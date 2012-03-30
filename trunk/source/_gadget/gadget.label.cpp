@@ -8,10 +8,8 @@ void _label::setStrValue( string val )
 		this->autoWidth = 2; 
 		this->computeSize(); 
 	}
-	else{
-		this->refreshBitmap();
-		this->bubbleRealRefresh( true );
-	}
+	else
+		this->bubbleRefresh( true );
 }
 
 void _label::setFont( _font* ft )
@@ -21,10 +19,8 @@ void _label::setFont( _font* ft )
 		this->autoWidth = 2; 
 		this->computeSize(); 
 	}
-	else{
-		this->refreshBitmap();
-		this->bubbleRealRefresh( true );
-	}
+	else
+		this->bubbleRefresh( true );
 }
 
 void _label::computeSize()
@@ -33,7 +29,7 @@ void _label::computeSize()
 		this->setWidth( this->font->getStringWidth( this->getStrValue() ) );
 		this->setHeight( this->font->getHeight() );
 		this->autoWidth = 1;
-		this->bubbleRealRefresh( true );
+		this->bubbleRefresh( true );
 	}
 }
 
@@ -124,7 +120,7 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	, autoWidth( 2 )
 {
 	// Link to Constructor
-	this->init( text );	
+	this->init( text );
 	
 	// Compute the necesary Width
 	this->computeSize();

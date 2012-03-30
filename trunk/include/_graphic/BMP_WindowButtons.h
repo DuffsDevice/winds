@@ -1,3 +1,4 @@
+#define _BMP_WINDOWBUTTONS_H_
 #ifndef _BMP_WINDOWBUTTONS_H_
 #define _BMP_WINDOWBUTTONS_H_
 

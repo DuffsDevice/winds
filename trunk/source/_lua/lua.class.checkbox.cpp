@@ -1,7 +1,7 @@
 #include "_lua/lua.class.checkbox.h"
 
 /*##################################
-##           Lua-Window           ##
+##          Lua-Checkbox          ##
 ##################################*/
 
 _lua_checkbox::_lua_checkbox( lua_State* L ) : 
@@ -19,7 +19,6 @@ Lunar<_lua_checkbox>::RegType _lua_checkbox::methods[] = {
   {"delete", &_lua_checkbox::_delete},
   LUNAR_DECLARE_METHOD(_lua_checkbox,bubbleEvent),
   LUNAR_DECLARE_METHOD(_lua_checkbox,bubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_checkbox,bubbleRealRefresh),
   LUNAR_DECLARE_METHOD(_lua_checkbox,refreshBitmap),
   LUNAR_DECLARE_METHOD(_lua_checkbox,getBitmap),
   LUNAR_DECLARE_METHOD(_lua_checkbox,getWindows),

@@ -16,17 +16,7 @@ extern "C"{
 #include "_lua/lauxlib.h"
 #include "_lua/lualib.h"
 }
-#include "_lua/lunar.h"
-/**
- * Proxy Classes
-**/
-#include "_lua/lua.class.rect.h"
-#include "_lua/lua.class.font.h"
-#include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.gadgetEventArgs.h"
-#include "_lua/lua.class.window.h"
-#include "_lua/lua.class.button.h"
-#include "_lua/lua.class.checkbox.h"
+
 #include "_gadget/gadget.windows.h"
 
 using namespace std;
