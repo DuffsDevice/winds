@@ -37,9 +37,6 @@ int _lua_gadget::bubbleEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_ga
 //! bubbleRefresh
 int _lua_gadget::bubbleRefresh(lua_State* L){ this->gadget->bubbleRefresh( luaL_optint( L , 1 , 0 ) ); return 0; }
 
-//! bubbleRealRefresh
-int _lua_gadget::bubbleRealRefresh(lua_State* L){ this->gadget->bubbleRealRefresh( luaL_optint( L , 1 , 0 ) ); return 0; }
-
 //! refreshBitmap
 int _lua_gadget::refreshBitmap( lua_State* L ){ this->gadget->refreshBitmap(); return 0; }
 
@@ -161,7 +158,6 @@ Lunar<_lua_gadget>::RegType _lua_gadget::methods[] = {
   {"delete", &_lua_gadget::_delete},
   LUNAR_DECLARE_METHOD(_lua_gadget,bubbleEvent),
   LUNAR_DECLARE_METHOD(_lua_gadget,bubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_gadget,bubbleRealRefresh),
   LUNAR_DECLARE_METHOD(_lua_gadget,refreshBitmap),
   LUNAR_DECLARE_METHOD(_lua_gadget,getBitmap),
   LUNAR_DECLARE_METHOD(_lua_gadget,getWindows),
@@ -340,12 +336,6 @@ int _lua_gadgetEventArgs::getCurrentKeyCodes(lua_State* L){ lua_pushnumber( L , 
 //! Set KeyCode State of that Moment the Event was triggered
 int _lua_gadgetEventArgs::setCurrentKeyCodes(lua_State* L){ _gadgetEventArgs::setCurrentKeyCodes( luaL_checkint( L , 1 ) ); return 0; }
 
-//! Set Refresh Rect
-int _lua_gadgetEventArgs::setRefreshRects(lua_State* L){ _lua_area* rc = Lunar<_lua_area>::check( L , 1 ); if( rc ) _gadgetEventArgs::setRefreshRects( *rc ); return 0; }
-
-//! get Refresh Rect
-int _lua_gadgetEventArgs::getRefreshRects(lua_State* L){  Lunar<_lua_area>::push( L , new _lua_area( _gadgetEventArgs::getRefreshRects() ) , true ); return 1; }
-
 //! Set Damaged Rects(The Rects that have to be repainted by the parent)
 int _lua_gadgetEventArgs::setDamagedRects(lua_State* L){ _lua_area* a = Lunar<_lua_area>::check( L , 1 ); if( a ) _gadgetEventArgs::setDamagedRects( *a ); return 0; }
 
@@ -381,8 +371,6 @@ Lunar<_lua_gadgetEventArgs>::RegType _lua_gadgetEventArgs::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getHeldTime),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setCurrentKeyCodes),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getCurrentKeyCodes),
-  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setRefreshRects),
-  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getRefreshRects),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, isBubbleRefresh),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setBubbleRefresh),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setDamagedRects),

@@ -15,10 +15,9 @@ _gadgetEvent::_gadgetEvent( _gadgetEventType type , _gadgetEventArgs args ){
 	this->args = args;
 }
 
-_gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _rect rect , _area damagedRects , _gadgetEventArgs args ){
+_gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _area damagedRects , _gadgetEventArgs args ){
 	this->type = type;
 	this->args = args;
-	this->args.setRefreshRects( rect );
 	this->args.setDamagedRects( damagedRects );
 	this->args.setBubbleRefresh( true );
 	this->args.setSource( src );

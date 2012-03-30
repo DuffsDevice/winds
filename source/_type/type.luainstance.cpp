@@ -1,5 +1,20 @@
 #include "_type/type.luainstance.h"
 
+#include "_lua/lunar.h"
+/**
+ * Proxy Classes
+**/
+#include "_lua/lua.class.rect.h"
+#include "_lua/lua.class.font.h"
+#include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.class.bitmapPort.h"
+#include "_lua/lua.class.gadgetEventArgs.h"
+#include "_lua/lua.class.window.h"
+#include "_lua/lua.class.label.h"
+#include "_lua/lua.class.imagegadget.h"
+#include "_lua/lua.class.button.h"
+#include "_lua/lua.class.checkbox.h"
+
 int luaL_expectint(lua_State* L , int narg , string name ){
 	if( !lua_isnumber(L,narg) ){
 		printf("Arg. #%d of %s is bad: %s\n",narg,name.c_str(),luaL_typename(L,narg));
@@ -60,17 +75,21 @@ _program::_program( string prog ) :
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );
 	
-	// Register Class _window
-	//Lunar<_lua_window>::Register( this->state );
+	//! Register Base Classes
 	Lunar<_lua_rect>::Register( this->state );
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
+	Lunar<_lua_bitmapPort>::Register( this->state );
 	Lunar<_lua_gadgetEventArgs>::Register( this->state );
 	Lunar<_lua_gadgetEvent>::Register( this->state );
 	Lunar<_lua_gadget>::Register( this->state );
+	
+	//! Register Gadgets
 	Lunar<_lua_window>::Register( this->state );
+	Lunar<_lua_imagegadget>::Register( this->state );
 	Lunar<_lua_button>::Register( this->state );
 	Lunar<_lua_checkbox>::Register( this->state );
+	Lunar<_lua_label>::Register( this->state );
 }
 
 void _program::runInit(){

@@ -106,12 +106,6 @@ class _lua_gadget{
 				//! Set KeyCode State of that Moment the Event was triggered
 				int setCurrentKeyCodes(lua_State* L);
 				
-				//! Set Refresh Rect
-				int setRefreshRects(lua_State* L);
-				
-				//! get Refresh Rect
-				int getRefreshRects(lua_State* L);
-				
 				//! Set Damaged Rects(The Rects that have to be repainted by the parent)
 				int setDamagedRects(lua_State* L);
 				
@@ -164,9 +158,6 @@ class _lua_gadget{
 		
 		//! bubbleRefresh
 		int bubbleRefresh(lua_State* L);
-		
-		//! bubbleRealRefresh
-		int bubbleRealRefresh(lua_State* L);
 		
 		//! refreshBitmap
 		int refreshBitmap( lua_State* );

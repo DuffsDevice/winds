@@ -6,6 +6,8 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	if( !doNotAllocateBitmap )
 		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
 	
+	this->padding = _padding( 0 );
+	
 	this->registerDefaultEventHandler( focus , &_gadget::gadgetFocusHandler );
 	this->registerDefaultEventHandler( mouseDown , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( mouseUp , &_gadget::gadgetMouseHandler );
@@ -31,6 +33,14 @@ _padding _gadget::getPadding(){
 	return this->padding;
 }
 
+bool _gadget::isEnhanced(){ 
+	return this->enhanced;
+}
+
+void _gadget::setEnhanced( bool flag ){
+	this->enhanced = flag;
+}
+
 _gadget::~_gadget(){
 	if( this->parent != nullptr )
 		this->parent->removeChild( this );
@@ -39,39 +49,30 @@ _gadget::~_gadget(){
 
 _gadgetType _gadget::getType(){ return this->type; }
 
-void _gadget::triggerEvent( _gadgetEvent event ){
+void _gadget::triggerEvent( _gadgetEvent event )
+{
 	_gadgetEventArgs args = event.getArgs();
 	args.setDestination( this );
 	event.setArgs( args );
 	this->generateEvent( event );
 }
 
-void _gadget::bubbleEvent( _gadgetEvent e , bool includeThis ){
+void _gadget::bubbleEvent( _gadgetEvent e , bool includeThis )
+{
 	if( includeThis )
 		this->triggerEvent( e );
 	if( this->parent != nullptr )
 		this->parent->bubbleEvent( e , true );
 }
 
-void _gadget::refreshBitmap(){
-	_gadgetEvent e = _gadgetEvent( this , refresh , this->getAbsoluteDimensions() , this->getAbsoluteDimensions() );
+void _gadget::refreshBitmap()
+{
+	_gadgetEvent e = _gadgetEvent( this , refresh , this->getAbsoluteDimensions() );
 	this->handleEvent( e );
 }
 
-void _gadget::bubbleRefresh( _gadgetEvent e , bool includeThis ){
-	if( includeThis )
-		this->triggerEvent( e );
-	e.getArgs().setSource( this );
-	if( this->parent != nullptr )
-		this->parent->bubbleRefresh( e , true );
-}
-
 void _gadget::bubbleRefresh( bool includeThis ){
-	this->bubbleRefresh( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() ) , includeThis );
-}
-
-void _gadget::bubbleRealRefresh( bool includeThis ){
-	this->bubbleEvent( _gadgetEvent( nullptr , refresh , _rect() , this->getAbsoluteDimensions() ) , includeThis );
+	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() ) , includeThis );
 }
 
 _bitmapPort _gadget::getBitmapPort() const {
@@ -226,27 +227,27 @@ _coord _gadget::getY() const {
 void _gadget::setX( int val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = val;
-	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() | dim ) );
 }
 
 void _gadget::setY( int val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.y = val;
-	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() | dim ) );
 }
 
 void _gadget::moveRelative( int dX , int dY ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x += dX;
 	this->dimensions.y += dY;
-	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() | dim ) );
 }
 
 void _gadget::moveTo( int x , int y ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = x;
 	this->dimensions.y = y;
-	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() | dim ) );
 }
 
 _gadget* _gadget::getParent() const {
@@ -271,7 +272,7 @@ void _gadget::removeChild( _gadget* child )
 		return;
 		
 	// Erase it on my bitmap
-	this->bubbleEvent( _gadgetEvent( child , refresh , _rect() , child->getAbsoluteDimensions() ) , true );
+	this->bubbleEvent( _gadgetEvent( child , refresh , child->getAbsoluteDimensions() ) , true );
 		
 	// Erase the Connection on both sides
 	child->parent = nullptr;
@@ -305,7 +306,7 @@ void _gadget::setDimensions( _rect rc ){
 	this->onResize();
 	
 	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleEvent( _gadgetEvent( this , refresh , _rect() , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent( this , refresh , dim - this->getAbsoluteDimensions() ) );
 }
 
 int _gadget::getHeight() const {
@@ -324,7 +325,7 @@ void _gadget::setHeight( int val ){
 		this->onResize();
 		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent( this , refresh , _rect() , dim - this->getAbsoluteDimensions() ) );
+		this->bubbleEvent( _gadgetEvent( this , refresh , dim - this->getAbsoluteDimensions() ) );
 	}
 }
 
@@ -336,7 +337,7 @@ void _gadget::setWidth( int val ){
 		this->onResize();
 		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent( this , refresh , _rect() , dim - this->getAbsoluteDimensions() ) );
+		this->bubbleEvent( _gadgetEvent( this , refresh , dim - this->getAbsoluteDimensions() ) );
 	}
 }
 
@@ -353,13 +354,21 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 	_gadget* gadget;
 	_gadgetList::reverse_iterator it;
 	
-	_area availableRects = event.getArgs().getDamagedRects().toRelative( this->getAbsoluteDimensions() );
-	_area availableRefreshRect = event.getArgs().getRefreshRects().toRelative( this->getAbsoluteDimensions() );
+	// Receive Areas
+	_area damagedRects;
+	_rect fullRect = _rect( 0 , 0 , this->dimensions.width , this->dimensions.height );
 	
-	if( event.getArgs().isBubbleRefresh() )
-		bP.addClippingRects( availableRects );
-	else
-		bP.resetClippingRects();
+	// Create Areas for normal Childs
+	_area drawArea;
+	
+	if( event.getArgs().isBubbleRefresh() ){
+		damagedRects = event.getArgs().getDamagedRects().toRelative( this->getAbsoluteDimensions() );
+		bP.addClippingRects( damagedRects & ( fullRect - this->getPadding() ) );
+	}
+	else{
+		damagedRects.push_back( fullRect );
+		bP.addClippingRects( damagedRects );
+	}
 	
 	for( it = this->children.rbegin() ; it != this->children.rend() ; it++ )
 	{
@@ -367,36 +376,28 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 		// Receive target
 		gadget = (*it);
 		
-		// Draw the gadget that requested the paint?
-		if( event.getArgs().isBubbleRefresh() && event.getArgs().getSource() == gadget )
+		// Has the Gadget special Privilegs e.g. it can draw on the Parents reserved areas?
+		if( gadget->isEnhanced() )
 		{
 			// Reset clipping Rects
 			bP.deleteClippingRects();
 			
 			// Special Area for the Specific Gadget which wants itself to be refreshed
-			bP.addClippingRects( availableRefreshRect );
-			bP.copyTransparent( gadget->getX() , gadget->getY() , gadget->getBitmapPort() );
-			
-			// Return to normal refresh
-			bP.deleteClippingRects();
-			bP.addClippingRects( availableRects );
+			bP.addClippingRects( damagedRects );
+			bP.copyTransparent( gadget->getX() , gadget->getY() , gadget->getBitmap() );
 		}
 		else
-		{
 			// Draw...
 			bP.copyTransparent( gadget->getX() , gadget->getY() , gadget->getBitmapPort() );
-		}
 		
 		// Since we startat the very top Gadget:
 		// Reduce the Available Area to
 		// the still visible Parts!
-		availableRects -= gadget->getDimensions();
-		availableRefreshRect -= gadget->getDimensions();
+		damagedRects -= gadget->getDimensions();
+		drawArea = damagedRects & ( fullRect - this->getPadding() );
 		
-		if( event.getArgs().isBubbleRefresh() ){
-			bP.deleteClippingRects();
-			bP.addClippingRects( availableRects );
-		}
+		bP.deleteClippingRects();
+		bP.addClippingRects( drawArea );
 	}
 	
 	return handled;

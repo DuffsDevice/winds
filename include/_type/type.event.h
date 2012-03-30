@@ -70,7 +70,7 @@ class _gadgetEvent
 		_gadgetEvent( _gadgetEventType type = refresh , _gadgetEventArgs args = _gadgetEventArgs() );
 		
 		// Set type to refresh & set the refreshRect
-		_gadgetEvent( _gadget* src , _gadgetEventType type , _rect g , _area damagedRects = _area() , _gadgetEventArgs args = _gadgetEventArgs() );
+		_gadgetEvent( _gadget* src , _gadgetEventType type , _area damagedRects = _area() , _gadgetEventArgs args = _gadgetEventArgs() );
 		
 		// Auto set the Destination
 		_gadgetEvent( _gadget* src , _gadgetEventType type , _gadget* dest , _gadgetEventArgs args = _gadgetEventArgs() );

@@ -35,22 +35,25 @@ class _gadget{
 	protected:
 	
 		// Coordinates
-		_rect dimensions;
+		_rect 		dimensions;
 		
 		// Padding
-		_padding padding;
+		_padding	padding;
+		
+		// Enhancement
+		bool 		enhanced;
 		
 		// Children
-		_gadgetList children;
+		_gadgetList	children;
 		
 		// Parent
-		_gadget* parent;
+		_gadget*	parent;
 		
 		// Style
 		_gadgetStyle style;
 		
 		// Only for the dragHandler
-		_gadget* dragTemp;
+		_gadget*	dragTemp;
 		
 		// Event-Handlers
 		map<_gadgetEventType,_gadgetDefaultEventHandler> defaultEventHandlers;
@@ -58,22 +61,20 @@ class _gadget{
 		map<_gadgetEventType,_gadgetEventHandler> eventHandlers;
 		
 		// Standard EventHandler
-		_gadgetEventReturnType gadgetRefreshHandler( _gadgetEvent event );
-		_gadgetEventReturnType gadgetDragHandler( _gadgetEvent event );
-		_gadgetEventReturnType gadgetMouseHandler( _gadgetEvent event );
-		_gadgetEventReturnType gadgetFocusHandler( _gadgetEvent event );
+		_gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent event );
+		_gadgetEventReturnType	gadgetDragHandler( _gadgetEvent event );
+		_gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent event );
+		_gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent event );
 		
 		// Bitmap of the Gadget
-		_bitmap* bitmap;
+		_bitmap*	bitmap;
 		
 		// If any Gadget wants to do something on resize,
 		// Just implement that one in your class and let it do something
 		virtual void onResize(){};
 		
-		// Used to set The Focus on a child and return whether this goal succeded
+		// Tries to focus a child and returns whether it succeded
 		virtual bool focusChild( _gadget* child );
-		
-		_gadget* getThis();
 	
 	public:
 		
@@ -99,6 +100,16 @@ class _gadget{
 		_padding getPadding();
 		
 		/**
+		 * Check whether this Gadget can also be on the reserved area of the parent
+		**/
+		bool isEnhanced();
+		
+		/**
+		 * Set whether this Gadget can also be on the reserved area of the parent
+		**/
+		void setEnhanced( bool flag = true );
+		
+		/**
 		 * Let an Event bubble from child to parent and so on...
 		**/
 		void bubbleEvent( _gadgetEvent e , bool includeThis = false );
@@ -107,8 +118,6 @@ class _gadget{
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( _gadgetEvent e , bool includeThis = false );
-		void bubbleRealRefresh( bool includeThis = false ); // Refreshes also the transparent Parts
 		void bubbleRefresh( bool includeThis = false );
 		
 		/**

@@ -27,7 +27,6 @@ Lunar<_lua_button>::RegType _lua_button::methods[] = {
   {"delete", &_lua_button::_delete},
   LUNAR_DECLARE_METHOD(_lua_button,bubbleEvent),
   LUNAR_DECLARE_METHOD(_lua_button,bubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_button,bubbleRealRefresh),
   LUNAR_DECLARE_METHOD(_lua_button,refreshBitmap),
   LUNAR_DECLARE_METHOD(_lua_button,getBitmap),
   LUNAR_DECLARE_METHOD(_lua_button,getWindows),

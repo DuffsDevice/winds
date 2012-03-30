@@ -42,8 +42,8 @@ _rect _rect::fromCoords( const _coord left , const _coord top , const _coord rig
 	_rect rc;
 	rc.x = left;
 	rc.y = top;
-	rc.width = right - left;
-	rc.height = bottom - top;
+	rc.width = right - left + 1;
+	rc.height = bottom - top + 1;
 	return rc;
 }
 
@@ -57,20 +57,20 @@ _rect _rect::toRelative( const _rect rc ) const {
 	return _rect( this->x - rc.x , this->y - rc.y , this->width , this->height );
 }
 
-_rect _rect::operator+( const _padding p ) const {
-	return _rect( this->x - p.left , this->y - p.top , this->getX2() + p.right - this->x , this->getY2() + p.bottom - this->y );
+_rect _rect::operator+( const _margin p ) const {
+	return _rect::fromCoords( this->x - p.left , this->y - p.top , this->getX2() + p.right , this->getY2() + p.bottom );
 }
 
 _rect _rect::operator-( const _padding p ) const {
-	return _rect( this->x + p.left , this->y + p.top , this->getX2() - p.right - this->x , this->getY2() - p.bottom - this->y );
+	return _rect::fromCoords( this->x + p.left , this->y + p.top , this->getX2() - p.right , this->getY2() - p.bottom );
 }
 
-_rect& _rect::operator+=( const _padding p ){
-	return (*this = _rect( this->x - p.left , this->y - p.top , this->getX2() + p.right - this->x , this->getY2() + p.bottom - this->y ));
+_rect& _rect::operator+=( const _margin p ){
+	return (*this = _rect::fromCoords( this->x - p.left , this->y - p.top , this->getX2() + p.right , this->getY2() + p.bottom ) );
 }
 
 _rect& _rect::operator-=( const _padding p ){
-	return (*this = _rect( this->x + p.left , this->y + p.top , this->getX2() - p.right - this->x , this->getY2() - p.bottom - this->y )); 
+	return (*this = _rect::fromCoords( this->x + p.left , this->y + p.top , this->getX2() - p.right , this->getY2() - p.bottom ) ); 
 }
 
 _rect _rect::operator+( const _rect rc ) const {
