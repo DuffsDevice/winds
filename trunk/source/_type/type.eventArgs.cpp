@@ -9,7 +9,7 @@ _gadgetEventArgs::_gadgetEventArgs( void* dest ){
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
 	this->bubbleRefresh = false;
-	this->refreshRects = _area();
+	this->damagedRects = _area();
 }
 
 void _gadgetEventArgs::reset(){
@@ -21,7 +21,7 @@ void _gadgetEventArgs::reset(){
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
 	this->bubbleRefresh = false;
-	this->refreshRects = _area();
+	this->damagedRects = _area();
 }
 
 void* _gadgetEventArgs::getDestination(){ return this->dest; }
@@ -59,10 +59,6 @@ void _gadgetEventArgs::setHeldTime( _u32 heldTime ){ this->heldTime = heldTime; 
 _key _gadgetEventArgs::getCurrentKeyCodes(){ return this->currentKeyCodes; }
 
 void _gadgetEventArgs::setCurrentKeyCodes( _key code ){ this->currentKeyCodes = code; }
-
-_area _gadgetEventArgs::getRefreshRects(){ return this->refreshRects; }
-
-void _gadgetEventArgs::setRefreshRects( _area rects ){ this->refreshRects = rects; }
 
 _area _gadgetEventArgs::getDamagedRects(){ return this->damagedRects; };
 

@@ -13,6 +13,7 @@ _runtimeAttributes::_runtimeAttributes() :
 	, startButtonText( "start" ) 
 	, windowBar( new BMP_WindowHeader() ) 
 	, showFileExtension( true )
+	, fileObjectHeight( 10 )
 {
 	this->keyboardChar[0] = { 
 		'1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0' ,

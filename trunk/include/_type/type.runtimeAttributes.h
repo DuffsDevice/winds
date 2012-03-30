@@ -25,6 +25,7 @@ class _runtimeAttributes{
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
 		_bitmap*		windowBar;
+		_u8				fileObjectHeight;
 		bool 			showFileExtension;
 		
 		

@@ -45,5 +45,7 @@ class _mimeType{
 		}
 		
 		const _bitmap* getFileImage() const ;
+		
+		const _bitmap* getFolderImage() const ;
 };
 #endif

@@ -16,27 +16,25 @@ class _label : public _gadget , public _interface_input {
 		friend class _checkbox;
 		
 		//! Farbe der Schrift
-		_pixel color;
-		_pixel bgColor;
+		_pixel 	color;
+		_pixel 	bgColor;
 		
-		_u8 autoWidth;
+		_u8 	computeW;
+		_u8 	computeH;
 		
 		//! Schriftart/Font
-		//! Default: system-Font inside of _gadgetStyle
-		_font* font;
+		//! Default: system-Font inside of _defaultRuntimeAttributes_
+		_font* 	font;
 		
 		//! Refresh-Handler
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
-		//! Internal init method to be called inside of all ctors
-		void init( string text );
-		
+		//! Method to cumpute Space-Requirements
 		void computeSize();
-		
-		void onResize(){ this->handleEvent( refresh ); }
 		
 	public:
 		
+		//! Set the Text to be displayed
 		void setStrValue( string val );
 		
 		//! Set Text Color
@@ -67,7 +65,17 @@ class _label : public _gadget , public _interface_input {
 		_label( _length width , _length height , _coord x , _coord y , string value , _gadgetStyle style = _defaultStyle_ );
 		
 		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string value , _gadgetStyle style = _defaultStyle_ );
+		_label( _coord x , _coord y , string text , _gadgetStyle style = _defaultStyle_ );
+		
+		// Methods to set Size
+		void setWidth( _u8 width );
+		void setDimensions( _rect dim );
+		void setHeight( _u8 height );
+
+		// Methods to tell: We want it to compute the Size on its own
+		void setWidth();
+		void setDimensions();
+		void setHeight();
 };
 
 #endif

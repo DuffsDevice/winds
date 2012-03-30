@@ -113,11 +113,15 @@ _windows* cur = NULL;
 int addToWindows( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( g && cur ) cur->addChild( g->gadget ); return 0; }
 
 void _program::run( _windows* w ){
+	// Config Random
 	srand( time(NULL) );
+	
 	cur = w;
 	luaL_loadstring( this->state , this->code.c_str() );
 	lua_pushcfunction( this->state , addToWindows );
 	lua_setglobal( this->state , "registerToWindows" );
+	
+	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
 		printf("Parser Error");
 	}

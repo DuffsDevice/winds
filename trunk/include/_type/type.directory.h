@@ -33,6 +33,8 @@ class _directory : public _file{
 		deque<_file*>::iterator begin(){ return this->children.begin(); }
 		
 		deque<_file*>::iterator end(){ return this->children.end(); }
+		
+		string getExtension();
 };
 
 extern _directory* _diskRoot_;

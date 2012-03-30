@@ -64,5 +64,9 @@ bool _directory::readChildren(){
 	return true;
 }
 
+string _directory::getExtension(){
+	return "";
+}
+
 /// Root Directory
 _directory* _diskRoot_ = new _directory("/");

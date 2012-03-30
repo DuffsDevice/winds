@@ -3,34 +3,35 @@
 
 void _label::setStrValue( string val )
 {
+	// Set Value...
 	_interface_input::setStrValue( val );
-	if( this->autoWidth == 1 ){ 
-		this->autoWidth = 2; 
-		this->computeSize(); 
-	}
-	else
-		this->bubbleRefresh( true );
+	this->computeSize();
+	this->bubbleRefresh( true );
 }
 
 void _label::setFont( _font* ft )
 {
+	if( this->font == ft )
+		return;
+	
+	// Set Font...
 	this->font = ft;
-	if( this->autoWidth == 1 ){
-		this->autoWidth = 2; 
-		this->computeSize(); 
-	}
-	else
-		this->bubbleRefresh( true );
+	this->computeSize();
+	this->bubbleRefresh( true );
 }
 
 void _label::computeSize()
 {
-	if( this->autoWidth == 2 && this->font->valid() ){
-		this->setWidth( this->font->getStringWidth( this->getStrValue() ) );
+	if( !this->font || !this->font->valid() )
+		return;
+	
+	// Compute Height
+	if( this->computeH == 2 && ( this->computeH = 1 ) )
 		this->setHeight( this->font->getHeight() );
-		this->autoWidth = 1;
-		this->bubbleRefresh( true );
-	}
+	
+	// Compute Width
+	if( this->computeW == 2 && ( this->computeW = 1 ) )
+		this->setWidth( this->font->getStringWidth( this->getStrValue() ) );
 }
 
 _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
@@ -48,7 +49,7 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	bP.fill( that->bgColor );
 	
 	// If there is no font it doesn't make sense to paint
-	if( that->font == nullptr || !that->font->valid() )
+	if( !that->font || !that->font->valid() )
 		return use_default;
 	
 	_length myH = that->bitmap->getHeight();
@@ -82,49 +83,57 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 			break;
 	}
 	
-	// Text
+	// Draw Text...
 	bP.drawString( x , y , that->font , that->getStrValue() , that->color );
 	
 	return use_default;
 }
 
-void _label::init( string text )
-{	
-	// Set Font...
-	this->font = _defaultRuntimeAttributes_.defaultFont;
-	
-	// Init
-	this->setStrValue( text );
-	this->color = RGB( 0 , 0 , 0 );
-	this->bgColor = NO_COLOR;
-	
-	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , &_label::refreshHandler );
-}
+// Methods to set Size
+void _label::setWidth( _u8 width )		{ this->computeW = 0; _gadget::setWidth( width ); }
+void _label::setDimensions( _rect dim )	{ this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim ); }
+void _label::setHeight( _u8 height )	{ this->computeH = 0; _gadget::setHeight( height ); }
+
+// Methods to tell: We want it to compute the Size on its own
+void _label::setWidth()					{ this->computeW = 2; this->computeSize(); }
+void _label::setDimensions()			{ this->computeH = 0; this->computeW = 0; this->computeSize(); }
+void _label::setHeight()				{ this->computeH = 2; this->computeSize(); }
+
 
 _label::_label( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::label , width , height , x , y , style )
-	, _interface_input( text )
-	, autoWidth( 0 )
+	, color( RGB( 0 , 0 , 0 ) )
+	, bgColor( NO_COLOR )
+	, computeW( 0 )
+	, computeH( 0 )
 {
-	// Link to Constructor
-	this->init( text );
+	this->font = _defaultRuntimeAttributes_.defaultFont;
 	
-	// Refresh Me
+	_interface_input::setStrValue( text );
+	
+	// Register my handler as the default Refresh-Handler
+	this->registerEventHandler( refresh , &_label::refreshHandler );
+	
+	// Refresh
+	this->computeSize();
 	this->refreshBitmap();
 }
 
 _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
-	_gadget( _gadgetType::label , 1 , 9 , x , y , style )
-	, _interface_input( text )
-	, autoWidth( 2 )
+	_gadget( _gadgetType::label , 1 , 1 , x , y , style )
+	, color( RGB( 0 , 0 , 0 ) )
+	, bgColor( NO_COLOR )
+	, computeW( 2 )
+	, computeH( 2 )
 {
-	// Link to Constructor
-	this->init( text );
+	this->font = _defaultRuntimeAttributes_.defaultFont;
 	
-	// Compute the necesary Width
+	_interface_input::setStrValue( text );
+	
+	// Register my handler as the default Refresh-Handler
+	this->registerEventHandler( refresh , &_label::refreshHandler );
+	
+	// Refresh
 	this->computeSize();
-	
-	// Refresh Me
 	this->refreshBitmap();
 }
