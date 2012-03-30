@@ -112,10 +112,10 @@ class _file{
 		virtual string readString( _u32 size = -1 );
 		
 		// get Name of the file (not "C:/Hello.txt", but "Hello")
-		string getName();
+		virtual string getName();
 		
 		// get Extension of the file (not "C:/Hello.txt", but "txt")
-		string getExtension();
+		virtual string getExtension();
 		
 		//! get the size of a file (in bytes)
 		virtual _u32 getSize();

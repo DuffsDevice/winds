@@ -104,10 +104,11 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	return handled;
 }
 
-_keyboard::_keyboard( _coord x , _coord y , _gadget* destination , _gadgetStyle style ) :
+_keyboard::_keyboard( _coord x , _coord y , _gadget* dest , _gadgetStyle style ) :
 	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 102 , x , y , style )
 	, font( new FONT_CourierNew10() )
 	, shift( false )
+	, destination( dest )
 {
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )

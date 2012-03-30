@@ -39,6 +39,8 @@ class _interface_input
 		virtual string getTitle(){ return title; }
 		
 		_interface_input( string val ){ this->setTitle(val); }
+		
+		_interface_input(){ }
 };
 
 #endif

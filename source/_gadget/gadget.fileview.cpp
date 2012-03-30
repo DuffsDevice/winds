@@ -14,13 +14,13 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , _di
 	dir->readChildren();
 	_directory* d = dir;
 	#else
-	deque<_file*>* d = new deque<_file*>{ new _file("Textdatei.txt") , new _file("Fat:/XML-File.xml") , new _file("Fat:/Executable_file.exe") , new _file("Fat:/Unknown") };
+	deque<_file*>* d = new deque<_file*>{ new _file("Textdatei.txt") , new _file("Fat:/XML-File.xml") , new _file("Fat:/Executable_file.exe") , new _directory("Fat:/Unknown") };
 	#endif
 	
-	int i = -10;
+	int i = -_defaultRuntimeAttributes_.fileObjectHeight;
 	
 	for( _file* file : *d )
-		this->addChild( new _fileobject( 0 , (i+=11) , file , this->viewType ) );
+		this->addChild( new _fileobject( 1 , ( i += _defaultRuntimeAttributes_.fileObjectHeight + 1 ) , file , this->viewType ) );
 	
 	// Refresh...
 	this->refreshBitmap();

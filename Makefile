@@ -18,7 +18,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/_graphic source/_gadget source/_lua source/_type source/_file source/_file/_fat
+SOURCES		:=	source source/_graphic source/_gadget source/_lua source/_type source/_file source/_file/_fat source/_wifi
 #source/_lua 
 INCLUDES	:=	include
 DATA		:=	data  
@@ -35,7 +35,7 @@ CFLAGS	:=	-g -Wall -O2\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -Wno-sign-compare
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3 -Wextra
 ## C++0x:   -std=c++11; -std=gnu++11;
 
 ASFLAGS	:=	-g $(ARCH)
@@ -44,7 +44,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lFatLib -lLua -lnds9
+LIBS	:=  -lFatLib -ldswifi9 -lLua -lnds9
  
  
 #---------------------------------------------------------------------------------

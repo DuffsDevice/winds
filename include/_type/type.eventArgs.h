@@ -21,7 +21,6 @@ class _gadgetEventArgs
 		_key 	keyCode;		 //! KeyCode of the Button that triggered the Event
 		_key 	currentKeyCodes; //! Keycode-State of that Moment the Event was triggered
 		_u32	heldTime; 		 //! Time the Button was Pressed (only for: keyUp, keyClick, mouseUp, mouseClick )
-		_area	refreshRects;	 //! If (isBubbleRefresh) is true then this Attribute will specify the rects to be painted
 		_area	damagedRects;	 //! If (isBubbleRefresh) is true then this Attribute will specify the Area, that is invalid/damaged and has to be repainted
 		bool	bubbleRefresh;	 //! Whether this is an auto generated Event for bubble-refreshing
 		
@@ -87,22 +86,16 @@ class _gadgetEventArgs
 		//! Set KeyCode State of that Moment the Event was triggered
 		void setCurrentKeyCodes( _key code );
 		
-		//! Get KeyCode State of that Moment the Event was triggered
-		_area getRefreshRects();
-		
-		//! Set KeyCode State of that Moment the Event was triggered
-		void setRefreshRects( _area rect );
-		
-		//! Get KeyCode State of that Moment the Event was triggered
+		//! get Rects to be repainted
 		_area getDamagedRects();
 		
-		//! Set KeyCode State of that Moment the Event was triggered
+		//! Set Rects to be repainted
 		void setDamagedRects( _area rects );
 		
-		//! Get KeyCode State of that Moment the Event was triggered
+		//! Check if this event was auto-generated to refresh every gadget until the DOM-Tree HEAD
 		bool isBubbleRefresh();
 		
-		//! Set KeyCode State of that Moment the Event was triggered
+		//! Set if this event was auto-generated
 		void setBubbleRefresh( bool bR );
 		
 		void dump();

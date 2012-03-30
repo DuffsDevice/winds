@@ -22,7 +22,7 @@ _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 }
 
 _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewtype , _gadgetStyle style ) :
-	_gadget( fileobject , 50 , 10 , x , y , style ) , file( fl ) , viewType( viewtype )
+	_gadget( fileobject , 50 , _defaultRuntimeAttributes_.fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );
@@ -49,10 +49,18 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 				ext = "." + ext;
 			
 			this->label = new _label( 11 , 0 , file->getName() + ext );
-			const _bitmap* fileIcon = mime.getFileImage();
+			this->label->setHeight( _defaultRuntimeAttributes_.fileObjectHeight );
+			this->label->setVAlign( middle );
+			
+			const _bitmap* fileIcon;
+			
+			if( file->isDirectory() )
+				fileIcon = mime.getFolderImage();
+			else
+				fileIcon = mime.getFileImage();
 			
 			// Set Icon
-			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , 0 , fileIcon );
+			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _defaultRuntimeAttributes_.fileObjectHeight >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
 			
 			// Resize
 			_rect dim = this->getDimensions();

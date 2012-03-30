@@ -3,10 +3,12 @@
 #include "_graphic/BMP_ExeIcon.h"
 #include "_graphic/BMP_TxtIcon.h"
 #include "_graphic/BMP_XmlIcon.h"
+#include "_graphic/BMP_FolderIcon.h"
 
 _bitmap* icon_application_octet_stream = new BMP_ExeIcon();
 _bitmap* icon_application_microsoft_installer = new BMP_FileIcon();
 _bitmap* icon_plain = new BMP_FileIcon();
+_bitmap* icon_folder = new BMP_FolderIcon();
 _bitmap* icon_text_plain = new BMP_TxtIcon();
 _bitmap* icon_text_xml = new BMP_XmlIcon();
 
@@ -44,6 +46,10 @@ map<_mime,string> mimeType2string = {
 	{ application_octet_stream , "application/octet-stream" } ,
 	{ application_microsoft_installer , "application/microsoft-installer" } 
 };
+
+const _bitmap* _mimeType::getFolderImage() const {
+	return icon_folder;
+}
 
 const _bitmap* _mimeType::getFileImage() const 
 {

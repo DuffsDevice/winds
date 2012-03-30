@@ -128,7 +128,7 @@ class _gadget{
 		/**
 		 * StandardPaint is a method implemented in the gadgets themselfes to draw the standard layout
 		**/
-		virtual void standardPaint( _gadgetEvent event ){ };
+		virtual void standardPaint( _gadgetEvent event );
 		
 		/**
 		 * Receive a Bitmap Port

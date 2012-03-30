@@ -35,7 +35,7 @@ CFLAGS	:=	-g -Wall -O2\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -Wno-sign-compare
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3 -Wextra
 ## C++0x:   -std=c++11; -std=gnu++11;
 
 ASFLAGS	:=	-g $(ARCH)
