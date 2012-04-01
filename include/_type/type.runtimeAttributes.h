@@ -35,6 +35,4 @@ class _runtimeAttributes{
 		_runtimeAttributes();
 };
 
-extern _runtimeAttributes _defaultRuntimeAttributes_;
-
 #endif

@@ -173,13 +173,10 @@ class _gadget{
 		**/
 		int unregisterLuaEventHandler( _gadgetEventType type );
 		
-		// Only Windows can Handle Events:
-		//
-		// You can use triggerEvent to throw Events.
-		// They will be passed to the Windows Class using function getWindows().
-		// Windows will redefine triggerEvent to its own functionality!
-		// That's inheritance in its completition!
-		virtual void generateEvent( _gadgetEvent event , bool works = true );
+		/**
+		 * Method to push an event onto the stack
+		**/
+		void generateEvent( _gadgetEvent event );
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically)

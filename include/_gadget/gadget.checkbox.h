@@ -29,7 +29,7 @@ class _checkbox : public _gadget , public _interface_input {
 	public:
 		
 		//! setIntValue
-		void setIntValue( _s32 val ){ _interface_input::setIntValue( val ); this->handleEvent( refresh ); }
+		void setIntValue( _s32 val ){ _interface_input::setIntValue( val ); this->triggerEvent( refresh ); }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_checkbox( _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );

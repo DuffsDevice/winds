@@ -1,4 +1,5 @@
 #include "_gadget/gadget.windows.taskBoard.h"
+#include "_type/type.system.h"
 #include "_graphic/BMP_StartButton.h"
 #include "_graphic/BMP_WindowHeader.h"
 
@@ -11,8 +12,8 @@ void _windowsTaskBoard::openDialog( _gadget* dest , _gadget* visibleArea )
 	{
 		this->anim->setFromValue( this->getY() );
 		this->anim->setToValue( SCREEN_HEIGHT - 112 );
-		this->anim->start( _animations_.getNow() );
-		_animations_.add( this->anim );
+		this->anim->start( _system_->getNow() );
+		_system_->addAnimation( this->anim );
 		this->mode = true;
 	}
 }
@@ -31,9 +32,9 @@ _gadgetEventReturnType _windowsTaskBoard::refreshHandler( _gadgetEvent event )
 	else
 		bP.resetClippingRects();
 	
-	bP.copyHorizontalStretch( 33 , 0 , SCREEN_WIDTH - 33 , _defaultRuntimeAttributes_.windowBar );
+	bP.copyHorizontalStretch( 33 , 0 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
 	bP.copy( 0 , 0 , that->startButton );
-	bP.drawString( 12 , 2 , _defaultRuntimeAttributes_.defaultFont , _defaultRuntimeAttributes_.startButtonText , RGB( 30 , 30 , 30 ) );
+	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , _system_->_runtimeAttributes_->startButtonText , RGB( 30 , 30 , 30 ) );
 	
 	return use_default;
 }
@@ -101,8 +102,8 @@ _gadgetEventReturnType _windowsTaskBoard::dragHandler( _gadgetEvent event )
 			that->keyboard->setDestination( nullptr );
 		
 		that->anim->setToValue( toValue );
-		that->anim->start( _animations_.getNow() );
-		_animations_.add( that->anim );
+		that->anim->start( _system_->getNow() );
+		_system_->addAnimation( that->anim );
 		
 		// Return
 		return handled;

@@ -1,4 +1,5 @@
 #include "_type/type.gadget.h"
+#include "_type/type.system.h"
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
 	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
@@ -10,6 +11,7 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	this->registerDefaultEventHandler( mouseDown , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( mouseUp , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( mouseClick , &_gadget::gadgetMouseHandler );
+	this->registerDefaultEventHandler( mouseDoubleClick , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( refresh , &_gadget::gadgetRefreshHandler );
 	this->registerDefaultEventHandler( dragStart , &_gadget::gadgetDragHandler );
 	this->registerDefaultEventHandler( dragging , &_gadget::gadgetDragHandler );
@@ -175,20 +177,17 @@ bool _gadget::focusChild( _gadget* child )
 	return true;
 }
 
-void _gadget::generateEvent( _gadgetEvent event , bool works )
+void _gadget::generateEvent( _gadgetEvent event )
 {
-	if( !works )
-		return;
-	_gadget* top = this->getWindows();
-	if( top != nullptr )
-		top->generateEvent( event , false );
+	_system_->addEvent( event );
 }
 
 bool _gadget::canReactTo( _gadgetEventType type ) const {
 	return this->eventHandlers.count( type ) || this->luaEventHandlers.count( type );
 }
 
-_gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent event ){
+_gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent event )
+{
 	// Use the default EventHandler if available
 	if( this->defaultEventHandlers.count( event.getType() ) )
 	{

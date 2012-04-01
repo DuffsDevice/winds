@@ -1,8 +1,5 @@
 #include "_gadget/gadget.window.h"
-
-// Graphics
-
-#include "_gadget/gadget.windows.h"
+#include "_type/type.system.h"
 
 _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 {
@@ -95,12 +92,12 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	bP.fill( RGB( 30 , 30 , 29 ) );
 	
 	// Window-Bar
-	bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _defaultRuntimeAttributes_.windowBar );
+	bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system_->_runtimeAttributes_->windowBar );
 	
 	// Bottom Border
-	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , (*_defaultRuntimeAttributes_.windowBar)[0] );
-	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , (*_defaultRuntimeAttributes_.windowBar)[9] );
-	bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , (*_defaultRuntimeAttributes_.windowBar)[9] );
+	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , (*_system_->_runtimeAttributes_->windowBar)[0] );
+	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , (*_system_->_runtimeAttributes_->windowBar)[9] );
+	bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , (*_system_->_runtimeAttributes_->windowBar)[9] );
 	
 	that->label->refreshBitmap();
 	
@@ -173,6 +170,8 @@ _gadgetEventReturnType _window::closeHandler( _gadgetEvent event )
 	_windowButton* that = (_windowButton*)event.getGadget();
 	
 	that->getParent()->setParent( nullptr ); 
+	
+	return handled;
 }
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style ) :
@@ -181,8 +180,8 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 {
 	// Create a Label
 	this->label = new _label( this->getWidth() - 4 , 6 , 2 , 2 , title );
-	this->label->setAlign( left );
-	this->label->setVAlign( middle );
+	this->label->setAlign( _align::left );
+	this->label->setVAlign( _valign::middle );
 	this->label->setColor( RGB( 31 , 31 , 31 ) );
 	
 	// Append it to this button

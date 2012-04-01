@@ -1,4 +1,6 @@
 #include "_type/type.file.h"
+#include "_type/type.mime.h"
+#include "_type/type.system.h"
 extern "C"{
 #include "_file/_fat/partition.h"
 #include "_file/_fat/fatfile.h"
@@ -177,4 +179,18 @@ string _file::getExtension()
 	if( pos > npos && pos != this->filename.npos )
 		return this->extension = this->filename.substr( pos + 1 );
 	return "";
+}
+
+
+
+void _file::execute(){
+	
+	_mimeType mime = { this->getExtension() };
+	switch( mime ){
+		case _mime::application_octet_stream:
+			_system_->addProgram( new _program( this->readString() ) );
+			break;
+		default:
+			break;
+	}
 }

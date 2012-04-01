@@ -27,6 +27,7 @@
 
 #include "_type/type.h"
 #include "_type/type.color.h"
+#include "_type/type.system.h"
 #include "_type/type.eventArgs.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.bitmapPort.h"
@@ -63,15 +64,6 @@ using namespace std;
 namespace DSWindows
 {	
 	void memcpyHalfWords( _u16* src , _u16* dest , _u32 size );
-	
-	void submit();
-	
-	void initDisplay();
-	
-	void benchMarkStart();
-	
-	void benchMarkStopPrint();
-	
 }
 
 #endif

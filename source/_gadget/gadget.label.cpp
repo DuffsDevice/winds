@@ -1,5 +1,5 @@
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.windows.h"
+#include "_type/type.system.h"
 
 void _label::setStrValue( string val )
 {
@@ -60,27 +60,27 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	
 	switch( that->getAlign() )
 	{
-		case center:
+		case _align::center:
 			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() ) - 1 ) >> 1 );
 			break;
-		case left:
-		case optimize:
+		case _align::left:
+		case _align::optimize:
 			x = 0;
 			break;
-		case right:
+		case _align::right:
 			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() );
 			break;
 	}
 	
 	switch( that->getVAlign() )
 	{
-		case middle:
+		case _valign::middle:
 			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getMainHeight() + 1 ) >> 1 );
 			break;
-		case top:
+		case _valign::top:
 			y = 0;
 			break;
-		case bottom:
+		case _valign::bottom:
 			y = that->dimensions.height - that->font->getMainHeight();
 			break;
 	}
@@ -109,7 +109,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, computeW( 0 )
 	, computeH( 0 )
 {
-	this->font = _defaultRuntimeAttributes_.defaultFont;
+	this->font = _system_->_runtimeAttributes_->defaultFont;
 	
 	_interface_input::setStrValue( text );
 	
@@ -127,7 +127,7 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	, computeW( 2 )
 	, computeH( 2 )
 {
-	this->font = _defaultRuntimeAttributes_.defaultFont;
+	this->font = _system_->_runtimeAttributes_->defaultFont;
 	
 	_interface_input::setStrValue( text );
 	

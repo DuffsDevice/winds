@@ -23,7 +23,7 @@ class _label : public _gadget , public _interface_input {
 		_u8 	computeH;
 		
 		//! Schriftart/Font
-		//! Default: system-Font inside of _defaultRuntimeAttributes_
+		//! Default: system-Font inside of _system_->_runtimeAttributes_
 		_font* 	font;
 		
 		//! Refresh-Handler

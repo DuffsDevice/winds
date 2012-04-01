@@ -1,6 +1,7 @@
 #include "_gadget/gadget.fileview.h"
+#include "_type/type.system.h"
 
-#define FAT_EMULATOR
+#define FAT_EMULATORd
 
 
 _fileview::_fileview( _length width , _length height , _coord x , _coord y , _directory* dir , _fileviewType viewtype , _gadgetStyle style ) :
@@ -17,10 +18,10 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , _di
 	deque<_file*>* d = new deque<_file*>{ new _file("Textdatei.txt") , new _file("Fat:/XML-File.xml") , new _file("Fat:/Executable_file.exe") , new _directory("Fat:/Unknown") };
 	#endif
 	
-	int i = -_defaultRuntimeAttributes_.fileObjectHeight;
+	int i = -_system_->_runtimeAttributes_->fileObjectHeight;
 	
 	for( _file* file : *d )
-		this->addChild( new _fileobject( 1 , ( i += _defaultRuntimeAttributes_.fileObjectHeight + 1 ) , file , this->viewType ) );
+		this->addChild( new _fileobject( 1 , ( i += _system_->_runtimeAttributes_->fileObjectHeight + 1 ) , file , this->viewType ) );
 	
 	// Refresh...
 	this->refreshBitmap();

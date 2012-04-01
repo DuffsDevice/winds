@@ -119,6 +119,9 @@ class _file{
 		
 		//! get the size of a file (in bytes)
 		virtual _u32 getSize();
+		
+		//! Execute That File
+		virtual void execute();
 };
 
 #endif
