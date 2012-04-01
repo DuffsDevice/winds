@@ -12,24 +12,15 @@ using namespace std;
 
 _windows* WIN = nullptr;
 
-void vblank(){
-	WIN->VBlank();
-	_animations_.step();
-}
-
 #define METHOD(r,o,m) (r (o::*)() )(&o::m)
 
 int main(){	
 	
-	//! Init The display
-	DSWindows::initDisplay();
-	
-	//! Set the VBLANK Interrupt handler
-	irqSet( IRQ_VBLANK , vblank );
-	
-	_defaultRuntimeAttributes_.wallpaper = new BMP_WindowsWallpaper();
+	_system_->_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
 	
 	WIN = new _windows();
+	_system_->setWindows( WIN );
+	
 	_fileview* view = new _fileview( 200 , 150 , 0 , 0 , _diskRoot_ );
 	WIN->addChild( view );
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
@@ -44,9 +35,6 @@ int main(){
 	_program prog = _program(a.readString( a.getSize() ).c_str());
 	prog.run( WIN );*/
 	
-	while(true){
-		WIN->processEvents();
-		swiWaitForVBlank();
-	}
+	_system_->run();
 	return 0;
 }

@@ -1,5 +1,5 @@
 #include "_gadget/gadget.desktop.h"
-#include "_type/type.runtimeAttributes.h"
+#include "_type/type.system.h"
 #include <nds/arm9/console.h>
 
 _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
@@ -14,13 +14,13 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 	else
 		bP.resetClippingRects();
 	
-	bP.fill( _defaultRuntimeAttributes_.wallpaperBgColor );
+	bP.fill( _system_->_runtimeAttributes_->wallpaperBgColor );
 	
-	if(  _defaultRuntimeAttributes_.wallpaper != nullptr )
+	if(  _system_->_runtimeAttributes_->wallpaper != nullptr )
 	{
-		switch( _defaultRuntimeAttributes_.wallpaperView ){
+		switch( _system_->_runtimeAttributes_->wallpaperView ){
 			case WALLPAPER_ORIG:{
-				_bitmap* wp = _defaultRuntimeAttributes_.wallpaper;
+				_bitmap* wp = _system_->_runtimeAttributes_->wallpaper;
 				bP.copy( 128 - ( wp->getWidth() >> 1 ) , 86 - ( wp->getHeight() >> 1 ) , wp );
 				break;
 			}

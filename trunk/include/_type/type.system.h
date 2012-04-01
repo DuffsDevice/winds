@@ -2,31 +2,88 @@
 #define _WIN_T_SYSTEM_
 
 #include "_type/type.h"
+#include "_type/type.animation.h"
+#include "_type/type.luainstance.h"
+#include "_type/type.event.h"
+#include "_type/type.runtimeAttributes.h"
+#include "_gadget/gadget.windows.h"
 #include "fat.h"
+
+#include <deque>
 
 class _system{
 	
 	private:
 		
-		bool sleeping;
+		static bool sleeping;
+		
+		static _animationsGroup<int> 	_animations_;
+		static deque<_program*> 		_programs_;
+		static _windows*				_windows_;
+		
+		//! Process User Inputs
+		static void processInput();
+		
+		//! Events
+		static deque<_gadgetEvent> 		events;
+		static deque<_gadgetEvent> 		newEvents;
+		static bool eventThrowable;
+		
+		static void optimizeEvents();
+		static void enableEventThrowing( void );
+		static void processEvents();
+		static void disableEventThrowing( void );
+		
+		// Benchmarks
+		static void benchMarkStart();
+		static void benchMarkStopPrint();
+		
+		//! Press Any Key to continue...
+		static void submit();
+		
+		static void runPrograms();
 		
 	public:
+	
+		static _runtimeAttributes*		_runtimeAttributes_;
 		
-		void goToSleep();
+		// Constructor
+		_system();
 		
-		void wakeUp();
+		static void addAnimation( _animation<int>* anim );
 		
-		void shutDown();
+		static void addProgram( _program* prog );
 		
-		void restart();
+		static void addEvent( _gadgetEvent event );
 		
-		bool initFat();
+		static _u32 getNow();
 		
-		void initWifi();
+		// Obtain current Keys
+		static _u16 getCurrentKeys();
 		
-		void initDisplay();
+		static void setWindows( _windows* win );
 		
-		void setBacklight( _u8 level );
+		static void _vblank_();
+		
+		static void goToSleep();
+		
+		static void wakeUp();
+		
+		static void shutDown();
+		
+		static void restart();
+		
+		static bool initFat();
+		
+		static void initWifi();
+		
+		static void initDisplay();
+		
+		static void setBacklight( _u8 level );
+		
+		static void run();
 };
+
+extern _system* _system_;
 
 #endif

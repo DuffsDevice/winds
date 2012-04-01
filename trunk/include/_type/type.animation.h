@@ -4,8 +4,6 @@
 #include <time.h>
 #include "_type/type.h"
 #include <functional>
-#include "stdio.h"
-#include <nds/timers.h>
 #include <cmath>
 #include <deque>
 
@@ -211,33 +209,9 @@ class _animationsGroup{
 	
 	public:
 	
-		_animationsGroup(){ cpuStartTiming(1); }
+		void step();
 		
-		void step(){
-			start:
-			for( _animation<T>* anim : this->animations ){
-				if( anim->runs )
-					anim->step( cpuGetTiming()>>15 );
-				else if( anim->finished( cpuGetTiming()>>15 ) ){
-					this->animations.erase( find( this->animations.begin() , this->animations.end() , anim ) );
-					goto start;
-				}
-			}
-		}
-		
-		_u32 getNow(){
-			return cpuGetTiming()>>15;
-		}
-		
-		void add( _animation<T>* anim ){
-			for( auto i = this->animations.begin(); i != this->animations.end(); i++ ){
-				if( *i == anim )
-					return;
-			}
-			this->animations.push_back( anim );
-		}
+		void add( _animation<T>* anim );
 };
-
-extern _animationsGroup<int> _animations_;
 
 #endif

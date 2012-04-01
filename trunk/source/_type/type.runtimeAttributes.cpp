@@ -14,8 +14,8 @@ _runtimeAttributes::_runtimeAttributes() :
 	, defaultFont( new FONT_Tahoma7() ) 
 	, startButtonText( "start" ) 
 	, windowBar( new BMP_WindowHeader() ) 
-	, showFileExtension( true )
 	, fileObjectHeight( 10 )
+	, showFileExtension( true )
 {
 	this->keyboardChar[0] = { 
 		'1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0' ,
@@ -46,5 +46,3 @@ _runtimeAttributes::_runtimeAttributes() :
 		"Shift" , "#" , "Space" , ";" , "+" , "Shift"
 	};
 }
-
-_runtimeAttributes _defaultRuntimeAttributes_;

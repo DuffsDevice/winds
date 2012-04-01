@@ -1,6 +1,8 @@
 #include "_gadget/gadget.keyboard.h"
-#include "_type/type.animation.h"
 #include "_gadget/gadget.windows.h"
+#include "_type/type.animation.h"
+#include "_type/type.system.h"
+
 #include "nds/arm9/console.h"
 
 #include "_graphic/FONT_CourierNew10.h"
@@ -94,8 +96,8 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 		
 		for( _u8 i = 0 ; i < 46 ; i++ )
 		{
-			that->buttons[i]->setTitle( _defaultRuntimeAttributes_.keyboardText[ bool( that->shift ) ][i] );
-			that->buttons[i]->setKey( _defaultRuntimeAttributes_.keyboardChar[ bool( that->shift ) ][i] );
+			that->buttons[i]->setTitle( _system_->_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
+			that->buttons[i]->setKey( _system_->_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
 		}
 	}
 	else if( that->destination != nullptr )
@@ -113,7 +115,7 @@ _keyboard::_keyboard( _coord x , _coord y , _gadget* dest , _gadgetStyle style )
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _defaultRuntimeAttributes_.keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y , _defaultRuntimeAttributes_.keyboardText[0][i] );
+		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y , _system_->_runtimeAttributes_->keyboardText[0][i] );
 		this->buttons[i]->setFont( this->font );
 		this->addChild( this->buttons[i] );
 	}
@@ -149,7 +151,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 	ev.getArgs().setKeyCode( that->key );
 	
 	if( that->getWindows() != nullptr )
-		ev.getArgs().setCurrentKeyCodes( ((_windows*)that->getWindows())->getCurrentKeys() );
+		ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
 	
 	if( that->parent != nullptr )
 		that->parent->handleEvent( ev );

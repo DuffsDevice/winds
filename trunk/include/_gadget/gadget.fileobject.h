@@ -32,6 +32,7 @@ class _fileobject : public _gadget {
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
 		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
+		static _gadgetEventReturnType doubleClickHandler( _gadgetEvent event );
 		
 	public:
 	

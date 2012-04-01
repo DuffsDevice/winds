@@ -1,5 +1,13 @@
 #include "_gadget/gadget.fileObject.h"
 #include "_type/type.mime.h"
+#include "_type/type.system.h"
+
+_gadgetEventReturnType _fileobject::doubleClickHandler( _gadgetEvent event ){
+	// Receive Gadget
+	_fileobject* that = (_fileobject*)event.getGadget();
+	
+	that->file->execute();
+}
 
 _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 {	
@@ -29,7 +37,7 @@ _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 }
 
 _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewtype , _gadgetStyle style ) :
-	_gadget( fileobject , 50 , _defaultRuntimeAttributes_.fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+	_gadget( fileobject , 50 , _system_->_runtimeAttributes_->fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );
@@ -41,6 +49,7 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
 	this->registerEventHandler( focus , &_fileobject::focusHandler );
 	this->registerEventHandler( blur , &_fileobject::focusHandler );
+	this->registerEventHandler( mouseDoubleClick , &_fileobject::doubleClickHandler );
 	
 	switch( this->viewType )
 	{
@@ -49,13 +58,13 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 			string 		ext 	= file->getExtension();
 			_mimeType 	mime 	= { ext };
 			// Certain Files do not have an .extension
-			if( !_defaultRuntimeAttributes_.showFileExtension || file->isDirectory() || !ext.length() )
+			if( !_system_->_runtimeAttributes_->showFileExtension || file->isDirectory() || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
 			
 			this->label = new _label( 11 , 0 , file->getName() + ext );
-			this->label->setHeight( _defaultRuntimeAttributes_.fileObjectHeight );
+			this->label->setHeight( _system_->_runtimeAttributes_->fileObjectHeight );
 			this->label->setVAlign( middle );
 			
 			const _bitmap* fileIcon;
@@ -66,7 +75,7 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 				fileIcon = mime.getFileImage();
 			
 			// Set Icon
-			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _defaultRuntimeAttributes_.fileObjectHeight >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
+			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system_->_runtimeAttributes_->fileObjectHeight >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
 			
 			// Resize
 			_rect dim = this->getDimensions();
