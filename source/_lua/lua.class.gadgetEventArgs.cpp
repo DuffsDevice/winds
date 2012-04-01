@@ -40,9 +40,6 @@ int _lua_gadget::bubbleRefresh(lua_State* L){ this->gadget->bubbleRefresh( luaL_
 //! refreshBitmap
 int _lua_gadget::refreshBitmap( lua_State* L ){ this->gadget->refreshBitmap(); return 0; }
 
-//! standardPaint
-int _lua_gadget::standardPaint( lua_State* L ){ _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( !e ) return 0; this->gadget->standardPaint( *e ); return 1; }
-
 //! getBitmap
 int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _lua_bitmap( this->gadget->getBitmap() ) , true ); return 1; }
 
@@ -155,40 +152,8 @@ int _lua_gadget::toDerived( lua_State* L ){
 //! Lua-_gadget
 const char _lua_gadget::className[] = "_gadget";
 Lunar<_lua_gadget>::RegType _lua_gadget::methods[] = {
-  {"delete", &_lua_gadget::_delete},
-  LUNAR_DECLARE_METHOD(_lua_gadget,bubbleEvent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,bubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_gadget,refreshBitmap),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getBitmap),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getWindows),
-  LUNAR_DECLARE_METHOD(_lua_gadget,registerEventHandler),
-  LUNAR_DECLARE_METHOD(_lua_gadget,unregisterEventHandler),
-  LUNAR_DECLARE_METHOD(_lua_gadget,generateEvent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,triggerEvent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,canReactTo),
-  LUNAR_DECLARE_METHOD(_lua_gadget,handleEvent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,handleEventDefault),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getAbsoluteX),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getAbsoluteY),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getX),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getY),
-  LUNAR_DECLARE_METHOD(_lua_gadget,setX),
-  LUNAR_DECLARE_METHOD(_lua_gadget,setY),
-  LUNAR_DECLARE_METHOD(_lua_gadget,moveTo),
-  LUNAR_DECLARE_METHOD(_lua_gadget,moveRelative),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getParent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,setParent),
-  LUNAR_DECLARE_METHOD(_lua_gadget,removeChild),
-  LUNAR_DECLARE_METHOD(_lua_gadget,addChild),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getDimensions),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getAbsoluteDimensions),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getHeight),
-  LUNAR_DECLARE_METHOD(_lua_gadget,setHeight),
-  LUNAR_DECLARE_METHOD(_lua_gadget,getWidth),
-  LUNAR_DECLARE_METHOD(_lua_gadget,setWidth),
-  LUNAR_DECLARE_METHOD(_lua_gadget,standardPaint),
-  LUNAR_DECLARE_METHOD(_lua_gadget,toDerived),
-  {0,0}
+	LUNAR_DECLARE_ALL_METHODS_OF( _lua_gadget ),
+	{0,0}
 };
 
 

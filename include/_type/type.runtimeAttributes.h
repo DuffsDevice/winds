@@ -18,8 +18,10 @@ class _runtimeAttributes{
 		_bitmap*		wallpaper;
 		_wallpaperViewType wallpaperView;
 		_pixel			wallpaperBgColor;
-		int 			minClickCycles;
-		int 			minDragDistance;
+		_u8 			maxClickCycles;
+		_u8				maxDoubleClickCycles;
+		_u8				maxDoubleClickArea;
+		_u8 			minDragDistance;
 		_font*			defaultFont;
 		string			startButtonText;
 		vector<_char>	keyboardChar[2];

@@ -1,12 +1,19 @@
 #include "_gadget/gadget.fileObject.h"
 #include "_type/type.mime.h"
 
-_gadgetEventReturnType _fileobject::mouseHandler( _gadgetEvent event )
+_gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
-	//printf("Hallo!!!");
+	if( event.getType() == focus ){
+		that->label->setBgColor( RGB255( 10 , 36 , 106 ) );
+		that->label->setColor( RGB( 31 , 31 , 31 ) );
+	}
+	else{
+		that->label->setBgColor( RGB( 31 , 31 , 31 ) );
+		that->label->setColor( RGB( 0 , 0 , 0 ) );
+	}
 	
 	return not_handled;//use_default;
 }
@@ -22,7 +29,7 @@ _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 }
 
 _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewtype , _gadgetStyle style ) :
-	_gadget( fileobject , 50 , _defaultRuntimeAttributes_.fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype )
+	_gadget( fileobject , 50 , _defaultRuntimeAttributes_.fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );
@@ -32,9 +39,8 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 	this->registerEventHandler( dragging , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStart , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
-	this->registerEventHandler( mouseDown , &_fileobject::mouseHandler );
-	this->registerEventHandler( mouseUp , &_fileobject::mouseHandler );
-	this->registerEventHandler( mouseClick , &_fileobject::mouseHandler );
+	this->registerEventHandler( focus , &_fileobject::focusHandler );
+	this->registerEventHandler( blur , &_fileobject::focusHandler );
 	
 	switch( this->viewType )
 	{
