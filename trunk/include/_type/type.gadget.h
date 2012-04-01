@@ -34,23 +34,18 @@ class _gadget{
 	
 	protected:
 	
-		// Coordinates
-		_rect 		dimensions;
-		
-		// Padding
+		// Attributes
 		_padding	padding;
-		
-		// Enhancement
+		_rect 		dimensions;
 		bool 		enhanced;
+		bool		focused;
+		_gadgetStyle style;
 		
 		// Children
 		_gadgetList	children;
 		
 		// Parent
 		_gadget*	parent;
-		
-		// Style
-		_gadgetStyle style;
 		
 		// Only for the dragHandler
 		_gadget*	dragTemp;
@@ -75,6 +70,7 @@ class _gadget{
 		
 		// Tries to focus a child and returns whether it succeded
 		virtual bool focusChild( _gadget* child );
+		virtual bool blurChild();
 	
 	public:
 		
@@ -124,11 +120,6 @@ class _gadget{
 		 * Method to refresh itself
 		**/
 		void refreshBitmap();
-		
-		/**
-		 * StandardPaint is a method implemented in the gadgets themselfes to draw the standard layout
-		**/
-		virtual void standardPaint( _gadgetEvent event );
 		
 		/**
 		 * Receive a Bitmap Port
@@ -233,12 +224,12 @@ class _gadget{
 		/**
 		 * Set the Relative X-Position
 		**/
-		void setX( int val );
+		void setX( _coord val );
 		
 		/**
 		 * Set the Relative Y-Position
 		**/
-		void setY( int val );
+		void setY( _coord val );
 		
 		/**
 		 * Get the Gadgets Parent
@@ -278,17 +269,17 @@ class _gadget{
 		/**
 		 * Get the height of the Gadget
 		**/
-		int getHeight() const ;
+		_length getHeight() const ;
 		
 		/**
 		 * Get the width of the Gadget
 		**/
-		int getWidth() const ;
+		_length getWidth() const ;
 		
 		/**
 		 * Move the Gadget relatively to its current position
 		**/
-		void moveTo( int dX , int dY );
+		void moveTo( _coord dX , _coord dY );
 		
 		/**
 		 * Relative moving fo the Gadget
@@ -298,12 +289,12 @@ class _gadget{
 		/**
 		 * Set Height " " "
 		**/
-		void setHeight( int val );
+		void setHeight( _length val );
 		
 		/**
 		 * Set Width " " "
 		**/
-		void setWidth( int val );
+		void setWidth( _length val );
 		
 		/**
 		 * Get the Type of the Gadget (enum)

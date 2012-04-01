@@ -24,44 +24,12 @@ int _lua_button::isAutoSelect( lua_State* L ){ lua_pushboolean( L , ((_button*)_
 //! Lua-button
 const char _lua_button::className[] = "_button";
 Lunar<_lua_button>::RegType _lua_button::methods[] = {
-  {"delete", &_lua_button::_delete},
-  LUNAR_DECLARE_METHOD(_lua_button,bubbleEvent),
-  LUNAR_DECLARE_METHOD(_lua_button,bubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_button,refreshBitmap),
-  LUNAR_DECLARE_METHOD(_lua_button,getBitmap),
-  LUNAR_DECLARE_METHOD(_lua_button,getWindows),
-  LUNAR_DECLARE_METHOD(_lua_button,registerEventHandler),
-  LUNAR_DECLARE_METHOD(_lua_button,unregisterEventHandler),
-  LUNAR_DECLARE_METHOD(_lua_button,generateEvent),
-  LUNAR_DECLARE_METHOD(_lua_button,triggerEvent),
-  LUNAR_DECLARE_METHOD(_lua_button,canReactTo),
-  LUNAR_DECLARE_METHOD(_lua_button,handleEvent),
-  LUNAR_DECLARE_METHOD(_lua_button,handleEventDefault),
-  LUNAR_DECLARE_METHOD(_lua_button,getAbsoluteX),
-  LUNAR_DECLARE_METHOD(_lua_button,getAbsoluteY),
-  LUNAR_DECLARE_METHOD(_lua_button,getX),
-  LUNAR_DECLARE_METHOD(_lua_button,getY),
-  LUNAR_DECLARE_METHOD(_lua_button,setX),
-  LUNAR_DECLARE_METHOD(_lua_button,setY),
-  LUNAR_DECLARE_METHOD(_lua_button,moveTo),
-  LUNAR_DECLARE_METHOD(_lua_button,moveRelative),
-  LUNAR_DECLARE_METHOD(_lua_button,getParent),
-  LUNAR_DECLARE_METHOD(_lua_button,setParent),
-  LUNAR_DECLARE_METHOD(_lua_button,removeChild),
-  LUNAR_DECLARE_METHOD(_lua_button,addChild),
-  LUNAR_DECLARE_METHOD(_lua_button,getDimensions),
-  LUNAR_DECLARE_METHOD(_lua_button,getAbsoluteDimensions),
-  LUNAR_DECLARE_METHOD(_lua_button,getHeight),
-  LUNAR_DECLARE_METHOD(_lua_button,setHeight),
-  LUNAR_DECLARE_METHOD(_lua_button,getWidth),
-  LUNAR_DECLARE_METHOD(_lua_button,setWidth),
-  LUNAR_DECLARE_METHOD(_lua_button,standardPaint),
-  LUNAR_DECLARE_METHOD(_lua_button,toDerived),
-  
-  //! _interface_input (only these two are used)
-  LUNAR_DECLARE_METHOD(_lua_button,setTitle),
-  LUNAR_DECLARE_METHOD(_lua_button,getTitle),
-  LUNAR_DECLARE_METHOD(_lua_button,setAutoSelect),
-  LUNAR_DECLARE_METHOD(_lua_button,isAutoSelect),
-  {0,0}
+	LUNAR_DECLARE_ALL_METHODS_OF( _lua_button ),
+	
+	//! _interface_input (only these two are used)
+	LUNAR_DECLARE_METHOD(_lua_button,setTitle),
+	LUNAR_DECLARE_METHOD(_lua_button,getTitle),
+	LUNAR_DECLARE_METHOD(_lua_button,setAutoSelect),
+	LUNAR_DECLARE_METHOD(_lua_button,isAutoSelect),
+	{0,0}
 };

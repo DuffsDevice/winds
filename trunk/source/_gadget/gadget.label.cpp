@@ -58,20 +58,22 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	_coord x = 0;
 	_coord y = 0;
 	
-	switch( that->getAlign() ){
+	switch( that->getAlign() )
+	{
 		case center:
-			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getTitle() ) - 1 ) >> 1 );
+			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() ) - 1 ) >> 1 );
 			break;
 		case left:
 		case optimize:
 			x = 0;
 			break;
 		case right:
-			x = that->dimensions.width - that->font->getStringWidth( that->getTitle() );
+			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() );
 			break;
 	}
 	
-	switch( that->getVAlign() ){
+	switch( that->getVAlign() )
+	{
 		case middle:
 			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getMainHeight() + 1 ) >> 1 );
 			break;
@@ -115,7 +117,6 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	this->registerEventHandler( refresh , &_label::refreshHandler );
 	
 	// Refresh
-	this->computeSize();
 	this->refreshBitmap();
 }
 

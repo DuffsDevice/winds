@@ -14,6 +14,40 @@ extern "C"{
 
 extern bool luaL_is( lua_State* L , int narg , string type );
 
+#define LUNAR_DECLARE_ALL_METHODS_OF(g)  {"delete", &g::_delete}, \
+	LUNAR_DECLARE_METHOD(g,bubbleEvent), \
+	LUNAR_DECLARE_METHOD(g,bubbleRefresh), \
+	LUNAR_DECLARE_METHOD(g,refreshBitmap), \
+	LUNAR_DECLARE_METHOD(g,getBitmap), \
+	LUNAR_DECLARE_METHOD(g,getWindows), \
+	LUNAR_DECLARE_METHOD(g,registerEventHandler), \
+	LUNAR_DECLARE_METHOD(g,unregisterEventHandler), \
+	LUNAR_DECLARE_METHOD(g,generateEvent), \
+	LUNAR_DECLARE_METHOD(g,triggerEvent), \
+	LUNAR_DECLARE_METHOD(g,canReactTo), \
+	LUNAR_DECLARE_METHOD(g,handleEvent), \
+	LUNAR_DECLARE_METHOD(g,handleEventDefault), \
+	LUNAR_DECLARE_METHOD(g,getAbsoluteX), \
+	LUNAR_DECLARE_METHOD(g,getAbsoluteY), \
+	LUNAR_DECLARE_METHOD(g,getX), \
+	LUNAR_DECLARE_METHOD(g,getY), \
+	LUNAR_DECLARE_METHOD(g,setX), \
+	LUNAR_DECLARE_METHOD(g,setY), \
+	LUNAR_DECLARE_METHOD(g,moveTo), \
+	LUNAR_DECLARE_METHOD(g,moveRelative), \
+	LUNAR_DECLARE_METHOD(g,getParent), \
+	LUNAR_DECLARE_METHOD(g,setParent), \
+	LUNAR_DECLARE_METHOD(g,removeChild), \
+	LUNAR_DECLARE_METHOD(g,addChild), \
+	LUNAR_DECLARE_METHOD(g,getDimensions), \
+	LUNAR_DECLARE_METHOD(g,getAbsoluteDimensions), \
+	LUNAR_DECLARE_METHOD(g,getHeight), \
+	LUNAR_DECLARE_METHOD(g,setHeight), \
+	LUNAR_DECLARE_METHOD(g,getWidth), \
+	LUNAR_DECLARE_METHOD(g,setWidth), \
+	LUNAR_DECLARE_METHOD(g,toDerived) \
+
+
 /**
  * Proxy Classes
 **/
@@ -161,9 +195,6 @@ class _lua_gadget{
 		
 		//! refreshBitmap
 		int refreshBitmap( lua_State* );
-		
-		//! standardPaint
-		int standardPaint( lua_State* L );
 		
 		
 		//! getBitmap

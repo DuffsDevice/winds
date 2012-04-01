@@ -24,12 +24,14 @@ class _fileobject : public _gadget {
 		_file*			file;
 		_fileviewType	viewType;
 		
+		bool 			pressed;
+		
 		_label*			label;
 		_imagegadget*	icon;
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
-		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
+		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
 		
 	public:
 	

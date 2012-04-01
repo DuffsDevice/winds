@@ -33,7 +33,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 }
 
 _desktop::_desktop( _gadgetStyle style ) :
-	_gadget( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
+	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
 {
 	this->registerEventHandler( refresh , &_desktop::refreshHandler );
 	// Refresh

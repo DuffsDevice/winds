@@ -91,9 +91,6 @@ class _lua_rect : public _rect {
 		//! fromCoords
 		int fromCoords(lua_State* L);
 		
-		//! fromDimensions
-		int fromDimensions(lua_State* L);
-		
 		//! toRelative
 		int toRelative(lua_State* L);
 		

@@ -25,3 +25,20 @@ map<string,_valign> string2valign = {
 };
 
 _u8 libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
+
+
+map<_gadgetType,string> gadgetType2string = {
+	{ button, "button" },
+	{ label, "label" },
+	{ checkbox, "checkbox" },
+	{ textbox, "textbox" },
+	{ keyboard, "keyboard" },
+	{ desktop, "desktop" },
+	{ fileview, "fileview" },
+	{ fileobject, "fileobject" },
+	{ imagegadget, "imagegadget" },
+	{ window, "window" },
+	{ windows, "windows" },
+	{ taskboard, "taskboard" },
+	{ _plain , "_plain" }
+};

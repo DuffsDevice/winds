@@ -38,13 +38,13 @@ class _label : public _gadget , public _interface_input {
 		void setStrValue( string val );
 		
 		//! Set Text Color
-		void setColor( _pixel col ){ this->color = col; this->handleEvent( refresh ); }
+		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
 		
 		//! Get Text Color
 		_pixel getColor(){ return this->color; }
 		
 		//! Set Text Color
-		void setBgColor( _pixel col ){ this->bgColor = col; this->handleEvent( refresh ); }
+		void setBgColor( _pixel col ){ this->bgColor = col; this->bubbleRefresh( true ); }
 		
 		//! Get Text Color
 		_pixel getBgColor(){ return this->bgColor; }
@@ -53,10 +53,10 @@ class _label : public _gadget , public _interface_input {
 		_font* getFont(){ return this->font; }
 		
 		//! Refresh on Align-setting
-		void setAlign( _align align ){ _interface_input::setAlign( align ); this->refreshBitmap(); }
+		void setAlign( _align align ){ _interface_input::setAlign( align ); this->bubbleRefresh( true ); }
 		
 		//! Refresh on Align-setting
-		void setVAlign( _valign vAlign ){ _interface_input::setVAlign( vAlign ); this->refreshBitmap(); }
+		void setVAlign( _valign vAlign ){ _interface_input::setVAlign( vAlign ); this->bubbleRefresh( true ); }
 		
 		//! Get Text Font
 		void setFont( _font* ft );

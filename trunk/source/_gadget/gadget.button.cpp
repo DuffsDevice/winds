@@ -19,8 +19,8 @@ void _button::setFont( _font* ft ){
 void _button::onResize()
 {
 	if( this->label != nullptr ){ 
-		this->label->setWidth( max( 1 , this->getWidth() - 4 ) );
-		this->label->setHeight( max( 1 , this->getHeight() - 4 ) );
+		this->label->setWidth( max( _length(1) , this->getWidth() - 4 ) );
+		this->label->setHeight( max( _length(1) , this->getHeight() - 4 ) );
 	}
 	this->handleEvent( refresh );
 }
@@ -154,7 +154,7 @@ _gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
 	}
 	
 	// Refresh
-	that->handleEvent( refresh );
+	that->bubbleRefresh( true );
 	
 	return handled;
 }

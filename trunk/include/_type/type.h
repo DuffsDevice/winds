@@ -158,6 +158,7 @@ enum _gadgetType{
 	checkbox,
 	textbox,
 	keyboard,
+	desktop,
 	fileview,
 	fileobject,
 	imagegadget,
@@ -166,5 +167,7 @@ enum _gadgetType{
 	taskboard,
 	_plain // No type set
 };
+
+extern map<_gadgetType,string> gadgetType2string;
 
 #endif

@@ -68,7 +68,9 @@ void _windows::processInput()
 	// Touch
 	static touchPosition startTouch; // For Dragging
 	static touchPosition lastTouch;
+	static touchPosition touchBefore;
 	static _u32 touchCycles = 0;
+	static _u8 cyclesLastClick = 0;
 	static bool touchDragging = false;
 	// Keys
 	static _u16 lastKeys = 0; // 0 = No Keys
@@ -86,6 +88,8 @@ void _windows::processInput()
 	touchPosition newTouch;
 	touchRead( &newTouch );
 	
+	if( cyclesLastClick && !( cyclesLastClick >> 7 ) )
+		cyclesLastClick++;
 	
 	/*!
 	 * Just Handle the Buttons, not the Pen!
@@ -131,7 +135,7 @@ void _windows::processInput()
 			
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
-			if( heldCycles[i] < this->runtimeAttributes.minClickCycles )
+			if( heldCycles[i] < _defaultRuntimeAttributes_.maxClickCycles )
 				this->triggerEvent( _gadgetEvent( keyClick , args ) );
 			
 			
@@ -193,7 +197,7 @@ void _windows::processInput()
 			
 			
 			// Check if Pen has moved the distance already
-			if( dragDistance > this->runtimeAttributes.minDragDistance * this->runtimeAttributes.minDragDistance )
+			if( dragDistance > _defaultRuntimeAttributes_.minDragDistance * _defaultRuntimeAttributes_.minDragDistance )
 			{
 				// Set the Args
 				args.reset();
@@ -236,14 +240,25 @@ void _windows::processInput()
 			this->handleEvent( _gadgetEvent( dragStop , args ) );
 		}
 		//! Maybe Click-Event?
-		else if( touchCycles < this->runtimeAttributes.minClickCycles )
+		else if( touchCycles < _defaultRuntimeAttributes_.maxClickCycles )
 		{
+			_s16	deltaX = touchBefore.px - lastTouch.px;
+			_s16	deltaY = touchBefore.py - lastTouch.py;
+			_s16 	deltaTouch = deltaX * deltaX + deltaY * deltaY;
 			// Trigger the mouseClick-Event!
-			this->handleEvent( _gadgetEvent( mouseClick , args ) );
+			if( cyclesLastClick && cyclesLastClick < _defaultRuntimeAttributes_.maxDoubleClickCycles && deltaTouch < _defaultRuntimeAttributes_.maxDoubleClickArea * _defaultRuntimeAttributes_.maxDoubleClickArea ){
+				this->handleEvent( _gadgetEvent( mouseDoubleClick , args ) );
+				cyclesLastClick = 0;
+			}
+			else{
+				this->handleEvent( _gadgetEvent( mouseClick , args ) );
+				cyclesLastClick = 1;
+			}
 		}
-
+		
 		// Trigger the mouseUp-Event!
 		this->handleEvent( _gadgetEvent( mouseUp , args ) );
+		touchBefore = lastTouch;
 		
 		// Reset touch Cycles
 		touchCycles = 0;
@@ -325,7 +340,7 @@ bool _windows::focusChild( _gadget* child )
 {	
 	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
 	
-	if( child == nullptr || child->getType() == _gadgetType::taskboard || *itTemp == *((this->children.rbegin())++))
+	if( child == nullptr || child->getType() == _gadgetType::taskboard || child->getType() == _gadgetType::desktop || *itTemp == *((this->children.rbegin())++))
 		return false;
 	
 	_gadgetList::iterator itKeyboard = find( this->children.begin() , this->children.end() , this->taskboard );
