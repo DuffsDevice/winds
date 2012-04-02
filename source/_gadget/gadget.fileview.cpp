@@ -1,7 +1,7 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
-#define FAT_EMULATORd
+#define FAT_EMULATORf
 
 
 _fileview::_fileview( _length width , _length height , _coord x , _coord y , _directory* dir , _fileviewType viewtype , _gadgetStyle style ) :

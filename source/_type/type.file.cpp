@@ -188,6 +188,7 @@ void _file::execute(){
 	_mimeType mime = { this->getExtension() };
 	switch( mime ){
 		case _mime::application_octet_stream:
+		case _mime::application_x_lua_bytecode:
 			_system_->addProgram( new _program( this->readString() ) );
 			break;
 		default:

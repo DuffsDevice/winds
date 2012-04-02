@@ -1,38 +1,48 @@
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.windows.h"
 
-void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->handleEvent( refresh ); }
+void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
 
 bool _button::isAutoSelect(){ return this->autoSelect; }
 
-void _button::setFont( _font* ft ){
-	if( this->label ) 
+void _button::setFont( _font* ft )
+{
+	if( this->label )
+	{
 		this->label->setFont( ft );
-	if( this->autoWidth == 1 ){
-		this->autoWidth = 2;
-		this->computeSize(); 
-	} else{ 
-		this->handleEvent( refresh );
+		this->computeSize();
+		this->bubbleRefresh( true );
 	}
 }
 
 void _button::onResize()
 {
-	if( this->label != nullptr ){ 
-		this->label->setWidth( max( _length(1) , this->getWidth() - 4 ) );
-		this->label->setHeight( max( _length(1) , this->getHeight() - 4 ) );
-	}
-	this->handleEvent( refresh );
+	if( !this->label )
+		return;
+	
+	this->label->setWidth( max( _length(1) , this->getWidth() - 2 ) );
+	this->label->setHeight( max( _length(1) , this->getHeight() - 2 ) );
+	
+	
+	//Refresh Label
+	this->label->refreshBitmap();
+	
+	// Refresh Button
+	this->bubbleRefresh( true );
 }
 
-void _button::computeSize(){
-	if( this->label != nullptr && this->autoWidth == 2 && this->label->font && this->label->font->valid() )
-	{
-		this->setWidth( max( 32 , 7 + this->label->font->getStringWidth( this->getTitle() ) ) );
-		this->autoWidth = 1;
-		// Refresh Me
-		this->handleEvent( refresh );
-	}
+void _button::computeSize()
+{
+	if( !this->label || !this->label->font || !this->label->font->valid() )
+		return;
+	
+	// Compute Height
+	if( this->computeH == 2 && ( this->computeH = 1 ) )
+		this->setHeight( this->label->font->getHeight() + 2 );
+	
+	// Compute Width
+	if( this->computeW == 2 && ( this->computeW = 1 ) )
+		this->setWidth( max( 28 , 7 + this->label->font->getStringWidth( this->getTitle() ) ) );
 }
 
 _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
@@ -159,25 +169,13 @@ _gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
 	return handled;
 }
 
-_button::_button( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
-	_gadget( _gadgetType::button , width , height , x , y , style )
-	, _interface_input( text )
-	, autoSelect( false )
-	, autoWidth( 0 )
-{
-	// Link to Constructor
-	this->init( text );
-	
-	// Refresh Me
-	this->refreshBitmap();
-}
-
 void _button::init( string text )
 {	
 	// Create a Label
-	this->label = new _label( this->getWidth() - 4 , this->getHeight() - 4 , 2 , 2 , text );
-	this->label->setAlign( center );
-	this->label->setVAlign( middle );
+	this->label = new _label( this->getWidth() - 2 , this->getHeight() - 2 , 1 , 1 , text );
+	//this->label->setBgColor( RGB( 31 , 0 , 0 ) );
+	this->label->setAlign( _align::center );
+	this->label->setVAlign( _valign::middle );
 	
 	this->pressed = false;
 	
@@ -185,24 +183,53 @@ void _button::init( string text )
 	this->addChild( this->label );	
 	
 	// Register my handler as the default Refresh-Handler
+	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_button::refreshHandler );
 	this->registerEventHandler( mouseDown , &_button::mouseHandler );
 	this->registerEventHandler( mouseUp , &_button::mouseHandler );
 	this->registerEventHandler( dragStart , &_button::dragHandler );
 	this->registerEventHandler( dragging , &_button::dragHandler );
+	
+	// Compute the necesary Width
+	this->computeSize();
+	
+	// Refresh Me
+	this->refreshBitmap();
+}
+
+// Methods to set Size
+void _button::setWidth( _u8 width )		{ this->computeW = 0; _gadget::setWidth( width ); }
+void _button::setDimensions( _rect dim )	{ this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim ); }
+void _button::setHeight( _u8 height )	{ this->computeH = 0; _gadget::setHeight( height ); }
+
+// Methods to tell: We want it to compute the Size on its own
+void _button::setWidth()					{ this->computeW = 2; this->computeSize(); }
+void _button::setDimensions()			{ this->computeH = 0; this->computeW = 0; this->computeSize(); }
+void _button::setHeight()				{ this->computeH = 2; this->computeSize(); }
+
+_button::_button( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
+	_gadget( _gadgetType::button , width , height , x , y , style )
+	, _interface_input( text )
+	, autoSelect( false )
+	, pressed( false )
+	, computeW( 0 )
+	, computeH( 0 )
+{
+	// Link to Constructor
+	this->init( text );
 }
 
 _button::_button( _coord x , _coord y , string text , _gadgetStyle style ) :
-	_gadget( _gadgetType::button , 1 , 9 , x , y , style )
+	_gadget( _gadgetType::button , 32 , 9 , x , y , style )
 	, _interface_input( text )
 	, autoSelect( false )
-	, autoWidth( 2 )
+	, pressed( false )
+	, computeW( 2 )
+	, computeH( 2 )
 {	
 	// Link to Constructor
 	this->init( text );	
 	
-	// Compute the necesary Width
-	this->computeSize();
 }
 
 _button::~_button(){

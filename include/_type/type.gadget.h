@@ -23,7 +23,7 @@ extern _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler ,
 
 typedef _gadgetEventReturnType (*_gadgetEventHandler)(_gadgetEvent);
 typedef list<_gadget*> _gadgetList;
-typedef _gadgetEventReturnType (_gadget::*_gadgetDefaultEventHandler)(_gadgetEvent);
+typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent);
 
 class _gadget{
 	
@@ -56,10 +56,10 @@ class _gadget{
 		map<_gadgetEventType,_gadgetEventHandler> eventHandlers;
 		
 		// Standard EventHandler
-		_gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent event );
-		_gadgetEventReturnType	gadgetDragHandler( _gadgetEvent event );
-		_gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent event );
-		_gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent event );
+		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent event );
+		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent event );
+		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent event );
+		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent event );
 		
 		// Bitmap of the Gadget
 		_bitmap*	bitmap;

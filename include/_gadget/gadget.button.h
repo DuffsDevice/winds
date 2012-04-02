@@ -17,10 +17,10 @@ class _button : public _gadget , public _interface_input {
 		_label* label;
 		
 		bool autoSelect;
-		
 		bool pressed;
 		
-		_u8 autoWidth;
+		_u8 	computeW;
+		_u8 	computeH;
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
@@ -38,22 +38,22 @@ class _button : public _gadget , public _interface_input {
 	public:
 		
 		//! Set Alignment of the Button
-		void setAlign( _align align ){ if( this->label != nullptr ) this->label->setAlign(align); }
+		void setAlign( _align align ){ if( this->label ) this->label->setAlign(align); }
 		
 		//! Get Alignment of the Button
-		_align getAlign(){ if( this->label != nullptr ) return this->label->getAlign(); return _align::left; }
+		_align getAlign(){ if( this->label ) return this->label->getAlign(); return _align::left; }
 		
 		//! Set Vertical Alignment of the Button
-		void setVAlign( _valign vAlign ){ if( this->label != nullptr ) this->label->setVAlign(vAlign); }
+		void setVAlign( _valign vAlign ){ if( this->label ) this->label->setVAlign(vAlign); }
 		
 		//! Get Vertical Alignment of the Button
-		_valign getVAlign(){ if( this->label != nullptr ) return this->label->getVAlign(); return top; }
+		_valign getVAlign(){ if( this->label ) return this->label->getVAlign(); return top; }
 		
 		//! Set Title to be displayed on top of the button
-		void setTitle( string val ){ if( this->label != nullptr ) this->label->setStrValue(val); this->computeSize(); }
+		void setTitle( string val ){ if( this->label ) this->label->setStrValue(val); this->computeSize(); }
 		
 		//! Get Title of the button
-		string getTitle(){ if( this->label != nullptr ) return this->label->getStrValue(); return ""; }
+		string getTitle(){ if( this->label ) return this->label->getStrValue(); return ""; }
 		
 		//! Whether the button should be outlined by a blue line
 		void setAutoSelect( bool aS );
@@ -68,7 +68,17 @@ class _button : public _gadget , public _interface_input {
 		void setFont( _font* ft );
 		
 		//! Get Text Font
-		_font* getFont(){ return this->label->getFont(); }
+		_font* getFont(){ if( !this->label ) return nullptr; return this->label->getFont(); }
+		
+		// Methods to set Size
+		void setWidth( _u8 width );
+		void setDimensions( _rect dim );
+		void setHeight( _u8 height );
+
+		// Methods to tell: We want it to compute the Size on its own
+		void setWidth();
+		void setDimensions();
+		void setHeight();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_button( _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style = _defaultStyle_ );

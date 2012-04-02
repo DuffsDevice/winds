@@ -1,34 +1,29 @@
-local g
+local w
 local b
 local c
-local b2
 local created = false
 
 function init()
 	-- create Gadgets
-	g = _window( 100 , 60 , 20 , 20 , "Neues Fenster" )
+	w = _window( 150 , 60 , 20 , 20 , "Neues Fenster" )
 	b = _button( 30 , 20 , 20 , 20 , "Click!" )
-	c = _checkbox( 10 , 11 , "Checkbox1 Name" )
-	
+	c = _checkbox( 10 , 11 )
+
 	-- construct the Tree
-	g:addChild( b )
-	g:addChild( c )
-	registerToWindows( g )
-	
+	w:addChild( b )
+	w:addChild( c )
+	registerToWindows( w )
+
 	-- register Handler-Functions
-	g:registerEventHandler( "dragging" , dragHandler )
-	g:registerEventHandler( "dragStart" , dragHandler )
+	w:registerEventHandler( "dragging" , dragHandler )
+	w:registerEventHandler( "dragStart" , dragHandler )
 	b:registerEventHandler( "mouseClick" , clickHandler )
-	
+
 	-- customize them
 	b:setAutoSelect()
-	
-	-- refresh them
-	g:handleEvent( _gadgetEvent( "refresh" ) )
-	c:handleEvent( _gadgetEvent( "refresh" ) )
-	b:handleEvent( _gadgetEvent( "refresh" ) )
-end 
- 
+
+end
+
 -- dragHandler to display Dragging-Params in window-title
 function dragHandler( e )
 	local dest = e:getArgs():getDestination():toDerived()
@@ -37,7 +32,7 @@ function dragHandler( e )
 			dest:setTitle( string.format( "%i - Delta: %i" , e:getArgs():getPosX() , e:getArgs():getDeltaX() ) )
 		end
 	elseif e:getType() == "dragStart" then
-		g:handleEventDefault( e )
+		w:handleEventDefault( e )
 	end
 	return "handled"
 end
@@ -49,8 +44,7 @@ function clickHandler()
 	end
 	b2 = _button( math.random( 40 ) , 45 , "Ok!" )
 	--print( b2 == b )
-	g:addChild( b2 )
-	b2:handleEvent( _gadgetEvent( "refresh" ) )
+	w:addChild( b2 )
 	b2:registerEventHandler( "mouseClick" , setValue )
 	created = true
 	return "handled"

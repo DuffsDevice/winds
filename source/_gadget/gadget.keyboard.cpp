@@ -163,5 +163,6 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 
 void _keyboardButton::init()
 {
+	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( mouseClick , &_keyboardButton::mouseHandler );
 }

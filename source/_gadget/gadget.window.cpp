@@ -73,7 +73,7 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
 ////////////////////////////////////////////
 void _window::onResize(){
 	if( this->label != nullptr ){
-		this->label->setWidth( this->getWidth() - 4 ); 
+		this->label->setWidth( this->getWidth() - 30 ); 
 	}
 }
 
@@ -178,8 +178,11 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	_gadget( _gadgetType::window , width , height , x , y , style ),
 	_interface_input( title )
 {
+	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
+	
 	// Create a Label
-	this->label = new _label( this->getWidth() - 4 , 6 , 2 , 2 , title );
+	this->label = new _label( this->getWidth() - 30 , 6 , 2 , 2 , title );
+	this->label->setEnhanced();
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( RGB( 31 , 31 , 31 ) );
@@ -190,6 +193,9 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->button[0] = new _windowButton( this->getWidth() - 10 , 1 , 0 );
 	this->button[1] = new _windowButton( this->getWidth() - 19 , 1 , 1 );
 	this->button[2] = new _windowButton( this->getWidth() - 28 , 1 , 2 );
+	this->button[0]->setEnhanced();
+	this->button[1]->setEnhanced();
+	this->button[2]->setEnhanced();
 	this->addChild( this->button[0] );
 	this->addChild( this->button[1] );
 	this->addChild( this->button[2] );

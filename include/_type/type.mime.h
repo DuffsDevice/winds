@@ -13,7 +13,8 @@ typedef enum{
 	text_html ,
 	text_xml ,
 	application_octet_stream ,
-	application_microsoft_installer 
+	application_microsoft_installer,
+	application_x_lua_bytecode
 }_mime;
 
 extern map<string,_mime> string2mimeType;
