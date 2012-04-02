@@ -7,6 +7,8 @@ using namespace std;
 // Standard LibNDS
 #include "nds.h"
 
+#include "programm_bin.h"
+
 // Windows!!!
 #include "DSWindows.h"
 
@@ -21,8 +23,10 @@ int main(){
 	WIN = new _windows();
 	_system_->setWindows( WIN );
 	
-	_fileview* view = new _fileview( 200 , 150 , 0 , 0 , _diskRoot_ );
-	WIN->addChild( view );
+	_window* win = new _window( 100 , 100 , 0 , 0 , "Explorer" );
+	_fileview* view = new _fileview( 98 , 88 , 1 , 11 , _diskRoot_ );
+	win->addChild( view );
+	WIN->addChild( win );
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
 	WIN->addChild( w );
 	_textbox* tb = new _textbox( 20 , 20 , 40 , "Test" );
@@ -31,8 +35,11 @@ int main(){
 	w->addChild( b );*/
 	
 	//sc = new _wifiSocketClient( "192.168.178.41" , 8080 , tcpNormal );
-	/*_file a("/datei.lua");
-	_program prog = _program(a.readString( a.getSize() ).c_str());
+	//_file a("/datei.lua");
+	/*string a = (const char*)programm_bin;
+	a = a.substr(0 , programm_bin_size);
+	
+	_program prog = _program(a.c_str());
 	prog.run( WIN );*/
 	
 	_system_->run();

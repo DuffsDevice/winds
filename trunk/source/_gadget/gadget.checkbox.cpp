@@ -90,6 +90,7 @@ _checkbox::_checkbox( _coord x , _coord y , _gadgetStyle style ) :
 	this->setIntValue(0);
 	
 	// Register my handler as the default Refresh-Handler
+	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_checkbox::refreshHandler );
 	this->registerEventHandler( mouseDown , &_checkbox::mouseHandler );
 	this->registerEventHandler( mouseUp , &_checkbox::mouseHandler );

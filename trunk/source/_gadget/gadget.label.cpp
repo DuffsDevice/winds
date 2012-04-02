@@ -132,6 +132,7 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	_interface_input::setStrValue( text );
 	
 	// Register my handler as the default Refresh-Handler
+	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_label::refreshHandler );
 	
 	// Refresh

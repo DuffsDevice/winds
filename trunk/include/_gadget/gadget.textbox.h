@@ -18,10 +18,10 @@ class _textbox : public _gadget , public _interface_input {
 		
 		bool pressed;
 		
-		_gadgetEventReturnType refreshHandler( _gadgetEvent e );
-		_gadgetEventReturnType mouseHandler( _gadgetEvent e );
-		_gadgetEventReturnType keyHandler( _gadgetEvent e );
-		_gadgetEventReturnType dragHandler( _gadgetEvent e );
+		static _gadgetEventReturnType refreshHandler( _gadgetEvent e );
+		static _gadgetEventReturnType mouseHandler( _gadgetEvent e );
+		static _gadgetEventReturnType keyHandler( _gadgetEvent e );
+		static _gadgetEventReturnType dragHandler( _gadgetEvent e );
 		
 		// Will be called if the butten is resized ->label will also be resized
 		void onResize();

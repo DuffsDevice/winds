@@ -2,7 +2,7 @@
 #include "_type/type.system.h"
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
-	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
+	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , enhanced( false ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
 {
 	if( !doNotAllocateBitmap )
 		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
@@ -11,7 +11,7 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	this->registerDefaultEventHandler( mouseDown , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( mouseUp , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( mouseClick , &_gadget::gadgetMouseHandler );
-	this->registerDefaultEventHandler( mouseDoubleClick , &_gadget::gadgetMouseHandler );
+	this->registerEventHandler( mouseDoubleClick , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( refresh , &_gadget::gadgetRefreshHandler );
 	this->registerDefaultEventHandler( dragStart , &_gadget::gadgetDragHandler );
 	this->registerDefaultEventHandler( dragging , &_gadget::gadgetDragHandler );
@@ -19,7 +19,7 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 }
 
 _gadget::_gadget( int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
-	: type( _plain ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
+	: type( _plain ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , enhanced( false ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
 {
 	if( !doNotAllocateBitmap )
 		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
@@ -190,10 +190,7 @@ _gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent event )
 {
 	// Use the default EventHandler if available
 	if( this->defaultEventHandlers.count( event.getType() ) )
-	{
-		_gadgetDefaultEventHandler handler = this->defaultEventHandlers[ event.getType() ];
-		return (this->*handler)( event );
-	}
+		return this->defaultEventHandlers[ event.getType() ]( event );
 	// If the Handler doesn't exist, return 
 	return not_handled;
 }
@@ -294,11 +291,11 @@ void _gadget::removeChild( _gadget* child )
 		return;
 		
 	// Erase it on my bitmap
+	this->children.erase( it );
 	this->bubbleEvent( _gadgetEvent( child , refresh , child->getAbsoluteDimensions() ) , true );
 		
 	// Erase the Connection on both sides
 	child->parent = nullptr;
-	this->children.erase( it );
 }
 
 void _gadget::addChild( _gadget* child )
@@ -365,12 +362,14 @@ void _gadget::setWidth( _length val ){
 
 _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 {
+	_gadget* that = event.getGadget();
+	
 	// If this Refresh-Event wasn't auto-generated, refresh my parents
 	if( !event.getArgs().isBubbleRefresh() )
-		this->bubbleRefresh();
+		that->bubbleRefresh();
 	
 	// Receive Bitmap-Port
-	_bitmapPort bP = this->getBitmapPort();
+	_bitmapPort bP = that->getBitmapPort();
 	
 	// Temp...
 	_gadget* gadget;
@@ -378,22 +377,23 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 	
 	// Receive Areas
 	_area damagedRects;
-	_rect fullRect = _rect( 0 , 0 , this->dimensions.width , this->dimensions.height );
-	
-	// Create Areas for normal Childs
-	_area drawArea;
+	_area damagedEnhancedRects;
+	_rect areaAvailable = _rect( 0 , 0 , that->dimensions.width , that->dimensions.height ) - that->getPadding();
 	
 	if( event.getArgs().isBubbleRefresh() ){
-		damagedRects = event.getArgs().getDamagedRects().toRelative( this->getAbsoluteDimensions() );
-		bP.addClippingRects( damagedRects & ( fullRect - this->getPadding() ) );
+		damagedRects = event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() );
+		damagedEnhancedRects = damagedRects;
+		damagedRects &= areaAvailable;
 	}
 	else{
-		damagedRects.push_back( fullRect );
-		bP.addClippingRects( damagedRects );
+		damagedRects.push_back( areaAvailable );
+		damagedEnhancedRects = _rect( 0 , 0 , that->dimensions.width , that->dimensions.height );
 	}
 	
-	for( it = this->children.rbegin() ; it != this->children.rend() ; it++ )
+	for( it = that->children.rbegin() ; it != that->children.rend() ; it++ )
 	{
+		// Reset clipping Rects
+		bP.deleteClippingRects();
 		
 		// Receive target
 		gadget = (*it);
@@ -401,25 +401,25 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 		// Has the Gadget special Privilegs e.g. it can draw on the Parents reserved areas?
 		if( gadget->isEnhanced() )
 		{
-			// Reset clipping Rects
-			bP.deleteClippingRects();
+			// Special Area for Enhanced Gadgets
+			bP.addClippingRects( damagedEnhancedRects );
 			
-			// Special Area for the Specific Gadget which wants itself to be refreshed
-			bP.addClippingRects( damagedRects );
+			// Copy...
 			bP.copyTransparent( gadget->getX() , gadget->getY() , gadget->getBitmap() );
+			
+			// Reduce Painting Area
+			damagedEnhancedRects -= gadget->getDimensions();
 		}
-		else
+		else{
+			
+			bP.addClippingRects( damagedRects );
+			
 			// Draw...
 			bP.copyTransparent( gadget->getX() , gadget->getY() , gadget->getBitmapPort() );
-		
-		// Since we startat the very top Gadget:
-		// Reduce the Available Area to
-		// the still visible Parts!
-		damagedRects -= gadget->getDimensions();
-		drawArea = damagedRects & ( fullRect - this->getPadding() );
-		
-		bP.deleteClippingRects();
-		bP.addClippingRects( drawArea );
+			
+			// Reduce Painting Area
+			damagedRects -= gadget->getDimensions();
+		}
 	}
 	
 	return handled;
@@ -427,11 +427,13 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 
 _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 {
+	_gadget* that = e.getGadget();
+	
 	// Temp...
 	_gadget* gadget;
 	_gadgetList::reverse_iterator it;
 	
-	for( it = this->children.rbegin(); it != this->children.rend() ; it++ )
+	for( it = that->children.rbegin(); it != that->children.rend() ; it++ )
 	{
 		// Receive target
 		gadget = ( *it );
@@ -447,8 +449,9 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 			e.getArgs().setPosY( e.getArgs().getPosY() - gadget->getY() );
 			
 			if( e.getType() == mouseDown )
-				this->focusChild( gadget );
-			
+				that->focusChild( gadget );
+			else if( e.getType() == mouseDoubleClick && !gadget->canReactTo( mouseDoubleClick ) )
+				e.setType( mouseClick );
 			// Trigger the Event
 			return gadget->handleEvent( e );
 		}
@@ -456,7 +459,7 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 	
 	// If no Gadget received the Mousedown, blur the Focussed Child
 	if( e.getType() == mouseDown )
-		this->blurChild();
+		that->blurChild();
 	
 	return not_handled;
 }
@@ -468,6 +471,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 	_gadget* gadget;
 	_gadgetList::reverse_iterator it;
 	
+	_gadget* that = e.getGadget();
 	
 	// Temp...
 	_gadgetEventArgs args = e.getArgs();
@@ -476,7 +480,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 	if( e.getType() == dragStart )
 	{
 		
-		for( it = this->children.rbegin(); it != this->children.rend() ; it++ )
+		for( it = that->children.rbegin(); it != that->children.rend() ; it++ )
 		{
 			// Receive target
 			gadget = ( *it );
@@ -493,12 +497,12 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 				args.setPosY( args.getPosY() - gadget->getY() );
 				
 				// Trigger the Event
-				_gadgetEventReturnType ret = gadget->handleEvent( _gadgetEvent( this , e.getType() , args ) );
+				_gadgetEventReturnType ret = gadget->handleEvent( _gadgetEvent( that , e.getType() , args ) );
 				
 				if( ret != not_handled )
 				{
 					// Set Gadget, which receives all other drag Events until dragStop is called
-					this->dragTemp = gadget;
+					that->dragTemp = gadget;
 				}
 				
 				return ret;
@@ -506,39 +510,41 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 		}
 	}
 	// Stop Dragging
-	else if( e.getType() == dragStop && this->dragTemp != nullptr )
+	else if( e.getType() == dragStop && that->dragTemp != nullptr )
 	{
 		// Rewrite Destination
-		args.setDestination( this->dragTemp );
+		args.setDestination( that->dragTemp );
 		
 		// Absolute Position to Relative Position
-		args.setPosX( args.getPosX() - dragTemp->getX() );
-		args.setPosY( args.getPosY() - dragTemp->getY() );
+		args.setPosX( args.getPosX() - that->dragTemp->getX() );
+		args.setPosY( args.getPosY() - that->dragTemp->getY() );
 		
 		// Trigger the Event
-		_gadgetEventReturnType ret = this->dragTemp->handleEvent( _gadgetEvent( this , e.getType() , args ) );
+		_gadgetEventReturnType ret = that->dragTemp->handleEvent( _gadgetEvent( that , e.getType() , args ) );
 		
 		// No Gadget will receive Events anymore
-		dragTemp = nullptr;
+		that->dragTemp = nullptr;
 		
 		return ret;
 	}
-	else if( e.getType() == dragging && this->dragTemp != nullptr )
+	else if( e.getType() == dragging && that->dragTemp != nullptr )
 	{
 		// Rewrite Destination
-		args.setDestination( this->dragTemp );
+		args.setDestination( that->dragTemp );
 		
 		
 		// Trigger the Event
-		return dragTemp->handleEvent( _gadgetEvent( this , e.getType() , args ) );
+		return that->dragTemp->handleEvent( _gadgetEvent( that , e.getType() , args ) );
 	}
 	return not_handled;
 }
 
 _gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent e )
 {
-	if( this->parent != nullptr )
-		return _gadgetEventReturnType( this->parent->focusChild( this ) );
+	_gadget* that = e.getGadget();
+	
+	if( that->parent != nullptr )
+		return _gadgetEventReturnType( that->parent->focusChild( that ) );
 	
 	return not_handled;
 }

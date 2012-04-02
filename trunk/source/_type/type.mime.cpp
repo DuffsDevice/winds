@@ -4,8 +4,10 @@
 #include "_graphic/BMP_TxtIcon.h"
 #include "_graphic/BMP_XmlIcon.h"
 #include "_graphic/BMP_FolderIcon.h"
+#include "_graphic/BMP_LuaIcon.h"
 
 _bitmap* icon_application_octet_stream = new BMP_ExeIcon();
+_bitmap* icon_application_x_lua_bytecode = new BMP_LuaIcon();
 _bitmap* icon_application_microsoft_installer = new BMP_FileIcon();
 _bitmap* icon_plain = new BMP_FileIcon();
 _bitmap* icon_folder = new BMP_FolderIcon();
@@ -21,6 +23,7 @@ map<string,_mime> string2mimeType = {
 	{ "text/xml" , text_xml } ,
 	{ "application/microsoft-installer" , application_microsoft_installer } ,
 	{ "application/octet-stream" , application_octet_stream } ,
+	{ "application/x-lua-bytecode" , application_x_lua_bytecode } ,
 	
 	// File Extensions
 	{ "jpg" , image_jpeg } ,
@@ -33,6 +36,7 @@ map<string,_mime> string2mimeType = {
 	{ "xml" , text_xml } ,
 	{ "xhtml" , text_xml } ,
 	{ "exe" , application_octet_stream } ,
+	{ "lua" , application_x_lua_bytecode } ,
 	{ "msi" , application_microsoft_installer }
 };
 
@@ -44,7 +48,8 @@ map<_mime,string> mimeType2string = {
 	{ text_html, "text/html" } ,
 	{ text_xml , "text/xml" } ,
 	{ application_octet_stream , "application/octet-stream" } ,
-	{ application_microsoft_installer , "application/microsoft-installer" } 
+	{ application_microsoft_installer , "application/microsoft-installer" }  ,
+	{ application_x_lua_bytecode , "application/x-lua-bytecode" } 
 };
 
 const _bitmap* _mimeType::getFolderImage() const {
@@ -56,6 +61,9 @@ const _bitmap* _mimeType::getFileImage() const
 	switch( this->type ){
 		case _mime::application_octet_stream:
 			return icon_application_octet_stream;
+			break;
+		case _mime::application_x_lua_bytecode:
+			return icon_application_x_lua_bytecode;
 			break;
 		case _mime::application_microsoft_installer:
 			return icon_application_microsoft_installer;
