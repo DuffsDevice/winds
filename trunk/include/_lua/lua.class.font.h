@@ -13,12 +13,14 @@ extern "C"{
 /**
  * Proxy Classes
 **/
-class _lua_font : public _font {
+class _lua_font{
 	
 	public:
 		
+		_font*	font;
+		
 		//! Ctor
-		_lua_font( _font f );
+		_lua_font( _font* f );
 		
 		//! Lua-Ctor
 		_lua_font( lua_State* L );

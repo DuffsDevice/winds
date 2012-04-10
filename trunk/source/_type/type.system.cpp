@@ -1,6 +1,7 @@
 #include "_type/type.system.h"
 #include <nds.h>
 #include <time.h>
+#include <array>
 #include "stdio.h"
 #include <nds/timers.h>
 
@@ -20,18 +21,21 @@ void _system::setBacklight( _u8 level ){
 }
 
 void _system::restart(){
-	
 	struct __bootstub *bootcode = transfer.bootcode;
-	
 	bootcode->arm9reboot();
-
 }
 
 void _system::shutDown(){
 	systemShutDown(); 
 }
 
-bool initFat(){
+void _system::debug( string msg ){
+	time_t rawtime = time(NULL);
+	struct tm* t = localtime( &rawtime );
+	_system::_debugFile_->writeString( asctime( t ) + msg + "\n" );
+}
+
+bool _system::initFat(){
 	return fatInitDefault();
 }
 
@@ -346,6 +350,13 @@ _system::_system()
 	//! Set the VBLANK Interrupt handler
 	irqSet( IRQ_VBLANK , _system::_vblank_ );
 	
+	// Create RTA
+	_system::_runtimeAttributes_ = new _runtimeAttributes;
+	
+	// Make sure there is a file to debug to 
+	_system::_debugFile_ = new _file("/%WINDIR%/debug.txt");
+	//_system::_debugFile_->create( true );
+	
 	cpuStartTiming(1);
 }
 
@@ -361,6 +372,8 @@ void _system::benchMarkStopPrint(){
 
 void _system::submit(){
 	while( !(keysDown() & KEY_A) )
+		scanKeys();
+	while( keysDown() & KEY_A )
 		scanKeys();
 }
 
@@ -381,9 +394,16 @@ void _system::addProgram( _program* prog ){
 	prog->run( _system::_windows_ );
 }
 
+vector<char> t;
+
+void _system::displayMemUsage(){
+	printf( "%d\n" , t.max_size() );
+}
+
 void _system::run(){
 	while(true){
 		_system::processEvents();
+		//displayMemUsage();
 		swiWaitForVBlank();
 	}
 }
@@ -402,7 +422,8 @@ bool 					_system::sleeping = false;
 _animationsGroup<int> 	_system::_animations_;
 deque<_program*> 		_system::_programs_;
 _windows*				_system::_windows_ = nullptr;
-_runtimeAttributes*		_system::_runtimeAttributes_ = new _runtimeAttributes;
+_runtimeAttributes*		_system::_runtimeAttributes_ = nullptr;
+_file*					_system::_debugFile_ = nullptr;
 //! Events
 deque<_gadgetEvent> 	_system::events;
 deque<_gadgetEvent> 	_system::newEvents;

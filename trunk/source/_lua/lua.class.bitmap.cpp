@@ -16,8 +16,8 @@ _lua_bitmap::_lua_bitmap( lua_State* L ){
 		this->bm = new _bitmap( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) );
 }
 
-//! Lua-Dtor
-int _lua_bitmap::_delete( lua_State* ){ if( this->bm != NULL ){ delete this->bm; this->bm = NULL; } return 0; }
+//! Dtor
+_lua_bitmap::~_lua_bitmap(){ if( this->bm != NULL ){ delete this->bm; this->bm = NULL; } }
 
 //! opertor[pos] and operator(x,y)
 int _lua_bitmap::get( lua_State* L ){ 
@@ -107,7 +107,7 @@ int _lua_bitmap::drawFilledEllipse( lua_State* L ){ this->bm->drawFilledEllipse(
 
 //! drawChar
 int _lua_bitmap::drawChar( lua_State* L ){ 
-	_font* f = Lunar<_lua_font>::check( L , 3 );
+	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	lua_pushnumber( L , this->bm->drawChar( 
@@ -121,7 +121,7 @@ int _lua_bitmap::drawChar( lua_State* L ){
 	
 //! drawString
 int _lua_bitmap::drawString( lua_State* L ){ 
-	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
+	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	this->bm->drawString( 
@@ -180,7 +180,6 @@ int _lua_bitmap::resetClippingRect( lua_State* L ){ this->bm->resetClippingRect(
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "_bitmap";
 Lunar<_lua_bitmap>::RegType _lua_bitmap::methods[] = {
-	{"delete", &_lua_bitmap::_delete},
 	LUNAR_DECLARE_METHOD(_lua_bitmap, get),
 	LUNAR_DECLARE_METHOD(_lua_bitmap, getWidth),
 	LUNAR_DECLARE_METHOD(_lua_bitmap, setWidth),

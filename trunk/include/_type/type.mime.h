@@ -2,7 +2,6 @@
 #define _WIN_T_MIMETYPE_
 
 #include "_type/type.h"
-#include "_type/type.bitmap.h"
 
 typedef enum{
 	plain = 0 ,
@@ -14,7 +13,9 @@ typedef enum{
 	text_xml ,
 	application_octet_stream ,
 	application_microsoft_installer,
-	application_x_lua_bytecode
+	application_x_lua_bytecode,
+	application_x_ms_shortcut,
+	application_x_internet_shortcut
 }_mime;
 
 extern map<string,_mime> string2mimeType;
@@ -33,7 +34,7 @@ class _mimeType{
 			type( string2mimeType[ str ] )
 		{ }
 		
-		_mimeType( _mime type ) :
+		_mimeType( _mime type = _mime::plain ) :
 			type( type )
 		{ }
 		
@@ -44,9 +45,5 @@ class _mimeType{
 		operator _mime(){
 			return this->type;
 		}
-		
-		const _bitmap* getFileImage() const ;
-		
-		const _bitmap* getFolderImage() const ;
 };
 #endif

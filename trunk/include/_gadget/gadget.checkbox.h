@@ -9,7 +9,6 @@
 
 // C Header
 #include <string>
-
 using namespace std;
 
 class _checkbox : public _gadget , public _interface_input {

@@ -2,6 +2,7 @@ local w
 local b
 local c
 local created = false
+dw =
 
 function init()
 	-- create Gadgets

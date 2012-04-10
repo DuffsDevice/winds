@@ -34,7 +34,6 @@ map<_gadgetType,string> gadgetType2string = {
 	{ textbox, "textbox" },
 	{ keyboard, "keyboard" },
 	{ desktop, "desktop" },
-	{ fileview, "fileview" },
 	{ fileobject, "fileobject" },
 	{ imagegadget, "imagegadget" },
 	{ window, "window" },

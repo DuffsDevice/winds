@@ -2,6 +2,7 @@
 #define _WIN_T_SYSTEM_
 
 #include "_type/type.h"
+#include "_type/type.file.h"
 #include "_type/type.animation.h"
 #include "_type/type.luainstance.h"
 #include "_type/type.event.h"
@@ -20,6 +21,7 @@ class _system{
 		static _animationsGroup<int> 	_animations_;
 		static deque<_program*> 		_programs_;
 		static _windows*				_windows_;
+		static _file*					_debugFile_;
 		
 		//! Process User Inputs
 		static void processInput();
@@ -38,10 +40,8 @@ class _system{
 		static void benchMarkStart();
 		static void benchMarkStopPrint();
 		
-		//! Press Any Key to continue...
-		static void submit();
-		
 		static void runPrograms();
+		static void displayMemUsage();
 		
 	public:
 	
@@ -82,6 +82,11 @@ class _system{
 		static void setBacklight( _u8 level );
 		
 		static void run();
+		
+		//! Press Any Key to continue...
+		static void submit();
+		
+		static void debug( string msg );
 };
 
 extern _system* _system_;

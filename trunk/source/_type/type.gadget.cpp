@@ -23,6 +23,18 @@ _gadget::_gadget( int width , int height , int posX , int posY , _gadgetStyle st
 {
 	if( !doNotAllocateBitmap )
 		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
+	
+	this->bitmap->reset( RGB( 31 , 0 , 0 ) );
+	
+	//this->registerDefaultEventHandler( focus , &_gadget::gadgetFocusHandler );
+	this->registerDefaultEventHandler( mouseDown , &_gadget::gadgetMouseHandler );
+	this->registerDefaultEventHandler( mouseUp , &_gadget::gadgetMouseHandler );
+	this->registerDefaultEventHandler( mouseClick , &_gadget::gadgetMouseHandler );
+	this->registerEventHandler( mouseDoubleClick , &_gadget::gadgetMouseHandler );
+	this->registerDefaultEventHandler( refresh , &_gadget::gadgetRefreshHandler );
+	this->registerDefaultEventHandler( dragStart , &_gadget::gadgetDragHandler );
+	this->registerDefaultEventHandler( dragging , &_gadget::gadgetDragHandler );
+	this->registerDefaultEventHandler( dragStop , &_gadget::gadgetDragHandler );
 }
 
 void _gadget::setPadding( _padding p ){
@@ -150,10 +162,10 @@ bool _gadget::blurChild(){
 
 bool _gadget::focusChild( _gadget* child )
 {
-	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
-	
 	if( !child )
 		return false;
+		
+	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );	
 	
 	if( !child->focused )
 		// Blur the Previously focused gadget
@@ -255,7 +267,7 @@ void _gadget::setY( _coord val ){
 	this->bubbleEvent( _gadgetEvent( this , refresh , this->getAbsoluteDimensions() | dim ) );
 }
 
-void _gadget::moveRelative( int dX , int dY ){
+void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x += dX;
 	this->dimensions.y += dY;
@@ -283,6 +295,8 @@ void _gadget::setParent( _gadget* val ){
 
 void _gadget::removeChild( _gadget* child )
 {
+	if( !child )
+		return;
 	// Find it!
 	_gadgetList::iterator it = find( this->children.begin() , this->children.end() , child );
 	
@@ -300,6 +314,8 @@ void _gadget::removeChild( _gadget* child )
 
 void _gadget::addChild( _gadget* child )
 {
+	if( !child )
+		return;
 	// Add it!
 	this->children.push_back( child );
 	child->parent = this;
@@ -452,6 +468,7 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 				that->focusChild( gadget );
 			else if( e.getType() == mouseDoubleClick && !gadget->canReactTo( mouseDoubleClick ) )
 				e.setType( mouseClick );
+			
 			// Trigger the Event
 			return gadget->handleEvent( e );
 		}

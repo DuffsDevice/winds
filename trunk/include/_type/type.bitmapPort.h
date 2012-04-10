@@ -256,6 +256,17 @@ class _bitmapPort{
 		**/
 		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap* data );
 		void copyHorizontalStretch( _coord x , _coord y , _length width , _bitmapPort data );
+		
+		/**
+		 * Copy a _bitmap onto the bitmap by taking the row y=0 and stretching that line over width
+		 * @param x X-Position Left
+		 * @param y Y-Position Top
+		 * @param width Width to stretch it to
+		 * @param data Other _bitmap to copy
+		 * @return void
+		**/
+		void copyVerticalStretch( _coord x , _coord y , _length width , const _bitmap* data );
+		void copyVerticalStretch( _coord x , _coord y , _length width , _bitmapPort data );
 };
 
 #endif

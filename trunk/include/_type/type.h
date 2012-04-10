@@ -25,24 +25,46 @@ typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 
 //! Convert red, green, blue to 15bit Triplette
-constexpr _pixel RGB( _u8 r , _u8 g , _u8 b ){
+constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
 }
-constexpr _pixel RGB255( _u8 r , _u8 g , _u8 b ){
+constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b ){
 	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
 }
 
 //! Convert " " " to 16bit Triplette including an alpha-channel
-constexpr _pixel RGBA( _u8 r , _u8 g , _u8 b , bool a ){
+constexpr inline _pixel RGBA( _u8 r , _u8 g , _u8 b , bool a ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( a << 15 ); // a=1 means opaque, a=0 means transparent
 }
-constexpr _pixel RGBA255( _u8 r , _u8 g , _u8 b , bool a ){
+constexpr inline _pixel RGBA255( _u8 r , _u8 g , _u8 b , bool a ){
 	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 2 ) << 10 ) | ( ( a >> 3 ) << 15 ); // a=1 means opaque, a=0 means transparent
 }
-#define RGB_GETR(c) ((c) & 0x1F)
-#define RGB_GETG(c) (((c)>>5) & 0x1F)
-#define RGB_GETB(c) (((c)>>10) & 0x1F)
-#define RGB_GETA(c) (((c)>>15) & 1)
+
+constexpr inline _u8 RGB_GETR( _pixel c ){
+	return c & 0x1F;
+}
+
+constexpr inline _u8 RGB_GETG( _pixel c ){
+	return ( c >> 5 ) & 0x1F;
+}
+
+constexpr inline _u8 RGB_GETB( _pixel c ){
+	return ( c >> 10 ) & 0x1F;
+}
+
+constexpr inline _u8 RGB_GETA( _pixel c ){
+	return ( c >> 15 ) & 1;
+}
+
+#define COLOR_TRANSPARENT (_pixel(0))
+#define COLOR_YELLOW 	(_pixel(33791))
+#define COLOR_GREEN 	(_pixel(1023))
+#define COLOR_CYAN 		(_pixel(65503))
+#define COLOR_BLUE 		(_pixel(32767))
+#define COLOR_MAGENTA 	(_pixel(65503))
+#define COLOR_RED 		(_pixel(32))
+#define COLOR_BLACK 	(_pixel(1<<15))
+#define COLOR_WHITE 	(_pixel((1<<16)-1))
 #define NO_COLOR 0
 
 #define DEPRECATED __attribute__((deprecated))
@@ -159,9 +181,10 @@ enum _gadgetType{
 	textbox,
 	keyboard,
 	desktop,
-	fileview,
 	fileobject,
 	imagegadget,
+	scrollarea,
+	scrollbutton,
 	window,
 	windows,
 	taskboard,

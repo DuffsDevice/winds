@@ -14,9 +14,10 @@ _runtimeAttributes::_runtimeAttributes() :
 	, defaultFont( new FONT_Tahoma7() ) 
 	, startButtonText( "start" ) 
 	, windowBar( new BMP_WindowHeader() ) 
-	, fileObjectHeight( 10 )
+	, fileObjectHeight( 10 ) //10
 	, showFileExtension( true )
 {
+	this->assocDirectories = { { "%WINDIR%" , "windows" } };
 	this->keyboardChar[0] = { 
 		'1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0' ,
 		'q' , 'w' , 'e' , 'r' , 't' , 'z' , 'u' , 'i' , 'o' , 'p' , 

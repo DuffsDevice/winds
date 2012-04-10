@@ -67,10 +67,6 @@ class _gadget{
 		// If any Gadget wants to do something on resize,
 		// Just implement that one in your class and let it do something
 		virtual void onResize(){};
-		
-		// Tries to focus a child and returns whether it succeded
-		virtual bool focusChild( _gadget* child );
-		virtual bool blurChild();
 	
 	public:
 		
@@ -241,12 +237,16 @@ class _gadget{
 		/**
 		 * Remove a specific children
 		**/
-		void removeChild( _gadget* child );
+		virtual void removeChild( _gadget* child );
 		
 		/**
 		 * Add a child-gadget to this one
 		**/
-		void addChild( _gadget* child );
+		virtual void addChild( _gadget* child );
+		
+		// Tries to focus a child and returns whether it succeded
+		virtual bool focusChild( _gadget* child );
+		virtual bool blurChild();
 		
 		/**
 		 * Get Dimensions of the Gadget (including Coords)
@@ -281,7 +281,7 @@ class _gadget{
 		/**
 		 * Relative moving fo the Gadget
 		**/
-		void moveRelative( int deltaX , int deltaY );
+		void moveRelative( _s16 deltaX , _s16 deltaY );
 		
 		/**
 		 * Set Height " " "

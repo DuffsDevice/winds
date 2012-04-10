@@ -30,6 +30,9 @@ class _runtimeAttributes{
 		_u8				fileObjectHeight;
 		bool 			showFileExtension;
 		
+		// Associative Directories: e.g. %WINDIR%
+		vector<pair<string,string>> assocDirectories;
+		
 		
 		//! Default Constructor
 		_runtimeAttributes();

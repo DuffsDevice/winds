@@ -31,7 +31,7 @@ class _lua_bitmap{
 		_lua_bitmap( lua_State* L );
 				
 		//! Lua-Dtor
-		int _delete( lua_State* );
+		~_lua_bitmap();
 		
 		//! opertor[pos] and operator(x,y)
 		int get( lua_State* L );

@@ -701,6 +701,37 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 	}
 }
 
+void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap* data )
+{
+	_coord x2 = x + data->getWidth() - 1;
+	_coord y2 = y + h - 1;
+	_coord origX = x;
+	
+	if( data->getWidth() == 0 || data->getHeight() == 0 )
+		return;
+	
+	// Attempt to clip
+	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	
+	// Get Data
+	_pixelArray copyData = &data->operator[]( + x - origX );
+	_pixelArray myData	= &this->bmp[ y * this->width + x ];
+	
+	_length height = y2 - y + 1;
+	_length width = x2 - x + 1;
+	
+	// Draw one line!
+	memCopy( myData , copyData , width );
+	
+	_pixelArray destination = myData;
+	
+	// Copy that line!
+	for (_u16 i = 1; i < height; i++){
+		destination += this->width;
+		memCopy( destination , myData , width );
+	}
+}
+
 bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom )
 {
 	

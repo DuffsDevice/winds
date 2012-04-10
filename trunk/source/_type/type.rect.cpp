@@ -11,8 +11,8 @@ _rect::_rect() :
 	width( 1 ) , height( 1 ) , x( -1 ) , y( -1 )
 { }
 
-_coord _rect::getX2() const { return this->x + this->width - 1; }
-_coord _rect::getY2() const { return this->y + this->height - 1; }
+_coord _rect::getX2() const { return this->x + _coord(this->width) - 1; }
+_coord _rect::getY2() const { return this->y + _coord(this->height) - 1; }
 void _rect::setX2( _coord x2 ){ this->width = x2 - this->x + 1; }
 void _rect::setY2( _coord y2 ){ this->height = y2 - this->y + 1; }
 _coord _rect::getX() const { return this->x; }
@@ -29,12 +29,12 @@ bool _rect::isValid() const {
 }
 
 bool _rect::contains( const _coord x , const _coord y ) const {
-	return ( this->x <= x && this->y <= y && ( this->x + this->width ) >= x && ( this->y + this->height ) >= y )
+	return ( this->x <= x && this->y <= y && ( this->x + _coord(this->width) ) >= x && ( this->y + _coord(this->height) ) >= y )
 		? true : false;
 }
 
 bool _rect::contains( const _rect rc ) const {
-	return ( this->x < rc.x && this->y < rc.y && (this->height + this->y) > (rc.height + rc.y) && (this->width + this->x) > (rc.width + rc.x) )
+	return ( this->x < rc.x && this->y < rc.y && (_coord(this->height) + this->y) > (rc.height + rc.y) && (_coord(this->width) + this->x) > (rc.width + rc.x) )
 		? true : false;
 }
 

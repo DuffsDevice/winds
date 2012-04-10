@@ -7,6 +7,8 @@ _gadgetEventReturnType _fileobject::doubleClickHandler( _gadgetEvent event ){
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
 	that->file->execute();
+	
+	return handled;
 }
 
 _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
@@ -55,8 +57,8 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 	{
 		case _fileviewType::list:{
 			// Generate...
-			string 		ext 	= file->getExtension();
-			_mimeType 	mime 	= { ext };
+			string ext = file->getExtension();
+			
 			// Certain Files do not have an .extension
 			if( !_system_->_runtimeAttributes_->showFileExtension || file->isDirectory() || !ext.length() )
 				ext = "";
@@ -67,12 +69,7 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 			this->label->setHeight( _system_->_runtimeAttributes_->fileObjectHeight );
 			this->label->setVAlign( middle );
 			
-			const _bitmap* fileIcon;
-			
-			if( file->isDirectory() )
-				fileIcon = mime.getFolderImage();
-			else
-				fileIcon = mime.getFileImage();
+			const _bitmap* fileIcon = file->getFileImage();
 			
 			// Set Icon
 			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system_->_runtimeAttributes_->fileObjectHeight >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );

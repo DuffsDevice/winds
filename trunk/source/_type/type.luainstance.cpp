@@ -1,4 +1,5 @@
 #include "_type/type.luainstance.h"
+#include "_type/type.system.h"
 
 #include "_lua/lunar.h"
 /**
@@ -6,6 +7,7 @@
 **/
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.font.h"
+#include "_lua/lua.class.file.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.class.gadgetEventArgs.h"
@@ -45,6 +47,12 @@ bool luaL_is( lua_State* L , int narg , string type ){
 	return false;
 }
 
+_windows* cur = NULL;
+
+int addToWindows( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( g && cur ) cur->addChild( g->gadget ); return 0; }
+int luaRGB( lua_State* L ){ lua_pushnumber( L , RGB( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) ); return 1; }
+int luaRGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) ); return 1; }
+
 
 //! This Function will be called from _gadget
 _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadgetEvent e ){
@@ -77,6 +85,8 @@ _program::_program( string prog ) :
 	
 	//! Register Base Classes
 	Lunar<_lua_rect>::Register( this->state );
+	Lunar<_lua_font>::Register( this->state );
+	Lunar<_lua_file>::Register( this->state );
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
 	Lunar<_lua_bitmapPort>::Register( this->state );
@@ -90,41 +100,47 @@ _program::_program( string prog ) :
 	Lunar<_lua_button>::Register( this->state );
 	Lunar<_lua_checkbox>::Register( this->state );
 	Lunar<_lua_label>::Register( this->state );
+	
+	// Load our lua-piece
+	luaL_loadstring( this->state , this->code.c_str() );
+	
+	// Publish some methods
+	lua_pushcfunction( this->state , addToWindows );
+	lua_setglobal( this->state , "registerToWindows" );
+	
+	lua_pushcfunction( this->state , luaRGB );
+	lua_setglobal( this->state , "RGB" );
+	
+	lua_pushcfunction( this->state , luaRGBA );
+	lua_setglobal( this->state , "RGBA" );
+	
+	// Parse Whole Program
+	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
+		_system_->debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
+	}
 }
 
-void _program::runInit(){
+bool _program::runInit(){
 	lua_getglobal( this->state , "init" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
-		printf("Epic Fail Init!");
-		while(true);
+		_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
+		return false;
 	}
+	return true;
 }
 
 void _program::runMain(){
 	lua_getglobal( this->state , "main" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
-		printf("Epic Fail Main!");
-		while(true);
+		_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
 	}
 }
-
-_windows* cur = NULL;
-
-int addToWindows( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( g && cur ) cur->addChild( g->gadget ); return 0; }
 
 void _program::run( _windows* w ){
 	// Config Random
 	srand( time(NULL) );
-	
 	cur = w;
-	luaL_loadstring( this->state , this->code.c_str() );
-	lua_pushcfunction( this->state , addToWindows );
-	lua_setglobal( this->state , "registerToWindows" );
 	
-	// Parse Whole Program
-	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
-		printf("Parser Error");
-	}
-	this->runInit();
-	this->runMain();
+	if( this->runInit() )
+		this->runMain();
 }

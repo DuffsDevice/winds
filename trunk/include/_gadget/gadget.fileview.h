@@ -4,11 +4,12 @@
 
 #include "_type/type.gadget.h"
 #include "_type/type.directory.h"
+#include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileobject.h"
 #include <string>
 
-class _fileview : public _gadget {
+class _fileview : public _scrollArea {
 	
 	private:
 	

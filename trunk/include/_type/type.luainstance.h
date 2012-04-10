@@ -32,7 +32,7 @@ class _program{
 		
 		void runMain();
 		
-		void runInit();
+		bool runInit();
 		
 	
 	private:

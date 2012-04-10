@@ -326,6 +326,22 @@ void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , const
 	this->base->setClippingRect( tempRect );
 }
 
+void _bitmapPort::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap* data )
+{
+	_rect tempRect = this->base->getClippingRect();
+	
+	for( deque< _rect >::iterator it = clippingRects.begin() ; it < clippingRects.end() ; it++ )
+	{
+		this->base->setClippingRect( *it );
+		
+		//! Standard Bitmap Routine
+		this->base->copyVerticalStretch( x , y , h , data );
+		//! Standard Bitmap Routine
+	}
+	
+	this->base->setClippingRect( tempRect );
+}
+
 void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , _bitmapPort data )
 {
 	this->copyHorizontalStretch( x , y , w , data.base );

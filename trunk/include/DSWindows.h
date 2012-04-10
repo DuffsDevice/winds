@@ -38,17 +38,20 @@
 #include "_type/type.directory.h"
 #include "_type/type.luainstance.h"
 #include "_type/type.animation.h"
+#include "_type/type.ini.h"
 #ifdef _WIN_USE_WIFI_
 #include "_type/type.wificonnection.h"
 #endif
 
 #include "_file/file.png.h"
+#include "_file/file.shortcut.h"
 
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.desktop.h"
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.textbox.h"
+#include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileview.h"
