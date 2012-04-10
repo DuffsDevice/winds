@@ -13,6 +13,7 @@ using namespace std;
 #include "DSWindows.h"
 
 _windows* WIN = nullptr;
+_fileview* view = nullptr;
 
 #define METHOD(r,o,m) (r (o::*)() )(&o::m)
 
@@ -23,10 +24,11 @@ int main(){
 	WIN = new _windows();
 	_system_->setWindows( WIN );
 	
-	_window* win = new _window( 100 , 100 , 0 , 0 , "Explorer" );
-	_fileview* view = new _fileview( 98 , 88 , 1 , 11 , _diskRoot_ );
+	_window* win = new _window( 100 , 120 , 20 , 20 , "Explorer" );
+	view = new _fileview( 98 , 109 , 1 , 11 , _diskRoot_ );
 	win->addChild( view );
 	WIN->addChild( win );
+	
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
 	WIN->addChild( w );
 	_textbox* tb = new _textbox( 20 , 20 , 40 , "Test" );
@@ -35,7 +37,6 @@ int main(){
 	w->addChild( b );*/
 	
 	//sc = new _wifiSocketClient( "192.168.178.41" , 8080 , tcpNormal );
-	//_file a("/datei.lua");
 	/*string a = (const char*)programm_bin;
 	a = a.substr(0 , programm_bin_size);
 	

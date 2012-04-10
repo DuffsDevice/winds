@@ -136,7 +136,7 @@ _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 			that->pressed = false;
 			
 			// Refresh my parents
-			that->handleEvent( refresh );
+			that->bubbleRefresh( true );
 		}
 		return handled;
 	}

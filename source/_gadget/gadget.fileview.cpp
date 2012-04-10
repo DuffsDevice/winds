@@ -5,7 +5,8 @@
 
 
 _fileview::_fileview( _length width , _length height , _coord x , _coord y , _directory* dir , _fileviewType viewtype , _gadgetStyle style ) :
-	_gadget( fileview , width , height , x , y , style ) , directory( dir ) , viewType( viewtype )
+	_scrollArea( width , height , x , y , prevent , scroll , style ) 
+	, directory( dir ) , viewType( viewtype )
 {
 	// Reset Bitamp
 	this->bitmap->reset( ( 1 << 16 ) - 1 );

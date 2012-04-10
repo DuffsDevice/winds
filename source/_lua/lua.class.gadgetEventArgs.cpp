@@ -29,7 +29,7 @@ _lua_gadget::_lua_gadget( _gadget* w ){ this->gadget = w; }
 _lua_gadget::_lua_gadget( lua_State* L ){ this->gadget = new _gadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); }
 
 //! Lua-Dtor
-int _lua_gadget::_delete( lua_State* ){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } return 0; }
+_lua_gadget::~_lua_gadget(){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } }
 
 //! bubbleEvent
 int _lua_gadget::bubbleEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->bubbleEvent( *e , luaL_optint( L , 2 , 0 ) ); return 0; }
@@ -161,7 +161,7 @@ Lunar<_lua_gadget>::RegType _lua_gadget::methods[] = {
 
 
 /*##################################
-##         Lua-GaggetEvent        ##
+##         Lua-GadgetEvent        ##
 ##################################*/
 // Ctor...
 _lua_gadgetEvent::_lua_gadgetEvent( _gadgetEvent e ) :
@@ -218,6 +218,9 @@ int _lua_gadgetEvent::getArgs( lua_State* L ){ Lunar<_lua_gadgetEventArgs>::push
 //! setArgs
 int _lua_gadgetEvent::setArgs( lua_State* L ){ _lua_gadgetEventArgs* ea = Lunar<_lua_gadgetEventArgs>::check( L , 1 ); if( ea ) _gadgetEvent::setArgs( *ea ); return 0; }
 
+//! getGadget
+int _lua_gadgetEvent::getGadget( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( _gadgetEvent::getGadget() ) , true ); return 1; }
+
 //! Lua-_gadgetEvent
 const char _lua_gadgetEvent::className[] = "_gadgetEvent";
 Lunar<_lua_gadgetEvent>::RegType _lua_gadgetEvent::methods[] = {
@@ -225,6 +228,7 @@ Lunar<_lua_gadgetEvent>::RegType _lua_gadgetEvent::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_gadgetEvent, getType),
   LUNAR_DECLARE_METHOD(_lua_gadgetEvent, setArgs),
   LUNAR_DECLARE_METHOD(_lua_gadgetEvent, getArgs),
+  LUNAR_DECLARE_METHOD(_lua_gadgetEvent, getGadget),
   {0,0}
 };
 

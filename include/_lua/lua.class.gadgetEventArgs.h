@@ -14,7 +14,7 @@ extern "C"{
 
 extern bool luaL_is( lua_State* L , int narg , string type );
 
-#define LUNAR_DECLARE_ALL_METHODS_OF(g)  {"delete", &g::_delete}, \
+#define LUNAR_DECLARE_ALL_METHODS_OF(g) \
 	LUNAR_DECLARE_METHOD(g,bubbleEvent), \
 	LUNAR_DECLARE_METHOD(g,bubbleRefresh), \
 	LUNAR_DECLARE_METHOD(g,refreshBitmap), \
@@ -65,7 +65,7 @@ class _lua_gadget{
 		_lua_gadget( _gadget* w );
 		
 		//! Lua-Dtor
-		int _delete( lua_State* );
+		~_lua_gadget();
 		
 		// Lua-Ctor
 		_lua_gadget( lua_State* L );
@@ -180,6 +180,10 @@ class _lua_gadget{
 				
 				//! setArgs
 				int setArgs( lua_State* L );
+				
+				
+				//! getGadget
+				int getGadget( lua_State* L );
 				
 				
 				//! Lunar !//

@@ -5,17 +5,17 @@
 ##################################*/
 
 //! Ctor
-_lua_font::_lua_font( _font f ) :
-	_font( f )
+_lua_font::_lua_font( _font* f ) :
+	font( f )
 { }
 
 //! Lua-Ctor
 _lua_font::_lua_font( lua_State* L ) : 
-	_font()
+	font( new _font() )
 { }
 
 //! getStringWidth
-int _lua_font::getStringWidth( lua_State* L ){ lua_pushnumber( L , _font::getStringWidth( luaL_checkstring( L , 1 ) ) ); return 1; }
+int _lua_font::getStringWidth( lua_State* L ){ lua_pushnumber( L , this->font->getStringWidth( luaL_checkstring( L , 1 ) ) ); return 1; }
 
 
 //! Lua-_gadget

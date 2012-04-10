@@ -362,10 +362,18 @@ class _bitmap
 		 * @param x X-Position Left
 		 * @param y Y-Position Top
 		 * @param width Width to stretch it to
-		 * @param border Border to leave on both sites: It only stretches inside the borders
 		 * @return void
 		**/
 		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap* data );
+		
+		/**
+		 * Copy a _bitmap onto the bitmap by taking the row y=0 and stretching that line over width
+		 * @param x X-Position Left
+		 * @param y Y-Position Top
+		 * @param height Height to stretch it to
+		 * @return void
+		**/
+		void copyVerticalStretch( _coord x , _coord y , _length height , const _bitmap* data );
 		
 		/**
 		 * Set the active ClippingRect

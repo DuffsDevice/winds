@@ -23,6 +23,8 @@ class _lua_window : public _lua_gadget , public _lua_interface_input{
 		
 		_lua_window( _window* w ) : _lua_gadget( w ) , _lua_interface_input( w ) { }
 		
+		int close( lua_State* L );
+		
 		
 		//! Lunar !//
 		static const char className[];

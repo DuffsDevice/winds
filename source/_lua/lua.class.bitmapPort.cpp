@@ -109,7 +109,7 @@ int _lua_bitmapPort::drawFilledEllipse( lua_State* L ){ _bitmapPort::drawFilledE
 
 //! drawChar
 int _lua_bitmapPort::drawChar( lua_State* L ){ 
-	_font* f = Lunar<_lua_font>::check( L , 3 );
+	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	lua_pushnumber( L , _bitmapPort::drawChar( 
@@ -124,7 +124,7 @@ int _lua_bitmapPort::drawChar( lua_State* L ){
 //! drawString
 int _lua_bitmapPort::drawString( lua_State* L )
 { 
-	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
+	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	_bitmapPort::drawString( 
