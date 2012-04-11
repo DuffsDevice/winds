@@ -24,10 +24,7 @@ int main(){
 	WIN = new _windows();
 	_system_->setWindows( WIN );
 	
-	_window* win = new _window( 100 , 120 , 20 , 20 , "Explorer" );
-	view = new _fileview( 98 , 109 , 1 , 11 , _diskRoot_ );
-	win->addChild( view );
-	WIN->addChild( win );
+	_system_->runProgram( "explorer.exe" );
 	
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
 	WIN->addChild( w );

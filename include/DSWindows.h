@@ -17,8 +17,6 @@
  *	
  **/
  
-//#define _WIN_USE_WIFI_
- 
  
 #ifndef _WIN_PREDEFINES_
 #define _WIN_PREDEFINES_
@@ -36,12 +34,10 @@
 #include "_type/type.font.h"
 #include "_type/type.file.h"
 #include "_type/type.directory.h"
-#include "_type/type.luainstance.h"
+#include "_type/type.progLua.h"
 #include "_type/type.animation.h"
 #include "_type/type.ini.h"
-#ifdef _WIN_USE_WIFI_
-#include "_type/type.wificonnection.h"
-#endif
+#include "_wifi/wifi.connection.h"
 
 #include "_file/file.png.h"
 #include "_file/file.shortcut.h"
