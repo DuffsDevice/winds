@@ -4,7 +4,8 @@
 #include "_type/type.h"
 #include "_type/type.file.h"
 #include "_type/type.animation.h"
-#include "_type/type.luainstance.h"
+#include "_type/type.progLua.h"
+#include "_type/type.progC.h"
 #include "_type/type.event.h"
 #include "_type/type.runtimeAttributes.h"
 #include "_gadget/gadget.windows.h"
@@ -20,6 +21,7 @@ class _system{
 		
 		static _animationsGroup<int> 	_animations_;
 		static deque<_program*> 		_programs_;
+		static map<string,_program*>		_assocPrograms_;
 		static _windows*				_windows_;
 		static _file*					_debugFile_;
 		
@@ -82,6 +84,8 @@ class _system{
 		static void setBacklight( _u8 level );
 		
 		static void run();
+		
+		static bool runProgram( string qualifiedName , _cmdArgs args = _cmdArgs() );
 		
 		//! Press Any Key to continue...
 		static void submit();

@@ -8,7 +8,6 @@
 #include "func.memory.h"
 #include <string.h>
 
-#include "nds/dma.h"
 #include "nds/arm9/math.h"
 
 //! A Wrapper-Class to store a BMP-Field

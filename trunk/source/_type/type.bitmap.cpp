@@ -302,7 +302,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	h = y2 - y + 1;
 		
 	// Draw the rectangle
-	for (u16 i = 0; i < h; i++) {
+	for (_u16 i = 0; i < h; i++) {
 		this->blitFill( x , y + i , color , w );
 	}
 }

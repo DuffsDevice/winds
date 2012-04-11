@@ -1,4 +1,4 @@
-#include "_wifi/wifi.wificonnection.h"
+#include "_wifi/wifi.connection.h"
 #include <string.h>
 #include <stdlib.h>
 #include <netinet/in.h>

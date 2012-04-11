@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAINSTANCE_
-#define _WIN_LUAINSTANCE_
+#ifndef _WIN_T_LUAPROG_
+#define _WIN_T_LUAPROG_
 
 #include <iostream>
 #include <signal.h>
@@ -17,12 +17,12 @@ extern "C"{
 #include "_lua/lualib.h"
 }
 
-#include "_gadget/gadget.windows.h"
+#include "_type/type.program.h"
 
 using namespace std;
 
 
-class _program{
+class _progLua : public _program{
 	
 	private:
 		
@@ -46,9 +46,9 @@ class _program{
 		
 	public:
 		
-		_program( string prog );
+		_progLua( string prog );
 		
-		void run( _windows* w );
+		void run();
 		
 };
 

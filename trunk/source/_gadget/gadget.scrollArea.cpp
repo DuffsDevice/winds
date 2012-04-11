@@ -1,6 +1,6 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_graphic/BMP_ScrollButtons.h"
-#include <nds/bios.h>
+#include "nds/arm9/math.h"
 
 const _bitmap icon_scroll_bg = BMP_ScrollBg();
 const _bitmap icon_scroll_bg_ = BMP_ScrollBg_();
@@ -57,8 +57,8 @@ void _scrollArea::onResize(){
 }
 
 void _scrollArea::computeRatio(){
-	this->_ratioWidth_ = ( this->dimensions.width - ( !this->scrollTypeY ? 23 : 15 ) << 16 ) / this->innerWidth;
-	this->_ratioHeight_ = ( this->dimensions.height - 15 << 16 ) / this->innerHeight;
+	this->_ratioWidth_ = div32( ( this->dimensions.width - ( !this->scrollTypeY ? 23 : 15 ) << 16 ) , this->innerWidth );
+	this->_ratioHeight_ = div32( ( this->dimensions.height - 15 << 16 ) , this->innerHeight );
 	this->buttonHandleX->setWidth( this->getWidthRatio( this->visibleWidth ) );
 	this->buttonHandleY->setHeight( this->getHeightRatio( this->visibleHeight ) );
 }
@@ -174,10 +174,10 @@ _gadgetEventReturnType _scrollArea::refreshHandler( _gadgetEvent event ){
 	
 	// Show Scrollbar-Backgrounds
 	if( that->buttonHandleX->getParent() )
-		bP.copyHorizontalStretch( 8 , that->dimensions.height - 8 , that->dimensions.width - 17 - 9 , &icon_scroll_bg );
+		bP.copyHorizontalStretch( 8 , myH - 8 , myW - 17 - 9 , &icon_scroll_bg );
 	
 	if( that->buttonHandleY->getParent() )
-		bP.copyVerticalStretch( that->dimensions.width - 8 , 8 , that->dimensions.height - 9 - 8 , &icon_scroll_bg_ );
+		bP.copyVerticalStretch( myW - 8 , 8 , myH - 9 - 8 , &icon_scroll_bg_ );
 	
 	return use_default;
 }

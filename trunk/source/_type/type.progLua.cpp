@@ -1,4 +1,4 @@
-#include "_type/type.luainstance.h"
+#include "_type/type.progLua.h"
 #include "_type/type.system.h"
 
 #include "_lua/lunar.h"
@@ -74,8 +74,9 @@ _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadge
 /**
  * Programm Stuff
 **/
-_program::_program( string prog ) : 
-	code( prog )
+_progLua::_progLua( string prog ) : 
+	_program( progLua )
+	, code( prog )
 {
 	// Create State
 	this->state = luaL_newstate();
@@ -120,7 +121,7 @@ _program::_program( string prog ) :
 	}
 }
 
-bool _program::runInit(){
+bool _progLua::runInit(){
 	lua_getglobal( this->state , "init" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
 		_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
@@ -129,18 +130,14 @@ bool _program::runInit(){
 	return true;
 }
 
-void _program::runMain(){
+void _progLua::runMain(){
 	lua_getglobal( this->state , "main" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
 		_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
 	}
 }
 
-void _program::run( _windows* w ){
-	// Config Random
-	srand( time(NULL) );
-	cur = w;
-	
+void _progLua::run(){	
 	if( this->runInit() )
 		this->runMain();
 }

@@ -5,6 +5,9 @@
 #include "stdio.h"
 #include <nds/timers.h>
 
+//! Standard Programs:
+#include "_program/PROG_Explorer.h"
+
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
 struct __TransferRegion {
@@ -16,8 +19,9 @@ struct __TransferRegion {
 	struct __bootstub *bootcode;
 };
 
+// TODO: Implement
 void _system::setBacklight( _u8 level ){
-	
+	level = level;
 }
 
 void _system::restart(){
@@ -358,6 +362,9 @@ _system::_system()
 	//_system::_debugFile_->create( true );
 	
 	cpuStartTiming(1);
+	
+	//! Init Rand
+	srand( time(NULL) );
 }
 
 void _system::benchMarkStart(){
@@ -408,6 +415,14 @@ void _system::run(){
 	}
 }
 
+bool _system::runProgram( string qualifiedName , _cmdArgs args ){
+	if( _system::_assocPrograms_.count( qualifiedName ) ){
+		_assocPrograms_[qualifiedName]->run( _system::_windows_ );
+		return true;
+	}
+	return false;
+}
+
 void _system::runPrograms(){
 	for( _program* prog : _system::_programs_ )
 		prog->run( _system::_windows_ );
@@ -424,6 +439,10 @@ deque<_program*> 		_system::_programs_;
 _windows*				_system::_windows_ = nullptr;
 _runtimeAttributes*		_system::_runtimeAttributes_ = nullptr;
 _file*					_system::_debugFile_ = nullptr;
+map<string,_program*>	_system::_assocPrograms_ = { 
+	{"explorer.exe" , new PROG_Explorer() }
+};
+
 //! Events
 deque<_gadgetEvent> 	_system::events;
 deque<_gadgetEvent> 	_system::newEvents;
