@@ -5,7 +5,10 @@ void _label::setStrValue( string val )
 {
 	// Set Value...
 	_interface_input::setStrValue( val );
-	this->computeSize();
+	if( this->computeW == 1 ){
+		this->computeW = 2;
+		this->computeSize();
+	}
 	this->bubbleRefresh( true );
 }
 
@@ -16,6 +19,10 @@ void _label::setFont( _font* ft )
 	
 	// Set Font...
 	this->font = ft;
+	if( this->computeW == 1 )
+		this->computeW = 2;
+	if( this->computeH == 1 )
+		this->computeH = 2;
 	this->computeSize();
 	this->bubbleRefresh( true );
 }
@@ -41,7 +48,7 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();
@@ -91,21 +98,25 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-// Methods to set Size
-void _label::setWidth( _u8 width )		{ this->computeW = 0; _gadget::setWidth( width ); }
-void _label::setDimensions( _rect dim )	{ this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim ); }
-void _label::setHeight( _u8 height )	{ this->computeH = 0; _gadget::setHeight( height ); }
-
-// Methods to tell: We want it to compute the Size on its own
-void _label::setWidth()					{ this->computeW = 2; this->computeSize(); }
-void _label::setDimensions()			{ this->computeH = 0; this->computeW = 0; this->computeSize(); }
-void _label::setHeight()				{ this->computeH = 2; this->computeSize(); }
+// Methods to set Size (Pass something not valid to tell the _label to compute the size)
+void _label::setWidth( _u8 width ){ 
+	if( width <= 0 ){ this->computeW = 2; this->computeSize(); return; }
+	this->computeW = 0; _gadget::setWidth( width );
+}
+void _label::setDimensions( _rect dim ){ 
+	if( !dim.isValid() ){ this->computeH = 2; this->computeW = 2; this->computeSize(); return; }
+	this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim );
+}
+void _label::setHeight( _u8 height ){
+	if( height <= 0 ){ this->computeH = 2; this->computeSize(); return; }
+	this->computeH = 0; _gadget::setHeight( height );
+}
 
 
 _label::_label( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::label , width , height , x , y , style )
 	, color( RGB( 0 , 0 , 0 ) )
-	, bgColor( NO_COLOR )
+	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
 	, computeH( 0 )
 {
@@ -123,7 +134,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::label , 1 , 1 , x , y , style )
 	, color( RGB( 0 , 0 , 0 ) )
-	, bgColor( NO_COLOR )
+	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )
 	, computeH( 2 )
 {

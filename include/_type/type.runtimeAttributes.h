@@ -13,8 +13,10 @@ enum _wallpaperViewType{
 };
 
 
-class _runtimeAttributes{
+class _runtimeAttributes
+{
 	public:
+
 		_bitmap*		wallpaper;
 		_wallpaperViewType wallpaperView;
 		_pixel			wallpaperBgColor;
@@ -29,6 +31,9 @@ class _runtimeAttributes{
 		_bitmap*		windowBar;
 		_u8				fileObjectHeight;
 		bool 			showFileExtension;
+		_bitmap*		userLogo;
+		_bitmap*		userImage;
+		string			userName;
 		
 		// Associative Directories: e.g. %WINDIR%
 		vector<pair<string,string>> assocDirectories;
@@ -36,6 +41,9 @@ class _runtimeAttributes{
 		
 		//! Default Constructor
 		_runtimeAttributes();
+		
+		//! Default Destructor
+		~_runtimeAttributes();
 };
 
 #endif

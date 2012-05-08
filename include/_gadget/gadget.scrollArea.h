@@ -57,7 +57,6 @@ class _scrollArea : public _gadget {
 		_u32		getHeightRatio( _u32 of ){ return this->_ratioHeight_ * of >> 16; }
 		
 		void		hideOrShowScrollButtons();
-		void		removeChild( _gadget* child );
 		
 		void		moveScrollHandleX();
 		void		moveScrollHandleY();
@@ -84,6 +83,7 @@ class _scrollArea : public _gadget {
 		
 		// Replace children-functions
 		void addChild( _gadget* child );
+		void removeChild( _gadget* child );
 		
 		//! Default Constructor width optional scrolltypes
 		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::scroll, _scrollType scrollTypeY = _scrollType::scroll , _gadgetStyle style = _defaultStyle_ );

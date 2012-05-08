@@ -8,7 +8,7 @@ _gadgetEventArgs::_gadgetEventArgs( void* dest ){
 	this->keyCode = 0;
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
-	this->bubbleRefresh = false;
+	this->bubble = false;
 	this->damagedRects = _area();
 }
 
@@ -20,7 +20,7 @@ void _gadgetEventArgs::reset(){
 	this->keyCode = 0;
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
-	this->bubbleRefresh = false;
+	this->bubble = false;
 	this->damagedRects = _area();
 }
 
@@ -64,11 +64,13 @@ _area _gadgetEventArgs::getDamagedRects(){ return this->damagedRects; };
 
 void _gadgetEventArgs::setDamagedRects( _area rects ){ this->damagedRects = rects; };
 
-bool _gadgetEventArgs::isBubbleRefresh(){ return this->bubbleRefresh; }
+bool _gadgetEventArgs::isBubblePrevented(){ return this->bubble; }
 
-void _gadgetEventArgs::setBubbleRefresh( bool bR ){ this->bubbleRefresh = bR; }
+void _gadgetEventArgs::preventBubble( bool bR ){ this->bubble = bR; }
+
+bool _gadgetEventArgs::hasClippingRects(){ return !this->damagedRects.empty(); }
 
 
 void _gadgetEventArgs::dump(){
-	printf("d_eargs: iBR:%d,X:%d,Y:%d\n",this->bubbleRefresh,this->posX,this->posY);
+	printf("d_eargs: iB:%d,X:%d,Y:%d\n",this->bubble,this->posX,this->posY);
 }

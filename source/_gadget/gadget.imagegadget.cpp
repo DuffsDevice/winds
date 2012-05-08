@@ -7,7 +7,7 @@ _gadgetEventReturnType _imagegadget::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();

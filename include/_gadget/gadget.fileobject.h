@@ -3,25 +3,25 @@
 #define _WIN_G_FILEOBJECT_
 
 #include "_type/type.gadget.h"
-#include "_type/type.file.h"
+#include "_type/type.direntry.h"
 #include "_type/type.runtimeAttributes.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.imagegadget.h"
 #include <string>
 
-typedef enum{
+enum _fileviewType{
 	detail = 0,
-	list = 1,
+	liste = 1,
 	symbol_small = 2,
 	symbol_big = 3
-}_fileviewType;
+};
 
 class _fileobject : public _gadget {
 	
 	private:
 	
 		// My Data...
-		_file*			file;
+		_direntry		file;
 		_fileviewType	viewType;
 		
 		bool 			pressed;
@@ -36,7 +36,7 @@ class _fileobject : public _gadget {
 		
 	public:
 	
-		_fileobject( _coord x , _coord y , _file* dir , _fileviewType viewtype = _fileviewType::list , _gadgetStyle style = _defaultStyle_ );
+		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::liste , _gadgetStyle style = _defaultStyle_ );
 		
 };
 

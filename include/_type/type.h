@@ -24,6 +24,8 @@ typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 
+typedef map<string,string> _cmdArgs;
+
 //! Convert red, green, blue to 15bit Triplette
 constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
@@ -57,12 +59,12 @@ constexpr inline _u8 RGB_GETA( _pixel c ){
 }
 
 #define COLOR_TRANSPARENT (_pixel(0))
-#define COLOR_YELLOW 	(_pixel(33791))
-#define COLOR_GREEN 	(_pixel(1023))
-#define COLOR_CYAN 		(_pixel(65503))
-#define COLOR_BLUE 		(_pixel(32767))
-#define COLOR_MAGENTA 	(_pixel(65503))
-#define COLOR_RED 		(_pixel(32))
+#define COLOR_YELLOW 	(RGB(31,31,0))
+#define COLOR_GREEN 	(RGB(0,31,0))
+#define COLOR_CYAN 		(RGB(0,31,31))
+#define COLOR_BLUE 		(RGB(0,0,31))
+#define COLOR_MAGENTA 	(RGB(31,0,31))
+#define COLOR_RED 		(RGB(31,0,0))
 #define COLOR_BLACK 	(_pixel(1<<15))
 #define COLOR_WHITE 	(_pixel((1<<16)-1))
 #define NO_COLOR 0
@@ -187,7 +189,7 @@ enum _gadgetType{
 	scrollbutton,
 	window,
 	windows,
-	taskboard,
+	contextmenu,
 	_plain // No type set
 };
 

@@ -46,7 +46,7 @@ _windows::_windows( _gadgetStyle style ) :
 	this->bitmap = new _bitmap( BG_GFX , SCREEN_WIDTH , SCREEN_HEIGHT );
 	
 	//! Allocate new taskboard
-	this->taskboard = new _windowsTaskBoard();
+	this->taskboard = new _keyboard();
 	this->desktop = new _desktop();
 	this->addChild( this->desktop );
 	this->addChild( this->taskboard );
@@ -56,21 +56,58 @@ _windows::_windows( _gadgetStyle style ) :
 }
 
 
-bool _windows::focusChild( _gadget* child )
-{	
-	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
+bool _windows::blurEventChild()
+{
+	_gadget* child = *( ++this->children.rbegin() );
 	
-	if( child == nullptr || child->getType() == _gadgetType::taskboard || child->getType() == _gadgetType::desktop || *itTemp == *((this->children.rbegin())++))
+	if( !child || !this->children.size() )
 		return false;
 	
-	_gadgetList::iterator itKeyboard = find( this->children.begin() , this->children.end() , this->taskboard );
+	return child->hasFocus() && child->handleEvent( blur ) == _gadgetEventReturnType::use_default;
+}
+
+bool _windows::blurChild()
+{
+	_gadget* child = *( ++this->children.rbegin() );
 	
-	this->children.erase( itTemp );
-	this->children.erase( itKeyboard );
-	this->children.push_back( child );
-	this->children.push_back( this->taskboard );
+	if( !child || !this->children.size() )
+		return false;
 	
-	// Refresh the Window
+	if( child->hasFocus() )
+	{
+		child->hasFocus() = false;
+		return true;
+	}
+	return false;
+}
+
+bool _windows::focusChild( _gadget* child )
+{
+	//printf("Trying to Focus %s\n",gadgetType2string[child->getType()].c_str() );
+	
+	if( !child )
+		return false;
+	
+	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
+	
+	// Blur the Previously focused gadget
+	if( !child->hasFocus() )
+		this->blurEventChild();
+	else
+		return false;
+	
+	child->hasFocus() = true;
+	
+	if( child->getType() == _gadgetType::desktop || *itTemp == *( ++this->children.rbegin() ) )
+		return true;
+	
+	// Move the gadget to "top"
+	this->children.splice( this->children.end() , this->children , itTemp );
+	
+	// Move the keyboard top the "top", so the child will be at pos No. 2
+	this->children.splice( this->children.end() , this->children , find( this->children.begin() , this->children.end() , this->taskboard ) );
+	
+	// Refresh the Gadget
 	child->bubbleRefresh();
 	
 	return true;

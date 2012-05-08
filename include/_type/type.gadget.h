@@ -31,6 +31,8 @@ class _gadget{
 	
 		// Type of the Gadget
 		_gadgetType type;
+		
+		static bool removeEnhanced( _gadget* g );
 	
 	protected:
 	
@@ -67,6 +69,9 @@ class _gadget{
 		// If any Gadget wants to do something on resize,
 		// Just implement that one in your class and let it do something
 		virtual void onResize(){};
+		
+		virtual bool blurEventChild();
+		virtual bool focusEventChild( _gadget* child );
 	
 	public:
 		
@@ -94,7 +99,7 @@ class _gadget{
 		/**
 		 * Check whether this Gadget can also be on the reserved area of the parent
 		**/
-		bool isEnhanced();
+		bool isEnhanced() const;
 		
 		/**
 		 * Set whether this Gadget can also be on the reserved area of the parent
@@ -110,7 +115,7 @@ class _gadget{
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( bool includeThis = false );
+		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() );
 		
 		/**
 		 * Method to refresh itself
@@ -141,6 +146,11 @@ class _gadget{
 		 * Returns the Toppest Parent, which is usually Windows itself
 		**/
 		_gadget* getWindows();
+		
+		/**
+		 * Method to check whether the Gadget has Focus
+		**/
+		bool& hasFocus();
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
@@ -233,11 +243,13 @@ class _gadget{
 		 * Set the Gadgets Parent
 		**/
 		void setParent( _gadget* val );
+		void _setParent( _gadget* val );
 		
 		/**
 		 * Remove a specific children
 		**/
 		virtual void removeChild( _gadget* child );
+		virtual void removeChildren( bool preserveEnhanced = false );
 		
 		/**
 		 * Add a child-gadget to this one
@@ -245,6 +257,7 @@ class _gadget{
 		virtual void addChild( _gadget* child );
 		
 		// Tries to focus a child and returns whether it succeded
+		/// @param inform whether to also trigger the 'blur'/'focus' event on the gadget
 		virtual bool focusChild( _gadget* child );
 		virtual bool blurChild();
 		
@@ -257,6 +270,11 @@ class _gadget{
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
 		**/
 		_rect getAbsoluteDimensions() const ;
+		
+		/**
+		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}
+		**/
+		_rect getSize() const;
 		
 		/**
 		 * Set Dimensions of the Gadget (including Coords)

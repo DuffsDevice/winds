@@ -5,24 +5,20 @@
 #include "_type/type.program.h"
 using namespace std;
 
-class _cmdArgs{};
-
 class _progC : public _program{
-	
-	public:
-		
-		typedef int	(_progC::*_progfunc)( _cmdArgs args );
 		
 	private:
 		
-		_progfunc	initFunc;
-		_progfunc	mainFunc;
+		void 		(_progC::*initFunc)(_cmdArgs);
+		int 		(_progC::*mainFunc)(_cmdArgs);
 		
 	public:
 		
-		_progC( _progfunc init , _progfunc main );
+		_progC( void (_progC::*init)(_cmdArgs) , int (_progC::*main)(_cmdArgs) );
 		
-		void run();
+		int main( _cmdArgs args );
+		
+		void init( _cmdArgs args );
 		
 };
 

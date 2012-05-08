@@ -5,6 +5,7 @@
 
 typedef enum{
 	plain = 0 ,
+	directory,
 	image_jpeg ,
 	image_png ,
 	image_gif ,
@@ -19,6 +20,7 @@ typedef enum{
 }_mime;
 
 extern map<string,_mime> string2mimeType;
+extern map<string,_mime> extension2mimeType;
 extern map<_mime,string> mimeType2string;
 	
 
@@ -37,6 +39,10 @@ class _mimeType{
 		_mimeType( _mime type = _mime::plain ) :
 			type( type )
 		{ }
+		
+		static _mimeType fromExtension( string ext ){
+			return extension2mimeType[ext];
+		}
 		
 		operator string(){
 			return mimeType2string[ this->type ];

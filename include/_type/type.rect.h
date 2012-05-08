@@ -107,6 +107,10 @@ class _rect{
 						rc &= limits;
 					return *this;
 				}
+				
+				bool empty(){
+					return this->rects.empty();
+				}
 		};
 	
 	public:

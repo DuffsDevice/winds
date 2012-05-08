@@ -11,7 +11,7 @@ using namespace std;
 
 class _bitmapPort{
 	
-	private:
+	public:
 		
 		//! A list of Clipping-Rects
 		deque< _rect > clippingRects;

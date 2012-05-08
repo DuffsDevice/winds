@@ -38,6 +38,6 @@ map<_gadgetType,string> gadgetType2string = {
 	{ imagegadget, "imagegadget" },
 	{ window, "window" },
 	{ windows, "windows" },
-	{ taskboard, "taskboard" },
+	{ contextmenu, "contextmenu" },
 	{ _plain , "_plain" }
 };

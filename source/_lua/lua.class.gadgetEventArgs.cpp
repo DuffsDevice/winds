@@ -312,10 +312,10 @@ int _lua_gadgetEventArgs::setDamagedRects(lua_State* L){ _lua_area* a = Lunar<_l
 int _lua_gadgetEventArgs::getDamagedRects(lua_State* L){  Lunar<_lua_area>::push( L , new _lua_area( _gadgetEventArgs::getDamagedRects() ) , true ); return 1; }
 
 //! Check if event is a bubble-Refresh-One
-int _lua_gadgetEventArgs::isBubbleRefresh(lua_State* L){ lua_pushboolean( L , _gadgetEventArgs::isBubbleRefresh() ); return 1; }
+int _lua_gadgetEventArgs::isBubblePrevented(lua_State* L){ lua_pushboolean( L , _gadgetEventArgs::isBubblePrevented() ); return 1; }
 
 //! Check if event is a bubble-Refresh-One
-int _lua_gadgetEventArgs::setBubbleRefresh(lua_State* L){ _gadgetEventArgs::setBubbleRefresh( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEventArgs::preventBubble(lua_State* L){ _gadgetEventArgs::preventBubble( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Lua-_gadgetEventArgs
 const char _lua_gadgetEventArgs::className[] = "_gadgetEventArgs";
@@ -340,8 +340,8 @@ Lunar<_lua_gadgetEventArgs>::RegType _lua_gadgetEventArgs::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getHeldTime),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setCurrentKeyCodes),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getCurrentKeyCodes),
-  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, isBubbleRefresh),
-  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setBubbleRefresh),
+  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, isBubblePrevented),
+  LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, preventBubble),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, setDamagedRects),
   LUNAR_DECLARE_METHOD(_lua_gadgetEventArgs, getDamagedRects),
   {0,0}

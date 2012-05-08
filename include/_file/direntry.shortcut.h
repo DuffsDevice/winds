@@ -2,7 +2,7 @@
 #define _WIN_F_SHORTCUT_
 
 #include "_type/type.h"
-#include "_type/type.file.h"
+#include "_type/type.direntry.h"
 #include "_type/type.ini.h"
 using namespace std;
 
@@ -76,11 +76,11 @@ struct _shortcutHeader{
 	_u32	reserved3; // Always Zero
 }__attribute__(( packed ));*/
 
-class _shortcut : public _file {
+class _shortcut : public _direntry {
 	
 	private:
 		
-		_file* destination;
+		_direntry destination;
 		
 		_bitmap* image;
 		
@@ -88,7 +88,8 @@ class _shortcut : public _file {
 		
 		_shortcut( string fn );
 		
-		_file* getDestination();
+		//! Get the Destination the shortcut pointes to
+		_direntry getDestination();
 		
 		bool open();
 		

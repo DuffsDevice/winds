@@ -3,6 +3,8 @@
 #define _WIN_T_PROGRAM_
 
 #include "_gadget/gadget.windows.h"
+#include <memory>
+using namespace std;
 
 typedef enum{
 	progLua,
@@ -10,7 +12,7 @@ typedef enum{
 	progFile
 } _programType;
 
-class _program{
+class _program : public enable_shared_from_this<_program>{
 	
 	private:
 		
@@ -24,9 +26,13 @@ class _program{
 		
 		_program( _programType type ) : type( type ){}
 		
-		void run( _windows* w ){ this->windowsInstance = w; this->run(); }
+		void 			execute( _cmdArgs args = _cmdArgs() );
 		
-		virtual void run() = 0;
+		void 			init( _windows* w , _cmdArgs args  );
+		
+		virtual int		main( _cmdArgs args ) = 0;
+		
+		virtual void	init( _cmdArgs args ) = 0;
 		
 };
 

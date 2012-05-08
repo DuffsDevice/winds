@@ -8,7 +8,7 @@ _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();
@@ -84,7 +84,7 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();
@@ -118,7 +118,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 	if( event.getType() == dragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the subject of Dragment :-)
-		if( event.getArgs().getPosY() > 11 ){
+		if( event.getArgs().getPosY() > 9 ){
 			that->dragMe = false;
 			return use_default;
 		}

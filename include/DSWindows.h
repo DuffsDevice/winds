@@ -28,19 +28,19 @@
 #include "_type/type.system.h"
 #include "_type/type.eventArgs.h"
 #include "_type/type.bitmap.h"
+#include "_type/type.bitmapAnimation.h"
 #include "_type/type.bitmapPort.h"
 #include "_type/type.rect.h"
 #include "_type/type.event.h"
 #include "_type/type.font.h"
-#include "_type/type.file.h"
-#include "_type/type.directory.h"
+#include "_type/type.direntry.h"
 #include "_type/type.progLua.h"
 #include "_type/type.animation.h"
 #include "_type/type.ini.h"
 #include "_wifi/wifi.connection.h"
 
-#include "_file/file.png.h"
-#include "_file/file.shortcut.h"
+#include "_file/direntry.png.h"
+#include "_file/direntry.shortcut.h"
 
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.desktop.h"
@@ -52,7 +52,7 @@
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileview.h"
 #include "_gadget/gadget.checkbox.h"
-#include "_gadget/gadget.windows.taskboard.h"
+#include "_gadget/gadget.windows.startMenu.h"
 
 #include <nds/arm9/input.h>
 #include <nds/system.h>

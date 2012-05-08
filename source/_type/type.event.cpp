@@ -19,7 +19,7 @@ _gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _area damaged
 	this->type = type;
 	this->args = args;
 	this->args.setDamagedRects( damagedRects );
-	this->args.setBubbleRefresh( true );
+	this->args.preventBubble( true );
 	this->args.setSource( src );
 }
 
@@ -79,10 +79,8 @@ map<string,_gadgetEventType> string2eventType = {
 
 map<string,_gadgetEventReturnType> string2eventReturnType = {
 	{ "handled" , handled },
-	{ "handled_no_delete" , handled_no_delete },
 	{ "use_default" , use_default },
 	{ "not_handled" , not_handled },
-	{ "not_handled_no_delete" , not_handled_no_delete }
 };
 
 map<_gadgetEventType,string> eventType2string = {
@@ -105,8 +103,6 @@ map<_gadgetEventType,string> eventType2string = {
 
 map<_gadgetEventReturnType,string> eventReturnType2string = {
 	{ handled , "handled" },
-	{ handled_no_delete , "handled_no_delete" },
 	{ use_default , "use_default" },
 	{ not_handled , "not_handled" },
-	{ not_handled_no_delete , "not_handled_no_delete" }
 };

@@ -973,6 +973,7 @@ int YsGenericPngDecoder::Decode(const char fn[])
 				{
 					if(plt.Decode(length,buf)!=YSOK)
 					{
+						printf("Yet undefined error!");
 						delete [] buf;
 						goto ERREND;
 					}
@@ -1027,6 +1028,8 @@ int YsGenericPngDecoder::Decode(const char fn[])
 		fclose(fp);
 		return YSOK;
 	}
+	else
+		printf("cannot open file!");
 
 ERREND:
 	if(fp!=nullptr)

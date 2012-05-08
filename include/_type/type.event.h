@@ -13,10 +13,8 @@ using namespace std;
 **/
 enum _gadgetEventReturnType{
 	handled = 1,
-	handled_no_delete = 2,
-	use_default = 3,
+	use_default = 2,
 	not_handled = 0, // If returned on DragStart -> dragging will be prevented
-	not_handled_no_delete = -1
 };
 
 /**

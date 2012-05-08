@@ -1,6 +1,7 @@
 #include "_type/type.mime.h"
 
 map<string,_mime> string2mimeType = {
+	{ "directory" , directory } ,
 	{ "image/jpeg" , image_jpeg } ,
 	{ "image/png" , image_png } ,
 	{ "image/gif" , image_gif } ,
@@ -12,8 +13,10 @@ map<string,_mime> string2mimeType = {
 	{ "application/x-lua-bytecode" , application_x_lua_bytecode } ,
 	{ "application/x-ms-shortcut" , application_x_ms_shortcut } ,
 	{ "application/x-internet-shortcut" , application_x_internet_shortcut } ,
-	
-	// File Extensions
+};
+
+// File Extensions#
+map<string,_mime> extension2mimeType = {
 	{ "jpg" , image_jpeg } ,
 	{ "jpeg" , image_jpeg } ,
 	{ "png" , image_png } ,
@@ -31,6 +34,7 @@ map<string,_mime> string2mimeType = {
 };
 
 map<_mime,string> mimeType2string = {
+	{ directory , "directory" } , 
 	{ image_jpeg , "image/jpeg" } , 
 	{ image_png, "image/png" } ,
 	{ image_gif, "image/gif" } ,
