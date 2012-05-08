@@ -3,9 +3,9 @@
 #include "_type/type.animation.h"
 #include "_type/type.system.h"
 
+//! Screen_Height etc...
 #include "nds/arm9/console.h"
 
-#include "_graphic/FONT_CourierNew10.h"
 #include "_graphic/BMP_Background.h"
 
 _bitmap* _keyboard::bg = new BMP_Background();
@@ -59,6 +59,31 @@ _rect _keyboard::buttonDimensions[]{
 	_rect( 221 , 82 , 33 , 18 ) // Shift
 };
 
+void _keyboard::setDestination( _gadget* dest )
+{
+	// Altes Ziel den Fokus wieder nehmen
+	if( this->destination != nullptr && this->destination->getParent() != nullptr )
+		this->destination->triggerEvent( blur );
+	
+	this->destination = dest;
+	
+	//! If not already visible
+	if( !this->mode && dest )
+	{
+		this->anim.setFromValue( this->getY() );
+		this->anim.setToValue( SCREEN_HEIGHT - 112 );
+		this->anim.start();
+		this->mode = true;
+	}
+	else if( this->mode && !dest )
+	{
+		this->anim.setFromValue( this->getY() );
+		this->anim.setToValue( SCREEN_HEIGHT - 9 );
+		this->anim.start();
+		this->mode = false;
+	}
+}
+
 _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
@@ -66,18 +91,13 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();
 	
-	//_length myW = bP.getWidth();
-	
-	//bP.fill( that->style.windowBg );
-	
-	//bP.drawVerticalGradient( 0 , 0 , myW , 5 , RGB( 17 , 17 , 17 ) , that->style.windowBg );
-	
-	bP.copy( 0 , 0 , that->bg );
+	bP.copyHorizontalStretch( 33 , 0 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
+	bP.copy( 0 , 10 , that->bg );
 	
 	return use_default;
 }
@@ -100,22 +120,107 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 			that->buttons[i]->setKey( _system_->_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
 		}
 	}
+	else if( event.getArgs().getKeyCode() == DSWindows::KEY_WINDOWS )
+		1;
 	else if( that->destination != nullptr )
 		that->destination->handleEvent( event );
 	
 	return handled;
 }
 
-_keyboard::_keyboard( _coord x , _coord y , _gadget* dest , _gadgetStyle style ) :
-	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 102 , x , y , style )
-	, font( new FONT_CourierNew10() )
-	, shift( false )
-	, destination( dest )
+_gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 {
+	// Receive Gadget
+	_keyboard* that = (_keyboard*)event.getGadget();
+	
+	static int deltaY = 0;
+	
+	if( event.getType() == dragStart )
+	{
+		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
+		if( event.getArgs().getPosY() > 11 )
+		{
+			that->dragMe = false;			
+			// Check children
+			return use_default;
+		}
+		
+		that->dragMe = true;
+		
+		deltaY = event.getArgs().getPosY();
+		
+		// If y is on the windowbar, drag Me!
+		return handled;
+	}
+	else if( event.getType() == dragging )
+	{
+		// Check if there is a gadget who receives drag-events,
+		// If not, it has to be me who's dragged
+		if( !that->dragMe )
+			return use_default;
+		
+		/**
+		 * Handling of my 'dragment' !
+		**/
+		
+		// Has the Gadget to move?
+		if( event.getArgs().getDeltaY() == 0 )
+			return handled;
+		
+		// Move it relatively
+		that->moveTo( 0 , max( SCREEN_HEIGHT - 112 , 0 - deltaY + event.getArgs().getPosY() ) );
+		
+		// Return
+		return handled;
+	}
+	else if( event.getType() == dragStop )
+	{
+		// Check if there is a gadget who receives drag-events,
+		// If not, it has to be me who's dragged
+		if( !that->dragMe )
+			return use_default;
+			
+		that->anim.setFromValue( that->getY() );
+		
+		_coord toValue = SCREEN_HEIGHT - 112;
+		if( ( that->mode == true && event.getArgs().getPosY() + that->getAbsoluteY() > SCREEN_HEIGHT - 80 ) || ( that->mode == false && event.getArgs().getPosY() + that->getAbsoluteY() > SCREEN_HEIGHT - 30 ) )
+			toValue = SCREEN_HEIGHT - 9;
+		
+		that->mode = (SCREEN_HEIGHT - 112 == toValue ) ? true : false ;
+		
+		if( !that->mode )
+		{
+			// Altes Ziel den Fokus wieder nehmen
+			if( that->destination != nullptr && that->destination->getParent() != nullptr )
+				that->destination->triggerEvent( blur );
+			that->destination = nullptr;
+		}
+		
+		that->anim.setToValue( toValue );
+		that->anim.start();
+		
+		// Return
+		return handled;
+	}
+	
+	// Default return
+	return not_handled;
+}
+
+_keyboard::_keyboard( _gadgetStyle style ) :
+	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 112 , 0 , SCREEN_HEIGHT - 10 , style )
+	, font( new FONT_CourierNew10() )
+	, startButton( new _keyboardStartButton( 0 , 0 ) )
+	, shift( false )
+	, mode( false ) // Means "Hidden"
+	, destination( nullptr )
+	, anim( 0 , 0 , 500 )
+{
+	this->bitmap->reset( RGB( 19,19,19) );
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y , _system_->_runtimeAttributes_->keyboardText[0][i] );
+		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 10 , _system_->_runtimeAttributes_->keyboardText[0][i] );
 		this->buttons[i]->setFont( this->font );
 		this->addChild( this->buttons[i] );
 	}
@@ -123,46 +228,31 @@ _keyboard::_keyboard( _coord x , _coord y , _gadget* dest , _gadgetStyle style )
 	this->buttons[45]->setAutoSelect( true );
 	this->buttons[40]->setAutoSelect( true );
 	
+	//! Animations
+	this->anim.setEasing( _animation::_bounce::easeOut );
+	this->anim.setter( [&]( int y ){ this->setY( y ); } );	
 	
 	//! Register my handler as the default Refresh-Handler
+	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_keyboard::refreshHandler );
 	this->registerEventHandler( keyDown , &_keyboard::keyHandler );
 	this->registerEventHandler( keyUp , &_keyboard::keyHandler );
 	this->registerEventHandler( keyClick , &_keyboard::keyHandler );
 	
+	this->registerEventHandler( dragStart , &_keyboard::dragHandler );
+	this->registerEventHandler( dragStop , &_keyboard::dragHandler );
+	this->registerEventHandler( dragging , &_keyboard::dragHandler );
+	
+	this->addChild( this->startButton );
+	
 	// Refresh Me
 	this->refreshBitmap();
 }
 
-_keyboard::~_keyboard(){
+_keyboard::~_keyboard()
+{
 	delete this->font;
-	//this->dtor();
-}
-
-
-_gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
-{
-	// Receive Gadget
-	_keyboardButton* that = (_keyboardButton*)event.getGadget();
 	
-	_gadgetEvent ev = _gadgetEvent( keyClick );
-	
-	// Set Key-code
-	ev.getArgs().setKeyCode( that->key );
-	
-	if( that->getWindows() != nullptr )
-		ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
-	
-	if( that->parent != nullptr )
-		that->parent->handleEvent( ev );
-	
-	_button::mouseHandler( event );
-	
-	return handled;
-}
-
-void _keyboardButton::init()
-{
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( mouseClick , &_keyboardButton::mouseHandler );
+	for( _u8 i = 0 ; i < 46 ; i++ )
+		delete this->buttons[i];
 }

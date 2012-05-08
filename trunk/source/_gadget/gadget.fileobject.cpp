@@ -6,7 +6,7 @@ _gadgetEventReturnType _fileobject::doubleClickHandler( _gadgetEvent event ){
 	// Receive Gadget
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
-	that->file->execute();
+	that->file.execute();
 	
 	return handled;
 }
@@ -16,16 +16,17 @@ _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 	// Receive Gadget
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
-	if( event.getType() == focus ){
+	if( event.getType() == focus )
+	{
 		that->label->setBgColor( RGB255( 10 , 36 , 106 ) );
-		that->label->setColor( RGB( 31 , 31 , 31 ) );
+		that->label->setColor( COLOR_WHITE );
 	}
 	else{
-		that->label->setBgColor( RGB( 31 , 31 , 31 ) );
-		that->label->setColor( RGB( 0 , 0 , 0 ) );
+		that->label->setBgColor( COLOR_WHITE );
+		that->label->setColor( COLOR_BLACK );
 	}
 	
-	return not_handled;//use_default;
+	return use_default;
 }
 
 _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
@@ -35,17 +36,16 @@ _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 	
 	//printf("Hallo!!!");
 	
-	return not_handled;//use_default;
+	return not_handled;
 }
 
-_fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewtype , _gadgetStyle style ) :
+_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _gadgetStyle style ) :
 	_gadget( fileobject , 50 , _system_->_runtimeAttributes_->fileObjectHeight , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );
 	
 	// Register Handlers
-	//this->registerEventHandlers( refresh , &_fileobject::refreshHandler );
 	this->registerEventHandler( dragging , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStart , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
@@ -55,21 +55,21 @@ _fileobject::_fileobject( _coord x , _coord y , _file* fl , _fileviewType viewty
 	
 	switch( this->viewType )
 	{
-		case _fileviewType::list:{
+		case _fileviewType::liste:{
 			// Generate...
-			string ext = file->getExtension();
+			string ext = file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system_->_runtimeAttributes_->showFileExtension || file->isDirectory() || !ext.length() )
+			if( !_system_->_runtimeAttributes_->showFileExtension || file.isDirectory() || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
 			
-			this->label = new _label( 11 , 0 , file->getName() + ext );
+			this->label = new _label( 11 , 0 , file.getName() + ext );
 			this->label->setHeight( _system_->_runtimeAttributes_->fileObjectHeight );
-			this->label->setVAlign( middle );
+			this->label->setVAlign( _valign::middle );
 			
-			const _bitmap* fileIcon = file->getFileImage();
+			const _bitmap* fileIcon = file.getFileImage();
 			
 			// Set Icon
 			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system_->_runtimeAttributes_->fileObjectHeight >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );

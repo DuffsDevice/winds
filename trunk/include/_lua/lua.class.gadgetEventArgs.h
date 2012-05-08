@@ -147,10 +147,10 @@ class _lua_gadget{
 				int getDamagedRects(lua_State* L);
 				
 				//! Check if event is a bubble-Refresh-One
-				int isBubbleRefresh(lua_State* L);
+				int isBubblePrevented(lua_State* L);
 				
 				//! Check if event is a bubble-Refresh-One
-				int setBubbleRefresh(lua_State* L);
+				int preventBubble(lua_State* L);
 				
 				
 				//! Lunar !//

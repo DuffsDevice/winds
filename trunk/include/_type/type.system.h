@@ -2,7 +2,7 @@
 #define _WIN_T_SYSTEM_
 
 #include "_type/type.h"
-#include "_type/type.file.h"
+#include "_type/type.direntry.h"
 #include "_type/type.animation.h"
 #include "_type/type.progLua.h"
 #include "_type/type.progC.h"
@@ -11,7 +11,9 @@
 #include "_gadget/gadget.windows.h"
 #include "fat.h"
 
-#include <deque>
+#include <tr1/memory>
+
+#include <list>
 
 class _system{
 	
@@ -19,77 +21,65 @@ class _system{
 		
 		static bool sleeping;
 		
-		static _animationsGroup<int> 	_animations_;
-		static deque<_program*> 		_programs_;
-		static map<string,_program*>		_assocPrograms_;
-		static _windows*				_windows_;
-		static _file*					_debugFile_;
+		//! Attributes
+		static list< _animation >		_animations_;
+		static list<pair<shared_ptr<_program>,_cmdArgs>> 	_programs_;
+		static _direntry				_debugFile_;
 		
 		//! Process User Inputs
 		static void processInput();
 		
 		//! Events
-		static deque<_gadgetEvent> 		events;
-		static deque<_gadgetEvent> 		newEvents;
+		static list<_gadgetEvent> 		events;
+		static list<_gadgetEvent> 		newEvents;
 		static bool eventThrowable;
 		
-		static void optimizeEvents();
 		static void enableEventThrowing( void );
 		static void processEvents();
 		static void disableEventThrowing( void );
 		
-		// Benchmarks
-		static void benchMarkStart();
-		static void benchMarkStopPrint();
-		
+		static void runAnimations();
 		static void runPrograms();
 		static void displayMemUsage();
 		
+		static void _vblank_();
+		
+		friend class _gadget;
+		friend class _program;
+		friend class _animation;
+		
+		//! Add Thinks for execution
+		static void executeAnimation( const _animation& anim );
+		static void executeProgram( shared_ptr<_program> prog , _cmdArgs args = _cmdArgs() );
+		static void generateEvent( _gadgetEvent event );
+		
 	public:
 	
+		static _windows*				_windows_;
 		static _runtimeAttributes*		_runtimeAttributes_;
 		
 		// Constructor
 		_system();
 		
-		static void addAnimation( _animation<int>* anim );
+		//! Get a Built in Program
+		static shared_ptr<_program> getBuiltInProgram( string qualifiedName );
 		
-		static void addProgram( _program* prog );
+		//! Get Current Time (time since system startup)
+		static _u32 getTime();
 		
-		static void addEvent( _gadgetEvent event );
-		
-		static _u32 getNow();
-		
-		// Obtain current Keys
+		//! Obtain current Keys
 		static _u16 getCurrentKeys();
 		
-		static void setWindows( _windows* win );
-		
-		static void _vblank_();
-		
-		static void goToSleep();
-		
-		static void wakeUp();
-		
+		//! Turn Device off
 		static void shutDown();
 		
-		static void restart();
-		
-		static bool initFat();
-		
-		static void initWifi();
-		
-		static void initDisplay();
-		
-		static void setBacklight( _u8 level );
-		
-		static void run();
-		
-		static bool runProgram( string qualifiedName , _cmdArgs args = _cmdArgs() );
+		//! main Loop...
+		static void main();
 		
 		//! Press Any Key to continue...
 		static void submit();
 		
+		//! Debugging
 		static void debug( string msg );
 };
 

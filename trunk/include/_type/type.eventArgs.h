@@ -22,7 +22,7 @@ class _gadgetEventArgs
 		_key 	currentKeyCodes; //! Keycode-State of that Moment the Event was triggered
 		_u32	heldTime; 		 //! Time the Button was Pressed (only for: keyUp, keyClick, mouseUp, mouseClick )
 		_area	damagedRects;	 //! If (isBubbleRefresh) is true then this Attribute will specify the Area, that is invalid/damaged and has to be repainted
-		bool	bubbleRefresh;	 //! Whether this is an auto generated Event for bubble-refreshing
+		bool	bubble;	 		 //! If 'true', all events needed for informing the parents are already thrown, no need to throw the again
 		
 	public:
 		
@@ -93,10 +93,13 @@ class _gadgetEventArgs
 		void setDamagedRects( _area rects );
 		
 		//! Check if this event was auto-generated to refresh every gadget until the DOM-Tree HEAD
-		bool isBubbleRefresh();
+		bool isBubblePrevented();
 		
 		//! Set if this event was auto-generated
-		void setBubbleRefresh( bool bR );
+		void preventBubble( bool bR = true );
+		
+		//! Check if the Event crops the area to be painted to
+		bool hasClippingRects();
 		
 		void dump();
 };

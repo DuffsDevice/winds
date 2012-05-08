@@ -5,12 +5,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <dswifi9.h>
 
 #define IS_DIGIT_OR_DOT(c) (isdigit(c)||((c)=='.'))
 #define IS_INETADDR(s) (IS_DIGIT_OR_DOT(s[0])&&IS_DIGIT_OR_DOT(s[1])&&IS_DIGIT_OR_DOT(s[2])&&IS_DIGIT_OR_DOT(s[3])&&IS_DIGIT_OR_DOT(s[4])&&IS_DIGIT_OR_DOT(s[5])&&IS_DIGIT_OR_DOT(s[6]))
-
-bool _wifiSocketClient::wifiInited = false;
 
 _u32 _wifiSocketClient::makeIP( _u8 d , _u8 c , _u8 b , _u8 a ){
 	return ( a << 24 ) | ( b << 16 ) | ( c << 8 ) | d;
@@ -41,10 +38,6 @@ _u32 _wifiSocketClient::string2IP( string str ) {
 _wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode )
 {
 	
-	if( !this->wifiInited ){
-		printf("Connecting...");
-		this->wifiInited = Wifi_InitDefault(WFC_CONNECT);
-	}
 	unsigned long 		ip;
 	struct sockaddr_in 	servaddr;
 	

@@ -1,12 +1,17 @@
 #include "_type/type.system.h"
+#include "_type/type.bitmapAnimation.h"
 #include <nds.h>
 #include <time.h>
 #include <array>
 #include "stdio.h"
 #include <nds/timers.h>
+#include <dswifi9.h>
+#include <fat.h>
 
 //! Standard Programs:
 #include "_program/PROG_Explorer.h"
+
+#include "_graphic/BMP_Checkboxes.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -19,15 +24,10 @@ struct __TransferRegion {
 	struct __bootstub *bootcode;
 };
 
-// TODO: Implement
-void _system::setBacklight( _u8 level ){
-	level = level;
-}
-
-void _system::restart(){
+/*void _system::restart(){
 	struct __bootstub *bootcode = transfer.bootcode;
 	bootcode->arm9reboot();
-}
+}*/
 
 void _system::shutDown(){
 	systemShutDown(); 
@@ -36,19 +36,14 @@ void _system::shutDown(){
 void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
-	_system::_debugFile_->writeString( asctime( t ) + msg + "\n" );
-}
-
-bool _system::initFat(){
-	return fatInitDefault();
+	_system::_debugFile_.writeString( asctime( t ) + msg + "\n" );
 }
 
 void _system::_vblank_(){
-	_system::_animations_.step();
 	_system::processInput();
 }
 
-void _system::addEvent( _gadgetEvent event )
+void _system::generateEvent( _gadgetEvent event )
 {
 	if( _system::eventThrowable )
 		_system::events.push_back( event );
@@ -63,27 +58,19 @@ void _system::processEvents()
 	// -> This was a big Problem - Hours of finding that out!
 	disableEventThrowing();
 	
+	//printf("%d\n",_system::events.size() );
+	
 	// Temp...
 	_gadget* gadget;
-	_gadgetEventReturnType ret;
 
 	for( _gadgetEvent event : _system::events )
 	{
 		gadget = (_gadget*)event.getArgs().getDestination();		
 		
-		// Default: Say its not handled
-		// It can be set if Gadget != nullptr
-		ret = not_handled;
-		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
-			ret = gadget->handleEvent( event );
+			gadget->handleEvent( event );
 		
-		
-		// Check if the Event was Handled
-		// -> If it can be deleted afterwards: Delete It!!!
-		if( ret == not_handled_no_delete || ret == handled_no_delete )
-			_system::_windows_->generateEvent( event );
 	}
 
 	// Erase all Events
@@ -194,7 +181,7 @@ void _system::processInput()
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < _system::_runtimeAttributes_->maxClickCycles )
-				_system::_windows_->triggerEvent( _gadgetEvent( keyClick , args ) );
+				_system::_windows_->handleEvent( _gadgetEvent( keyClick , args ) );
 			
 			
 			// Reset Cycles
@@ -303,6 +290,7 @@ void _system::processInput()
 			_s16	deltaX = touchBefore.px - lastTouch.px;
 			_s16	deltaY = touchBefore.py - lastTouch.py;
 			_s16 	deltaTouch = deltaX * deltaX + deltaY * deltaY;
+			
 			// Trigger the mouseClick-Event!
 			if( cyclesLastClick && cyclesLastClick < _system::_runtimeAttributes_->maxDoubleClickCycles && deltaTouch < _system::_runtimeAttributes_->maxDoubleClickArea * _system::_runtimeAttributes_->maxDoubleClickArea ){
 				_system::_windows_->handleEvent( _gadgetEvent( mouseDoubleClick , args ) );
@@ -329,52 +317,83 @@ void _system::processInput()
 
 _system::_system()
 {
-	//! Power on everything 
-	powerOn( POWER_ALL );
+	// ------------------------------------------------------------------------
+	// Display 
+	// ------------------------------------------------------------------------
 	
-	//! Set the video mode on the main screen.
-	videoSetMode( MODE_5_2D );
+		//! Power on everything 
+		powerOn( POWER_ALL );
+		
+		//! Set the video mode on the main screen.
+		videoSetMode( MODE_5_2D );
+		
+		//lcdMainOnTop();
+		lcdMainOnBottom();
+		
+		//! Set the video mode on the sub screen.
+		videoSetModeSub( MODE_5_2D );
+		
+		//! Init Video RAMs
+		vramSetBankA( VRAM_A_MAIN_BG );
+		vramSetBankC( VRAM_C_SUB_BG );
+		
+		//! Init Backgrounds
+		bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		
+		consoleDemoInit();
+	// ------------------------------------------------------------------------
+	// Interrupts
+	// ------------------------------------------------------------------------
 	
-	//lcdMainOnTop();
-	lcdMainOnBottom();
+		//! Set the VBLANK Interrupt handler
+		irqSet( IRQ_VBLANK , _system::_vblank_ );
+		
+		//! Start Time
+		cpuStartTiming(1);
 	
-	//! Set the video mode on the sub screen.
-	videoSetModeSub( MODE_5_2D );
+	// ------------------------------------------------------------------------
+	// System-Attributes
+	// ------------------------------------------------------------------------
 	
-	//! Init Video RAMs
-	vramSetBankA( VRAM_A_MAIN_BG );
-	vramSetBankC( VRAM_C_SUB_BG );
+		// Make sure there is a file to debug to
+		//_system::_debugFile_->create( true );
+		
+		// Create RTA
+		_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
+		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		
+		//! Create Windows
+		_system::_windows_ = new _windows();
+		
+		//! random Random() generator
+		srand( time(NULL) );
 	
-	//! Init Backgrounds
-	bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-	bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+	// ------------------------------------------------------------------------
+	// Wifi & FAT32
+	// ------------------------------------------------------------------------
+		
+		// TODO: Implement Wifi-Settings-App
+		//! libWifi instantionation
+		/*if( !Wifi_InitDefault(WFC_CONNECT) )
+			_system::debug("Wifi could not be inited! Please not that the default Firmware Settings are used to connect");*/
+		
 	
-	consoleDemoInit();
+	// ------------------------------------------------------------------------
 	
-	//! Set the VBLANK Interrupt handler
-	irqSet( IRQ_VBLANK , _system::_vblank_ );
-	
-	// Create RTA
-	_system::_runtimeAttributes_ = new _runtimeAttributes;
-	
-	// Make sure there is a file to debug to 
-	_system::_debugFile_ = new _file("/%WINDIR%/debug.txt");
-	//_system::_debugFile_->create( true );
-	
-	cpuStartTiming(1);
-	
-	//! Init Rand
-	srand( time(NULL) );
 }
 
-void _system::benchMarkStart(){
-	cpuStartTiming(true);
-}
-
-void _system::benchMarkStopPrint(){
-	printf("Ticks:%d",cpuGetTiming() );
-	cpuEndTiming();
-	submit();
+void _system::runAnimations(){
+	start:
+	for( auto animIter = _system::_animations_.begin() ; animIter != _system::_animations_.end() ; animIter++ )
+	{			
+		if( animIter->finished( _system_->getTime() ) )
+		{
+			_system::_animations_.erase( animIter );
+			goto start;
+		}
+		animIter->step( _system_->getTime() );
+	}
 }
 
 void _system::submit(){
@@ -384,66 +403,62 @@ void _system::submit(){
 		scanKeys();
 }
 
-_u32 _system::getNow(){
+_u32 _system::getTime(){
 	return cpuGetTiming()>>15;
 }
 
-void _system::setWindows( _windows* win ){
-	_system::_windows_ = win;
+void _system::executeAnimation( const _animation& anim ){
+	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
+	_system::_animations_.push_back( anim );
 }
 
-void _system::addAnimation( _animation<int>* anim ){
-	_system::_animations_.add( anim );
+void _system::executeProgram( shared_ptr<_program> prog , _cmdArgs args ){
+	_system::_programs_.push_back( make_pair( prog , args ) );
+	prog->init( _system::_windows_ , args );
 }
 
-void _system::addProgram( _program* prog ){
-	_system::_programs_.push_back( prog );
-	prog->run( _system::_windows_ );
-}
-
-vector<char> t;
-
-void _system::displayMemUsage(){
-	printf( "%d\n" , t.max_size() );
-}
-
-void _system::run(){
-	while(true){
+void _system::main(){
+	while(true)
+	{
 		_system::processEvents();
-		//displayMemUsage();
+		_system::runAnimations();
+		_system::runPrograms();
 		swiWaitForVBlank();
 	}
 }
 
-bool _system::runProgram( string qualifiedName , _cmdArgs args ){
-	if( _system::_assocPrograms_.count( qualifiedName ) ){
-		_assocPrograms_[qualifiedName]->run( _system::_windows_ );
-		return true;
+shared_ptr<_program> _system::getBuiltInProgram( string qualifiedName ){
+	if( qualifiedName == "explorer.exe" ){
+		return shared_ptr<_program>(new PROG_Explorer());
 	}
-	return false;
+	return nullptr;
 }
 
-void _system::runPrograms(){
-	for( _program* prog : _system::_programs_ )
-		prog->run( _system::_windows_ );
+void _system::runPrograms()
+{
+	start:
+	for( auto progIter = _system::_programs_.begin(); progIter != _system::_programs_.end() ; progIter++ )
+	{
+		if( progIter->first->main( progIter->second ) == 1 ){
+			_system::_programs_.erase( progIter );
+			goto start;
+		}
+	}
 };
-
-_system* _system_ = new _system;
-
 
 // Static Attributes...
 
-bool 					_system::sleeping = false;
-_animationsGroup<int> 	_system::_animations_;
-deque<_program*> 		_system::_programs_;
-_windows*				_system::_windows_ = nullptr;
-_runtimeAttributes*		_system::_runtimeAttributes_ = nullptr;
-_file*					_system::_debugFile_ = nullptr;
-map<string,_program*>	_system::_assocPrograms_ = { 
-	{"explorer.exe" , new PROG_Explorer() }
-};
+bool 							_system::sleeping = false;
+list<_animation>				_system::_animations_;
+list<pair<shared_ptr<_program>,_cmdArgs>>	_system::_programs_;
+_windows*						_system::_windows_ = nullptr;
+_runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
+_direntry						_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
 
 //! Events
-deque<_gadgetEvent> 	_system::events;
-deque<_gadgetEvent> 	_system::newEvents;
-bool _system::eventThrowable = true;
+list<_gadgetEvent>				_system::events;
+list<_gadgetEvent> 				_system::newEvents;
+bool 							_system::eventThrowable = true;
+
+// Static system...
+_system* _system_ = new _system();

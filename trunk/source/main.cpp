@@ -12,19 +12,12 @@ using namespace std;
 // Windows!!!
 #include "DSWindows.h"
 
-_windows* WIN = nullptr;
-_fileview* view = nullptr;
-
 #define METHOD(r,o,m) (r (o::*)() )(&o::m)
 
 int main(){	
 	
-	_system_->_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
-	
-	WIN = new _windows();
-	_system_->setWindows( WIN );
-	
-	_system_->runProgram( "explorer.exe" );
+	_system_->getBuiltInProgram( "explorer.exe" )->execute();
+	_system_->getBuiltInProgram( "explorer.exe" )->execute();
 	
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
 	WIN->addChild( w );
@@ -40,6 +33,8 @@ int main(){
 	_program prog = _program(a.c_str());
 	prog.run( WIN );*/
 	
-	_system_->run();
+	//_system_->_windows_->addChild( new _startMenu( 10 , 10 ) );
+	
+	_system_->main();
 	return 0;
 }

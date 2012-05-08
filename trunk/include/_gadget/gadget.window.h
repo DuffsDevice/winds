@@ -4,6 +4,7 @@
 
 #include "_type/type.gadget.h"
 #include "_type/type.bitmap.h"
+#include "_type/type.program.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.button.h"
 #include "interface.input.h"
@@ -22,6 +23,8 @@ class _window : public _gadget , public _interface_input {
 	
 	private:
 	
+		_program*	programHandle;
+		
 		_label* label;
 		
 		bool dragMe;
@@ -38,6 +41,10 @@ class _window : public _gadget , public _interface_input {
 		void onResize();
 		
 	public:
+		
+		void setProgramHandle( _program* prog ){ this->programHandle = prog; }
+		
+		_program* getProgramHandle(){ return this->programHandle; }
 		
 		void setTitle( string title ){ if( this->label ) this->label->setStrValue( title ); }
 		

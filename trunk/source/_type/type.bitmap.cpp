@@ -375,7 +375,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	
 	_length gradWidth = w;
 	_coord gradX = x;
-	_pixelArray gradTable = new _pixel[h];
+	_pixelArray gradTable = new _pixel[w];
 	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
@@ -632,6 +632,8 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data->getBitmap( x - origX , y - origY );
+	if( !copyData )
+		return;
 	_pixelArray myData	= this->getBitmap( x , y );
 	
 	_length h = y2 - y + 1;
@@ -660,6 +662,8 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data , _pixe
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data->getBitmap( x - origX , y - origY );
+	if( !copyData )
+		return;
 	_pixelArray myData	= this->getBitmap( x , y );
 	
 	_length h = y2 - y + 1;
@@ -689,6 +693,8 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data->getBitmap();
+	if( !copyData )
+		return;
 	_pixelArray myData	= &this->bmp[ y * this->width + x ];
 	
 	_length height = y2 - y + 1;
@@ -715,6 +721,8 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 	
 	// Get Data
 	_pixelArray copyData = &data->operator[]( + x - origX );
+	if( !copyData )
+		return;
 	_pixelArray myData	= &this->bmp[ y * this->width + x ];
 	
 	_length height = y2 - y + 1;

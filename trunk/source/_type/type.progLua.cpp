@@ -7,7 +7,7 @@
 **/
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.font.h"
-#include "_lua/lua.class.file.h"
+#include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.class.gadgetEventArgs.h"
@@ -87,7 +87,7 @@ _progLua::_progLua( string prog ) :
 	//! Register Base Classes
 	Lunar<_lua_rect>::Register( this->state );
 	Lunar<_lua_font>::Register( this->state );
-	Lunar<_lua_file>::Register( this->state );
+	Lunar<_lua_direntry>::Register( this->state );
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
 	Lunar<_lua_bitmapPort>::Register( this->state );
@@ -121,23 +121,18 @@ _progLua::_progLua( string prog ) :
 	}
 }
 
-bool _progLua::runInit(){
+void _progLua::init( _cmdArgs args ){
 	lua_getglobal( this->state , "init" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
 		_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
-		return false;
 	}
-	return true;
 }
 
-void _progLua::runMain(){
+int _progLua::main( _cmdArgs args ){
 	lua_getglobal( this->state , "main" );
 	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
 		_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
+		return 1;
 	}
-}
-
-void _progLua::run(){	
-	if( this->runInit() )
-		this->runMain();
+	return luaL_optint( this->state , -1 , 0 );
 }

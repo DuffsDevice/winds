@@ -10,7 +10,7 @@ using namespace std;
 
 class _label : public _gadget , public _interface_input {
 	
-	private:
+	protected:
 	
 		friend class _button;
 		friend class _checkbox;
@@ -26,11 +26,11 @@ class _label : public _gadget , public _interface_input {
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
 		_font* 	font;
 		
-		//! Refresh-Handler
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		
 		//! Method to cumpute Space-Requirements
 		void computeSize();
+		
+		//! Refresh-Handler
+		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
 	public:
 		
@@ -71,11 +71,6 @@ class _label : public _gadget , public _interface_input {
 		void setWidth( _u8 width );
 		void setDimensions( _rect dim );
 		void setHeight( _u8 height );
-
-		// Methods to tell: We want it to compute the Size on its own
-		void setWidth();
-		void setDimensions();
-		void setHeight();
 };
 
 #endif

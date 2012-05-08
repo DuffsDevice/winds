@@ -9,9 +9,6 @@ class _wifiSocketClient{
 	
 	private:
 	
-		//! Indicates whether Wifi is turned on an is connected
-		static bool	wifiInited;
-		
 		_tcpType 	mode;
 		int			sock;
 		_u16		port;

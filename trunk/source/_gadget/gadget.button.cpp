@@ -52,7 +52,7 @@ _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().isBubbleRefresh() )
+	if( event.getArgs().hasClippingRects() )
 		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
 	else
 		bP.resetClippingRects();
@@ -180,7 +180,7 @@ void _button::init( string text )
 	this->pressed = false;
 	
 	// Append it to this button
-	this->addChild( this->label );	
+	this->addChild( this->label );
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
@@ -198,14 +198,18 @@ void _button::init( string text )
 }
 
 // Methods to set Size
-void _button::setWidth( _u8 width )		{ this->computeW = 0; _gadget::setWidth( width ); }
-void _button::setDimensions( _rect dim )	{ this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim ); }
-void _button::setHeight( _u8 height )	{ this->computeH = 0; _gadget::setHeight( height ); }
-
-// Methods to tell: We want it to compute the Size on its own
-void _button::setWidth()					{ this->computeW = 2; this->computeSize(); }
-void _button::setDimensions()			{ this->computeH = 0; this->computeW = 0; this->computeSize(); }
-void _button::setHeight()				{ this->computeH = 2; this->computeSize(); }
+void _button::setWidth( _u8 width ){ 
+	if( width <= 0 ){ this->computeW = 2; this->computeSize(); return; }
+	this->computeW = 0; _gadget::setWidth( width );
+}
+void _button::setDimensions( _rect dim ){ 
+	if( !dim.isValid() ){ this->computeH = 2; this->computeW = 2; this->computeSize(); return; }
+	this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim );
+}
+void _button::setHeight( _u8 height ){
+	if( height <= 0 ){ this->computeH = 2; this->computeSize(); return; }
+	this->computeH = 0; _gadget::setHeight( height );
+}
 
 _button::_button( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::button , width , height , x , y , style )

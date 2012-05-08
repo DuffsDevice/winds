@@ -30,10 +30,6 @@ class _progLua : public _program{
 		
 		static int createWindow( lua_State* L );
 		
-		void runMain();
-		
-		bool runInit();
-		
 	
 	private:
 		
@@ -48,7 +44,9 @@ class _progLua : public _program{
 		
 		_progLua( string prog );
 		
-		void run();
+		int main( _cmdArgs args );
+		
+		void init( _cmdArgs args );
 		
 };
 

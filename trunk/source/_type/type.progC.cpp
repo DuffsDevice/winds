@@ -1,15 +1,19 @@
 #include "_type/type.progC.h"
 #include "_type/type.system.h"
 
-_progC::_progC( _progfunc init , _progfunc main ) :
+_progC::_progC( void (_progC::*init)(_cmdArgs) , int (_progC::*main)(_cmdArgs) ) :
 	_program( progC )
 	, initFunc( init )
 	, mainFunc( main )
 { }
 
-void _progC::run(){
-	if( this->initFunc )
-		(this->*initFunc)( _cmdArgs() );
+int _progC::main( _cmdArgs args ){
 	if( this->mainFunc )
-		(this->*mainFunc)( _cmdArgs() );
+		return (this->*mainFunc)( args );
+	return 0;
+}
+
+void _progC::init( _cmdArgs args ){
+	if( this->initFunc )
+		(this->*initFunc)( args );
 }
