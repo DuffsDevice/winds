@@ -1028,8 +1028,6 @@ int YsGenericPngDecoder::Decode(const char fn[])
 		fclose(fp);
 		return YSOK;
 	}
-	else
-		printf("cannot open file!");
 
 ERREND:
 	if(fp!=nullptr)

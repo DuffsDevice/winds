@@ -31,6 +31,9 @@ class _lua_rect : public _rect {
 				//! []
 				int get(lua_State* L);
 				
+				//! clear
+				int clear(lua_State* L);
+				
 				//! toRelative
 				int toRelative(lua_State* L);
 				
@@ -108,6 +111,9 @@ class _lua_rect : public _rect {
 		
 		//! OR
 		int OR(lua_State* L);
+		
+		//! intersectsWith
+		int intersectsWith(lua_State* L);
 		
 		
 		//! Lunar !//

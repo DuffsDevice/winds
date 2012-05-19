@@ -2,7 +2,7 @@ local w
 local b
 local c
 local created = false
-dw =
+local ende = 0
 
 function init()
 	-- create Gadgets
@@ -13,7 +13,7 @@ function init()
 	-- construct the Tree
 	w:addChild( b )
 	w:addChild( c )
-	registerToWindows( w )
+	System.registerWindow( w )
 
 	-- register Handler-Functions
 	w:registerEventHandler( "dragging" , dragHandler )
@@ -38,13 +38,18 @@ function dragHandler( e )
 	return "handled"
 end
 
+function main()
+	return ende
+end
+
 -- clickHandler to handle Click Events on Button1
 function clickHandler()
 	if created then
+		-- ready for garbage collection
 		b2:delete()
+		b2 = nil
 	end
 	b2 = _button( math.random( 40 ) , 45 , "Ok!" )
-	--print( b2 == b )
 	w:addChild( b2 )
 	b2:registerEventHandler( "mouseClick" , setValue )
 	created = true
@@ -53,8 +58,6 @@ end
 
 function setValue()
 	c:setIntValue( math.random( 0 , 2 ) )
+	ende = 1
 	return "handled"
 end
-
---local st,err = pcall(init)
---print(err)

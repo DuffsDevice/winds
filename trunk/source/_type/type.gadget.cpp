@@ -176,7 +176,7 @@ int _gadget::unregisterLuaEventHandler( _gadgetEventType type ){
 
 bool _gadget::blurEventChild()
 {
-	_gadget* child = this->children.back();
+	_gadget* child = *find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();});
 	
 	if( !child || !this->children.size() )
 		return false;
@@ -188,7 +188,7 @@ bool _gadget::focusEventChild( _gadget* child ){ return !child->focused && child
 
 bool _gadget::blurChild()
 {
-	_gadget* child = this->children.back();
+	_gadget* child = *find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();});
 	
 	if( !child || !this->children.size() )
 		return false;

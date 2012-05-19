@@ -24,7 +24,9 @@ class _program : public enable_shared_from_this<_program>{
 		
 	public:
 		
-		_program( _programType type ) : type( type ){}
+		bool 			autoDelete; // whether the program shall be deleted on finish
+		
+		_program( _programType type ) : type( type ) , autoDelete( true ) {}
 		
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		

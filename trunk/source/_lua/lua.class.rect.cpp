@@ -72,6 +72,8 @@ int _lua_rect::SUB(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1
 int _lua_rect::XOR(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; Lunar<_lua_area>::push( L , new _lua_area( _rect::operator^( *rc ) ) , true ); return 1; }
 //! OR
 int _lua_rect::OR(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; Lunar<_lua_area>::push( L , new _lua_area( _rect::operator|( *rc ) ) , true ); return 1; }
+//! intersectsWith
+int _lua_rect::intersectsWith(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; lua_pushboolean( L , _rect::intersectsWith( *rc ) ); return 1; }
 
 //! Lua-_rect
 const char _lua_rect::className[] = "_rect";
@@ -97,6 +99,7 @@ Lunar<_lua_rect>::RegType _lua_rect::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_rect, SUB),
   LUNAR_DECLARE_METHOD(_lua_rect, XOR),
   LUNAR_DECLARE_METHOD(_lua_rect, OR),
+  LUNAR_DECLARE_METHOD(_lua_rect, intersectsWith),
   {0,0}
 };
 
@@ -116,6 +119,8 @@ _lua_area::_lua_area( lua_State* L ) : _area() { _lua_rect* rc = Lunar<_lua_rect
 int _lua_area::insert( lua_State* L ){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) _area::push_back( *rc ); return 0; }
 //! []
 int _lua_area::get(lua_State* L){ Lunar<_lua_rect>::push( L , new _lua_rect( _area::operator[]( luaL_checkint( L , 1 ) ) ) , true ); return 1; }
+//! clear
+int _lua_area::clear(lua_State* L){ _area::clear(); return 0; }
 //! toRelative
 int _lua_area::toRelative(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) Lunar<_lua_area>::push( L , new _lua_area( _area::toRelative( *rc ) ) , true ); return 1; }
 
@@ -125,5 +130,6 @@ Lunar<_lua_area>::RegType _lua_area::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_area, insert),
   LUNAR_DECLARE_METHOD(_lua_area, get),
   LUNAR_DECLARE_METHOD(_lua_area, toRelative),
+  LUNAR_DECLARE_METHOD(_lua_area, clear),
   {0,0}
 };

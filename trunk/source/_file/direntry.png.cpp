@@ -6,8 +6,6 @@ _png::_png( string fn ) :
 {
 	int result = decoder.Decode( this->filename.c_str() );
 	
-	printf( "Result: %s\n" , this->filename.c_str() );
-	
 	if( decoder.wid > 0 && decoder.hei > 0 && decoder.rgba != NULL )
 	{
 		this->width = decoder.wid;
