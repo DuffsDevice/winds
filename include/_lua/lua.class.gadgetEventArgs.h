@@ -15,11 +15,18 @@ extern "C"{
 extern bool luaL_is( lua_State* L , int narg , string type );
 
 #define LUNAR_DECLARE_ALL_METHODS_OF(g) \
+	{"delete",&g::_delete}, \
+	LUNAR_DECLARE_METHOD(g,setPadding), \
+	LUNAR_DECLARE_METHOD(g,getPadding), \
+	LUNAR_DECLARE_METHOD(g,isEnhanced), \
+	LUNAR_DECLARE_METHOD(g,setEnhanced), \
 	LUNAR_DECLARE_METHOD(g,bubbleEvent), \
 	LUNAR_DECLARE_METHOD(g,bubbleRefresh), \
 	LUNAR_DECLARE_METHOD(g,refreshBitmap), \
 	LUNAR_DECLARE_METHOD(g,getBitmap), \
+	LUNAR_DECLARE_METHOD(g,getBitmapPort), \
 	LUNAR_DECLARE_METHOD(g,getWindows), \
+	LUNAR_DECLARE_METHOD(g,hasFocus), \
 	LUNAR_DECLARE_METHOD(g,registerEventHandler), \
 	LUNAR_DECLARE_METHOD(g,unregisterEventHandler), \
 	LUNAR_DECLARE_METHOD(g,generateEvent), \
@@ -33,19 +40,23 @@ extern bool luaL_is( lua_State* L , int narg , string type );
 	LUNAR_DECLARE_METHOD(g,getY), \
 	LUNAR_DECLARE_METHOD(g,setX), \
 	LUNAR_DECLARE_METHOD(g,setY), \
-	LUNAR_DECLARE_METHOD(g,moveTo), \
-	LUNAR_DECLARE_METHOD(g,moveRelative), \
 	LUNAR_DECLARE_METHOD(g,getParent), \
 	LUNAR_DECLARE_METHOD(g,setParent), \
 	LUNAR_DECLARE_METHOD(g,removeChild), \
+	LUNAR_DECLARE_METHOD(g,removeChildren), \
 	LUNAR_DECLARE_METHOD(g,addChild), \
 	LUNAR_DECLARE_METHOD(g,getDimensions), \
 	LUNAR_DECLARE_METHOD(g,getAbsoluteDimensions), \
+	LUNAR_DECLARE_METHOD(g,setDimensions), \
+	LUNAR_DECLARE_METHOD(g,getSize), \
 	LUNAR_DECLARE_METHOD(g,getHeight), \
 	LUNAR_DECLARE_METHOD(g,setHeight), \
 	LUNAR_DECLARE_METHOD(g,getWidth), \
 	LUNAR_DECLARE_METHOD(g,setWidth), \
-	LUNAR_DECLARE_METHOD(g,toDerived) \
+	LUNAR_DECLARE_METHOD(g,moveTo), \
+	LUNAR_DECLARE_METHOD(g,moveRelative), \
+	LUNAR_DECLARE_METHOD(g,toDerived), \
+	LUNAR_DECLARE_METHOD(g,getType) \
 
 
 /**
@@ -66,6 +77,9 @@ class _lua_gadget{
 		
 		//! Lua-Dtor
 		~_lua_gadget();
+		
+		//! Lua-Dtor
+		int _delete( lua_State* L);
 		
 		// Lua-Ctor
 		_lua_gadget( lua_State* L );
@@ -152,6 +166,9 @@ class _lua_gadget{
 				//! Check if event is a bubble-Refresh-One
 				int preventBubble(lua_State* L);
 				
+				//! Check if event has Clipping Rects
+				int hasClippingRects(lua_State* L);
+				
 				
 				//! Lunar !//
 				static const char className[];
@@ -200,10 +217,14 @@ class _lua_gadget{
 		//! refreshBitmap
 		int refreshBitmap( lua_State* );
 		
+		//! hasFocus
+		int hasFocus( lua_State* );
 		
 		//! getBitmap
 		int getBitmap( lua_State* L );
 		
+		//! getBitmapPort
+		int getBitmapPort( lua_State* L );
 		
 		//! getWindows
 		int getWindows( lua_State* L );
@@ -262,6 +283,9 @@ class _lua_gadget{
 		//! removeChild
 		int removeChild( lua_State* L );
 		
+		//! removeChildren
+		int removeChildren( lua_State* L );
+		
 		//! addChild
 		int addChild( lua_State* L );
 		
@@ -274,6 +298,18 @@ class _lua_gadget{
 		//! setDimensions
 		int setDimensions( lua_State* L );
 		
+		//! setPadding
+		int setPadding( lua_State* L );
+		
+		//! getPadding
+		int getPadding( lua_State* L );
+		
+		//! setEnhanced
+		int setEnhanced( lua_State* L );
+		
+		//! isEnhanced
+		int isEnhanced( lua_State* L );
+		
 		//! getHeight
 		int getHeight( lua_State* L );
 		
@@ -285,6 +321,12 @@ class _lua_gadget{
 		
 		//! setHeight
 		int setHeight(lua_State* L);
+		
+		//! getSize
+		int getSize( lua_State* L );
+		
+		//! getType
+		int getType( lua_State* L );
 		
 		//! toDerived !//
 		//! Method to get the lua-class of the gadget, because there is no inheritance in Lua

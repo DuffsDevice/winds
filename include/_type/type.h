@@ -154,14 +154,28 @@ enum _valign{
 	bottom
 };
 
-struct _border{
-	_length left;
-	_length top;
-	_length right;
-	_length bottom;
-	_border( _length l , _length t , _length r , _length b ) : left(l) , top(t) , right(r) , bottom(b) {}
-	_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
-	_border() : left(0) , top(0) , right(0) , bottom(0) {}
+class _border
+{
+	private:
+		_length left;
+		_length top;
+		_length right;
+		_length bottom;
+		
+	public:
+		_border( _length l , _length t , _length r , _length b ) : left(l) , top(t) , right(r) , bottom(b) {}
+		_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
+		_border() : left(0) , top(0) , right(0) , bottom(0) {}
+		
+		_length getLeft() const { return left; }
+		_length getRight() const { return right; }
+		_length getTop() const { return top; }
+		_length getBottom() const { return bottom; }
+		
+		void setLeft( _length val ){ left = val; }
+		void setRight( _length val ){ right = val; }
+		void setTop( _length val ){ top = val; }
+		void setBottom( _length val ){ bottom = val; }
 };
 
 typedef _border _padding;

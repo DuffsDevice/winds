@@ -6,5 +6,5 @@ void _program::init( _windows* w , _cmdArgs args  ){
 }
 
 void _program::execute( _cmdArgs args ){
-	_system_->executeProgram( shared_from_this() , args );
+	_system_->executeProgram( this , args );
 }

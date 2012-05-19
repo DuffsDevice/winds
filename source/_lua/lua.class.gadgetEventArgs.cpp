@@ -1,9 +1,11 @@
 #include "_lua/lua.class.gadgetEventArgs.h"
 
 #include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.class.window.h"
 #include "_lua/lua.class.button.h"
 #include "_lua/lua.class.checkbox.h"
+#include "_lua/lua.class.border.h"
 
 #include <vector>
 #include <sstream>
@@ -25,14 +27,17 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 
 _lua_gadget::_lua_gadget( _gadget* w ){ this->gadget = w; }
 
-// Lua-Ctor
+//! Lua-Ctor
 _lua_gadget::_lua_gadget( lua_State* L ){ this->gadget = new _gadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); }
 
 //! Lua-Dtor
 _lua_gadget::~_lua_gadget(){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } }
 
+//! Lua-Dtor
+int _lua_gadget::_delete( lua_State* L){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } }
+
 //! bubbleEvent
-int _lua_gadget::bubbleEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->bubbleEvent( *e , luaL_optint( L , 2 , 0 ) ); return 0; }
+int _lua_gadget::bubbleEvent(lua_State* L){ _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->bubbleEvent( *e , luaL_optint( L , 2 , 0 ) ); return 0; }
 
 //! bubbleRefresh
 int _lua_gadget::bubbleRefresh(lua_State* L){ this->gadget->bubbleRefresh( luaL_optint( L , 1 , 0 ) ); return 0; }
@@ -42,6 +47,9 @@ int _lua_gadget::refreshBitmap( lua_State* L ){ this->gadget->refreshBitmap(); r
 
 //! getBitmap
 int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _lua_bitmap( this->gadget->getBitmap() ) , true ); return 1; }
+
+//! getBitmapPort
+int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) , true ); return 1; }
 
 //! getWindows
 int _lua_gadget::getWindows( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getWindows() ) , true ); return 1; }
@@ -107,6 +115,9 @@ int _lua_gadget::setParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = thi
 //! removeChild
 int _lua_gadget::removeChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->removeChild( g->gadget ); return 0; }
 
+//! removeChildren
+int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( luaL_optint( L , 1 , 0 ) ); return 0; }
+
 //! addChild
 int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->addChild( g->gadget ); return 0; }
 
@@ -148,6 +159,27 @@ int _lua_gadget::toDerived( lua_State* L ){
 	}
 	return 0;
 }
+
+//! setPadding
+int _lua_gadget::setPadding(lua_State* L){ _lua_border* rc = Lunar<_lua_border>::check( L , 1 ); if( rc ) this->gadget->setPadding( *(_border*)rc ); return 0; }
+
+//! getPadding
+int _lua_gadget::getPadding(lua_State* L){ Lunar<_lua_border>::push( L , new _lua_border( this->gadget->getPadding() ) , true ); return 1; }
+
+//! setEnhanced
+int _lua_gadget::setEnhanced(lua_State* L){ this->gadget->setPadding( luaL_optint( L , 1 , 1 ) ); return 0; }
+
+//! isEnhanced
+int _lua_gadget::isEnhanced(lua_State* L){ lua_pushboolean( L , this->gadget->isEnhanced() ); return 1; }
+
+//! hasFocus
+int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }
+
+//! getSize
+int _lua_gadget::getSize(lua_State* L){ Lunar<_lua_rect>::push( L , new _lua_rect( this->gadget->getSize() ) , true ); return 1; }
+
+//! getType
+int _lua_gadget::getType(lua_State* L){ lua_pushstring( L , gadgetType2string[this->gadget->getType()].c_str() ); return 1; }
 
 //! Lua-_gadget
 const char _lua_gadget::className[] = "_gadget";
@@ -316,6 +348,9 @@ int _lua_gadgetEventArgs::isBubblePrevented(lua_State* L){ lua_pushboolean( L , 
 
 //! Check if event is a bubble-Refresh-One
 int _lua_gadgetEventArgs::preventBubble(lua_State* L){ _gadgetEventArgs::preventBubble( luaL_checkint( L , 1 ) ); return 0; }
+
+//! Check if event has Clipping Rects
+int _lua_gadgetEventArgs::hasClippingRects(lua_State* L){ lua_pushboolean( L , _gadgetEventArgs::hasClippingRects() ); return 1; }
 
 //! Lua-_gadgetEventArgs
 const char _lua_gadgetEventArgs::className[] = "_gadgetEventArgs";

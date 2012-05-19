@@ -21,9 +21,9 @@ extern "C"{
 #define FAT_EMULATORm
 
 typedef enum{
-	closed = 0,
-	read = 1,
-	write = 2
+	mode_closed = 0,
+	mode_read = 1,
+	mode_write = 2
 }_direntryMode;
 
 union _direntryAttributes{
@@ -88,6 +88,9 @@ class _direntry{
 		~_direntry(){
 			this->close();
 		}
+		
+		//! get mode (used to determine if the file is openend)
+		_direntryMode getMode(){ return this->mode; }
 		
 		//! Open a file. The Mode for opening is specified with mode
 		virtual bool open( const char* mode );
@@ -159,7 +162,7 @@ class _direntry{
 			this->extension = other.extension;
 			this->stat_buf = other.stat_buf;
 			this->mimeType = other.mimeType;
-			this->mode = _direntryMode::closed;
+			this->mode = _direntryMode::mode_closed;
 			return *this;
 		}
 			

@@ -36,7 +36,8 @@ void _system::shutDown(){
 void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
-	_system::_debugFile_.writeString( asctime( t ) + msg + "\n" );
+	//_system::_debugFile_.writeString( asctime( t ) + msg + "\n" );
+	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
 void _system::_vblank_(){
@@ -108,7 +109,6 @@ void _system::processInput()
 {
 	// Refresh Input
 	scanKeys();
-	
 	
 	// Touch
 	static touchPosition startTouch; // For Dragging
@@ -356,12 +356,14 @@ _system::_system()
 	// System-Attributes
 	// ------------------------------------------------------------------------
 	
-		// Make sure there is a file to debug to
-		//_system::_debugFile_->create( true );
 		
 		// Create RTA
 		_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
 		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		
+		// Make sure there is a file to debug to
+		_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
+		_system::_debugFile_.create();
 		
 		//! Create Windows
 		_system::_windows_ = new _windows();
@@ -412,14 +414,17 @@ void _system::executeAnimation( const _animation& anim ){
 	_system::_animations_.push_back( anim );
 }
 
-void _system::executeProgram( shared_ptr<_program> prog , _cmdArgs args ){
+void _system::executeProgram( _program* prog , _cmdArgs args ){
 	_system::_programs_.push_back( make_pair( prog , args ) );
 	prog->init( _system::_windows_ , args );
 }
 
 void _system::main(){
+	_direntry d = _direntry("hallo.exe");
+	d.execute();
 	while(true)
 	{
+		//printf("%d\n",_system::_debugFile_.getMode() != mode_closed );
 		_system::processEvents();
 		_system::runAnimations();
 		_system::runPrograms();
@@ -427,9 +432,9 @@ void _system::main(){
 	}
 }
 
-shared_ptr<_program> _system::getBuiltInProgram( string qualifiedName ){
+_program* _system::getBuiltInProgram( string qualifiedName ){
 	if( qualifiedName == "explorer.exe" ){
-		return shared_ptr<_program>(new PROG_Explorer());
+		return new PROG_Explorer();
 	}
 	return nullptr;
 }
@@ -440,20 +445,22 @@ void _system::runPrograms()
 	for( auto progIter = _system::_programs_.begin(); progIter != _system::_programs_.end() ; progIter++ )
 	{
 		if( progIter->first->main( progIter->second ) == 1 ){
+			if( progIter->first->autoDelete )
+				delete progIter->first;
 			_system::_programs_.erase( progIter );
 			goto start;
 		}
 	}
 };
 
-// Static Attributes...
 
+// Static Attributes...
 bool 							_system::sleeping = false;
 list<_animation>				_system::_animations_;
-list<pair<shared_ptr<_program>,_cmdArgs>>	_system::_programs_;
+list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _windows*						_system::_windows_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
-_direntry						_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
+_direntry						_system::_debugFile_ = _direntry("");
 
 //! Events
 list<_gadgetEvent>				_system::events;

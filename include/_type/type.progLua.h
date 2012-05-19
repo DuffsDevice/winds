@@ -30,9 +30,6 @@ class _progLua : public _program{
 		
 		static int createWindow( lua_State* L );
 		
-	
-	private:
-		
 		lua_State* 				state;
 		
 		string 					code;

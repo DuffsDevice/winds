@@ -55,32 +55,6 @@ _windows::_windows( _gadgetStyle style ) :
 	this->refreshBitmap();
 }
 
-
-bool _windows::blurEventChild()
-{
-	_gadget* child = *( ++this->children.rbegin() );
-	
-	if( !child || !this->children.size() )
-		return false;
-	
-	return child->hasFocus() && child->handleEvent( blur ) == _gadgetEventReturnType::use_default;
-}
-
-bool _windows::blurChild()
-{
-	_gadget* child = *( ++this->children.rbegin() );
-	
-	if( !child || !this->children.size() )
-		return false;
-	
-	if( child->hasFocus() )
-	{
-		child->hasFocus() = false;
-		return true;
-	}
-	return false;
-}
-
 bool _windows::focusChild( _gadget* child )
 {
 	//printf("Trying to Focus %s\n",gadgetType2string[child->getType()].c_str() );

@@ -35,8 +35,6 @@ class _windows : public _gadget
 		static _gadgetEventReturnType	refreshHandler( _gadgetEvent );
 		
 		bool focusChild( _gadget* child );
-		bool blurEventChild();
-		bool blurChild();
 		
 	public:		
 	

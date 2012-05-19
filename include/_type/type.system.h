@@ -23,7 +23,7 @@ class _system{
 		
 		//! Attributes
 		static list< _animation >		_animations_;
-		static list<pair<shared_ptr<_program>,_cmdArgs>> 	_programs_;
+		static list<pair<_program*,_cmdArgs>> 	_programs_;
 		static _direntry				_debugFile_;
 		
 		//! Process User Inputs
@@ -50,7 +50,7 @@ class _system{
 		
 		//! Add Thinks for execution
 		static void executeAnimation( const _animation& anim );
-		static void executeProgram( shared_ptr<_program> prog , _cmdArgs args = _cmdArgs() );
+		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() );
 		static void generateEvent( _gadgetEvent event );
 		
 	public:
@@ -62,7 +62,7 @@ class _system{
 		_system();
 		
 		//! Get a Built in Program
-		static shared_ptr<_program> getBuiltInProgram( string qualifiedName );
+		static _program* getBuiltInProgram( string qualifiedName );
 		
 		//! Get Current Time (time since system startup)
 		static _u32 getTime();
