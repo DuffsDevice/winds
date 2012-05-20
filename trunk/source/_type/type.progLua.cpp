@@ -156,27 +156,60 @@ _progLua::_progLua( string prog ) :
 	
 }
 
-void _progLua::init( _cmdArgs args ){
+void _progLua::init( _cmdArgs& args )
+{
 	lua_getglobal( this->state , "init" );
-	if( lua_isfunction( this->state , -1 ) && lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) ){
-		_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
+	
+	if( lua_isfunction( this->state , -1 ) )
+	{
+		// Create Arguments
+		lua_newtable( this->state );
+		int top = lua_gettop( this->state );
+		
+		for( _cmdArgs::iterator it = args.begin() ; it != args.end() ; ++it )
+		{
+			lua_pushstring( this->state , it->first.c_str() ); // Key
+			lua_pushstring( this->state , it->second.c_str() ); // Value
+			lua_settable( this->state , top );
+		}
+		
+		if( lua_pcall( this->state , 1 /* One Argument */ , 0 , 0 ) )
+			_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
 	}
 }
 
-int _progLua::main( _cmdArgs args )
+int _progLua::main( _cmdArgs& args )
 {
-	printf("%d\n",lua_gettop(this->state));
+	// Get Function
 	lua_getglobal( this->state , "main" );
-	if( !lua_isfunction( this->state , -1 ) )
+	
+	if( lua_isfunction( this->state , -1 ) )
 	{
-		lua_pop( this->state , 1 );
-		return 0;
+		// Create Arguments
+		lua_newtable( this->state );
+		int top = lua_gettop( this->state );
+		
+		for( _cmdArgs::iterator it = args.begin() ; it != args.end() ; ++it )
+		{
+			lua_pushstring( this->state , it->first.c_str() ); // Key
+			lua_pushstring( this->state , it->second.c_str() ); // Value
+			lua_settable( this->state , top );
+		}
+		
+		if( lua_pcall( this->state , 1 /* One Argument */ , LUA_MULTRET , 0 ) )
+			_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
 	}
-	if( lua_pcall( this->state , 0 , LUA_MULTRET , 0 ) )
-	{
-		_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
-		return 1;
-	}
-	lua_pop( this->state , 1 );
-	return luaL_optint( this->state , -1 , 0 );
+	
+	// Get Return-value
+	int t = luaL_optint( this->state , -1 , 0 );
+	
+	// Reset Lua-Stack
+	lua_settop( this->state , 0 );
+	
+	return t;
+}
+
+_progLua::~_progLua()
+{
+	lua_close( this->state );
 }

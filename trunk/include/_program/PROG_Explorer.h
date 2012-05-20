@@ -18,14 +18,15 @@ class PROG_Explorer : public _progC {
 		_textbox*	addressbar;
 		_button*	submitbutton;
 		
-		void		init( _cmdArgs );
-		int			main( _cmdArgs );
+		void		init( _cmdArgs& args );
+		int			main( _cmdArgs& args );
+		void		destruct();
 		
 		static _gadgetEventReturnType handler( _gadgetEvent event );
 		
 	public:
 		
-		PROG_Explorer( string path = "/" );
+		PROG_Explorer();
 };
 
 #endif

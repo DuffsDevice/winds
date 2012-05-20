@@ -195,6 +195,7 @@ bool _gadget::blurChild()
 		return true;
 	
 	(*child)->focused = false;
+	_system::_currentFocus_ = nullptr;
 	return true;
 }
 
@@ -211,6 +212,7 @@ bool _gadget::focusChild( _gadget* child )
 	else
 		return false;
 	
+	_system::_currentFocus_ = child;
 	child->focused = true;
 	
 	if( *itTemp == this->children.back() )
@@ -521,7 +523,8 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 			e.getArgs().setPosX( e.getArgs().getPosX() - gadget->getX() );
 			e.getArgs().setPosY( e.getArgs().getPosY() - gadget->getY() );
 			
-			if( e.getType() == mouseDown )
+			// It doesn't make sense to focus a child of some _gadget that can't be focused
+			if( e.getType() == mouseDown && ( that->focused || that->type == _gadgetType::windows ) )
 				that->focusEventChild( gadget );
 			else if( e.getType() == mouseDoubleClick && !gadget->canReactTo( mouseDoubleClick ) )
 				e.setType( mouseClick );

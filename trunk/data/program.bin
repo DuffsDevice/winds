@@ -3,7 +3,6 @@ local b
 local c
 local created = false
 local ende = 0
-local i = 0
 
 function init()
 	-- create Gadgets
@@ -43,7 +42,6 @@ function dragHandler( e )
 end
 
 function main()
-	print(i)
 	return ende
 end
 

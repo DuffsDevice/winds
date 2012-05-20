@@ -1,12 +1,15 @@
 #include "_program/PROG_Explorer.h"
 
-PROG_Explorer::PROG_Explorer( string path ) :
-	_progC( static_cast<void (_progC::*)(_cmdArgs)>( &PROG_Explorer::init) , static_cast<int (_progC::*)(_cmdArgs)>( &PROG_Explorer::main) )
-	, path( path )
+PROG_Explorer::PROG_Explorer() :
+	_progC( static_cast<void (_progC::*)(_cmdArgs&)>( &PROG_Explorer::init) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) , static_cast<int (_progC::*)(_cmdArgs&)>( &PROG_Explorer::main) )
+	, path( "/" )
 { }
 
-void PROG_Explorer::init( _cmdArgs args )
+void PROG_Explorer::init( _cmdArgs& args )
 {
+	if( args["path"].length() )
+		this->path = args["path"];
+	
 	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" );
 	this->fileview = new _fileview( 118 , 47 , 1 , 22 , this->path );
 	this->addressbar = new _textbox( 2 , 11 , 98 , this->path );
@@ -19,6 +22,18 @@ void PROG_Explorer::init( _cmdArgs args )
 	this->window->addChild( this->addressbar );
 	this->window->addChild( this->submitbutton );
 	this->windowsInstance->addChild( this->window );
+}
+
+void PROG_Explorer::destruct()
+{
+	if( this->window )
+		delete this->window;
+	if( this->fileview )
+		delete this->fileview;
+	if( this->addressbar )
+		delete this->addressbar;
+	if( this->submitbutton )
+		delete this->submitbutton;
 }
 
 _gadgetEventReturnType PROG_Explorer::handler( _gadgetEvent event )
@@ -38,7 +53,7 @@ _gadgetEventReturnType PROG_Explorer::handler( _gadgetEvent event )
 }
 
 
-int PROG_Explorer::main( _cmdArgs args )
+int PROG_Explorer::main( _cmdArgs& args )
 {
 	return 0;
 }

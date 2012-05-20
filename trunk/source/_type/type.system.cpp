@@ -139,7 +139,7 @@ void _system::processInput()
 	/*!
 	 * Just Handle the Buttons, not the Pen!
 	 **/
-	for( u8 i = 0 ; i < 16 ; ++i )
+	for( u8 i = 0 ; i < 16 && _system::_currentFocus_; ++i )
 	{
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
@@ -148,18 +148,17 @@ void _system::processInput()
 		// Increase Cycles
 		if( GETBIT( newKeys , i ) )
 		{
-			if( heldCycles[i] == 0 )
+			if( heldCycles[i] == 0 || ( _system::_runtimeAttributes_->keyRepetitionDelay && heldCycles[i] > _system::_runtimeAttributes_->keyRepetitionDelay && heldCycles[i] % _system::_runtimeAttributes_->keyRepetitionSpeed == 0 ) )
 			{
 				// Set the Args
 				args.reset();
-				args.setKeyCode( BIT(i) );
+				args.setKeyCode( libnds2key[i] );
 				args.setCurrentKeyCodes( lastKeys );
 				
 				
 				// Trigger the Event
-				_system::_windows_->handleEvent( _gadgetEvent( keyDown , args ) );
+				_system::_currentFocus_->handleEvent( _gadgetEvent( keyDown , args ) );
 			}
-			
 			
 			// Increase Cycles
 			heldCycles[i]++;
@@ -171,17 +170,17 @@ void _system::processInput()
 		{
 			// Set the Args
 			args.reset();
-			args.setKeyCode( bits[i] );
+			args.setKeyCode( libnds2key[i] );
 			args.setCurrentKeyCodes( lastKeys );
 			
 			
 			// Trigger the Event
-			_system::_windows_->handleEvent( _gadgetEvent( keyUp , args ) );
+			_system::_currentFocus_->handleEvent( _gadgetEvent( keyUp , args ) );
 			
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < _system::_runtimeAttributes_->maxClickCycles )
-				_system::_windows_->handleEvent( _gadgetEvent( keyClick , args ) );
+				_system::_currentFocus_->handleEvent( _gadgetEvent( keyClick , args ) );
 			
 			
 			// Reset Cycles
@@ -420,8 +419,8 @@ void _system::executeProgram( _program* prog , _cmdArgs args ){
 }
 
 void _system::main(){
-	_direntry d = _direntry("hallo.exe");
-	d.execute();
+	//_direntry d = _direntry("hallo.exe");
+	//d.execute();
 	while(true)
 	{
 		//printf("%d\n",_system::_debugFile_.getMode() != mode_closed );
@@ -429,14 +428,16 @@ void _system::main(){
 		_system::runAnimations();
 		_system::runPrograms();
 		swiWaitForVBlank();
-		/*consoleClear();
-		for( _gadget* g : _system::_windows_->children ){
-			printf("-%s: %s\n",gadgetType2string[g->getType()].c_str(),g->hasFocus()?"focused":"");
-			if( g->getType() == keyboard )
-				continue;
-			for( _gadget* g2 : g->children )
-				printf("  -%s: %s\n",gadgetType2string[g2->getType()].c_str(),g2->hasFocus()?"focused":"");
-		}*/
+		//
+		//if( _system::_currentFocus_ )
+		//		printf("Focused: %s\n", gadgetType2string[_system::_currentFocus_->getType()].c_str() );
+		//for( _gadget* g : _system::_windows_->children ){
+		//	printf("-%s: %s\n",gadgetType2string[g->getType()].c_str(),g->hasFocus()?"focused":"");
+		//	if( g->getType() == keyboard )
+		//		continue;
+		//	for( _gadget* g2 : g->children )
+		//		printf("  -%s: %s\n",gadgetType2string[g2->getType()].c_str(),g2->hasFocus()?"focused":"");
+		//}
 	}
 }
 
@@ -462,13 +463,14 @@ void _system::runPrograms()
 };
 
 
-// Static Attributes...
+//! Static Attributes...
 bool 							_system::sleeping = false;
 list<_animation>				_system::_animations_;
 list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _windows*						_system::_windows_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry						_system::_debugFile_ = _direntry("");
+_gadget*						_system::_currentFocus_ = nullptr;
 
 //! Events
 list<_gadgetEvent>				_system::events;

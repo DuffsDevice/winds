@@ -34,7 +34,7 @@ _lua_gadget::_lua_gadget( lua_State* L ){ this->gadget = new _gadget( luaL_check
 _lua_gadget::~_lua_gadget(){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } }
 
 //! Lua-Dtor
-int _lua_gadget::_delete( lua_State* L){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } }
+int _lua_gadget::_delete( lua_State* L){ if( this->gadget != NULL ){ delete this->gadget; this->gadget = NULL; } return 0; }
 
 //! bubbleEvent
 int _lua_gadget::bubbleEvent(lua_State* L){ _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->bubbleEvent( *e , luaL_optint( L , 2 , 0 ) ); return 0; }

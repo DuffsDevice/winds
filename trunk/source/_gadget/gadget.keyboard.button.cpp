@@ -9,19 +9,65 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 	// Receive Gadget
 	_keyboardButton* that = (_keyboardButton*)event.getGadget();
 	
-	_gadgetEvent ev = _gadgetEvent( keyClick );
-	
-	// Set Key-code
-	ev.getArgs().setKeyCode( that->key );
-	
-	if( that->getWindows() != nullptr )
-		ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
-	
-	if( that->parent != nullptr )
-		that->parent->handleEvent( ev );
-	
-	_button::mouseHandler( event );
-	
+	if( event.getType() == _gadgetEventType::mouseClick )
+	{
+		_gadgetEvent ev = keyClick;
+		
+		// Set Key-code
+		ev.getArgs().setKeyCode( that->key );
+		
+		if( that->getWindows() != nullptr )
+			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+		
+		if( that->parent != nullptr )
+			that->parent->handleEvent( ev );
+	}
+	else if( event.getType() == _gadgetEventType::mouseDown )
+	{
+		_gadgetEvent ev = keyDown;
+		
+		// Set Key-code
+		ev.getArgs().setKeyCode( that->key );
+		
+		if( that->getWindows() )
+			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+		
+		if( that->parent )
+			that->parent->handleEvent( ev );
+		
+		
+		// Start Key-Repetition
+		if( _system::_runtimeAttributes_->keyRepetitionDelay )
+		{
+			_gadgetEvent e = individual;
+			e.getArgs().setHeldTime( 0 );
+			that->triggerEvent( individual );
+		}
+		
+		return _button::mouseHandler( event );
+	}
+	else
+	{
+		if( that->isPressed() ){
+			// Trigger Event
+			_gadgetEvent e = individual;
+			e.getArgs().setHeldTime( event.getArgs().getHeldTime() + 1 );
+			that->triggerEvent( e );
+		}
+		if( _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() > _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() % _system::_runtimeAttributes_->keyRepetitionSpeed == 0 ) 
+		{
+			_gadgetEvent ev = _gadgetEvent( keyDown );
+			
+			// Set Key-code
+			ev.getArgs().setKeyCode( that->key );
+			
+			if( that->getWindows() != nullptr )
+				ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+			
+			if( that->parent != nullptr )
+				that->parent->handleEvent( ev );
+		}
+	}
 	return handled;
 }
 
@@ -33,6 +79,8 @@ void _keyboardButton::init()
 {
 	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( mouseClick , &_keyboardButton::mouseHandler );
+	this->registerEventHandler( mouseDown , &_keyboardButton::mouseHandler );
+	this->registerEventHandler( individual , &_keyboardButton::mouseHandler );
 }
 
 _keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style )

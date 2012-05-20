@@ -8,13 +8,15 @@
 #include "_type/type.bitmapAnimation.h"
 
 _runtimeAttributes::_runtimeAttributes() :
-	wallpaper( nullptr ) 
+	wallpaper( new BMP_WindowsWallpaper() ) 
 	, wallpaperView( WALLPAPER_ORIG ) 
 	, wallpaperBgColor( RGB( 7 , 13 , 20 ) )  
 	, maxClickCycles( 30 ) 
 	, maxDoubleClickCycles( 60 )
 	, maxDoubleClickArea( 6 )
 	, minDragDistance( 10 ) 
+	, keyRepetitionDelay( 35 )
+	, keyRepetitionSpeed( 3 )
 	, defaultFont( new FONT_Tahoma7() ) 
 	, startButtonText( "start" ) 
 	, windowBar( new BMP_WindowHeader() ) 

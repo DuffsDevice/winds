@@ -379,8 +379,8 @@ _u32 _direntry::getSize()
 
 bool _direntry::execute()
 {
-	if( !this->fatInited )
-		return false;
+	//if( !this->fatInited )
+	//	return false;
 	_mimeType mime = _mimeType::fromExtension( this->getExtension() );
 	switch( mime )
 	{
@@ -393,6 +393,9 @@ bool _direntry::execute()
 			prog->execute();
 			break;
 		}
+		case _mime::directory:
+			_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path",this->filename}});
+			break;
 		default:
 			return false;
 	}
