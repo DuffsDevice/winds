@@ -22,21 +22,22 @@ class _system{
 		static bool sleeping;
 		
 		//! Attributes
-		static list< _animation >		_animations_;
-		static list<pair<_program*,_cmdArgs>> 	_programs_;
-		static _direntry				_debugFile_;
-		
-		//! Process User Inputs
-		static void processInput();
+		static list< _animation >	_animations_;
+		static list<pair<_program*
+					,_cmdArgs>> 	_programs_;
+		static _direntry			_debugFile_;
+		static _gadget*				_currentFocus_;
 		
 		//! Events
-		static list<_gadgetEvent> 		events;
-		static list<_gadgetEvent> 		newEvents;
-		static bool eventThrowable;
-		
+		static bool 				eventThrowable;
+		static list<_gadgetEvent> 	events;
+		static list<_gadgetEvent> 	newEvents;
 		static void enableEventThrowing( void );
 		static void processEvents();
 		static void disableEventThrowing( void );
+		
+		//! Process User Inputs
+		static void processInput();
 		
 		static void runAnimations();
 		static void runPrograms();

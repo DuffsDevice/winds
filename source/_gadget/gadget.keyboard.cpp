@@ -120,8 +120,6 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 			that->buttons[i]->setKey( _system_->_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
 		}
 	}
-	else if( event.getArgs().getKeyCode() == DSWindows::KEY_WINDOWS )
-		1;
 	else if( that->destination != nullptr )
 		that->destination->handleEvent( event );
 	

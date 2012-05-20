@@ -24,8 +24,12 @@ map<string,_valign> string2valign = {
 	{ "bottom" , bottom }
 };
 
-_u8 libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
+_char libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
 
+bool DSWindows::isHardwareKey( _char key )
+{
+	return ( ( key > 0 && key < 8 ) || ( key > 13 && key < 19 ) );
+}
 
 map<_gadgetType,string> gadgetType2string = {
 	{ button, "button" },

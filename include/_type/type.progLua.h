@@ -22,7 +22,8 @@ extern "C"{
 using namespace std;
 
 
-class _progLua : public _program{
+class _progLua : public _program
+{
 	
 	private:
 		
@@ -41,9 +42,11 @@ class _progLua : public _program{
 		
 		_progLua( string prog );
 		
-		int main( _cmdArgs args );
+		~_progLua();
 		
-		void init( _cmdArgs args );
+		int main( _cmdArgs& args );
+		
+		void init( _cmdArgs& args );
 		
 };
 

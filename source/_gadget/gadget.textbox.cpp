@@ -75,7 +75,8 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 	
 	switch( event.getArgs().getKeyCode() ){
 		case DSWindows::KEY_BACKSPACE:
-			if( !(val.length()) ){
+		case DSWindows::KEY_B:
+			if( !(val.length()) || that->cursor < 2 ){
 				//_system_->errorTone();
 				break;
 			}
@@ -84,7 +85,15 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 			break;
 		case DSWindows::KEY_CARRIAGE_RETURN:
 			break;
+		case DSWindows::KEY_LEFT:
+			that->cursor-1 && that->cursor--;
+			break;
+		case DSWindows::KEY_RIGHT:
+			val.length() - that->cursor + 1 > 0 && that->cursor++;
+			break;
 		default:
+			if( DSWindows::isHardwareKey( event.getArgs().getKeyCode() ) )
+				break;
 			val.insert( that->cursor - 1 , 1 , event.getArgs().getKeyCode() );
 			that->cursor++;
 			break;
@@ -170,7 +179,7 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	this->registerEventHandler( blur , &_textbox::blurHandler );
 	this->registerEventHandler( refresh , &_textbox::refreshHandler );
 	this->registerEventHandler( mouseUp , &_textbox::mouseHandler );
-	this->registerEventHandler( keyClick , &_textbox::keyHandler );
+	this->registerEventHandler( keyDown , &_textbox::keyHandler );
 	this->registerEventHandler( dragStart , &_textbox::mouseHandler );
 	this->registerEventHandler( dragging , &_textbox::mouseHandler );
 	

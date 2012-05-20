@@ -133,11 +133,13 @@ namespace DSWindows
 	const char KEY_CAPS	= 19;
 	const char KEY_SHIFT = 20;
 	const char KEY_WINDOWS = 21;
+	
+	extern bool isHardwareKey( _char );
 };
 
 
 // Libnds Keys to Windows-Keys
-extern _u8 libnds2key[12];
+extern _char libnds2key[12];
 
 
 
@@ -186,6 +188,7 @@ extern map<_valign,string> valign2string;
 
 extern map<string,_align> string2align;
 extern map<string,_valign> string2valign;
+
 
 /**
  * Specifies the Type of an API-Element

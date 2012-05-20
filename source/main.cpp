@@ -32,7 +32,7 @@ _gadgetEventReturnType dragHandler( _gadgetEvent event ){
 
 int main(){	
 	
-	_system_->getBuiltInProgram( "explorer.exe" )->execute();
+	_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path","/windows/"}});
 	
 	/*_window* w = new _window( 100 , 60 , 5 , 5 , "Fenster" );
 	WIN->addChild( w );

@@ -1,7 +1,7 @@
 #include "_type/type.program.h"
 #include "_type/type.system.h"
 
-void _program::init( _windows* w , _cmdArgs args  ){
+void _program::init( _windows* w , _cmdArgs& args  ){
 	this->windowsInstance = w; this->init( args );
 }
 

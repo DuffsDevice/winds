@@ -3,16 +3,17 @@
 #define _WIN_T_PROGRAM_
 
 #include "_gadget/gadget.windows.h"
-#include <memory>
 using namespace std;
 
-typedef enum{
+typedef enum
+{
 	progLua,
 	progC,
 	progFile
 } _programType;
 
-class _program : public enable_shared_from_this<_program>{
+class _program
+{
 	
 	private:
 		
@@ -30,11 +31,11 @@ class _program : public enable_shared_from_this<_program>{
 		
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		
-		void 			init( _windows* w , _cmdArgs args  );
+		void 			init( _windows* w , _cmdArgs& args  );
 		
-		virtual int		main( _cmdArgs args ) = 0;
+		virtual int		main( _cmdArgs& args ) = 0;
 		
-		virtual void	init( _cmdArgs args ) = 0;
+		virtual void	init( _cmdArgs& args ) = 0;
 		
 };
 

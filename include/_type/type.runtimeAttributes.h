@@ -24,6 +24,8 @@ class _runtimeAttributes
 		_u8				maxDoubleClickCycles;
 		_u8				maxDoubleClickArea;
 		_u8 			minDragDistance;
+		_u8				keyRepetitionDelay;
+		_u8				keyRepetitionSpeed;
 		_font*			defaultFont;
 		string			startButtonText;
 		vector<_char>	keyboardChar[2];
