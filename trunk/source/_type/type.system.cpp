@@ -429,6 +429,14 @@ void _system::main(){
 		_system::runAnimations();
 		_system::runPrograms();
 		swiWaitForVBlank();
+		/*consoleClear();
+		for( _gadget* g : _system::_windows_->children ){
+			printf("-%s: %s\n",gadgetType2string[g->getType()].c_str(),g->hasFocus()?"focused":"");
+			if( g->getType() == keyboard )
+				continue;
+			for( _gadget* g2 : g->children )
+				printf("  -%s: %s\n",gadgetType2string[g2->getType()].c_str(),g2->hasFocus()?"focused":"");
+		}*/
 	}
 }
 

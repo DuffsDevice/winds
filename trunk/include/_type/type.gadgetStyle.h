@@ -3,7 +3,6 @@
 
 
 #include "_type/type.h"
-#include "_type/type.font.h"
 
 /**
  * Specifies the appearence of a gadget
@@ -12,7 +11,7 @@ struct _gadgetStyle{
 	bool resizable;		/** Is resizable? **/
 	bool destroyable;	/** Is destroyable? **/
 	bool editable;		/** Is editable? **/
-	_pixel windowBg;
+	bool showsUpInTaskBar; /** A Link is added to the taskbar */
 	_gadgetStyle();
 };
 

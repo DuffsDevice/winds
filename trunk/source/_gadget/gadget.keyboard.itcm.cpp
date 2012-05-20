@@ -128,6 +128,10 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	return handled;
 }
 
+_gadgetEventReturnType _keyboard::focusHandler( _gadgetEvent event ){
+	return handled;
+}
+
 _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 {
 	// Receive Gadget
@@ -242,6 +246,8 @@ _keyboard::_keyboard( _gadgetStyle style ) :
 	this->registerEventHandler( dragStart , &_keyboard::dragHandler );
 	this->registerEventHandler( dragStop , &_keyboard::dragHandler );
 	this->registerEventHandler( dragging , &_keyboard::dragHandler );
+	
+	this->registerEventHandler( focus , &_keyboard::dragHandler );
 	
 	this->addChild( this->startButton );
 	

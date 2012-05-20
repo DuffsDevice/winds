@@ -16,7 +16,7 @@ class _scrollArea : public _gadget {
 	private:
 	
 		_length		scrollX;
-		_length 	scrollY;
+		_length		scrollY;
 		
 		// Size of scrolling Area
 		_length		innerWidth;

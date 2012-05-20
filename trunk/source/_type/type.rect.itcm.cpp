@@ -53,6 +53,17 @@ bool _rect::intersectsWith( const _rect other ) const {
 	return true;
 }
 
+bool _rect::intersectsWith( const _area other ) const {
+	for( const _rect& r : other.rects )
+	{
+		if( this->x > r.getX2() || this->getX2() < r.x || this->y > r.getY2() || this->getY2() < r.y )
+			continue;
+		else
+			return true;
+	}	
+	return false;
+}
+
 _rect _rect::toRelative( const _rect rc ) const {
 	return _rect( this->x - rc.x , this->y - rc.y , this->width , this->height );
 }

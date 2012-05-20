@@ -1,4 +1,5 @@
 #include "_gadget/gadget.scrollArea.h"
+#include "_gadget/gadget.button.h"
 #include "_graphic/BMP_ScrollButtons.h"
 #include "nds/arm9/math.h"
 
@@ -8,9 +9,11 @@ const _bitmap icon_scroll_bg_ = BMP_ScrollBg_();
 void _scrollArea::addChild( _gadget* child ){
 	child->moveRelative( - this->scrollX , - this->scrollY );
 	
+	_gadget::addChild( child );
 	if( !child->isEnhanced() )
 		this->nonEnhancedChildren.push_back( child );
-	_gadget::addChild( child );
+	else
+		return;
 	
 	// Re-compute Scrollbar and innerSize
 	this->computeInnerSize();
@@ -32,6 +35,8 @@ void _scrollArea::removeChild( _gadget* child )
 		// Erase it
 		this->nonEnhancedChildren.erase( it );
 	}
+	else
+		return;
 	
 	// Re-compute Scrollbar and innerSize
 	this->computeInnerSize();
@@ -103,10 +108,19 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 	// Receive Gadget
 	_scrollArea* that = (_scrollArea*)event.getGadget();
 	
-	if( event.getType() == dragStart ){
+	static int lastX = 0;
+	static int lastY = 0;
+	
+	if( event.getType() == dragStart )
+	{
 		// fire mouseUp Event on Children
 		event.setType( mouseUp );
 		that->handleEventDefault( event );
+		
+		// Set Delta
+		lastX = event.getArgs().getPosX() + that->getAbsoluteX();
+		lastY = event.getArgs().getPosY() + that->getAbsoluteY();
+		
 		return handled;
 	}
 	else if( event.getType() == dragging )
@@ -115,7 +129,7 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 		
 		if( that->scrollTypeX != _scrollType::prevent && that->innerWidth > that->visibleWidth )
 		{
-			dX = event.getArgs().getDeltaX();
+			dX = event.getArgs().getPosX() - lastX;
 			if( dX < 0 )
 				dX = max( (int)dX , - _s16( that->innerWidth ) + _s16( that->visibleWidth + that->scrollX ) );
 			else if( dX > 0 )
@@ -128,7 +142,7 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 		
 		if( that->scrollTypeY != _scrollType::prevent && that->innerHeight > that->visibleHeight )
 		{
-			dY = event.getArgs().getDeltaY();
+			dY = event.getArgs().getPosY() - lastY;
 			if( dY < 0 )
 				dY = max( (int)dY , - _s16( that->innerHeight ) + _s16( that->visibleHeight + that->scrollY ) );
 			else if( dY > 0 )
@@ -138,6 +152,9 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 			
 			that->moveScrollHandleY();
 		}
+		
+		lastX += dX;
+		lastY += dY;
 		
 		if( dX != 0 || dY != 0 )
 		{
@@ -270,6 +287,8 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	
 	// Refresh Me
 	this->hideOrShowScrollButtons();
+	
+	//this->addChild( new _button( 30 , 120 , "HEllo" ) );
 }
 
 _scrollArea::~_scrollArea(){

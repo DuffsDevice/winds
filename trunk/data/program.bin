@@ -3,6 +3,7 @@ local b
 local c
 local created = false
 local ende = 0
+local i = 0
 
 function init()
 	-- create Gadgets
@@ -22,6 +23,9 @@ function init()
 
 	-- customize them
 	b:setAutoSelect()
+	
+	local dir = _direntry("/fat.h")
+	dir:create()
 
 end
 
@@ -39,6 +43,7 @@ function dragHandler( e )
 end
 
 function main()
+	print(i)
 	return ende
 end
 

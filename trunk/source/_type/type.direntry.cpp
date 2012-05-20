@@ -386,8 +386,9 @@ bool _direntry::execute()
 	{
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
-			/*string pro = (const char*)program_bin;
-			pro.resize( program_bin_size );*/
+			//string pro = (const char*)program_bin;
+			//pro.resize( program_bin_size );
+			//_program* prog = new _progLua( pro );
 			_program* prog = new _progLua( this->readString() );
 			prog->execute();
 			break;
