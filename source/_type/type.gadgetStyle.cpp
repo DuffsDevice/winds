@@ -4,7 +4,7 @@ _gadgetStyle::_gadgetStyle() :
 	resizable(false)
 	, destroyable(true)
 	, editable(true)
-	, windowBg( RGB( 29 , 29 , 27 ) )
+	, showsUpInTaskBar(false)
 { }
 
 _gadgetStyle _defaultStyle_;

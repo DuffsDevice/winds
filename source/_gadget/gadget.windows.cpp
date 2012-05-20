@@ -57,6 +57,7 @@ _windows::_windows( _gadgetStyle style ) :
 
 bool _windows::focusChild( _gadget* child )
 {
+	//return _gadget::focusChild( child );
 	//printf("Trying to Focus %s\n",gadgetType2string[child->getType()].c_str() );
 	
 	if( !child )
@@ -70,7 +71,7 @@ bool _windows::focusChild( _gadget* child )
 	else
 		return false;
 	
-	child->hasFocus() = true;
+	child->focused = true;
 	
 	if( child->getType() == _gadgetType::desktop || *itTemp == *( ++this->children.rbegin() ) )
 		return true;

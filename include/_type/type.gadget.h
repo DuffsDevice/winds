@@ -34,7 +34,7 @@ class _gadget{
 		
 		static bool removeEnhanced( _gadget* g );
 	
-	protected:
+	public:
 	
 		// Attributes
 		_padding	padding;
@@ -115,7 +115,7 @@ class _gadget{
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() );
+		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() ) ITCM_CODE;
 		
 		/**
 		 * Method to refresh itself
@@ -294,12 +294,12 @@ class _gadget{
 		/**
 		 * Move the Gadget relatively to its current position
 		**/
-		void moveTo( _coord dX , _coord dY );
+		void moveTo( _coord dX , _coord dY ) ITCM_CODE;
 		
 		/**
 		 * Relative moving fo the Gadget
 		**/
-		void moveRelative( _s16 deltaX , _s16 deltaY );
+		void moveRelative( _s16 deltaX , _s16 deltaY ) ITCM_CODE;
 		
 		/**
 		 * Set Height " " "

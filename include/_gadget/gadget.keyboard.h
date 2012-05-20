@@ -44,6 +44,7 @@ class _keyboard : public _gadget {
 		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
 		static _gadgetEventReturnType keyHandler( _gadgetEvent event );
 		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
+		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
 	
 	public:
 	

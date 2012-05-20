@@ -74,6 +74,8 @@ map<string,_gadgetEventType> string2eventType = {
 	{ "refresh" , refresh },
 	{ "individual" , individual },
 	{ "change" , change },
+	{ "blur" , blur },
+	{ "focus" , focus },
 	{ "all" , all }
 };
 
@@ -98,6 +100,8 @@ map<_gadgetEventType,string> eventType2string = {
 	{ refresh , "refresh" },
 	{ individual , "individual" },
 	{ change , "change" },
+	{ blur , "blur" },
+	{ focus , "focus" },
 	{ all , "all" }
 };
 

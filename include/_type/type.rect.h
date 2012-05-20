@@ -21,6 +21,8 @@ class _rect{
 		
 		class _area
 		{
+			friend class _rect;
+			
 			private:
 				
 				vector<_rect> rects;
@@ -182,7 +184,8 @@ class _rect{
 		_rect operator-( const _padding p ) const ;
 		_rect& operator-=( const _padding p );
 		
-		bool intersectsWith( _rect other ) const ;
+		bool intersectsWith( const _rect other ) const ;
+		bool intersectsWith( const _area other ) const;
 };
 
 typedef _rect::_area _area;

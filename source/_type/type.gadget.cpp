@@ -1,5 +1,6 @@
 #include "_type/type.gadget.h"
 #include "_type/type.system.h"
+#include <nds.h>
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
 	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , enhanced( false ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
@@ -106,8 +107,8 @@ void _gadget::bubbleRefresh( bool includeThis , _gadgetEvent e )
 	// Bubble!
 	if( this->parent != nullptr )
 	{
-		_rect size = this->parent->getSize();
-		if( size.intersectsWith( this->dimensions ) )
+		_rect size = this->parent->getAbsoluteDimensions();
+		if( size.intersectsWith( e.getArgs().getDamagedRects() ) )
 			this->parent->bubbleRefresh( true , e );
 	}
 }
@@ -176,29 +177,25 @@ int _gadget::unregisterLuaEventHandler( _gadgetEventType type ){
 
 bool _gadget::blurEventChild()
 {
-	_gadget* child = *find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();});
+	_gadgetList::iterator child = find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();} );
 	
-	if( !child || !this->children.size() )
-		return false;
+	if( child == this->children.end() || !this->children.size() )
+		return true;
 	
-	return child->focused && child->handleEvent( blur ) == _gadgetEventReturnType::use_default;
+	return !(*child)->focused || (*child)->handleEvent( blur ) == _gadgetEventReturnType::handled;
 }
 
-bool _gadget::focusEventChild( _gadget* child ){ return !child->focused && child->handleEvent( focus ) == _gadgetEventReturnType::use_default; }
+bool _gadget::focusEventChild( _gadget* child ){ if( !child ) return false; return child->focused || child->handleEvent( focus ) == _gadgetEventReturnType::handled; }
 
 bool _gadget::blurChild()
 {
-	_gadget* child = *find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();});
+	_gadgetList::iterator child = find_if( this->children.begin() , this->children.end() , [](_gadget* g)->bool{return g->hasFocus();} );
 	
-	if( !child || !this->children.size() )
-		return false;
-	
-	if( child->focused )
-	{
-		child->focused = false;
+	if( child == this->children.end() || !this->children.size() )
 		return true;
-	}
-	return false;
+	
+	(*child)->focused = false;
+	return true;
 }
 
 bool _gadget::focusChild( _gadget* child )
@@ -619,17 +616,23 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 _gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent e )
 {
 	_gadget* that = e.getGadget();
+	
 	if( !that->parent )
 		return not_handled;
+	
+	//printf("-%s ",eventType2string[e.getType()].c_str());
+	//printf(",%s\n",gadgetType2string[that->getType()].c_str() );
 	
 	switch( e.getType() )
 	{
 		case focus:
-			//printf("Focus-Event %s\n",gadgetType2string[that->getType()].c_str() );
-			return _gadgetEventReturnType( that->parent->focusChild( that ) );
+			that->parent->focusChild( that );
+			return handled;
 			break;
 		case blur:
-			return _gadgetEventReturnType( that->parent->blurChild() );
+			that->parent->blurChild();
+			that->blurEventChild();
+			return handled;
 			break;
 		default:
 			break;
