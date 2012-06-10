@@ -312,6 +312,11 @@ class _gadget{
 		void setWidth( _length val );
 		
 		/**
+		 * Get the toppest child owned by the parent
+		**/
+		_gadget* getToppestChild();
+		
+		/**
 		 * Get the Type of the Gadget (enum)
 		 * @see type.h:111
 		**/

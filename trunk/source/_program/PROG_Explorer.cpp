@@ -11,11 +11,11 @@ void PROG_Explorer::init( _cmdArgs& args )
 		this->path = args["path"];
 	
 	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" );
-	this->fileview = new _fileview( 118 , 47 , 1 , 22 , this->path );
-	this->addressbar = new _textbox( 2 , 11 , 98 , this->path );
-	this->submitbutton = new _button( 17 , 10 , 101 , 11 , "->" );
+	this->fileview = new _fileview( 118 , 47 , 0 , 12 , this->path );
+	this->addressbar = new _textbox( 1 , 1 , 98 , this->path );
+	this->submitbutton = new _button( 17 , 10 , 100 , 1 , "->" );
 	
-	this->submitbutton->registerEventHandler( individual , PROG_Explorer::handler );
+	this->submitbutton->registerEventHandler( "listener" , PROG_Explorer::handler );
 	
 	this->window->setProgramHandle( this );
 	this->window->addChild( this->fileview );

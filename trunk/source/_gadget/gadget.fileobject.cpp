@@ -16,12 +16,13 @@ _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 	// Receive Gadget
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
-	if( event.getType() == focus )
+	if( event.getType() == "focus" )
 	{
 		that->label->setBgColor( RGB255( 10 , 36 , 106 ) );
 		that->label->setColor( COLOR_WHITE );
 	}
-	else{
+	else
+	{
 		that->label->setBgColor( COLOR_WHITE );
 		that->label->setColor( COLOR_BLACK );
 	}
@@ -46,12 +47,12 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	this->bitmap->reset( NO_COLOR );
 	
 	// Register Handlers
-	this->registerEventHandler( dragging , &_fileobject::dragHandler );
-	this->registerEventHandler( dragStart , &_fileobject::dragHandler );
-	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
-	this->registerEventHandler( focus , &_fileobject::focusHandler );
-	this->registerEventHandler( blur , &_fileobject::focusHandler );
-	this->registerEventHandler( mouseDoubleClick , &_fileobject::doubleClickHandler );
+	this->registerEventHandler( "dragging" , &_fileobject::dragHandler );
+	this->registerEventHandler( "dragStart" , &_fileobject::dragHandler );
+	this->registerEventHandler( "dragStop" , &_fileobject::dragHandler );
+	this->registerEventHandler( "focus" , &_fileobject::focusHandler );
+	this->registerEventHandler( "blur" , &_fileobject::focusHandler );
+	this->registerEventHandler( "mouseDoubleClick" , &_fileobject::doubleClickHandler );
 	
 	switch( this->viewType )
 	{

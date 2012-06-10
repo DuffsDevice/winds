@@ -56,7 +56,7 @@ int _lua_gadget::getWindows( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
-	_gadgetEventType t = string2eventType[ luaL_checkstring( L , 1 ) ];
+	_gadgetEventType t = luaL_checkstring( L , 1 );
 	if( lua_isfunction( L , -1 ) ){
 		int i = luaL_ref(L, LUA_REGISTRYINDEX);
 		this->gadget->registerLuaEventHandler( t , i , L ); 
@@ -65,7 +65,7 @@ int _lua_gadget::registerEventHandler( lua_State* L ){
 }
 
 //! unregisterEventHandler
-int _lua_gadget::unregisterEventHandler( lua_State* L ){ _gadgetEventType t = string2eventType[ luaL_checkstring( L , 1 ) ]; luaL_unref(L, LUA_REGISTRYINDEX , this->gadget->unregisterLuaEventHandler( t ) ); return 0; }
+int _lua_gadget::unregisterEventHandler( lua_State* L ){ _gadgetEventType t = luaL_checkstring( L , 1 ); luaL_unref(L, LUA_REGISTRYINDEX , this->gadget->unregisterLuaEventHandler( t ) ); return 0; }
 
 //! generateEvent
 int _lua_gadget::generateEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->generateEvent( *e ); return 0; }
@@ -74,7 +74,7 @@ int _lua_gadget::generateEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_
 int _lua_gadget::triggerEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->triggerEvent( *e ); return 0; }
 
 //! canReactTo
-int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->canReactTo( string2eventType[ luaL_checkstring( L , 1 ) ] ) ); return 1; }
+int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->canReactTo( luaL_checkstring( L , 1 ) ) ); return 1; }
 
 //! handleEvent
 int _lua_gadget::handleEvent( lua_State* L ){ _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEvent( *e ) ].c_str() ); return 1; }
@@ -205,7 +205,7 @@ _lua_gadgetEvent::_lua_gadgetEvent( lua_State* L ) : _gadgetEvent( ){
 	// _gadgetEvent( type , args )
 	if( string("string") == luaL_typename( L , 1 ) )
 	{
-		_gadgetEvent::setType( string2eventType[ luaL_checkstring( L , 1 ) ] );
+		_gadgetEvent::setType( luaL_checkstring( L , 1 ) );
 		
 		if( luaL_is( L , 2 , "_gadgetEventArgs" ) ){
 			_lua_gadgetEventArgs* ea = Lunar<_lua_gadgetEventArgs>::check( L , 2 );
@@ -224,7 +224,7 @@ _lua_gadgetEvent::_lua_gadgetEvent( lua_State* L ) : _gadgetEvent( ){
 		// Is a gadgetEventType?
 		if( string("string") == luaL_typename( L , 2 ) )
 		{
-			_gadgetEvent::setType( string2eventType[ luaL_checkstring( L , 2 ) ] );
+			_gadgetEvent::setType( luaL_checkstring( L , 2 ) );
 			
 			// Additionally args?
 			if( luaL_is( L , 3 , "_gadgetEventArgs" ) )
@@ -239,10 +239,10 @@ _lua_gadgetEvent::_lua_gadgetEvent( lua_State* L ) : _gadgetEvent( ){
 }
 
 //! setType
-int _lua_gadgetEvent::setType( lua_State* L ){ _gadgetEvent::setType( string2eventType[ luaL_checkstring( L , 1 ) ] ); return 0; }
+int _lua_gadgetEvent::setType( lua_State* L ){ _gadgetEvent::setType( luaL_checkstring( L , 1 ) ); return 0; }
 
 //! getType
-int _lua_gadgetEvent::getType( lua_State* L ){ lua_pushstring( L , eventType2string[ _gadgetEvent::getType() ].c_str() ); return 1; }
+int _lua_gadgetEvent::getType( lua_State* L ){ lua_pushstring( L , _gadgetEvent::getType().c_str() ); return 1; }
 
 //! getArgs
 int _lua_gadgetEvent::getArgs( lua_State* L ){ Lunar<_lua_gadgetEventArgs>::push( L , new _lua_gadgetEventArgs( _gadgetEvent::getArgs() ) , true ); return 1; }

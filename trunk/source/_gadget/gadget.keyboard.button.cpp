@@ -9,9 +9,9 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 	// Receive Gadget
 	_keyboardButton* that = (_keyboardButton*)event.getGadget();
 	
-	if( event.getType() == _gadgetEventType::mouseClick )
+	if( event.getType() == "mouseClick" )
 	{
-		_gadgetEvent ev = keyClick;
+		_gadgetEvent ev = _gadgetEvent( "keyClick" );
 		
 		// Set Key-code
 		ev.getArgs().setKeyCode( that->key );
@@ -22,9 +22,9 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		if( that->parent != nullptr )
 			that->parent->handleEvent( ev );
 	}
-	else if( event.getType() == _gadgetEventType::mouseDown )
+	else if( event.getType() == "mouseDown" )
 	{
-		_gadgetEvent ev = keyDown;
+		_gadgetEvent ev = _gadgetEvent( "keyDown" );
 		
 		// Set Key-code
 		ev.getArgs().setKeyCode( that->key );
@@ -39,9 +39,9 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		// Start Key-Repetition
 		if( _system::_runtimeAttributes_->keyRepetitionDelay )
 		{
-			_gadgetEvent e = individual;
+			_gadgetEvent e = _gadgetEvent( "repeater" );
 			e.getArgs().setHeldTime( 0 );
-			that->triggerEvent( individual );
+			that->triggerEvent( _gadgetEvent( "repeater" ) );
 		}
 		
 		return _button::mouseHandler( event );
@@ -50,13 +50,13 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 	{
 		if( that->isPressed() ){
 			// Trigger Event
-			_gadgetEvent e = individual;
+			_gadgetEvent e = _gadgetEvent( "repeater" );
 			e.getArgs().setHeldTime( event.getArgs().getHeldTime() + 1 );
 			that->triggerEvent( e );
 		}
 		if( _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() > _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() % _system::_runtimeAttributes_->keyRepetitionSpeed == 0 ) 
 		{
-			_gadgetEvent ev = _gadgetEvent( keyDown );
+			_gadgetEvent ev = _gadgetEvent( _gadgetEvent( "keyDown" ) );
 			
 			// Set Key-code
 			ev.getArgs().setKeyCode( that->key );
@@ -77,10 +77,10 @@ void _keyboardButton::setKey( _key key ){ this->key = key; }
 
 void _keyboardButton::init()
 {
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( mouseClick , &_keyboardButton::mouseHandler );
-	this->registerEventHandler( mouseDown , &_keyboardButton::mouseHandler );
-	this->registerEventHandler( individual , &_keyboardButton::mouseHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "mouseClick" , &_keyboardButton::mouseHandler );
+	this->registerEventHandler( "mouseDown" , &_keyboardButton::mouseHandler );
+	this->registerEventHandler( "repeater" , &_keyboardButton::mouseHandler );
 }
 
 _keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style )
@@ -96,6 +96,7 @@ _keyboardButton::_keyboardButton( _key key , _coord x , _coord y , string text ,
 // ---------------------------- //
 
 _bitmap* _keyboardStartButton::startButton = new BMP_StartButton();
+_bitmap* _keyboardStartButton::startButtonPressed = new BMP_StartButtonPressed();
 
 _gadgetEventReturnType _keyboardStartButton::mouseHandler( _gadgetEvent event ){
 	
@@ -104,7 +105,7 @@ _gadgetEventReturnType _keyboardStartButton::mouseHandler( _gadgetEvent event ){
 	
 	that->startMenu->toggle( that->getAbsoluteX() , that->getAbsoluteY() );
 	
-	return handled;
+	return _button::mouseHandler( event );
 
 }
 
@@ -120,21 +121,27 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 	else
 		bP.resetClippingRects();
 	
-	bP.copy( 0 , 0 , that->startButton );
+	if( that->isPressed() || that->startMenu->isOpened() )
+		bP.copy( 0 , 0 , that->startButtonPressed );
+	else
+		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
 	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , _system_->_runtimeAttributes_->startButtonText , RGB( 30 , 30 , 30 ) );
 	
-	return handled;
+	if( event.getType() == "dialogClose" )
+		that->bubbleRefresh();
+	
+	return use_default;
 }
 
 _keyboardStartButton::_keyboardStartButton( _coord x , _coord y , _gadgetStyle style ) :
-	_gadget( 38 , 10 , x , y ,  style )
-	, startMenu( new _startMenu() )
+	_button( 38 , 10 , x , y , "" , style )
+	, startMenu( new _startMenu( this ) )
 {
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( mouseClick , &_keyboardStartButton::mouseHandler );
-	this->registerEventHandler( refresh , &_keyboardStartButton::refreshHandler );
+	this->registerEventHandler( "mouseClick" , &_keyboardStartButton::mouseHandler );
+	this->registerEventHandler( "refresh" , &_keyboardStartButton::refreshHandler );
+	this->registerEventHandler( "dialogClose" , &_keyboardStartButton::refreshHandler );
 	
 	this->refreshBitmap();
 }

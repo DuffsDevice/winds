@@ -82,7 +82,7 @@ _scrollButton::_scrollButton( _scrollButtonType type , _coord x , _coord y , _le
 		this->setWidth( length );
 	
 	// Reister Event Handlers...
-	this->registerEventHandler( refresh , &_scrollButton::refreshHandler );
+	this->registerEventHandler( "refresh" , &_scrollButton::refreshHandler );
 	
 	// Refresh my bitmap
 	this->refreshBitmap();

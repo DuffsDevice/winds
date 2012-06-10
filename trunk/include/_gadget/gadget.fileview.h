@@ -6,7 +6,6 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileobject.h"
-#include <string>
 
 class _fileview : public _scrollArea {
 	

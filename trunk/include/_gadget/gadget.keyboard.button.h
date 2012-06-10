@@ -25,12 +25,13 @@ class _keyboardButton : public _button {
 		_keyboardButton( _key key , _coord x , _coord y , string text , _gadgetStyle style = _defaultStyle_ );
 };
 
-class _keyboardStartButton : public _gadget {
+class _keyboardStartButton : public _button {
 	
 	private:
 	
 		//! Images...
 		static _bitmap* startButton;
+		static _bitmap* startButtonPressed;
 		
 		_startMenu*		startMenu;
 		

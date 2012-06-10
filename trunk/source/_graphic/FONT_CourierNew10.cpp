@@ -1153,7 +1153,7 @@ const unsigned char FONT_CourierNew10_width[94] = {
 };
 
 FONT_CourierNew10::FONT_CourierNew10( unsigned char fixedWidth )
-: _font (
+: _memoryfont (
 	"Courier New",
 	33,
 	126,

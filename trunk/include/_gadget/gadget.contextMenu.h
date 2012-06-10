@@ -3,6 +3,9 @@
 
 #include "_type/type.h"
 #include "_type/type.gadget.h"
+#include <map>
+
+typedef map<_s32,string> _contextMenuEntryList;
 
 class _contextMenu : public _gadget{
 	
@@ -10,8 +13,12 @@ class _contextMenu : public _gadget{
 		
 		static _gadgetEventReturnType blurHandler( _gadgetEvent e );
 		
-		_align			xDir;
-		_valign			yDir;
+		_align			xDir; // can either be left or right
+		_valign			yDir; // Can either bo top or bottom
+		
+		_gadget*		owner;
+		
+		bool			opened;
 		
 	public:
 		
@@ -21,7 +28,16 @@ class _contextMenu : public _gadget{
 		
 		void toggle( _coord x , _coord y );
 		
-		_contextMenu( _length width , _length height , _gadgetStyle style = _defaultStyle_ );
+		bool isOpened();
+		
+		void setOwner( _gadget* owner );
+		
+		// For ContextMenu entries to close the cM and submit their value
+		void closeAndSend( _s32 intValue = -1 , string strValue = "" );
+		
+		_gadget* getOwner();
+		
+		_contextMenu( _length width , _length height , _gadget* owner , _gadgetStyle style = _defaultStyle_ );
 		
 };
 

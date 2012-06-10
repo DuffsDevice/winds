@@ -21,6 +21,7 @@ _runtimeAttributes::_runtimeAttributes() :
 	, startButtonText( "start" ) 
 	, windowBar( new BMP_WindowHeader() ) 
 	, fileObjectHeight( 10 ) //10
+	, selectObjectHeight( 8 ) //10
 	, showFileExtension( true )
 	, userLogo( nullptr )
 	, userImage( nullptr )

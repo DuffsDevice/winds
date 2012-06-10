@@ -89,7 +89,7 @@ public:
   }
 
   // push onto the Lua stack a userdata containing a pointer to T object
-  static int push(lua_State *L, T *obj, bool gc=false) {
+  static int push(lua_State *L, T *obj, bool gc=true) {
     if (!obj) { lua_pushnil(L); return 0; }
     luaL_getmetatable(L, T::className);  // lookup metatable in Lua registry
     if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", T::className);
@@ -121,7 +121,7 @@ public:
       static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
     if(!ud) {
 		printf("Arg. #%d is bad; expected %s\n",narg,T::className);
-		while(true);
+		//while(true);
         luaL_typerror(L, narg, T::className);
         return nullptr;
     }
@@ -152,11 +152,11 @@ private:
 
   // garbage collection metamethod
   static int gc_T(lua_State *L) {
-    if (luaL_getmetafield(L, 1, "do not trash")) {
+    /*if (luaL_getmetafield(L, 1, "do not trash")) {
       lua_pushvalue(L, 1);  // dup userdata
       lua_gettable(L, -2);
       if (!lua_isnil(L, -1)) return 0;  // do not delete object
-    }
+    }*/
     userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
     T *obj = ud->pT;
     if (obj) delete obj;  // call destructor for T objects

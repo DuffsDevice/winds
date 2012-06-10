@@ -37,17 +37,18 @@ _gadgetEventReturnType _checkbox::dragHandler( _gadgetEvent event )
 	// Receive Gadget
 	_checkbox* that = (_checkbox*)event.getGadget();
 	
-	if( event.getType() == dragStart )
+	if( event.getType() == "dragStart" )
 		return handled;
-	else if( event.getType() == dragging ){
-		
+	
+	else if( event.getType() == "dragging" )
+	{	
 		if( !that->getAbsoluteDimensions().contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
 		{
 			// I'm not pressed anymore!
 			that->pressed = false;
 			
 			// Refresh my parents
-			that->handleEvent( refresh );
+			that->bubbleRefresh( true );
 		}
 		return handled;
 	}
@@ -60,24 +61,17 @@ _gadgetEventReturnType _checkbox::mouseHandler( _gadgetEvent event )
 	// Receive Gadget
 	_checkbox* that = (_checkbox*)event.getGadget();
 	
-	switch( event.getType() )
-	{
-		case mouseDown:
+	if( event.getType() == "mouseDown" )
 			that->pressed = true;
-			break;
-		case mouseUp:
-			if( that->pressed ){
-				that->setIntValue( ! bool(that->getIntValue()) );
-				that->handleEvent( change );
-				that->pressed = false;
-			}
-			break;
-		default:
-			break;
+	else if( that->pressed && event.getType() == "mouseUp" )
+	{
+		that->setIntValue( ! bool(that->getIntValue()) );
+		that->triggerEvent( _gadgetEvent( "change" ) );
+		that->pressed = false;
 	}
 	
 	// Refresh
-	that->handleEvent( refresh );
+	that->bubbleRefresh( true );
 	
 	return handled;
 }
@@ -90,12 +84,12 @@ _checkbox::_checkbox( _coord x , _coord y , _gadgetStyle style ) :
 	this->setIntValue(0);
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_checkbox::refreshHandler );
-	this->registerEventHandler( mouseDown , &_checkbox::mouseHandler );
-	this->registerEventHandler( mouseUp , &_checkbox::mouseHandler );
-	this->registerEventHandler( dragStart , &_checkbox::dragHandler );
-	this->registerEventHandler( dragging , &_checkbox::dragHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "refresh" , &_checkbox::refreshHandler );
+	this->registerEventHandler( "mouseDown" , &_checkbox::mouseHandler );
+	this->registerEventHandler( "mouseUp" , &_checkbox::mouseHandler );
+	this->registerEventHandler( "dragStart" , &_checkbox::dragHandler );
+	this->registerEventHandler( "dragging" , &_checkbox::dragHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

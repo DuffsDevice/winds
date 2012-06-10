@@ -10,6 +10,8 @@
 
 #include "nds/arm9/math.h"
 
+class _font;
+
 //! A Wrapper-Class to store a BMP-Field
 class _bitmap
 {
@@ -323,7 +325,7 @@ class _bitmap
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
 		**/
-		_u8 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color);
+		_u16 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color);
 		
 		/**
 		 * Draw a String to a specific Position

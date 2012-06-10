@@ -40,10 +40,11 @@
 
 //! Constructor
 _windows::_windows( _gadgetStyle style ) :
-	_gadget( _gadgetType::windows , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style , true )
+	_gadget( _gadgetType::windows , SCREEN_WIDTH , SCREEN_HEIGHT * 2, 0 , 0 , style , true )
 {	
 	//! Set my bitmap
-	this->bitmap = new _bitmap( BG_GFX , SCREEN_WIDTH , SCREEN_HEIGHT );
+	this->bitmap = new _bitmap( BG_GFX , SCREEN_WIDTH, 256 );
+	this->bitmap->reset( RGB( 31, 31 , 31 ) );
 	
 	//! Allocate new taskboard
 	this->taskboard = new _keyboard();

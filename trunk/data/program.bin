@@ -51,6 +51,7 @@ function clickHandler()
 		-- ready for garbage collection
 		b2:delete()
 		b2 = nil
+		collectgarbage( "collect" )
 	end
 	b2 = _button( math.random( 40 ) , 45 , "Ok!" )
 	w:addChild( b2 )

@@ -1,5 +1,5 @@
 #include "_lua/lua.class.label.h"
-#include "_lua/lua.class.font.h"
+//#include "_lua/lua.class.font.h"
 
 /*##################################
 ##            Lua-Label           ##
@@ -29,14 +29,17 @@ int _lua_label::getBgColor( lua_State* L ){
 }
 
 int _lua_label::setFont( lua_State* L ){
-	_font* f = Lunar<_lua_font>::check( L , 1 )->font;
+	/*_font* f = Lunar<_lua_font>::check( L , 1 )->font;
 	if( f )
 		((_label*)this->gadget)->setFont( f );
-	return 0;
+	return 0;*/
+	//! TODO: implement
 }
 
 int _lua_label::getFont( lua_State* L ){
-	Lunar<_lua_font>::push( L , new _lua_font( ((_label*)this->gadget)->getFont() ) , true ); return 1;
+	//Lunar<_lua_font>::push( L , new _lua_font( ((_label*)this->gadget)->getFont() ) , true ); return 1;
+	return 0;
+	//!TODO: implement
 }
 
 //! Lua-window

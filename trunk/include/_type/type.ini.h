@@ -2,30 +2,37 @@
 #define _WIN_T_INI_
 
 #include <stdio.h>
-#include <string>
 #include <map>
 #include <sstream>
 using namespace std;
 
 #include "_type/type.h"
 
-class _ini{
+typedef map<string,map<string,string>> _iniStructure;
+
+class _ini
+{
 	
 	private:
 		
 		static void trim( string& );
 		
-		istringstream str;
+		istringstream input;
+		string output;
 		
-		map<string,string> array;
+		_iniStructure array;
 		
 	public:
 		
-		bool parse();
+		bool read();
 		
-		_ini( string str ) : str( str ) { }
+		void write();
 		
-		map<string,string>& getMap();
+		_ini( string str ) : input( str ), output( "" ) { }
+		
+		_iniStructure& getMap();
+		
+		string&	getString();
 		
 };
 

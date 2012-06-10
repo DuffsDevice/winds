@@ -4,7 +4,7 @@ _png::_png( string fn ) :
 	_bitmap( nullptr , 0 , 0 )
 	, _direntry( fn )
 {
-	int result = decoder.Decode( this->filename.c_str() );
+	decoder.Decode( this->filename.c_str() );
 	
 	if( decoder.wid > 0 && decoder.hei > 0 && decoder.rgba != NULL )
 	{

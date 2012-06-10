@@ -2,12 +2,12 @@
 #define _FONT_TAHOMA7_
 
 #include "_type/type.h"
-#include "_type/type.font.h"
+#include "_type/type.memoryfont.h"
 
 /**
  * FONT_Tahoma7 font.
  */
-class FONT_Tahoma7 : public _font {
+class FONT_Tahoma7 : public _memoryfont {
 	
 	public:
 

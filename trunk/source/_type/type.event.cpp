@@ -7,7 +7,7 @@ using namespace std;
 _gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _gadgetEventArgs args ){
 	this->type = type;
 	this->args = args;
-	this->args.setSource( src );
+	this->args.src = src;
 }
 
 _gadgetEvent::_gadgetEvent( _gadgetEventType type , _gadgetEventArgs args ){
@@ -15,19 +15,20 @@ _gadgetEvent::_gadgetEvent( _gadgetEventType type , _gadgetEventArgs args ){
 	this->args = args;
 }
 
-_gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _area damagedRects , _gadgetEventArgs args ){
-	this->type = type;
-	this->args = args;
-	this->args.setDamagedRects( damagedRects );
-	this->args.preventBubble( true );
-	this->args.setSource( src );
+_gadgetEvent _gadgetEvent::refreshEvent( _gadget* src , _area damagedRects , _gadgetEventArgs args ){
+	_gadgetEvent e = _gadgetEvent( src , "refresh" , args );
+	e.args.damagedRects = damagedRects;
+	e.args.bubble = true;
+	e.args.src = src;
+	return e;
 }
 
-_gadgetEvent::_gadgetEvent( _gadget* src , _gadgetEventType type , _gadget* dest , _gadgetEventArgs args ){
-	this->type = type;
-	this->args = args;
-	this->args.setDestination( dest );
-	this->args.setSource( src );
+_gadgetEvent _gadgetEvent::dialogClose( _gadget* src , _s32 intValue , string strValue , _gadgetEventArgs args ){
+	_gadgetEvent e = _gadgetEvent( src , "dialogClose" , args );
+	e.args.src = src;
+	e.args.intValue = intValue;
+	e.args.strValue = strValue;
+	return e;
 }
 
 void _gadgetEvent::setType( _gadgetEventType type ){
@@ -38,10 +39,6 @@ _gadgetEventType _gadgetEvent::getType(){
 	return this->type;
 }
 
-const string _gadgetEvent::getTypeString(){
-	return eventType2string[ this->type ];
-}
-
 void _gadgetEvent::setArgs( _gadgetEventArgs args ){
 	this->args = args;
 }
@@ -50,59 +47,14 @@ _gadgetEventArgs& _gadgetEvent::getArgs(){
 	return this->args;
 }
 
-void _gadgetEvent::dump(){
-	printf("d_event:%s",this->getTypeString().c_str());
-	this->args.dump();
-}
-
 void _gadgetEvent::setGadget( _gadget* that ){ this->that = that; }
 
 _gadget* _gadgetEvent::getGadget(){ return this->that; }
-
-map<string,_gadgetEventType> string2eventType = {
-	{ "none" , none },
-	{ "mouseClick" , mouseClick },
-	{ "mouseDown" , mouseDown },
-	{ "mouseUp" , mouseUp },
-	{ "mouseDoubleClick" , mouseDoubleClick },
-	{ "keyDown" , keyDown },
-	{ "keyUp" , keyUp },
-	{ "keyClick" , keyClick },
-	{ "dragging" , dragging },
-	{ "dragStart" , dragStart },
-	{ "dragStop" , dragStop },
-	{ "refresh" , refresh },
-	{ "individual" , individual },
-	{ "change" , change },
-	{ "blur" , blur },
-	{ "focus" , focus },
-	{ "all" , all }
-};
 
 map<string,_gadgetEventReturnType> string2eventReturnType = {
 	{ "handled" , handled },
 	{ "use_default" , use_default },
 	{ "not_handled" , not_handled },
-};
-
-map<_gadgetEventType,string> eventType2string = {
-	{ none , "none" },
-	{ mouseClick , "mouseClick" },
-	{ mouseDown , "mouseDown" },
-	{ mouseUp , "mouseUp" },
-	{ mouseDoubleClick , "mouseDoubleClick" },
-	{ keyDown , "keyDown" },
-	{ keyUp , "keyUp" },
-	{ keyClick , "keyClick" },
-	{ dragging , "dragging" },
-	{ dragStart , "dragStart" },
-	{ dragStop , "dragStop" },
-	{ refresh , "refresh" },
-	{ individual , "individual" },
-	{ change , "change" },
-	{ blur , "blur" },
-	{ focus , "focus" },
-	{ all , "all" }
 };
 
 map<_gadgetEventReturnType,string> eventReturnType2string = {

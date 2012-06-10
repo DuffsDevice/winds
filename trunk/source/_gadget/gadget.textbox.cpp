@@ -131,9 +131,11 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 {
 	_textbox* that = (_textbox*)event.getGadget();
 	
-	if( event.getType() == dragStart )
+	if( event.getType() == "dragStart" )
 		return handled;
-	else if( event.getType() == dragging ){
+	
+	else if( event.getType() == "dragging" )
+	{
 		if( !that->getAbsoluteDimensions().contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
 			that->pressed = false;
 		else
@@ -142,7 +144,7 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 	
 	_coord position = event.getArgs().getPosX();
 	
-	if( event.getType() == dragging )
+	if( event.getType() == "dragging" )
 		position -= that->getAbsoluteX();
 	
 	position = max( 0 , (int)position );
@@ -174,14 +176,14 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	_label::setColor( RGB( 3 , 3 , 3 ) );
 	
 	// Regsiter Handling Functions for events
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( focus , &_textbox::focusHandler );
-	this->registerEventHandler( blur , &_textbox::blurHandler );
-	this->registerEventHandler( refresh , &_textbox::refreshHandler );
-	this->registerEventHandler( mouseUp , &_textbox::mouseHandler );
-	this->registerEventHandler( keyDown , &_textbox::keyHandler );
-	this->registerEventHandler( dragStart , &_textbox::mouseHandler );
-	this->registerEventHandler( dragging , &_textbox::mouseHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "focus" , &_textbox::focusHandler );
+	this->registerEventHandler( "blur" , &_textbox::blurHandler );
+	this->registerEventHandler( "refresh" , &_textbox::refreshHandler );
+	this->registerEventHandler( "mouseUp" , &_textbox::mouseHandler );
+	this->registerEventHandler( "keyDown" , &_textbox::keyHandler );
+	this->registerEventHandler( "dragStart" , &_textbox::mouseHandler );
+	this->registerEventHandler( "dragging" , &_textbox::mouseHandler );
 	
 	// Refresh Myself
 	this->refreshBitmap();

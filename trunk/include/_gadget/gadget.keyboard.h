@@ -5,9 +5,6 @@
 #include "_type/type.gadget.h"
 #include "_type/type.animation.h"
 #include "_gadget/gadget.keyboard.button.h"
-#include <string>
-
-using namespace std;
 
 class _keyboardButton;
 
@@ -45,6 +42,8 @@ class _keyboard : public _gadget {
 		static _gadgetEventReturnType keyHandler( _gadgetEvent event );
 		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
 		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
+		
+		void setState( int val );
 	
 	public:
 	

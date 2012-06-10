@@ -125,7 +125,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	_interface_input::setStrValue( text );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , &_label::refreshHandler );
+	this->registerEventHandler( "refresh" , &_label::refreshHandler );
 	
 	// Refresh
 	this->refreshBitmap();
@@ -143,8 +143,8 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	_interface_input::setStrValue( text );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_label::refreshHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "refresh" , &_label::refreshHandler );
 	
 	// Refresh
 	this->computeSize();

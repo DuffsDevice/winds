@@ -8,17 +8,22 @@
 #include "_type/type.progC.h"
 #include "_type/type.event.h"
 #include "_type/type.runtimeAttributes.h"
+#include "_type/type.registry.h"
+#include "_type/type.freetypefont.h"
 #include "_gadget/gadget.windows.h"
 #include "fat.h"
 
 #include <tr1/memory>
 
+#include "_freetype/freetypefacemanager.h"
+#include "_freetype/freetypecache.h"
 #include <list>
 
 class _system{
 	
 	private:
 		
+		friend class _freetypefont;
 		static bool sleeping;
 		
 		//! Attributes
@@ -27,6 +32,8 @@ class _system{
 					,_cmdArgs>> 	_programs_;
 		static _direntry			_debugFile_;
 		static _gadget*				_currentFocus_;
+		static FreeTypeFaceManager* _faceTypeManager_;
+		static FreeTypeCache* 		_faceTypeCache_;
 		
 		//! Events
 		static bool 				eventThrowable;
@@ -57,6 +64,7 @@ class _system{
 	public:
 	
 		static _windows*				_windows_;
+		static _registry*				_registry_;
 		static _runtimeAttributes*		_runtimeAttributes_;
 		
 		// Constructor

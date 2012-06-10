@@ -12,7 +12,7 @@ class _startMenu : public _contextMenu{
 	
 	public:
 	
-		_startMenu( _gadgetStyle style = _defaultStyle_ );
+		_startMenu( _gadget* owner , _gadgetStyle style = _defaultStyle_ );
 
 };	
 

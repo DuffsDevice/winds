@@ -8,7 +8,7 @@ extern "C"{
 	#include "_lua/lualib.h"
 }
 #include "_lua/lunar.h"
-#include "_lua/lua.class.font.h"
+//#include "_lua/lua.class.font.h"
 #include "_lua/lua.class.rect.h"
 #include "_type/type.bitmapPort.h"
 
