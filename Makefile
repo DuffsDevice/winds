@@ -18,12 +18,15 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/_graphic source/_gadget source/_lua source/_program source/_type source/_file source/_file/_fat source/_wifi
+SOURCES		:=	source source/_graphic source/_gadget source/_lua source/_program source/_type source/_file source/_file/_fat source/_wifi source/_freetype
 INCLUDES	:=	include
 DATA		:=	data  
 GRAPHICS	:=	gfx
 
 GAME_ICON	:= $(CURDIR)/../icon.bmp
+GAME_TITLE  := WinDS
+GAME_SUBTITLE1 := Windows for DS
+GAME_SUBTITLE2 := palmato.com/WinDS/
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -37,7 +40,7 @@ CFLAGS	:=	-g -Wall -O2\
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -Wno-sign-compare
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3 -Wextra
-## C++0x:   -std=c++11; -std=gnu++11;
+## C++0x:   -std=gnu++0x;
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -45,7 +48,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lFatLib -ldswifi9 -lLua -lnds9
+LIBS	:=  -lFatLib -ldswifi9 -lFreetype -lLua -lnds9
  
  
 #---------------------------------------------------------------------------------

@@ -126,9 +126,9 @@ _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 	// Receive Gadget
 	_button* that = (_button*)event.getGadget();
 	
-	if( event.getType() == dragStart )
+	if( event.getType() == "dragStart" )
 		return handled;
-	else if( event.getType() == dragging ){
+	else if( event.getType() == "dragging" ){
 		
 		if( !that->getAbsoluteDimensions().contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
 		{
@@ -149,18 +149,13 @@ _gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
 	// Receive Gadget
 	_button* that = (_button*)event.getGadget();
 	
-	switch( event.getType() )
+	if( event.getType() == "mouseDown" )
+		that->pressed = true;
+	else if( event.getType() == "mouseUp" )
 	{
-		case mouseDown:
-			that->pressed = true;
-			break;
-		case mouseUp:
-			if( that->pressed )
-				that->handleEvent( individual );
-			that->pressed = false;
-			break;
-		default:
-			break;
+		if( that->pressed )
+			that->handleEvent( _gadgetEvent( "listener" ) );
+		that->pressed = false;
 	}
 	
 	// Refresh
@@ -183,12 +178,12 @@ void _button::init( string text )
 	this->addChild( this->label );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_button::refreshHandler );
-	this->registerEventHandler( mouseDown , &_button::mouseHandler );
-	this->registerEventHandler( mouseUp , &_button::mouseHandler );
-	this->registerEventHandler( dragStart , &_button::dragHandler );
-	this->registerEventHandler( dragging , &_button::dragHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "refresh" , &_button::refreshHandler );
+	this->registerEventHandler( "mouseDown" , &_button::mouseHandler );
+	this->registerEventHandler( "mouseUp" , &_button::mouseHandler );
+	this->registerEventHandler( "dragStart" , &_button::dragHandler );
+	this->registerEventHandler( "dragging" , &_button::dragHandler );
 	
 	// Compute the necesary Width
 	this->computeSize();

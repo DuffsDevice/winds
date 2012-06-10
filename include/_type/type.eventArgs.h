@@ -5,6 +5,8 @@
 #include "type.rect.h"
 #include <stdio.h>
 
+class _gadgetEvent;
+
 /**
  * Specifies the Type of an Event
 **/
@@ -12,6 +14,7 @@ class _gadgetEventArgs
 {
 	private:
 		
+		friend class _gadgetEvent;
 		void* 	src;			 //! Triggering Gadget not defined sometimes
 		void* 	dest;			 //! Gadget to receive the Event
 		_coord 	posX;			 //! X-Position of the Mouse when the Event was triggered
@@ -24,13 +27,17 @@ class _gadgetEventArgs
 		_area	damagedRects;	 //! If (isBubbleRefresh) is true then this Attribute will specify the Area, that is invalid/damaged and has to be repainted
 		bool	bubble;	 		 //! If 'true', all events needed for informing the parents are already thrown, no need to throw the again
 		
+		//! Optional parameters
+		string	strValue;
+		_s32	intValue;
+		
 	public:
 		
 		//! Constructors
 		_gadgetEventArgs( void* dest = nullptr );
 		
 		//! Reset All Arguments
-		void reset();
+		void reset( void* dest = nullptr );
 		
 		//! Get Destination Gadget
 		void* getDestination();
@@ -101,7 +108,9 @@ class _gadgetEventArgs
 		//! Check if the Event crops the area to be painted to
 		bool hasClippingRects();
 		
-		void dump();
+		//! Receive optional Parameters
+		_s32 getIntValue();
+		string getStrValue();
 };
 
 #endif

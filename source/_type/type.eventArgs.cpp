@@ -1,20 +1,12 @@
 #include "_type/type.eventArgs.h"
 
 _gadgetEventArgs::_gadgetEventArgs( void* dest ){
-	this->src = nullptr;
-	this->dest = dest;
-	this->posX = 0;
-	this->posY = 0;
-	this->keyCode = 0;
-	this->currentKeyCodes = 0;
-	this->heldTime = 0;
-	this->bubble = false;
-	this->damagedRects = _area();
+	this->reset( dest );
 }
 
-void _gadgetEventArgs::reset(){
+void _gadgetEventArgs::reset( void* dest ){
 	this->src = nullptr;
-	this->dest = nullptr;
+	this->dest = dest;
 	this->posX = 0;
 	this->posY = 0;
 	this->keyCode = 0;
@@ -70,7 +62,6 @@ void _gadgetEventArgs::preventBubble( bool bR ){ this->bubble = bR; }
 
 bool _gadgetEventArgs::hasClippingRects(){ return !this->damagedRects.empty(); }
 
+_s32 _gadgetEventArgs::getIntValue(){ return this->intValue; }
 
-void _gadgetEventArgs::dump(){
-	printf("d_eargs: iB:%d,X:%d,Y:%d\n",this->bubble,this->posX,this->posY);
-}
+string _gadgetEventArgs::getStrValue(){ return this->strValue; }

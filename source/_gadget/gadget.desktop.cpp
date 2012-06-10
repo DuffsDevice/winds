@@ -1,5 +1,6 @@
 #include "_gadget/gadget.desktop.h"
 #include "_type/type.system.h"
+#include "_type/type.freetypefont.h"
 #include <nds/arm9/console.h>
 
 _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
@@ -35,7 +36,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 _desktop::_desktop( _gadgetStyle style ) :
 	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
 {
-	this->registerEventHandler( refresh , &_desktop::refreshHandler );
+	this->registerEventHandler( "refresh" , &_desktop::refreshHandler );
 	// Refresh
 	this->refreshBitmap();
 }

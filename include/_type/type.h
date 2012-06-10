@@ -4,10 +4,8 @@
 
 #include <string>
 #include <map>
-
 using namespace std;
 
-typedef unsigned int _length;
 typedef short int _coord;
 typedef unsigned char _char;
 typedef uint8_t _u8;
@@ -18,11 +16,14 @@ typedef uint32_t _u32;
 typedef int32_t _s32;
 typedef uint64_t _u64;
 typedef int64_t _s64;
+typedef _u32 _length;
 typedef unsigned short int _key;
 typedef bool _bit;
 typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
+
+typedef basic_string<char> _string;
 
 typedef map<string,string> _cmdArgs;
 
@@ -198,6 +199,7 @@ enum _gadgetType{
 	label,
 	checkbox,
 	textbox,
+	selectbox,
 	keyboard,
 	desktop,
 	fileobject,
@@ -207,7 +209,7 @@ enum _gadgetType{
 	window,
 	windows,
 	contextmenu,
-	_plain // No type set
+	_plain // No type set (is probably not used)
 };
 
 extern map<_gadgetType,string> gadgetType2string;

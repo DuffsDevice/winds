@@ -48,8 +48,8 @@
 
 }
 
-_startMenu::_startMenu( _gadgetStyle style ) :
-	_contextMenu( 110 , 110 , style )
+_startMenu::_startMenu( _gadget* owner , _gadgetStyle style ) :
+	_contextMenu( 110 , 110 , owner , style )
 {
 	// Reset Bitmap
 	this->bitmap->reset( COLOR_WHITE );
@@ -70,7 +70,7 @@ _startMenu::_startMenu( _gadgetStyle style ) :
 	this->addChild( usrName );
 	
 	// Registering Event Handlers
-	this->registerEventHandler( refresh , _startMenu::refreshHandler );
+	this->registerEventHandler( "refresh" , _startMenu::refreshHandler );
 	
 	// Refresh...
 	this->refreshBitmap();

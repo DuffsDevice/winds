@@ -161,8 +161,10 @@ inline bool _direntry::openread(){
 	return this->open( "rb" ) && (this->mode = _direntryMode::mode_read ); // Open for read, do not create
 }
 
-inline bool _direntry::openwrite(){
-	return this->open( "rb+" ) && (this->mode = _direntryMode::mode_write); // Open for read & write, do not create
+inline bool _direntry::openwrite( bool erase ){
+	if( !this->exists )
+		return false;
+	return this->open( erase ? "wb+" : "rb+" ) && (this->mode = _direntryMode::mode_write); // Open for read & write, do not create
 }
 
 inline bool _direntry::create()
@@ -379,6 +381,7 @@ _u32 _direntry::getSize()
 
 bool _direntry::execute()
 {
+	//!TODO: remove Comment
 	//if( !this->fatInited )
 	//	return false;
 	_mimeType mime = _mimeType::fromExtension( this->getExtension() );
@@ -386,10 +389,15 @@ bool _direntry::execute()
 	{
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
-			//string pro = (const char*)program_bin;
-			//pro.resize( program_bin_size );
-			//_program* prog = new _progLua( pro );
-			_program* prog = new _progLua( this->readString() );
+			_program* prog = nullptr;
+			if( true )
+			{
+				string pro = (const char*)program_bin;
+				pro.resize( program_bin_size );
+				prog = new _progLua( pro );
+			}
+			else
+				prog = new _progLua( this->readString() );
 			prog->execute();
 			break;
 		}

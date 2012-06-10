@@ -15,7 +15,7 @@ class _imagegadget : public _gadget {
 		
 	public:
 		
-		void setImage( const _bitmap* img ){ this->img = img; this->setWidth( img->getWidth() ); this->setHeight( img->getHeight() ); this->triggerEvent( refresh ); }
+		void setImage( const _bitmap* img ){ this->img = img; this->setWidth( img->getWidth() ); this->setHeight( img->getHeight() ); this->bubbleRefresh( true ); }
 		
 		const _bitmap* getImage(){ return this->img; }
 		

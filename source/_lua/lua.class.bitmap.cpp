@@ -107,7 +107,7 @@ int _lua_bitmap::drawFilledEllipse( lua_State* L ){ this->bm->drawFilledEllipse(
 
 //! drawChar
 int _lua_bitmap::drawChar( lua_State* L ){ 
-	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
+	/*_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	lua_pushnumber( L , this->bm->drawChar( 
@@ -116,12 +116,13 @@ int _lua_bitmap::drawChar( lua_State* L ){
 		f ,
 		luaL_checkstring( L , 4 )[0] ,
 		luaL_checkint( L , 5 ) 
-	) ); return 1;
+	) ); return 1;*/
+	//! TODO: implement
 }
 	
 //! drawString
 int _lua_bitmap::drawString( lua_State* L ){ 
-	_font* f = Lunar<_lua_font>::check( L , 3 )->font;
+	/*_font* f = Lunar<_lua_font>::check( L , 3 )->font;
 	if( !f )
 		return 0;
 	this->bm->drawString( 
@@ -130,7 +131,8 @@ int _lua_bitmap::drawString( lua_State* L ){
 		f ,
 		luaL_checkstring( L , 4 ) ,
 		luaL_checkint( L , 5 ) 
-	); return 0; 
+	); return 0; */
+	//! TODO: implement
 }
 
 //! copy

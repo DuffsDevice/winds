@@ -5,9 +5,6 @@
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.label.h"
 #include "interface.input.h"
-#include <string>
-
-using namespace std;
 
 class _textbox : public _label {
 	

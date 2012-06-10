@@ -8,7 +8,7 @@ extern "C"{
 	#include "_lua/lualib.h"
 }
 #include "_lua/lunar.h"
-#include "_type/type.font.h"
+#include "_type/type.freetypefont.h"
 
 /**
  * Proxy Classes
@@ -17,10 +17,10 @@ class _lua_font{
 	
 	public:
 		
-		_font*	font;
+		_freetypefont*	font;
 		
 		//! Ctor
-		_lua_font( _font* f );
+		_lua_font( _freetypefont* f );
 		
 		//! Lua-Ctor
 		_lua_font( lua_State* L );

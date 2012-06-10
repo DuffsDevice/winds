@@ -3,12 +3,18 @@
 #include "_type/type.animation.h"
 #include "_type/type.system.h"
 
+#include <nds.h>
+
+const int sStart = 0;
+const int sSwap = 13;
+const int sEnd = 49;
+
 //! Screen_Height etc...
 #include "nds/arm9/console.h"
 
 #include "_graphic/BMP_Background.h"
 
-_bitmap* _keyboard::bg = new BMP_Background();
+//_bitmap* _keyboard::bg = new BMP_Background();
 
 _rect _keyboard::buttonDimensions[]{
 	_rect( 2 , 2 , 22 , 18 ), // 1
@@ -59,26 +65,35 @@ _rect _keyboard::buttonDimensions[]{
 	_rect( 221 , 82 , 33 , 18 ) // Shift
 };
 
+void _keyboard::setState( int value )
+{
+	bgSetScrollf( 3 , 0 , int(value*1.32) << 8 );
+	bgUpdate();
+	
+	// Move it relatively
+	this->moveTo( 0 , SCREEN_HEIGHT - 10 - value/1.32 );
+}
+
 void _keyboard::setDestination( _gadget* dest )
 {
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr && this->destination->getParent() != nullptr )
-		this->destination->triggerEvent( blur );
+		this->destination->triggerEvent( _gadgetEvent( "blur" ) );
 	
 	this->destination = dest;
 	
 	//! If not already visible
 	if( !this->mode && dest )
 	{
-		this->anim.setFromValue( this->getY() );
-		this->anim.setToValue( SCREEN_HEIGHT - 112 );
+		this->anim.setFromValue( sStart );
+		this->anim.setToValue( sEnd );
 		this->anim.start();
 		this->mode = true;
 	}
 	else if( this->mode && !dest )
 	{
-		this->anim.setFromValue( this->getY() );
-		this->anim.setToValue( SCREEN_HEIGHT - 9 );
+		this->anim.setFromValue( sEnd );
+		this->anim.setToValue( sStart );
 		this->anim.start();
 		this->mode = false;
 	}
@@ -97,7 +112,7 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 		bP.resetClippingRects();
 	
 	bP.copyHorizontalStretch( 33 , 0 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
-	bP.copy( 0 , 10 , that->bg );
+	//bP.copy( 0 , 10 , that->bg );
 	
 	return use_default;
 }
@@ -107,7 +122,7 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	// Receive Gadget
 	_keyboard* that = (_keyboard*)event.getGadget();
 	
-	if( event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
+	if( event.getType() == "keyClick" && event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
 	{
 		if( that->shift == 2 )
 			return handled;
@@ -137,7 +152,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 	
 	static int deltaY = 0;
 	
-	if( event.getType() == dragStart )
+	if( event.getType() == "dragStart" )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
 		if( event.getArgs().getPosY() > 11 )
@@ -154,7 +169,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		// If y is on the windowbar, drag Me!
 		return handled;
 	}
-	else if( event.getType() == dragging )
+	else if( event.getType() == "dragging" )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -169,36 +184,35 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( event.getArgs().getDeltaY() == 0 )
 			return handled;
 		
-		// Move it relatively
-		that->moveTo( 0 , max( SCREEN_HEIGHT - 112 , 0 - deltaY + event.getArgs().getPosY() ) );
+		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY )/2 , sEnd , sStart ) );
 		
 		// Return
 		return handled;
 	}
-	else if( event.getType() == dragStop )
+	else if( event.getType() == "dragStop" )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
 		if( !that->dragMe )
 			return use_default;
-			
-		that->anim.setFromValue( that->getY() );
 		
-		_coord toValue = SCREEN_HEIGHT - 112;
-		if( ( that->mode == true && event.getArgs().getPosY() + that->getAbsoluteY() > SCREEN_HEIGHT - 80 ) || ( that->mode == false && event.getArgs().getPosY() + that->getAbsoluteY() > SCREEN_HEIGHT - 30 ) )
-			toValue = SCREEN_HEIGHT - 9;
+		_u8 state = mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY )/2 , sEnd , sStart );
 		
-		that->mode = (SCREEN_HEIGHT - 112 == toValue ) ? true : false ;
+		that->anim.setFromValue( state );
 		
-		if( !that->mode )
-		{
+		if( ( that->mode == true && state < sEnd - sSwap ) || ( that->mode == false && state < sStart + sSwap ) ){
+			that->anim.setToValue( sStart );
+			that->mode = false;
 			// Altes Ziel den Fokus wieder nehmen
 			if( that->destination != nullptr && that->destination->getParent() != nullptr )
-				that->destination->triggerEvent( blur );
+				that->destination->triggerEvent( _gadgetEvent( "blur" ) );
 			that->destination = nullptr;
 		}
+		else{
+			that->anim.setToValue( sEnd );
+			that->mode = true;
+		}
 		
-		that->anim.setToValue( toValue );
 		that->anim.start();
 		
 		// Return
@@ -232,20 +246,20 @@ _keyboard::_keyboard( _gadgetStyle style ) :
 	
 	//! Animations
 	this->anim.setEasing( _animation::_bounce::easeOut );
-	this->anim.setter( [&]( int y ){ this->setY( y ); } );	
+	this->anim.setter( [&]( int y ){ this->setState( y ); } );
 	
 	//! Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_keyboard::refreshHandler );
-	this->registerEventHandler( keyDown , &_keyboard::keyHandler );
-	this->registerEventHandler( keyUp , &_keyboard::keyHandler );
-	this->registerEventHandler( keyClick , &_keyboard::keyHandler );
+	this->unregisterEventHandler( "mouseDoubleClick" );
+	this->registerEventHandler( "refresh" , &_keyboard::refreshHandler );
+	this->registerEventHandler( "keyDown" , &_keyboard::keyHandler );
+	this->registerEventHandler( "keyUp" , &_keyboard::keyHandler );
+	this->registerEventHandler( "keyClick" , &_keyboard::keyHandler );
 	
-	this->registerEventHandler( dragStart , &_keyboard::dragHandler );
-	this->registerEventHandler( dragStop , &_keyboard::dragHandler );
-	this->registerEventHandler( dragging , &_keyboard::dragHandler );
+	this->registerEventHandler( "dragStart" , &_keyboard::dragHandler );
+	this->registerEventHandler( "dragStop" , &_keyboard::dragHandler );
+	this->registerEventHandler( "dragging" , &_keyboard::dragHandler );
 	
-	this->registerEventHandler( focus , &_keyboard::dragHandler );
+	this->registerEventHandler( "focus" , &_keyboard::dragHandler );
 	
 	this->addChild( this->startButton );
 	

@@ -574,36 +574,10 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-_u8 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color)
+_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color )
 {
-	
-	if( ch == ' ' )
-		return font->getCharacterWidth(' ');
-	
-	const _bit *data 	= font->getCharacterData( ch );
-	_length height 		= font->getHeight();
-	_length width 		= font->getCharacterWidth( ch );
-	_length ms 			= font->isMonospace();
-	
-	// Check for transparent
-	if( !RGB_GETA(color) )
-		goto end;
-	
-	if( ms != 0 && width <= ms - 2 )
-		x0++;
-	if( ms != 0 && width <= ms - 4 )
-		x0++;
-	
-	for( int x = 0; x < width ; ++x ){
-		for( int y = 0; y < height ; y++ ){
-			if( data[ y * width + x ] )
-				this->drawPixel( x0 + x , y0 + y , color );
-		}
-	}
-	end: // Breakpoint
-	if( ms != 0 )
-		return ms;
-	return width;
+	// Let the font do the hard work!
+	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect );
 }
 
 void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color)
@@ -612,10 +586,12 @@ void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pi
 	if( !RGB_GETA(color) )
 		return;
 	
-	_coord left = 0;
-	_coord pos = 0;
-	while( pos < str.size() )
-		left += 1 + this->drawChar(x0 + left , y0 , font , str[pos++] , color );
+	for( const _char& ch : str )
+	{
+		if( x0 > this->activeClippingRect.getX2() )
+			break;
+		x0 += 1 + this->drawChar(x0 , y0 , font , ch , color );
+	}
 }
 
 void _bitmap::copy( _coord x , _coord y , const _bitmap* data )

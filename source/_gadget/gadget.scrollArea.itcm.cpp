@@ -6,7 +6,8 @@
 const _bitmap icon_scroll_bg = BMP_ScrollBg();
 const _bitmap icon_scroll_bg_ = BMP_ScrollBg_();
 
-void _scrollArea::addChild( _gadget* child ){
+void _scrollArea::addChild( _gadget* child )
+{
 	child->moveRelative( - this->scrollX , - this->scrollY );
 	
 	_gadget::addChild( child );
@@ -108,13 +109,15 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 	// Receive Gadget
 	_scrollArea* that = (_scrollArea*)event.getGadget();
 	
+	_s16 dY = 0 , dX = 0;
+	
 	static int lastX = 0;
 	static int lastY = 0;
 	
-	if( event.getType() == dragStart )
+	if( event.getType() == "dragStart" )
 	{
 		// fire mouseUp Event on Children
-		event.setType( mouseUp );
+		event.setType( "mouseUp" );
 		that->handleEventDefault( event );
 		
 		// Set Delta
@@ -123,15 +126,17 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 		
 		return handled;
 	}
-	else if( event.getType() == dragging )
+	else if( event.getType() == "dragging" )
 	{
-		_s16 dY = 0 , dX = 0;
 		
 		if( that->scrollTypeX != _scrollType::prevent && that->innerWidth > that->visibleWidth )
 		{
 			dX = event.getArgs().getPosX() - lastX;
 			if( dX < 0 )
-				dX = max( (int)dX , - _s16( that->innerWidth ) + _s16( that->visibleWidth + that->scrollX ) );
+			{
+				if( that->scrollX - dX > _s16( that->innerWidth ) + _s16( that->visibleWidth + that->scrollX ) )
+					dX = 4/dX;
+			}
 			else if( dX > 0 )
 				dX = min( dX , _s16( that->scrollX ) );
 			
@@ -279,16 +284,13 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	this->computeInnerSize();
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , &_scrollArea::refreshHandler );
+	this->registerEventHandler( "refresh" , &_scrollArea::refreshHandler );
 
-	this->registerEventHandler( dragStart , &_scrollArea::dragHandler );
-	this->registerEventHandler( dragging , &_scrollArea::dragHandler );
-	this->registerEventHandler( dragStop , &_scrollArea::dragHandler );
+	this->registerEventHandler( "dragStart" , &_scrollArea::dragHandler );
+	this->registerEventHandler( "dragging" , &_scrollArea::dragHandler );
 	
 	// Refresh Me
 	this->hideOrShowScrollButtons();
-	
-	//this->addChild( new _button( 30 , 120 , "HEllo" ) );
 }
 
 _scrollArea::~_scrollArea(){

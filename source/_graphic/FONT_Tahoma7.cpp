@@ -867,7 +867,7 @@ static const unsigned char FONT_Tahoma7_width[94] = {
  4, 3, 4, 3, 4, 4, 5, 3, 4, 4, 3, 1, 3, 4
 };
 
-FONT_Tahoma7::FONT_Tahoma7( unsigned char fixedWidth ) : _font (
+FONT_Tahoma7::FONT_Tahoma7( unsigned char fixedWidth ) : _memoryfont (
 	"Tahoma",
 	33,
 	126,

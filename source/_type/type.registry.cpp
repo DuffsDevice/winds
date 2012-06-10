@@ -1,0 +1,1 @@
+#include "_type/type.registry.h"

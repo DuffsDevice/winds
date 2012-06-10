@@ -99,7 +99,7 @@ class _direntry{
 		virtual bool openread();
 		
 		//! open the file for writing
-		virtual bool openwrite();
+		virtual bool openwrite( bool eraseContent = false );
 		
 		//! Create a file with the specified filename
 		virtual bool create();

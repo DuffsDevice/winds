@@ -7,7 +7,6 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.imagegadget.h"
-#include <string>
 
 enum _fileviewType{
 	detail = 0,

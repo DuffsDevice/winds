@@ -16,8 +16,8 @@ _direntry _shortcut::getDestination(){
 	if( this->destination.getFileName() != "" )
 		return this->destination;
 	_ini parser( this->readString() );
-	if( parser.parse() )
-		this->destination = _direntry(parser.getMap()["LocalShortcut:URL"]);
+	if( parser.read() )
+		this->destination = _direntry(parser.getMap()["LocalShortcut"]["URL"]);
 	return this->destination;
 }
 

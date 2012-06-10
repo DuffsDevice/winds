@@ -8,7 +8,6 @@
 
 
 // C Header
-#include <string>
 using namespace std;
 
 class _checkbox : public _gadget , public _interface_input {
@@ -28,7 +27,7 @@ class _checkbox : public _gadget , public _interface_input {
 	public:
 		
 		//! setIntValue
-		void setIntValue( _s32 val ){ _interface_input::setIntValue( val ); this->triggerEvent( refresh ); }
+		void setIntValue( _s32 val ){ _interface_input::setIntValue( val ); this->bubbleRefresh( true ); }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_checkbox( _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );

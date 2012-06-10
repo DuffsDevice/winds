@@ -29,14 +29,16 @@ struct __TransferRegion {
 	bootcode->arm9reboot();
 }*/
 
-void _system::shutDown(){
+void _system::shutDown()
+{
+	delete _system::_registry_;
 	systemShutDown(); 
 }
 
 void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
-	//_system::_debugFile_.writeString( asctime( t ) + msg + "\n" );
+	_system::_debugFile_.writeString( asctime( t ) + msg + "\r\n" );
 	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
@@ -121,10 +123,6 @@ void _system::processInput()
 	static _u16 lastKeys = 0; // 0 = No Keys
 	static _u32 heldCycles[16] = {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	static _u16 bits[16] = {
-			1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5, 1 << 6, 1 << 7,
-			1 << 8, 1 << 9, 1 << 10, 1 << 11, 1 << 12, 1 << 13,
-			1 << 14, 1 << 15 };
 	
 	
 	// Temp...
@@ -132,6 +130,8 @@ void _system::processInput()
 	_u16 newKeys = keysHeld();
 	touchPosition newTouch;
 	touchRead( &newTouch );
+	newTouch.px += bgState[3].scrollX>>8;
+	newTouch.py += bgState[3].scrollY>>8;
 	
 	if( cyclesLastClick && !( cyclesLastClick >> 7 ) )
 		cyclesLastClick++;
@@ -157,7 +157,7 @@ void _system::processInput()
 				
 				
 				// Trigger the Event
-				_system::_currentFocus_->handleEvent( _gadgetEvent( keyDown , args ) );
+				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyDown" , args ) );
 			}
 			
 			// Increase Cycles
@@ -175,12 +175,12 @@ void _system::processInput()
 			
 			
 			// Trigger the Event
-			_system::_currentFocus_->handleEvent( _gadgetEvent( keyUp , args ) );
+			_system::_currentFocus_->handleEvent( _gadgetEvent( "keyUp" , args ) );
 			
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < _system::_runtimeAttributes_->maxClickCycles )
-				_system::_currentFocus_->handleEvent( _gadgetEvent( keyClick , args ) );
+				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyClick" , args ) );
 			
 			
 			// Reset Cycles
@@ -205,7 +205,7 @@ void _system::processInput()
 			
 			
 			// Trigger the Event
-			_system::_windows_->handleEvent( _gadgetEvent( mouseDown , args ) );
+			_system::_windows_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
 			
 			
 			// Set the starting Point of the mouseDown here!
@@ -225,7 +225,7 @@ void _system::processInput()
 			args.setPosY( newTouch.py );
 			
 			// Trigger the Event
-			_system::_windows_->handleEvent( _gadgetEvent( dragging , args ) );
+			_system::_windows_->handleEvent( _gadgetEvent( "dragging" , args ) );
 			
 			lastTouch = newTouch;
 		}
@@ -250,7 +250,7 @@ void _system::processInput()
 				args.setPosY( startTouch.py );
 				
 				// Trigger the Event!
-				_system::_windows_->handleEvent( _gadgetEvent( dragStart , args ) );
+				_system::_windows_->handleEvent( _gadgetEvent( "dragStart" , args ) );
 				
 				lastTouch = startTouch;
 				
@@ -281,7 +281,7 @@ void _system::processInput()
 			touchDragging = false;
 			
 			// Trigger the Event!
-			_system::_windows_->handleEvent( _gadgetEvent( dragStop , args ) );
+			_system::_windows_->handleEvent( _gadgetEvent( "dragStop" , args ) );
 		}
 		//! Maybe Click-Event?
 		else if( touchCycles < _system::_runtimeAttributes_->maxClickCycles )
@@ -292,17 +292,17 @@ void _system::processInput()
 			
 			// Trigger the mouseClick-Event!
 			if( cyclesLastClick && cyclesLastClick < _system::_runtimeAttributes_->maxDoubleClickCycles && deltaTouch < _system::_runtimeAttributes_->maxDoubleClickArea * _system::_runtimeAttributes_->maxDoubleClickArea ){
-				_system::_windows_->handleEvent( _gadgetEvent( mouseDoubleClick , args ) );
+				_system::_windows_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
 				cyclesLastClick = 0;
 			}
 			else{
-				_system::_windows_->handleEvent( _gadgetEvent( mouseClick , args ) );
+				_system::_windows_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
 				cyclesLastClick = 1;
 			}
 		}
 		
 		// Trigger the mouseUp-Event!
-		_system::_windows_->handleEvent( _gadgetEvent( mouseUp , args ) );
+		_system::_windows_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
 		touchBefore = lastTouch;
 		
 		// Reset touch Cycles
@@ -333,12 +333,14 @@ _system::_system()
 		videoSetModeSub( MODE_5_2D );
 		
 		//! Init Video RAMs
-		vramSetBankA( VRAM_A_MAIN_BG );
-		vramSetBankC( VRAM_C_SUB_BG );
+		vramSetBankA(VRAM_A_MAIN_BG );
+		vramSetBankC(VRAM_C_SUB_BG);
 		
 		//! Init Backgrounds
 		bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-		bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		//bgScroll( 3 , 0 , 15 );
+		//bgUpdate();
+		bgInitSub(3, BgType_Bmp16, BgSize_B8_256x256, 0, 0);
 		
 		consoleDemoInit();
 	// ------------------------------------------------------------------------
@@ -355,6 +357,9 @@ _system::_system()
 	// System-Attributes
 	// ------------------------------------------------------------------------
 	
+		// Fonts
+		_system::_faceTypeManager_ = new FreeTypeFaceManager();
+		_system::_faceTypeCache_ = new FreeTypeCache();
 		
 		// Create RTA
 		_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
@@ -364,11 +369,14 @@ _system::_system()
 		_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
 		_system::_debugFile_.create();
 		
+		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
+		
 		//! Create Windows
 		_system::_windows_ = new _windows();
 		
 		//! random Random() generator
 		srand( time(NULL) );
+		
 	
 	// ------------------------------------------------------------------------
 	// Wifi & FAT32
@@ -421,23 +429,22 @@ void _system::executeProgram( _program* prog , _cmdArgs args ){
 void _system::main(){
 	//_direntry d = _direntry("hallo.exe");
 	//d.execute();
+	
+	SetYtrigger( 250 );
+	irqEnable( IRQ_VCOUNT );
+	
 	while(true)
 	{
-		//printf("%d\n",_system::_debugFile_.getMode() != mode_closed );
+		// wait until line 0
+		swiIntrWait( 0, IRQ_VCOUNT );
+		//printf( "%d\n" , REG_VCOUNT );
 		_system::processEvents();
 		_system::runAnimations();
 		_system::runPrograms();
+		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
 		swiWaitForVBlank();
-		//
-		//if( _system::_currentFocus_ )
-		//		printf("Focused: %s\n", gadgetType2string[_system::_currentFocus_->getType()].c_str() );
-		//for( _gadget* g : _system::_windows_->children ){
-		//	printf("-%s: %s\n",gadgetType2string[g->getType()].c_str(),g->hasFocus()?"focused":"");
-		//	if( g->getType() == keyboard )
-		//		continue;
-		//	for( _gadget* g2 : g->children )
-		//		printf("  -%s: %s\n",gadgetType2string[g2->getType()].c_str(),g2->hasFocus()?"focused":"");
-		//}
+		//consoleClear();
+		BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
 	}
 }
 
@@ -468,9 +475,12 @@ bool 							_system::sleeping = false;
 list<_animation>				_system::_animations_;
 list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _windows*						_system::_windows_ = nullptr;
+_registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry						_system::_debugFile_ = _direntry("");
 _gadget*						_system::_currentFocus_ = nullptr;
+FreeTypeFaceManager* 			_system::_faceTypeManager_ = nullptr;
+FreeTypeCache* 					_system::_faceTypeCache_ = nullptr;
 
 //! Events
 list<_gadgetEvent>				_system::events;

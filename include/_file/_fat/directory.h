@@ -60,7 +60,7 @@
 #define CASE_LOWER_EXT  0x10		// WinNT lowercase extension
 #define CASE_LOWER_BASE 0x08		// WinNT lowercase basename
 
-typedef enum {FT_DIRECTORY, FT_FILE} FILE_TYPE;
+typedef enum {FILETYPE_DIRECTORY, FILETYPE_FILE} FILE_TYPE;
 
 typedef struct {
 	uint32_t cluster;

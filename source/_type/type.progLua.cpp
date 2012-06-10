@@ -7,7 +7,7 @@
 **/
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.border.h"
-#include "_lua/lua.class.font.h"
+//#include "_lua/lua.class.font.h"
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
@@ -16,6 +16,7 @@
 #include "_lua/lua.class.label.h"
 #include "_lua/lua.class.imagegadget.h"
 #include "_lua/lua.class.button.h"
+#include "_lua/lua.class.select.h"
 #include "_lua/lua.class.checkbox.h"
 
 int luaL_expectint(lua_State* L , int narg , string name )
@@ -59,6 +60,12 @@ bool luaL_is( lua_State* L , int narg , string type )
 }
 
 int registerWindow( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( !g ) return 0; _system_->_windows_->addChild( g->gadget ); return 0; }
+
+int readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system_->_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
+int writeRegistryIndex( lua_State* L ){ _system_->_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
+int deleteRegistryIndex( lua_State* L ){ _system_->_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
+int deleteRegistrySection( lua_State* L ){ _system_->_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
+
 int luaRGB( lua_State* L ){ lua_pushnumber( L , RGB( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) ); return 1; }
 int luaRGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) ); return 1; }
 int luaRGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( luaL_checkint( L , 1 ) ) ); return 1; }
@@ -74,6 +81,10 @@ luaL_Reg windowsLibrary[] = {
 	{"RGB_GETB",luaRGB_GETB},
 	{"RGB_GETA",luaRGB_GETA},
 	{"registerWindow",registerWindow},
+	{"readRegistryIndex",readRegistryIndex},
+	{"writeRegistryIndex",writeRegistryIndex},
+	{"deleteRegistryIndex",deleteRegistryIndex},
+	{"deleteRegistrySection",deleteRegistrySection},
 	{ 0 , 0 }
 };
 
@@ -113,7 +124,7 @@ _progLua::_progLua( string prog ) :
 	//! Register Base Classes
 	Lunar<_lua_rect>::Register( this->state );
 	Lunar<_lua_border>::Register( this->state );
-	Lunar<_lua_font>::Register( this->state );
+	//Lunar<_lua_font>::Register( this->state );
 	Lunar<_lua_direntry>::Register( this->state );
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
@@ -126,6 +137,7 @@ _progLua::_progLua( string prog ) :
 	Lunar<_lua_window>::Register( this->state );
 	Lunar<_lua_imagegadget>::Register( this->state );
 	Lunar<_lua_button>::Register( this->state );
+	Lunar<_lua_select>::Register( this->state );
 	Lunar<_lua_checkbox>::Register( this->state );
 	Lunar<_lua_label>::Register( this->state );
 	

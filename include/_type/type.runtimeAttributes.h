@@ -1,9 +1,8 @@
 #ifndef _WIN_T_RUNTIMEATTRIBUTES_
 #define _WIN_T_RUNTIMEATTRIBUTES_
 
-#include "type.bitmap.h"
 #include "type.h"
-#include <string>
+#include "type.bitmap.h"
 using namespace std;
 
 enum _wallpaperViewType{
@@ -31,7 +30,12 @@ class _runtimeAttributes
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
 		_bitmap*		windowBar;
+		_pixel			selectForeground;
+		_pixel			selectBackground;
+		_pixel			defaultForeground;
+		_pixel			defaultBackground;
 		_u8				fileObjectHeight;
+		_u8				selectObjectHeight;
 		bool 			showFileExtension;
 		_bitmap*		userLogo;
 		_bitmap*		userImage;

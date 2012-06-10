@@ -20,30 +20,10 @@ enum _gadgetEventReturnType{
 /**
  * Specifies the Type of an Event
 **/
-enum _gadgetEventType{
-	none	 			= 0,
-	mouseClick 			= 1,
-	mouseDown 			= 1<<1,
-	mouseUp 			= 1<<2,
-	mouseDoubleClick 	= 1<<3,
-	keyDown 			= 1<<4,
-	keyUp 				= 1<<5,
-	keyClick 			= 1<<6,
-	dragging 			= 1<<7,
-	dragStart 			= 1<<8,
-	dragStop 			= 1<<9,
-	refresh 			= 1<<10,
-	individual 			= 1<<11,
-	change				= 1<<13,
-	focus				= 1<<14,
-	blur				= 1<<15,
-	all					= (1<<16) - 1
-};
+typedef string _gadgetEventType;
 
 // Predefines
-extern map<_gadgetEventType,string> eventType2string;
 extern map<_gadgetEventReturnType,string> eventReturnType2string;
-extern map<string,_gadgetEventType> string2eventType;
 extern map<string,_gadgetEventReturnType> string2eventReturnType;
 class _gadget;
 
@@ -63,24 +43,21 @@ class _gadgetEvent
 	
 	public:
 		
-		//! Default Constructors
-		_gadgetEvent( _gadget* src ,  _gadgetEventType type , _gadgetEventArgs args = _gadgetEventArgs() );
-		_gadgetEvent( _gadgetEventType type = refresh , _gadgetEventArgs args = _gadgetEventArgs() );
+		//! Default Constructor
+		_gadgetEvent( _gadget* src = nullptr , _gadgetEventType type = "none" , _gadgetEventArgs args = _gadgetEventArgs() );
 		
-		// Set type to refresh & set the refreshRect
-		_gadgetEvent( _gadget* src , _gadgetEventType type , _area damagedRects = _area() , _gadgetEventArgs args = _gadgetEventArgs() );
+		//! Common Constructor
+		_gadgetEvent( _gadgetEventType type , _gadgetEventArgs args = _gadgetEventArgs() );
 		
-		// Auto set the Destination
-		_gadgetEvent( _gadget* src , _gadgetEventType type , _gadget* dest , _gadgetEventArgs args = _gadgetEventArgs() );
+		//! Specific Events:
+		static _gadgetEvent refreshEvent( _gadget* src ,  _area damagedRects = _area() , _gadgetEventArgs args = _gadgetEventArgs() );
+		static _gadgetEvent dialogClose( _gadget* src , _s32 intVal , string strVal , _gadgetEventArgs args = _gadgetEventArgs() );
 		
 		// Manually set Event Type
 		void setType( _gadgetEventType type );
 		
 		// Get EventType
 		_gadgetEventType getType();
-		
-		// Get EventType as a String
-		const string getTypeString();
 		
 		// Manually set Event Args
 		void setArgs( _gadgetEventArgs args );

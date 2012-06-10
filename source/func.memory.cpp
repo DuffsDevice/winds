@@ -37,3 +37,19 @@ void memSet( _pixelArray dest , _s32 value , _u32 size )
 		*dest++ = value;
 	};
 }
+
+#include "malloc.h"
+
+_u32 getFreeMemory()
+{
+	const _u32 FreeMemSeg=2*1024;
+  
+	for( _u32 i = FreeMemSeg ; i < 4096 * 1024 ; i += FreeMemSeg )
+	{
+		void *ptr=malloc( i );
+		if( ptr == NULL )
+			return i-FreeMemSeg;
+		free( ptr );
+		ptr = NULL;
+	}
+}

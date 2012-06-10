@@ -4,7 +4,6 @@
 
 #include "_type/type.gadget.h"
 #include "interface.input.h"
-#include <string>
 
 using namespace std;
 
