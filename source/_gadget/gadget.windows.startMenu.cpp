@@ -61,10 +61,10 @@ _startMenu::_startMenu( _gadget* owner , _gadgetStyle style ) :
 	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// User-Image
-	this->addChild( new _imagegadget( 3 , 2 , _system_->_runtimeAttributes_->userLogo ) );
+	this->addChild( new _imagegadget( 3 , 2 , _system_->_runtimeAttributes_->user->userLogo ) );
 	
 	// Username
-	_label* usrName = new _label( this->dimensions.width - 19 - 2 , 14 , 19 , 2 , _system_->_runtimeAttributes_->userName );
+	_label* usrName = new _label( this->dimensions.width - 19 - 2 , 14 , 19 , 2 , _system_->_runtimeAttributes_->user->getUsername() );
 	usrName->setVAlign( _valign::middle );
 	usrName->setColor( COLOR_WHITE );
 	this->addChild( usrName );

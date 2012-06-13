@@ -123,6 +123,12 @@ void _system::processInput()
 	static _u16 lastKeys = 0; // 0 = No Keys
 	static _u32 heldCycles[16] = {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	static _u32 kRD = _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" );
+	static _u32 kRS = _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionSpeed" );
+	static _u32 mCC = _system::_runtimeAttributes_->user->getIntAttr( "maxClickCycles" );
+	static _u32 mDD = _system::_runtimeAttributes_->user->getIntAttr( "minDragDistance" );
+	static _u32 mDC = _system::_runtimeAttributes_->user->getIntAttr( "maxDoubleClickCycles" );
+	static _u32 mDA = _system::_runtimeAttributes_->user->getIntAttr( "maxDoubleClickArea" );
 	
 	
 	// Temp...
@@ -148,7 +154,7 @@ void _system::processInput()
 		// Increase Cycles
 		if( GETBIT( newKeys , i ) )
 		{
-			if( heldCycles[i] == 0 || ( _system::_runtimeAttributes_->keyRepetitionDelay && heldCycles[i] > _system::_runtimeAttributes_->keyRepetitionDelay && heldCycles[i] % _system::_runtimeAttributes_->keyRepetitionSpeed == 0 ) )
+			if( heldCycles[i] == 0 || ( kRD && heldCycles[i] > kRD && heldCycles[i] % kRS == 0 ) )
 			{
 				// Set the Args
 				args.reset();
@@ -179,7 +185,7 @@ void _system::processInput()
 			
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
-			if( heldCycles[i] < _system::_runtimeAttributes_->maxClickCycles )
+			if( heldCycles[i] < mCC )
 				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyClick" , args ) );
 			
 			
@@ -241,7 +247,7 @@ void _system::processInput()
 			
 			
 			// Check if Pen has moved the distance already
-			if( dragDistance > _system::_runtimeAttributes_->minDragDistance * _system::_runtimeAttributes_->minDragDistance )
+			if( dragDistance > mDD * mDD )
 			{
 				// Set the Args
 				args.reset();
@@ -284,18 +290,20 @@ void _system::processInput()
 			_system::_windows_->handleEvent( _gadgetEvent( "dragStop" , args ) );
 		}
 		//! Maybe Click-Event?
-		else if( touchCycles < _system::_runtimeAttributes_->maxClickCycles )
+		else if( touchCycles < mCC )
 		{
 			_s16	deltaX = touchBefore.px - lastTouch.px;
 			_s16	deltaY = touchBefore.py - lastTouch.py;
 			_s16 	deltaTouch = deltaX * deltaX + deltaY * deltaY;
 			
 			// Trigger the mouseClick-Event!
-			if( cyclesLastClick && cyclesLastClick < _system::_runtimeAttributes_->maxDoubleClickCycles && deltaTouch < _system::_runtimeAttributes_->maxDoubleClickArea * _system::_runtimeAttributes_->maxDoubleClickArea ){
+			if( cyclesLastClick && cyclesLastClick < mDC && deltaTouch < mDA * mDA )
+			{
 				_system::_windows_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
 				cyclesLastClick = 0;
 			}
-			else{
+			else
+			{
 				_system::_windows_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
 				cyclesLastClick = 1;
 			}
@@ -338,11 +346,12 @@ _system::_system()
 		
 		//! Init Backgrounds
 		bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-		//bgScroll( 3 , 0 , 15 );
-		//bgUpdate();
 		bgInitSub(3, BgType_Bmp16, BgSize_B8_256x256, 0, 0);
 		
+		setBackdropColor( COLOR_RED );
+		
 		consoleDemoInit();
+	
 	// ------------------------------------------------------------------------
 	// Interrupts
 	// ------------------------------------------------------------------------
@@ -362,8 +371,9 @@ _system::_system()
 		_system::_faceTypeCache_ = new FreeTypeCache();
 		
 		// Create RTA
-		_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
+		//_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
 		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		_system::_runtimeAttributes_->user = new _user("Jakob");
 		
 		// Make sure there is a file to debug to
 		_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
@@ -417,7 +427,7 @@ _u32 _system::getTime(){
 }
 
 void _system::executeAnimation( const _animation& anim ){
-	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
+	_system::_animations_.remove_if( [&]( _animation& a )->bool{ if( a.getID() == anim.getID() ) { return true; } return false; } );
 	_system::_animations_.push_back( anim );
 }
 
@@ -444,7 +454,7 @@ void _system::main(){
 		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
 		swiWaitForVBlank();
 		//consoleClear();
-		BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
+		//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
 	}
 }
 

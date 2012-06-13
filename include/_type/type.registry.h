@@ -5,64 +5,28 @@
 #include "_type/type.ini.h"
 #include "_type/type.direntry.h"
 
-class _registry : private _direntry
+class _registry : protected _direntry
 {
-	private:
+	protected:
 		
 		_ini* ini;
-	
+		bool creation;
+		
 	public:
 		
-		_registry( string filename ) :
-			_direntry( filename )
-			, ini( nullptr )
-		{
-			if( !this->exists )
-				this->create();
-				
-			this->openread();
-			this->ini = new _ini( this->readString() );
-			this->close();
-			
-			this->ini->read();
-			
-		}
+		_registry( string filename );
 		
-		~_registry()
-		{
-			if( this->ini )
-			{
-				this->ini->write();
-				this->openwrite( true );
-				this->writeString( this->ini->getString() );
-				this->close();
-				delete this->ini;
-			}
-		}
+		~_registry();
 		
-		string readIndex( string section , string name )
-		{
-			return this->ini->getMap()[section][name];
-		}
+		string readIndex( string section , string name );
 		
-		void writeIndex( string section , string name , string value )
-		{
-			this->ini->getMap()[section][name] = value;
-		}
+		void writeIndex( string section , string name , string value );
 		
-		void deleteSection( string section )
-		{
-			this->ini->getMap().erase( section );
-		}
+		void deleteSection( string section );
 		
-		void deleteIndex( string section , string name )
-		{
-			this->ini->getMap()[section].erase(name);
-		}
+		void deleteIndex( string section , string name );
 		
-		_iniStructure& getMap(){
-			return this->ini->getMap();
-		}
+		_iniStructure& getMap();
 };
 
 #endif

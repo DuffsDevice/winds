@@ -67,11 +67,15 @@ _rect _keyboard::buttonDimensions[]{
 
 void _keyboard::setState( int value )
 {
-	bgSetScrollf( 3 , 0 , int(value*1.32) << 8 );
-	bgUpdate();
-	
-	// Move it relatively
-	this->moveTo( 0 , SCREEN_HEIGHT - 10 - value/1.32 );
+	if( value != this->curState )
+	{
+		bgSetScrollf( 3 , 0 , _u16(value*1.32) << 8 );
+		bgUpdate();
+		
+		// Move it relatively
+		this->moveTo( 0 , SCREEN_HEIGHT - 10 - value/1.32 );
+	}
+	this->curState = value;
 }
 
 void _keyboard::setDestination( _gadget* dest )
@@ -82,17 +86,18 @@ void _keyboard::setDestination( _gadget* dest )
 	
 	this->destination = dest;
 	
+	
 	//! If not already visible
 	if( !this->mode && dest )
 	{
-		this->anim.setFromValue( sStart );
+		this->anim.setFromValue( this->curState );
 		this->anim.setToValue( sEnd );
 		this->anim.start();
 		this->mode = true;
 	}
 	else if( this->mode && !dest )
 	{
-		this->anim.setFromValue( sEnd );
+		this->anim.setFromValue( this->curState );
 		this->anim.setToValue( sStart );
 		this->anim.start();
 		this->mode = false;
@@ -196,11 +201,9 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( !that->dragMe )
 			return use_default;
 		
-		_u8 state = mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY )/2 , sEnd , sStart );
+		that->anim.setFromValue( that->curState );
 		
-		that->anim.setFromValue( state );
-		
-		if( ( that->mode == true && state < sEnd - sSwap ) || ( that->mode == false && state < sStart + sSwap ) ){
+		if( ( that->mode == true && that->curState < sEnd - sSwap ) || ( that->mode == false && that->curState < sStart + sSwap ) ){
 			that->anim.setToValue( sStart );
 			that->mode = false;
 			// Altes Ziel den Fokus wieder nehmen
@@ -245,7 +248,7 @@ _keyboard::_keyboard( _gadgetStyle style ) :
 	this->buttons[40]->setAutoSelect( true );
 	
 	//! Animations
-	this->anim.setEasing( _animation::_bounce::easeOut );
+	this->anim.setEasing( _animation::_back::easeIn );
 	this->anim.setter( [&]( int y ){ this->setState( y ); } );
 	
 	//! Register my handler as the default Refresh-Handler

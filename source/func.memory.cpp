@@ -53,3 +53,20 @@ _u32 getFreeMemory()
 		ptr = NULL;
 	}
 }
+
+int string2int(const char *p){
+    int x = 0;
+    bool neg = false;
+    if (*p == '-') {
+        neg = true;
+        ++p;
+    }
+    while (*p >= '0' && *p <= '9') {
+        x = (x*10) + (*p - '0');
+        ++p;
+    }
+    if (neg) {
+        x = -x;
+    }
+    return x;
+}

@@ -27,6 +27,7 @@ class _keyboard : public _gadget {
 		bool 	dragMe;
 		bool	shift;
 		bool	mode; // Whether the Keyboard is collapsed(=false) or expanded(=true)
+		_s8		curState;
 		
 		//! Destination Gadget to receive Key-Events
 		_gadget* destination;

@@ -57,9 +57,9 @@ _gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
 }
 
 _select::_select( _coord x , _coord y , _length width , _contextMenuEntryList lst , _gadgetStyle style ) :
-	_gadget( _gadgetType::selectbox , width , _system_->_runtimeAttributes_->selectObjectHeight + 2 , x , y , style )
+	_gadget( _gadgetType::selectbox , width , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) + 2 , x , y , style )
 	, entries( lst )
-	, label( new _label( width , _system_->_runtimeAttributes_->selectObjectHeight , 1 , 0 , lst[0] ) )
+	, label( new _label( width , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) , 1 , 0 , lst[0] ) )
 	, selected( 0 )
 {
 	this->popDownList = new _selectPopDown( this , &this->entries );
@@ -178,7 +178,7 @@ void _selectPopDown::refreshChildren()
 	
 	_rect absDim = owner->getAbsoluteDimensions();
 	
-	this->setHeight( this->entries->size() * _system_->_runtimeAttributes_->selectObjectHeight + 2 );
+	this->setHeight( this->entries->size() * _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) + 2 );
 	
 	while( ( g = this->getToppestChild() ) != nullptr )
 	{
@@ -190,14 +190,14 @@ void _selectPopDown::refreshChildren()
 	
 	for( pair<const _s32,string>& entry : *this->entries )
 	{
-		_label* l = new _label( absDim.getWidth() - 2 , _system_->_runtimeAttributes_->selectObjectHeight , 0 , y , entry.second );
+		_label* l = new _label( absDim.getWidth() - 2 , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) , 0 , y , entry.second );
 		l->setVAlign( _valign::middle );
 		l->setIntValue( entry.first );
 		l->registerEventHandler( "mouseClick" , &_selectPopDown::clickHandler );
 		l->registerEventHandler( "blur" , &_selectPopDown::clickHandler );
 		l->registerEventHandler( "focus" , &_selectPopDown::clickHandler );
 		this->addChild( l );
-		y += _system_->_runtimeAttributes_->selectObjectHeight;
+		y += _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" );
 	}
 }
 

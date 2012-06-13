@@ -9,4 +9,6 @@ void memSet( _pixelArray dest , _s32 value , _u32 size );
 
 _u32 getFreeMemory();
 
+int string2int(const char *p);
+
 #endif

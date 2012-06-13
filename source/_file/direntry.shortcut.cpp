@@ -21,19 +21,22 @@ _direntry _shortcut::getDestination(){
 	return this->destination;
 }
 
-const _bitmap* _shortcut::getFileImage(){
+const _bitmap* _shortcut::getFileImage()
+{
+	static _u8 fOH = _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" );
+	
 	if( this->image )
 		return this->image;
 	
 	//! Creaty my icon
-	this->image = new _bitmap( _system_->_runtimeAttributes_->fileObjectHeight , _system_->_runtimeAttributes_->fileObjectHeight );
+	this->image = new _bitmap( fOH , fOH );
 	this->image->reset( NO_COLOR );
 	
 	_direntry fl = this->getDestination();
 	if( fl.getFileName() != "" )
 	{
 		const _bitmap* icon = fl.getFileImage();
-		this->image->copy( 5 - ( icon->getWidth() >> 1 ) , ( _system_->_runtimeAttributes_->fileObjectHeight >> 1 ) - ( icon->getHeight() >> 1 ) , icon );
+		this->image->copy( 5 - ( icon->getWidth() >> 1 ) , ( fOH >> 1 ) - ( icon->getHeight() >> 1 ) , icon );
 	}
 	this->image->copy( 5 , 5 , icon_shortcut );
 	return  this->image;
