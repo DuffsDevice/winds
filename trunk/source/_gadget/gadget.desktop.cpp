@@ -15,7 +15,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 	else
 		bP.resetClippingRects();
 	
-	bP.fill( _system_->_runtimeAttributes_->wallpaperBgColor );
+	bP.fill( _system_->_runtimeAttributes_->user->getIntAttr( "wallpaperBgColor" ) );
 	
 	if(  _system_->_runtimeAttributes_->wallpaper != nullptr )
 	{

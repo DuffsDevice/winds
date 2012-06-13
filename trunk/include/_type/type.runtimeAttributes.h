@@ -1,9 +1,9 @@
 #ifndef _WIN_T_RUNTIMEATTRIBUTES_
 #define _WIN_T_RUNTIMEATTRIBUTES_
 
-#include "type.h"
-#include "type.bitmap.h"
-using namespace std;
+#include "_type/type.h"
+#include "_type/type.bitmap.h"
+#include "_type/type.user.h"
 
 enum _wallpaperViewType{
 	WALLPAPER_ADJUST,
@@ -18,15 +18,7 @@ class _runtimeAttributes
 
 		_bitmap*		wallpaper;
 		_wallpaperViewType wallpaperView;
-		_pixel			wallpaperBgColor;
-		_u8 			maxClickCycles;
-		_u8				maxDoubleClickCycles;
-		_u8				maxDoubleClickArea;
-		_u8 			minDragDistance;
-		_u8				keyRepetitionDelay;
-		_u8				keyRepetitionSpeed;
 		_font*			defaultFont;
-		string			startButtonText;
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
 		_bitmap*		windowBar;
@@ -34,12 +26,7 @@ class _runtimeAttributes
 		_pixel			selectBackground;
 		_pixel			defaultForeground;
 		_pixel			defaultBackground;
-		_u8				fileObjectHeight;
-		_u8				selectObjectHeight;
-		bool 			showFileExtension;
-		_bitmap*		userLogo;
-		_bitmap*		userImage;
-		string			userName;
+		_user*			user;
 		
 		// Associative Directories: e.g. %WINDIR%
 		vector<pair<string,string>> assocDirectories;

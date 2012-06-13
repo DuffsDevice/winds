@@ -37,7 +37,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		
 		
 		// Start Key-Repetition
-		if( _system::_runtimeAttributes_->keyRepetitionDelay )
+		if( _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) )
 		{
 			_gadgetEvent e = _gadgetEvent( "repeater" );
 			e.getArgs().setHeldTime( 0 );
@@ -54,7 +54,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 			e.getArgs().setHeldTime( event.getArgs().getHeldTime() + 1 );
 			that->triggerEvent( e );
 		}
-		if( _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() > _system::_runtimeAttributes_->keyRepetitionDelay && event.getArgs().getHeldTime() % _system::_runtimeAttributes_->keyRepetitionSpeed == 0 ) 
+		if( _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) && event.getArgs().getHeldTime() > _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) && event.getArgs().getHeldTime() % _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionSpeed" ) == 0 ) 
 		{
 			_gadgetEvent ev = _gadgetEvent( _gadgetEvent( "keyDown" ) );
 			
@@ -111,6 +111,7 @@ _gadgetEventReturnType _keyboardStartButton::mouseHandler( _gadgetEvent event ){
 
 _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event )
 {
+	static string sBT = _system_->_runtimeAttributes_->user->getStrAttr( "startButtonText" );
 	// Receive Gadget
 	_keyboardStartButton* that = (_keyboardStartButton*)event.getGadget();
 	
@@ -127,7 +128,7 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , _system_->_runtimeAttributes_->startButtonText , RGB( 30 , 30 , 30 ) );
+	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , sBT , RGB( 30 , 30 , 30 ) );
 	
 	if( event.getType() == "dialogClose" )
 		that->bubbleRefresh();

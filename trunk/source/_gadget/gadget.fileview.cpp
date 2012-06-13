@@ -27,7 +27,7 @@ void _fileview::setPath( const string& path ){
 
 void _fileview::generateChildren()
 {
-	int i = -_system_->_runtimeAttributes_->fileObjectHeight;
+	int i = -_system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" );
 	
 	this->directory.rewindChildren();
 	
@@ -35,7 +35,7 @@ void _fileview::generateChildren()
 	for( string str; this->directory.readChild( str ) != false ; )
 	{
 		//printf( "new %s\n" , str.c_str() );
-		this->addChild( new _fileobject( 1 , ( i += _system_->_runtimeAttributes_->fileObjectHeight + 1 ) , str , this->viewType ) );
+		this->addChild( new _fileobject( 1 , ( i += _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" ) + 1 ) , str , this->viewType ) );
 	}
 }
 

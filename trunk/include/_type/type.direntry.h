@@ -165,7 +165,12 @@ class _direntry{
 			this->mode = _direntryMode::mode_closed;
 			return *this;
 		}
-			
+		
+		//! To remove the file
+		virtual bool unlink();
+		
+		//! To rename the file
+		virtual bool rename( string newName );
 };
 
 extern _direntry _diskRoot_;

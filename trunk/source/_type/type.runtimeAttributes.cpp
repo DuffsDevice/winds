@@ -10,49 +10,11 @@
 _runtimeAttributes::_runtimeAttributes() :
 	wallpaper( new BMP_WindowsWallpaper() ) 
 	, wallpaperView( WALLPAPER_ORIG ) 
-	, wallpaperBgColor( RGB( 7 , 13 , 20 ) )  
-	, maxClickCycles( 30 ) 
-	, maxDoubleClickCycles( 60 )
-	, maxDoubleClickArea( 6 )
-	, minDragDistance( 10 ) 
-	, keyRepetitionDelay( 35 )
-	, keyRepetitionSpeed( 3 )
+	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )  
 	, defaultFont( new FONT_Tahoma7() ) 
-	, startButtonText( "start" ) 
-	, windowBar( new BMP_WindowHeader() ) 
-	, fileObjectHeight( 10 ) //10
-	, selectObjectHeight( 8 ) //10
-	, showFileExtension( true )
-	, userLogo( nullptr )
-	, userImage( nullptr )
-	, userName( "Jakob" )
+	, windowBar( new BMP_WindowHeader() )
 {
-	this->assocDirectories = { { "%WINDIR%" , "windows" } , { "%APPDATA%" , "windows/appdata" } , { "%USERS%" , "windows/users" } };
-	
-	this->userLogo = new _bitmap( 14 , 14 );
-	this->userLogo->reset( COLOR_WHITE );
-	
-	_png* uImage = new _png( "windows/users/" + this->userName + "/userimage.png" );
-	
-	if( uImage && uImage->getBitmap() )
-	{
-		_bitmapTransform* bmp = new _bitmapTransform( 13 , 13 , uImage );
-		bmp->compute();
-		
-		// Create a Logo
-		this->userImage = bmp;
-		
-		// ... and the Raw Image
-		this->userLogo->copy( 0 , 0 , this->userImage );
-	}
-	
-	delete uImage;
-	
-	this->userLogo->drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 31 , 22 ) );
-	this->userLogo->drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
+	this->assocDirectories = { { "%WINDIR%" , "/windows" } , { "%APPDATA%" , "/windows/appdata" } , { "%USERS%" , "/windows/users" } };
 	
 	this->keyboardChar[0] = { 
 		'1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0' ,
@@ -85,6 +47,4 @@ _runtimeAttributes::_runtimeAttributes() :
 }
 
 _runtimeAttributes::~_runtimeAttributes()
-{
-	delete this->userLogo;
-}
+{ }

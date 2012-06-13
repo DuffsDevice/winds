@@ -5,7 +5,6 @@ extern "C"{
 #include "_file/_fat/fatfile.h"
 #include "_file/_fat/file_allocation_table.h"
 }
-
 #include "program_bin.h"
 
 #include "_graphic/BMP_FileIcon.h"
@@ -390,7 +389,7 @@ bool _direntry::execute()
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
 			_program* prog = nullptr;
-			if( true )
+			if( false )
 			{
 				string pro = (const char*)program_bin;
 				pro.resize( program_bin_size );
@@ -435,6 +434,64 @@ const _bitmap* _direntry::getFileImage()
 			break;
 	}
 	return icon_plain;
+}
+
+bool _direntry::unlink()
+{
+	if( this->mode != _direntryMode::mode_closed )
+		this->close();
+	if( std::remove( this->filename.c_str() ) == 0 )
+	{
+		this->exists = false;
+		return true;
+	}
+	return false;
+}
+
+bool _direntry::rename( string newName )
+{
+	if( this->mode != _direntryMode::mode_closed )
+		this->close();
+	
+	// Replace associative directory names
+	newName = replaceASSOCS( newName );
+	
+	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 )
+	{
+		this->filename = newName;
+		this->extension = "";
+		
+		// set Name (not filename!)
+		this->name = this->filename.substr( this->filename.find_last_of("/") + 1 );
+		this->name = this->name.substr( 0 , this->name.find_last_of(".") );
+		
+		// Fill Stat-Struct
+		this->exists = !stat( this->filename.c_str() , &this->stat_buf );
+		
+		//! Set Mime-Type
+		if( this->isDirectory() )
+		{
+			this->mimeType = _mime::directory;
+			if( *(this->filename.rbegin()+1) != '/' )
+				this->filename += "/";
+		}
+		else
+		{
+			// Set Extension
+			_coord pos = this->filename.find_last_of(".");
+			_coord npos = this->filename.find_last_of("/");
+			if( pos > npos && pos != this->filename.npos )
+				this->extension = this->filename.substr( pos + 1 );
+			
+			this->mimeType = _mimeType::fromExtension( this->getExtension() );
+		}
+		
+		if( this->filename.front() != '/' )
+			this->filename.insert( 0 , 1 , '/' );
+		
+		return true;
+	}
+	return false;
 }
 
 /// Root Directory
