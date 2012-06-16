@@ -1,8 +1,7 @@
 #include "_type/type.system.h"
-#include "_type/type.bitmapAnimation.h"
+#include "func.memory.h"
 #include <nds.h>
 #include <time.h>
-#include <array>
 #include "stdio.h"
 #include <nds/timers.h>
 #include <dswifi9.h>
@@ -44,6 +43,7 @@ void _system::debug( string msg ){
 
 void _system::_vblank_(){
 	_system::processInput();
+	_system::_keyboard_->screenVBL();
 }
 
 void _system::generateEvent( _gadgetEvent event )
@@ -118,7 +118,7 @@ void _system::processInput()
 	static touchPosition touchBefore;
 	static _u32 touchCycles = 0;
 	static _u8 cyclesLastClick = 0;
-	static bool touchDragging = false;
+	static _gadget* dragTemp = nullptr;
 	// Keys
 	static _u16 lastKeys = 0; // 0 = No Keys
 	static _u32 heldCycles[16] = {
@@ -136,8 +136,9 @@ void _system::processInput()
 	_u16 newKeys = keysHeld();
 	touchPosition newTouch;
 	touchRead( &newTouch );
-	newTouch.px += bgState[3].scrollX>>8;
-	newTouch.py += bgState[3].scrollY>>8;
+	newTouch.px += bgState[_system::bgIdBack].scrollX>>8;
+	newTouch.py += bgState[_system::bgIdBack].scrollY>>8;
+	//printf("%d\n",newTouch.py);
 	
 	if( cyclesLastClick && !( cyclesLastClick >> 7 ) )
 		cyclesLastClick++;
@@ -209,10 +210,14 @@ void _system::processInput()
 			args.setPosX( newTouch.px );
 			args.setPosY( newTouch.py );
 			
-			
 			// Trigger the Event
-			_system::_windows_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
-			
+			if( newTouch.py < SCREEN_HEIGHT - 9 )
+				_system::_windows_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
+			else
+			{
+				args.setPosY( newTouch.py - _system::_keyboard_->getY() );
+				_system::_keyboard_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
+			}
 			
 			// Set the starting Point of the mouseDown here!
 			startTouch = newTouch;
@@ -220,7 +225,7 @@ void _system::processInput()
 		}
 
 		//! Check if the Pen is dragging something
-		if( touchDragging )
+		if( dragTemp )
 		{
 			// Set the Args
 			args.reset();
@@ -231,13 +236,13 @@ void _system::processInput()
 			args.setPosY( newTouch.py );
 			
 			// Trigger the Event
-			_system::_windows_->handleEvent( _gadgetEvent( "dragging" , args ) );
+			dragTemp->handleEvent( _gadgetEvent( "dragging" , args ) );
 			
 			lastTouch = newTouch;
 		}
 
 		//! Check if the Stylus has moved
-		if( !touchDragging )
+		if( !dragTemp )
 		{
 			// Compute the dragged Distance
 			// -> Pythagoras!
@@ -255,14 +260,18 @@ void _system::processInput()
 				args.setPosX( startTouch.px );
 				args.setPosY( startTouch.py );
 				
-				// Trigger the Event!
-				_system::_windows_->handleEvent( _gadgetEvent( "dragStart" , args ) );
+				// set dragTemp
+				if( startTouch.py < SCREEN_HEIGHT - 9 )
+					dragTemp = _system::_windows_;
+				else
+				{
+					args.setPosY( startTouch.py - _system::_keyboard_->getY() );
+					dragTemp = _system::_keyboard_;
+				}
 				
-				lastTouch = startTouch;
+				dragTemp->handleEvent( _gadgetEvent( "dragStart" , args ) );
 				
-				// Set touchDragging to true!
-				touchDragging = true;
-				
+				lastTouch = startTouch;				
 			}
 		}
 		
@@ -281,13 +290,16 @@ void _system::processInput()
 		
 		
 		//! Maybe DragStop-Event?
-		if( touchDragging )
-		{
-			// Set touchDragging to false!
-			touchDragging = false;
-			
+		if( dragTemp )
+		{			
 			// Trigger the Event!
-			_system::_windows_->handleEvent( _gadgetEvent( "dragStop" , args ) );
+			if( dragTemp == _system::_keyboard_ )
+				args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
+			
+			dragTemp->handleEvent( _gadgetEvent( "dragStop" , args ) );
+			
+			// Set touchDragging to false!
+			dragTemp = nullptr;
 		}
 		//! Maybe Click-Event?
 		else if( touchCycles < mCC )
@@ -299,18 +311,41 @@ void _system::processInput()
 			// Trigger the mouseClick-Event!
 			if( cyclesLastClick && cyclesLastClick < mDC && deltaTouch < mDA * mDA )
 			{
-				_system::_windows_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+				// Trigger the Event
+				if( lastTouch.py < SCREEN_HEIGHT - 9 )
+					_system::_windows_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+				else
+				{
+					args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
+					_system::_keyboard_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+				}
 				cyclesLastClick = 0;
 			}
 			else
 			{
-				_system::_windows_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
+				if( lastTouch.py < SCREEN_HEIGHT - 9 )
+					_system::_windows_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
+				else
+				{
+					args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
+					_system::_keyboard_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
+				}
+				
 				cyclesLastClick = 1;
 			}
 		}
 		
 		// Trigger the mouseUp-Event!
-		_system::_windows_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
+		if( lastTouch.py < SCREEN_HEIGHT - 9 )
+		{
+			args.setPosY( lastTouch.py );
+			_system::_windows_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
+		}
+		else
+		{
+			args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
+			_system::_keyboard_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
+		}
 		touchBefore = lastTouch;
 		
 		// Reset touch Cycles
@@ -341,17 +376,29 @@ _system::_system()
 		videoSetModeSub( MODE_5_2D );
 		
 		//! Init Video RAMs
-		vramSetBankA(VRAM_A_MAIN_BG );
-		vramSetBankC(VRAM_C_SUB_BG);
+		vramSetBankA( VRAM_A_MAIN_BG );
+		vramSetBankB( VRAM_B_MAIN_BG );
+		vramSetBankC( VRAM_C_SUB_BG);
 		
 		//! Init Backgrounds
-		bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-		bgInitSub(3, BgType_Bmp16, BgSize_B8_256x256, 0, 0);
+		_system::_bgIdFront = bgInit(2, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		_system::_bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
+		_system::_bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		
-		setBackdropColor( COLOR_RED );
+		//setBackdropColor( COLOR_RED );
+		//consoleDemoInit();
+		/*_pixelArray d = bgGetGfxPtr(bgIdFront);
+		printf("%p",d);
+		for( int f = 0; f < 4000 ; d[f++] = COLOR_GREEN );
 		
-		consoleDemoInit();
-	
+		d = bgGetGfxPtr(bgIdBack);
+		printf("%p,%d",d,bgIdBack);
+		for( int f = 0; f < 5000 ; d[f++] = COLOR_BLUE );
+		bgScroll( bgIdBack , 50 , 0 );
+		bgScroll( bgIdFront , -50 , 0 );
+		bgUpdate();
+		while(true);*/
+		
 	// ------------------------------------------------------------------------
 	// Interrupts
 	// ------------------------------------------------------------------------
@@ -381,8 +428,9 @@ _system::_system()
 		
 		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
 		
-		//! Create Windows
-		_system::_windows_ = new _windows();
+		//! Create Windows & the Keyboard
+		_system::_keyboard_ = new _keyboard( bgIdFront , bgIdBack , bgIdSub );
+		_system::_windows_ = new _windows( bgIdBack );
 		
 		//! random Random() generator
 		srand( time(NULL) );
@@ -406,7 +454,7 @@ void _system::runAnimations(){
 	start:
 	for( auto animIter = _system::_animations_.begin() ; animIter != _system::_animations_.end() ; animIter++ )
 	{			
-		if( animIter->finished( _system_->getTime() ) )
+		if( animIter->finished() )
 		{
 			_system::_animations_.erase( animIter );
 			goto start;
@@ -440,13 +488,14 @@ void _system::main(){
 	//_direntry d = _direntry("hallo.exe");
 	//d.execute();
 	
-	SetYtrigger( 250 );
+	SetYtrigger( 192 );
 	irqEnable( IRQ_VCOUNT );
 	
 	while(true)
 	{
 		// wait until line 0
-		swiIntrWait( 0, IRQ_VCOUNT );
+		//swiIntrWait( 192, IRQ_VCOUNT );
+		
 		//printf( "%d\n" , REG_VCOUNT );
 		_system::processEvents();
 		_system::runAnimations();
@@ -485,12 +534,19 @@ bool 							_system::sleeping = false;
 list<_animation>				_system::_animations_;
 list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _windows*						_system::_windows_ = nullptr;
+_keyboard*						_system::_keyboard_ = nullptr;
 _registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry						_system::_debugFile_ = _direntry("");
 _gadget*						_system::_currentFocus_ = nullptr;
 FreeTypeFaceManager* 			_system::_faceTypeManager_ = nullptr;
 FreeTypeCache* 					_system::_faceTypeCache_ = nullptr;
+int								_system::_bgIdFront;
+const int&						_system::bgIdFront = _system::_bgIdFront;
+int								_system::_bgIdBack;
+const int&						_system::bgIdBack = _system::_bgIdBack;
+int								_system::_bgIdSub;
+const int&						_system::bgIdSub = _system::_bgIdSub;
 
 //! Events
 list<_gadgetEvent>				_system::events;

@@ -8,7 +8,7 @@ _rect::_rect( _coord x , _coord y , _length width , _length height ){
 }
 
 _rect::_rect() : 
-	width( 1 ) , height( 1 ) , x( -1 ) , y( -1 )
+	width( 0 ) , height( 0 ) , x( -1 ) , y( -1 )
 { }
 
 _coord _rect::getX2() const { return this->x + _coord(this->width) - 1; }

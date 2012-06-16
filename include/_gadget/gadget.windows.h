@@ -24,11 +24,13 @@ class _windows : public _gadget
 	
 	private:
 	
+		//! Background-id
+		_u8					bgId;
+		
 		//! Graphics
 		BMP_WindowHeader	winHeader;
 		
-		//! Taskbar and Keyboard!
-		_keyboard*			taskboard;
+		//! Desktop-Gadget
 		_desktop*			desktop;
 		
 		//! Standard Function to be executed on refresh
@@ -39,11 +41,7 @@ class _windows : public _gadget
 	public:		
 	
 		//! Constructor with style
-		_windows( _gadgetStyle style = _defaultStyle_ );
-		
-		
-		//! Get Keyboard of windows
-		_keyboard* getTaskBoard(){ return this->taskboard; }
+		_windows( _u8 bgId , _gadgetStyle style = _defaultStyle_ );
 		
 };
 

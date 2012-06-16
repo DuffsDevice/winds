@@ -11,6 +11,7 @@
 #include "_type/type.registry.h"
 #include "_type/type.freetypefont.h"
 #include "_gadget/gadget.windows.h"
+#include "_gadget/gadget.keyboard.h"
 #include "fat.h"
 
 #include <tr1/memory>
@@ -61,11 +62,20 @@ class _system{
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() );
 		static void generateEvent( _gadgetEvent event );
 		
+		static int	_bgIdFront;
+		static int	_bgIdBack;
+		static int	_bgIdSub;
+		
 	public:
 	
 		static _windows*				_windows_;
+		static _keyboard*				_keyboard_;
 		static _registry*				_registry_;
 		static _runtimeAttributes*		_runtimeAttributes_;
+		
+		static const int&	bgIdFront;
+		static const int&	bgIdBack;
+		static const int&	bgIdSub;
 		
 		// Constructor
 		_system();

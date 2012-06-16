@@ -107,7 +107,7 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 _gadgetEventReturnType _textbox::focusHandler( _gadgetEvent event )
 {
 	// Open the Keyboard
-	_system_->_windows_->getTaskBoard()->setDestination( event.getGadget() );
+	_system_->_keyboard_->setDestination( event.getGadget() );
 	
 	return use_default;
 }
@@ -116,7 +116,7 @@ _gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
 {
 	_textbox* that = (_textbox*)event.getGadget();
 	
-	_system_->_windows_->getTaskBoard()->setDestination( nullptr );
+	_system_->_keyboard_->setDestination( nullptr );
 	
 	// Remove Cursor!
 	that->cursor = 0;

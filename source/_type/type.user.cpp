@@ -4,7 +4,7 @@
 #include "func.md5.h"
 #include "func.memory.h"
 #include "_file/direntry.png.h"
-#include "_type/type.bitmapAnimation.h"
+#include "_type/type.bitmapResizer.h"
 
 _user::_user( string username ) :
 	_registry( "%USERS%/" + username + "/user.ini"  )
@@ -46,8 +46,7 @@ _user::_user( string username ) :
 	
 	if( uImage && uImage->getBitmap() )
 	{
-		_bitmapTransform* bmp = new _bitmapTransform( 13 , 13 , uImage );
-		bmp->compute();
+		_bitmapResizer* bmp = new _bitmapResizer( 13 , 13 , uImage );
 		
 		// Create a Logo
 		this->userImage = bmp;

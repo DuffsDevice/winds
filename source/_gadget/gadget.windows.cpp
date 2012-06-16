@@ -4,6 +4,8 @@
 #include "nds/arm9/console.h"
 #include "nds/arm9/input.h"
 
+#include "_type/type.system.h"
+
 //void _windows::optimizeEvents(){
 	//! Optimize refresh-Events
 	//map<_gadget*,_gadgetEvent*);
@@ -39,18 +41,16 @@
 
 
 //! Constructor
-_windows::_windows( _gadgetStyle style ) :
+_windows::_windows( _u8 bgId , _gadgetStyle style ) :
 	_gadget( _gadgetType::windows , SCREEN_WIDTH , SCREEN_HEIGHT * 2, 0 , 0 , style , true )
 {	
 	//! Set my bitmap
-	this->bitmap = new _bitmap( BG_GFX , SCREEN_WIDTH, 256 );
+	this->bitmap = new _bitmap( bgGetGfxPtr(bgId) , SCREEN_WIDTH, 256 );
 	this->bitmap->reset( RGB( 31, 31 , 31 ) );
 	
-	//! Allocate new taskboard
-	this->taskboard = new _keyboard();
+	//! Allocate new _desktop
 	this->desktop = new _desktop();
 	this->addChild( this->desktop );
-	this->addChild( this->taskboard );
 	
 	// Refresh Me
 	this->refreshBitmap();
@@ -81,7 +81,7 @@ bool _windows::focusChild( _gadget* child )
 	this->children.splice( this->children.end() , this->children , itTemp );
 	
 	// Move the keyboard top the "top", so the child will be at pos No. 2
-	this->children.splice( this->children.end() , this->children , find( this->children.begin() , this->children.end() , this->taskboard ) );
+	//this->children.splice( this->children.end() , this->children , find( this->children.begin() , this->children.end() , this->taskboard ) );
 	
 	// Refresh the Gadget
 	child->bubbleRefresh();
