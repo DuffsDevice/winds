@@ -25,7 +25,7 @@ class _animation{
 		//! Additionally: call a setter function
 		function<void(int)> setterFunc;
 		
-		int			(*easeFunc)( float t , float b , float c , float d );
+		float		(*easeFunc)( float t , float b , float c , float d );
 		
 		int			fromValue;
 		int			toValue;
@@ -79,7 +79,7 @@ class _animation{
 			}
 			if( this->easeFunc != nullptr )
 			{
-				int value = this->easeFunc( tElapsed , this->fromValue , this->deltaValue , this->duration );
+				int value = this->easeFunc( tElapsed , this->fromValue , this->deltaValue , this->duration ) + 0.5;
 				if( this->setterFunc != nullptr )
 					this->setterFunc(value);
 				if( this->destination != nullptr )
@@ -87,71 +87,71 @@ class _animation{
 			}
 		}
 		
-		void setEasing( int (*easeFunc)( float t , float b , float c , float d ) ){
+		void setEasing( float (*easeFunc)( float t , float b , float c , float d ) ){
 			this->easeFunc = easeFunc;
 		}
 		
 		//! Check if animation is finished
-		bool finished( _u32 timing ){ return timing - this->startTime > this->duration; }
+		bool finished(){ return !this->runs; }
 		
 		class _linear{
 			public:
-			static int ease( float t , float b , float c , float d );
+			static float ease( float t , float b , float c , float d );
 		};
 		
 		class _quad{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _sinus{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _bounce{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _back{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _circular{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _cubic{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		
 		class _elastic{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 		class _expo{
 			public:
-			static int easeIn( float t , float b , float c , float d );
-			static int easeOut( float t , float b , float c , float d );
-			static int easeInOut( float t , float b , float c , float d );
+			static float easeIn( float t , float b , float c , float d );
+			static float easeOut( float t , float b , float c , float d );
+			static float easeInOut( float t , float b , float c , float d );
 		};
 };
 

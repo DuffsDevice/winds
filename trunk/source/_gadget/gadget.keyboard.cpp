@@ -6,8 +6,8 @@
 #include <nds.h>
 
 const int sStart = 0;
-const int sSwap = 13;
-const int sEnd = 49;
+const int sSwap = 34;
+const int sEnd = 102;
 
 //! Screen_Height etc...
 #include "nds/arm9/console.h"
@@ -65,15 +65,26 @@ _rect _keyboard::buttonDimensions[]{
 	_rect( 221 , 82 , 33 , 18 ) // Shift
 };
 
+void _keyboard::screenVBL()
+{
+	dmaCopyHalfWords( 0 , bgGetGfxPtr(this->winBgId) ,  bgGetGfxPtr(this->bgIdSub) , 256*192*2 );
+	if( this->destination ){
+		_bitmap b = _bitmap( bgGetGfxPtr(this->bgIdSub) , 256 , 256 );
+		_rect dim = this->destination->getAbsoluteDimensions();
+		b.drawRect( dim.getX() , dim.getY() , dim.getWidth() , dim.getHeight() , COLOR_RED );
+		b.drawRect( dim.getX()-1 , dim.getY()-1 , dim.getWidth()+2 , dim.getHeight()+2 , COLOR_RED );
+	}
+}
+
 void _keyboard::setState( int value )
 {
 	if( value != this->curState )
 	{
-		bgSetScrollf( 3 , 0 , _u16(value*1.32) << 8 );
+		bgSetScrollf( this->bgId , 0 , (value-182) << 8 );
+		bgSetScrollf( this->winBgId , 0 , value << 8 );
+		bgSetScale( this->bgIdSub , floatToFixed( 1 , 8 ) , floatToFixed( float(value*value)/(sEnd*sEnd) , 8 ) );
+		bgSetScrollf( this->bgIdSub , 0 , int(value*1.88-192) << 8 );
 		bgUpdate();
-		
-		// Move it relatively
-		this->moveTo( 0 , SCREEN_HEIGHT - 10 - value/1.32 );
 	}
 	this->curState = value;
 }
@@ -189,7 +200,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( event.getArgs().getDeltaY() == 0 )
 			return handled;
 		
-		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY )/2 , sEnd , sStart ) );
+		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY ) , sEnd , sStart ) );
 		
 		// Return
 		return handled;
@@ -207,11 +218,12 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 			that->anim.setToValue( sStart );
 			that->mode = false;
 			// Altes Ziel den Fokus wieder nehmen
-			if( that->destination != nullptr && that->destination->getParent() != nullptr )
+			if( that->destination != nullptr )
 				that->destination->triggerEvent( _gadgetEvent( "blur" ) );
 			that->destination = nullptr;
 		}
-		else{
+		else
+		{
 			that->anim.setToValue( sEnd );
 			that->mode = true;
 		}
@@ -226,16 +238,24 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_keyboard::_keyboard( _gadgetStyle style ) :
-	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 112 , 0 , SCREEN_HEIGHT - 10 , style )
+_keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style ) :
+	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 112 , 0 , SCREEN_HEIGHT - 9 , style , true )
+	, bgId( bgId )
+	, winBgId( winBgId )
+	, bgIdSub( bgIdSub )
 	, font( new FONT_CourierNew10() )
 	, startButton( new _keyboardStartButton( 0 , 0 ) )
 	, shift( false )
 	, mode( false ) // Means "Hidden"
 	, destination( nullptr )
-	, anim( 0 , 0 , 500 )
+	, anim( 0 , 0 , 800 )
+	, curState( 1 )
 {
+	//! Set my bitmap
+	this->bitmap = new _bitmap( bgGetGfxPtr(bgId) , SCREEN_WIDTH, SCREEN_HEIGHT );
 	this->bitmap->reset( RGB( 19,19,19) );
+	this->setState(sStart);
+	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
@@ -248,7 +268,7 @@ _keyboard::_keyboard( _gadgetStyle style ) :
 	this->buttons[40]->setAutoSelect( true );
 	
 	//! Animations
-	this->anim.setEasing( _animation::_back::easeIn );
+	this->anim.setEasing( _animation::_expo::easeOut );
 	this->anim.setter( [&]( int y ){ this->setState( y ); } );
 	
 	//! Register my handler as the default Refresh-Handler

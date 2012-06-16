@@ -12,6 +12,11 @@ class _keyboard : public _gadget {
 	
 	private:
 	
+		//! Background-id
+		_u8					bgId;
+		_u8					winBgId;
+		_u8					bgIdSub;
+		
 		//! Font of the Buttons
 		_font* font;
 		
@@ -54,8 +59,10 @@ class _keyboard : public _gadget {
 		//! Get Receiver of Key-Events
 		_gadget* getDestination(){ return this->destination; }
 		
+		void screenVBL();
+		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_keyboard( _gadgetStyle style = _defaultStyle_ );
+		_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style = _defaultStyle_ );
 		
 		//! Destrucor
 		~_keyboard();

@@ -5,7 +5,6 @@
 #include "_graphic/BMP_WindowButtons.h"
 #include "_graphic/BMP_WindowsWallpaper.h"
 #include "_file/direntry.png.h"
-#include "_type/type.bitmapAnimation.h"
 
 _runtimeAttributes::_runtimeAttributes() :
 	wallpaper( new BMP_WindowsWallpaper() ) 

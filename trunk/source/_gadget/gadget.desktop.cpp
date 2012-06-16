@@ -22,7 +22,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 		switch( _system_->_runtimeAttributes_->wallpaperView ){
 			case WALLPAPER_ORIG:{
 				_bitmap* wp = _system_->_runtimeAttributes_->wallpaper;
-				bP.copy( 128 - ( wp->getWidth() >> 1 ) , 86 - ( wp->getHeight() >> 1 ) , wp );
+				bP.copy( 128 - ( wp->getWidth() >> 1 ) , 96 - ( wp->getHeight() >> 1 ) , wp );
 				break;
 			}
 			default:
@@ -33,10 +33,12 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
+
 _desktop::_desktop( _gadgetStyle style ) :
-	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
+	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style )
 {
 	this->registerEventHandler( "refresh" , &_desktop::refreshHandler );
+	
 	// Refresh
 	this->refreshBitmap();
 }
