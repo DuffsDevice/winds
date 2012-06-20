@@ -15,8 +15,6 @@ class _ini
 	
 	private:
 		
-		static void trim( string& );
-		
 		istringstream input;
 		string output;
 		

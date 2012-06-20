@@ -30,14 +30,13 @@ struct __TransferRegion {
 
 void _system::shutDown()
 {
-	delete _system::_registry_;
-	systemShutDown(); 
+	delete _system_;
 }
 
 void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
-	_system::_debugFile_.writeString( asctime( t ) + msg + "\r\n" );
+	_system::_debugFile_->writeString( asctime( t ) + msg + "\r\n" );
 	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
@@ -130,15 +129,12 @@ void _system::processInput()
 	static _u32 mDC = _system::_runtimeAttributes_->user->getIntAttr( "maxDoubleClickCycles" );
 	static _u32 mDA = _system::_runtimeAttributes_->user->getIntAttr( "maxDoubleClickArea" );
 	
-	
 	// Temp...
 	_gadgetEventArgs args;
 	_u16 newKeys = keysHeld();
+	
 	touchPosition newTouch;
 	touchRead( &newTouch );
-	newTouch.px += bgState[_system::bgIdBack].scrollX>>8;
-	newTouch.py += bgState[_system::bgIdBack].scrollY>>8;
-	//printf("%d\n",newTouch.py);
 	
 	if( cyclesLastClick && !( cyclesLastClick >> 7 ) )
 		cyclesLastClick++;
@@ -207,14 +203,18 @@ void _system::processInput()
 			// Set the Args
 			args.reset();
 			args.setCurrentKeyCodes( newKeys );
-			args.setPosX( newTouch.px );
-			args.setPosY( newTouch.py );
 			
+			//printf("%d < %d\n",newTouch.py,_system::_keyboard_->getY());
 			// Trigger the Event
-			if( newTouch.py < SCREEN_HEIGHT - 9 )
+			if( newTouch.py < _system::_keyboard_->getY() )
+			{
+				args.setPosX( int(newTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+				args.setPosY( int(newTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
 				_system::_windows_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
+			}
 			else
 			{
+				args.setPosX( newTouch.px );
 				args.setPosY( newTouch.py - _system::_keyboard_->getY() );
 				_system::_keyboard_->handleEvent( _gadgetEvent( "mouseDown" , args ) );
 			}
@@ -232,15 +232,24 @@ void _system::processInput()
 			args.setCurrentKeyCodes( newKeys );
 			args.setDeltaX( newTouch.px - lastTouch.px );
 			args.setDeltaY( newTouch.py - lastTouch.py );
-			args.setPosX( newTouch.px );
-			args.setPosY( newTouch.py );
 			
 			// Trigger the Event
-			dragTemp->handleEvent( _gadgetEvent( "dragging" , args ) );
+			if( dragTemp == _system::_windows_ )
+			{
+				args.setPosX( int(newTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+				args.setPosY( int(newTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
+				_system::_windows_->handleEvent( _gadgetEvent( "dragging" , args ) );
+			}
+			else
+			{
+				args.setPosX( newTouch.px );
+				args.setPosY( newTouch.py );
+				_system::_keyboard_->handleEvent( _gadgetEvent( "dragging" , args ) );
+			}
 			
 			lastTouch = newTouch;
 		}
-
+		
 		//! Check if the Stylus has moved
 		if( !dragTemp )
 		{
@@ -257,14 +266,17 @@ void _system::processInput()
 				// Set the Args
 				args.reset();
 				args.setCurrentKeyCodes( newKeys );
-				args.setPosX( startTouch.px );
-				args.setPosY( startTouch.py );
 				
 				// set dragTemp
-				if( startTouch.py < SCREEN_HEIGHT - 9 )
+				if( startTouch.py < _system::_keyboard_->getY() )
+				{
+					args.setPosX( int(startTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+					args.setPosY( int(startTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
 					dragTemp = _system::_windows_;
+				}
 				else
 				{
+					args.setPosX( startTouch.px - _system::_keyboard_->getX() );
 					args.setPosY( startTouch.py - _system::_keyboard_->getY() );
 					dragTemp = _system::_keyboard_;
 				}
@@ -312,21 +324,32 @@ void _system::processInput()
 			if( cyclesLastClick && cyclesLastClick < mDC && deltaTouch < mDA * mDA )
 			{
 				// Trigger the Event
-				if( lastTouch.py < SCREEN_HEIGHT - 9 )
+				if( lastTouch.py < _system::_keyboard_->getY() )
+				{
+					args.setPosX( int(lastTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+					args.setPosY( int(lastTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
 					_system::_windows_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+				}
 				else
 				{
+					args.setPosX( lastTouch.px );
 					args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
-					_system::_keyboard_->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+					_system::_keyboard_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
 				}
 				cyclesLastClick = 0;
 			}
 			else
 			{
-				if( lastTouch.py < SCREEN_HEIGHT - 9 )
+				// Trigger the Event
+				if( lastTouch.py < _system::_keyboard_->getY() )
+				{
+					args.setPosX( int(lastTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+					args.setPosY( int(lastTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
 					_system::_windows_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
+				}
 				else
 				{
+					args.setPosX( lastTouch.px );
 					args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
 					_system::_keyboard_->handleEvent( _gadgetEvent( "mouseClick" , args ) );
 				}
@@ -335,14 +358,16 @@ void _system::processInput()
 			}
 		}
 		
-		// Trigger the mouseUp-Event!
-		if( lastTouch.py < SCREEN_HEIGHT - 9 )
+		// Trigger the Event
+		if( lastTouch.py < _system::_keyboard_->getY() )
 		{
-			args.setPosY( lastTouch.py );
+			args.setPosX( int(lastTouch.px * fixedToFloat( bgState[_system::bgIdBack].scaleX , 8 )) + ( bgState[_system::bgIdBack].scrollX >> 8 ) );
+			args.setPosY( int(lastTouch.py * fixedToFloat( bgState[_system::bgIdBack].scaleY , 8 )) + ( bgState[_system::bgIdBack].scrollY >> 8 ) );
 			_system::_windows_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
 		}
 		else
 		{
+			args.setPosX( lastTouch.px );
 			args.setPosY( lastTouch.py - _system::_keyboard_->getY() );
 			_system::_keyboard_->handleEvent( _gadgetEvent( "mouseUp" , args ) );
 		}
@@ -379,25 +404,17 @@ _system::_system()
 		vramSetBankA( VRAM_A_MAIN_BG );
 		vramSetBankB( VRAM_B_MAIN_BG );
 		vramSetBankC( VRAM_C_SUB_BG);
+		vramSetBankD( VRAM_D_MAIN_BG );
 		
 		//! Init Backgrounds
 		_system::_bgIdFront = bgInit(2, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		_system::_bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
 		_system::_bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		//int consoleFont = bgInitSub(1, BgType_Text4bpp, BgSize_T_256x256, 0, 0);
 		
 		//setBackdropColor( COLOR_RED );
-		//consoleDemoInit();
-		/*_pixelArray d = bgGetGfxPtr(bgIdFront);
-		printf("%p",d);
-		for( int f = 0; f < 4000 ; d[f++] = COLOR_GREEN );
-		
-		d = bgGetGfxPtr(bgIdBack);
-		printf("%p,%d",d,bgIdBack);
-		for( int f = 0; f < 5000 ; d[f++] = COLOR_BLUE );
-		bgScroll( bgIdBack , 50 , 0 );
-		bgScroll( bgIdFront , -50 , 0 );
-		bgUpdate();
-		while(true);*/
+		consoleDemoInit();
+		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
 		
 	// ------------------------------------------------------------------------
 	// Interrupts
@@ -423,8 +440,8 @@ _system::_system()
 		_system::_runtimeAttributes_->user = new _user("Jakob");
 		
 		// Make sure there is a file to debug to
-		_system::_debugFile_ = _direntry("/%WINDIR%/debug.txt");
-		_system::_debugFile_.create();
+		_system::_debugFile_ = new _direntry("/%WINDIR%/debug.txt");
+		_system::_debugFile_->create();
 		
 		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
 		
@@ -448,6 +465,19 @@ _system::_system()
 	
 	// ------------------------------------------------------------------------
 	
+}
+
+_system::~_system()
+{
+	delete _system::_registry_;
+	delete _system::_debugFile_;
+	delete _system::_keyboard_;
+	delete _system::_windows_;
+	delete _system::_runtimeAttributes_->user;
+	delete _system::_runtimeAttributes_;
+	delete _system::_faceTypeManager_;
+	delete _system::_faceTypeCache_;
+	systemShutDown();
 }
 
 void _system::runAnimations(){
@@ -490,7 +520,7 @@ void _system::main(){
 	
 	SetYtrigger( 192 );
 	irqEnable( IRQ_VCOUNT );
-	
+	int i = 0;
 	while(true)
 	{
 		// wait until line 0
@@ -504,6 +534,10 @@ void _system::main(){
 		swiWaitForVBlank();
 		//consoleClear();
 		//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
+		if( ++i > 300 ){
+			delete _system_;
+			return;
+		}
 	}
 }
 
@@ -537,7 +571,7 @@ _windows*						_system::_windows_ = nullptr;
 _keyboard*						_system::_keyboard_ = nullptr;
 _registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
-_direntry						_system::_debugFile_ = _direntry("");
+_direntry*						_system::_debugFile_ = nullptr;
 _gadget*						_system::_currentFocus_ = nullptr;
 FreeTypeFaceManager* 			_system::_faceTypeManager_ = nullptr;
 FreeTypeCache* 					_system::_faceTypeCache_ = nullptr;

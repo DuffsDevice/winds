@@ -17,6 +17,13 @@ class _keyboard : public _gadget {
 		_u8					winBgId;
 		_u8					bgIdSub;
 		
+		float				magnifFactor;
+		_u8					magnifPosX;
+		_u8					magnifPosY;
+		_u8					oldPosX;
+		_u8					oldPosY;
+		float				oldFactor;
+		
 		//! Font of the Buttons
 		_font* font;
 		
@@ -38,7 +45,8 @@ class _keyboard : public _gadget {
 		_gadget* destination;
 		
 		//! Animation
-		_animation	anim;
+		_animation	animKeyb;
+		_animation	animMagnif;
 		
 		//! Label on the top of the button
 		_keyboardButton* buttons[46];
@@ -50,6 +58,7 @@ class _keyboard : public _gadget {
 		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
 		
 		void setState( int val );
+		void setMagnification( int val );
 	
 	public:
 	

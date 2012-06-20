@@ -605,7 +605,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 		}
 	}
 	// Stop Dragging
-	else if( e.getType() == "dragStop" && that->dragTemp != nullptr )
+	else if( e.getType() == "dragStop" && that->dragTemp )
 	{
 		// Rewrite Destination
 		args.setDestination( that->dragTemp );
@@ -618,7 +618,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 		
 		return ret;
 	}
-	else if( e.getType() == "dragging" && that->dragTemp != nullptr )
+	else if( e.getType() == "dragging" && that->dragTemp )
 	{
 		// Rewrite Destination
 		args.setDestination( that->dragTemp );

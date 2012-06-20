@@ -1,4 +1,5 @@
 #include "_type/type.registry.h"
+#include "nds.h"
 
 _registry::_registry( string filename ) :
 	_direntry( filename )
@@ -34,7 +35,10 @@ _registry::~_registry()
 
 string _registry::readIndex( string section , string name )
 {
-	return this->ini->getMap()[section][name];
+	_iniStructure& m = this->ini->getMap();
+	if( !m.count( section ) || !m[section].count(name) )
+		return "";
+	return m[section][name];
 }
 
 void _registry::writeIndex( string section , string name , string value )

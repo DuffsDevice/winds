@@ -1,19 +1,6 @@
 #include "_type/type.ini.h"
 #include "_type/type.system.h"
 
-void _ini::trim( string& str ){
-	size_t endpos = str.find_last_not_of(" \n\r\t");
-	if( string::npos != endpos )
-	{
-		str = str.substr( 0, endpos+1 );
-	}
-	size_t startpos = str.find_first_not_of(" \n\r\t");
-	if( string::npos != startpos )
-	{
-		str = str.substr( startpos );
-	}
-}
-
 bool _ini::read()
 {
     /* Uses a fair bit of stack (use heap instead if you need to) */

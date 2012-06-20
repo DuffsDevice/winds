@@ -67,26 +67,47 @@ _rect _keyboard::buttonDimensions[]{
 
 void _keyboard::screenVBL()
 {
-	dmaCopyHalfWords( 0 , bgGetGfxPtr(this->winBgId) ,  bgGetGfxPtr(this->bgIdSub) , 256*192*2 );
+	/*dmaCopyHalfWords( 0 , bgGetGfxPtr(this->winBgId) ,  bgGetGfxPtr(this->bgIdSub) , 256*192*2 );
 	if( this->destination ){
 		_bitmap b = _bitmap( bgGetGfxPtr(this->bgIdSub) , 256 , 256 );
 		_rect dim = this->destination->getAbsoluteDimensions();
-		b.drawRect( dim.getX() , dim.getY() , dim.getWidth() , dim.getHeight() , COLOR_RED );
-		b.drawRect( dim.getX()-1 , dim.getY()-1 , dim.getWidth()+2 , dim.getHeight()+2 , COLOR_RED );
-	}
+		b.drawRect( dim.getX()-4 , dim.getY()-4 , dim.getWidth()+8 , dim.getHeight()+8 , COLOR_RED );
+		b.drawRect( dim.getX()-5 , dim.getY()-5 , dim.getWidth()+10 , dim.getHeight()+10 , COLOR_RED );
+	}*/
 }
 
 void _keyboard::setState( int value )
 {
 	if( value != this->curState )
 	{
+		// Scroll Keyboard
 		bgSetScrollf( this->bgId , 0 , (value-182) << 8 );
-		bgSetScrollf( this->winBgId , 0 , value << 8 );
+		
+		// Scroll Windows
+		if( !this->destination )
+			bgSetScrollf( this->winBgId , 0 , value << 8 );
+		
+		// Topper Screen
 		bgSetScale( this->bgIdSub , floatToFixed( 1 , 8 ) , floatToFixed( float(value*value)/(sEnd*sEnd) , 8 ) );
 		bgSetScrollf( this->bgIdSub , 0 , int(value*1.88-192) << 8 );
 		bgUpdate();
+		
+		this->setY( SCREEN_HEIGHT - value - 9 );
 	}
 	this->curState = value;
+}
+
+void _keyboard::setMagnification( int value )
+{
+	// Scale Lower Screen
+	float percent = float(value) / sEnd;
+	
+	float rat = this->oldFactor - percent * ( this->oldFactor - this->magnifFactor );
+	bgSetScale( this->winBgId , floatToFixed( rat , 8 ) , floatToFixed( rat , 8 ) );
+	
+	bgSetScrollf( this->winBgId , int( this->oldPosX - percent * ( this->oldPosX - this->magnifPosX ) ) << 8 , int( this->oldPosY - percent * ( this->oldPosY - this->magnifPosY ) ) << 8 );
+	
+	bgUpdate();
 }
 
 void _keyboard::setDestination( _gadget* dest )
@@ -101,16 +122,66 @@ void _keyboard::setDestination( _gadget* dest )
 	//! If not already visible
 	if( !this->mode && dest )
 	{
-		this->anim.setFromValue( this->curState );
-		this->anim.setToValue( sEnd );
-		this->anim.start();
+		//! Compute
+			this->oldPosX = this->magnifPosX;
+			this->oldPosY = this->magnifPosY;
+			this->oldFactor = this->magnifFactor;
+			
+			_rect dim = this->destination->getAbsoluteDimensions();
+			float myRatio = 256./(SCREEN_HEIGHT-112);
+			float itsRatio = float(dim.getWidth())/dim.getHeight();
+			float ratio = 1;
+			
+			// "higher" than me
+			if( itsRatio < myRatio )
+				ratio = float(dim.getHeight()+16)/(SCREEN_HEIGHT-112);
+			else
+				ratio = float(dim.getWidth()+16)/(SCREEN_WIDTH);
+			
+			if( ratio < 0.25 )
+				ratio = 0.25;
+			else if( ratio < 0.3333333 )
+				ratio = 0.33333333;
+			else if( ratio < 0.5 )
+				ratio = 0.5;
+			else
+				ratio = 1;
+			
+			// Set 
+			this->magnifFactor = ratio;
+			
+			_s8 magnBorder = 0;
+			
+			// "higher" than me
+			if( itsRatio < myRatio )
+				magnBorder = ( (SCREEN_HEIGHT-112) * ratio - dim.getHeight() ) / 2;
+			else
+				magnBorder = ( SCREEN_WIDTH * ratio - dim.getWidth() ) / 2;
+				
+			this->magnifPosX = dim.getX() - magnBorder;
+			this->magnifPosY = dim.getY() - magnBorder;
+		//! ----------- End -----------
+		
+		this->animKeyb.setFromValue( this->curState );
+		this->animKeyb.setToValue( sEnd );
+		this->animKeyb.start();
+		this->animMagnif.start();
 		this->mode = true;
 	}
 	else if( this->mode && !dest )
 	{
-		this->anim.setFromValue( this->curState );
-		this->anim.setToValue( sStart );
-		this->anim.start();
+		// Reset
+		this->oldPosX = this->magnifPosX;
+		this->oldPosY = this->magnifPosY;
+		this->oldFactor = this->magnifFactor;
+		this->magnifPosX = 0;
+		this->magnifPosY = 0;
+		this->magnifFactor = 1;
+		
+		this->animKeyb.setFromValue( this->curState );
+		this->animKeyb.setToValue( sStart );
+		this->animKeyb.start();
+		this->animMagnif.start();
 		this->mode = false;
 	}
 }
@@ -200,7 +271,8 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( event.getArgs().getDeltaY() == 0 )
 			return handled;
 		
-		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + (bgState[3].scrollY>>8) + deltaY ) , sEnd , sStart ) );
+		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + deltaY ) , sEnd , sStart ) );
+		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + deltaY ) , sEnd , sStart ) );
 		
 		// Return
 		return handled;
@@ -212,23 +284,33 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( !that->dragMe )
 			return use_default;
 		
-		that->anim.setFromValue( that->curState );
+		that->animKeyb.setFromValue( that->curState );
 		
-		if( ( that->mode == true && that->curState < sEnd - sSwap ) || ( that->mode == false && that->curState < sStart + sSwap ) ){
-			that->anim.setToValue( sStart );
+		if( ( that->mode == true && that->curState < sEnd - sSwap ) || ( that->mode == false && that->curState < sStart + sSwap ) )
+		{
+			// Reset
+			that->oldPosX = that->magnifPosX;
+			that->oldPosY = that->magnifPosY;
+			that->oldFactor = that->magnifFactor;
+			that->magnifPosX = 0;
+			that->magnifPosY = 0;
+			that->magnifFactor = 1;
+			
+			that->animKeyb.setToValue( sStart );
 			that->mode = false;
 			// Altes Ziel den Fokus wieder nehmen
 			if( that->destination != nullptr )
 				that->destination->triggerEvent( _gadgetEvent( "blur" ) );
 			that->destination = nullptr;
+			that->animMagnif.start();
 		}
 		else
 		{
-			that->anim.setToValue( sEnd );
+			that->animKeyb.setToValue( sEnd );
 			that->mode = true;
 		}
 		
-		that->anim.start();
+		that->animKeyb.start();
 		
 		// Return
 		return handled;
@@ -243,13 +325,17 @@ _keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style 
 	, bgId( bgId )
 	, winBgId( winBgId )
 	, bgIdSub( bgIdSub )
+	, magnifFactor( 1 )
+	, magnifPosX( 0 )
+	, magnifPosY( 0 )
 	, font( new FONT_CourierNew10() )
 	, startButton( new _keyboardStartButton( 0 , 0 ) )
 	, shift( false )
 	, mode( false ) // Means "Hidden"
-	, destination( nullptr )
-	, anim( 0 , 0 , 800 )
 	, curState( 1 )
+	, destination( nullptr )
+	, animKeyb( 0 , 0 , 800 )
+	, animMagnif( sStart , sEnd , 800 )
 {
 	//! Set my bitmap
 	this->bitmap = new _bitmap( bgGetGfxPtr(bgId) , SCREEN_WIDTH, SCREEN_HEIGHT );
@@ -268,8 +354,10 @@ _keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style 
 	this->buttons[40]->setAutoSelect( true );
 	
 	//! Animations
-	this->anim.setEasing( _animation::_expo::easeOut );
-	this->anim.setter( [&]( int y ){ this->setState( y ); } );
+	this->animKeyb.setEasing( _animation::_expo::easeOut );
+	this->animKeyb.setter( [&]( int n ){ this->setState( n ); } );
+	this->animMagnif.setEasing( _animation::_expo::easeOut );
+	this->animMagnif.setter( [&]( int n ){ this->setMagnification( n ); } );
 	
 	//! Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( "mouseDoubleClick" );

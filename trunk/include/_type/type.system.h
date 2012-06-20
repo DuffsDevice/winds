@@ -31,7 +31,7 @@ class _system{
 		static list< _animation >	_animations_;
 		static list<pair<_program*
 					,_cmdArgs>> 	_programs_;
-		static _direntry			_debugFile_;
+		static _direntry*			_debugFile_;
 		static _gadget*				_currentFocus_;
 		static FreeTypeFaceManager* _faceTypeManager_;
 		static FreeTypeCache* 		_faceTypeCache_;
@@ -79,6 +79,9 @@ class _system{
 		
 		// Constructor
 		_system();
+		
+		// Destructor
+		~_system();
 		
 		//! Get a Built in Program
 		static _program* getBuiltInProgram( string qualifiedName );

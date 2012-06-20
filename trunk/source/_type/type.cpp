@@ -47,3 +47,16 @@ map<_gadgetType,string> gadgetType2string = {
 	{ contextmenu, "contextmenu" },
 	{ _plain , "_plain" }
 };
+
+void trim( string& str ){
+	size_t endpos = str.find_last_not_of(" \n\r\t");
+	if( string::npos != endpos )
+	{
+		str = str.substr( 0, endpos+1 );
+	}
+	size_t startpos = str.find_first_not_of(" \n\r\t");
+	if( string::npos != startpos )
+	{
+		str = str.substr( startpos );
+	}
+}
