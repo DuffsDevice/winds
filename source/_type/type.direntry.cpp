@@ -182,9 +182,9 @@ inline bool _direntry::create()
 	
 	// Then create the file/directory
 	if( this->filename.back() == '/' )
-		return mkdir( this->filename.substr( 0 , this->filename.length() - 1 ).c_str() , S_IRWXU | S_IRWXG | S_IRWXO ) == 0;
+		return mkdir( this->filename.substr( 0 , this->filename.length() - 1 ).c_str() , S_IRWXU | S_IRWXG | S_IRWXO ) == 0 && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
 	else
-		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && this->close();
+		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
 }
 
 bool _direntry::read( void* dest , _u32 size )

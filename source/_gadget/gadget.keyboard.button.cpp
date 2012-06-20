@@ -128,7 +128,7 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , sBT , RGB( 30 , 30 , 30 ) );
+	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
 	
 	if( event.getType() == "dialogClose" )
 		that->bubbleRefresh();

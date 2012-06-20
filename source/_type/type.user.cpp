@@ -19,12 +19,14 @@ _user::_user( string username ) :
 				{
 					{ "userName" , this->userName } ,
 					{ "desktopImage" , "" } ,
-					{ "desktopColor" , "26839" } ,
+					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
 					{ "userLogo" , "" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
+					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
 					{ "keyRepetitionDelay" , "35" } ,
 					{ "keyRepetitionSpeed" , "3" } ,
+					{ "minDragDistance" , "6" } ,
 					{ "maxClickCycles" , "30" } ,
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
@@ -32,6 +34,7 @@ _user::_user( string username ) :
 					{ "selectObjectHeight" , "8" }
 				}
 			} };
+		setPassword("pflanze");
 	}
 	
 	
@@ -108,9 +111,58 @@ void _user::setUsername( string uN )
 	delete d;
 }
 
+#include "nds.h"
+
 _s32 _user::getIntAttr( string idx )
 {
-	return string2int( _registry::readIndex( "_global_" , idx ).c_str() );
+	string attr = _registry::readIndex( "_global_" , idx );
+	
+	// Allow formats of RGB( 14 , 6 , 9 ) and rgba( 1 , 20 , 25 , 0 )
+	if( attr.substr( 0 , 3 ) == "RGB" || attr.substr( 0 , 3 ) == "rgb" )
+	{
+		int i = 2 , f = 0;
+		bool hasAlpha = false;
+		_u8 r , b , g , a = 1;
+		
+		if( isalpha( attr[3] ) && ( attr[3] == 'A' || attr[3] == 'a' ) )
+		{
+			i = 3;
+			hasAlpha = true;
+		}
+		else if( isalpha( attr[3] ) ) // No RGB
+			return string2int( attr.c_str() );
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to first number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		r = string2int( attr.substr( f , i-f ).c_str() ); // Save red part
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to second number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		g = string2int( attr.substr( f , i-f ).c_str() ); // Save green part
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to third number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		b = string2int( attr.substr( f , i-f ).c_str() ); // Save blue part
+		
+		if( hasAlpha )
+		{
+			for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to fourth number
+			if( attr[i] == '0' )
+				a = 0;
+		}
+		
+		return RGBA( r , g , b , a );
+	}
+	return string2int( attr.c_str() );
 }
 
 string _user::getStrAttr( string idx )

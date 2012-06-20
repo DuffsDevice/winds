@@ -212,6 +212,8 @@ enum _gadgetType{
 	_plain // No type set (is probably not used)
 };
 
+void trim( string& );
+
 extern map<_gadgetType,string> gadgetType2string;
 
 #endif

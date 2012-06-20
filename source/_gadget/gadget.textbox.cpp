@@ -180,7 +180,7 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	this->registerEventHandler( "focus" , &_textbox::focusHandler );
 	this->registerEventHandler( "blur" , &_textbox::blurHandler );
 	this->registerEventHandler( "refresh" , &_textbox::refreshHandler );
-	this->registerEventHandler( "mouseUp" , &_textbox::mouseHandler );
+	this->registerEventHandler( "mouseDown" , &_textbox::mouseHandler );
 	this->registerEventHandler( "keyDown" , &_textbox::keyHandler );
 	this->registerEventHandler( "dragStart" , &_textbox::mouseHandler );
 	this->registerEventHandler( "dragging" , &_textbox::mouseHandler );
