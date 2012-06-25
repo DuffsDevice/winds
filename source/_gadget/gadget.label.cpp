@@ -27,6 +27,21 @@ void _label::setFont( _font* ft )
 	this->bubbleRefresh( true );
 }
 
+void _label::setFontSize( _u8 fontSize )
+{
+	if( this->fontSize == fontSize )
+		return;
+	
+	// Set FontSize...
+	this->fontSize = fontSize;
+	if( this->computeW == 1 )
+		this->computeW = 2;
+	if( this->computeH == 1 )
+		this->computeH = 2;
+	this->computeSize();
+	this->bubbleRefresh( true );
+}
+
 void _label::computeSize()
 {
 	if( !this->font || !this->font->valid() )
@@ -34,11 +49,11 @@ void _label::computeSize()
 	
 	// Compute Height
 	if( this->computeH == 2 && ( this->computeH = 1 ) )
-		this->setHeight( this->font->getHeight() );
+		this->setHeight( this->font->getHeight( this->fontSize ) );
 	
 	// Compute Width
 	if( this->computeW == 2 && ( this->computeW = 1 ) )
-		this->setWidth( this->font->getStringWidth( this->getStrValue() ) );
+		this->setWidth( this->font->getStringWidth( this->getStrValue() , this->fontSize ) );
 }
 
 _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
@@ -68,32 +83,32 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	switch( that->getAlign() )
 	{
 		case _align::center:
-			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() ) - 1 ) >> 1 );
+			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) - 1 ) >> 1 );
 			break;
 		case _align::left:
 		case _align::optimize:
 			x = 0;
 			break;
 		case _align::right:
-			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() );
+			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() , that->fontSize );
 			break;
 	}
 	
 	switch( that->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getMainHeight() + 1 ) >> 1 );
+			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getAscent( that->fontSize ) + 1 ) >> 1 );
 			break;
 		case _valign::top:
 			y = 0;
 			break;
 		case _valign::bottom:
-			y = that->dimensions.height - that->font->getMainHeight();
+			y = that->dimensions.height - that->font->getAscent( that->fontSize );
 			break;
 	}
 	
 	// Draw Text...
-	bP.drawString( x , y , that->font , that->getStrValue() , that->color );
+	bP.drawString( x , y , that->font , that->getStrValue() , that->color , that->fontSize );
 	
 	return use_default;
 }
@@ -121,6 +136,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, computeH( 0 )
 {
 	this->font = _system_->_runtimeAttributes_->defaultFont;
+	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );
 	
@@ -139,6 +155,7 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	, computeH( 2 )
 {
 	this->font = _system_->_runtimeAttributes_->defaultFont;
+	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );
 	

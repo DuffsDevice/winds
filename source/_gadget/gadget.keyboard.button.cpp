@@ -2,7 +2,7 @@
 #include "_type/type.system.h"
 
 //! Graphics
-#include "_graphic/BMP_StartButton.h"
+#include "_resource/BMP_StartButton.h"
 
 _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 {

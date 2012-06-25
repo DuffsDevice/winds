@@ -3,6 +3,8 @@
 #include "_type/type.freetypefont.h"
 #include <nds/arm9/console.h>
 
+_freetypefont* ft = nullptr;
+
 _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
@@ -30,6 +32,8 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 		}
 	}
 	
+	bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
+	
 	return use_default;
 }
 
@@ -37,6 +41,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 _desktop::_desktop( _gadgetStyle style ) :
 	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style )
 {
+	ft = new _freetypefont("/font.ttf");
 	this->registerEventHandler( "refresh" , &_desktop::refreshHandler );
 	
 	// Refresh

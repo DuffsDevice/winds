@@ -1,6 +1,6 @@
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.button.h"
-#include "_graphic/BMP_ScrollButtons.h"
+#include "_resource/BMP_ScrollButtons.h"
 
 BMP_ScrollButtonBottom* graphic = new BMP_ScrollButtonBottom();
 
@@ -21,7 +21,8 @@ _gadgetEventReturnType _select::dialogCloseHandler( _gadgetEvent event )
 	
 	_s32 val = event.getArgs().getIntValue();
 	
-	if( val != -1 ){
+	if( val != -1 )
+	{
 		that->label->setStrValue( that->entries[ val ] );
 		that->selected = val;
 	}

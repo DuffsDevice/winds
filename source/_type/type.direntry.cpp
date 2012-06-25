@@ -1,18 +1,20 @@
 #include "_type/type.direntry.h"
 #include "_type/type.system.h"
 extern "C"{
-#include "_file/_fat/partition.h"
-#include "_file/_fat/fatfile.h"
-#include "_file/_fat/file_allocation_table.h"
+#include "_library/_fat/partition.h"
+#include "_library/_fat/fatfile.h"
+#include "_library/_fat/file_allocation_table.h"
 }
 #include "program_bin.h"
 
-#include "_graphic/BMP_FileIcon.h"
-#include "_graphic/BMP_ExeIcon.h"
-#include "_graphic/BMP_TxtIcon.h"
-#include "_graphic/BMP_XmlIcon.h"
-#include "_graphic/BMP_LuaIcon.h"
-#include "_graphic/BMP_FolderIcon.h"
+#include <unistd.h>
+
+#include "_resource/BMP_FileIcon.h"
+#include "_resource/BMP_ExeIcon.h"
+#include "_resource/BMP_TxtIcon.h"
+#include "_resource/BMP_XmlIcon.h"
+#include "_resource/BMP_LuaIcon.h"
+#include "_resource/BMP_FolderIcon.h"
 
 _bitmap* icon_exe = new BMP_ExeIcon();
 _bitmap* icon_lua = new BMP_LuaIcon();
@@ -310,7 +312,6 @@ string _direntry::readString( _u32 size )
 	
 	if( this->mode == _direntryMode::mode_closed && !this->openread() )
 		return "";
-	
 	if( size <= 0 )
 		return "";
 	
@@ -377,6 +378,26 @@ _u32 _direntry::getSize()
 }
 
 
+string _direntry::getWorkingDirectory()
+{
+	char* val = new char[PATH_MAX];
+	
+	// Get working directory
+	getcwd( val , PATH_MAX );
+	
+	// Copy to std::string
+	string ret = val;
+	
+	// Free temorary storage
+	delete[] val;
+	
+	return ret;
+}
+
+void _direntry::setWorkingDirectory( string dir )
+{
+	chdir( replaceASSOCS(dir).c_str() );
+}
 
 bool _direntry::execute()
 {

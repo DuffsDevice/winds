@@ -574,13 +574,13 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color )
+_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize )
 {
 	// Let the font do the hard work!
-	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect );
+	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color)
+void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
 {
 	// Check for transparent
 	if( !RGB_GETA(color) )
@@ -590,7 +590,7 @@ void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pi
 	{
 		if( x0 > this->activeClippingRect.getX2() )
 			break;
-		x0 += 1 + this->drawChar(x0 , y0 , font , ch , color );
+		x0 += 1 + this->drawChar( x0 , y0 , font , ch , color , fontSize );
 	}
 }
 

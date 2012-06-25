@@ -1,16 +1,16 @@
 #include "_type/type.runtimeAttributes.h"
-#include "_graphic/FONT_Tahoma7.h"
-#include "_graphic/BMP_WindowHeader.h"
-#include "_graphic/BMP_Checkboxes.h"
-#include "_graphic/BMP_WindowButtons.h"
-#include "_graphic/BMP_WindowsWallpaper.h"
-#include "_file/direntry.png.h"
+#include "_resource/FONT_Tahoma7.h"
+#include "_resource/BMP_WindowHeader.h"
+#include "_resource/BMP_Checkboxes.h"
+#include "_resource/BMP_WindowButtons.h"
+#include "_resource/BMP_WindowsWallpaper.h"
 
 _runtimeAttributes::_runtimeAttributes() :
 	wallpaper( new BMP_WindowsWallpaper() ) 
 	, wallpaperView( WALLPAPER_SMALL ) 
-	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )  
+	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )
 	, defaultFont( new FONT_Tahoma7() ) 
+	, defaultFontSize( 8 ) 
 	, windowBar( new BMP_WindowHeader() )
 {
 	this->assocDirectories = { { "%WINDIR%" , "/windows" } , { "%APPDATA%" , "/windows/appdata" } , { "%USERS%" , "/windows/users" } };

@@ -20,10 +20,11 @@ class _animation{
 		friend class _system;
 		clock_t		startTime;
 		_u32		duration; //! In Milliseconds
-		_u32*		destination;
+		_s32*		destination;
 		
 		//! Additionally: call a setter function
 		function<void(int)> setterFunc;
+		function<void(int)> finishFunc;
 		
 		float		(*easeFunc)( float t , float b , float c , float d );
 		
@@ -38,14 +39,18 @@ class _animation{
 		
 	public:
 	
-		_animation( int from , int to , _u32 dur );
+		_animation( _s32 from , _s32 to , _u32 dur );
 		
 		_u32 getID() const { return this->id; }
 		
 		//! Set Address of the Variable to write
-		void setter( _u32* destination );
+		void setter( _s32* destination );
 		
+		//! Set a lamda-expression to be the setter
 		void setter( function<void(int)> setterFunc ){ this->setterFunc = setterFunc; }
+		
+		//! Set a lamda-expression to be called at the end of the animation
+		void finish( function<void(int)> finishFunc = NULL ){ this->finishFunc = finishFunc; }
 		
 		//! Start the animation
 		void start();
@@ -72,7 +77,11 @@ class _animation{
 			{
 				this->runs = false;
 				if( this->setterFunc != nullptr )
+				{
 					this->setterFunc( this->toValue );
+					if( this->finishFunc )
+						this->finishFunc( this->toValue );
+				}
 				if( this->destination != nullptr )
 					*this->destination = this->toValue;
 				return;

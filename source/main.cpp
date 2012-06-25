@@ -9,7 +9,7 @@ using namespace std;
 
 //#define METHOD(r,o,m) (r (o::*)() )(&o::m)
 #include "_type/type.system.h"
-#include "_type/type.bitmapResizer.h"
+#include "_type/type.imagefile.h"
 #include "_gadget/gadget.imagegadget.h"
 #include <nds/timers.h>
 
@@ -29,20 +29,18 @@ _gadgetEventReturnType dragHandler( _gadgetEvent event ){
 	return handled;
 }
 
-int main(){	
+int main()
+{
 	
 	_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path","/"}});
 	
+	//_direntry d = _direntry("Hello.txt");
+	//d.setAttrs(0);
 	//sc = new _wifiSocketClient( "192.168.178.41" , 8080 , tcpNormal );
-	/*string a = (const char*)programm_bin;
-	a = a.substr(0 , programm_bin_size);
-	5
-	_program prog = _program(a.c_str());
-	prog.run( WIN );*/
 	
-	//_bitmap* bmp = new BMP_WindowsWallpaper();
-	
-	//_system::_windows_->addChild( new _imagegadget( 20 , 20 , new _bitmapResizer( 150 , 150 , bmp , _rect( 5 , 5 , 10 , 10 ) ) ) ); 
+	//_direntry d = _direntry("windows/users/Jakob/user.ini");
+	//printf("Text: %s",d.readString().c_str() );
+	//while(true); 
 	
 	_system_->main();
 	return 0;

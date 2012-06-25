@@ -19,6 +19,7 @@ class _runtimeAttributes
 		_bitmap*		wallpaper;
 		_wallpaperViewType wallpaperView;
 		_font*			defaultFont;
+		_u8				defaultFontSize;
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
 		_bitmap*		windowBar;
@@ -30,7 +31,6 @@ class _runtimeAttributes
 		
 		// Associative Directories: e.g. %WINDIR%
 		vector<pair<string,string>> assocDirectories;
-		
 		
 		//! Default Constructor
 		_runtimeAttributes();

@@ -1,10 +1,14 @@
-#include "_type/type.user.h"
+//! Standard Headers
 #include "time.h"
 #include <sstream>
+#include <nds/arm9/console.h>
+
+//! Types
+#include "_type/type.imagefile.h"
+#include "_type/type.bitmapResizer.h"
 #include "func.md5.h"
 #include "func.memory.h"
-#include "_file/direntry.png.h"
-#include "_type/type.bitmapResizer.h"
+#include "_type/type.user.h"
 
 _user::_user( string username ) :
 	_registry( "%USERS%/" + username + "/user.ini"  )
@@ -14,6 +18,8 @@ _user::_user( string username ) :
 { 
 	if( _registry::creation )
 	{
+		consoleDemoInit();
+		printf("Wait!, i'm creating myself!");
 		this->ini->getMap() = 
 			{ { "_global_" , 
 				{
@@ -35,6 +41,7 @@ _user::_user( string username ) :
 				}
 			} };
 		setPassword("pflanze");
+		while(true);
 	}
 	
 	
@@ -45,7 +52,12 @@ _user::_user( string username ) :
 	this->userLogo->drawPixel( 6 , 4 , COLOR_RED );
 	this->userLogo->drawPixel( 4 , 6 , COLOR_RED );
 	
-	_png* uImage = new _png( "%USERS%/" + this->userName + "/userimage.png" );
+	string cwd = _direntry::getWorkingDirectory();
+	_direntry::setWorkingDirectory( "%USERS%" );
+	
+	_imagefile* uImage = new _imagefile( "%USERS%/" + this->userName + "/userimage.png" );
+	
+	_direntry::setWorkingDirectory( cwd );
 	
 	if( uImage && uImage->getBitmap() )
 	{

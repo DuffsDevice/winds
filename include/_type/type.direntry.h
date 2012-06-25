@@ -1,5 +1,5 @@
-#ifndef _WIN_T_FILE_
-#define _WIN_T_FILE_
+#ifndef _WIN_T_DIRENTRY_
+#define _WIN_T_DIRENTRY_
 
 #include <string.h>
 #include <stdio.h>
@@ -14,8 +14,8 @@ using namespace std;
 
 // Libfat
 extern "C"{
-#include "_file/_fat/partition.h"
-#include "_file/_fat/fatdir.h"
+#include "_library/_fat/partition.h"
+#include "_library/_fat/fatdir.h"
 }
 
 #define FAT_EMULATORm
@@ -165,6 +165,12 @@ class _direntry{
 			this->mode = _direntryMode::mode_closed;
 			return *this;
 		}
+		
+		//! Get cwd
+		static string getWorkingDirectory();
+		
+		//! Set cwd
+		static void setWorkingDirectory( string dir );
 		
 		//! To remove the file
 		virtual bool unlink();

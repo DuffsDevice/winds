@@ -234,7 +234,7 @@ void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b,
 	this->base->setClippingRect( tempRect );
 }
 
-void _bitmapPort::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color)
+void _bitmapPort::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
 {
 	_rect tempRect = this->base->getClippingRect();
 	
@@ -243,14 +243,14 @@ void _bitmapPort::drawString( _coord x0 , _coord y0 , _font* font , string str ,
 		this->base->setClippingRect( *it );
 		
 		//! Standard Bitmap Routine
-		this->base->drawString( x0 , y0 , font , str , color );
+		this->base->drawString( x0 , y0 , font , str , color , fontSize );
 		//! Standard Bitmap Routine
 	}
 	
 	this->base->setClippingRect( tempRect );
 }
 
-_length _bitmapPort::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color )
+_length _bitmapPort::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize )
 {
 	_rect tempRect = this->base->getClippingRect();
 	
@@ -259,7 +259,7 @@ _length _bitmapPort::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , 
 		this->base->setClippingRect( *it );
 		
 		//! Standard Bitmap Routine
-		this->base->drawChar( x0 , y0 , font , ch , color );
+		this->base->drawChar( x0 , y0 , font , ch , color , fontSize );
 		//! Standard Bitmap Routine
 	}
 	
