@@ -24,6 +24,7 @@ class _label : public _gadget , public _interface_input {
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
 		_font* 	font;
+		_u8		fontSize;
 		
 		//! Method to cumpute Space-Requirements
 		void computeSize();
@@ -48,8 +49,11 @@ class _label : public _gadget , public _interface_input {
 		//! Get Text Color
 		_pixel getBgColor(){ return this->bgColor; }
 		
-		//! Set Text Font
+		//! Get Text Font
 		_font* getFont(){ return this->font; }
+		
+		//! Get Text FontSize
+		_u8 getFontSize(){ return this->fontSize; }
 		
 		//! Refresh on Align-setting
 		void setAlign( _align align ){ _interface_input::setAlign( align ); this->bubbleRefresh( true ); }
@@ -57,8 +61,11 @@ class _label : public _gadget , public _interface_input {
 		//! Refresh on Align-setting
 		void setVAlign( _valign vAlign ){ _interface_input::setVAlign( vAlign ); this->bubbleRefresh( true ); }
 		
-		//! Get Text Font
+		//! Set Text Font
 		void setFont( _font* ft );
+		
+		//! Set FontSize
+		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
 		_label( _length width , _length height , _coord x , _coord y , string value , _gadgetStyle style = _defaultStyle_ );

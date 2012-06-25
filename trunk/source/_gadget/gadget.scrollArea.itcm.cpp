@@ -1,6 +1,6 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.button.h"
-#include "_graphic/BMP_ScrollButtons.h"
+#include "_resource/BMP_ScrollButtons.h"
 #include "nds/arm9/math.h"
 
 const _bitmap icon_scroll_bg = BMP_ScrollBg();

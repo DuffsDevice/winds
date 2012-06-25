@@ -6,7 +6,10 @@ _registry::_registry( string filename ) :
 	, ini( nullptr )
 	, creation( false )
 {
-	if( !this->exists )
+	// Obtain size of the .reg file
+	_u32 size = this->getSize();
+	
+	if( !this->isExisting() || !size )
 	{
 		this->create();
 		this->ini = new _ini("");
@@ -14,9 +17,7 @@ _registry::_registry( string filename ) :
 	}
 	else
 	{
-		this->openread();
-		this->ini = new _ini( this->readString() );
-		this->close();
+		this->ini = new _ini( this->readString( size ) );
 		this->ini->read();
 	}	
 }

@@ -13,7 +13,7 @@ _memoryfont::_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , co
 	, charOffsets( offsets )
 { }
 
-_u16 _memoryfont::getCharacterWidth( _char character ) const {
+_u16 _memoryfont::getCharacterWidth( _char character , _u8 fontSize ) const {
 	if( character == ' ' )
 		return this->spaceWidth;
 	return (this->charWidths[ character - this->firstChar ]);
@@ -31,15 +31,15 @@ bool _memoryfont::valid() const {
 	return this->charData != nullptr;
 }
 
-_u16 _memoryfont::getHeight() const {
+_u16 _memoryfont::getHeight( _u8 fontSize ) const {
 	return this->height;
 }
 
-_u16 _memoryfont::getMainHeight() const {
+_u16 _memoryfont::getAscent( _u8 fontSize ) const {
 	return this->mainHeight;
 }
 
-_u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char ch , _pixel color , _rect clip ) const 
+_u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char ch , _pixel color , _rect clip , _u8 fontSize ) const 
 {
 	if( ch == ' ' )
 		return this->spaceWidth;

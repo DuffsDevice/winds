@@ -11,7 +11,7 @@ _lua_font::_lua_font( _freetypefont* f ) :
 
 //! Lua-Ctor
 _lua_font::_lua_font( lua_State* L ) : 
-	font( new _freetypefont( luaL_checkstring( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) )
+	font( new _freetypefont( luaL_checkstring( L , 1 ) ) )
 { }
 
 //! getStringWidth

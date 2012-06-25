@@ -1,5 +1,5 @@
 #include "_gadget/gadget.scrollArea.buttons.h"
-#include "_graphic/BMP_ScrollButtons.h"
+#include "_resource/BMP_ScrollButtons.h"
 
 const _bitmap icon_scroll_top = BMP_ScrollButtonTop();
 const _bitmap icon_scroll_bottom = BMP_ScrollButtonBottom();
@@ -83,6 +83,8 @@ _scrollButton::_scrollButton( _scrollButtonType type , _coord x , _coord y , _le
 	
 	// Reister Event Handlers...
 	this->registerEventHandler( "refresh" , &_scrollButton::refreshHandler );
+	
+	this->bitmap->reset( NO_COLOR );
 	
 	// Refresh my bitmap
 	this->refreshBitmap();

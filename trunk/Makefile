@@ -18,7 +18,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/_graphic source/_gadget source/_lua source/_program source/_type source/_file source/_file/_fat source/_wifi source/_freetype
+SOURCES		:=	source source/_resource source/_gadget source/_lua source/_type source/_library source/_library/_freetype
 INCLUDES	:=	include
 DATA		:=	data  
 GRAPHICS	:=	gfx
@@ -48,7 +48,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lFatLib -ldswifi9 -lFreetype -lLua -lnds9
+LIBS	:= -ldswifi9 -lfat -lNanoJpeg -lLua -lnds9
  
  
 #---------------------------------------------------------------------------------

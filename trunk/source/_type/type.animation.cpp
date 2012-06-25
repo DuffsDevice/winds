@@ -4,7 +4,7 @@
 _u32 _animation::idCount = 0;
 
 _animation::_animation( int from , int to , _u32 dur ) :
-	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
+	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
 { this->id = this->idCount++; }
 
 void _animation::start(){
@@ -14,7 +14,7 @@ void _animation::start(){
 	_system_->executeAnimation( *this );
 }
 
-void _animation::setter( _u32* destination )
+void _animation::setter( _s32* destination )
 {	
 	this->destination = destination;
 }

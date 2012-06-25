@@ -43,13 +43,13 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 	switch( that->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getMainHeight() + 1 ) >> 1 );
+			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getAscent() + 1 ) >> 1 );
 			break;
 		case _valign::top:
 			y = 2;
 			break;
 		case _valign::bottom:
-			y = myH - that->font->getMainHeight();
+			y = myH - that->font->getAscent();
 			break;
 	}
 	
@@ -62,7 +62,7 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
 	
 	if( that->cursor )
-		bP.drawVerticalLine( that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor-1 ) ) + 1 , y - 1 , that->font->getMainHeight() + 2 , RGB( 31 , 0 , 0 ) );
+		bP.drawVerticalLine( that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor-1 ) ) + 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
 	
 	return use_default;
 }

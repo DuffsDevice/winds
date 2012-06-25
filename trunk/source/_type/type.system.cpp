@@ -7,10 +7,9 @@
 #include <dswifi9.h>
 #include <fat.h>
 
-//! Standard Programs:
-#include "_program/PROG_Explorer.h"
-
-#include "_graphic/BMP_Checkboxes.h"
+//! Resources we need
+#include "_resource/PROG_Explorer.h"
+#include "_resource/BMP_Checkboxes.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -410,10 +409,9 @@ _system::_system()
 		_system::_bgIdFront = bgInit(2, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		_system::_bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
 		_system::_bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-		//int consoleFont = bgInitSub(1, BgType_Text4bpp, BgSize_T_256x256, 0, 0);
 		
 		//setBackdropColor( COLOR_RED );
-		consoleDemoInit();
+		//consoleDemoInit();
 		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
 		
 	// ------------------------------------------------------------------------
@@ -425,14 +423,12 @@ _system::_system()
 		
 		//! Start Time
 		cpuStartTiming(1);
+		
+		//return;
 	
 	// ------------------------------------------------------------------------
 	// System-Attributes
 	// ------------------------------------------------------------------------
-	
-		// Fonts
-		_system::_faceTypeManager_ = new FreeTypeFaceManager();
-		_system::_faceTypeCache_ = new FreeTypeCache();
 		
 		// Create RTA
 		//_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
@@ -475,8 +471,6 @@ _system::~_system()
 	delete _system::_windows_;
 	delete _system::_runtimeAttributes_->user;
 	delete _system::_runtimeAttributes_;
-	delete _system::_faceTypeManager_;
-	delete _system::_faceTypeCache_;
 	systemShutDown();
 }
 
@@ -534,10 +528,10 @@ void _system::main(){
 		swiWaitForVBlank();
 		//consoleClear();
 		//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
-		if( ++i > 300 ){
+		/*if( ++i > 6000 ){
 			delete _system_;
 			return;
-		}
+		}*/
 	}
 }
 
@@ -573,8 +567,6 @@ _registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry*						_system::_debugFile_ = nullptr;
 _gadget*						_system::_currentFocus_ = nullptr;
-FreeTypeFaceManager* 			_system::_faceTypeManager_ = nullptr;
-FreeTypeCache* 					_system::_faceTypeCache_ = nullptr;
 int								_system::_bgIdFront;
 const int&						_system::bgIdFront = _system::_bgIdFront;
 int								_system::_bgIdBack;

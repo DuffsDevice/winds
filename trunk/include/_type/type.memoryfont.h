@@ -39,10 +39,10 @@ class _memoryfont : public _font{
 		_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _bit *data , const _u8 *widths , const _u16 *offsets , _u8 ms , _u8 sW );
 		
 		//! Get the CharacterWidth related to a specific character
-		_u16 getCharacterWidth( _char ch ) const ;
+		_u16 getCharacterWidth( _char ch , _u8 fontSize = 0 ) const ;
 		
 		//! Get the With of a string
-		_u16 getStringWidth( string str ) const ;
+		_u16 getStringWidth( string str , _u8 fontSize = 0 ) const ;
 		
 		//! Check whether this font is monospace
 		_u16 isMonospace() const ;
@@ -51,16 +51,16 @@ class _memoryfont : public _font{
 		bool isCharSupported( _char ch ) const ;
 		
 		//! Get the Height of the font
-		_u16 getHeight() const ;
+		_u16 getHeight( _u8 fontSize = 0 ) const ;
 		
 		//! Get the Main-Height of the font
-		_u16 getMainHeight() const ;
+		_u16 getAscent( _u8 fontSize = 0 ) const ;
 		
 		//! Check if this font is valid
 		bool valid() const ;
 		
 		//! draw a Character!
-		_u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip ) const ;
+		_u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const ;
 		
 };
 

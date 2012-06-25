@@ -13,19 +13,15 @@ class _keyboard : public _gadget {
 	private:
 	
 		//! Background-id
-		_u8					bgId;
-		_u8					winBgId;
-		_u8					bgIdSub;
-		
-		float				magnifFactor;
-		_u8					magnifPosX;
-		_u8					magnifPosY;
-		_u8					oldPosX;
-		_u8					oldPosY;
-		float				oldFactor;
+		_u8			bgId;
+		_u8			winBgId;
+		_u8			bgIdSub;
+		int			magnifX;
+		int			magnifY;
+		float		magnifFactor;
 		
 		//! Font of the Buttons
-		_font* font;
+		_font*		font;
 		
 		//! Internal Array for Keyboard-Layout
 		static _rect buttonDimensions[];

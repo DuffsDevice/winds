@@ -16,8 +16,6 @@
 
 #include <tr1/memory>
 
-#include "_freetype/freetypefacemanager.h"
-#include "_freetype/freetypecache.h"
 #include <list>
 
 class _system{
@@ -33,8 +31,6 @@ class _system{
 					,_cmdArgs>> 	_programs_;
 		static _direntry*			_debugFile_;
 		static _gadget*				_currentFocus_;
-		static FreeTypeFaceManager* _faceTypeManager_;
-		static FreeTypeCache* 		_faceTypeCache_;
 		
 		//! Events
 		static bool 				eventThrowable;
