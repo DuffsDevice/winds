@@ -11,7 +11,7 @@ using namespace std;
 #include "_type/type.system.h"
 #include "_type/type.imagefile.h"
 #include "_gadget/gadget.imagegadget.h"
-#include <nds/timers.h>
+#include <nds/arm9/console.h>
 
 _gadgetEventReturnType dragHandler( _gadgetEvent event ){
 	_gadget* that = event.getGadget();

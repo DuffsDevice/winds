@@ -1,10 +1,7 @@
 #include "_type/type.direntry.h"
 #include "_type/type.system.h"
-extern "C"{
-#include "_library/_fat/partition.h"
-#include "_library/_fat/fatfile.h"
-#include "_library/_fat/file_allocation_table.h"
-}
+
+#include "fat.h"
 #include "program_bin.h"
 
 #include <unistd.h>
@@ -135,7 +132,7 @@ int _direntry::setAttrs( _direntryAttributes attrs )
 {	
 	if( !this->fatInited )
 		return 0;
-	return FAT_setAttr( this->filename.c_str() , attrs );
+	return FAT_setAttr( this->filename.c_str() , int(attrs) );
 }
 
 bool _direntry::open( const char* mode )

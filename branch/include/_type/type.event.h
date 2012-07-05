@@ -14,6 +14,7 @@ using namespace std;
 enum _gadgetEventReturnType{
 	handled = 1,
 	use_default = 2,
+	use_normal = 3,
 	not_handled = 0, // If returned on dragStart -> dragging will be prevented
 };
 

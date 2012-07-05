@@ -14,7 +14,6 @@
 // STD-Standards
 #include <list>
 #include <utility>
-#include <map>
 using namespace std;
 
 class _gadget;
@@ -32,7 +31,8 @@ class _gadget{
 		// Type of the Gadget
 		_gadgetType type;
 		
-		static bool removeEnhanced( _gadget* g );
+		static bool removeEnhancedCallback( _gadget* g );
+		static bool removeCallback( _gadget* g );
 	
 	public:
 	
@@ -143,9 +143,9 @@ class _gadget{
 		void setStyle( _gadgetStyle style );
 		
 		/**
-		 * Returns the Toppest Parent, which is usually Windows itself
+		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
 		**/
-		_gadget* getWindows();
+		_gadget* getScreen();
 		
 		/**
 		 * Method to check whether the Gadget has Focus
@@ -200,7 +200,12 @@ class _gadget{
 		_gadgetEventReturnType handleEvent( _gadgetEvent event );
 		
 		/**
-		 * Make The Gadget act onto a specific GadgetEvent by using the Dafault event-handler if available
+		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
+		**/
+		_gadgetEventReturnType handleEventNormal( _gadgetEvent event );
+		
+		/**
+		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
 		**/
 		_gadgetEventReturnType handleEventDefault( _gadgetEvent event );
 		

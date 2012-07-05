@@ -90,7 +90,7 @@ _u32 transparencyJump[256] =  {
 
 _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
 {
-	int fontWidth , fontHeight , xOffset , yOffset , ascent , nextCharBegin , xOffset2;
+	int fontWidth , fontHeight , xOffset , yOffset , ascent;
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
 	stbtt_GetFontVMetrics( &	 this->fontInfo , &ascent , 0 , 0 );
 	_u8* bitmap = stbtt_GetCodepointBitmap( &this->fontInfo , 0 , scale , letter , &fontWidth , &fontHeight , &xOffset , &yOffset );

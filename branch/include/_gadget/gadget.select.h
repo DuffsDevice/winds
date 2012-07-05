@@ -5,6 +5,7 @@
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.label.h"
 #include "_type/type.system.h"
+#include "_gadget/gadget.contextMenu.h"
 
 class _select;
 

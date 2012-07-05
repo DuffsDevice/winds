@@ -9,6 +9,7 @@
 #include "func.md5.h"
 #include "func.memory.h"
 #include "_type/type.user.h"
+#include "_type/type.system.h"
 
 _user::_user( string username ) :
 	_registry( "%USERS%/" + username + "/user.ini"  )
@@ -18,6 +19,7 @@ _user::_user( string username ) :
 { 
 	if( _registry::creation )
 	{
+		_system_->debug( string("Creating user with username: ") + username );
 		this->ini->getMap() = 
 			{ { "_global_" , 
 				{
@@ -38,7 +40,6 @@ _user::_user( string username ) :
 					{ "selectObjectHeight" , "8" }
 				}
 			} };
-		setPassword("pflanze");
 	}
 	
 	

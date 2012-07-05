@@ -24,13 +24,17 @@ void _gadgetEventArgs::setDestination( void* newVal ){ this->dest = newVal; }
 
 void _gadgetEventArgs::setSource( void* newVal ){ this->src = newVal; }
 
-_coord _gadgetEventArgs::getPosX(){ return this->posX; }
+_coord _gadgetEventArgs::getPosX( bool effectivePos ){ if( effectivePos ) return this->effectiveX; return this->posX; }
 
-_coord _gadgetEventArgs::getPosY(){ return this->posY; }
+_coord _gadgetEventArgs::getPosY( bool effectivePos ){ if( effectivePos ) return this->effectiveY; return this->posY; }
 
 void _gadgetEventArgs::setPosX( _coord pos ){ this->posX = pos; }
 
 void _gadgetEventArgs::setPosY( _coord pos ){ this->posY = pos; }
+
+void _gadgetEventArgs::setEffectivePosX( _coord pos ){ this->effectiveX = pos; }
+
+void _gadgetEventArgs::setEffectivePosY( _coord pos ){ this->effectiveY = pos; }
 
 _coord _gadgetEventArgs::getDeltaX(){ return this->deltaX; }
 

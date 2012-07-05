@@ -53,12 +53,14 @@ _gadget* _gadgetEvent::getGadget(){ return this->that; }
 
 map<string,_gadgetEventReturnType> string2eventReturnType = {
 	{ "handled" , handled },
+	{ "use_normal" , use_normal },
 	{ "use_default" , use_default },
 	{ "not_handled" , not_handled },
 };
 
 map<_gadgetEventReturnType,string> eventReturnType2string = {
 	{ handled , "handled" },
+	{ use_normal , "use_normal" },
 	{ use_default , "use_default" },
 	{ not_handled , "not_handled" },
 };

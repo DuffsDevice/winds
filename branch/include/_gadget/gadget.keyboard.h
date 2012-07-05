@@ -2,19 +2,18 @@
 #ifndef _WIN_G_KEYBOARD_
 #define _WIN_G_KEYBOARD_
 
-#include "_type/type.gadget.h"
+#include "_type/type.gadgetScreen.h"
 #include "_type/type.animation.h"
 #include "_gadget/gadget.keyboard.button.h"
 
 class _keyboardButton;
 
-class _keyboard : public _gadget {
+class _keyboard : public _gadgetScreen {
 	
 	private:
 	
-		//! Background-id
-		_u8			bgId;
-		_u8			winBgId;
+		_screen*	topScreen;
+		_gadgetScreen*	gHScreen; // GadgetHost
 		_u8			bgIdSub;
 		int			magnifX;
 		int			magnifY;
@@ -28,8 +27,6 @@ class _keyboard : public _gadget {
 		
 		//! Images...
 		static _bitmap* bg;
-		
-		_keyboardStartButton*	startButton;
 		
 		//! State-Saver
 		bool 	dragMe;
@@ -67,7 +64,7 @@ class _keyboard : public _gadget {
 		void screenVBL();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style = _defaultStyle_ );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _gadgetStyle style = _defaultStyle_ );
 		
 		//! Destrucor
 		~_keyboard();

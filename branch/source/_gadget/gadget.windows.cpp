@@ -1,10 +1,13 @@
 #include "_gadget/gadget.windows.h"
 
-// For Console
-#include "nds/arm9/console.h"
-#include "nds/arm9/input.h"
+//! For Console
+#include <nds/arm9/console.h>
+#include <nds/arm9/input.h>
 
 #include "_type/type.system.h"
+
+//! Graphics
+#include "_resource/BMP_StartButton.h"
 
 //void _windows::optimizeEvents(){
 	//! Optimize refresh-Events
@@ -39,18 +42,41 @@
 	this->events = tempEvents;*/
 //}
 
+_gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
+{	
+	// Receive Gadget
+	_windows* that = (_windows*)event.getGadget();
+	
+	_bitmapPort bP = that->getBitmapPort();
+	
+	if( event.getArgs().hasClippingRects() )
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+	else
+		bP.resetClippingRects();
+		
+	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 9 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
+	
+	return use_default;
+}
 
 //! Constructor
 _windows::_windows( _u8 bgId , _gadgetStyle style ) :
-	_gadget( _gadgetType::windows , SCREEN_WIDTH , SCREEN_HEIGHT * 2, 0 , 0 , style , true )
-{	
-	//! Set my bitmap
-	this->bitmap = new _bitmap( bgGetGfxPtr(bgId) , SCREEN_WIDTH, 256 );
-	this->bitmap->reset( RGB( 31, 31 , 31 ) );
+	_gadgetScreen( bgId , style )
+{
+	//! Set Padding
+	this->setPadding( _padding( 0 , 0 , 0 , 9 ) );
+	
+	//! Add startButton
+	this->startButton = new _windowsStartButton( 0 , SCREEN_HEIGHT - 9 );
+	this->startButton->setEnhanced( true );
 	
 	//! Allocate new _desktop
 	this->desktop = new _desktop();
 	this->addChild( this->desktop );
+	this->addChild( this->startButton );
+	
+	//! Register Event-Handlers
+	this->registerEventHandler( "refresh" , &_windows::refreshHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();
@@ -58,9 +84,6 @@ _windows::_windows( _u8 bgId , _gadgetStyle style ) :
 
 bool _windows::focusChild( _gadget* child )
 {
-	//return _gadget::focusChild( child );
-	//printf("Trying to Focus %s\n",gadgetType2string[child->getType()].c_str() );
-	
 	if( !child )
 		return false;
 	

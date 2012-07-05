@@ -51,8 +51,8 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 //! getBitmapPort
 int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) , true ); return 1; }
 
-//! getWindows
-int _lua_gadget::getWindows( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getWindows() ) , true ); return 1; }
+//! getScreen
+int _lua_gadget::getScreen( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getScreen() ) , true ); return 1; }
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 

@@ -249,3 +249,8 @@ _rect _rect::operator&( const _rect rect ) const
 
 	return _rect( x1 , y1 , x2 - x1 + 1 , y2 - y1 + 1 );
 }
+
+bool _rect::operator==( const _rect other ) const 
+{
+	return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
+}

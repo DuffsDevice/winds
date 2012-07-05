@@ -2,7 +2,7 @@
 #ifndef _WIN_T_PROGRAM_
 #define _WIN_T_PROGRAM_
 
-#include "_gadget/gadget.windows.h"
+#include "_type/type.gadget.h"
 using namespace std;
 
 typedef enum
@@ -21,7 +21,7 @@ class _program
 		
 	protected:
 		
-		_windows*		windowsInstance;
+		_gadget*		gadgetHost;
 		
 	public:
 		
@@ -31,7 +31,7 @@ class _program
 		
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		
-		void 			init( _windows* w , _cmdArgs& args  );
+		void 			init( _gadget* w , _cmdArgs& args  );
 		
 		virtual int		main( _cmdArgs& args ) = 0;
 		

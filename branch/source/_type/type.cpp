@@ -32,19 +32,19 @@ bool DSWindows::isHardwareKey( _char key )
 }
 
 map<_gadgetType,string> gadgetType2string = {
-	{ button, "button" },
-	{ label, "label" },
-	{ checkbox, "checkbox" },
-	{ textbox, "textbox" },
-	{ keyboard, "keyboard" },
-	{ desktop, "desktop" },
-	{ fileobject, "fileobject" },
-	{ imagegadget, "imagegadget" },
+	{ button , "button" },
+	{ label , "label" },
+	{ checkbox , "checkbox" },
+	{ textbox , "textbox" },
+	{ keyboard , "keyboard" },
+	{ desktop , "desktop" },
+	{ fileobject , "fileobject" },
+	{ imagegadget , "imagegadget" },
 	{ scrollarea , "scrollarea" },
 	{ scrollbutton , "scrollbutton" },
-	{ window, "window" },
-	{ windows, "windows" },
-	{ contextmenu, "contextmenu" },
+	{ window , "window" },
+	{ screen , "screen" },
+	{ contextmenu , "contextmenu" },
 	{ _plain , "_plain" }
 };
 

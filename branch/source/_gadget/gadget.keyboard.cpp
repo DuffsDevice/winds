@@ -3,11 +3,13 @@
 #include "_type/type.animation.h"
 #include "_type/type.system.h"
 
-#include <nds.h>
+#include "_resource/BMP_Grip.h"
+
+static _bitmap* Grip = new BMP_Grip();
 
 const int sStart = 0;
 const int sSwap = 34;
-const int sEnd = 102;
+const int sEnd = 108;
 
 //! Screen_Height etc...
 #include "nds/arm9/console.h"
@@ -63,35 +65,36 @@ _rect _keyboard::buttonDimensions[]{
 
 void _keyboard::screenVBL()
 {
-	dmaCopyHalfWords( 0 , bgGetGfxPtr(this->winBgId) ,  bgGetGfxPtr(this->bgIdSub) , 256*192*2 );
+	dmaCopyHalfWords( 0 , this->gHScreen->getMemoryPtr() ,  this->topScreen->getMemoryPtr() , 256*192*2 );
 	if( this->destination ){
-		_bitmap b = _bitmap( bgGetGfxPtr(this->bgIdSub) , 256 , 256 );
+		_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
 		_rect dim = this->destination->getAbsoluteDimensions();
 		b.drawRect( dim.getX()-4 , dim.getY()-4 , dim.getWidth()+8 , dim.getHeight()+8 , COLOR_RED );
 		b.drawRect( dim.getX()-5 , dim.getY()-5 , dim.getWidth()+10 , dim.getHeight()+10 , COLOR_RED );
 	}
 }
 
-int _x,_y;
-float _factor;
+int _x = 0 , _y = 0;
+float _factor = 1;
 
 void _keyboard::setState( int value )
 {
 	if( value != this->curState )
 	{
 		// Scroll Keyboard
-		bgSetScrollf( this->bgId , 0 , (value-182) << 8 );
+		this->scrollY( ( value - SCREEN_HEIGHT + 9 ) );
 		
 		// Scroll Windows
 		if( _factor == 1 && _x == 0 && _y == 0 )
-			bgSetScrollf( this->winBgId , 0 , value << 8 );
+			this->gHScreen->scrollY( value );
 		
 		// Topper Screen
-		bgSetScale( this->bgIdSub , floatToFixed( 1 , 8 ) , floatToFixed( float(value*value)/(sEnd*sEnd) , 8 ) );
-		bgSetScrollf( this->bgIdSub , 0 , int(value*1.88-192) << 8 );
+		this->topScreen->scaleY( float(value*value)/(sEnd*sEnd) );
+		this->topScreen->scrollY( value * 1.88f - SCREEN_HEIGHT );
+		
 		bgUpdate();
 		
-		this->setY( SCREEN_HEIGHT - value - 9 );
+		this->setY( SCREEN_HEIGHT - value );
 	}
 	this->curState = value;
 }
@@ -106,9 +109,10 @@ void _keyboard::setMagnification( int value )
 	float percent = float(value) / sEnd;
 	
 	float rat = 1 - percent * ( 1 - _factor );
-	bgSetScale( this->winBgId , floatToFixed( rat , 8 ) , floatToFixed( rat , 8 ) );
+	this->gHScreen->scale( rat );
 	
-	bgSetScrollf( this->winBgId , int( 0 - percent * ( 0 - _x ) ) << 8 , int( 0 - percent * ( 0 - _y ) ) << 8 );
+	this->gHScreen->scrollX( -percent * ( 0 - _x ) );
+	this->gHScreen->scrollY( -percent * ( 0 - _y ) );
 	
 	bgUpdate();
 }
@@ -199,7 +203,13 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 	else
 		bP.resetClippingRects();
 	
-	bP.copyHorizontalStretch( 33 , 0 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
+	bP.copyTransparent( ( SCREEN_WIDTH >> 1 ) - 16 , 0 , Grip );
+	bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
+	bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH , RGB( 3 , 3 , 3 ) );
+	bP.drawHorizontalLine( 0 , 9+1 , SCREEN_WIDTH , RGB( 12 , 12 , 12 ) );
+	bP.drawHorizontalLine( 0 , 9+2 , SCREEN_WIDTH , RGB( 14 , 14 , 14 ) );
+	bP.drawHorizontalLine( 0 , 9+3 , SCREEN_WIDTH , RGB( 16 , 16 , 16 ) );
+	bP.drawHorizontalLine( 0 , 9+4 , SCREEN_WIDTH , RGB( 18 , 18 , 18 ) );
 	
 	return use_default;
 }
@@ -209,9 +219,9 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	// Receive Gadget
 	_keyboard* that = (_keyboard*)event.getGadget();
 	
-	if( event.getType() == "keyClick" && event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
+	if( event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
 	{
-		if( that->shift == 2 )
+		if( event.getType() != "keyClick" || that->shift == 2 )
 			return handled;
 		
 		that->shift = !that->shift;
@@ -257,7 +267,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		return handled;
 	}
 	else if( event.getType() == "dragging" )
-	{
+	{		
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
 		if( !that->dragMe )
@@ -271,8 +281,8 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( event.getArgs().getDeltaY() == 0 )
 			return handled;
 		
-		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + deltaY ) , sEnd , sStart ) );
-		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY() + deltaY ) , sEnd , sStart ) );
+		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
+		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
 		
 		// Return
 		return handled;
@@ -318,13 +328,11 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style ) :
-	_gadget( _gadgetType::keyboard , SCREEN_WIDTH , 112 , 0 , SCREEN_HEIGHT - 9 , style , true )
-	, bgId( bgId )
-	, winBgId( winBgId )
-	, bgIdSub( bgIdSub )
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _gadgetStyle style ) :
+	_gadgetScreen( bgId , style )
+	, topScreen( topScreen )
+	, gHScreen( gadgetHost )
 	, font( new FONT_CourierNew10() )
-	, startButton( new _keyboardStartButton( 0 , 0 ) )
 	, shift( false )
 	, mode( false ) // Means "Hidden"
 	, curState( 1 )
@@ -333,15 +341,17 @@ _keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style 
 	, animMagnif( sStart , sEnd , 800 )
 {
 	//! Set my bitmap
-	this->bitmap = new _bitmap( bgGetGfxPtr(bgId) , SCREEN_WIDTH, SCREEN_HEIGHT );
-	this->bitmap->reset( RGB( 19,19,19) );
+	this->bitmap->reset( NO_COLOR );
+	
+	//! Reset Keyboard Position
 	this->setState( sStart );
 	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 10 , _system_->_runtimeAttributes_->keyboardText[0][i] );
+		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system_->_runtimeAttributes_->keyboardText[0][i] );
 		this->buttons[i]->setFont( this->font );
+		this->buttons[i]->registerEventHandler( "focus" , &_keyboard::focusHandler );
 		this->addChild( this->buttons[i] );
 	}
 	
@@ -355,7 +365,6 @@ _keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style 
 	this->animMagnif.setter( [&]( int n ){ this->setMagnification( n ); } );
 	
 	//! Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
 	this->registerEventHandler( "refresh" , &_keyboard::refreshHandler );
 	this->registerEventHandler( "keyDown" , &_keyboard::keyHandler );
 	this->registerEventHandler( "keyUp" , &_keyboard::keyHandler );
@@ -364,10 +373,6 @@ _keyboard::_keyboard( _u8 bgId , _u8 winBgId , _u8 bgIdSub , _gadgetStyle style 
 	this->registerEventHandler( "dragStart" , &_keyboard::dragHandler );
 	this->registerEventHandler( "dragStop" , &_keyboard::dragHandler );
 	this->registerEventHandler( "dragging" , &_keyboard::dragHandler );
-	
-	this->registerEventHandler( "focus" , &_keyboard::dragHandler );
-	
-	this->addChild( this->startButton );
 	
 	// Refresh Me
 	this->refreshBitmap();

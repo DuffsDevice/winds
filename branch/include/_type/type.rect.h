@@ -184,6 +184,9 @@ class _rect{
 		_rect operator-( const _padding p ) const ;
 		_rect& operator-=( const _padding p );
 		
+		//! Check if the rect equals another
+		bool operator==( const _rect other ) const ;
+		
 		bool intersectsWith( const _rect other ) const ;
 		bool intersectsWith( const _area other ) const;
 };
