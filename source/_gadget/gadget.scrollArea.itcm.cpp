@@ -289,6 +289,8 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	this->registerEventHandler( "dragStart" , &_scrollArea::dragHandler );
 	this->registerEventHandler( "dragging" , &_scrollArea::dragHandler );
 	
+	this->addChild( new _button( 90 , 90 , 10 , 10 , "Hallo" ) );
+	
 	// Refresh Me
 	this->hideOrShowScrollButtons();
 }

@@ -106,6 +106,6 @@ extern int _FAT_syncToDisc (FILE_STRUCT* file);
 Method to modify File Attributes
 */
 uint8_t	FAT_getAttr(const char *file);
-bool FAT_setAttr(const char *file, uint8_t attr );
+int FAT_setAttr(const char *file, uint8_t attr );
 
 #endif // _FATFILE_H
