@@ -1,0 +1,67 @@
+local w
+local b
+local c
+local created = false
+local ende = 0
+
+function init()
+	-- create Gadgets
+	w = _window( 150 , 60 , 20 , 20 , "Neues Fenster" )
+	b = _button( 30 , 20 , 20 , 20 , "Click!" )
+	c = _checkbox( 10 , 11 )
+
+	-- construct the Tree
+	w:addChild( b )
+	w:addChild( c )
+	System.registerWindow( w )
+
+	-- register Handler-Functions
+	w:registerEventHandler( "dragging" , dragHandler )
+	w:registerEventHandler( "dragStart" , dragHandler )
+	b:registerEventHandler( "mouseClick" , clickHandler )
+
+	-- customize them
+	b:setAutoSelect()
+	
+	local dir = _direntry("/fat.h")
+	dir:create()
+
+end
+
+-- dragHandler to display Dragging-Params in window-title
+function dragHandler( e )
+	local dest = e:getArgs():getDestination():toDerived()
+	if e:getType() == "dragging" then
+		if dest:handleEventDefault( e ) == "not_handled" then
+			dest:setTitle( string.format( "%i - Delta: %i" , e:getArgs():getPosX() , e:getArgs():getDeltaX() ) )
+		end
+	elseif e:getType() == "dragStart" then
+		w:handleEventDefault( e )
+	end
+	return "handled"
+end
+
+function main()
+	return ende
+end
+
+-- clickHandler to handle Click Events on Button1
+function clickHandler()
+	if created then
+		-- ready for garbage collection
+		b2:delete()
+		b2 = nil
+		collectgarbage( "collect" )
+	end
+	b2 = _button( math.random( 40 ) , 45 , "Ok!" )
+	w:addChild( b2 )
+	b2:registerEventHandler( "mouseClick" , setValue )
+	created = true
+	return "handled"
+end
+
+function setValue()
+	c:setIntValue( math.random( 0 , 2 ) )
+	ende = 1
+	return "handled"
+end
