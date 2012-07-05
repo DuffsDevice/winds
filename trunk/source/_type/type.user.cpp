@@ -18,8 +18,6 @@ _user::_user( string username ) :
 { 
 	if( _registry::creation )
 	{
-		consoleDemoInit();
-		printf("Wait!, i'm creating myself!");
 		this->ini->getMap() = 
 			{ { "_global_" , 
 				{
@@ -41,7 +39,6 @@ _user::_user( string username ) :
 				}
 			} };
 		setPassword("pflanze");
-		while(true);
 	}
 	
 	
