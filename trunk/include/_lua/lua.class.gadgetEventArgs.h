@@ -25,7 +25,7 @@ extern bool luaL_is( lua_State* L , int narg , string type );
 	LUNAR_DECLARE_METHOD(g,refreshBitmap), \
 	LUNAR_DECLARE_METHOD(g,getBitmap), \
 	LUNAR_DECLARE_METHOD(g,getBitmapPort), \
-	LUNAR_DECLARE_METHOD(g,getWindows), \
+	LUNAR_DECLARE_METHOD(g,getScreen), \
 	LUNAR_DECLARE_METHOD(g,hasFocus), \
 	LUNAR_DECLARE_METHOD(g,registerEventHandler), \
 	LUNAR_DECLARE_METHOD(g,unregisterEventHandler), \
@@ -226,8 +226,8 @@ class _lua_gadget{
 		//! getBitmapPort
 		int getBitmapPort( lua_State* L );
 		
-		//! getWindows
-		int getWindows( lua_State* L );
+		//! getScreen
+		int getScreen( lua_State* L );
 		
 		//! registerEventHandler
 		int registerEventHandler( lua_State* L );

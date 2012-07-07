@@ -2,7 +2,7 @@
 #include "_type/type.system.h"
 
 _progC::_progC( void (_progC::*init)(_cmdArgs&) , void (_progC::*destruct)() , int (_progC::*main)(_cmdArgs&) ) :
-	_program( progC )
+	_program( _programType::progC )
 	, initFunc( init )
 	, mainFunc( main )
 	, destructFunc( destruct )

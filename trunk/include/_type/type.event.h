@@ -9,11 +9,13 @@
 using namespace std;
 
 /**
- * Specifies if the Eevent was Handled or not
+ * Specifies how the event was handled
 **/
-enum _gadgetEventReturnType{
+enum _gadgetEventReturnType : _u8
+{
 	handled = 1,
 	use_default = 2,
+	use_normal = 3,
 	not_handled = 0, // If returned on dragStart -> dragging will be prevented
 };
 
@@ -25,6 +27,7 @@ typedef string _gadgetEventType;
 // Predefines
 extern map<_gadgetEventReturnType,string> eventReturnType2string;
 extern map<string,_gadgetEventReturnType> string2eventReturnType;
+
 class _gadget;
 
 class _gadgetEvent

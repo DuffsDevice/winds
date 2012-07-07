@@ -35,13 +35,11 @@ _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 	// Receive Gadget
 	_fileobject* that = (_fileobject*)event.getGadget();
 	
-	//printf("Hallo!!!");
-	
 	return not_handled;
 }
 
 _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _gadgetStyle style ) :
-	_gadget( fileobject , 50 , _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" ) , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+	_gadget( _gadgetType::fileobject , 50 , _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" ) , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );

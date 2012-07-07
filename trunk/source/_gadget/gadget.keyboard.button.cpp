@@ -16,7 +16,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		// Set Key-code
 		ev.getArgs().setKeyCode( that->key );
 		
-		if( that->getWindows() != nullptr )
+		if( that->getScreen() != nullptr )
 			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
 		
 		if( that->parent != nullptr )
@@ -29,7 +29,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		// Set Key-code
 		ev.getArgs().setKeyCode( that->key );
 		
-		if( that->getWindows() )
+		if( that->getScreen() )
 			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
 		
 		if( that->parent )
@@ -61,7 +61,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 			// Set Key-code
 			ev.getArgs().setKeyCode( that->key );
 			
-			if( that->getWindows() != nullptr )
+			if( that->getScreen() != nullptr )
 				ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
 			
 			if( that->parent != nullptr )

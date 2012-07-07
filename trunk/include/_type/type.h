@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+
 using namespace std;
 
 typedef short int _coord;
@@ -17,45 +18,56 @@ typedef int32_t _s32;
 typedef uint64_t _u64;
 typedef int64_t _s64;
 typedef _u32 _length;
+typedef int _int;
 typedef unsigned short int _key;
 typedef bool _bit;
 typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 
+#define u16 _u16
+#include <nds/touch.h>
+#undef u16
+
 typedef basic_string<char> _string;
 
 typedef map<string,string> _cmdArgs;
 
 //! Convert red, green, blue to 15bit Triplette
-constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
+static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
 }
-constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b ){
+static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b ){
 	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
+}
+static constexpr inline _pixel RGBHEX( _u32 hex ){
+	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
 }
 
 //! Convert " " " to 16bit Triplette including an alpha-channel
-constexpr inline _pixel RGBA( _u8 r , _u8 g , _u8 b , bool a ){
+static constexpr inline _pixel RGBA( _u8 r , _u8 g , _u8 b , bool a ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( a << 15 ); // a=1 means opaque, a=0 means transparent
 }
-constexpr inline _pixel RGBA255( _u8 r , _u8 g , _u8 b , bool a ){
+static constexpr inline _pixel RGBA255( _u8 r , _u8 g , _u8 b , bool a ){
 	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 2 ) << 10 ) | ( ( a >> 3 ) << 15 ); // a=1 means opaque, a=0 means transparent
 }
+static constexpr inline _pixel RGBAHEX( _u32 hex , bool alpha ){
+	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
+}
 
-constexpr inline _u8 RGB_GETR( _pixel c ){
+static constexpr inline _u8 RGB_GETR( _pixel c ){
 	return c & 0x1F;
 }
 
-constexpr inline _u8 RGB_GETG( _pixel c ){
+static constexpr inline _u8 RGB_GETG( _pixel c ){
 	return ( c >> 5 ) & 0x1F;
 }
 
-constexpr inline _u8 RGB_GETB( _pixel c ){
+static constexpr inline _u8 RGB_GETB( _pixel c ){
 	return ( c >> 10 ) & 0x1F;
 }
 
-constexpr inline _u8 RGB_GETA( _pixel c ){
+static constexpr inline _u8 RGB_GETA( _pixel c ){
 	return ( c >> 15 ) & 1;
 }
 
@@ -144,14 +156,14 @@ extern _char libnds2key[12];
 
 
 
-enum _align{
+enum class _align : _u8 {
 	left,
 	center,
 	right,
 	optimize
 };
 
-enum _valign{
+enum class _valign : _u8 {
 	top,
 	middle,
 	bottom
@@ -184,6 +196,25 @@ class _border
 typedef _border _padding;
 typedef _border _margin;
 
+struct _touch{
+	_coord x;
+	_coord y;
+	
+	_touch& operator=( touchPosition t )
+	{
+		x = t.px;
+		y = t.py;
+		return *this;
+	}
+	
+	_touch( touchPosition t ){ *this = t; }
+	
+	_touch() :
+		x( 0 )
+		, y ( 0 )
+	{ }
+};
+
 extern map<_align,string> align2string;
 extern map<_valign,string> valign2string;
 
@@ -194,7 +225,8 @@ extern map<string,_valign> string2valign;
 /**
  * Specifies the Type of an API-Element
 **/
-enum _gadgetType{
+enum class _gadgetType : _u8
+{
 	button,
 	label,
 	checkbox,
@@ -207,7 +239,7 @@ enum _gadgetType{
 	scrollarea,
 	scrollbutton,
 	window,
-	windows,
+	screen,
 	contextmenu,
 	_plain // No type set (is probably not used)
 };

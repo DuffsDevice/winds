@@ -1,4 +1,5 @@
 #include "_type/type.bitmapResizer.h"
+#include "func.memory.h"
 
 void _bitmapResizer::compute(){
 	this->scaleRect( this , this->src , this->srcArea );
@@ -37,7 +38,7 @@ void _bitmapResizer::scaleRect( _bitmap* dest , _bitmap* src, _rect srcArea )
 	for( _length y = destHeight , intPart = ( srcHeight / destHeight ) * realSrcWidth , fractPart = srcHeight % destHeight , trigY = 0 ; y ; y-- )
 	{
 		if ( srcData == prevSrcData )
-			memcpy( destData , destData - realDestWidth , destWidth * sizeof( *destData ) );
+			memCpy( destData , destData - realDestWidth , destWidth * sizeof( *destData ) );
 		else
 		{
 			// Copy The Line

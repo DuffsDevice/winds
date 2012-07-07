@@ -4,6 +4,7 @@
 
 //! Types
 #include "_type/type.gadget.h"
+#include "_type/type.gadgetScreen.h"
 
 //! C-Header
 #include <stdio.h>
@@ -18,20 +19,21 @@
 
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.desktop.h"
+#include "_gadget/gadget.windows.button.h"
 
-class _windows : public _gadget
+class _windows : public _gadgetScreen
 {
 	
 	private:
-	
-		//! Background-id returned by bgInit or bgInitSub
-		_u8					bgId;
 		
 		//! Graphics
-		BMP_WindowHeader	winHeader;
+		BMP_WindowHeader		winHeader;
+		
+		//! Start-Button
+		_windowsStartButton*	startButton;
 		
 		//! Desktop-Gadget
-		_desktop*			desktop;
+		_desktop*				desktop;
 		
 		//! Standard Function to be executed on refresh
 		static _gadgetEventReturnType	refreshHandler( _gadgetEvent );

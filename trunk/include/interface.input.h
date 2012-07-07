@@ -2,7 +2,6 @@
 #define _WIN_INTERFACE_INPUT_
 
 #include "_type/type.h"
-#include <string.h>
 
 class _interface_input
 {

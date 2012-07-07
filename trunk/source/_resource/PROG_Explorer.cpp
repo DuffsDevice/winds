@@ -21,7 +21,7 @@ void PROG_Explorer::init( _cmdArgs& args )
 	this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );
 	this->window->addChild( this->submitbutton );
-	this->windowsInstance->addChild( this->window );
+	this->gadgetHost->addChild( this->window );
 }
 
 void PROG_Explorer::destruct()

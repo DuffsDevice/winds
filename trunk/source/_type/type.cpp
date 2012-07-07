@@ -1,27 +1,27 @@
 #include "_type/type.h"
 
 map<_align,string> align2string = {
-	{ left , "left" },
-	{ center , "center" },
-	{ right , "right" }
+	{ _align::left , "left" },
+	{ _align::center , "center" },
+	{ _align::right , "right" }
 };
 
 map<_valign,string> valign2string = {
-	{ top , "top" },
-	{ middle , "middle" },
-	{ bottom , "bottom" }
+	{ _valign::top , "top" },
+	{ _valign::middle , "middle" },
+	{ _valign::bottom , "bottom" }
 };
 
 map<string,_align> string2align = {
-	{ "left" , left },
-	{ "center" , center },
-	{ "right" , right }
+	{ "left" , _align::left },
+	{ "center" , _align::center },
+	{ "right" , _align::right }
 };
 
 map<string,_valign> string2valign = {
-	{ "top" , top },
-	{ "middle" , middle },
-	{ "bottom" , bottom }
+	{ "top" , _valign::top },
+	{ "middle" , _valign::middle },
+	{ "bottom" , _valign::bottom }
 };
 
 _char libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
@@ -32,23 +32,24 @@ bool DSWindows::isHardwareKey( _char key )
 }
 
 map<_gadgetType,string> gadgetType2string = {
-	{ button, "button" },
-	{ label, "label" },
-	{ checkbox, "checkbox" },
-	{ textbox, "textbox" },
-	{ keyboard, "keyboard" },
-	{ desktop, "desktop" },
-	{ fileobject, "fileobject" },
-	{ imagegadget, "imagegadget" },
-	{ scrollarea , "scrollarea" },
-	{ scrollbutton , "scrollbutton" },
-	{ window, "window" },
-	{ windows, "windows" },
-	{ contextmenu, "contextmenu" },
-	{ _plain , "_plain" }
+	{ _gadgetType::button , "button" },
+	{ _gadgetType::label , "label" },
+	{ _gadgetType::checkbox , "checkbox" },
+	{ _gadgetType::textbox , "textbox" },
+	{ _gadgetType::keyboard , "keyboard" },
+	{ _gadgetType::desktop , "desktop" },
+	{ _gadgetType::fileobject , "fileobject" },
+	{ _gadgetType::imagegadget , "imagegadget" },
+	{ _gadgetType::scrollarea , "scrollarea" },
+	{ _gadgetType::scrollbutton , "scrollbutton" },
+	{ _gadgetType::window , "window" },
+	{ _gadgetType::screen , "screen" },
+	{ _gadgetType::contextmenu , "contextmenu" },
+	{ _gadgetType::_plain , "_plain" }
 };
 
-void trim( string& str ){
+void trim( string& str )
+{
 	size_t endpos = str.find_last_not_of(" \n\r\t");
 	if( string::npos != endpos )
 	{

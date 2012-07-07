@@ -28,9 +28,6 @@ class _lua_rect : public _rect {
 				//! Push-back
 				int insert( lua_State* L );
 				
-				//! []
-				int get(lua_State* L);
-				
 				//! clear
 				int clear(lua_State* L);
 				

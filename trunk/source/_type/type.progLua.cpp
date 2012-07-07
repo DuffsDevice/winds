@@ -59,7 +59,7 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
-int registerWindow( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( !g ) return 0; _system_->_windows_->addChild( g->gadget ); return 0; }
+int registerWindow( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( !g ) return 0; _system_->_gadgetHost_->addChild( g->gadget ); return 0; }
 
 int readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system_->_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
 int writeRegistryIndex( lua_State* L ){ _system_->_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
@@ -112,7 +112,7 @@ _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadge
  * Programm Stuff
 **/
 _progLua::_progLua( string prog ) : 
-	_program( progLua )
+	_program( _programType::progLua )
 	, code( prog )
 {
 	// Create State

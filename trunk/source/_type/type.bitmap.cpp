@@ -1,5 +1,8 @@
 #include "_type/type.bitmap.h"
+#include "func.memory.h"
 
+#include <nds/timers.h>
+#include <nds/arm9/math.h>
 
 _bitmap::_bitmap( _pixelArray base , _length w , _length h )
 	: bmp( base ) , width( w ), height( h ) , wasAllocated( false )
@@ -60,6 +63,9 @@ _length _bitmap::getHeight() const {
 
 void _bitmap::setWidth( _length w )
 { 
+	if( this->width == w )
+		return;
+	
 	_pixelArray newBmp;	
 	
 	if( this->wasAllocated )
@@ -74,23 +80,15 @@ void _bitmap::setWidth( _length w )
 		
 	if( w < this->width )
 	{
-		for( _u16 y = 0; y < this->height ; y++ )
-		{
-			for( _u16 x = 0; x < w ; x++ )
-			{
+		for( _int y = 0; y < this->height ; y++ )
+			for( _int x = 0; x < w ; x++ )
 				newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
-			}
-		}
 	}
 	else
 	{
-		for( _u16 y = this->height ; y > 0 ; y-- )
-		{
-			for( _u16 x = this->width ; x > 0 ; x-- )
-			{
+		for( _int y = this->height ; y > 0 ; y-- )
+			for( _int x = this->width ; x > 0 ; x-- )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
-			}
-		}
 	}
 	
 	if( this->wasAllocated )
@@ -113,11 +111,9 @@ void _bitmap::setHeight( _length h )
 		memSet( newBmp , 0 , h * this->width );
 	}
 	else
-	{
 		newBmp = this->bmp;
-	}
 	
-	memCopy( newBmp , this->bmp , min( this->height , h ) * this->width );
+	memCpy( newBmp , this->bmp , min( this->height , h ) * this->width );
 	
 	if( this->wasAllocated )
 	{
@@ -130,7 +126,9 @@ void _bitmap::setHeight( _length h )
 }
 
 void _bitmap::resize( _length w , _length h )
-{ 
+{
+	if( this->width == w && this->height == h )
+		return;
 	_pixelArray newBmp;	
 	
 	if( this->wasAllocated )
@@ -139,31 +137,21 @@ void _bitmap::resize( _length w , _length h )
 		memSet( newBmp , 0 , w * this->height );
 	}
 	else
-	{
 		newBmp = this->bmp;
-	}
 	
 	_length minH = min( this->height , h );
 	
 	if( w < this->width )
 	{
-		for( _u16 y = 0; y < minH ; y++ )
-		{
-			for( _u16 x = 0; x < w ; x++ )
-			{
+		for( _int y = 0; y < minH ; y++ )
+			for( _int x = 0; x < w ; x++ )
 				newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
-			}
-		}
 	}
 	else
 	{
-		for( _u16 y = minH ; y > 0 ; y-- )
-		{
-			for( _u16 x = this->width ; x > 0 ; x-- )
-			{
+		for( _int y = minH ; y > 0 ; y-- )
+			for( _int x = this->width ; x > 0 ; x-- )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
-			}
-		}
 	}
 	
 	if( this->wasAllocated )
@@ -256,7 +244,7 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	for(int i = 0; i < length; ++i , ptr += this->width )
+	for( _int i = 0; i != length; ++i , ptr += this->width )
 		*ptr = color;
 }
 
@@ -290,6 +278,7 @@ void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel col
 
 void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
 {
+	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
 	_coord y2 = y + h - 1;
@@ -300,7 +289,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	// Calculate new width/height
 	w = x2 - x + 1;
 	h = y2 - y + 1;
-		
+	
 	// Draw the rectangle
 	for (_u16 i = 0; i < h; i++) {
 		this->blitFill( x , y + i , color , w );
@@ -317,7 +306,6 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	
 	_length gradHeight = h;
 	_coord gradY = y;
-	_pixelArray gradTable = new _pixel[h];
 	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
@@ -326,12 +314,18 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
+	
 	// Calculate new width/height
 	w = x2 - x + 1;
 	h = y2 - y + 1;
 	int dY = y - gradY;
 	
 	//! Gradient Computations
+		
+		_pixelArray gradTable = new _pixel[h];
+		_pixelArray temp = gradTable + dY;
+		_pixelArray end = gradTable + h;
+		
 		// Difference between color values
 		int dR = RGB_GETR(toColor) - RGB_GETR(fromColor);
 		int dG = RGB_GETG(toColor) - RGB_GETG(fromColor);
@@ -349,25 +343,22 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		int curG = RGB_GETG(fromColor) << 11;
 		int curB = RGB_GETB(fromColor) << 11;
 		
-		if( dY > 0 ){
+		if( dY > 0 )
 			curR += trigR*dY; curG += trigG*dY; curB += trigB*dY;
-		}
 		
 		// Fill the table
-		for( int t = 0; t < h ; t++, curR += trigR, curG += trigG, curB += trigB ){
-			gradTable[ dY + t ] = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
-		}
+		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
+			*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
 		
 	// Draw the rectangle
-	for (_coord i = 0; i < h; i++)
-		this->blitFill(x, y + i, gradTable[dY+i] , w );
+	for ( _int i = 0; i < h; i++)
+		this->blitFill( x , y + i , gradTable[dY+i] , w );
 	
 	delete[] gradTable;
 }
 
 void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
 {
-	
 	if( fromColor == toColor ){
 		this->drawFilledRect( x , y , w , h , fromColor );
 		return;
@@ -375,7 +366,6 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	
 	_length gradWidth = w;
 	_coord gradX = x;
-	_pixelArray gradTable = new _pixel[w];
 	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
@@ -390,6 +380,12 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	int dX = x - gradX;
 	
 	//! Gradient Computations
+		
+		_pixelArray gradTable = new _pixel[w];
+		_pixelArray start = gradTable + dX;
+		_pixelArray temp = start;
+		_pixelArray end = gradTable + w;
+		
 		// Difference between color values
 		int dR = RGB_GETR(toColor) - RGB_GETR(fromColor);
 		int dG = RGB_GETG(toColor) - RGB_GETG(fromColor);
@@ -403,27 +399,32 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		int trigB = div32( dB , gradWidth );
 		
 		// Defines
-		int curR = RGB_GETR(fromColor) << 11;
-		int curG = RGB_GETG(fromColor) << 11;
-		int curB = RGB_GETB(fromColor) << 11;
+		unsigned int curR = ( fromColor & 31 ) << 11; // Faster than RGB_GETR... ??
+		unsigned int curG = RGB_GETG(fromColor) << 11;
+		unsigned int curB = RGB_GETB(fromColor) << 11;
 		
-		if( dX > 0 ){
-			curR += trigR*dX; curG += trigG*dX; curB += trigB*dX;
+		if( dX > 0 )
+		{
+			curR += trigR * dX;
+			curG += trigG * dX;
+			curB += trigB * dX;
 		}
 		
 		// Fill the table
-		for( int t = 0; t < w ; t++, curR += trigR, curG += trigG, curB += trigB ){
-			gradTable[dX+t] = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
-		}
+		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
+			*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
 		
-	// Draw one line!
-	for (_coord i = 0; i < w; i++)
-		this->drawPixelNoCheck( x + i , y, gradTable[dX+i] );
+	// Draw Set Bitmap-starting-ptr
+	_pixelArray pos = this->bmp + y * this->width + x;
+	_u16 part = this->width - ( w + x );
 	
-	// Copy that line!
-	for (_coord i = 1; i < h; i++){
-		memCopy( &this->bmp[ this->width * ( y + i ) + x ] , &this->bmp[ y * this->width + x ] , w );
-		//dmaCopyWords( 3 , &this->bmp[ y * this->width + x ] , &this->bmp[ this->width * ( y + i ) + x ] , sizeof(_pixel) * w );
+	// Fill the rect
+	for ( _int i = 0; i != h; ++i )
+	{
+		temp = start;
+		while( temp != end )
+			*pos++ = *temp++;
+		pos += part;
 	}
 	
 	delete[] gradTable;
@@ -617,7 +618,7 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
 	
 	for(int i = 0; i < h; i++ )
 	{
-		memCopy( myData , copyData , w );
+		memCpy( myData , copyData , w );
 		copyData += data->getWidth();
 		myData += this->width;
 	}
@@ -705,14 +706,14 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 	_length width = x2 - x + 1;
 	
 	// Draw one line!
-	memCopy( myData , copyData , width );
+	memCpy( myData , copyData , width );
 	
 	_pixelArray destination = myData;
 	
 	// Copy that line!
 	for (_u16 i = 1; i < height; i++){
 		destination += this->width;
-		memCopy( destination , myData , width );
+		memCpy( destination , myData , width );
 	}
 }
 

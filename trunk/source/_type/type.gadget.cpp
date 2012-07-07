@@ -1,6 +1,5 @@
 #include "_type/type.gadget.h"
 #include "_type/type.system.h"
-#include <nds.h>
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
 	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , enhanced( false ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
@@ -16,33 +15,19 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	this->registerDefaultEventHandler( "mouseDown" , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( "mouseUp" , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( "mouseClick" , &_gadget::gadgetMouseHandler );
-	this->registerEventHandler( "mouseDoubleClick" , &_gadget::gadgetMouseHandler );
+	this->registerDefaultEventHandler( "mouseDoubleClick" , &_gadget::gadgetMouseHandler );
 	this->registerDefaultEventHandler( "refresh" , &_gadget::gadgetRefreshHandler );
 	this->registerDefaultEventHandler( "dragStart" , &_gadget::gadgetDragHandler );
 	this->registerDefaultEventHandler( "dragging" , &_gadget::gadgetDragHandler );
 	this->registerDefaultEventHandler( "dragStop" , &_gadget::gadgetDragHandler );
 }
 
+//
+// Delegating Constructors!!!! C++0x I love you!
+//
 _gadget::_gadget( int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
-	: type( _plain ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , enhanced( false ) , focused( false ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr )
-{
-	if( !doNotAllocateBitmap )
-	{
-		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
-		this->bitmap->reset( COLOR_WHITE );
-	}
-	
-	this->registerDefaultEventHandler( "focus" , &_gadget::gadgetFocusHandler );
-	this->registerDefaultEventHandler( "blur" , &_gadget::gadgetFocusHandler );
-	this->registerDefaultEventHandler( "mouseDown" , &_gadget::gadgetMouseHandler );
-	this->registerDefaultEventHandler( "mouseUp" , &_gadget::gadgetMouseHandler );
-	this->registerDefaultEventHandler( "mouseClick" , &_gadget::gadgetMouseHandler );
-	this->registerEventHandler( "mouseDoubleClick" , &_gadget::gadgetMouseHandler );
-	this->registerDefaultEventHandler( "refresh" , &_gadget::gadgetRefreshHandler );
-	this->registerDefaultEventHandler( "dragStart" , &_gadget::gadgetDragHandler );
-	this->registerDefaultEventHandler( "dragging" , &_gadget::gadgetDragHandler );
-	this->registerDefaultEventHandler( "dragStop" , &_gadget::gadgetDragHandler );
-}
+	: _gadget( _gadgetType::_plain , width , height , posX , posY , style , doNotAllocateBitmap )
+{ }
 
 void _gadget::setPadding( _padding p ){
 	this->padding = p;
@@ -94,8 +79,7 @@ _rect _gadget::getSize() const {
 	return _rect( 0 , 0 , this->dimensions.width , this->dimensions.height );
 }
 
-void _gadget::generateEvent( _gadgetEvent event )
-{
+void _gadget::generateEvent( _gadgetEvent event ){
 	_system_->generateEvent( event );
 }
 
@@ -129,16 +113,18 @@ _gadgetStyle _gadget::getStyle() const {
 	return this->style;
 }
 
-void _gadget::setStyle( _gadgetStyle style ){
+void _gadget::setStyle( _gadgetStyle style )
+{
 	this->style = style;
 	this->triggerEvent( _gadgetEvent( "refresh" ) );
 }
 
-_gadget* _gadget::getWindows(){
-	if( this->type == windows )
+_gadget* _gadget::getScreen()
+{
+	if( this->type == _gadgetType::screen )
 		return this;
 	else if( this->parent != nullptr )
-		return this->parent->getWindows();
+		return this->parent->getScreen();
 	else
 		return nullptr;
 }
@@ -199,7 +185,9 @@ bool _gadget::blurChild()
 		return true;
 	
 	(*child)->focused = false;
+	
 	_system::_currentFocus_ = nullptr;
+	
 	return true;
 }
 
@@ -211,12 +199,13 @@ bool _gadget::focusChild( _gadget* child )
 	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
 	
 	// Blur the Previously focused gadget
-	if( !child->focused )
+	if( itTemp != this->children.end() && !child->focused )
 		this->blurEventChild();
 	else
 		return false;
 	
 	_system::_currentFocus_ = child;
+	
 	child->focused = true;
 	
 	if( *itTemp == this->children.back() )
@@ -231,16 +220,33 @@ bool _gadget::focusChild( _gadget* child )
 }
 
 bool _gadget::canReactTo( _gadgetEventType type ) const {
+	//printf("%s can react to %s: %d\n",gadgetType2string[this->type].c_str(),type.c_str(),this->eventHandlers.count( type ) || this->luaEventHandlers.count( type ));
 	return this->eventHandlers.count( type ) || this->luaEventHandlers.count( type );
 }
 
-_gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent event )
+_gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent& event )
 {
 	// Use the default EventHandler if available
 	if( this->defaultEventHandlers.count( event.getType() ) )
 		return this->defaultEventHandlers[ event.getType() ]( event );
-	// If the Handler doesn't exist, return 
+	
+	// If the Handler for the given event doesn't exist, return 
 	return not_handled;
+}
+
+_gadgetEventReturnType _gadget::handleEventNormal( _gadgetEvent event )
+{
+	// Check for Normal Event Handlers
+	if( this->eventHandlers.count( event.getType() ) )
+	{
+		_gadgetEventReturnType ret = this->eventHandlers[ event.getType() ]( event );
+		
+		if( ret != use_default )
+			return ret;
+	}
+	
+	// If the Handler doesn't exist, return 
+	return this->handleEventDefault( event );
 }
 
 _gadgetEventReturnType _gadget::handleEvent( _gadgetEvent event )
@@ -249,37 +255,38 @@ _gadgetEventReturnType _gadget::handleEvent( _gadgetEvent event )
 	pair<int,lua_State*> data;
 	_gadgetEventReturnType ret = not_handled;
 	
-	// Check for Normal Event Handlers
-	if( this->eventHandlers.count( event.getType() ) )
+	/*if( event.getType() == "refresh" )
 	{
 		ret = this->eventHandlers[ event.getType() ]( event );
 		if( ret == use_default )
 			return this->handleEventDefault( event ); // Use the default EventHandler if available
 		return ret;
-	}
+	}*/
 	// Check for a Handler by lua
-	else if( this->luaEventHandlers.count( event.getType() ) )
+	if( this->luaEventHandlers.count( event.getType() ) )
 	{
 		ret = lua_callEventHandler( (data = this->luaEventHandlers[ event.getType() ]).second , data.first , event );
 		if( ret == use_default )
 			return this->handleEventDefault( event ); // Use the default EventHandler if available
-		return ret;
+		else if( ret != use_normal )
+			return ret;
 	}
+	
 	// Use the default EventHandler if available
-	return this->handleEventDefault( event );
+	return this->handleEventNormal( event );
 }
 
 _coord _gadget::getAbsoluteX() const {
-	if( this->parent != nullptr ){
+	if( this->parent != nullptr )
 		return this->parent->getAbsoluteX() + this->dimensions.x + ( !this->enhanced ) * this->parent->getPadding().getLeft();
-	}
+	
 	return this->dimensions.x;
 }
 
 _coord _gadget::getAbsoluteY() const {
-	if( this->parent != nullptr ){
+	if( this->parent != nullptr )
 		return this->parent->getAbsoluteY() + this->dimensions.y + ( !this->enhanced ) * this->parent->getPadding().getTop();
-	}
+	
 	return this->dimensions.y;
 }
 
@@ -324,26 +331,46 @@ _gadget* _gadget::getParent() const {
 	return this->parent;
 }
 
-void _gadget::setParent( _gadget* val ){
+void _gadget::setParent( _gadget* val )
+{
 	if( this->parent != nullptr )
 		this->parent->removeChild( this );
+		
 	this->parent = val;
+	
 	if( val )
 		this->parent->addChild( this );
 }
 
 void _gadget::_setParent( _gadget* val ){ this->parent = val; }
 
-bool _gadget::removeEnhanced( _gadget* g ) { if( g->enhanced ) return false; g->parent = nullptr; g->focused = false; return true; }
+// Internal
+bool _gadget::removeEnhancedCallback( _gadget* g )
+{ 
+	if( g->enhanced )
+		return false;
+	
+	return _gadget::removeCallback( g );
+}
+
+// Internal
+bool _gadget::removeCallback( _gadget* g )
+{ 
+	if( g->focused && g->parent )
+		g->parent->blurChild();
+	
+	g->parent = nullptr;
+	return true;
+}
 
 void _gadget::removeChildren( bool preserveEnhanced )
 {
 	if( preserveEnhanced )
-		this->children.remove_if( this->removeEnhanced  );
+		this->children.remove_if( this->removeEnhancedCallback );
 	else
-		this->children.erase( this->children.begin(), this->children.end() );
+		this->children.remove_if( this->removeCallback );
 	
-	// Signalize there are no children left!
+	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
 }
 
@@ -365,9 +392,11 @@ void _gadget::removeChild( _gadget* child )
 	
 	this->bubbleRefresh( true , _gadgetEvent::refreshEvent( this , absDim ) );
 	
+	if( child->focused )
+		this->blurChild();
+	
 	// Erase the Connection on both sides
 	child->parent = nullptr;
-	child->focused = false;
 }
 
 void _gadget::addChild( _gadget* child )
@@ -441,13 +470,13 @@ void _gadget::setWidth( _length val )
 
 _gadget* _gadget::getToppestChild()
 {
-	if( this->children.size() == 0 )
+	if( this->children.empty() )
 		return nullptr;
 	else
 		return this->children.back();
 }
 
-_gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
+_gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -516,7 +545,7 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent event )
 	return handled;
 }
 
-_gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
+_gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& e )
 {
 	_gadget* that = e.getGadget();
 	
@@ -542,7 +571,7 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 			e.getArgs().setPosY( e.getArgs().getPosY() - ( gadget->getY() + ( !gadget->enhanced ) * p.getTop() ) );
 			
 			// It doesn't make sense to focus a child of some _gadget that can't be focused
-			if( e.getType() == "mouseDown" && ( that->focused || that->type == _gadgetType::windows ) )
+			if( e.getType() == "mouseDown" && ( that->focused || that->type == _gadgetType::screen ) )
 				that->focusEventChild( gadget );
 			else if( e.getType() == "mouseDoubleClick" && !gadget->canReactTo( "mouseDoubleClick" ) )
 				e.setType( "mouseClick" );
@@ -560,7 +589,7 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent e )
 }
 
 
-_gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
+_gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& e )
 {
 	// Temp...
 	_gadget* that = e.getGadget();
@@ -630,7 +659,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent e )
 	return not_handled;
 }
 
-_gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent e )
+_gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent& e )
 {
 	_gadget* that = e.getGadget();
 	
