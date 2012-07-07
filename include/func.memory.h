@@ -3,12 +3,19 @@
 
 #include "_type/type.h"
 
-void memCopy( _pixelArray src , _pixelArray dest , _u32 size );
-
-void memSet( _pixelArray dest , _s32 value , _u32 size );
-
-_u32 getFreeMemory();
+unsigned int getFreeMemory();
 
 int string2int(const char *p);
+
+/*//! Tonc-lib
+void memset32(void *dst, unsigned int src, unsigned int wdn);
+void memset16(void *dst, unsigned short int val, unsigned int hwn);
+
+//! Tonc-lib
+void memcpy16(void *dst, const void *src, unsigned int hwn);
+void memcpy32(void *dst, const void *src, unsigned int hwn);*/
+
+void memSet( void* dst , const unsigned short int val , unsigned int hwn );
+void memCpy( void* dst , const void* src , unsigned int hwn );
 
 #endif

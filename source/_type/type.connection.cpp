@@ -1,5 +1,4 @@
 #include "_type/type.connection.h"
-#include <string.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <sys/socket.h>

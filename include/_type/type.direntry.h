@@ -1,7 +1,6 @@
 #ifndef _WIN_T_DIRENTRY_
 #define _WIN_T_DIRENTRY_
 
-#include <string.h>
 #include <stdio.h>
 #include <list>
 #include <sys/dir.h>

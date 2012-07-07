@@ -9,8 +9,8 @@
 #include "_type/type.event.h"
 #include "_type/type.runtimeAttributes.h"
 #include "_type/type.registry.h"
+#include "_type/type.gadgetScreen.h"
 #include "_type/type.freetypefont.h"
-#include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.keyboard.h"
 #include "fat.h"
 
@@ -58,20 +58,17 @@ class _system{
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() );
 		static void generateEvent( _gadgetEvent event );
 		
-		static int	_bgIdFront;
-		static int	_bgIdBack;
-		static int	_bgIdSub;
+		static int 	bgIdFront;
+		static int 	bgIdBack;
+		static int 	bgIdSub;
 		
 	public:
 	
-		static _windows*				_windows_;
+		static _gadgetScreen*			_gadgetHost_;
 		static _keyboard*				_keyboard_;
+		static _screen*					_topScreen_;
 		static _registry*				_registry_;
 		static _runtimeAttributes*		_runtimeAttributes_;
-		
-		static const int&	bgIdFront;
-		static const int&	bgIdBack;
-		static const int&	bgIdSub;
 		
 		// Constructor
 		_system();

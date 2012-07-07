@@ -51,7 +51,7 @@ int _lua_rect::contains(lua_State* L){
 	return 1; 
 }
 //! fromCoords
-int _lua_rect::fromCoords(lua_State* L){ 
+int _lua_rect::fromCoords(lua_State* L){
 	Lunar<_lua_rect>::push( L , new _lua_rect( _rect::fromCoords( 
 		luaL_checkint( L , 1 ),
 		luaL_checkint( L , 2 ),
@@ -117,8 +117,6 @@ _lua_area::_lua_area( _area a ) : _area( a )
 _lua_area::_lua_area( lua_State* L ) : _area() { _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) _area::push_back( *rc ); }
 //! Push-back
 int _lua_area::insert( lua_State* L ){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) _area::push_back( *rc ); return 0; }
-//! []
-int _lua_area::get(lua_State* L){ Lunar<_lua_rect>::push( L , new _lua_rect( _area::operator[]( luaL_checkint( L , 1 ) ) ) , true ); return 1; }
 //! clear
 int _lua_area::clear(lua_State* L){ _area::clear(); return 0; }
 //! toRelative
@@ -128,7 +126,6 @@ int _lua_area::toRelative(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check
 const char _lua_area::className[] = "_area";
 Lunar<_lua_area>::RegType _lua_area::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_area, insert),
-  LUNAR_DECLARE_METHOD(_lua_area, get),
   LUNAR_DECLARE_METHOD(_lua_area, toRelative),
   LUNAR_DECLARE_METHOD(_lua_area, clear),
   {0,0}

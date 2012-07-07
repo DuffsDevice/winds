@@ -68,7 +68,7 @@ void _contextMenu::show( _coord x , _coord y )
 	this->opened = true;
 	
 	// View
-	this->setParent( _system_->_windows_ );
+	this->setParent( _system_->_gadgetHost_ );
 	
 	// Focus
 	this->handleEvent( _gadgetEvent( "focus" ) );

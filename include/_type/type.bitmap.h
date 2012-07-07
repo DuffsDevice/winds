@@ -5,10 +5,6 @@
 #include "_type/type.h"
 #include "_type/type.font.h"
 #include "_type/type.rect.h"
-#include "func.memory.h"
-#include <string.h>
-
-#include "nds/arm9/math.h"
 
 class _font;
 

@@ -11,7 +11,7 @@
 #include <sstream>
 
 /*##################################
-##           Lua-Gagget           ##
+##           Lua-Gadget           ##
 ##################################*/
 
 _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
@@ -51,8 +51,8 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 //! getBitmapPort
 int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) , true ); return 1; }
 
-//! getWindows
-int _lua_gadget::getWindows( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getWindows() ) , true ); return 1; }
+//! getScreen
+int _lua_gadget::getScreen( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getScreen() ) , true ); return 1; }
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
@@ -145,13 +145,13 @@ int _lua_gadget::setHeight(lua_State* L){ this->gadget->setHeight( luaL_checkint
 //! toDerived
 int _lua_gadget::toDerived( lua_State* L ){ 
 	switch( this->gadget->getType() ){
-		case window:
+		case _gadgetType::window:
 			Lunar<_lua_window>::push( L , new _lua_window( (_window*)this->gadget ) , true );
 			return 1;
-		case checkbox:
+		case _gadgetType::checkbox:
 			Lunar<_lua_checkbox>::push( L , new _lua_checkbox( (_checkbox*)this->gadget ) , true );
 			return 1;
-		case button:
+		case _gadgetType::button:
 			Lunar<_lua_button>::push( L , new _lua_button( (_button*)this->gadget ) , true );
 			return 1;
 		default:

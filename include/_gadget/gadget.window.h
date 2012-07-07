@@ -9,7 +9,6 @@
 #include "_gadget/gadget.button.h"
 #include "interface.input.h"
 #include "_type/type.runtimeAttributes.h"
-#include <string.h>
 
 class _windowButton : public _button{
 	private:

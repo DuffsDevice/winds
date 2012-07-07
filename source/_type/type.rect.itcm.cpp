@@ -1,5 +1,95 @@
 #include "_type/type.rect.h"
 
+//////////
+// AREA //
+//////////
+
+_area::_area( _rect rc ){
+	rects.push_back( rc );
+}
+
+_area::_area(int){}
+
+void _area::push_back( _rect rc ){
+	this->rects.push_back( rc );
+}
+
+void _area::push_back( const _area ar ){
+	for( const _rect& rc : ar.rects )
+		this->rects.push_back( rc );
+}
+
+void _area::clear(){
+	this->rects.clear();
+}
+
+list<_rect>::iterator _area::begin(){
+	return this->rects.begin();
+}
+
+list<_rect>::iterator _area::end(){
+	return this->rects.end();
+}
+
+_area _area::operator-( const _rect dim ) const {
+	// Temp Rects
+	_area r;
+	for( const _rect& rc : this->rects )
+		r.add( rc - dim );
+	return r;
+}
+
+_area& _area::operator-=( const _rect dim ){
+	// Temp Rects
+	list<_rect> tR = this->rects;
+	
+	// Clear
+	this->rects.clear();
+	
+	for( const _rect& rc : tR )
+		this->add( rc - dim );
+	
+	return *this;
+}
+
+void _area::add( _area cR ){
+	for( const _rect& rc : cR ){
+		this->rects.push_back( rc );
+	}
+}
+
+void _area::dump() const {
+	for( const _rect &rc : this->rects )
+		rc.dump();
+}
+
+_area _area::toRelative( const _rect absDim ) const {
+	_area ar = *this;
+	for( _rect &rc : ar.rects )
+		rc = rc.toRelative( absDim );
+	return ar;
+}
+
+_area _area::operator&( const _rect limits ) const {
+	_area ar = *this;
+	for( _rect &rc : ar.rects )
+		rc &= limits;
+	return ar;
+}
+
+_area& _area::operator&=( const _rect limits ){
+	for( _rect &rc : this->rects )
+		rc &= limits;
+	return *this;
+}
+
+bool _area::empty(){
+	return this->rects.empty();
+}
+
+//////////
+// RECT //
+//////////
 _rect::_rect( _coord x , _coord y , _length width , _length height ){
 	this->x = x;
 	this->y = y;
@@ -248,4 +338,9 @@ _rect _rect::operator&( const _rect rect ) const
 	_coord y2 = min( this->getY2() , rect.getY2() );
 
 	return _rect( x1 , y1 , x2 - x1 + 1 , y2 - y1 + 1 );
+}
+
+bool _rect::operator==( const _rect other ) const 
+{
+	return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
 }

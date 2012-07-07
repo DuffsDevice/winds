@@ -44,7 +44,7 @@ class _button : public _gadget , public _interface_input {
 		void setVAlign( _valign vAlign ){ if( this->label ) this->label->setVAlign(vAlign); }
 		
 		//! Get Vertical Alignment of the Button
-		_valign getVAlign(){ if( this->label ) return this->label->getVAlign(); return top; }
+		_valign getVAlign(){ if( this->label ) return this->label->getVAlign(); return _valign::top; }
 		
 		//! Set Title to be displayed on top of the button
 		void setTitle( string val ){ if( this->label ) this->label->setStrValue(val); this->computeSize(); }

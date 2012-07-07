@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_GADGET_
-#define _WIN_GADGET_
+#ifndef _WIN_T_GADGET_
+#define _WIN_T_GADGET_
 
 #include "_type/type.bitmap.h"
 #include "_type/type.gadgetStyle.h"
@@ -14,8 +14,9 @@
 // STD-Standards
 #include <list>
 #include <utility>
-#include <map>
 using namespace std;
+
+#include <nds/memory.h>
 
 class _gadget;
 
@@ -23,7 +24,7 @@ extern _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler ,
 
 typedef _gadgetEventReturnType (*_gadgetEventHandler)(_gadgetEvent);
 typedef list<_gadget*> _gadgetList;
-typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent);
+typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent&);
 
 class _gadget{
 	
@@ -32,7 +33,8 @@ class _gadget{
 		// Type of the Gadget
 		_gadgetType type;
 		
-		static bool removeEnhanced( _gadget* g );
+		static bool removeEnhancedCallback( _gadget* g );
+		static bool removeCallback( _gadget* g );
 	
 	public:
 	
@@ -58,10 +60,10 @@ class _gadget{
 		map<_gadgetEventType,_gadgetEventHandler> eventHandlers;
 		
 		// Standard EventHandler
-		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent event );
-		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent event );
-		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent event );
+		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent& event );
+		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent& event );
+		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent& event );
+		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent& event );
 		
 		// Bitmap of the Gadget
 		_bitmap*	bitmap;
@@ -115,7 +117,7 @@ class _gadget{
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() ) ITCM_CODE;
+		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() );
 		
 		/**
 		 * Method to refresh itself
@@ -143,9 +145,9 @@ class _gadget{
 		void setStyle( _gadgetStyle style );
 		
 		/**
-		 * Returns the Toppest Parent, which is usually Windows itself
+		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
 		**/
-		_gadget* getWindows();
+		_gadget* getScreen();
 		
 		/**
 		 * Method to check whether the Gadget has Focus
@@ -200,9 +202,14 @@ class _gadget{
 		_gadgetEventReturnType handleEvent( _gadgetEvent event );
 		
 		/**
-		 * Make The Gadget act onto a specific GadgetEvent by using the Dafault event-handler if available
+		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
 		**/
-		_gadgetEventReturnType handleEventDefault( _gadgetEvent event );
+		_gadgetEventReturnType handleEventNormal( _gadgetEvent event );
+		
+		/**
+		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
+		**/
+		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event );
 		
 		/**
 		 * Get the absolute X-position

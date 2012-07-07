@@ -5,7 +5,6 @@
 #include "type.bitmap.h"
 #include "type.rect.h"
 #include "type.h"
-#include <deque>
 
 using namespace std;
 
@@ -14,7 +13,7 @@ class _bitmapPort{
 	public:
 		
 		//! A list of Clipping-Rects
-		deque< _rect > clippingRects;
+		_area clippingRects;
 		
 		//! Base Bitmap
 		_bitmap* base;

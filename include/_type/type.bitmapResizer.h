@@ -3,7 +3,6 @@
 #define _WIN_T_BITMAPRESIZER_
 
 #include "_type/type.bitmap.h"
-#include <string.h>
 
 class _bitmapResizer : public _bitmap
 {

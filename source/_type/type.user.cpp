@@ -38,7 +38,6 @@ _user::_user( string username ) :
 					{ "selectObjectHeight" , "8" }
 				}
 			} };
-		setPassword("pflanze");
 	}
 	
 	

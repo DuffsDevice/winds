@@ -3,8 +3,7 @@
 
 #include "type.h"
 #include <cmath>
-#include <vector>
-#include <stdio.h>
+#include <list>
 #include <algorithm>
 
 class _rect{
@@ -19,100 +18,46 @@ class _rect{
 		_coord x;
 		_coord y;
 		
+		//! Define Inside because of cicular dependencies...
 		class _area
 		{
 			friend class _rect;
 			
 			private:
 				
-				vector<_rect> rects;
+				list<_rect> rects;
 				
 			public:
 				
-				_area( _rect rc ){
-					rects.push_back( rc );
-				}
+				_area( _rect rc );
 				
-				_area( int = 0 ){}
+				_area( int = 0 );
 				
-				void push_back( _rect rc ){
-					this->rects.push_back( rc );
-				}
+				void push_back( _rect rc );
 				
-				void push_back( _area ar ){
-					for( _rect& rc : ar.rects )
-						this->rects.push_back( rc );
-				}
+				void push_back( const _area ar );
 				
-				void clear(){
-					this->rects.clear();
-				}
+				void clear();
 				
-				_rect& operator[](int u){
-					return this->rects[u];
-				}
+				list<_rect>::iterator begin();
 				
-				vector<_rect>::iterator begin(){
-					return this->rects.begin();
-				}
+				list<_rect>::iterator end();
 				
-				vector<_rect>::iterator end(){
-					return this->rects.end();
-				}
+				_area operator-( const _rect dim ) const ;
 				
-				_area operator-( const _rect dim ) const {
-					// Temp Rects
-					_area r;
-					for( auto it = this->rects.begin(); it < this->rects.end() ; it++ ){
-						r.add( *it - dim );
-					}
-					return r;
-				}
+				_area& operator-=( const _rect dim );
 				
-				_area& operator-=( const _rect dim ){
-					// Temp Rects
-					vector<_rect> tR = this->rects;
-					this->rects.clear();
-					for( auto it = tR.begin(); it < tR.end() ; it++ ){
-						this->add( *it - dim );
-					}
-					return *this;
-				}
+				void add( _area cR );
 				
-				void add( _area cR ){
-					for( vector<_rect>::iterator i = cR.begin() ; i < cR.end() ;i++ ){
-						this->rects.push_back( *i );
-					}
-				}
+				void dump() const ;
 				
-				void dump() const {
-					for( const _rect &rc : this->rects )
-						rc.dump();
-				}
+				_area toRelative( const _rect absDim ) const ;
 				
-				_area toRelative( const _rect absDim ) const {
-					_area ar = *this;
-					for( _rect &rc : ar.rects )
-						rc = rc.toRelative( absDim );
-					return ar;
-				}
+				_area operator&( const _rect limits ) const ;
 				
-				_area operator&( const _rect limits ) const {
-					_area ar = *this;
-					for( _rect &rc : ar.rects )
-						rc &= limits;
-					return ar;
-				}
+				_area& operator&=( const _rect limits );
 				
-				_area& operator&=( const _rect limits ){
-					for( _rect &rc : this->rects )
-						rc &= limits;
-					return *this;
-				}
-				
-				bool empty(){
-					return this->rects.empty();
-				}
+				bool empty();
 		};
 	
 	public:
@@ -183,6 +128,9 @@ class _rect{
 		//! Crop the Rect by applying a padding
 		_rect operator-( const _padding p ) const ;
 		_rect& operator-=( const _padding p );
+		
+		//! Check if the rect equals another
+		bool operator==( const _rect other ) const ;
 		
 		bool intersectsWith( const _rect other ) const ;
 		bool intersectsWith( const _area other ) const;
