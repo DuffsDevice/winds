@@ -301,20 +301,20 @@ _coord _gadget::getY() const {
 void _gadget::setX( _coord val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = val;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , this->getAbsoluteDimensions() | dim ) );
+	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 }
 
 void _gadget::setY( _coord val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.y = val;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , this->getAbsoluteDimensions() | dim ) );
+	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 }
 
 void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x += dX;
 	this->dimensions.y += dY;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , this->getAbsoluteDimensions() | dim ) );
+	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 }
 
 void _gadget::moveTo( _coord x , _coord y )
@@ -322,7 +322,9 @@ void _gadget::moveTo( _coord x , _coord y )
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = x;
 	this->dimensions.y = y;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , this->getAbsoluteDimensions() | dim ) );
+	if( this->parent )
+		this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
+	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 }
 
 bool& _gadget::hasFocus(){ return this->focused; }
@@ -431,7 +433,7 @@ void _gadget::setDimensions( _rect rc ){
 	this->onResize();
 	
 	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim - this->getAbsoluteDimensions() ) );
+	this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 }
 
 _length _gadget::getHeight() const {
@@ -451,7 +453,7 @@ void _gadget::setHeight( _length val )
 		this->onResize();
 		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim - this->getAbsoluteDimensions() ) );
+		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim | this->getAbsoluteDimensions() ) );
 	}
 }
 
@@ -533,8 +535,6 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 			bP.addClippingRects( damagedRects );
 			
 			// Copy...
-			//if( padding.getTop() )
-				//printf(" %d,%d\n" , gadget->getDimensions().getY() , gadget->getDimensions().toRelative( _rect( -padding.getLeft() , -padding.getTop() , 0 , 0 ) ).getY() );
 			bP.copyTransparent( gadget->getX() + padding.getLeft() , gadget->getY() + padding.getTop() , gadget->getBitmap() );
 			
 			// Reduce Painting Area

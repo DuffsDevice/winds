@@ -27,16 +27,13 @@ void _fileview::setPath( const string& path ){
 
 void _fileview::generateChildren()
 {
-	int i = -_system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" );
+	int i = -_system_->_runtimeAttributes_->user->fOH;
 	
 	this->directory.rewindChildren();
 	
 	// Read Children of directory
 	for( string str; this->directory.readChild( str ) != false ; )
-	{
-		//printf( "new %s\n" , str.c_str() );
-		this->addChild( new _fileobject( 1 , ( i += _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" ) + 1 ) , str , this->viewType ) );
-	}
+		this->addChild( new _fileobject( 1 , ( i += _system_->_runtimeAttributes_->user->fOH + 1 ) , str , this->viewType ) );
 }
 
 _fileview::~_fileview(){

@@ -12,6 +12,15 @@ class _user : public _registry
 	
 	public:
 		
+		// Touch Parameters
+		_u32 	mDD;
+		_u32 	mCC;
+		_u32 	mDC;
+		_u32 	mDA;
+		_u32 	kRD;
+		_u32 	kRS;
+		_u32 	fOH;
+		
 		_bitmap* userLogo;
 		_bitmap* userImage;
 		

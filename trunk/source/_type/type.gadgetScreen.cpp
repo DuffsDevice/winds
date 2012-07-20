@@ -23,11 +23,8 @@ _touch _gadgetScreen::adjustTouch( _touch touch )
 
 bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 {
-	// Attributes
-	static _u32 mCC = _system_->_runtimeAttributes_->user->getIntAttr( "maxClickCycles" );
-	static _u32 mDD = _system_->_runtimeAttributes_->user->getIntAttr( "minDragDistance" );
-	static _u32 mDC = _system_->_runtimeAttributes_->user->getIntAttr( "maxDoubleClickCycles" );
-	static _u32 mDA = _system_->_runtimeAttributes_->user->getIntAttr( "maxDoubleClickArea" );
+	// Shortcut...
+	const _user* user = _system_->_runtimeAttributes_->user;
 	
 	// Temp...
 	_gadgetEventArgs args;
@@ -88,7 +85,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			u32 dragDistance = xd * xd + yd * yd;
 			
 			// Check if Pen has moved the distance already
-			if( dragDistance > mDD * mDD )
+			if( dragDistance > user->mDD * user->mDD )
 			{
 				// Set the Args
 				args.reset();
@@ -131,14 +128,14 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			this->dragging = false;
 		}
 		//! Maybe Click-Event?
-		else if( this->touchCycles < mCC )
+		else if( this->touchCycles < user->mCC )
 		{
 			_s16	deltaX = touchBefore.x - lastTouch.x;
 			_s16	deltaY = touchBefore.y - lastTouch.y;
 			_s16 	deltaTouch = deltaX * deltaX + deltaY * deltaY;
 			
 			// Trigger the mouseClick-Event and mouseDoubleCLick!
-			if( this->cyclesLastClick && this->cyclesLastClick < mDC && deltaTouch < mDA * mDA )
+			if( this->cyclesLastClick && this->cyclesLastClick < user->mDC && deltaTouch < user->mDA * user->mDA )
 			{
 				// Trigger the Event
 				this->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );

@@ -75,6 +75,8 @@ class _direntry{
 		// Get PARTITION and DIR_ENTRY
 		bool getEntry( PARTITION* &partition , DIR_ENTRY* &dirEntry );
 		
+		bool flush();
+		
 	public:
 	
 		// Check if File is Direct

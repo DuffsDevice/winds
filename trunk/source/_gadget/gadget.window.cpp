@@ -29,7 +29,6 @@ _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 			bP.drawPixel( 2 , 5 , color[5] );
 			bP.drawPixel( 5 , 2 , color[5] );
 			bP.drawPixel( 5 , 5 , color[5] );
-			//printf("CLOSE\n");
 			break;
 		case 1:
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
@@ -37,13 +36,11 @@ _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 			bP.drawRect( 3 , 3 , 2 , 2 , color[1] );
 			bP.drawRect( 2 , 2 , 4 , 4 , color[0] );
 			bP.drawHorizontalLine( 2 , 2 , 4 , RGB( 31 , 31 , 31 ) );
-			//printf("MAX\n");
 			break;
 		case 2:
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
 			bP.drawFilledRect( 1 , 1 , 6 , 6 , color[1] );
 			bP.drawHorizontalLine( 2 , 5 , 3 , RGB( 31 , 31 , 31 ) );
-			//printf("MIN\n");
 			break;
 	}
 	

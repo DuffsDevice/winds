@@ -1,18 +1,28 @@
 #include "_type/type.imagefile.h"
+#include "nds.h"
+#include <functional>
+
+auto wait = [](){ while( ! (keysDown() & KEY_A) ) scanKeys(); };
 
 _imagefile::_imagefile( string fn ) :
 	_bitmap( nullptr , 0 , 0 )
 	, _direntry( fn )
 	, pngDecoder( nullptr )
 {
+	// Doesn't make sence to 
+	if( !this->isExisting() )
+		return;
+	
 	if( this->getMimeType() == _mime::image_png )
 	{
+		printf("PNG-File!\n");
 		pngDecoder = new YsRawPngDecoder;
 		
 		pngDecoder->Decode( this->filename.c_str() );
 		
 		if( pngDecoder->wid > 0 && pngDecoder->hei > 0 && pngDecoder->rgba != NULL )
 		{
+			printf("Success: %d , %d\n",pngDecoder->wid,pngDecoder->hei);
 			this->width = pngDecoder->wid;
 			this->height = pngDecoder->hei;
 			
@@ -28,6 +38,7 @@ _imagefile::_imagefile( string fn ) :
 	}
 	else if( this->getMimeType() == _mime::image_jpeg )
 	{
+		printf("JPG-File!\n");
 		_u32 size = this->getSize();
 		_u8* data = new _u8[size];
 		this->read( data , size );
@@ -35,6 +46,7 @@ _imagefile::_imagefile( string fn ) :
 		
 		if ( this->jpgDecoder->GetResult() == Jpeg::Decoder::OK )
 		{
+			//printf("Success: %d , %d\n",this->jpgDecoder->GetWidth(),this->jpgDecoder->GetHeight());
 			this->bmp = new _pixel[ this->jpgDecoder->GetWidth() * this->jpgDecoder->GetHeight() ];
 			this->width = this->jpgDecoder->GetWidth();
 			this->height = this->jpgDecoder->GetHeight();
@@ -56,7 +68,6 @@ _imagefile::_imagefile( string fn ) :
 					this->bmp[s] = RGB( rgb[s] >> 3 , rgb[s] >> 3 , rgb[s] >> 3 );
 			}
 		}
-		
 		delete data;
 		delete this->jpgDecoder;
 	}
