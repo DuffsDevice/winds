@@ -32,6 +32,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 		}
 	}
 	
+	//bP.copy( 0 , 0 , _system_->_runtimeAttributes_->user->userLogo );
 	bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	
 	return use_default;

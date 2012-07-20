@@ -5,7 +5,6 @@ extern "C"{
 #include "_library/_fat/fatfile.h"
 #include "_library/_fat/file_allocation_table.h"
 }
-#include "program_bin.h"
 
 #include <unistd.h>
 
@@ -15,6 +14,14 @@ extern "C"{
 #include "_resource/BMP_XmlIcon.h"
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
+
+#define FAT_EMULATOR_
+
+
+#ifdef FAT_EMULATOR_
+#include "program_bin.h"
+#include "image_bin.h"
+#endif
 
 _bitmap* icon_exe = new BMP_ExeIcon();
 _bitmap* icon_lua = new BMP_LuaIcon();
@@ -118,6 +125,8 @@ bool _direntry::close()
 	{
 		if( fclose( this->fHandle ) != 0 )
 			return false;
+		
+		this->flush();
 	}
 	else
 	{
@@ -128,6 +137,29 @@ bool _direntry::close()
 	this->dHandle = nullptr;
 	this->fHandle = nullptr;
 	this->mode = _direntryMode::mode_closed;
+	return true;
+}
+
+// Get the definition of libfat
+PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
+
+bool _direntry::flush()
+{
+
+	// Defines...
+	PARTITION *partition = NULL;
+
+	// Get Partition
+	partition = _FAT_partition_getPartitionFromPath( this->filename.c_str() );
+
+	// Check Partition
+	if( !partition )
+		return false;
+	
+	// Flush any sectors in the disc cache
+	if ( !_FAT_cache_flush( partition->cache ) )
+		return false;
+
 	return true;
 }
 
@@ -189,8 +221,20 @@ inline bool _direntry::create()
 		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
 }
 
+#ifdef FAT_EMULATOR_
+#include <string.h>
+#endif
+
 bool _direntry::read( void* dest , _u32 size )
 {
+	#ifdef FAT_EMULATOR_
+	if( !size )
+			size = this->getSize();
+	
+	memcpy( dest , image_bin , size );
+	return true;
+	#endif
+	
 	if( this->fatInited || !this->isDirectory() )
 	{
 		if( !size )
@@ -344,6 +388,9 @@ _mimeType _direntry::getMimeType(){
 
 _u32 _direntry::getSize()
 {
+	#ifdef FAT_EMULATOR_
+	return image_bin_size;
+	#endif
 	
 	if( !this->fatInited || this->isDirectory() )
 		return 0;
@@ -410,15 +457,15 @@ bool _direntry::execute()
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
 			_program* prog = nullptr;
-			if( false )
-			{
+			
+			#ifdef FAT_EMULATOR_
 				string pro = (const char*)program_bin;
 				pro.resize( program_bin_size );
 				prog = new _progLua( pro );
-			}
-			else
+			#else
 				prog = new _progLua( this->readString() );
 			prog->execute();
+			#endif
 			break;
 		}
 		case _mime::directory:

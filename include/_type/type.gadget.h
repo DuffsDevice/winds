@@ -111,13 +111,13 @@ class _gadget{
 		/**
 		 * Let an Event bubble from child to parent and so on...
 		**/
-		void bubbleEvent( _gadgetEvent e , bool includeThis = false );
+		void bubbleEvent( _gadgetEvent e , bool includeThis = false ) ITCM_CODE ;
 		
 		/**
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() );
+		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() ) ITCM_CODE ;
 		
 		/**
 		 * Method to refresh itself
@@ -127,7 +127,7 @@ class _gadget{
 		/**
 		 * Receive a Bitmap Port
 		**/
-		_bitmapPort getBitmapPort() const ;
+		_bitmapPort getBitmapPort() const ITCM_CODE ;
 		
 		/**
 		 * Get The Bitmap of the Gadget
@@ -199,27 +199,27 @@ class _gadget{
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		**/
-		_gadgetEventReturnType handleEvent( _gadgetEvent event );
+		_gadgetEventReturnType handleEvent( _gadgetEvent event ) ITCM_CODE ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
 		**/
-		_gadgetEventReturnType handleEventNormal( _gadgetEvent event );
+		_gadgetEventReturnType handleEventNormal( _gadgetEvent event ) ITCM_CODE ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
 		**/
-		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event );
+		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event ) ITCM_CODE ;
 		
 		/**
 		 * Get the absolute X-position
 		**/
-		_coord getAbsoluteX() const ;
+		_coord getAbsoluteX() const ITCM_CODE ;
 		
 		/**
 		 * Get the absolute Y-position
 		**/
-		_coord getAbsoluteY() const ;
+		_coord getAbsoluteY() const ITCM_CODE ;
 		
 		/**
 		 * Get the Relative X-position
@@ -276,7 +276,7 @@ class _gadget{
 		/**
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
 		**/
-		_rect getAbsoluteDimensions() const ;
+		_rect getAbsoluteDimensions() const ITCM_CODE ;
 		
 		/**
 		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}

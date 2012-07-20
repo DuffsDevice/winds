@@ -22,7 +22,7 @@ _registry::_registry( string filename ) :
 	}	
 }
 
-_registry::~_registry()
+void _registry::flush()
 {
 	if( this->ini )
 	{
@@ -30,8 +30,15 @@ _registry::~_registry()
 		this->openwrite( true );
 		this->writeString( this->ini->getString() );
 		this->close();
-		delete this->ini;
 	}
+}
+
+_registry::~_registry()
+{
+	this->flush();
+	
+	if( this->ini )
+		delete this->ini;
 }
 
 string _registry::readIndex( string section , string name )

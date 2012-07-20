@@ -24,13 +24,13 @@ _user::_user( string username ) :
 					{ "userName" , this->userName } ,
 					{ "desktopImage" , "" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "" } ,
+					{ "userLogo" , "frs.jpg" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
 					{ "keyRepetitionDelay" , "35" } ,
 					{ "keyRepetitionSpeed" , "3" } ,
-					{ "minDragDistance" , "6" } ,
+					{ "minDragDistance" , "16" } ,
 					{ "maxClickCycles" , "30" } ,
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
@@ -38,8 +38,18 @@ _user::_user( string username ) :
 					{ "selectObjectHeight" , "8" }
 				}
 			} };
+		this->flush();
 	}
 	
+	// Initialize
+	this->mDD = this->getIntAttr( "minDragDistance" );
+	this->mCC = this->getIntAttr( "maxClickCycles" );
+	this->mDC = this->getIntAttr( "maxDoubleClickCycles" );
+	this->mDA = this->getIntAttr( "maxDoubleClickArea" );
+	this->kRD = this->getIntAttr( "keyRepetitionDelay" );
+	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
+	
+	this->fOH = this->getIntAttr( "fileObjectHeight" );	
 	
 	this->userLogo = new _bitmap( 14 , 14 );
 	this->userLogo->reset( RGB( 22 , 22 , 22 ) );
@@ -48,14 +58,15 @@ _user::_user( string username ) :
 	this->userLogo->drawPixel( 6 , 4 , COLOR_RED );
 	this->userLogo->drawPixel( 4 , 6 , COLOR_RED );
 	
+	// Set Currently Working directory
 	string cwd = _direntry::getWorkingDirectory();
-	_direntry::setWorkingDirectory( "%USERS%" );
+	_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
 	
-	_imagefile* uImage = new _imagefile( "%USERS%/" + this->userName + "/userimage.png" );
+	_imagefile* uImage = new _imagefile( _registry::readIndex( "_global_" , "userLogo" ) );
 	
 	_direntry::setWorkingDirectory( cwd );
 	
-	if( uImage && uImage->getBitmap() )
+	if( uImage->getBitmap() )
 	{
 		_bitmapResizer* bmp = new _bitmapResizer( 13 , 13 , uImage );
 		
@@ -73,6 +84,8 @@ _user::_user( string username ) :
 	this->userLogo->drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
 	this->userLogo->drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
 	this->userLogo->drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
+	
+	_direntry::setWorkingDirectory( cwd );
 }
 
 _user::~_user()

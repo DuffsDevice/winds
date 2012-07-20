@@ -373,6 +373,12 @@ class _bitmap
 		void copyVerticalStretch( _coord x , _coord y , _length height , const _bitmap* data );
 		
 		/**
+		 * Move a part of the bitmap to another location
+		 * 
+		**/
+		void move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height );
+		
+		/**
 		 * Set the active ClippingRect
 		 * @param rc Rect The rect to be clipped to
 		 * @return void

@@ -717,6 +717,86 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 	}
 }
 
+void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height )
+{
+	
+	// Do nothing if no copying involved
+	if ( ( sourceX == destX ) && ( sourceY == destY ) ) return;
+
+	// Get end point of source
+	_coord x2 = sourceX + width - 1;
+	_coord y2 = sourceY + height - 1;
+
+	// Attempt to clip
+	if ( ! this->clipCoordinates( sourceX , sourceY , x2, y2 ) ) return;
+
+	// Convert width and height back so that we can calculate the dimesions of the dest
+	width = x2 + 1 - sourceX;
+	height = y2 + 1 - sourceY;
+
+	// Get end point of dest
+	x2 = destX + width - 1;
+	y2 = destY + height - 1;
+	
+	_s16 dX = destX;
+
+	// Attempt to clip
+	if ( ! this->clipCoordinates( destX , destY , x2 , y2 ) ) return;
+
+	// Convert width and height back again for use in the rest of the function
+	width = x2 + 1 - destX;
+	height = y2 + 1 - destY;
+	
+	dX -= destX;
+	
+	// If there is no vertical movement and the source and destination overlap,
+	// we need to use an offscreen buffer to copy
+	if ( sourceY == destY )
+	{
+		if ( ( destX >= sourceX ) && ( destX <= sourceX + width ) )
+		{
+			_pixelArray buffer = new _pixel[width+dX];
+			
+			for ( _int y = 0; y != height; ++y )
+			{
+				// Copy row to buffer
+				memCpy( buffer , this->bmp + sourceX + dX + this->width * ( sourceY + y ) , width + dX );
+				
+				// Copy row back to screen
+				memCpy( this->bmp + destX + dX + this->width * ( destX + y ) , buffer , width + dX );
+			}
+			
+			delete buffer;
+			
+			return;
+		}
+	}
+	
+	// Vertical movement or non overlap means we do not need to use an intermediate buffer
+	// Copy from top to bottom if moving up; from bottom to top if moving down.
+	// Ensures that rows to be copied are not overwritten
+	if (sourceY > destY)
+	{
+		_pixelArray src = this->bmp + sourceX - dX + this->width * sourceY;
+		_pixelArray dst = this->bmp + destX + this->width * destY;
+		//printf("%d,%d,%d\n",dX,sourceX - dX ,destX );
+		
+		// Copy up
+		for ( _int i = 0 ; i != height ; ++i , src += this->width , dst += this->width )
+			memCpy( dst , src , width );
+	}
+	else
+	{
+		_pixelArray src = this->bmp + sourceX - dX + this->width * ( sourceY + height - 1 );
+		_pixelArray dst = this->bmp + destX + this->width * ( destY + height - 1 );
+		
+		// Copy down
+		for ( _int i = height - 1 ; i != -1; --i , src -= this->width , dst -= this->width )
+			memCpy( dst , src , width );
+	}
+}
+
+
 bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom )
 {
 	

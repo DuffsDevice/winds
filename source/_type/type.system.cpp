@@ -125,10 +125,8 @@ void _system::processInput()
 	
 	_gadgetEventArgs args;
 	
-	// Useful Values...
-	static _u32 kRD = _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" );
-	static _u32 kRS = _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionSpeed" );
-	static _u32 mCC = _system::_runtimeAttributes_->user->getIntAttr( "maxClickCycles" );
+	// Shortcut...
+	const _user* user = _system_->_runtimeAttributes_->user;
 	
 	_key keys = keysHeld();
 	
@@ -147,7 +145,7 @@ void _system::processInput()
 		// Increase Cycles
 		if( GETBIT( keys , i ) )
 		{
-			if( heldCycles[i] == 0 || ( kRD && heldCycles[i] > kRD && heldCycles[i] % kRS == 0 ) )
+			if( heldCycles[i] == 0 || ( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 ) )
 			{
 				// Set the Args
 				args.reset();
@@ -173,7 +171,7 @@ void _system::processInput()
 			_system::_currentFocus_->handleEvent( _gadgetEvent( "keyUp" , args ) );
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
-			if( heldCycles[i] < mCC )
+			if( heldCycles[i] < user->mCC )
 				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyClick" , args ) );
 			
 			// Reset Cycles
@@ -213,7 +211,6 @@ _system::_system()
 		
 		//setBackdropColor( COLOR_RED );
 		consoleDemoInit();
-		//printf("%d\n",1<<15);
 		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
 		
 	// ------------------------------------------------------------------------
@@ -246,8 +243,8 @@ _system::_system()
 		//! Create Windows & the Keyboard
 		//_system::_gadgetHost_ = new _windows( bgIdBack );
 		_system::_topScreen_ = new _screen( bgIdSub );
-		//_system::_gadgetHost_ = new _windows( bgIdBack );
-		_system::_gadgetHost_ = new _startupScreen( bgIdBack );
+		_system::_gadgetHost_ = new _windows( bgIdBack );
+		//_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 		_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 		
 		//! random Random() generator
@@ -313,15 +310,23 @@ void _system::executeProgram( _program* prog , _cmdArgs args ){
 	prog->init( _system::_gadgetHost_ , args );
 }
 
-void _system::main(){
+#include "_type/type.imagefile.h"
+
+void _system::main()
+{
 	//_direntry d = _direntry("hallo.exe");
 	//d.execute();
 	SetYtrigger( 192 );
 	irqEnable( IRQ_VCOUNT );
-	//int i = 0;
+	int i = 60;
+	/*_bitmap bmp = _bitmap( bgGetGfxPtr(_system::bgIdBack) , SCREEN_WIDTH , SCREEN_HEIGHT );
+			cpuStartTiming(0);
+			bmp.move( 0 , 0 , 10, 10 , 10 , 10 );
+			bmp.move( 10 , 10 , 20, 20 , 10 , 10 );
+			printf("%d\n",cpuGetTiming() );*/
 	while(true)
 	{
-		// wait until line 0
+		// wait until line 0 
 		//swiIntrWait( 192, IRQ_VCOUNT );
 		
 		//printf( "%d\n" , REG_VCOUNT );
@@ -332,9 +337,9 @@ void _system::main(){
 		swiWaitForVBlank();
 		//consoleClear();
 		//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
-		/*if( ++i > 6000 ){
-			delete _system_;
-			return;
+		/*if( ++i > 120 )
+		{
+			i = 0;
 		}*/
 	}
 }
