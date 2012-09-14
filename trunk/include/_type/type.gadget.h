@@ -22,58 +22,62 @@ class _gadget;
 
 extern _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadgetEvent e );
 
+// _gagdetEventHandler
 typedef _gadgetEventReturnType (*_gadgetEventHandler)(_gadgetEvent);
+
+// _gadgetList
 typedef list<_gadget*> _gadgetList;
+
+// _gadgetDefaultEventHandler
 typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent&);
+
+extern _gadgetType typeof( _gadget* );
 
 class _gadget{
 	
 	private:
 	
 		// Type of the Gadget
-		_gadgetType type;
+		_gadgetType 	type;
 		
-		static bool removeEnhancedCallback( _gadget* g );
-		static bool removeCallback( _gadget* g );
+		static bool 	removeEnhancedCallback( _gadget* g );
+		static bool 	removeCallback( _gadget* g );
 	
 	public:
 	
 		// Attributes
-		_padding	padding;
-		_rect 		dimensions;
-		bool 		enhanced;
-		bool		focused;
-		_gadgetStyle style;
+		_padding		padding;
+		_rect 			dimensions;
+		bool 			enhanced;
+		bool			focused;
+		_gadgetStyle 	style;
 		
 		// Children
-		_gadgetList	children;
+		_gadgetList		children;
 		
 		// Parent
-		_gadget*	parent;
+		_gadget*		parent;
 		
 		// Only for the dragHandler
-		_gadget*	dragTemp;
+		_gadget*		dragTemp;
 		
 		// Event-Handlers
-		map<_gadgetEventType,_gadgetDefaultEventHandler> defaultEventHandlers;
-		map<_gadgetEventType,pair<int,lua_State*>> luaEventHandlers;
-		map<_gadgetEventType,_gadgetEventHandler> eventHandlers;
+		map<_gadgetEventType,pair<int,lua_State*>> 				luaEventHandlers;
+		map<_gadgetEventType,_gadgetEventHandler> 				eventHandlers;
+		static map<_gadgetEventType,_gadgetDefaultEventHandler> defaultEventHandlers;
 		
 		// Standard EventHandler
 		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent& event );
 		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent& event );
 		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent& event );
 		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent& event );
+		static _gadgetEventReturnType	gadgetKeyHandler( _gadgetEvent& event );
 		
 		// Bitmap of the Gadget
-		_bitmap*	bitmap;
+		_bitmap*		bitmap;
 		
-		// If any Gadget wants to do something on resize,
-		// Just implement that one in your class and let it do something
-		virtual void onResize(){};
-		
-		virtual bool blurEventChild();
-		virtual bool focusEventChild( _gadget* child );
+		virtual bool 	blurEventChild();
+		virtual bool 	focusEventChild( _gadget* child );
 	
 	public:
 		
@@ -86,7 +90,7 @@ class _gadget{
 		/**
 		 * Destructor
 		**/
-		~_gadget();
+		virtual ~_gadget();
 		
 		/**
 		 * Set the Padding of the Gadget
@@ -169,7 +173,7 @@ class _gadget{
 		 * some events thrown on this Gadget and not handled by 
 		 * any other EventHandlers
 		**/
-		bool registerDefaultEventHandler( _gadgetEventType type , _gadgetDefaultEventHandler handler );
+		static bool registerDefaultEventHandler( _gadgetEventType type , _gadgetDefaultEventHandler handler );
 		
 		/**
 		 * Unbind an EventHandler from this Gadget

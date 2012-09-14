@@ -1,6 +1,5 @@
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.windows.h"
-
 void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
 
 bool _button::isAutoSelect(){ return this->autoSelect; }
@@ -15,20 +14,24 @@ void _button::setFont( _font* ft )
 	}
 }
 
-void _button::onResize()
+_gadgetEventReturnType _button::resizeHandler( _gadgetEvent event )
 {
-	if( !this->label )
-		return;
+	_button* that = event.getGadget<_button>();
 	
-	this->label->setWidth( max( _length(1) , this->getWidth() - 2 ) );
-	this->label->setHeight( max( _length(1) , this->getHeight() - 2 ) );
+	if( !that->label )
+		return handled;
+	
+	that->label->setWidth( max( _length(1) , that->getWidth() - 2 ) );
+	that->label->setHeight( max( _length(1) , that->getHeight() - 2 ) );
 	
 	
 	//Refresh Label
-	this->label->refreshBitmap();
+	that->label->refreshBitmap();
 	
 	// Refresh Button
-	this->bubbleRefresh( true );
+	that->bubbleRefresh( true );
+	
+	return handled;
 }
 
 void _button::computeSize()
@@ -48,12 +51,12 @@ void _button::computeSize()
 _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_button* that = (_button*)event.getGadget();
+	_button* that = event.getGadget<_button>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -124,7 +127,7 @@ _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
 _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_button* that = (_button*)event.getGadget();
+	_button* that = event.getGadget<_button>();
 	
 	if( event.getType() == "dragStart" )
 		return handled;
@@ -147,7 +150,7 @@ _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 _gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_button* that = (_button*)event.getGadget();
+	_button* that = event.getGadget<_button>();
 	
 	if( event.getType() == "mouseDown" )
 		that->pressed = true;
@@ -155,6 +158,8 @@ _gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
 	{
 		if( that->pressed )
 			that->handleEvent( _gadgetEvent( "listener" ) );
+		else
+			return handled;
 		that->pressed = false;
 	}
 	
@@ -184,6 +189,7 @@ void _button::init( string text )
 	this->registerEventHandler( "mouseUp" , &_button::mouseHandler );
 	this->registerEventHandler( "dragStart" , &_button::dragHandler );
 	this->registerEventHandler( "dragging" , &_button::dragHandler );
+	this->registerEventHandler( "resize" , &_button::resizeHandler );
 	
 	// Compute the necesary Width
 	this->computeSize();
@@ -228,7 +234,6 @@ _button::_button( _coord x , _coord y , string text , _gadgetStyle style ) :
 {	
 	// Link to Constructor
 	this->init( text );	
-	
 }
 
 _button::~_button(){

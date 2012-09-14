@@ -10,7 +10,7 @@ _bitmap* _windowsStartButton::startButtonPressed = new BMP_StartButtonPressed();
 _gadgetEventReturnType _windowsStartButton::mouseHandler( _gadgetEvent event ){
 	
 	// Receive Gadget
-	_windowsStartButton* that = (_windowsStartButton*)event.getGadget();
+	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
 	
 	that->startMenu->toggle( that->getAbsoluteX() , that->getAbsoluteY() );
 	
@@ -21,13 +21,14 @@ _gadgetEventReturnType _windowsStartButton::mouseHandler( _gadgetEvent event ){
 _gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
 {
 	static string sBT = _system_->_runtimeAttributes_->user->getStrAttr( "startButtonText" );
+	
 	// Receive Gadget
-	_windowsStartButton* that = (_windowsStartButton*)event.getGadget();
+	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

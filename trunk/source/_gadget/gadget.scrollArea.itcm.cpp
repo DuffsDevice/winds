@@ -1,10 +1,16 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.button.h"
-#include "_resource/BMP_ScrollButtons.h"
-#include "nds/arm9/math.h"
 
-const _bitmap icon_scroll_bg = BMP_ScrollBg();
-const _bitmap icon_scroll_bg_ = BMP_ScrollBg_();
+map<_string,_scrollType> string2scrollType = {
+	{ "scroll" , _scrollType::scroll },
+	{ "hidden" , _scrollType::hidden },
+	{ "prevent" , _scrollType::prevent }
+};
+map<_scrollType,_string> scrollType2string = {
+	{ _scrollType::scroll , "scroll" },
+	{ _scrollType::hidden , "hidden" },
+	{ _scrollType::prevent , "prevent" }
+};
 
 void _scrollArea::addChild( _gadget* child )
 {
@@ -17,8 +23,8 @@ void _scrollArea::addChild( _gadget* child )
 		return;
 	
 	// Re-compute Scrollbar and innerSize
-	this->computeInnerSize();
-	this->computeRatio();
+	this->computeCanvasSize();
+	refresh();
 }
 
 void _scrollArea::removeChild( _gadget* child )
@@ -40,48 +46,109 @@ void _scrollArea::removeChild( _gadget* child )
 		return;
 	
 	// Re-compute Scrollbar and innerSize
-	this->computeInnerSize();
-	this->computeRatio();
+	this->computeCanvasSize();
+	refresh();
 }
 
-void _scrollArea::onResize(){
-	// Move Buttons
-	this->buttonTop->setX( this->dimensions.width - 8 );
-	this->buttonHandleY->setX( this->dimensions.width - 8 );
-	this->buttonBottom->moveTo( this->dimensions.width - 8 , this->dimensions.height - 8 );
-	this->buttonRight->moveTo( this->dimensions.width - ( !this->scrollTypeY ? 17 : 8 ) , this->dimensions.height - 8 );
-	this->buttonHandleX->setY( this->dimensions.height - 8 );
-	this->buttonLeft->setY( this->dimensions.height - 8 );
+void _scrollArea::refresh()
+{
+	bool needY = this->dimensions.width != this->clipWidth;
+	bool needX = this->dimensions.height != this->clipHeight;
 	
-	// Additional data...
-	this->visibleWidth = this->dimensions.width - ( !this->scrollTypeY ? 8 : 0 );
-	this->visibleHeight = this->dimensions.height - ( !this->scrollTypeX ? 8 : 0 );
+	if( needX )
+	{
+		this->scrollBarX->setValue( this->scrollX );
+		this->scrollBarX->setY( this->dimensions.height - 8 );
+		this->scrollBarX->setWidth( this->dimensions.width - ( needY ? 8 : 0 ) );
+		this->scrollBarX->setLength( this->clipWidth );
+		this->scrollBarX->setLength2( this->canvasWidth );
+		if( !this->scrollBarX->parent )
+			this->scrollBarX->setParent( this );
+	}
+	else if( this->scrollBarX->parent )
+		this->scrollBarX->setParent( nullptr );
 	
-	// Re-compute Data...
-	this->computeRatio();
-	this->bubbleRefresh( true );
+	if( needY )
+	{
+		this->scrollBarY->setValue( this->scrollY );
+		this->scrollBarY->setX( this->dimensions.width - 8 );
+		this->scrollBarY->setHeight( this->dimensions.height - ( needX ? 8 : 0 ) );
+		this->scrollBarY->setLength( this->clipHeight );
+		this->scrollBarY->setLength2( this->canvasHeight );
+		if( !this->scrollBarY->parent )
+			this->scrollBarY->setParent( this );
+	}
+	else if( this->scrollBarY->parent )
+			this->scrollBarY->setParent( nullptr );
+			
+	// Crop children Area
+	this->setPadding( _padding( 0 , 0 , needX ? 8 : 0 , needY ? 8 : 0 ) );
 }
 
-void _scrollArea::computeRatio(){
-	this->_ratioWidth_ = div32( ( this->dimensions.width - ( !this->scrollTypeY ? 23 : 15 ) << 16 ) , this->innerWidth );
-	this->_ratioHeight_ = div32( ( this->dimensions.height - 15 << 16 ) , this->innerHeight );
-	this->buttonHandleX->setWidth( this->getWidthRatio( this->visibleWidth ) );
-	this->buttonHandleY->setHeight( this->getHeightRatio( this->visibleHeight ) );
+void _scrollArea::computeClipSize()
+{
+	this->clipWidth = this->dimensions.width;
+	this->clipHeight = this->dimensions.height;
+	
+	switch( this->scrollTypeX )
+	{
+		case _scrollType::meta:
+			if( this->canvasWidth > this->clipWidth )
+			{
+				this->clipHeight -= 8;
+			}
+			else if( this->canvasHeight > this->clipHeight )
+			{
+				this->clipWidth -= 8;
+				
+				// We might now need a scrollBar
+				if( this->canvasWidth > this->clipWidth )
+				{
+					this->clipHeight -= 8;
+				}
+			}
+			break;
+		case _scrollType::scroll:
+			this->clipWidth -= 8;
+			this->clipHeight -= 8;
+			break;
+		default:
+			break;
+	}
 }
 
-inline void _scrollArea::moveScrollHandleX(){
-	if( !this->scrollTypeX )
-		this->buttonHandleX->setX( 8 + this->getWidthRatio( this->scrollX ) );
+_gadgetEventReturnType _scrollArea::resizeHandler( _gadgetEvent event )
+{
+	_scrollArea* that = event.getGadget<_scrollArea>();
+	
+	if( event.getType() == "refresh" )
+	{
+		_bitmapPort bP = that->getBitmapPort();
+	
+		if( event.getArgs().hasClippingRects() )
+			bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		else
+			bP.resetClippingRects();
+		
+		
+		bP.fill( COLOR_WHITE );
+		
+		return use_default;
+		
+	}
+	
+	that->computeClipSize();
+	
+	that->refresh();
+	
+	that->bubbleRefresh( true );
+	
+	return handled;
 }
 
-inline void _scrollArea::moveScrollHandleY(){
-	if( !this->scrollTypeY )
-		this->buttonHandleY->setY( 8 + this->getHeightRatio( this->scrollY ) );
-}
-
-void _scrollArea::computeInnerSize(){
+void _scrollArea::computeCanvasSize(){
 	// Return if there's nothing to do
-	if( !this->computeInnerWidth && this->computeInnerHeight )
+	if( !this->computeCanvasWidth && !this->computeCanvasHeight )
 		return;
 	
 	int maxX = 0;
@@ -93,21 +160,20 @@ void _scrollArea::computeInnerSize(){
 		maxY = max( child->getDimensions().getY2() + 1 , maxY );
 	}
 	
-	if( this->computeInnerWidth ){
+	if( this->computeCanvasWidth ){
 		maxX += 1 + this->scrollX;
-		this->innerWidth = maxX;
+		this->canvasWidth = maxX;
 	}
-	if( this->computeInnerHeight ){
+	if( this->computeCanvasHeight ){
 		maxY += 1 + this->scrollY;
-		this->innerHeight = maxY;
+		this->canvasHeight = maxY;
 	}
-	this->hideOrShowScrollButtons();
 }
 
 _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 	
 	// Receive Gadget
-	_scrollArea* that = (_scrollArea*)event.getGadget();
+	_scrollArea* that = event.getGadget<_scrollArea>();
 	
 	_s16 dY = 0 , dX = 0;
 	
@@ -129,33 +195,29 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 	else if( event.getType() == "dragging" )
 	{
 		
-		if( that->scrollTypeX != _scrollType::prevent && that->innerWidth > that->visibleWidth )
+		if( that->scrollTypeX != _scrollType::prevent && that->canvasWidth > that->clipWidth )
 		{
 			dX = event.getArgs().getPosX() - lastX;
 			if( dX < 0 )
 			{
-				if( that->scrollX - dX > _s16( that->innerWidth ) + _s16( that->visibleWidth + that->scrollX ) )
+				if( that->scrollX - dX > _s16( that->canvasWidth ) + _s16( that->clipWidth + that->scrollX ) )
 					dX = 4/dX;
 			}
 			else if( dX > 0 )
 				dX = min( dX , _s16( that->scrollX ) );
 			
 			that->scrollX -= dX;
-			
-			that->moveScrollHandleX();
 		}
 		
-		if( that->scrollTypeY != _scrollType::prevent && that->innerHeight > that->visibleHeight )
+		if( that->scrollTypeY != _scrollType::prevent && that->canvasHeight > that->clipHeight )
 		{
 			dY = event.getArgs().getPosY() - lastY;
 			if( dY < 0 )
-				dY = max( (int)dY , - _s16( that->innerHeight ) + _s16( that->visibleHeight + that->scrollY ) );
+				dY = max( (int)dY , - _s16( that->canvasHeight ) + _s16( that->clipHeight + that->scrollY ) );
 			else if( dY > 0 )
 				dY = min( dY , _s16( that->scrollY ) );
 			
 			that->scrollY -= dY;
-			
-			that->moveScrollHandleY();
 		}
 		
 		lastX += dX;
@@ -169,6 +231,8 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 					continue;
 				child->moveRelative( dX , dY );
 			}
+			
+			that->refresh();
 		}
 		
 		return handled;
@@ -177,129 +241,49 @@ _gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
 	return use_default;
 }
 
-_gadgetEventReturnType _scrollArea::refreshHandler( _gadgetEvent event ){
-	
-	// Receive Gadget
-	_scrollArea* that = (_scrollArea*)event.getGadget();
-	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
-	else
-		bP.resetClippingRects();
-	
-	_length myH = bP.getHeight();
-	_length myW = bP.getWidth();
-	
-	bP.fill( RGB( 31 , 31 , 31 ) );
-	
-	// Show Scrollbar-Backgrounds
-	if( that->buttonHandleX->getParent() )
-		bP.copyHorizontalStretch( 8 , myH - 8 , myW - 17 - 9 , &icon_scroll_bg );
-	
-	if( that->buttonHandleY->getParent() )
-		bP.copyVerticalStretch( myW - 8 , 8 , myH - 9 - 8 , &icon_scroll_bg_ );
-	
-	return use_default;
-}
-
 void _scrollArea::setScrollTypeX( _scrollType typeX ){
 	this->scrollTypeX = typeX;
-	this->hideOrShowScrollButtons();
+	this->computeClipSize();
+	this->refresh();
 }
 
 void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->scrollTypeY = typeY;
-	this->hideOrShowScrollButtons();
-}
-
-void _scrollArea::hideOrShowScrollButtons()
-{
-	if( !this->scrollTypeY && this->innerHeight > this->visibleHeight )
-	{
-		if( this->buttonTop->getParent() )
-			goto breakup;
-		this->addChild( this->buttonTop );
-		this->addChild( this->buttonBottom );
-		this->addChild( this->buttonHandleY );
-	}
-	else if( this->buttonTop->getParent() )
-	{
-		this->removeChild( this->buttonTop );
-		this->removeChild( this->buttonBottom );
-		this->removeChild( this->buttonHandleY );
-	}
-	
-	breakup:
-	
-	if( !this->scrollTypeX && this->innerWidth > this->visibleWidth )
-	{
-		if( this->buttonRight->getParent() )
-			goto breakupTwo;
-		this->addChild( this->buttonRight );
-		this->addChild( this->buttonLeft );
-		this->addChild( this->buttonHandleX );
-	}
-	else if( this->buttonRight->getParent() )
-	{
-		this->removeChild( this->buttonRight );
-		this->removeChild( this->buttonLeft );
-		this->removeChild( this->buttonHandleX );
-	}
-	
-	// Breakpoint
-	breakupTwo:
-	
-	// Crop children Area
-	this->setPadding( _padding( 0 , 0 , !this->scrollTypeY ? 8 : 0 , !this->scrollTypeX ? 8 : 0 ) );
-	
-	this->onResize();
+	this->computeClipSize();
+	this->refresh();
 }
 
 _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _gadgetStyle style ) :
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
 	, scrollX( 0 )
 	, scrollY( 0 )
-	, innerWidth( width )
-	, innerHeight( height )
-	, computeInnerWidth( true )
-	, computeInnerHeight( true )
+	, canvasWidth( width )
+	, canvasHeight( height )
+	, computeCanvasWidth( true )
+	, computeCanvasHeight( true )
 	, scrollTypeX( scrollTypeX )
 	, scrollTypeY( scrollTypeY )
-	, buttonTop( new _scrollButton( _scrollButtonType::buttonTop , this->dimensions.width - 8 , 0 ) )
-	, buttonBottom( new _scrollButton( _scrollButtonType::buttonBottom , this->dimensions.width - 8 , this->dimensions.height - 8 ) )
-	, buttonRight( new _scrollButton( _scrollButtonType::buttonRight , this->dimensions.width - ( !this->scrollTypeY ? 17 : 8 ) , this->dimensions.height - 8 ) )
-	, buttonLeft( new _scrollButton( _scrollButtonType::buttonLeft , 0 , this->dimensions.height - 8 ) )
-	, buttonHandleX( new _scrollButton( _scrollButtonType::buttonHandleX , 12 , this->dimensions.height - 8 , 20) )
-	, buttonHandleY( new _scrollButton( _scrollButtonType::buttonHandleY , this->dimensions.width - 8 , 12 , 14) )
+	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 0 , 0 , _dimension::horizontal ) )
+	, scrollBarY( new _scrollBar( 0 , 0 , 8 , 0 , 0 , _dimension::vertical ) )
 {
-	this->buttonTop->setEnhanced();
-	this->buttonBottom->setEnhanced();
-	this->buttonHandleX->setEnhanced();
-	this->buttonHandleY->setEnhanced();
-	this->buttonRight->setEnhanced();
-	this->buttonLeft->setEnhanced();
-	
-	this->computeInnerSize();
+	this->scrollBarX->setEnhanced();
+	this->scrollBarY->setEnhanced();
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( "refresh" , &_scrollArea::refreshHandler );
-
+	this->registerEventHandler( "resize" , &_scrollArea::resizeHandler );
 	this->registerEventHandler( "dragStart" , &_scrollArea::dragHandler );
 	this->registerEventHandler( "dragging" , &_scrollArea::dragHandler );
+	this->registerEventHandler( "refresh" , &_scrollArea::resizeHandler );
 	
-	//this->addChild( new _button( 90 , 90 , 10 , 10 , "Hallo" ) );
+	//this->addChild( new _button( 10 , 90 , 10 , 10 , "Hallo" ) );
 	
 	// Refresh Me
-	this->hideOrShowScrollButtons();
+	this->computeClipSize();
+	
+	this->refresh();
 }
 
 _scrollArea::~_scrollArea(){
-	delete this->buttonTop;
-	delete this->buttonBottom;
-	delete this->buttonRight;
-	delete this->buttonLeft;
-	delete this->buttonHandleX;
-	delete this->buttonHandleY;
+	delete this->scrollBarX;
+	delete this->scrollBarY;
 }

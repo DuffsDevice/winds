@@ -7,7 +7,7 @@
 _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_keyboardButton* that = (_keyboardButton*)event.getGadget();
+	_keyboardButton* that = event.getGadget<_keyboardButton>();
 	
 	if( event.getType() == "mouseClick" )
 	{
@@ -101,7 +101,10 @@ _bitmap* _keyboardStartButton::startButtonPressed = new BMP_StartButtonPressed()
 _gadgetEventReturnType _keyboardStartButton::mouseHandler( _gadgetEvent event ){
 	
 	// Receive Gadget
-	_keyboardStartButton* that = (_keyboardStartButton*)event.getGadget();
+	_keyboardStartButton* that = event.getGadget<_keyboardStartButton>();
+	
+	if( event.getType() == "focus" )
+		return handled;
 	
 	that->startMenu->toggle( that->getAbsoluteX() , that->getAbsoluteY() );
 	
@@ -113,12 +116,12 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 {
 	static string sBT = _system_->_runtimeAttributes_->user->getStrAttr( "startButtonText" );
 	// Receive Gadget
-	_keyboardStartButton* that = (_keyboardStartButton*)event.getGadget();
+	_keyboardStartButton* that = event.getGadget<_keyboardStartButton>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -143,6 +146,7 @@ _keyboardStartButton::_keyboardStartButton( _coord x , _coord y , _gadgetStyle s
 	this->registerEventHandler( "mouseClick" , &_keyboardStartButton::mouseHandler );
 	this->registerEventHandler( "refresh" , &_keyboardStartButton::refreshHandler );
 	this->registerEventHandler( "dialogClose" , &_keyboardStartButton::refreshHandler );
+	//this->registerEventHandler( "focus" , &_keyboardStartButton::mouseHandler );
 	
 	this->refreshBitmap();
 }

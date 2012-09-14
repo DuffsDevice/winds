@@ -2,28 +2,25 @@
 #include "_gadget/gadget.button.h"
 #include "_resource/BMP_ScrollButtons.h"
 
-BMP_ScrollButtonBottom* graphic = new BMP_ScrollButtonBottom();
+_bitmap* graphic;// = new BMP_ScrollButtonBottom();
 
 _gadgetEventReturnType _select::mouseHandler( _gadgetEvent event )
-{
-	// Receive Gadget
-	_select* that = (_select*)event.getGadget();
+{	
+	event.getGadget<_select>()->popDownList->toggle();
 	
-	that->popDownList->toggle();
-	
-	return handled;
+	return use_default;
 }
 
 _gadgetEventReturnType _select::dialogCloseHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_select* that = (_select*)event.getGadget();
+	_select* that = event.getGadget<_select>();
 	
 	_s32 val = event.getArgs().getIntValue();
 	
-	if( val != -1 )
+	if( val + 1 )
 	{
-		that->label->setStrValue( that->entries[ val ] );
+		that->label->setStrValue( that->entries[ val ]);
 		that->selected = val;
 	}
 	
@@ -33,12 +30,12 @@ _gadgetEventReturnType _select::dialogCloseHandler( _gadgetEvent event )
 _gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
 	
 	// Receive Gadget
-	_select* that = (_select*)event.getGadget();
+	_select* that = event.getGadget<_select>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -58,9 +55,9 @@ _gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
 }
 
 _select::_select( _coord x , _coord y , _length width , _contextMenuEntryList lst , _gadgetStyle style ) :
-	_gadget( _gadgetType::selectbox , width , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) + 2 , x , y , style )
+	_gadget( _gadgetType::selectbox , width , _system_->_runtimeAttributes_->user->fOH + 2 , x , y , style )
 	, entries( lst )
-	, label( new _label( width , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) , 1 , 0 , lst[0] ) )
+	, label( new _label( width , _system_->_runtimeAttributes_->user->fOH , 1 , 0 , lst[0] ) )
 	, selected( 0 )
 {
 	this->popDownList = new _selectPopDown( this , &this->entries );
@@ -73,7 +70,7 @@ _select::_select( _coord x , _coord y , _length width , _contextMenuEntryList ls
 	
 	// Register Event - Handlers
 	this->registerEventHandler( "refresh" , &_select::refreshHandler );
-	this->registerEventHandler( "mouseClick" , &_select::mouseHandler );
+	this->registerEventHandler( "mouseDown" , &_select::mouseHandler );
 	this->registerEventHandler( "dialogClose" , &_select::dialogCloseHandler );
 	
 	// Refresh Me
@@ -123,12 +120,12 @@ void	_select::refreshList(){
 _gadgetEventReturnType _selectPopDown::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_selectPopDown* that = (_selectPopDown*)event.getGadget();
+	_selectPopDown* that = event.getGadget<_selectPopDown>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -146,11 +143,12 @@ _gadgetEventReturnType _selectPopDown::refreshHandler( _gadgetEvent event )
 
 _gadgetEventReturnType _selectPopDown::clickHandler( _gadgetEvent event )
 {
-	_label* that = (_label*)event.getGadget();
+	_label* that = event.getGadget<_label>();
+
 	
 	if( event.getType() == "mouseClick" )
 	{
-		((_contextMenu*)that->getParent())->closeAndSend( that->getIntValue() , that->getStrValue() );
+		that->getParent()->handleEvent( _gadgetEvent::dialogClose( that ,  that->getIntValue() , that->getStrValue() ) );
 		return handled;
 	}
 	else if( event.getType() == "focus" )
@@ -179,7 +177,7 @@ void _selectPopDown::refreshChildren()
 	
 	_rect absDim = owner->getAbsoluteDimensions();
 	
-	this->setHeight( this->entries->size() * _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) + 2 );
+	this->setHeight( this->entries->size() * _system_->_runtimeAttributes_->user->fOH + 2 );
 	
 	while( ( g = this->getToppestChild() ) != nullptr )
 	{
@@ -191,7 +189,7 @@ void _selectPopDown::refreshChildren()
 	
 	for( pair<const _s32,string>& entry : *this->entries )
 	{
-		_label* l = new _label( absDim.getWidth() - 2 , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) , 0 , y , entry.second );
+		_label* l = new _label( absDim.width - 2 , _system_->_runtimeAttributes_->user->getIntAttr( "selectObjectHeight" ) , 0 , y , entry.second );
 		l->setVAlign( _valign::middle );
 		l->setIntValue( entry.first );
 		l->registerEventHandler( "mouseClick" , &_selectPopDown::clickHandler );
@@ -214,11 +212,30 @@ void _selectPopDown::toggle()
 	
 	_rect absDim = owner->getAbsoluteDimensions();
 	
-	this->setWidth( absDim.getWidth() );
+	this->setWidth( absDim.width );
 	
 	this->refreshBitmap();
 	
-	_contextMenu::toggle( absDim.getX() , absDim.getY2() + 1 );
+	_contextMenu::toggle( absDim.x , absDim.getY2() + 1 );
+}
+
+void _selectPopDown::show()
+{
+	
+	// Temp...
+	_gadget* owner = this->getOwner();
+	
+	// Assert
+	if( !owner )
+		return;
+	
+	_rect absDim = owner->getAbsoluteDimensions();
+	
+	this->setWidth( absDim.width );
+	
+	this->refreshBitmap();
+	
+	_contextMenu::show( absDim.x , absDim.getY2() + 1 );
 }
 
 _selectPopDown::_selectPopDown( _gadget* owner , _contextMenuEntryList* lst ) :

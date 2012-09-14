@@ -8,6 +8,8 @@ class _desktop : public _gadget{
 	private:
 	
 		static _gadgetEventReturnType  refreshHandler( _gadgetEvent e );
+		
+		static _gadgetEventReturnType  focusHandler( _gadgetEvent e );
 	
 	public:
 	

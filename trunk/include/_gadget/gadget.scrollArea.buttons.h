@@ -22,7 +22,7 @@ class _scrollButton : public _gadget{
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
-		void onResize();
+		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
 		
 	public:
 		

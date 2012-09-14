@@ -3,12 +3,12 @@
 _gadgetEventReturnType _imagegadget::refreshHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_imagegadget* that = (_imagegadget*)event.getGadget();
+	_imagegadget* that = event.getGadget<_imagegadget>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

@@ -1,22 +1,24 @@
 #include "_type/type.bitmapPort.h"
 
-_bitmapPort::_bitmapPort( _bitmap* bm ) : base( bm ){}
+_bitmapPort::_bitmapPort( _bitmap* bm ) : base( bm ) {}
+
+_bitmapPort::_bitmapPort( _bitmap* bm , _area clippings ) : base( bm ) , clippingRects( clippings ) {}
 
 void _bitmapPort::addClippingRects( _rect cR ){
-	clippingRects.push_back( cR );
+	clippingRects.add( cR );
 }
 
 void _bitmapPort::addClippingRects( _area cR ){
-	clippingRects.push_back( cR );
+	clippingRects.add( cR );
 }
 
 void _bitmapPort::resetClippingRects(){
-	clippingRects.clear();
-	clippingRects.push_back( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
+	clippingRects.clearRects();
+	clippingRects.add( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
 }
 
 void _bitmapPort::deleteClippingRects(){
-	clippingRects.clear();
+	clippingRects.clearRects();
 }
 
 _pixel& _bitmapPort::operator()( const _coord x , const _coord y ){

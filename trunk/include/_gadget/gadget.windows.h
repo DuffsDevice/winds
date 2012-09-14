@@ -38,7 +38,7 @@ class _windows : public _gadgetScreen
 		//! Standard Function to be executed on refresh
 		static _gadgetEventReturnType	refreshHandler( _gadgetEvent );
 		
-		bool focusChild( _gadget* child );
+		//bool focusChild( _gadget* child );
 		
 	public:		
 	

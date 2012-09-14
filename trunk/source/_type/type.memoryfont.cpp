@@ -49,9 +49,9 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	
 	// no need to blit to screen
 	if ( y0 > clip.getY2() ) return width;
-	if ( y0 + this->height < clip.getY() ) return width;
+	if ( y0 + this->height < clip.y ) return width;
 	if ( x0 > clip.getX2() ) return width;
-	if ( x0 + width < clip.getX() ) return width;
+	if ( x0 + width < clip.x ) return width;
 	
 	// Check for transparent
 	if( !RGB_GETA(color) )

@@ -16,19 +16,26 @@ _gadget* _contextMenu::getOwner(){
 	return this->owner;
 }
 
-void _contextMenu::closeAndSend( _s32 intValue , string strValue )
+_gadgetEventReturnType _contextMenu::closeAndSend( _gadgetEvent event )
 {
-	// Delete
-	this->opened = false;
-	this->setParent( nullptr );
+	_contextMenu* that = event.getGadget<_contextMenu>();
 	
-	if( this->owner )
-		this->owner->handleEvent( _gadgetEvent::dialogClose( this , intValue , strValue ) );
+	// Delete
+	that->opened = false;
+	that->setParent( nullptr );
+	
+	if( that->owner )
+		that->owner->handleEvent( event );
+	
+	return handled;
 }
 
-_gadgetEventReturnType _contextMenu::blurHandler( _gadgetEvent e )
+_gadgetEventReturnType _contextMenu::blurHandler( _gadgetEvent event )
 {
-	((_contextMenu*)e.getGadget())->closeAndSend();
+	_contextMenu* that = event.getGadget<_contextMenu>();
+	
+	that->parent->blurChild();
+	that->triggerEvent( _gadgetEvent::dialogClose( that , -1 , "" ) );
 	
 	return use_default;
 }
@@ -96,6 +103,6 @@ _contextMenu::_contextMenu( _length width , _length height , _gadget* owner , _g
 	, owner( owner )
 	, opened( false )
 {	
-	this->unregisterEventHandler( "mouseDoubleClick" );
 	this->registerEventHandler( "blur" , &_contextMenu::blurHandler );	
+	this->registerEventHandler( "dialogClose" , &_contextMenu::closeAndSend );	
 }

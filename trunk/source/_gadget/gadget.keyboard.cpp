@@ -69,8 +69,8 @@ void _keyboard::screenVBL()
 	if( this->destination ){
 		_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
 		_rect dim = this->destination->getAbsoluteDimensions();
-		b.drawRect( dim.getX()-4 , dim.getY()-4 , dim.getWidth()+8 , dim.getHeight()+8 , COLOR_RED );
-		b.drawRect( dim.getX()-5 , dim.getY()-5 , dim.getWidth()+10 , dim.getHeight()+10 , COLOR_RED );
+		b.drawRect( dim.x-4 , dim.y-4 , dim.width+8 , dim.height+8 , COLOR_RED );
+		b.drawRect( dim.x-5 , dim.y-5 , dim.width+10 , dim.height+10 , COLOR_RED );
 	}
 }
 
@@ -132,14 +132,14 @@ void _keyboard::setDestination( _gadget* dest )
 		//! Compute
 		_rect dim = this->destination->getAbsoluteDimensions();
 		float myRatio = 256./(SCREEN_HEIGHT-112);
-		float itsRatio = float(dim.getWidth())/dim.getHeight();
+		float itsRatio = float(dim.width)/dim.height;
 		float ratio = 1;
 		
 		// "higher" than me
 		if( itsRatio < myRatio )
-			ratio = float(dim.getHeight()+16)/(SCREEN_HEIGHT-112);
+			ratio = float(dim.height+16)/(SCREEN_HEIGHT-112);
 		else
-			ratio = float(dim.getWidth()+16)/(SCREEN_WIDTH);
+			ratio = float(dim.width+16)/(SCREEN_WIDTH);
 		
 		if( ratio < 0.25 )
 			ratio = 0.25;
@@ -157,12 +157,12 @@ void _keyboard::setDestination( _gadget* dest )
 		
 		// "higher" than me
 		if( itsRatio < myRatio )
-			magnBorder = ( (SCREEN_HEIGHT-112) * ratio - dim.getHeight() ) / 2;
+			magnBorder = ( (SCREEN_HEIGHT-112) * ratio - dim.height ) / 2;
 		else
-			magnBorder = ( SCREEN_WIDTH * ratio - dim.getWidth() ) / 2;
+			magnBorder = ( SCREEN_WIDTH * ratio - dim.width ) / 2;
 			
-		_x = dim.getX() - magnBorder;
-		_y = dim.getY() - magnBorder;
+		_x = dim.x - magnBorder;
+		_y = dim.y - magnBorder;
 		//! ----------- End -----------
 		
 		if( !this->mode )
@@ -194,12 +194,12 @@ void _keyboard::setDestination( _gadget* dest )
 _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_keyboard* that = (_keyboard*)event.getGadget();
+	_keyboard* that = event.getGadget<_keyboard>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -219,7 +219,7 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_keyboard* that = (_keyboard*)event.getGadget();
+	_keyboard* that = event.getGadget<_keyboard>();
 	
 	if( event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
 	{
@@ -247,7 +247,7 @@ _gadgetEventReturnType _keyboard::focusHandler( _gadgetEvent event ){
 _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_keyboard* that = (_keyboard*)event.getGadget();
+	_keyboard* that = event.getGadget<_keyboard>();
 	
 	static int deltaY = 0;
 	
@@ -283,6 +283,8 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( event.getArgs().getDeltaY() == 0 )
 			return handled;
 		
+		that->animKeyb.terminate();
+		that->animMagnif.terminate();
 		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
 		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
 		
@@ -353,7 +355,6 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	{
 		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system_->_runtimeAttributes_->keyboardText[0][i] );
 		this->buttons[i]->setFont( this->font );
-		this->buttons[i]->registerEventHandler( "focus" , &_keyboard::focusHandler );
 		this->addChild( this->buttons[i] );
 	}
 	
@@ -375,6 +376,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	this->registerEventHandler( "dragStart" , &_keyboard::dragHandler );
 	this->registerEventHandler( "dragStop" , &_keyboard::dragHandler );
 	this->registerEventHandler( "dragging" , &_keyboard::dragHandler );
+	this->registerEventHandler( "focus" , &_keyboard::focusHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

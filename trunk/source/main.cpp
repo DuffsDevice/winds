@@ -11,6 +11,7 @@ using namespace std;
 #include "_type/type.system.h"
 #include "_type/type.imagefile.h"
 #include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.scrollArea.h"
 #include <nds/timers.h>
 
 _gadgetEventReturnType dragHandler( _gadgetEvent event ){
@@ -32,7 +33,14 @@ _gadgetEventReturnType dragHandler( _gadgetEvent event ){
 int main()
 {
 	
-	_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path","/"}});
+	//_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path","/"}});
+	
+	_scrollBar* bar = new _scrollBar( 70 , 70 , 50 , 50 , 50 , _dimension::vertical , 100 );
+	_system_->_gadgetHost_->addChild( bar );
+	bar->setLength2( 2 );
+	
+	/*_button* bar = new _button( 70 , 70 , 50 , 50 , "Hello" );
+	_system_->_gadgetHost_->addChild( bar );*/
 	
 	//_direntry d = _direntry("Hello.txt");
 	//d.setAttrs(0);

@@ -68,7 +68,15 @@ class _gadgetEvent
 		// Get EventArgs
 		_gadgetEventArgs& getArgs();
 		
-		//! Get the Current Gadget the Handler was called
+		//! Get the (current) Gadget the Handler was called on
+		template<typename T>
+		T* getGadget(){ 
+			#pragma GCC diagnostic ignored "-Wunused-value"
+			T::_gadget::defaultEventHandlers; // Just Test if the supplied param is a subclass of _gadget!!!!!
+			#pragma GCC diagnostic warning "-Wunused-value"
+			return static_cast<T*>( this->that );
+		}
+		
 		_gadget* getGadget();
 		
 		// Dump whole Class

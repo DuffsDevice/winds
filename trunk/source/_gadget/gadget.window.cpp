@@ -4,12 +4,12 @@
 _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 {
 	// Get Source
-	_windowButton* that = (_windowButton*)event.getGadget();
+	_windowButton* that = event.getGadget<_windowButton>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -68,10 +68,14 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
 }
 
 ////////////////////////////////////////////
-void _window::onResize(){
-	if( this->label != nullptr ){
-		this->label->setWidth( this->getWidth() - 30 ); 
-	}
+_gadgetEventReturnType _window::resizeHandler( _gadgetEvent event )
+{
+	_window* that = event.getGadget<_window>();
+	
+	if( that->label != nullptr )
+		that->label->setWidth( that->getWidth() - 30 ); 
+	
+	return handled;
 }
 
 _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
@@ -82,7 +86,7 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -164,9 +168,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 _gadgetEventReturnType _window::closeHandler( _gadgetEvent event )
 {	
 	// Get Source
-	_windowButton* that = (_windowButton*)event.getGadget();
-	
-	that->getParent()->setParent( nullptr ); 
+	event.getGadget()->getParent()->setParent( nullptr ); 
 	
 	return handled;
 }

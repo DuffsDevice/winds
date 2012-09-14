@@ -24,7 +24,7 @@ _user::_user( string username ) :
 					{ "userName" , this->userName } ,
 					{ "desktopImage" , "" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "frs.jpg" } ,
+					{ "userLogo" , "" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,

@@ -22,6 +22,10 @@ class _lua_interface_input{
 		
 		_lua_interface_input( _interface_input* i );
 		
+		_lua_interface_input(){ input = nullptr; }
+		
+		virtual ~_lua_interface_input(){};
+		
 		//! setAlign
 		int setAlign( lua_State* L );
 		
