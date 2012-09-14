@@ -4,7 +4,7 @@
 
 _gadgetEventReturnType _fileobject::doubleClickHandler( _gadgetEvent event ){
 	// Receive Gadget
-	_fileobject* that = (_fileobject*)event.getGadget();
+	_fileobject* that = event.getGadget<_fileobject>();
 	
 	that->file.execute();
 	
@@ -14,7 +14,7 @@ _gadgetEventReturnType _fileobject::doubleClickHandler( _gadgetEvent event ){
 _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_fileobject* that = (_fileobject*)event.getGadget();
+	_fileobject* that = event.getGadget<_fileobject>();
 	
 	if( event.getType() == "focus" )
 	{
@@ -33,7 +33,7 @@ _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_fileobject* that = (_fileobject*)event.getGadget();
+	_fileobject* that = event.getGadget<_fileobject>();
 	
 	return not_handled;
 }
@@ -75,7 +75,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			
 			// Resize
 			_rect dim = this->getDimensions();
-			dim.setWidth( this->label->getWidth() + 12 );
+			dim.width = this->label->getWidth() + 12;
 			this->setDimensions( dim );
 			
 			// Add Child

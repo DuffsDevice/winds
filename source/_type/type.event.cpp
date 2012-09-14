@@ -49,7 +49,10 @@ _gadgetEventArgs& _gadgetEvent::getArgs(){
 
 void _gadgetEvent::setGadget( _gadget* that ){ this->that = that; }
 
-_gadget* _gadgetEvent::getGadget(){ return this->that; }
+
+_gadget* _gadgetEvent::getGadget(){ 
+	return this->that;
+}
 
 map<string,_gadgetEventReturnType> string2eventReturnType = {
 	{ "handled" , handled },

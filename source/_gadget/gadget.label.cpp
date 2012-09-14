@@ -59,12 +59,12 @@ void _label::computeSize()
 _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_label* that = (_label*)event.getGadget();
+	_label* that = event.getGadget<_label>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

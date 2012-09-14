@@ -32,8 +32,8 @@ class _contextMenu : public _gadget{
 		
 		void setOwner( _gadget* owner );
 		
-		// For ContextMenu entries to close the cM and submit their value
-		void closeAndSend( _s32 intValue = -1 , string strValue = "" );
+		// For ContextMenu entries to close the cM and submit their value ( this event type must be _gadgetEvent::dialogClose )
+		static _gadgetEventReturnType closeAndSend( _gadgetEvent e );
 		
 		_gadget* getOwner();
 		

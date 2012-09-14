@@ -25,12 +25,12 @@ class _button : public _gadget , public _interface_input {
 		
 		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
 		
+		// Will be called if the butten is resized ->label will also be resized
+		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		
 		void init( string text );
 		
 		void computeSize();
-		
-		// Will be called if the butten is resized ->label will also be resized
-		void onResize();
 		
 	public:
 		
@@ -78,11 +78,11 @@ class _button : public _gadget , public _interface_input {
 		void setHeight();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_button( _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style = _defaultStyle_ );
+		_button( _length width , _length height , _coord x , _coord y , string title = "" , _gadgetStyle style = _defaultStyle_ );
 		
 		//! Constructor with coordinates, title and optional: Style
 		//! The Width will be computed by the font
-		_button( _coord x , _coord y , string text , _gadgetStyle style = _defaultStyle_ );
+		_button( _coord x , _coord y , string text = "" , _gadgetStyle style = _defaultStyle_ );
 		
 		//! Destrucor
 		~_button();

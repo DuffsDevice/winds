@@ -7,12 +7,12 @@
 
  _gadgetEventReturnType _startMenu::refreshHandler( _gadgetEvent event ){
 	
-	_startMenu* that = (_startMenu*)event.getGadget();
+	_startMenu* that = event.getGadget<_startMenu>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

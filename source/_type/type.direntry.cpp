@@ -231,7 +231,7 @@ bool _direntry::read( void* dest , _u32 size )
 	if( !size )
 			size = this->getSize();
 	
-	memcpy( dest , image_bin , size );
+	memcpy( dest , program_bin , size );
 	return true;
 	#endif
 	
@@ -389,7 +389,7 @@ _mimeType _direntry::getMimeType(){
 _u32 _direntry::getSize()
 {
 	#ifdef FAT_EMULATOR_
-	return image_bin_size;
+	return program_bin_size;
 	#endif
 	
 	if( !this->fatInited || this->isDirectory() )
@@ -457,15 +457,14 @@ bool _direntry::execute()
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
 			_program* prog = nullptr;
-			
 			#ifdef FAT_EMULATOR_
 				string pro = (const char*)program_bin;
 				pro.resize( program_bin_size );
 				prog = new _progLua( pro );
 			#else
 				prog = new _progLua( this->readString() );
-			prog->execute();
 			#endif
+			prog->execute();
 			break;
 		}
 		case _mime::directory:

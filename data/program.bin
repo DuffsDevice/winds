@@ -3,17 +3,20 @@ local b
 local c
 local created = false
 local ende = 0
+local select
 
 function init()
 	-- create Gadgets
-	w = _window( 150 , 60 , 20 , 20 , "Neues Fenster" )
+	w = _window( 150 , 80 , 20 , 20 , "Neues Fenster" )
 	b = _button( 30 , 20 , 20 , 20 , "Click!" )
 	c = _checkbox( 10 , 11 )
+	select = _select( 40 , 7 , 40 )
 
 	-- construct the Tree
 	w:addChild( b )
 	w:addChild( c )
-	System.registerWindow( w )
+	w:addChild( select )
+	--System.registerWindow( w )
 
 	-- register Handler-Functions
 	w:registerEventHandler( "dragging" , dragHandler )
@@ -32,16 +35,15 @@ end
 function dragHandler( e )
 	local dest = e:getArgs():getDestination():toDerived()
 	if e:getType() == "dragging" then
-		if dest:handleEventDefault( e ) == "not_handled" then
-			dest:setTitle( string.format( "%i - Delta: %i" , e:getArgs():getPosX() , e:getArgs():getDeltaX() ) )
-		end
+		dest:setTitle( string.format( "%i - Delta: %i" , e:getArgs():getPosX() , e:getArgs():getDeltaX() ) )
 	elseif e:getType() == "dragStart" then
-		w:handleEventDefault( e )
+		--dest:handleEventDefault( e )
 	end
 	return "handled"
 end
 
 function main()
+	--w:setTitle( string.format( "%i - Delta: %i" , math.random( 400 ) , 23544124 ) )
 	return ende
 end
 
@@ -49,13 +51,14 @@ end
 function clickHandler()
 	if created then
 		-- ready for garbage collection
-		b2:delete()
-		b2 = nil
-		collectgarbage( "collect" )
+		--b2:delete()
+		--b2 = nil
 	end
-	b2 = _button( math.random( 40 ) , 45 , "Ok!" )
+	b2 = _button( math.random( 40 ) , 45 , " rfdv" )
+	---b2 = _button( 40 , 10 , "ewf" )
 	w:addChild( b2 )
 	b2:registerEventHandler( "mouseClick" , setValue )
+	select:addIndex( -1 , "Hello" )
 	created = true
 	return "handled"
 end

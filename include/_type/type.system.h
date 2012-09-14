@@ -58,6 +58,10 @@ class _system{
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() );
 		static void generateEvent( _gadgetEvent event );
 		
+		//! Things for termination
+		static void terminateProgram( _program* prog );
+		static void terminateAnimation( const _animation& anim );
+		
 		static int 	bgIdFront;
 		static int 	bgIdBack;
 		static int 	bgIdSub;

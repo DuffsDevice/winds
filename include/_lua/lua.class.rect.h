@@ -26,13 +26,19 @@ class _lua_rect : public _rect {
 				_lua_area( lua_State* L );
 				
 				//! Push-back
-				int insert( lua_State* L );
+				int add( lua_State* L );
+				
+				//! reduce
+				int reduce( lua_State* L );
 				
 				//! clear
-				int clear(lua_State* L);
+				int clearRects(lua_State* L);
 				
 				//! toRelative
 				int toRelative(lua_State* L);
+				
+				//! clipToIntersect
+				int clipToIntersect(lua_State* L);
 				
 				//! Lunar !//
 				static const char className[];
@@ -85,7 +91,7 @@ class _lua_rect : public _rect {
 		//! isValid
 		int isValid(lua_State* L);
 		
-		//! Contains (Coords)
+		//! contains (Coords)
 		int contains(lua_State* L);
 		
 		//! fromCoords
@@ -94,24 +100,20 @@ class _lua_rect : public _rect {
 		//! toRelative
 		int toRelative(lua_State* L);
 		
-		//! AND
-		int AND(lua_State* L);
+		//! clipToIntersect
+		int clipToIntersect(lua_State* L);
 		
-		//! +
-		int ADD(lua_State* L);
+		//! expandToInclude
+		int expandToInclude(lua_State* L);
 		
-		//! -
-		int SUB(lua_State* L);
+		//! reduce
+		int reduce(lua_State* L);
 		
-		//! XOR
-		int XOR(lua_State* L);
-		
-		//! OR
-		int OR(lua_State* L);
+		//! combine
+		int combine(lua_State* L);
 		
 		//! intersectsWith
 		int intersectsWith(lua_State* L);
-		
 		
 		//! Lunar !//
 		static const char className[];

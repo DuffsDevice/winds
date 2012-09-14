@@ -34,6 +34,7 @@ bool DSWindows::isHardwareKey( _char key )
 map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::button , "button" },
 	{ _gadgetType::label , "label" },
+	{ _gadgetType::selectbox , "selectbox" },
 	{ _gadgetType::checkbox , "checkbox" },
 	{ _gadgetType::textbox , "textbox" },
 	{ _gadgetType::keyboard , "keyboard" },

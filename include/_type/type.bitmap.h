@@ -405,7 +405,6 @@ class _bitmap
 		 * @param s16 bottom Bottom side of the Rectangle to check
 		 * @return bool Whether it is visible (true) or not (false)
 		**/
-		private:
 		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom );
 		public:
 };

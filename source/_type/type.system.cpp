@@ -223,7 +223,22 @@ _system::_system()
 		//! Start Time
 		cpuStartTiming(1);
 		
-		//return;
+		/*_bitmap bmp = _bitmap( BG_GFX , SCREEN_WIDTH , SCREEN_HEIGHT );
+		
+		_area b = { _rect( 40 , 40 , 40 , 40 ) , _rect( 50 , 50 , 40 , 40 ) };
+		for( _rect rc : b )
+			bmp.drawRect( rc.x , rc.y , rc.width , rc.height , RGB( 0 , 0 , 31 ) );
+			
+		_area a = _rect( 40 , 40 , 40 , 40 ).reduce(_rect( 50 , 50 , 40 , 40 ));
+		
+		int i = -6;
+		for( _rect rc : a )
+		{
+			for( int i = 0; i < 60; i++ )swiWaitForVBlank();
+			bmp.drawRect( rc.x , rc.y , rc.width , rc.height , RGB( 31 - (i+=6) , i , 15 ) );
+		}
+		
+		while(true);*/
 	
 	// ------------------------------------------------------------------------
 	// System-Attributes
@@ -241,9 +256,8 @@ _system::_system()
 		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
 		
 		//! Create Windows & the Keyboard
-		//_system::_gadgetHost_ = new _windows( bgIdBack );
-		_system::_topScreen_ = new _screen( bgIdSub );
 		_system::_gadgetHost_ = new _windows( bgIdBack );
+		_system::_topScreen_ = new _screen( bgIdSub );
 		//_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 		_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 		
@@ -300,17 +314,36 @@ _u32 _system::getTime(){
 	return cpuGetTiming()>>15;
 }
 
-void _system::executeAnimation( const _animation& anim ){
-	_system::_animations_.remove_if( [&]( _animation& a )->bool{ if( a.getID() == anim.getID() ) { return true; } return false; } );
+void _system::executeAnimation( const _animation& anim )
+{
+	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
 	_system::_animations_.push_back( anim );
 }
 
-void _system::executeProgram( _program* prog , _cmdArgs args ){
+void _system::terminateAnimation( const _animation& anim )
+{
+	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
+}
+
+void _system::executeProgram( _program* prog , _cmdArgs args )
+{
 	_system::_programs_.push_back( make_pair( prog , args ) );
 	prog->init( _system::_gadgetHost_ , args );
 }
 
+void _system::terminateProgram( _program* prog )
+{
+	// Erase the Program-Instance in the list of running instances
+	_system::_programs_.remove_if( [&]( pair<_program*,_cmdArgs> s )->bool{ return s.first == prog; } );
+	delete prog;
+}
+
 #include "_type/type.imagefile.h"
+
+void hdl(){
+	printf("end");
+	while(true);
+}
 
 void _system::main()
 {
@@ -318,7 +351,7 @@ void _system::main()
 	//d.execute();
 	SetYtrigger( 192 );
 	irqEnable( IRQ_VCOUNT );
-	int i = 60;
+	int i = 0;
 	/*_bitmap bmp = _bitmap( bgGetGfxPtr(_system::bgIdBack) , SCREEN_WIDTH , SCREEN_HEIGHT );
 			cpuStartTiming(0);
 			bmp.move( 0 , 0 , 10, 10 , 10 , 10 );
@@ -333,13 +366,30 @@ void _system::main()
 		_system::processEvents();
 		_system::runAnimations();
 		_system::runPrograms();
-		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
+		/*consoleClear();
+		if( _currentFocus_ )
+			printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
+		for( _gadget* g : _gadgetHost_->children )
+			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
+		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );*/
 		swiWaitForVBlank();
-		//consoleClear();
-		//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
-		/*if( ++i > 120 )
+		//swiWaitForVBlank();
+		//swiWaitForVBlank();
+		/*//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
+		if( ++i > 120 )
 		{
-			i = 0;
+			const unsigned int FreeMemSeg=8*1024;
+			set_new_handler(&hdl );
+			unsigned int s;
+			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
+			{
+				void *ptr=new char[ s ];
+				consoleClear();
+				printf("free: %d\n",s-FreeMemSeg);
+				//swiWaitForVBlank();
+				delete ptr;
+				ptr = 0;
+			}
 		}*/
 	}
 }

@@ -90,7 +90,7 @@ _u32 transparencyJump[256] =  {
 
 _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
 {
-	int fontWidth , fontHeight , xOffset , yOffset , ascent , nextCharBegin , xOffset2;
+	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
 	stbtt_GetFontVMetrics( &	 this->fontInfo , &ascent , 0 , 0 );
 	_u8* bitmap = stbtt_GetCodepointBitmap( &this->fontInfo , 0 , scale , letter , &fontWidth , &fontHeight , &xOffset , &yOffset );
@@ -111,20 +111,20 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 
 	// no need to blit to screen
 	if ( y > clip.getY2() ) return output;
-	if ( y + fontHeight < clip.getY() ) return output;
+	if ( y + fontHeight < clip.y ) return output;
 	if ( x > clip.getX2() ) return output;
-	if ( x + fontWidth < clip.getX() ) return output;
+	if ( x + fontWidth < clip.x ) return output;
 
 	// Calculate values for clipping
-	_u16 startX = max( x , clip.getX() );
-	_u16 endX = min( x , clip.getX() );
-	_u16 startY = max( y , clip.getY() );
-	_u16 endY = min( y , clip.getY() );
+	_u16 startX = max( x , clip.x );
+	_u16 endX = min( x , clip.x );
+	_u16 startY = max( y , clip.y );
+	_u16 endY = min( y , clip.y );
 
 	// Calculate clipping starting offsets - tells us the pixel offset
 	// from the top-left of the character that we start drawing from
-	_u16 offsetStartX = x > clip.getX() ? 0 : clip.getX() - x;
-	_u16 offsetStartY = y > clip.getY() ? 0 : clip.getY() - y;
+	_u16 offsetStartX = x > clip.x ? 0 : clip.x - x;
+	_u16 offsetStartY = y > clip.y ? 0 : clip.y - y;
 
 	// Calculate dimensions of region to copy
 	_u16 clipWidth = (endX - startX) + 1;

@@ -31,11 +31,15 @@ class _program
 		
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		
+		void 			terminate();
+		
 		void 			init( _gadget* w , _cmdArgs& args  );
 		
 		virtual int		main( _cmdArgs& args ) = 0;
 		
 		virtual void	init( _cmdArgs& args ) = 0;
+		
+		virtual 		~_program(){};
 		
 };
 

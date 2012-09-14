@@ -25,6 +25,8 @@ class _selectPopDown : public _contextMenu{
 		
 		void toggle();
 		
+		void show();
+		
 		_selectPopDown( _gadget* owner , _contextMenuEntryList* lst );
 };
 

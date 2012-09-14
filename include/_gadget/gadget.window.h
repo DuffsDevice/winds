@@ -4,7 +4,6 @@
 
 #include "_type/type.gadget.h"
 #include "_type/type.bitmap.h"
-#include "_type/type.program.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.button.h"
 #include "interface.input.h"
@@ -21,8 +20,6 @@ class _windowButton : public _button{
 class _window : public _gadget , public _interface_input {
 	
 	private:
-	
-		_program*	programHandle;
 		
 		_label* label;
 		
@@ -37,13 +34,9 @@ class _window : public _gadget , public _interface_input {
 		static _gadgetEventReturnType closeHandler( _gadgetEvent event );
 		
 		// Will be called if the window is resized ->label will also be resized
-		void onResize();
+		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
 		
 	public:
-		
-		void setProgramHandle( _program* prog ){ this->programHandle = prog; }
-		
-		_program* getProgramHandle(){ return this->programHandle; }
 		
 		void setTitle( string title ){ if( this->label ) this->label->setStrValue( title ); }
 		

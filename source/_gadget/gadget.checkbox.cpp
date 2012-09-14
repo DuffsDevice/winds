@@ -9,12 +9,12 @@ const _bitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxCh
 _gadgetEventReturnType _checkbox::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_checkbox* that = (_checkbox*)event.getGadget();
+	_checkbox* that = event.getGadget<_checkbox>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -35,7 +35,7 @@ _gadgetEventReturnType _checkbox::refreshHandler( _gadgetEvent event )
 _gadgetEventReturnType _checkbox::dragHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_checkbox* that = (_checkbox*)event.getGadget();
+	_checkbox* that = event.getGadget<_checkbox>();
 	
 	if( event.getType() == "dragStart" )
 		return handled;
@@ -59,7 +59,7 @@ _gadgetEventReturnType _checkbox::dragHandler( _gadgetEvent event )
 _gadgetEventReturnType _checkbox::mouseHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_checkbox* that = (_checkbox*)event.getGadget();
+	_checkbox* that = event.getGadget<_checkbox>();
 	
 	if( event.getType() == "mouseDown" )
 			that->pressed = true;

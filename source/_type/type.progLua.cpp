@@ -11,13 +11,13 @@
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
-#include "_lua/lua.class.gadgetEventArgs.h"
-#include "_lua/lua.class.window.h"
-#include "_lua/lua.class.label.h"
-#include "_lua/lua.class.imagegadget.h"
-#include "_lua/lua.class.button.h"
-#include "_lua/lua.class.select.h"
-#include "_lua/lua.class.checkbox.h"
+#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lua.gadget.window.h"
+#include "_lua/lua.gadget.label.h"
+#include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.button.h"
+#include "_lua/lua.gadget.select.h"
+#include "_lua/lua.gadget.checkbox.h"
 
 int luaL_expectint(lua_State* L , int narg , string name )
 {
@@ -217,6 +217,10 @@ int _progLua::main( _cmdArgs& args )
 	
 	// Reset Lua-Stack
 	lua_settop( this->state , 0 );
+	
+	//lua_gc( this->state , LUA_GCCOLLECT , 1 );
+	lua_gc( this->state , LUA_GCSTEP , 10 );
+	//printf("used: %d\n",lua_gc( this->state , LUA_GCCOUNT , 0 ));
 	
 	return t;
 }

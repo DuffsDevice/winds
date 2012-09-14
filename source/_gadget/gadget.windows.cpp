@@ -45,12 +45,12 @@
 _gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_windows* that = (_windows*)event.getGadget();
+	_windows* that = event.getGadget<_windows>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 		
@@ -82,7 +82,7 @@ _windows::_windows( _u8 bgId , _gadgetStyle style ) :
 	this->refreshBitmap();
 }
 
-bool _windows::focusChild( _gadget* child )
+/*bool _windows::focusChild( _gadget* child )
 {
 	if( !child )
 		return false;
@@ -110,4 +110,4 @@ bool _windows::focusChild( _gadget* child )
 	child->bubbleRefresh();
 	
 	return true;
-}
+}*/

@@ -26,8 +26,8 @@ void _bitmapResizer::scaleRect( _bitmap* dest , _bitmap* src, _rect srcArea )
 	_length realSrcWidth = src->getWidth();
 	if( !srcArea.isValid() )
 		srcArea = _rect( 0 , 0 , realSrcWidth , src->getHeight() );
-	_length srcWidth = srcArea.getWidth();
-	_length srcHeight = srcArea.getHeight();
+	_length srcWidth = srcArea.width;
+	_length srcHeight = srcArea.height;
 	_length destWidth = dest->getWidth();
 	_length destHeight = dest->getHeight();
 	

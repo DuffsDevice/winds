@@ -27,6 +27,13 @@ class _bitmapPort{
 		_bitmapPort( _bitmap* bm );
 		
 		/**
+		 * Construcor
+		 * @param bm the base _bitmap the work is done on
+		 * @param clippings clippingRects to work in
+		**/
+		_bitmapPort( _bitmap* bm , _area clippings );
+		
+		/**
 		 * Add a Clipping Rect to the list
 		 * @param cR the Clipping-Rect to add
 		**/

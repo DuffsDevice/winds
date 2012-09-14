@@ -24,6 +24,7 @@ typedef bool _bit;
 typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
+typedef float _float;
 
 #define u16 _u16
 #include <nds/touch.h>
@@ -238,6 +239,7 @@ enum class _gadgetType : _u8
 	imagegadget,
 	scrollarea,
 	scrollbutton,
+	scrollbar,
 	window,
 	screen,
 	contextmenu,

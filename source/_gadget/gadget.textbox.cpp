@@ -5,12 +5,12 @@
 _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_textbox* that = (_textbox*)event.getGadget();
+	_textbox* that = event.getGadget<_textbox>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -69,7 +69,7 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 
 _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 {
-	_textbox* that = (_textbox*)event.getGadget();
+	_textbox* that = event.getGadget<_textbox>();
 	
 	string val = that->getStrValue();
 	
@@ -114,7 +114,7 @@ _gadgetEventReturnType _textbox::focusHandler( _gadgetEvent event )
 
 _gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
 {
-	_textbox* that = (_textbox*)event.getGadget();
+	_textbox* that = event.getGadget<_textbox>();
 	
 	_system_->_keyboard_->setDestination( nullptr );
 	
@@ -129,7 +129,7 @@ _gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
 
 _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 {
-	_textbox* that = (_textbox*)event.getGadget();
+	_textbox* that = event.getGadget<_textbox>();
 	
 	if( event.getType() == "dragStart" )
 		return handled;
@@ -153,7 +153,7 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 	_length strLen = str.length();
 	_length pos = 0;
 	
-	for( _length l = 0 ; l < position + 1 && pos <= strLen; pos++ )
+	for( _coord l = 0 ; l < position + 1 && pos <= strLen; pos++ )
 		l += that->font->getCharacterWidth( str[pos] ) + 1;
 	
 	that->cursor = pos;

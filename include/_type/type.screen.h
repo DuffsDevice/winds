@@ -7,7 +7,7 @@
 
 //! Types
 #include "_type/type.h"
-#include "_type/type.gadget.h"
+#include "_type/type.bitmap.h"
 
 class _screen{
 	
@@ -15,6 +15,8 @@ class _screen{
 		
 		//! Background-id returned by bgInit or bgInitSub
 		int bgId;
+		
+		_bitmap* t_bitmap;
 		
 	public:
 	
@@ -37,6 +39,9 @@ class _screen{
 		
 		//! get the base Memory
 		_pixelArray	getMemoryPtr() const ;
+		
+		//! get the base Memory
+		_bitmap*	getBitmap() const ;
 		
 		//! Get the id returned by bgInit or bgInitSub
 		int getBgId() const ;

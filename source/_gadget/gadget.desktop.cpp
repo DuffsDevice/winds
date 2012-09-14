@@ -5,15 +5,26 @@
 
 _freetypefont* ft = nullptr;
 
+_gadgetEventReturnType _desktop::focusHandler( _gadgetEvent event )
+{
+	// Receive Gadget
+	_desktop* that = event.getGadget<_desktop>();
+	
+	if( that->getParent() )
+		that->getParent()->blurEventChild();
+	
+	return handled;
+}
+
 _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
-	_desktop* that = (_desktop*)event.getGadget();
+	_desktop* that = event.getGadget<_desktop>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteDimensions() ) );
+		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -33,7 +44,8 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 	}
 	
 	//bP.copy( 0 , 0 , _system_->_runtimeAttributes_->user->userLogo );
-	bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
+	//if( ft )
+		//bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	
 	return use_default;
 }
@@ -42,8 +54,10 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 _desktop::_desktop( _gadgetStyle style ) :
 	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style )
 {
-	ft = new _freetypefont("/font.ttf");
+	//ft = new _freetypefont("/font.ttf");
+	
 	this->registerEventHandler( "refresh" , &_desktop::refreshHandler );
+	this->registerEventHandler( "focus" , &_desktop::focusHandler );
 	
 	// Refresh
 	this->refreshBitmap();
