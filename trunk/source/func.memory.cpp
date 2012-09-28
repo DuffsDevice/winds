@@ -21,16 +21,14 @@ unsigned int getFreeMemory()
 
 void memSet( void* dst , const unsigned short int val , unsigned int hwn )
 {
-	hwn <<= 1;
-	DC_FlushRange( dst , hwn );
-	dmaFillHalfWords( val , dst , hwn );
+	DC_FlushRange( dst , hwn << 1 );
+	dmaFillHalfWords( val , dst , hwn << 1 );
 }
 
 void memCpy( void* dst , const void* src , unsigned int hwn )
 {
-	hwn <<= 1;
-	DC_FlushRange( src , hwn );
-	dmaCopyHalfWords( 0 , src , dst , hwn );
+	DC_FlushRange( src , hwn << 1 );
+	dmaCopyHalfWords( 0 , src , dst , hwn << 1 );
 }
 
 int string2int(const char *p){

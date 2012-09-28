@@ -124,7 +124,7 @@ _gadgetEventReturnType _scrollArea::resizeHandler( _gadgetEvent event )
 	if( event.getType() == "refresh" )
 	{
 		_bitmapPort bP = that->getBitmapPort();
-	
+		
 		if( event.getArgs().hasClippingRects() )
 			bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 		else
@@ -138,10 +138,7 @@ _gadgetEventReturnType _scrollArea::resizeHandler( _gadgetEvent event )
 	}
 	
 	that->computeClipSize();
-	
 	that->refresh();
-	
-	that->bubbleRefresh( true );
 	
 	return handled;
 }

@@ -1,14 +1,5 @@
 #include "_type/type.gadgetStyle.h"
 
-_gadgetStyle::_gadgetStyle() : 
-	resizable( BIT(1) | BIT(0) ) // Resizable in both directions
-	, destroyable(true)
-	, editable(true)
-	, showsUpInTaskBar(false)
-	, own( nullptr )
-	, data( 0 )
-{ }
-
 _gadgetStyle _gadgetStyle::owner( void* owner ){
 	_gadgetStyle g = _gadgetStyle();
 	g.own = owner;
@@ -21,4 +12,19 @@ _gadgetStyle _gadgetStyle::storeData( _u32 d ){
 	return g;
 }
 
-_gadgetStyle _defaultStyle_;
+_gadgetStyle _defaultStyle_ = { 
+	nullptr , // Owner
+	0 , // Value
+	BIT(1) | BIT(0) , // Resizable (X|Y)
+	true , // destroyable
+	false , // focused
+	false , // pressed
+	false , // enhanced
+	false , // dragged
+	false , // draggable
+	true , // editable
+	false , // showsUpInTaskBar
+	true ,  // canTakeFocus
+	true , // canLooseFocus
+	true // canReceiveFocus
+};

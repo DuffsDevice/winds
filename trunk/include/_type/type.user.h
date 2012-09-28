@@ -20,6 +20,7 @@ class _user : public _registry
 		_u32 	kRD;
 		_u32 	kRS;
 		_u32 	fOH;
+		_u32 	sOH;
 		
 		_bitmap* userLogo;
 		_bitmap* userImage;

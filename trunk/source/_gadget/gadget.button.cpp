@@ -24,13 +24,6 @@ _gadgetEventReturnType _button::resizeHandler( _gadgetEvent event )
 	that->label->setWidth( max( _length(1) , that->getWidth() - 2 ) );
 	that->label->setHeight( max( _length(1) , that->getHeight() - 2 ) );
 	
-	
-	//Refresh Label
-	that->label->refreshBitmap();
-	
-	// Refresh Button
-	that->bubbleRefresh( true );
-	
 	return handled;
 }
 

@@ -49,40 +49,11 @@ _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	_gadgetScreen( bgId , style )
 {	
 	_gadget* refresher = new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 );
+	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( "refresh" , &_startupScreen::refreshHandler );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	
 	//! Refresh me
 	this->refreshBitmap();
-}
-
-bool _startupScreen::focusChild( _gadget* child )
-{
-	if( !child )
-		return false;
-	
-	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
-	
-	// Blur the Previously focused gadget
-	if( !child->hasFocus() )
-		this->blurEventChild();
-	else
-		return false;
-	
-	child->focused = true;
-	
-	if( child->getType() == _gadgetType::_plain || *itTemp == *( ++this->children.rbegin() ) )
-		return true;
-	
-	// Move the gadget to "top"
-	this->children.splice( this->children.end() , this->children , itTemp );
-	
-	// Move the keyboard top the "top", so the child will be at pos No. 2
-	//this->children.splice( this->children.end() , this->children , find( this->children.begin() , this->children.end() , this->taskboard ) );
-	
-	// Refresh the Gadget
-	child->bubbleRefresh();
-	
-	return true;
 }

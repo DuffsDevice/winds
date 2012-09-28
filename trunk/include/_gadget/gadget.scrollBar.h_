@@ -1,0 +1,65 @@
+#ifndef _WIN_G_SCROLLBAR_
+#define _WIN_G_SCROLLBAR_
+
+#include "_type/type.gadget.h"
+#include "_gadget/gadget.button.h"
+
+enum class _dimension : _u8{
+	horizontal = 0 ,
+	vertical = 3
+};
+
+class _scrollBar : public _gadget{
+	
+	private:
+		
+		_u32 		value;
+		_u32 		length; // Length of the visible Part -> scrollHandle length
+		_u32 		length2;// Length of the whole scrollCanvas
+		_u32 		cache;  // Will be "Physically scrollbar Height" - "theoratically scrollbarHeight"
+							// This will keep the scrollBar in a more visible state
+		_u16		step;
+		
+		_dimension 	dim;
+		
+		_button* 	dragHandle;
+		_button* 	higherHandle;
+		_button* 	lowerHandle;
+		
+		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _gadgetEventReturnType clickHandler( _gadgetEvent event );
+		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		
+		void refreshCache();
+		void refreshPosition();
+		
+		void init();
+	
+	public:
+		
+		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _gadgetStyle style = _gadgetStyle() );
+		
+		void setValue( _u32 value );
+		
+		void setDimension( _dimension dim );
+		
+		void setStep( _u16 value )
+		{
+			this->step = value;
+		}
+		
+		void setLength( _u32 value );
+		
+		void setLength2( _u32 value );
+		
+		_dimension getDimension(){
+			return this->dim;
+		}
+		
+		_u32 getValue(){
+			return this->value;
+		}
+		
+};
+
+#endif

@@ -4,63 +4,6 @@
 #include <nds/timers.h>
 #include <nds/arm9/math.h>
 
-_bitmap::_bitmap( _pixelArray base , _length w , _length h )
-	: bmp( base ) , width( w ), height( h ) , wasAllocated( false )
-{ this->resetClippingRect(); }
-
-_bitmap::_bitmap( _length w , _length h )
-	: width( w ), height( h ) , wasAllocated( true )
-{
-	this->bmp = new _pixel[w*h];
-	this->resetClippingRect();
-}
-
-_bitmap::_bitmap( const _bitmap &bm )
-	: bmp( bm.getBitmap() ) , width( bm.getWidth() ), height( bm.getHeight() ) , wasAllocated( false )
-{ this->resetClippingRect(); }
-
-_bitmap::_bitmap()
-	: bmp( nullptr ) , width( 0 ), height( 0 ) , wasAllocated( false )
-{ this->resetClippingRect(); }
-
-_pixelArray _bitmap::getBitmap() const {
-	return this->bmp;
-}
-
-_pixelArray _bitmap::getBitmap( _length y ) const {
-	return &this->bmp[ y * this->width ];
-}
-
-_pixelArray _bitmap::getBitmap( _length x , _length y ) const {
-	return &this->bmp[ y * this->width + x ];
-}
-
-void _bitmap::setBitmap( _pixelArray bmp ) {
-	this->bmp = bmp;
-}
-
-_pixel& _bitmap::operator[]( const _u32 pos ) const {
-	return this->bmp[ min( _u32(this->width * this->height - 1 ) , pos ) ];
-}
-
-_pixel& _bitmap::operator()( _coord x , _coord y ) const {
-	
-	x = min( _length(x) , this->width - 1 );
-	y = min( _length(y) , this->height -1 );
-	
-	_u32 position = y * this->width + x;
-	
-	return this->bmp[position];
-}
-
-_length _bitmap::getWidth() const {
-	return this->width;
-}
-
-_length _bitmap::getHeight() const {
-	return this->height;
-}
-
 void _bitmap::setWidth( _length w )
 { 
 	if( this->width == w )
@@ -165,32 +108,6 @@ void _bitmap::resize( _length w , _length h )
 	this->resetClippingRect(); 
 }
 
-void _bitmap::destruct(){ 
-	if( this->wasAllocated ){
-		delete[] this->bmp;
-	}
-}
-
-_bitmap::~_bitmap(){ 
-	this->destruct();
-}
-
-_pixel _bitmap::getPixel( _coord x , _coord y ) const 
-{
-	_u32 position = y * this->width + x;
-	
-	// Prevent Overflows
-	if( position > (this->height * this->width - 1 ) || x >= this->width || y >= this->height )
-		return NO_COLOR;
-	
-	return this->bmp[position];
-}
-
-_pixel _bitmap::getPixelFast( _coord x , _coord y ) const 
-{
-	return this->bmp[ y * this->width + x ];
-}
-
 void _bitmap::drawPixel( _coord x , _coord y , _pixel color )
 {
 	
@@ -205,27 +122,6 @@ void _bitmap::drawPixel( _coord x , _coord y , _pixel color )
 	_u32 position = y * this->width + x;
 	
 	this->bmp[position] = color;
-}
-
-void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length )
-{
-	//dmaFillHalfWords( color , &this->bmp[this->width*y+x] , sizeof(_pixel) * length );
-	memSet( &this->bmp[ y * this->width + x ] , color , length );
-}
-
-void _bitmap::drawPixelNoCheck( _coord x , _coord y , _pixel color )
-{
-	this->bmp[y * this->width + x] = color;
-}
-
-void _bitmap::reset( _pixel color )
-{
-	this->blitFill( 0 , 0 , color , this->width * this->height );
-}
-
-void _bitmap::fill( _pixel color )
-{
-	this->drawFilledRect( 0 , 0 , this->width , this->height , color );
 }
 
 void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
@@ -248,6 +144,26 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 		*ptr = color;
 }
 
+void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
+{
+	// Get end point of rect to draw
+	_coord x2 = x;
+	_coord y2 = y + length - 1;
+	
+	// Attempt to clip
+	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+		
+	// Calculate new height
+	length = y2 - y + 1 >> 1;
+	
+	// Pointer to BitMapBase
+	_pixel* ptr = this->bmp + x + y * this->width;
+	
+	// Fill...
+	for( _int i = 0; i != length; ++i , ptr += this->width << 2 )
+		*ptr = color;
+}
+
 void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
 {
 	// Get end point of rect to draw
@@ -265,15 +181,25 @@ void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel 
 	
 }
 
-void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
-{			
-	--w;
-	--h;
+void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color )
+{
+	// Get end point of rect to draw
+	_coord x2 = x + length - 1;
+	_coord y2 = y;
 	
-	this->drawVerticalLine( x , y , h , color );
-	this->drawVerticalLine( x + w  , y + 1 , h , color );
-	this->drawHorizontalLine( x + 1, y , w , color );
-	this->drawHorizontalLine( x , y + h  , w , color );
+	// Attempt to clip
+	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+		
+	// Calculate new width
+	length = x2 - x + 1 >> 1;
+	
+	// Pointer to BitMapBase
+	_pixel* ptr = this->bmp + x + y * this->width;
+	
+	// Fill...
+	for( _int i = 0; i != length; ++i , ptr++ )
+		*ptr++ = color;
+	
 }
 
 void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
@@ -290,9 +216,13 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	w = x2 - x + 1;
 	h = y2 - y + 1;
 	
+	_pixelArray to = this->bmp + y * this->width + x;
+	
 	// Draw the rectangle
-	for (_u16 i = 0; i < h; i++) {
-		this->blitFill( x , y + i , color , w );
+	while( h-- )
+	{
+		memSet( to ,  color , w );
+		to += this->width;
 	}
 }
 
@@ -483,10 +413,10 @@ void _bitmap::drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel col
 		x++;
 		ddF_x += 2;
 		f += ddF_x + 1;
-
+		
 		this->drawHorizontalLine(xc - x, yc + y, (x << 1) + 1, color);
 		this->drawHorizontalLine(xc - x, yc - y, (x << 1) + 1, color);
-
+		
 		this->drawHorizontalLine(xc - y, yc + x, (y << 1) + 1, color);
 		this->drawHorizontalLine(xc - y, yc - x, (y << 1) + 1, color);
 	}
@@ -575,12 +505,6 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize )
-{
-	// Let the font do the hard work!
-	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
-}
-
 void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
 {
 	// Check for transparent
@@ -616,7 +540,7 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
 	
-	for(int i = 0; i < h; i++ )
+	while( h-- )
 	{
 		memCpy( myData , copyData , w );
 		copyData += data->getWidth();
@@ -624,9 +548,9 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
 	}
 }
 
-void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data , _pixel transparentColor )
+void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data )
 {
-	
+	//asm volatile("@Here I Start");
 	if( data->getWidth() == 0 || data->getHeight() == 0 )
 		return;
 	
@@ -645,11 +569,12 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data , _pixe
 	
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
-	
-	for(int i = 0; i < h; i++ )
+	int j;
+	while( h-- )
 	{
-		for( int j = 0; j < w; j++ ){
-			if( RGB_GETA( copyData[j] ) && copyData[j] != transparentColor ) // Check if this pixel of the data is non-transparent
+		j = w;
+		while( j-- ){
+			if( copyData[j] >> 15 ) // Check if this pixel of the data is non-transparent
 				myData[j] = copyData[j];
 		}
 		copyData += data->getWidth();
@@ -677,7 +602,7 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 	_length height = y2 - y + 1;
 	_length width = x2 - x + 1;
 	
-	for(int i = 0; i < height; i++ )
+	for(int i = 0; i != height; i++ )
 	{
 		memSet( myData , copyData[y - origY + i] , width );
 		myData += this->width;
@@ -702,7 +627,7 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 		return;
 	_pixelArray myData	= &this->bmp[ y * this->width + x ];
 	
-	_length height = y2 - y + 1;
+	_length height = y2 - y;
 	_length width = x2 - x + 1;
 	
 	// Draw one line!
@@ -711,7 +636,8 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 	_pixelArray destination = myData;
 	
 	// Copy that line!
-	for (_u16 i = 1; i < height; i++){
+	while( height-- )
+	{
 		destination += this->width;
 		memCpy( destination , myData , width );
 	}
@@ -779,7 +705,6 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 	{
 		_pixelArray src = this->bmp + sourceX - dX + this->width * sourceY;
 		_pixelArray dst = this->bmp + destX + this->width * destY;
-		//printf("%d,%d,%d\n",dX,sourceX - dX ,destX );
 		
 		// Copy up
 		for ( _int i = 0 ; i != height ; ++i , src += this->width , dst += this->width )
@@ -799,8 +724,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 
 bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom )
 {
-	
-	if( !activeClippingRect.isValid() )
+	if( !activeClippingRect.width || !activeClippingRect.height )
 		return false;
 		
 	// Get co-ords of clipping rect
@@ -810,8 +734,8 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	_coord maxY = activeClippingRect.y + activeClippingRect.height - 1;
 
 	// Choose larger start point values
-	minX = max( (int)minX , 0 );
-	minY = max( (int)minY , 0 );
+	minX = max( minX , 0 );
+	minY = max( minY , 0 );
 	
 	// Choose smaller end point values
 	maxX = min( maxX , _coord( this->width - 1 ) );
@@ -830,6 +754,15 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	return true;
 }
 
+_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize ){
+	// Let the font do the hard work!
+	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
+}
+
+void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length ){
+	memSet( &this->bmp[ y * this->width + x ] , color , length );
+}
+
 void _bitmap::setClippingRect( _rect rc ){
 	this->activeClippingRect = rc;
 	_coord dX = max( -this->activeClippingRect.x , 0 );
@@ -840,12 +773,4 @@ void _bitmap::setClippingRect( _rect rc ){
 	this->activeClippingRect.height -= dY;
 	this->activeClippingRect.setX2( min( this->activeClippingRect.getX2() , _coord( this->width ) ) );
 	this->activeClippingRect.setY2( min( this->activeClippingRect.getY2() , _coord( this->height ) ) );
-}
-
-_rect _bitmap::getClippingRect(){
-	return this->activeClippingRect;
-}
-
-void _bitmap::resetClippingRect(){
-	this->activeClippingRect = _rect( 0 , 0 , this->width , this->height );
 }

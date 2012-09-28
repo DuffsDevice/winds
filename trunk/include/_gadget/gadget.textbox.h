@@ -24,9 +24,6 @@ class _textbox : public _label {
 		
 		//! Construcor excluding dimensions and including font
 		_textbox( _coord x , _coord y , _length width , string value , _gadgetStyle style = _defaultStyle_ );
-		
-		//! Destructor
-		~_textbox();
 };
 
 #endif

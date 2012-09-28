@@ -7,7 +7,6 @@
 
 using namespace std;
 
-typedef short int _coord;
 typedef unsigned char _char;
 typedef uint8_t _u8;
 typedef int8_t _s8;
@@ -18,6 +17,7 @@ typedef int32_t _s32;
 typedef uint64_t _u64;
 typedef int64_t _s64;
 typedef _u32 _length;
+typedef _s32 _coord;
 typedef int _int;
 typedef unsigned short int _key;
 typedef bool _bit;
@@ -231,8 +231,10 @@ enum class _gadgetType : _u8
 	button,
 	label,
 	checkbox,
+	radiobox,
 	textbox,
 	selectbox,
+	selectitem,
 	keyboard,
 	desktop,
 	fileobject,
@@ -251,3 +253,5 @@ void trim( string& );
 extern map<_gadgetType,string> gadgetType2string;
 
 #endif
+
+#include "_type/type.analyzer.h"
