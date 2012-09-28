@@ -43,34 +43,40 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 {
 	if( ch == ' ' )
 		return this->spaceWidth;
+	startTimer( reinterpret_cast<void*>(&_memoryfont::drawCharacter) );
+	
+	if( !isCharSupported( ch ) )
+		ch = '?';
 	
 	const _bit *data 	= this->charData + this->charOffsets[ ch - this->firstChar ];
 	_length width 		= this->getCharacterWidth( ch );
-	
-	// no need to blit to screen
-	if ( y0 > clip.getY2() ) return width;
-	if ( y0 + this->height < clip.y ) return width;
-	if ( x0 > clip.getX2() ) return width;
-	if ( x0 + width < clip.x ) return width;
 	
 	// Check for transparent
 	if( !RGB_GETA(color) )
 		goto end;
 	
-	if( this->monospace && width <= this->monospace - 2 )
-		x0++;
-	if( this->monospace && width <= this->monospace - 4 )
-		x0++;
+	// no need to blit to screen
+	if ( y0 > clip.getY2() || y0 + this->height < clip.y || x0 > clip.getX2() || x0 + width < clip.x ) return width;
 	
-	for( int x = 0; x < width ; ++x ){
-		for( int y = 0; y < this->height ; y++ ){
+	if( this->monospace && width <= this->monospace - 2 )
+	{
+		x0++;
+		if( width <= this->monospace - 4 )
+			x0++;
+	}
+	
+	for( int x = 0; x != width ; ++x ){
+		for( int y = 0; y != this->height ; y++ ){
 			if( data[ y * width + x ] )
 				dest->drawPixel( x0 + x , y0 + y , color );
 		}
 	}
+	
 	end: // Breakpoint
 	if( this->monospace != 0 )
 		return this->monospace;
+	
+	stopTimer( reinterpret_cast<void*>(&_memoryfont::drawCharacter) );
 	
 	return width;
 }

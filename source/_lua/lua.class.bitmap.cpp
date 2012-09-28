@@ -151,8 +151,7 @@ int _lua_bitmap::copyTransparent( lua_State* L ){
 	this->bm->copyTransparent( 
 		luaL_checkint( L , 1 ) ,
 		luaL_checkint( L , 2 ) ,
-		b->bm ,
-		luaL_optint( L , 4 , 0 )
+		b->bm
 	); return 0; 
 }
 

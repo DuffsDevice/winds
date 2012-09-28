@@ -35,7 +35,7 @@ _user::_user( string username ) :
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
 					{ "fileObjectHeight" , "10" } ,
-					{ "selectObjectHeight" , "8" }
+					{ "selectObjectHeight" , "9" }
 				}
 			} };
 		this->flush();
@@ -50,6 +50,7 @@ _user::_user( string username ) :
 	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
 	
 	this->fOH = this->getIntAttr( "fileObjectHeight" );	
+	this->sOH = this->getIntAttr( "selectObjectHeight" );	
 	
 	this->userLogo = new _bitmap( 14 , 14 );
 	this->userLogo->reset( RGB( 22 , 22 , 22 ) );

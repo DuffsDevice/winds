@@ -17,13 +17,11 @@ extern "C"{
 #include "_library/_fat/fatdir.h"
 }
 
-#define FAT_EMULATORm
-
-typedef enum{
-	mode_closed = 0,
-	mode_read = 1,
-	mode_write = 2
-}_direntryMode;
+enum class _direntryMode : _u8{
+	closed = 0,
+	read = 1,
+	write = 2
+};
 
 union _direntryAttributes{
 	_u8 sum;	
@@ -163,7 +161,7 @@ class _direntry{
 			this->extension = other.extension;
 			this->stat_buf = other.stat_buf;
 			this->mimeType = other.mimeType;
-			this->mode = _direntryMode::mode_closed;
+			this->mode = _direntryMode::closed;
 			return *this;
 		}
 		

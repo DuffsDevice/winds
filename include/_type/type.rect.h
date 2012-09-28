@@ -27,7 +27,7 @@ class _rect{
 					
 				//! Push-back Aliases
 				void add( const _rect rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
-				void add( _area& ar );
+				void add( _area& cR ){ copy( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
 				
 				void cloneTo( _area& ar ){
 					ar.t_rects = t_rects;
@@ -44,13 +44,47 @@ class _rect{
 				void dump() const {	for( const _rect &rc : t_rects ) rc.dump(); }
 				
 				//! Cut the supplied Rectangle off
-				_area& reduce( const _rect dim );
+				_area& reduce( const _rect dim )
+				{
+					startTimer( reinterpret_cast<void*>(&_rect::reduce) );
+					// Temp Rects
+					list<_rect> tR = t_rects;;
+					
+					// Clear
+					t_rects.clear();
+					
+					for( _rect& rc : tR )
+						for( const _rect& t : rc.reduce( dim ) )
+							t_rects.push_back( t );
+					
+					stopTimer( reinterpret_cast<void*>(&_rect::reduce) );
+					
+					return *this;
+				}
 				
 				//! Relativate all t_rects
-				_area& toRelative( const _coord absX , const _coord absY );
+				_area& toRelative( const _coord absX , const _coord absY )
+				{
+					startTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+					for( _rect &rc : t_rects )
+						rc.toRelative( absX , absY );
+					stopTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+					return *this;
+				}
 				
 				//! Clip all t_rects to the supplied one
-				_area& clipToIntersect( const _rect limits );
+				_area& clipToIntersect( const _rect limits )
+				{
+					// Temp Rects
+					list<_rect> tR = t_rects;
+					
+					t_rects.clear();
+					
+					for( _rect& rc : tR )
+						add( rc.clipToIntersect( limits ) );
+					
+					return *this;
+				}
 				
 				//! Check for contained t_rects
 				bool empty(){ return t_rects.empty(); }

@@ -8,7 +8,7 @@
 #include <fat.h>
 
 //! Resources we need
-#include "_resource/PROG_Explorer.h"
+//#include "_resource/PROG_Explorer.h"
 #include "_resource/BMP_Checkboxes.h"
 
 #include "_gadget/gadget.windows.h"
@@ -68,7 +68,7 @@ void _system::processEvents()
 	// Temp...
 	_gadget* gadget;
 
-	for( _gadgetEvent event : _system::events )
+	for( _gadgetEvent& event : _system::events )
 	{
 		gadget = (_gadget*)event.getArgs().getDestination();		
 		
@@ -81,10 +81,22 @@ void _system::processEvents()
 	// Erase all Events
 	_system::events.clear();
 	
-	
 	// Copy all new Events into events Vector...
 	enableEventThrowing();
 	
+	
+	/*if( !_system::events.size() )
+	{
+		addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
+		addMethod( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler),"refresh");
+		addMethod( reinterpret_cast<void*>(&_bitmap::copyTransparent),"copyAlgo");
+		addMethod( reinterpret_cast<void*>(&_rect::reduce),"reduceAlgo");
+		addMethod( reinterpret_cast<void*>(&_rect::toRelative),"toRelative");
+		
+		printResults();
+		printf("%d\n",cpuGetTiming());
+		while(true);
+	}*/
 }
 
 void _system::enableEventThrowing( void )
@@ -256,9 +268,9 @@ _system::_system()
 		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
 		
 		//! Create Windows & the Keyboard
-		_system::_gadgetHost_ = new _windows( bgIdBack );
+		//_system::_gadgetHost_ = new _windows( bgIdBack );
 		_system::_topScreen_ = new _screen( bgIdSub );
-		//_system::_gadgetHost_ = new _startupScreen( bgIdBack );
+		_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 		_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 		
 		//! random Random() generator
@@ -338,8 +350,6 @@ void _system::terminateProgram( _program* prog )
 	delete prog;
 }
 
-#include "_type/type.imagefile.h"
-
 void hdl(){
 	printf("end");
 	while(true);
@@ -366,15 +376,15 @@ void _system::main()
 		_system::processEvents();
 		_system::runAnimations();
 		_system::runPrograms();
-		/*consoleClear();
-		if( _currentFocus_ )
+		consoleClear();
+		/*if( _currentFocus_ )
 			printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
 		for( _gadget* g : _gadgetHost_->children )
-			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
-		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );*/
+			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );*/
+		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
 		swiWaitForVBlank();
-		//swiWaitForVBlank();
-		//swiWaitForVBlank();
+		swiWaitForVBlank();
+		swiWaitForVBlank();
 		/*//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
 		if( ++i > 120 )
 		{
@@ -395,9 +405,9 @@ void _system::main()
 }
 
 _program* _system::getBuiltInProgram( string qualifiedName ){
-	if( qualifiedName == "explorer.exe" ){
+	/*if( qualifiedName == "explorer.exe" ){
 		return new PROG_Explorer();
-	}
+	}*/
 	return nullptr;
 }
 

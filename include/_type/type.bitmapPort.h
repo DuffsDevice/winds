@@ -249,8 +249,8 @@ class _bitmapPort{
 		 * @param data Other _bitmap
 		 * @return void
 		**/
-		void copyTransparent( _coord x , _coord y , const _bitmap* data , _pixel transparentColor = NO_COLOR );
-		void copyTransparent( _coord x , _coord y , _bitmapPort data , _pixel transparentColor = NO_COLOR );
+		void copyTransparent( _coord x , _coord y , const _bitmap* data );
+		void copyTransparent( _coord x , _coord y , _bitmapPort data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the line x=0 and stretching that line over width

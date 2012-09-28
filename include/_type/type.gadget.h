@@ -12,7 +12,7 @@
 #include "_lua/lauxlib.h"
 
 // STD-Standards
-#include <list>
+#include <forward_list>
 #include <utility>
 using namespace std;
 
@@ -26,7 +26,7 @@ extern _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler ,
 typedef _gadgetEventReturnType (*_gadgetEventHandler)(_gadgetEvent);
 
 // _gadgetList
-typedef list<_gadget*> _gadgetList;
+typedef forward_list<_gadget*> _gadgetList;
 
 // _gadgetDefaultEventHandler
 typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent&);
@@ -48,12 +48,13 @@ class _gadget{
 		// Attributes
 		_padding		padding;
 		_rect 			dimensions;
-		bool 			enhanced;
-		bool			focused;
 		_gadgetStyle 	style;
 		
 		// Children
 		_gadgetList		children;
+		_gadget*		focusedChild;
+		
+		_area			dirtyRects;
 		
 		// Parent
 		_gadget*		parent;
@@ -67,17 +68,14 @@ class _gadget{
 		static map<_gadgetEventType,_gadgetDefaultEventHandler> defaultEventHandlers;
 		
 		// Standard EventHandler
-		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent& event );
-		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent& event );
-		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent& event );
-		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent& event );
-		static _gadgetEventReturnType	gadgetKeyHandler( _gadgetEvent& event );
+		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent& event ) ITCM_CODE ;
+		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent& event ) ITCM_CODE ;
+		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent& event ) ITCM_CODE ;
+		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent& event ) ITCM_CODE ;
+		static _gadgetEventReturnType	gadgetKeyHandler( _gadgetEvent& event ) ITCM_CODE ;
 		
 		// Bitmap of the Gadget
 		_bitmap*		bitmap;
-		
-		virtual bool 	blurEventChild();
-		virtual bool 	focusEventChild( _gadget* child );
 	
 	public:
 		
@@ -115,7 +113,7 @@ class _gadget{
 		/**
 		 * Let an Event bubble from child to parent and so on...
 		**/
-		void bubbleEvent( _gadgetEvent e , bool includeThis = false ) ITCM_CODE ;
+		void bubbleEvent( _gadgetEvent e , bool includeThis = false ) ;
 		
 		/**
 		 * Print Contents but make the parent also refresh
@@ -131,7 +129,7 @@ class _gadget{
 		/**
 		 * Receive a Bitmap Port
 		**/
-		_bitmapPort getBitmapPort() const ITCM_CODE ;
+		_bitmapPort getBitmapPort() const ;
 		
 		/**
 		 * Get The Bitmap of the Gadget
@@ -156,7 +154,7 @@ class _gadget{
 		/**
 		 * Method to check whether the Gadget has Focus
 		**/
-		bool& hasFocus();
+		bool hasFocus();
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
@@ -203,27 +201,27 @@ class _gadget{
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		**/
-		_gadgetEventReturnType handleEvent( _gadgetEvent event ) ITCM_CODE ;
+		_gadgetEventReturnType handleEvent( _gadgetEvent event ) ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
 		**/
-		_gadgetEventReturnType handleEventNormal( _gadgetEvent event ) ITCM_CODE ;
+		_gadgetEventReturnType handleEventNormal( _gadgetEvent event ) ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
 		**/
-		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event ) ITCM_CODE ;
+		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event ) ;
 		
 		/**
 		 * Get the absolute X-position
 		**/
-		_coord getAbsoluteX() const ITCM_CODE ;
+		_coord getAbsoluteX() const ;
 		
 		/**
 		 * Get the absolute Y-position
 		**/
-		_coord getAbsoluteY() const ITCM_CODE ;
+		_coord getAbsoluteY() const ;
 		
 		/**
 		 * Get the Relative X-position
@@ -254,7 +252,6 @@ class _gadget{
 		 * Set the Gadgets Parent
 		**/
 		void setParent( _gadget* val );
-		void _setParent( _gadget* val );
 		
 		/**
 		 * Remove a specific children
@@ -269,8 +266,8 @@ class _gadget{
 		
 		// Tries to focus a child and returns whether it succeded
 		/// @param inform whether to also trigger the 'blur'/'focus' event on the gadget
-		virtual bool focusChild( _gadget* child );
-		virtual bool blurChild();
+		bool focusChild( _gadget* child );
+		bool blurChild();
 		
 		/**
 		 * Get Dimensions of the Gadget (including Coords)
@@ -280,7 +277,7 @@ class _gadget{
 		/**
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
 		**/
-		_rect getAbsoluteDimensions() const ITCM_CODE ;
+		_rect getAbsoluteDimensions() const ;
 		
 		/**
 		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}
@@ -305,12 +302,12 @@ class _gadget{
 		/**
 		 * Move the Gadget relatively to its current position
 		**/
-		void moveTo( _coord dX , _coord dY ) ITCM_CODE;
+		void moveTo( _coord dX , _coord dY );
 		
 		/**
 		 * Relative moving fo the Gadget
 		**/
-		void moveRelative( _s16 deltaX , _s16 deltaY ) ITCM_CODE;
+		void moveRelative( _s16 deltaX , _s16 deltaY );
 		
 		/**
 		 * Set Height " " "

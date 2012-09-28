@@ -289,8 +289,9 @@ void _bitmapPort::copy( _coord x , _coord y , _bitmapPort data )
 	this->copy( x , y , data.base );
 }
 
-void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap* data , _pixel transparentColor )
+void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap* data )
 {
+	startTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
 	_rect tempRect = this->base->getClippingRect();
 	
 	for( _rect& rc : clippingRects )
@@ -298,16 +299,17 @@ void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap* data , _
 		this->base->setClippingRect( rc );
 		
 		//! Standard Bitmap Routine
-		this->base->copyTransparent( x , y , data , transparentColor );
+		this->base->copyTransparent( x , y , data );
 		//! Standard Bitmap Routine
 	}
+	stopTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
 	
 	this->base->setClippingRect( tempRect );
 }
 
-void _bitmapPort::copyTransparent( _coord x , _coord y , _bitmapPort data , _pixel transparentColor )
+void _bitmapPort::copyTransparent( _coord x , _coord y , _bitmapPort data )
 {
-	this->copyTransparent( x , y , data.base , transparentColor );
+	this->copyTransparent( x , y , data.base );
 }
 
 void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap* data )

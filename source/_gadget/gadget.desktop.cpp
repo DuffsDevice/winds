@@ -5,17 +5,6 @@
 
 _freetypefont* ft = nullptr;
 
-_gadgetEventReturnType _desktop::focusHandler( _gadgetEvent event )
-{
-	// Receive Gadget
-	_desktop* that = event.getGadget<_desktop>();
-	
-	if( that->getParent() )
-		that->getParent()->blurEventChild();
-	
-	return handled;
-}
-
 _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 {
 	// Receive Gadget
@@ -54,10 +43,10 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 _desktop::_desktop( _gadgetStyle style ) :
 	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style )
 {
+	this->style.canReceiveFocus = false;
 	//ft = new _freetypefont("/font.ttf");
 	
 	this->registerEventHandler( "refresh" , &_desktop::refreshHandler );
-	this->registerEventHandler( "focus" , &_desktop::focusHandler );
 	
 	// Refresh
 	this->refreshBitmap();

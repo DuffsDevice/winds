@@ -31,7 +31,9 @@ class _bitmap
 		 * @param h Height of the bmp
 		 * @return void
 		**/
-		_bitmap( _pixelArray base , _length w , _length h );
+		_bitmap( _pixelArray base , _length w , _length h )
+			: bmp( base ) , width( w ), height( h ) , wasAllocated( false )
+		{ this->resetClippingRect(); }
 		
 		/**
 		 * Construcor: Make Bitmap out of dimensions (data will be allocated automatically)
@@ -39,20 +41,29 @@ class _bitmap
 		 * @param h Height of the bmp
 		 * @return void
 		**/
-		_bitmap( _length w , _length h );
+		_bitmap( _length w , _length h )
+			: width( w ), height( h ) , wasAllocated( true )
+		{
+			this->bmp = new _pixel[w*h];
+			this->resetClippingRect();
+		}
 		
 		/**
 		 * Copy-Constructor
 		 * @param bm Source Bitmap
 		 * @return void
 		**/
-		_bitmap( const _bitmap &bm );
+		_bitmap( const _bitmap &bm )
+			: bmp( bm.getBitmap() ) , width( bm.getWidth() ), height( bm.getHeight() ) , wasAllocated( false )
+		{ this->resetClippingRect(); }
 		
 		/**
 		 * Destructor
 		 * @return void
 		**/
-		~_bitmap();
+		~_bitmap(){ 
+			this->destruct();
+		}
 		
 		/**
 		 * Manual Data-Erase
@@ -60,27 +71,37 @@ class _bitmap
 		 * @return void
 		**/
 		private:
-		void destruct();
+		void destruct(){ 
+			if( this->wasAllocated ){
+				delete[] this->bmp;
+			}
+		}
 		public:
 		
 		/**
 		 * Default constructor
 		 * @return void
 		**/
-		_bitmap();
+		_bitmap()
+			: bmp( nullptr ) , width( 0 ), height( 0 ) , wasAllocated( false )
+		{ this->resetClippingRect(); }
 		
 		/**
 		 * Get the Bitmap Base
 		 * @return _pixelArray Pointer to the bitmap data
 		**/
-		_pixelArray getBitmap() const ;
+		_pixelArray getBitmap() const {
+			return this->bmp;
+		}
 		
 		/**
 		 * Get the Bitmap Base starting at a specific Position
 		 * @param y Row to get
 		 * @return _pixelArray Pointer to the bitmap data
 		**/
-		_pixelArray getBitmap( _length y ) const ;
+		_pixelArray getBitmap( _length y ) const {
+			return &this->bmp[ y * this->width ];
+		}
 		
 		/**
 		 * Get the Bitmap Base starting at a specific Position
@@ -88,37 +109,55 @@ class _bitmap
 		 * @param y Row to get
 		 * @return _pixelArray Pointer to the bitmap data
 		**/
-		_pixelArray getBitmap( _length x , _length y ) const ;
+		_pixelArray getBitmap( _length x , _length y ) const {
+			return &this->bmp[ y * this->width + x ];
+		}
 		
 		/**
 		 * Set the Bitmap Base
 		 * @param bmp Pointer to the bitmap data
 		**/
-		void setBitmap( _pixelArray bmp );
+		void setBitmap( _pixelArray bmp ){
+			this->bmp = bmp;
+		}
 		
 		/**
 		 * Operator for [i] to get a specific position of the bmp
 		 *
 		**/
-		_pixel& operator[]( const _u32 pos ) const ;
+		_pixel& operator[]( const _u32 pos ) const {
+			return this->bmp[ min( _u32(this->width * this->height - 1 ) , pos ) ];
+		}
 		
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
 		 *
 		**/
-		_pixel& operator()( _coord x , _coord y ) const ;
+		_pixel& operator()( _coord x , _coord y ) const {
+			
+			x = min( _length(x) , this->width - 1 );
+			y = min( _length(y) , this->height -1 );
+			
+			_u32 position = y * this->width + x;
+			
+			return this->bmp[position];
+		}
 		
 		/**
 		 * Get the Bitmap's Width
 		 * @return u16 Width of the _bitmap
 		**/
-		_length getWidth() const ;
+		_length getWidth() const {
+			return this->width;
+		}
 		
 		/**
 		 * Get the Bitmap's Height
 		 * @return u16 Height of the _bitmap
 		**/
-		_length getHeight() const ;
+		_length getHeight() const {
+			return this->height;
+		}
 		
 		/**
 		 * Set the Bitmap's Width
@@ -145,7 +184,16 @@ class _bitmap
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
 		**/
-		_pixel getPixel( _coord x , _coord y ) const ;
+		_pixel getPixel( _coord x , _coord y ) const 
+		{
+			_u32 position = y * this->width + x;
+			
+			// Prevent Overflows
+			if( position > (this->height * this->width - 1 ) || x >= this->width || y >= this->height )
+				return NO_COLOR;
+			
+			return this->bmp[position];
+		}
 		
 		/**
 		 * Get the Pixel at a specific location, but without a check if the poition is inside the bmp
@@ -154,7 +202,9 @@ class _bitmap
 		 * @return _pixel The Pixel at the specified location
 		**/
 		private:
-		_pixel getPixelFast( _coord x , _coord y ) const ;
+		_pixel getPixelFast( _coord x , _coord y ) const {
+			return this->bmp[ y * this->width + x ];
+		}
 		public:
 		
 		/**
@@ -186,7 +236,9 @@ class _bitmap
 		 * @return void
 		**/
 		private:
-		void drawPixelNoCheck( _coord x , _coord y , _pixel color );
+		void drawPixelNoCheck( _coord x , _coord y , _pixel color ){
+			this->bmp[y * this->width + x] = color;
+		}
 		public:
 		
 		/**
@@ -194,14 +246,18 @@ class _bitmap
 		 * @param color Optionally: The Color to erase
 		 * @return void
 		**/
-		void reset( _pixel color = BIT(15) );
+		void reset( _pixel color = BIT(15) ){
+			this->blitFill( 0 , 0 , color , this->width * this->height );
+		}
 		
 		/**
 		 * Fill the whole bmp
 		 * @param color The Color to fill with
 		 * @return void
 		**/
-		void fill( _pixel color );
+		void fill( _pixel color ){
+			this->drawFilledRect( 0 , 0 , this->width , this->height , color );
+		}
 		
 		/**
 		 * Draw a vertical Line onto the bmp
@@ -214,6 +270,16 @@ class _bitmap
 		void drawVerticalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
+		 * Draw a vertical dotted Line onto the bmp
+		 * @param x X-Position
+		 * @param y Y-Position Start (top)
+		 * @param length Length of the Line (height)
+		 * @param color Color of the Line
+		 * @return void
+		**/
+		void drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		
+		/**
 		 * Draw a horizontal Line onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start
@@ -224,6 +290,16 @@ class _bitmap
 		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
+		 * Draw a horizontal dotted Line onto the bmp
+		 * @param x X-Position (left)
+		 * @param y Y-Position Start
+		 * @param length Length of the Line (width)
+		 * @param color Color of the Line
+		 * @return void
+		**/
+		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		
+		/**
 		 * Draw a Rectangle onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start (top)
@@ -232,7 +308,13 @@ class _bitmap
 		 * @param color Color of the Rect
 		 * @return void
 		**/
-		void drawRect( _coord x , _coord y , _length width , _length height , _pixel color );
+		void drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
+		{
+			this->drawVerticalLine( x , y , --h , color );
+			this->drawVerticalLine( x + --w  , y + 1 , h , color );
+			this->drawHorizontalLine( x + 1, y , w , color );
+			this->drawHorizontalLine( x , y + h  , w , color );
+		}
 		
 		/**
 		 * Draw a filled Rectangle onto the bmp
@@ -352,7 +434,7 @@ class _bitmap
 		 * @param data Other _bitmap
 		 * @return void
 		**/
-		void copyTransparent( _coord x , _coord y , const _bitmap* data , _pixel transparentColor = NO_COLOR );
+		void copyTransparent( _coord x , _coord y , const _bitmap* data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the line x=0 and stretching that line over width
@@ -389,13 +471,17 @@ class _bitmap
 		 * Get the active ClippingRect
 		 * @return _rect
 		**/
-		_rect getClippingRect();
+		_rect getClippingRect(){
+			return this->activeClippingRect;
+		}
 		
 		/**
 		 * Make the _bitmap not checking Coordinates
 		 * @return void
 		**/
-		void resetClippingRect();
+		void resetClippingRect(){
+			this->activeClippingRect = _rect( 0 , 0 , this->width , this->height );
+		}
 		
 		/**
 		 * Check if a Rectangle specified by borders is visible if it gets clipped by the activeClippingRect

@@ -76,7 +76,7 @@ _direntry::_direntry( string fn ) :
 	fHandle( nullptr )
 	, dHandle( nullptr )
 	, filename( replaceASSOCS( fn ) )
-	, mode( _direntryMode::mode_closed )
+	, mode( _direntryMode::closed )
 {
 	 //! libFat instantiation
 	if( this->fatInited == -1 )
@@ -117,7 +117,7 @@ bool _direntry::close()
 		return false;
 	
 	// Returnm, if everything is closed already
-	if( this->mode == _direntryMode::mode_closed && !this->fHandle && !this->dHandle )
+	if( this->mode == _direntryMode::closed && !this->fHandle && !this->dHandle )
 		return true;
 	
 	// Close Method, depending on whether it's a directory
@@ -136,7 +136,7 @@ bool _direntry::close()
 	// Reset
 	this->dHandle = nullptr;
 	this->fHandle = nullptr;
-	this->mode = _direntryMode::mode_closed;
+	this->mode = _direntryMode::closed;
 	return true;
 }
 
@@ -191,13 +191,13 @@ bool _direntry::open( const char* mode )
 }
 
 inline bool _direntry::openread(){
-	return this->open( "rb" ) && (this->mode = _direntryMode::mode_read ); // Open for read, do not create
+	return this->open( "rb" ) && _u8( this->mode = _direntryMode::read ); // Open for read, do not create
 }
 
 inline bool _direntry::openwrite( bool erase ){
 	if( !this->exists )
 		return false;
-	return this->open( erase ? "wb+" : "rb+" ) && (this->mode = _direntryMode::mode_write); // Open for read & write, do not create
+	return this->open( erase ? "wb+" : "rb+" ) && _u8(this->mode = _direntryMode::write); // Open for read & write, do not create
 }
 
 inline bool _direntry::create()
@@ -242,14 +242,14 @@ bool _direntry::read( void* dest , _u32 size )
 		
 		_direntryMode modePrev = this->mode;
 		
-		if( this->mode == _direntryMode::mode_closed && !this->openread() )
+		if( this->mode == _direntryMode::closed && !this->openread() )
 			return false;
 		
 		//! Set Iterator to beginning
 		rewind( this->fHandle );
 		fread( dest , 1 , size , this->fHandle );
 		
-		if( modePrev == _direntryMode::mode_closed )
+		if( modePrev == _direntryMode::closed )
 			this->close();
 		
 		return 0 == ferror( this->fHandle ); // Check if there was an error	
@@ -263,13 +263,13 @@ bool _direntry::readChild( string& child )
 	{
 		
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::mode_closed )
+		if( this->mode == _direntryMode::closed )
 			this->dHandle = opendir( this->filename.c_str() );
 		
 		if( !this->dHandle )
 			return false;
 		else
-			this->mode = _direntryMode::mode_read;
+			this->mode = _direntryMode::read;
 		
 		struct dirent *dir;
 		
@@ -292,7 +292,7 @@ bool _direntry::rewindChildren()
 	if( this->fatInited && this->isDirectory() )
 	{
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::mode_closed )
+		if( this->mode == _direntryMode::closed )
 			return true;
 		
 		if( !this->dHandle )
@@ -310,14 +310,14 @@ bool _direntry::write( void* src , _u32 size )
 		return false;
 	_direntryMode modePrev = this->mode;
 	
-	if( this->mode == _direntryMode::mode_closed && !this->openwrite() )
+	if( this->mode == _direntryMode::closed && !this->openwrite() )
 		return false;
-	else if( this->mode == _direntryMode::mode_read )
+	else if( this->mode == _direntryMode::read )
 		return false;
 	
 	fwrite( src , size , 1 , this->fHandle );
 	
-	if( modePrev == _direntryMode::mode_closed )
+	if( modePrev == _direntryMode::closed )
 		this->close();
 	
 	return true;
@@ -329,14 +329,14 @@ bool _direntry::writeString( string str )
 	{
 		_direntryMode modePrev = this->mode;
 		
-		if( this->mode == _direntryMode::mode_closed && !this->openwrite() )
+		if( this->mode == _direntryMode::closed && !this->openwrite() )
 			return false;
-		else if( this->mode == _direntryMode::mode_read )
+		else if( this->mode == _direntryMode::read )
 			return false;
 		
 		fputs( str.c_str() , this->fHandle );
 		
-		if( modePrev == _direntryMode::mode_closed )
+		if( modePrev == _direntryMode::closed )
 			this->close();
 		
 		return true;
@@ -354,7 +354,7 @@ string _direntry::readString( _u32 size )
 	
 	_direntryMode modePrev = this->mode;
 	
-	if( this->mode == _direntryMode::mode_closed && !this->openread() )
+	if( this->mode == _direntryMode::closed && !this->openread() )
 		return "";
 	if( size <= 0 )
 		return "";
@@ -376,7 +376,7 @@ string _direntry::readString( _u32 size )
 	// Free temorary storage
 	delete[] text;
 	
-	if( modePrev == _direntryMode::mode_closed )
+	if( modePrev == _direntryMode::closed )
 		this->close();
 	
 	return out;
@@ -398,7 +398,7 @@ _u32 _direntry::getSize()
 	_u32 size = 0;
 	
 	//! Is the File already opened
-	if( this->mode != _direntryMode::mode_closed && this->fHandle != nullptr )
+	if( this->mode != _direntryMode::closed && this->fHandle != nullptr )
 	{
 		fpos_t lastpos; // Save last position of iterator
 		fgetpos( this->fHandle , &lastpos );
@@ -505,7 +505,7 @@ const _bitmap* _direntry::getFileImage()
 
 bool _direntry::unlink()
 {
-	if( this->mode != _direntryMode::mode_closed )
+	if( this->mode != _direntryMode::closed )
 		this->close();
 	if( std::remove( this->filename.c_str() ) == 0 )
 	{
@@ -517,7 +517,7 @@ bool _direntry::unlink()
 
 bool _direntry::rename( string newName )
 {
-	if( this->mode != _direntryMode::mode_closed )
+	if( this->mode != _direntryMode::closed )
 		this->close();
 	
 	// Replace associative directory names

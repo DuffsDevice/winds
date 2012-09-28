@@ -166,8 +166,7 @@ int _lua_bitmapPort::copyTransparent( lua_State* L )
 		_bitmapPort::copyTransparent( 
 			luaL_checkint( L , 1 ) ,
 			luaL_checkint( L , 2 ) ,
-			b->bm ,
-			luaL_optint( L , 4 , 0 )
+			b->bm
 		);
 	}
 	else{
@@ -177,8 +176,7 @@ int _lua_bitmapPort::copyTransparent( lua_State* L )
 		_bitmapPort::copyTransparent( 
 			luaL_checkint( L , 1 ) ,
 			luaL_checkint( L , 2 ) ,
-			*b ,
-			luaL_optint( L , 4 , 0 )
+			*b 
 		);
 	}
 	return 0;

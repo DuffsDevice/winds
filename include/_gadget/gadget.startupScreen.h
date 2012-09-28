@@ -11,8 +11,6 @@ class _startupScreen : public _gadgetScreen
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
-		bool focusChild( _gadget* child );
-		
 	public:
 	
 		_startupScreen( _u8 bgId , _gadgetStyle style = _gadgetStyle() );

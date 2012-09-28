@@ -177,8 +177,8 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	
 	// Regsiter Handling Functions for events
 	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "focus" , &_textbox::focusHandler );
-	this->registerEventHandler( "blur" , &_textbox::blurHandler );
+	this->registerEventHandler( "onFocus" , &_textbox::focusHandler );
+	this->registerEventHandler( "onBlur" , &_textbox::blurHandler );
 	this->registerEventHandler( "refresh" , &_textbox::refreshHandler );
 	this->registerEventHandler( "mouseDown" , &_textbox::mouseHandler );
 	this->registerEventHandler( "keyDown" , &_textbox::keyHandler );
@@ -187,8 +187,4 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	
 	// Refresh Myself
 	this->refreshBitmap();
-}
-
-_textbox::~_textbox()
-{
 }
