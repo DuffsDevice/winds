@@ -31,7 +31,7 @@ typedef forward_list<_gadget*> _gadgetList;
 // _gadgetDefaultEventHandler
 typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent&);
 
-extern _gadgetType typeof( _gadget* );
+extern _gadgetType typeOfGadget( _gadget* );
 
 class _gadget{
 	

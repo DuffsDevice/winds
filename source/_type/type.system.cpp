@@ -13,6 +13,7 @@
 
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.startupScreen.h"
+#include "_gadget/gadget.bootupScreen.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -42,10 +43,45 @@ void _system::debug( string msg ){
 	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
+void _system::initializeComponents(){
+	_bootupScreen* screen;
+	_system::_gadgetHost_ = screen = new _bootupScreen( bgIdBack );
+	
+	// -----------------------------------------------
+	//	Hardware Init
+	// -----------------------------------------------
+	
+	bool fatInit = _direntry::initFat();
+	bool wifiInit = Wifi_InitDefault(INIT_ONLY);
+	
+	if( fatInit && !wifiInit )
+		_system::debug("Wifi could not be inited! Please note that the default Firmware Settings are used to connect");
+		
+	// -----------------------------------------------
+	//	Software and Gadget-System-Init Init
+	// -----------------------------------------------
+	
+		// Create RTA
+		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		_system::_runtimeAttributes_->user = new _user("Jakob");
+		
+		// Make sure there is a file to debug to
+		_system::_debugFile_ = new _direntry("/%WINDIR%/debug.txt");
+		_system::_debugFile_->create();
+		
+		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
+		
+	//ende
+	_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
+}
+	
+
 void _system::_vblank_()
 {
-	_system::processInput();
-	//_system::_keyboard_->screenVBL();
+	if( _system::_gadgetHost_ )
+		_system::processInput();
+	if( _system::_keyboard_ )
+		_system::_keyboard_->screenVBL();
 }
 
 void _system::generateEvent( _gadgetEvent event )
@@ -145,10 +181,18 @@ void _system::processInput()
 	if( !_system::_keyboard_->processTouch( keys & KEY_TOUCH , t ) )
 		_system::_gadgetHost_->processTouch( keys & KEY_TOUCH , t );
 	
+	if( keysDown() & KEY_SELECT )
+	{
+		if( _system::_keyboard_->isOpened() )
+			_system::_keyboard_->close();
+		else
+			_system::_keyboard_->open();
+	}
+	
 	/*!
 	 * Just Handle the Buttons, not the Pen!
 	 **/
-	for( _u8 i = 0 ; i < 16 && _system::_currentFocus_; ++i )
+	for( _u8 i = 0 ; i < 16 && _system::_currentFocus_ ; ++i )
 	{
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
@@ -182,6 +226,7 @@ void _system::processInput()
 			// Trigger the Event
 			_system::_currentFocus_->handleEvent( _gadgetEvent( "keyUp" , args ) );
 			
+			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < user->mCC )
 				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyClick" , args ) );
@@ -197,15 +242,15 @@ _system::_system()
 	// ------------------------------------------------------------------------
 	// Display 
 	// ------------------------------------------------------------------------
-	
+		
 		//! Power on everything 
 		powerOn( POWER_ALL );
 		
 		//! Set the video mode on the main screen.
 		videoSetMode( MODE_5_2D );
 		
-		//lcdMainOnTop();
 		lcdMainOnBottom();
+		//lcdMainOnTop();
 		
 		//! Set the video mode on the sub screen.
 		videoSetModeSub( MODE_5_2D );
@@ -221,8 +266,11 @@ _system::_system()
 		_system::bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
 		_system::bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		
-		//setBackdropColor( COLOR_RED );
-		consoleDemoInit();
+		//setBackdropColor( COLOR_BLACK );
+		//setBackdropColorSub( COLOR_BLACK );
+		//consoleDemoInit();
+		
+		//memSet( BG_GFX_SUB , 0 , SCREEN_HEIGHT*SCREEN_WIDTH );
 		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
 		
 	// ------------------------------------------------------------------------
@@ -256,39 +304,25 @@ _system::_system()
 	// System-Attributes
 	// ------------------------------------------------------------------------
 		
-		// Create RTA
-		//_system::_runtimeAttributes_->wallpaper = new BMP_WindowsWallpaper();
-		_system::_runtimeAttributes_ = new _runtimeAttributes;
-		_system::_runtimeAttributes_->user = new _user("Jakob");
-		
-		// Make sure there is a file to debug to
-		_system::_debugFile_ = new _direntry("/%WINDIR%/debug.txt");
-		_system::_debugFile_->create();
-		
-		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
-		
 		//! Create Windows & the Keyboard
 		//_system::_gadgetHost_ = new _windows( bgIdBack );
 		_system::_topScreen_ = new _screen( bgIdSub );
-		_system::_gadgetHost_ = new _startupScreen( bgIdBack );
-		_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
+		//_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 		
 		//! random Random() generator
 		srand( time(NULL) );
 		
-	
-	// ------------------------------------------------------------------------
-	// Wifi & FAT32
-	// ------------------------------------------------------------------------
-		
-		// TODO: Implement Wifi-Settings-App
-		//! libWifi instantionation
-		/*if( !Wifi_InitDefault(WFC_CONNECT) )
-			_system::debug("Wifi could not be inited! Please not that the default Firmware Settings are used to connect");*/
-		
-	
+		//! Set Memory-Alloc-Error-Handler
+		set_new_handler( &_system::_newErrorFunc_ );
 	// ------------------------------------------------------------------------
 	
+	
+	initializeComponents();
+}
+
+void _system::_newErrorFunc_()
+{
+	//_system::blueScreen(121,"Not enough Memory!");
 }
 
 _system::~_system()
@@ -302,17 +336,9 @@ _system::~_system()
 	systemShutDown();
 }
 
-void _system::runAnimations(){
-	start:
-	for( auto animIter = _system::_animations_.begin() ; animIter != _system::_animations_.end() ; animIter++ )
-	{			
-		if( animIter->finished() )
-		{
-			_system::_animations_.erase( animIter );
-			goto start;
-		}
-		animIter->step( _system_->getTime() );
-	}
+void _system::runAnimations()
+{
+	_system::_animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( _system_->getTime() ); return anim->finished(); } );
 }
 
 void _system::submit(){
@@ -326,15 +352,15 @@ _u32 _system::getTime(){
 	return cpuGetTiming()>>15;
 }
 
-void _system::executeAnimation( const _animation& anim )
+void _system::executeAnimation( _animation* anim )
 {
-	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
+	_system::_animations_.remove_if( [&]( _animation* a )->bool{ return a == anim; } );
 	_system::_animations_.push_back( anim );
 }
 
-void _system::terminateAnimation( const _animation& anim )
+void _system::terminateAnimation( const _animation* anim )
 {
-	_system::_animations_.remove_if( [&]( _animation& a )->bool{ return a.getID() == anim.getID(); } );
+	_system::_animations_.remove_if( [&]( _animation* a )->bool{ return a == anim; } );
 }
 
 void _system::executeProgram( _program* prog , _cmdArgs args )
@@ -348,11 +374,6 @@ void _system::terminateProgram( _program* prog )
 	// Erase the Program-Instance in the list of running instances
 	_system::_programs_.remove_if( [&]( pair<_program*,_cmdArgs> s )->bool{ return s.first == prog; } );
 	delete prog;
-}
-
-void hdl(){
-	printf("end");
-	while(true);
 }
 
 void _system::main()
@@ -376,20 +397,18 @@ void _system::main()
 		_system::processEvents();
 		_system::runAnimations();
 		_system::runPrograms();
-		consoleClear();
+		//consoleClear();
 		/*if( _currentFocus_ )
 			printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
 		for( _gadget* g : _gadgetHost_->children )
 			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );*/
-		BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
-		swiWaitForVBlank();
-		swiWaitForVBlank();
+		//BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
 		swiWaitForVBlank();
 		/*//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
 		if( ++i > 120 )
 		{
 			const unsigned int FreeMemSeg=8*1024;
-			set_new_handler(&hdl );
+			
 			unsigned int s;
 			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
 			{
@@ -428,7 +447,7 @@ void _system::runPrograms()
 
 //! Static Attributes...
 bool 							_system::sleeping = false;
-list<_animation>				_system::_animations_;
+list<_animation*>				_system::_animations_;
 list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;
 _screen*						_system::_topScreen_ = nullptr;

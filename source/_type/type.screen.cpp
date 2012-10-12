@@ -1,6 +1,7 @@
 #include "_type/type.screen.h"
 #include <nds/arm9/background.h>
 #include "_type/type.system.h"
+#include "func.memory.h"
 #include <nds/arm9/trig_lut.h>
 
 _pixelArray	_screen::getMemoryPtr() const {	return bgGetGfxPtr( this->bgId ); }

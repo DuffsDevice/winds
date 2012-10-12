@@ -1,7 +1,6 @@
 //! Standard Headers
 #include "time.h"
 #include <sstream>
-#include <nds/arm9/console.h>
 
 //! Types
 #include "_type/type.imagefile.h"
@@ -132,8 +131,6 @@ void _user::setUsername( string uN )
 	d->rename( uN );
 	delete d;
 }
-
-#include "nds.h"
 
 _s32 _user::getIntAttr( string idx )
 {

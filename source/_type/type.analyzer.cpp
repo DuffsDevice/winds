@@ -1,5 +1,10 @@
 #include "_type/type.h"
 
+#include <nds/timers.h>
+#include <stdio.h>
+#include <nds/arm9/math.h>
+#include <nds/arm9/console.h>
+
 map<void*,_string> address2Name;
 map<void*,_u32> address2Time;
 map<void*,_u32> address2StartTime;

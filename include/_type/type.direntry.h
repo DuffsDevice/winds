@@ -77,6 +77,9 @@ class _direntry{
 		
 	public:
 	
+		// Manually init Fat
+		static bool initFat();
+		
 		// Check if File is Direct
 		inline bool isDirectory() const { return S_ISDIR( this->stat_buf.st_mode ); }
 		

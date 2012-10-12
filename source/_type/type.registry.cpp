@@ -1,5 +1,4 @@
 #include "_type/type.registry.h"
-#include "nds.h"
 
 _registry::_registry( string filename ) :
 	_direntry( filename )

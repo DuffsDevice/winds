@@ -1,7 +1,6 @@
 #include "_gadget/gadget.scrollBar.h"
 #include "_resource/BMP_ScrollButtons.h"
 #include "nds/arm9/math.h"
-#include "nds.h"
 
 _bitmap btn_background_released = BMP_ScrollButton();
 _bitmap btn_background_pressed 	= BMP_ScrollButtonPressed();

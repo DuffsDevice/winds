@@ -1,5 +1,8 @@
 #include "_type/type.h"
 
+extern int SCREEN_WIDTH = 256;
+extern int SCREEN_HEIGHT = 192;
+
 map<_align,string> align2string = {
 	{ _align::left , "left" },
 	{ _align::center , "center" },
@@ -39,6 +42,7 @@ map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::textbox , "textbox" },
 	{ _gadgetType::selectbox , "selectbox" },
 	{ _gadgetType::selectitem , "selectitem" },
+	{ _gadgetType::progressbar , "progressbar" },
 	{ _gadgetType::keyboard , "keyboard" },
 	{ _gadgetType::desktop , "desktop" },
 	{ _gadgetType::fileobject , "fileobject" },

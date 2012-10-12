@@ -72,15 +72,20 @@ string replaceASSOCS( string path )
 	return path;
 }
 
+bool _direntry::initFat(){
+	//! libFat instantiation
+	if( _direntry::fatInited == -1 )
+		_direntry::fatInited = fatInitDefault();
+	return _direntry::fatInited;
+}
+
 _direntry::_direntry( string fn ) :
 	fHandle( nullptr )
 	, dHandle( nullptr )
 	, filename( replaceASSOCS( fn ) )
 	, mode( _direntryMode::closed )
 {
-	 //! libFat instantiation
-	if( this->fatInited == -1 )
-		this->fatInited = fatInitDefault();
+	initFat();
 	
 	// set Name (not filename!)
 	this->name = this->filename.substr( this->filename.find_last_of("/") + 1 );

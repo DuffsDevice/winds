@@ -26,7 +26,7 @@ class _system{
 		static bool sleeping;
 		
 		//! Attributes
-		static list< _animation >	_animations_;
+		static list< _animation* >	_animations_;
 		static list<pair<_program*
 					,_cmdArgs>> 	_programs_;
 		static _direntry*			_debugFile_;
@@ -46,21 +46,23 @@ class _system{
 		static void runAnimations();
 		static void runPrograms();
 		static void displayMemUsage();
+		static void initializeComponents();
 		
 		static void _vblank_();
+		static void _newErrorFunc_();
 		
 		friend class _gadget;
 		friend class _program;
 		friend class _animation;
 		
 		//! Add Thinks for execution
-		static void executeAnimation( const _animation& anim );
+		static void executeAnimation(_animation* anim );
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() );
 		static void generateEvent( _gadgetEvent event );
 		
 		//! Things for termination
 		static void terminateProgram( _program* prog );
-		static void terminateAnimation( const _animation& anim );
+		static void terminateAnimation( const _animation* anim );
 		
 		static int 	bgIdFront;
 		static int 	bgIdBack;
