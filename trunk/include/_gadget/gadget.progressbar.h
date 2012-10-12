@@ -3,13 +3,17 @@
 #define _WIN_G_PROGRESSBAR_
 
 #include "_type/type.gadget.h"
+#include "_type/type.animation.h"
 
 class _progressbar : public _gadget {
 	
 	private:
 	
 		_u8		value;
-		bool	type;
+		bool	type; // 0 = value, 1 = progress
+		_animation* anim;
+		_u8		state;
+		bool	blue;
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 	
@@ -34,8 +38,16 @@ class _progressbar : public _gadget {
 			}
 		}
 		
-		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_progressbar( _coord x , _coord y , _length width , bool type = true , _gadgetStyle style = _defaultStyle_ );
+		void setCol( bool blue ){ this->blue = blue; }
+		
+		//! Constructor
+		_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _gadgetStyle style = _defaultStyle_ );
+		
+		//! Constructor
+		_progressbar( _length width , _coord x , _coord y  , bool type = true , _gadgetStyle style = _defaultStyle_ );
+		
+		//! Destructor
+		~_progressbar();
 };
 
 #endif

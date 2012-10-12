@@ -26,6 +26,9 @@ typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 typedef float _float;
 
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
+
 #define u16 _u16
 #include <nds/touch.h>
 #undef u16
@@ -235,6 +238,7 @@ enum class _gadgetType : _u8
 	textbox,
 	selectbox,
 	selectitem,
+	progressbar,
 	keyboard,
 	desktop,
 	fileobject,

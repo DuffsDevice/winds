@@ -1,8 +1,5 @@
 #include "_type/type.imagefile.h"
-#include "nds.h"
 #include <functional>
-
-auto wait = [](){ while( ! (keysDown() & KEY_A) ) scanKeys(); };
 
 _imagefile::_imagefile( string fn ) :
 	_bitmap( nullptr , 0 , 0 )

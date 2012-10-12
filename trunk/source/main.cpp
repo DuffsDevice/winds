@@ -1,13 +1,3 @@
-// Includes
-#include <stdio.h>
-#include <sstream>
-using namespace std;
-
-
-// Standard LibNDS
-//#include "nds.h"
-
-//#define METHOD(r,o,m) (r (o::*)() )(&o::m)
 #include "_type/type.system.h"
 #include "_type/type.imagefile.h"
 #include "_gadget/gadget.textbox.h"
@@ -15,7 +5,7 @@ using namespace std;
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.window.h"
-#include <nds/timers.h>
+#include "_gadget/gadget.progressbar.h"
 
 _gadgetEventReturnType dragHandler( _gadgetEvent event ){
 	_gadget* that = event.getGadget();
@@ -45,7 +35,7 @@ int main( int argc , char* argv[] )
 	/*_textbox* bar = new _textbox( 70 , 10 , 50 , "Hello" );
 	_system_->_gadgetHost_->addChild( bar );*/
 	
-	_select* bar2 = new _select( 70 , 40 , 20 , 20 , { { 0 , "Ooption 1" } , { 1 , "Superb 2" } } );
+	/*_select* bar2 = new _select( 70 , 40 , 20 , 20 , { { 0 , "Ooption 1" } , { 1 , "Superb 2" } , { 2 , "Totall!" } , { 3 , "Enormous 5" } } );
 	_system_->_gadgetHost_->addChild( bar2 );
 	
 	_radiogroup* grp = new _radiogroup();
@@ -61,6 +51,8 @@ int main( int argc , char* argv[] )
 	wnd->addChild( new _label( 32 , 57 , "Not Good at all" ) );
 	
 	_system_->_gadgetHost_->addChild( wnd );
+	
+	_system_->_gadgetHost_->addChild( new _textbox( 50 , 103 , 50 , "fdsgf" ) );*/
 	
 	//_direntry d = _direntry("Hello.txt");
 	//d.setAttrs(0);

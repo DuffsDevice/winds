@@ -9,11 +9,15 @@ class _startupScreen : public _gadgetScreen
 {
 	private:
 		
+		_gadget* 		refresher;
+		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		
 	public:
 	
 		_startupScreen( _u8 bgId , _gadgetStyle style = _gadgetStyle() );
+		
+		~_startupScreen();
 	
 };
 

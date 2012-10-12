@@ -47,8 +47,8 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 
 _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	_gadgetScreen( bgId , style )
+	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
 {	
-	_gadget* refresher = new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 );
 	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( "refresh" , &_startupScreen::refreshHandler );
 	refresher->refreshBitmap();
@@ -56,4 +56,9 @@ _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	
 	//! Refresh me
 	this->refreshBitmap();
+}
+
+_startupScreen::~_startupScreen()
+{
+	delete this->refresher;
 }

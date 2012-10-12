@@ -1,8 +1,6 @@
 #include "_gadget/gadget.contextMenu.h"
 #include "_type/type.system.h"
 
-#include <nds/arm9/console.h>
-
 bool _contextMenu::isOpened(){
 	return this->opened;
 }

@@ -1,7 +1,6 @@
 #include "_gadget/gadget.desktop.h"
 #include "_type/type.system.h"
 #include "_type/type.freetypefont.h"
-#include <nds/arm9/console.h>
 
 _freetypefont* ft = nullptr;
 

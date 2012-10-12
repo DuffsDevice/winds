@@ -1,6 +1,5 @@
 #include "_type/type.gadget.h"
 #include "_type/type.system.h"
-#include "nds.h"
 
 map<_gadgetEventType,_gadgetDefaultEventHandler> _gadget::defaultEventHandlers = {
 	{ "focus" , &_gadget::gadgetFocusHandler },
@@ -28,7 +27,7 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	}
 }
 
-_gadgetType typeof( _gadget* g )
+_gadgetType typeOfGadget( _gadget* g )
 {
 	return g->getType();
 }

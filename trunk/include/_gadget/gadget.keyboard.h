@@ -58,9 +58,19 @@ class _keyboard : public _gadgetScreen {
 		//! Set Receiver of Key-Events
 		void setDestination( _gadget* dest );
 		
+		//! Open!
+		void open();
+		
+		//! Close
+		void close();
+		
+		//! Check if opened
+		bool isOpened(){ return this->mode; }
+		
 		//! Get Receiver of Key-Events
 		_gadget* getDestination(){ return this->destination; }
 		
+		//! VBL of the Keyboard
 		void screenVBL();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style

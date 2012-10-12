@@ -7,7 +7,7 @@
 
 _runtimeAttributes::_runtimeAttributes() :
 	wallpaper( new BMP_WindowsWallpaper() ) 
-	, wallpaperView( WALLPAPER_SMALL ) 
+	, wallpaperView( WALLPAPER_ORIG ) 
 	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )
 	, defaultFont( new FONT_Tahoma7() ) 
 	, defaultFontSize( 8 ) 
@@ -23,7 +23,7 @@ _runtimeAttributes::_runtimeAttributes() :
 		DSWindows::KEY_SHIFT , DSWindows::KEY_WINDOWS , ' ' , ',' , '-' , DSWindows::KEY_SHIFT
 	};
 	this->keyboardChar[1] = { 
-		'!' , '"' , '#' , '$' , '%' , '&' , '/' , '(' , ')' , '=' ,
+		'!' , '"' , '#' , '?' , '%' , '&' , '/' , '(' , ')' , '=' ,
 		'Q' , 'W' , 'E' , 'R' , 'T' , 'Z' , 'U' , 'I' , 'O' , 'P' , 
 		'A' , 'S' , 'D' , 'F' , 'G' , 'H' , 'J' , 'K' , 'L' , DSWindows::KEY_BACKSPACE , 
 		DSWindows::KEY_CAPS , 'Y' , 'X' , 'C' , 'V' , 'B' , 'N' , 'M' , '+' , DSWindows::KEY_CARRIAGE_RETURN , 
@@ -37,7 +37,7 @@ _runtimeAttributes::_runtimeAttributes() :
 		"Shift" , "#" , "Space" , "," , "-" , "Shift"
 	};
 	this->keyboardText[1] = { 
-		"!" , "\"" , "#" , "$" , "%" , "&" , "/" , "(" , ")" , "=" ,
+		"!" , "\"" , "#" , "?" , "%" , "&" , "/" , "(" , ")" , "=" ,
 		"Q" , "W" , "E" , "R" , "T" , "Z" , "U" , "I" , "O" , "P" , 
 		"A" , "S" , "D" , "F" , "G" , "H" , "J" , "K" , "L" , "<-" , 
 		"Caps" , "Y" , "X" , "C" , "V" , "B" , "N" , "M" , "." , "CR" , 

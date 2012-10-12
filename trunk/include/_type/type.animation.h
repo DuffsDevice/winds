@@ -33,14 +33,11 @@ class _animation{
 		
 		bool		runs;
 		
-		_u32		id;
-		static _u32	idCount;
-		
 	public:
 	
 		_animation( _s32 from , _s32 to , _u32 dur );
 		
-		_u32 getID() const { return this->id; }
+		~_animation();
 		
 		//! Set Address of the Variable to write
 		void setter( _s32* destination );

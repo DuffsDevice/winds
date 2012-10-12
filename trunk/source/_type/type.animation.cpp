@@ -4,17 +4,20 @@
 #include <cmath>
 #define  M_PI        3.14159265358979323846
 
-_u32 _animation::idCount = 0;
-
 _animation::_animation( int from , int to , _u32 dur ) :
 	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
-{ this->id = this->idCount++; }
+{ }
+
+_animation::~_animation()
+{
+	this->terminate();
+}
 
 void _animation::start(){
 	this->deltaValue = this->toValue - this->fromValue;
 	this->runs = true;
 	this->startTime = _system_->getTime();
-	_system_->executeAnimation( *this );
+	_system_->executeAnimation( this );
 }
 
 void _animation::setter( _s32* destination )
@@ -24,8 +27,11 @@ void _animation::setter( _s32* destination )
 
 void _animation::terminate()
 {
-	_system_->terminateAnimation( *this );
-	this->runs = false;
+	if( this->runs )
+	{
+		_system_->terminateAnimation( this );
+		this->runs = false;
+	}
 }
 
 void _animation::step( _u32 curTime )
@@ -38,14 +44,13 @@ void _animation::step( _u32 curTime )
 	if( tElapsed > this->duration )
 	{
 		this->runs = false;
+		//printf("end, %d,%p\n", this->finished(), this );
 		if( this->setterFunc != nullptr )
-		{
 			this->setterFunc( this->toValue );
-			if( this->finishFunc )
-				this->finishFunc( this->toValue );
-		}
 		if( this->destination != nullptr )
 			*this->destination = this->toValue;
+		if( this->finishFunc )
+				this->finishFunc( this->toValue );
 		return;
 	}
 	if( this->easeFunc != nullptr )

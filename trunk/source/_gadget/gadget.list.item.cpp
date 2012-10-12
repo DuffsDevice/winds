@@ -6,7 +6,7 @@ _gadgetEventReturnType _selectItem::mouseHandler( _gadgetEvent event )
 {	
 	_selectItem* that = event.getGadget<_selectItem>();
 	
-	if( event.getType() == "mouseClick" )
+	if( event.getType() == "mouseDown" )
 	{
 		that->active = true;
 		((_select*)that->parent)->setSelected( that->intVal );
@@ -56,7 +56,7 @@ _selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _
 {
 	// Register Event - Handlers
 	this->registerEventHandler( "refresh" , &_selectItem::refreshHandler );
-	this->registerEventHandler( "mouseClick" , &_selectItem::mouseHandler );
+	this->registerEventHandler( "mouseDown" , &_selectItem::mouseHandler );
 	this->registerEventHandler( "unselect" , &_selectItem::mouseHandler );
 	
 	// Refresh Me

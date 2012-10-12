@@ -2,6 +2,9 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.animation.h"
 #include "_type/type.system.h"
+#include "func.memory.h"
+
+#include <nds/arm9/background.h>
 
 #include "_resource/BMP_Grip.h"
 
@@ -10,9 +13,6 @@ static _bitmap* Grip = new BMP_Grip();
 const int sStart = 0;
 const int sSwap = 34;
 const int sEnd = 108;
-
-//! Screen_Height etc...
-#include "nds/arm9/console.h"
 
 _rect _keyboard::buttonDimensions[]{
 	_rect( 2 , 2 , 22 , 18 ), // 1
@@ -65,7 +65,7 @@ _rect _keyboard::buttonDimensions[]{
 
 void _keyboard::screenVBL()
 {
-	dmaCopyHalfWords( 0 , this->gHScreen->getMemoryPtr() ,  this->topScreen->getMemoryPtr() , 256*192*2 );
+	memCpy( this->topScreen->getMemoryPtr() , this->gHScreen->getMemoryPtr() , SCREEN_WIDTH*SCREEN_HEIGHT );
 	if( this->destination ){
 		_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
 		_rect dim = this->destination->getAbsoluteDimensions();
@@ -90,7 +90,7 @@ void _keyboard::setState( int value )
 		
 		// Topper Screen
 		this->topScreen->scaleY( float(value*value)/(sEnd*sEnd) );
-		this->topScreen->scrollY( value * 1.88f - SCREEN_HEIGHT );
+		this->topScreen->scrollY( value * 1.77f - SCREEN_HEIGHT );
 		
 		bgUpdate();
 		
@@ -99,9 +99,34 @@ void _keyboard::setState( int value )
 	this->curState = value;
 }
 
+void _keyboard::open()
+{
+	this->animKeyb.setFromValue( this->curState );
+	this->animKeyb.setToValue( sEnd );
+	this->mode = true;
+	this->animKeyb.start();
+}
+
+void _keyboard::close()
+{
+	this->animKeyb.setFromValue( this->curState );
+	this->animMagnif.setFromValue( this->curState );
+	
+	// Altes Ziel den Fokus wieder nehmen
+	if( this->destination != nullptr )
+		this->destination->triggerEvent( _gadgetEvent( "blur" ) );
+	this->destination = nullptr;
+	
+	this->animKeyb.setToValue( sStart );
+	this->animMagnif.setToValue( sStart );
+	this->animMagnif.finish( [&]( int v ){ _factor = 1; _x = 0; _y = 0; } );
+	this->mode = false;
+	this->animMagnif.start();
+	this->animKeyb.start();
+}
+
 void _keyboard::setMagnification( int value )
 {
-	
 	if( _factor == 1 && _x == 0 && _y == 0 )
 		return;
 	
@@ -131,38 +156,37 @@ void _keyboard::setDestination( _gadget* dest )
 	{
 		//! Compute
 		_rect dim = this->destination->getAbsoluteDimensions();
-		float myRatio = 256./(SCREEN_HEIGHT-112);
+		float myRatio = 256./(SCREEN_HEIGHT-108);
 		float itsRatio = float(dim.width)/dim.height;
 		float ratio = 1;
 		
 		// "higher" than me
 		if( itsRatio < myRatio )
-			ratio = float(dim.height+16)/(SCREEN_HEIGHT-112);
+			ratio = (SCREEN_HEIGHT-108)/float(dim.height+16);
 		else
-			ratio = float(dim.width+16)/(SCREEN_WIDTH);
+			ratio = (SCREEN_WIDTH)/float(dim.width+16);
 		
-		if( ratio < 0.25 )
-			ratio = 0.25;
-		else if( ratio < 0.3333333 )
-			ratio = 0.33333333;
-		else if( ratio < 0.5 )
-			ratio = 0.5;
+		if( ratio > 4 )
+			ratio = 4;
+		else if( ratio > 3 )
+			ratio = 3;
+		else if( ratio > 2 )
+			ratio = 2;
 		else
 			ratio = 1;
 		
 		// Set 
-		_factor = ratio;
+		_factor = 1./ratio;
 		
-		_s8 magnBorder = 0;
+		_s8 magnBorderX = 0;
+		_s8 magnBorderY = 0;
 		
 		// "higher" than me
-		if( itsRatio < myRatio )
-			magnBorder = ( (SCREEN_HEIGHT-112) * ratio - dim.height ) / 2;
-		else
-			magnBorder = ( SCREEN_WIDTH * ratio - dim.width ) / 2;
+		magnBorderX = ( SCREEN_WIDTH / ratio - dim.width ) / 2;
+		magnBorderY = ( (SCREEN_HEIGHT-108) / ratio - dim.height ) / 2;
 			
-		_x = dim.x - magnBorder;
-		_y = dim.y - magnBorder;
+		_x = dim.x - magnBorderX;
+		_y = dim.y - magnBorderY;
 		//! ----------- End -----------
 		
 		if( !this->mode )
@@ -298,31 +322,10 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		if( !that->dragMe )
 			return use_default;
 		
-		that->animKeyb.setFromValue( that->curState );
-		that->animMagnif.setFromValue( that->curState );
-		
 		if( ( that->mode == true && that->curState < sEnd - sSwap ) || ( that->mode == false && that->curState < sStart + sSwap ) )
-		{			
-			// Altes Ziel den Fokus wieder nehmen
-			if( that->destination != nullptr )
-				that->destination->triggerEvent( _gadgetEvent( "blur" ) );
-			that->destination = nullptr;
-			
-			that->animKeyb.setToValue( sStart );
-			that->animMagnif.setToValue( sStart );
-			that->animMagnif.finish( [&]( int v ){ _factor = 1; _x = 0; _y = 0; } );
-			that->mode = false;
-		}
+			that->close();
 		else
-		{
-			that->animKeyb.setToValue( sEnd );
-			that->animMagnif.setToValue( sEnd );
-			that->animMagnif.finish();
-			that->mode = true;
-		}
-		
-		that->animMagnif.start();
-		that->animKeyb.start();
+			that->open();
 		
 		// Return
 		return handled;
