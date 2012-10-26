@@ -19,9 +19,9 @@ void _label::setFont( _font* ft )
 	
 	// Set Font...
 	this->font = ft;
-	if( this->computeW == 1 )
+	if( this->computeW )
 		this->computeW = 2;
-	if( this->computeH == 1 )
+	if( this->computeH )
 		this->computeH = 2;
 	this->computeSize();
 	this->bubbleRefresh( true );
@@ -34,9 +34,9 @@ void _label::setFontSize( _u8 fontSize )
 	
 	// Set FontSize...
 	this->fontSize = fontSize;
-	if( this->computeW == 1 )
+	if( this->computeW )
 		this->computeW = 2;
-	if( this->computeH == 1 )
+	if( this->computeH )
 		this->computeH = 2;
 	this->computeSize();
 	this->bubbleRefresh( true );
@@ -48,12 +48,18 @@ void _label::computeSize()
 		return;
 	
 	// Compute Height
-	if( this->computeH == 2 && ( this->computeH = 1 ) )
+	if( this->computeH == 2 )
+	{
 		this->setHeight( this->font->getHeight( this->fontSize ) );
+		this->computeH = 1;
+	}
 	
 	// Compute Width
-	if( this->computeW == 2 && ( this->computeW = 1 ) )
+	if( this->computeW == 2 )
+	{
 		this->setWidth( this->font->getStringWidth( this->getStrValue() , this->fontSize ) );
+		this->computeW = 1;
+	}
 }
 
 _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
@@ -63,8 +69,8 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -135,7 +141,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, computeW( 0 )
 	, computeH( 0 )
 {
-	this->font = _system_->_runtimeAttributes_->defaultFont;
+	this->font = _system_->getFont();
 	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );
@@ -154,7 +160,7 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	, computeW( 2 )
 	, computeH( 2 )
 {
-	this->font = _system_->_runtimeAttributes_->defaultFont;
+	this->font = _system_->getFont();
 	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );

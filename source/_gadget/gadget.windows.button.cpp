@@ -27,8 +27,8 @@ _gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -38,7 +38,7 @@ _gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
+	bP.drawString( 12 , 2 , _system_->getFont() , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
 	
 	if( event.getType() == "dialogClose" )
 		that->bubbleRefresh();

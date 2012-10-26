@@ -120,6 +120,7 @@ int _lua_bitmapPort::drawChar( lua_State* L ){
 		luaL_checkint( L , 5 ) 
 	) ); return 1;*/
 	//! TODO: implement
+	return 0;
 }
 	
 //! drawString

@@ -10,7 +10,7 @@ extern "C"{
 #include "_lua/lua.gadget.gadgetEventArgs.h"
 #include "_lua/lua.class.inputInterface.h"
 #include "_lua/lunar.h"
-#include "_gadget/gadget.list.h"
+#include "_gadget/gadget.select.h"
 
 /**
  * Proxy Classes

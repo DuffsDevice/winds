@@ -15,7 +15,7 @@ extern "C"{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-#define FAT_EMULATOR_
+//#define FAT_EMULATOR_
 
 
 #ifdef FAT_EMULATOR_
@@ -94,6 +94,8 @@ _direntry::_direntry( string fn ) :
 	// Fill Stat-Struct
 	this->exists = !stat( this->filename.c_str() , &this->stat_buf );
 	
+	//printf("direntry: %d, %s\n",this->getSize(),this->filename.c_str());
+	
 	//! Set Mime-Type
 	if( this->isDirectory() )
 	{
@@ -104,8 +106,8 @@ _direntry::_direntry( string fn ) :
 	else
 	{
 		// Set Extension
-		_coord pos = this->filename.find_last_of(".");
-		_coord npos = this->filename.find_last_of("/");
+		_length pos = this->filename.find_last_of(".");
+		_length npos = this->filename.find_last_of("/");
 		if( pos > npos && pos != this->filename.npos )
 			this->extension = this->filename.substr( pos + 1 );
 		
@@ -397,7 +399,7 @@ _u32 _direntry::getSize()
 	return program_bin_size;
 	#endif
 	
-	if( !this->fatInited || this->isDirectory() )
+	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return 0;
 	
 	_u32 size = 0;
@@ -448,6 +450,7 @@ string _direntry::getWorkingDirectory()
 
 void _direntry::setWorkingDirectory( string dir )
 {
+	//printf("change dir to %s = %d",replaceASSOCS(dir).c_str(),chdir( replaceASSOCS(dir).c_str()) );
 	chdir( replaceASSOCS(dir).c_str() );
 }
 
@@ -550,8 +553,8 @@ bool _direntry::rename( string newName )
 		else
 		{
 			// Set Extension
-			_coord pos = this->filename.find_last_of(".");
-			_coord npos = this->filename.find_last_of("/");
+			_length pos = this->filename.find_last_of(".");
+			_length npos = this->filename.find_last_of("/");
 			if( pos > npos && pos != this->filename.npos )
 				this->extension = this->filename.substr( pos + 1 );
 			

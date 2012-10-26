@@ -1,5 +1,5 @@
-#include "_gadget/gadget.list.item.h"
-#include "_gadget/gadget.list.h"
+#include "_gadget/gadget.select.item.h"
+#include "_gadget/gadget.select.h"
 #include "_type/type.system.h"
 
 _gadgetEventReturnType _selectItem::mouseHandler( _gadgetEvent event )
@@ -26,23 +26,23 @@ _gadgetEventReturnType _selectItem::refreshHandler( _gadgetEvent event ){
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
-	_length myH = bP.getHeight();
-	_length myW = bP.getWidth();
+	//_length myH = bP.getHeight();
+	//_length myW = bP.getWidth();
 	
 	if( that->active )
 	{
 		bP.fill( RGB255( 10 , 36 , 106 ) );
-		bP.drawString( 1 , 1 , _system_->_runtimeAttributes_->defaultFont , that->getStrValue() , COLOR_WHITE , _system_->_runtimeAttributes_->defaultFontSize );
+		bP.drawString( 1 , 1 , _system_->getFont() , that->getStrValue() , COLOR_WHITE , _system_->_runtimeAttributes_->defaultFontSize );
 	}
 	else
 	{
 		bP.fill( COLOR_WHITE );
-		bP.drawString( 1 , 1 , _system_->_runtimeAttributes_->defaultFont , that->getStrValue() , COLOR_BLACK , _system_->_runtimeAttributes_->defaultFontSize );
+		bP.drawString( 1 , 1 , _system_->getFont() , that->getStrValue() , COLOR_BLACK , _system_->_runtimeAttributes_->defaultFontSize );
 	}
 	
 	return use_default;

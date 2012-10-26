@@ -1,4 +1,6 @@
 #include "_gadget/gadget.startupScreen.h"
+#include "_gadget/gadget.imagegadget.h"
+#include "_resource/BMP_WindowsBootLogo.h"
 
 #include <nds/arm9/console.h>
 
@@ -16,8 +18,8 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -48,17 +50,25 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	_gadgetScreen( bgId , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
+	, winLogoGadget( new _imagegadget( 5 , 2 , _startupScreen::winLogo ) )
 {	
 	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( "refresh" , &_startupScreen::refreshHandler );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	
+	winLogoGadget->style.canReceiveFocus = false;
+	this->addChild( winLogoGadget );
+	
 	//! Refresh me
 	this->refreshBitmap();
 }
 
+_bitmap* _startupScreen::winLogo = new BMP_WindowsBootLogoSmall();
+
 _startupScreen::~_startupScreen()
 {
 	delete this->refresher;
+	delete this->winLogoGadget;
 }
+

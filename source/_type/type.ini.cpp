@@ -15,7 +15,7 @@ bool _ini::read()
         else if ( line[0] == '[' )
 		{
             /* A "[section]" line */
-			_s16 end = line.find_first_of("]");
+			_length end = line.find_first_of("]");
 			
             if ( end != string::npos )
 				section = line.substr( 1 , end - 1 );
@@ -27,7 +27,7 @@ bool _ini::read()
         else
 		{
 			/* Must be a name:= value pair! */
-			_s16 delim = line.find_first_of(":=");
+			_length delim = line.find_first_of(":=");
 			if( delim == string::npos )
 				return false;
 			name = line.substr( 0 , delim );

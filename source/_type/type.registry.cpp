@@ -12,12 +12,14 @@ _registry::_registry( string filename ) :
 	{
 		this->create();
 		this->ini = new _ini("");
+		this->writeIndex( "_global_" , "firstTimeUse" , "1" );
 		this->creation = true;
 	}
 	else
 	{
 		this->ini = new _ini( this->readString( size ) );
 		this->ini->read();
+		this->deleteIndex( "_global_" , "firstTimeUse" );
 	}	
 }
 

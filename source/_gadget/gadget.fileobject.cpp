@@ -33,7 +33,7 @@ _gadgetEventReturnType _fileobject::focusHandler( _gadgetEvent event )
 _gadgetEventReturnType _fileobject::dragHandler( _gadgetEvent event )
 {	
 	// Receive Gadget
-	_fileobject* that = event.getGadget<_fileobject>();
+	//_fileobject* that = event.getGadget<_fileobject>();
 	
 	return not_handled;
 }

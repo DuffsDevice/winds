@@ -14,8 +14,8 @@ _gadgetEventReturnType _radio::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -39,7 +39,7 @@ _gadgetEventReturnType _radio::dragHandler( _gadgetEvent event )
 	
 	else if( event.getType() == "dragging" )
 	{	
-		if( !that->getAbsoluteDimensions().contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
+		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 		{
 			// I'm not pressed anymore!
 			that->pressed = false;

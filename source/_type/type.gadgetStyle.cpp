@@ -6,7 +6,7 @@ _gadgetStyle _gadgetStyle::owner( void* owner ){
 	return g;
 }
 
-_gadgetStyle _gadgetStyle::storeData( _u32 d ){
+_gadgetStyle _gadgetStyle::storeData( _int d ){
 	_gadgetStyle g = _gadgetStyle();
 	g.data = d;
 	return g;

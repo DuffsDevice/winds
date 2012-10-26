@@ -15,7 +15,7 @@ class _memoryfont : public _font{
 		_char		lastChar;
 		_u8			height;
 		_u8			mainHeight;
-		const _bit*	charData;
+		const _u16*	charData;
 		const _u8*	charWidths;
 		const _u16*	charOffsets;
 		
@@ -36,7 +36,7 @@ class _memoryfont : public _font{
 		 * @param sW The Width of a Space
 		 * @return void
 		**/
-		_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _bit *data , const _u8 *widths , const _u16 *offsets , _u8 ms , _u8 sW );
+		_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW );
 		
 		//! Get the CharacterWidth related to a specific character
 		_u16 getCharacterWidth( _char ch , _u8 fontSize = 0 ) const ;

@@ -2,7 +2,7 @@
 
 _bitmapPort::_bitmapPort( _bitmap* bm ) : base( bm ) {}
 
-_bitmapPort::_bitmapPort( _bitmap* bm , _area clippings ) : base( bm ) , clippingRects( clippings ) {}
+_bitmapPort::_bitmapPort( _bitmap* bm , _area clippings ) : clippingRects( clippings ) , base( bm ) {}
 
 void _bitmapPort::addClippingRects( _rect cR ){
 	clippingRects.add( cR );
@@ -291,7 +291,7 @@ void _bitmapPort::copy( _coord x , _coord y , _bitmapPort data )
 
 void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap* data )
 {
-	startTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
+	//startTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
 	_rect tempRect = this->base->getClippingRect();
 	
 	for( _rect& rc : clippingRects )
@@ -302,7 +302,7 @@ void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap* data )
 		this->base->copyTransparent( x , y , data );
 		//! Standard Bitmap Routine
 	}
-	stopTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
+	//stopTimer( reinterpret_cast<void*>(&_bitmap::copyTransparent) );
 	
 	this->base->setClippingRect( tempRect );
 }

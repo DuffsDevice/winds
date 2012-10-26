@@ -9,7 +9,7 @@ _runtimeAttributes::_runtimeAttributes() :
 	wallpaper( new BMP_WindowsWallpaper() ) 
 	, wallpaperView( WALLPAPER_ORIG ) 
 	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )
-	, defaultFont( new FONT_Tahoma7() ) 
+	, defaultFont( "Tahoma7" )
 	, defaultFontSize( 8 ) 
 	, windowBar( new BMP_WindowHeader() )
 {

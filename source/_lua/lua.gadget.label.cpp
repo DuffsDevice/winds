@@ -34,12 +34,13 @@ int _lua_label::setFont( lua_State* L ){
 		((_label*)this->gadget)->setFont( f );
 	return 0;*/
 	//! TODO: implement
+	return 0;
 }
 
 int _lua_label::getFont( lua_State* L ){
 	//Lunar<_lua_font>::push( L , new _lua_font( ((_label*)this->gadget)->getFont() ) , true ); return 1;
-	return 0;
 	//!TODO: implement
+	return 0;
 }
 
 //! Lua-window

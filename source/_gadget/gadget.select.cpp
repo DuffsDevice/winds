@@ -1,4 +1,4 @@
-#include "_gadget/gadget.list.h"
+#include "_gadget/gadget.select.h"
 #include "_gadget/gadget.button.h"
 #include "_resource/BMP_ScrollButtons.h"
 
@@ -17,8 +17,8 @@ _gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

@@ -27,7 +27,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	const _user* user = _system_->_runtimeAttributes_->user;
 	
 	// Temp...
-	_gadgetEventArgs args;
+	_gadgetEvent event;
 	
 	// Increase clickCycles and prevent overflow
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )
@@ -41,18 +41,14 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	 **/
 	if( held )
 	{
-		args.reset();
-		args.setEffectivePosX( newTouch.x );
-		args.setEffectivePosY( newTouch.y );
-		args.setPosX( newNewTouch.x );
-		args.setPosY( newNewTouch.y );
+		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
 			
 		//! Check if this is the first Cycle the pen is down
 		if( this->touchCycles == 0 )
 		{
 			// Trigger the Event
 			if( newTouchInside )
-				this->handleEvent( _gadgetEvent( "mouseDown" , args ) );
+				this->handleEvent( event.setType( "mouseDown" ) );
 			
 			// Set the starting Point of the mouseDown here!
 			this->startTouch = newTouch;
@@ -66,12 +62,11 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		{
 			// Trigger the Event
 			_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
-			args.setPosX( newLastTouch.x );
-			args.setPosY( newLastTouch.y );
-			args.setDeltaX( newNewTouch.x - newLastTouch.x );
-			args.setDeltaY( newNewTouch.y - newLastTouch.y );
 			
-			this->handleEvent( _gadgetEvent( "dragging" , args ) );
+			// Modify Event
+			event.setPosX( newLastTouch.x ).setPosY( newLastTouch.y ).setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
+			
+			this->handleEvent( event.setType( "dragging" ) );
 			
 			this->lastTouch = newTouch;
 		}		
@@ -87,15 +82,11 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			// Check if Pen has moved the distance already
 			if( dragDistance > user->mDD * user->mDD )
 			{
-				// Set the Args
-				args.reset();
-				args.setEffectivePosX( startTouch.x );
-				args.setEffectivePosY( startTouch.y );
-				args.setPosX( newStartTouch.x );
-				args.setPosY( newStartTouch.y );
+				// Modify Event
+				event.setEffectivePosX( startTouch.x ).setEffectivePosY( startTouch.y ).setPosX( newStartTouch.x ).setPosY( newStartTouch.y );
 				
 				// start dragging
-				this->handleEvent( _gadgetEvent( "dragStart" , args ) );
+				this->handleEvent( event.setType( "dragStart" ) );
 				dragging = true;
 				
 				this->lastTouch = this->startTouch;	
@@ -109,20 +100,15 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	//! Pen is not down
 	else if( this->touchCycles > 0 )
 	{
-		// Set the Args
-		args.reset();
-		args.setEffectivePosX( lastTouch.x );
-		args.setEffectivePosY( lastTouch.y );
+		// Set the Event-Parameter
 		_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
-		args.setPosX( newLastTouch.x );
-		args.setPosY( newLastTouch.y );
-		
+		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y );		
 		
 		//! Maybe DragStop-Event?
 		if( this->dragging )
 		{
 			//! Trigger Event
-			this->handleEvent( _gadgetEvent( "dragStop" , args ) );
+			this->handleEvent( event.setType( "dragStop" ) );
 			
 			// Set touchDragging to false!
 			this->dragging = false;
@@ -132,26 +118,26 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		{
 			_s16	deltaX = touchBefore.x - lastTouch.x;
 			_s16	deltaY = touchBefore.y - lastTouch.y;
-			_s16 	deltaTouch = deltaX * deltaX + deltaY * deltaY;
+			_length deltaTouch = deltaX * deltaX + deltaY * deltaY;
 			
 			// Trigger the mouseClick-Event and mouseDoubleCLick!
 			if( this->cyclesLastClick && this->cyclesLastClick < user->mDC && deltaTouch < user->mDA * user->mDA )
 			{
 				// Trigger the Event
-				this->handleEvent( _gadgetEvent( "mouseDoubleClick" , args ) );
+				this->handleEvent( event.setType( "mouseDoubleClick" ) );
 				this->cyclesLastClick = 0;
 			}
 			else
 			{
 				// Trigger the Event
-				this->handleEvent( _gadgetEvent( "mouseClick" , args ) );
+				this->handleEvent( event.setType( "mouseClick" )  );
 				
 				this->cyclesLastClick = 1;
 			}
 		}
 		
 		// Trigger the Event
-		this->handleEvent( _gadgetEvent( "mouseUp" , args ) );
+		this->handleEvent( event.setType( "mouseUp" ) );
 		
 		touchBefore = lastTouch;
 		

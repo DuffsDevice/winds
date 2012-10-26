@@ -9,8 +9,8 @@ class _progressbar : public _gadget {
 	
 	private:
 	
-		_u8		value;
 		bool	type; // 0 = value, 1 = progress
+		_u8		value;
 		_animation* anim;
 		_u8		state;
 		bool	blue;

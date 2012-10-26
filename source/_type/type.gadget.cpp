@@ -18,7 +18,7 @@ map<_gadgetEventType,_gadgetDefaultEventHandler> _gadget::defaultEventHandlers =
 };
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
-	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , parent( nullptr ) , dragTemp ( nullptr ) , focusedChild( nullptr )
+	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , focusedChild( nullptr ) , parent( nullptr )  , dragTemp ( nullptr )
 {
 	if( !doNotAllocateBitmap )
 	{
@@ -66,7 +66,7 @@ _gadgetType _gadget::getType(){ return this->type; }
 
 void _gadget::triggerEvent( _gadgetEvent event )
 {
-	event.getArgs().setDestination( this );
+	event.setDestination( this );
 	_system_->generateEvent( event );
 }
 
@@ -80,9 +80,7 @@ void _gadget::bubbleEvent( _gadgetEvent event , bool includeThis )
 
 void _gadget::refreshBitmap()
 {
-	_gadgetEvent event = _gadgetEvent( this , "refresh" , _gadgetEventArgs() );
-	event.getArgs().preventBubble( true );
-	this->handleEvent( event );
+	this->handleEvent( _gadgetEvent( this , "refresh" ).preventBubble( true ) );
 }
 
 _rect _gadget::getSize() const {
@@ -96,7 +94,7 @@ void _gadget::generateEvent( _gadgetEvent event ){
 void _gadget::bubbleRefresh( bool includeThis , _gadgetEvent event )
 {
 	// Event not generated yet
-	if( !event.getArgs().isBubblePrevented() )
+	if( !event.hasClippingRects() )
 		event = _gadgetEvent::refreshEvent( this , { this->getAbsoluteDimensions() } );
 	
 	if( includeThis )
@@ -106,7 +104,7 @@ void _gadget::bubbleRefresh( bool includeThis , _gadgetEvent event )
 	if( this->parent != nullptr )
 	{
 		_rect size = this->parent->getAbsoluteDimensions();
-		if( size.intersectsWith( event.getArgs().getDamagedRects() ) )
+		if( size.intersectsWith( event.getDamagedRects() ) )
 			this->parent->bubbleRefresh( true , event );
 	}
 }
@@ -480,11 +478,11 @@ _gadget* _gadget::getToppestChild()
 
 _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 {
-	startTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
+	//startTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
 	_gadget* that = event.getGadget();
 	
 	// If this Refresh-Event wasn't auto-generated, refresh my parents
-	if( !event.getArgs().isBubblePrevented() )
+	if( !event.isBubblePrevented() )
 		that->bubbleRefresh();
 	
 	// Receive Bitmap-Port
@@ -496,9 +494,9 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 	_rect areaAvailable = { 0 , 0 , that->dimensions.width , that->dimensions.height };
 	areaAvailable.applyPadding( that->getPadding() );
 	
-	if( event.getArgs().hasClippingRects() )
+	if( event.hasClippingRects() )
 	{
-		damagedRects = event.getArgs().getDamagedRects();
+		damagedRects = event.getDamagedRects();
 		damagedRects.toRelative( that->getAbsoluteX() , that->getAbsoluteY() );
 		damagedEnhancedRects = damagedRects;
 		damagedRects.clipToIntersect( areaAvailable );
@@ -541,7 +539,7 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 		}
 	}
 	
-	stopTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
+	//stopTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
 	
 	return handled;
 }
@@ -556,14 +554,14 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& event )
 	{
 		
 		// Check if event position was inside this Gadget's Area
-		if( gadget->getDimensions().toRelative( - ( !gadget->style.enhanced ) * p.getLeft() , - ( !gadget->style.enhanced ) * p.getTop() ).contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
+		if( gadget->getDimensions().toRelative( - ( !gadget->style.enhanced ) * p.getLeft() , - ( !gadget->style.enhanced ) * p.getTop() ).contains( event.getPosX() , event.getPosY() ) )
 		{
 			// Rewrite Destination
-			event.getArgs().setDestination( gadget );
+			event.setDestination( gadget );
 			
 			// Absolute Position to Relative Position
-			event.getArgs().setPosX( event.getArgs().getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
-			event.getArgs().setPosY( event.getArgs().getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
+			event.setPosX( event.getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
+			event.setPosY( event.getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
 			
 			// It doesn't make sense to focus a child of some _gadget that can't be style.focused
 			if( event.getType() == "mouseDown" )
@@ -590,7 +588,6 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	_gadget* that = event.getGadget();
 	
 	// Temp...
-	_gadgetEventArgs args = event.getArgs();
 	_padding p = that->getPadding();
 	
 	// Start Dragging
@@ -601,17 +598,17 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 		{
 			
 			// Check if event position was inside this Gadget's Area
-			if( gadget->getDimensions().toRelative( -p.getLeft() , -p.getTop() ).contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
+			if( gadget->getDimensions().toRelative( -p.getLeft() , -p.getTop() ).contains( event.getPosX() , event.getPosY() ) )
 			{
 				// Rewrite Destination
-				args.setDestination( gadget );
+				event.setDestination( gadget );
 				
 				// Absolute Position to Relative Position
-				args.setPosX( args.getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
-				args.setPosY( args.getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
+				event.setPosX( event.getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
+				event.setPosY( event.getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
 				
 				// Trigger the Event
-				_gadgetEventReturnType ret = gadget->handleEvent( _gadgetEvent( that , event.getType() , args ) );
+				_gadgetEventReturnType ret = gadget->handleEvent( event );
 				
 				if( ret != not_handled )
 				{
@@ -626,11 +623,8 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	// Stop Dragging
 	else if( event.getType() == "dragStop" && that->dragTemp )
 	{
-		// Rewrite Destination
-		args.setDestination( that->dragTemp );
-		
-		// Trigger the Event
-		_gadgetEventReturnType ret = that->dragTemp->handleEvent( _gadgetEvent( that , event.getType() , args ) );
+		// Rewrite Destination andTrigger the Event
+		_gadgetEventReturnType ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
 		
 		// No Gadget will receive Events anymore
 		that->dragTemp = nullptr;
@@ -639,12 +633,8 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	}
 	else if( event.getType() == "dragging" && that->dragTemp )
 	{
-		// Rewrite Destination
-		args.setDestination( that->dragTemp );
-		
-		
-		// Trigger the Event
-		return that->dragTemp->handleEvent( _gadgetEvent( that , event.getType() , args ) );
+		// Rewrite Destination andTrigger the Event
+		return that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
 	}
 	return not_handled;
 }

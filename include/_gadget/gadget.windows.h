@@ -7,8 +7,7 @@
 #include "_type/type.gadgetScreen.h"
 
 //! C-Header
-#include <stdio.h>
-#include <list>
+//#include <stdio.h>
 #include <algorithm>
 
 //! Graphics

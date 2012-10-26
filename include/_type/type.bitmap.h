@@ -189,7 +189,7 @@ class _bitmap
 			_u32 position = y * this->width + x;
 			
 			// Prevent Overflows
-			if( position > (this->height * this->width - 1 ) || x >= this->width || y >= this->height )
+			if( position > (this->height * this->width - 1 ) || _length(x) >= this->width || _length(y) >= this->height )
 				return NO_COLOR;
 			
 			return this->bmp[position];

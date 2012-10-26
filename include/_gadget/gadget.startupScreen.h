@@ -10,6 +10,8 @@ class _startupScreen : public _gadgetScreen
 	private:
 		
 		_gadget* 		refresher;
+		static _bitmap*	winLogo;
+		_gadget*		winLogoGadget;
 		
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		

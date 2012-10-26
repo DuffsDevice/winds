@@ -10,6 +10,9 @@
 //! Resources we need
 //#include "_resource/PROG_Explorer.h"
 #include "_resource/BMP_Checkboxes.h"
+#include "_resource/FONT_ArialBlack10.h"
+#include "_resource/FONT_CourierNew10.h"
+#include "_resource/FONT_Tahoma7.h"
 
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.startupScreen.h"
@@ -43,53 +46,144 @@ void _system::debug( string msg ){
 	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
-void _system::initializeComponents(){
-	_bootupScreen* screen;
-	_system::_gadgetHost_ = screen = new _bootupScreen( bgIdBack );
+_gadgetEventReturnType setupHandler( _gadgetEvent e )
+{
+	static int state = 0;
 	
-	// -----------------------------------------------
-	//	Hardware Init
-	// -----------------------------------------------
 	
-	bool fatInit = _direntry::initFat();
-	bool wifiInit = Wifi_InitDefault(INIT_ONLY);
+	_gadget* that = e.getGadget();
 	
-	if( fatInit && !wifiInit )
-		_system::debug("Wifi could not be inited! Please note that the default Firmware Settings are used to connect");
-		
-	// -----------------------------------------------
-	//	Software and Gadget-System-Init Init
-	// -----------------------------------------------
+	if( typeOfGadget( that ) == _gadgetType::button )
+	{
+		if( that->getStyle().data == -1 )
+		{
+			if( state > 0 )
+			{
+				state--;
+				that->getParent()->triggerEvent( _gadgetEvent( "setup" ) );
+			}
+		}
+		else
+		{
+			if( state < 1 )
+			{
+				state++;
+				that->getParent()->triggerEvent( _gadgetEvent( "setup" ) );
+			}
+		}
+		return handled;
+	}
 	
-		// Create RTA
-		_system::_runtimeAttributes_ = new _runtimeAttributes;
-		_system::_runtimeAttributes_->user = new _user("Jakob");
-		
-		// Make sure there is a file to debug to
-		_system::_debugFile_ = new _direntry("/%WINDIR%/debug.txt");
-		_system::_debugFile_->create();
-		
-		_system::_registry_ = new _registry("/%WINDIR%/windows.reg");
-		
-	//ende
+	that->removeChildren( true );
+	
+	switch( that->getStyle().data )
+	{
+		case 0:{
+			_label* lbl = new _label( 14 , 29 , "Welcome" );
+			lbl->setColor( RGB( 2 , 5 , 15 ) );
+			lbl->setFont( _system_->getFont( "ArialBlack10" ) );
+			that->addChild( lbl );
+			_label* lbl2 = new _label( 13 , 28 , "Welcome" );
+			lbl2->setColor( RGB( 30 , 30 , 30 ) );
+			lbl2->setFont( _system_->getFont( "ArialBlack10" ) );
+			that->addChild( lbl2 );
+			break;}
+		case 1:
+			that->addChild( new _label( 13 , 13 , "Second Setup Page" ) );
+			break;
+	}
+	return handled;
+}
+void _system::setup()
+{	
+	// Clean up
+	_system::deleteGadgetHost();
+	//_system::deleteKeyboard();
+	
+	_system::_gadgetHost_ = new _startupScreen( bgIdBack , _gadgetStyle::storeData( 0 ) );
+	_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
+	
+	_system::_gadgetHost_->registerEventHandler( "setup" , setupHandler );
+	_system::_gadgetHost_->triggerEvent( _gadgetEvent( "setup" ) );
+	
+	while( true )
+		swiWaitForVBlank();
+}
+
+void _system::loginPage()
+{
+	// Clean up
+	_system::deleteGadgetHost();
+	
+	_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 	_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 }
+
+void _system::initializeComponents()
+{
+	// Clean up
+	_system::deleteGadgetHost();
 	
+	_u32 time = _system::getTime();
+	
+	// -----------------------------------------------
+	// Create BootLogo
+	// -----------------------------------------------
+		
+		_bootupScreen* screen;
+		_system::_gadgetHost_ = screen = new _bootupScreen( bgIdBack );
+		
+	
+	// End!
+	while( _system::getTime() - time < 2000 )
+		swiWaitForVBlank();
+}
+
+void _system::removeEventsOf( _gadget* g )
+{
+	// Delete events
+	_system::eventBuffer[_system::curEventBuffer].remove_if( [&]( _gadgetEvent event )->bool{ return event.getDestination() == g; } );
+}
+
+void _system::deleteGadgetHost()
+{
+	if( _system::_gadgetHost_ )
+	{
+		irqDisable( IRQ_VBLANK );
+		_system::removeEventsOf( _system::_gadgetHost_ );
+		delete _system::_gadgetHost_;
+		irqEnable( IRQ_VBLANK );
+		
+		_system::_gadgetHost_ = nullptr;
+	}
+}
+
+_font* _system::getFont( string font )
+{
+	if( font.empty() || !_system::_fonts_.count( font ) )
+		return _system::_fonts_[ _system::_runtimeAttributes_->defaultFont ];
+	
+	return _system::_fonts_[font];
+}
+
+_font* _system::getFont()
+{
+	return _system::_fonts_[ _system::_runtimeAttributes_->defaultFont ];
+}
 
 void _system::_vblank_()
 {
 	if( _system::_gadgetHost_ )
 		_system::processInput();
-	if( _system::_keyboard_ )
-		_system::_keyboard_->screenVBL();
+	//if( _system::_keyboard_ )
+	//	_system::_keyboard_->screenVBL();
+	_system::processEvents();
+	_system::runAnimations();
 }
 
 void _system::generateEvent( _gadgetEvent event )
 {
-	if( _system::eventThrowable )
-		_system::events.push_back( event );
-	else 
-		_system::newEvents.push_back( event );
+	_system::eventBuffer[_system::curEventBuffer].push_back( event );
 }
 
 void _system::processEvents()
@@ -97,64 +191,48 @@ void _system::processEvents()
 	//optimizeEvents();
 	// Do not throw any Events until we finished iterating through Events!!!!
 	// -> This was a big Problem - Hours of finding that out!
-	disableEventThrowing();
-	
-	//printf("%d\n",_system::events.size() );
+	eventsSwapBuffer();
 	
 	// Temp...
 	_gadget* gadget;
-
-	for( _gadgetEvent& event : _system::events )
+	
+	for( _gadgetEvent& event : _system::eventBuffer[!_system::curEventBuffer] )
 	{
-		gadget = (_gadget*)event.getArgs().getDestination();		
+		gadget = (_gadget*)event.getDestination();
+		
+		//int s = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
-		
+		//printf("\n%d",cpuGetTiming()-s);
 	}
 
 	// Erase all Events
-	_system::events.clear();
+	_system::eventBuffer[!_system::curEventBuffer].clear();
 	
-	// Copy all new Events into events Vector...
-	enableEventThrowing();
-	
-	
-	/*if( !_system::events.size() )
-	{
-		addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
-		addMethod( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler),"refresh");
-		addMethod( reinterpret_cast<void*>(&_bitmap::copyTransparent),"copyAlgo");
-		addMethod( reinterpret_cast<void*>(&_rect::reduce),"reduceAlgo");
-		addMethod( reinterpret_cast<void*>(&_rect::toRelative),"toRelative");
-		
-		printResults();
-		printf("%d\n",cpuGetTiming());
-		while(true);
-	}*/
+	//if( !_system::eventBuffer[_system::curEventBuffer].size() )
+	//{
+	//	addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
+	//	addMethod( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler),"refresh");
+	//	addMethod( reinterpret_cast<void*>(&_bitmap::copyTransparent),"copyAlgo");
+	//	addMethod( reinterpret_cast<void*>(&_rect::reduce),"reduceAlgo");
+	//	addMethod( reinterpret_cast<void*>(&_rect::toRelative),"toRelative");
+	//	
+	//	printResults();
+	//	printf("%d\n",cpuGetTiming());
+	//	while(true);
+	//}
 }
 
-void _system::enableEventThrowing( void )
+void _system::eventsSwapBuffer()
 {
-	// Copy new Events
-	_system::events.insert( _system::events.end() , _system::newEvents.begin() , _system::newEvents.end() );
-	
-	// Erase temporary events
-	_system::newEvents.clear();	
-	
-	// Reenable Events!
-	_system::eventThrowable = true;
+	_system::curEventBuffer = !_system::curEventBuffer;
 }
 
-_u16 _system::getCurrentKeys(){
+_u16 _system::getCurrentKeys()
+{
 	return keysHeld() & (~(KEY_TOUCH|KEY_LID));
-}
-
-void _system::disableEventThrowing( void )
-{
-	// Disable Throwing of Events!
-	_system::eventThrowable = false;
 }
 
 
@@ -171,14 +249,12 @@ void _system::processInput()
 	static _u32 heldCycles[16] = {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	
-	_gadgetEventArgs args;
-	
 	// Shortcut...
 	const _user* user = _system_->_runtimeAttributes_->user;
 	
 	_key keys = keysHeld();
 	
-	if( !_system::_keyboard_->processTouch( keys & KEY_TOUCH , t ) )
+	if( !_system::_keyboard_ || !_system::_keyboard_->processTouch( keys & KEY_TOUCH , t ) )
 		_system::_gadgetHost_->processTouch( keys & KEY_TOUCH , t );
 	
 	if( keysDown() & KEY_SELECT )
@@ -203,13 +279,8 @@ void _system::processInput()
 		{
 			if( heldCycles[i] == 0 || ( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 ) )
 			{
-				// Set the Args
-				args.reset();
-				args.setKeyCode( libnds2key[i] );
-				args.setCurrentKeyCodes( lastKeys );
-				
-				// Trigger the Event
-				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyDown" , args ) );
+				// Set the Args and Trigger the Event
+				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyDown" ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys ) );
 			}
 			
 			// Increase Cycles
@@ -219,17 +290,15 @@ void _system::processInput()
 		else if( heldCycles[i] > 0 )
 		{
 			// Set the Args
-			args.reset();
-			args.setKeyCode( libnds2key[i] );
-			args.setCurrentKeyCodes( lastKeys );
+			_gadgetEvent event = _gadgetEvent( "keyUp" ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys );
 			
 			// Trigger the Event
-			_system::_currentFocus_->handleEvent( _gadgetEvent( "keyUp" , args ) );
+			_system::_currentFocus_->handleEvent( event );
 			
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < user->mCC )
-				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyClick" , args ) );
+				_system::_currentFocus_->handleEvent( event.setType( "keyClick" ) );
 			
 			// Reset Cycles
 			heldCycles[i] = 0;
@@ -266,9 +335,9 @@ _system::_system()
 		_system::bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
 		_system::bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		
-		//setBackdropColor( COLOR_BLACK );
-		//setBackdropColorSub( COLOR_BLACK );
-		//consoleDemoInit();
+		setBackdropColor( COLOR_BLACK );
+		setBackdropColorSub( COLOR_BLACK );
+		consoleDemoInit();
 		
 		//memSet( BG_GFX_SUB , 0 , SCREEN_HEIGHT*SCREEN_WIDTH );
 		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
@@ -278,7 +347,10 @@ _system::_system()
 	// ------------------------------------------------------------------------
 	
 		//! Set the VBLANK Interrupt handler
+		SetYtrigger( 0 );
 		irqSet( IRQ_VBLANK , _system::_vblank_ );
+		//irqSet( IRQ_VCOUNT , _system::_vcount_ );
+		irqEnable( IRQ_VCOUNT | IRQ_VBLANK );
 		
 		//! Start Time
 		cpuStartTiming(1);
@@ -304,20 +376,51 @@ _system::_system()
 	// System-Attributes
 	// ------------------------------------------------------------------------
 		
-		//! Create Windows & the Keyboard
-		//_system::_gadgetHost_ = new _windows( bgIdBack );
-		_system::_topScreen_ = new _screen( bgIdSub );
-		//_system::_gadgetHost_ = new _startupScreen( bgIdBack );
-		
 		//! random Random() generator
 		srand( time(NULL) );
 		
 		//! Set Memory-Alloc-Error-Handler
 		set_new_handler( &_system::_newErrorFunc_ );
-	// ------------------------------------------------------------------------
 	
+	// -----------------------------------------------
+	//	Hardware Init
+	// -----------------------------------------------
 	
-	initializeComponents();
+		bool fatInit = _direntry::initFat();
+		bool wifiInit = Wifi_InitDefault(INIT_ONLY);
+		
+		if( fatInit && !wifiInit )
+			_system::debug("Wifi could not be inited! Please note that the default Firmware Settings are used to connect");
+	
+	// -----------------------------------------------
+	//	Open necesary Files
+	// -----------------------------------------------
+	
+		_system::_debugFile_ = new _direntry("%WINDIR%/debug.txt");
+		_system::_debugFile_->create();
+		
+		_system::_registry_ = new _registry("%WINDIR%/windows.reg");
+	
+	// -----------------------------------------------
+	// Gadget-System
+	// -----------------------------------------------
+		
+		_system::_topScreen_ = new _screen( bgIdSub );
+		
+	// -----------------------------------------------
+	//	RTA - Runtime Attributes
+	// -----------------------------------------------
+	
+		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		_system::_runtimeAttributes_->user = new _user("Jakob");
+		
+	// -----------------------------------------------
+	// Fonts
+	// -----------------------------------------------
+	
+		_system::_fonts_["ArialBlack10"] = new FONT_ArialBlack10();
+		_system::_fonts_["CourierNew10"] = new FONT_CourierNew10();
+		_system::_fonts_["Tahoma7"] = new FONT_Tahoma7();
 }
 
 void _system::_newErrorFunc_()
@@ -369,6 +472,11 @@ void _system::executeProgram( _program* prog , _cmdArgs args )
 	prog->init( _system::_gadgetHost_ , args );
 }
 
+_u32 _system::getCpuUsage()
+{
+	return _system::cpuUsageTemp;
+}
+
 void _system::terminateProgram( _program* prog )
 {
 	// Erase the Program-Instance in the list of running instances
@@ -378,32 +486,44 @@ void _system::terminateProgram( _program* prog )
 
 void _system::main()
 {
+	// Fist of all, the Boot up
+	//initializeComponents();
+	
+	// After the Boot up finishes,
+	
+	// see if this is a new Setup
+	if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
+		setup();
+	//_bitmap* bmp = new _bitmap( BG_GFX , SCREEN_WIDTH , SCREEN_HEIGHT );
+	//bmp->drawString( 20 , 20 , _system::_runtimeAttributes_->defaultFont , "Hello World!" , COLOR_WHITE );
+	
+	
 	//_direntry d = _direntry("hallo.exe");
 	//d.execute();
-	SetYtrigger( 192 );
-	irqEnable( IRQ_VCOUNT );
-	int i = 0;
+	//int i = 0;
 	/*_bitmap bmp = _bitmap( bgGetGfxPtr(_system::bgIdBack) , SCREEN_WIDTH , SCREEN_HEIGHT );
 			cpuStartTiming(0);
 			bmp.move( 0 , 0 , 10, 10 , 10 , 10 );
 			bmp.move( 10 , 10 , 20, 20 , 10 , 10 );
 			printf("%d\n",cpuGetTiming() );*/
+	//int t = 0;
 	while(true)
 	{
-		// wait until line 0 
-		//swiIntrWait( 192, IRQ_VCOUNT );
-		
-		//printf( "%d\n" , REG_VCOUNT );
-		_system::processEvents();
-		_system::runAnimations();
+		//printf( "%d\n" , cpuUsageTemp );
 		_system::runPrograms();
 		//consoleClear();
-		/*if( _currentFocus_ )
-			printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
-		for( _gadget* g : _gadgetHost_->children )
+		//if( _currentFocus_ )
+			//printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
+		/*for( _gadget* g : _gadgetHost_->children )
 			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );*/
 		//BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
+		_system::cpuUsageTemp = ( _system::cpuUsageTemp + _system::cpuUsageTemp + REG_VCOUNT - 192 ) / 3;
+		
+		// wait until line 0 
+		swiIntrWait( 0, IRQ_VCOUNT );
+		
 		swiWaitForVBlank();
+		
 		/*//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
 		if( ++i > 120 )
 		{
@@ -447,8 +567,9 @@ void _system::runPrograms()
 
 //! Static Attributes...
 bool 							_system::sleeping = false;
-list<_animation*>				_system::_animations_;
-list<pair<_program*,_cmdArgs>>	_system::_programs_;
+_list<_animation*>				_system::_animations_;
+_map<string,_font*>				_system::_fonts_;
+_list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;
 _screen*						_system::_topScreen_ = nullptr;
 _keyboard*						_system::_keyboard_ = nullptr;
@@ -459,11 +580,11 @@ _gadget*						_system::_currentFocus_ = nullptr;
 int								_system::bgIdFront;
 int								_system::bgIdBack;
 int								_system::bgIdSub;
+int								_system::cpuUsageTemp;
 
 //! Events
-list<_gadgetEvent>				_system::events;
-list<_gadgetEvent> 				_system::newEvents;
-bool 							_system::eventThrowable = true;
+int								_system::curEventBuffer = 0;
+_list<_gadgetEvent> 				_system::eventBuffer[2];
 
 // Static system...
-_system* _system_ = new _system();
+_system* _system_ = nullptr;

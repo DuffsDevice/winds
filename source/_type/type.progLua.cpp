@@ -129,7 +129,6 @@ _progLua::_progLua( string prog ) :
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
 	Lunar<_lua_bitmapPort>::Register( this->state );
-	Lunar<_lua_gadgetEventArgs>::Register( this->state );
 	Lunar<_lua_gadgetEvent>::Register( this->state );
 	Lunar<_lua_gadget>::Register( this->state );
 	
