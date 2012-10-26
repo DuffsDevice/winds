@@ -18,7 +18,7 @@ class _runtimeAttributes
 
 		_bitmap*		wallpaper;
 		_wallpaperViewType wallpaperView;
-		_font*			defaultFont;
+		string			defaultFont;
 		_u8				defaultFontSize;
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];

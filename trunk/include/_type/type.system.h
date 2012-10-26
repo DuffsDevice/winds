@@ -16,8 +16,6 @@
 
 #include <tr1/memory>
 
-#include <list>
-
 class _system{
 	
 	private:
@@ -26,19 +24,18 @@ class _system{
 		static bool sleeping;
 		
 		//! Attributes
-		static list< _animation* >	_animations_;
-		static list<pair<_program*
+		static _list<_animation*>	_animations_;
+		static _map<string,_font*>	_fonts_;
+		static _list<pair<_program*
 					,_cmdArgs>> 	_programs_;
 		static _direntry*			_debugFile_;
 		static _gadget*				_currentFocus_;
 		
 		//! Events
-		static bool 				eventThrowable;
-		static list<_gadgetEvent> 	events;
-		static list<_gadgetEvent> 	newEvents;
-		static void enableEventThrowing( void );
+		static int					curEventBuffer;
+		static _list<_gadgetEvent> 	eventBuffer[2];
+		static void eventsSwapBuffer( void );
 		static void processEvents();
-		static void disableEventThrowing( void );
 		
 		//! Process User Inputs
 		static void processInput();
@@ -46,7 +43,14 @@ class _system{
 		static void runAnimations();
 		static void runPrograms();
 		static void displayMemUsage();
+		
+		//! Different Scenarios
 		static void initializeComponents();
+		static void setup();
+		static void loginPage();
+		
+		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
+		static void deleteGadgetHost();
 		
 		static void _vblank_();
 		static void _newErrorFunc_();
@@ -68,6 +72,8 @@ class _system{
 		static int 	bgIdBack;
 		static int 	bgIdSub;
 		
+		static int 	cpuUsageTemp;
+		
 	public:
 	
 		static _gadgetScreen*			_gadgetHost_;
@@ -75,6 +81,8 @@ class _system{
 		static _screen*					_topScreen_;
 		static _registry*				_registry_;
 		static _runtimeAttributes*		_runtimeAttributes_;
+		
+		static void removeEventsOf( _gadget* g );
 		
 		// Constructor
 		_system();
@@ -87,6 +95,12 @@ class _system{
 		
 		//! Get Current Time (time since system startup)
 		static _u32 getTime();
+		
+		//! Get a Font by Name
+		static _font* getFont( string font );
+		static _font* getFont();
+		
+		static _u32 getCpuUsage();
 		
 		//! Obtain current Keys
 		static _u16 getCurrentKeys();

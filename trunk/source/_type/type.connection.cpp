@@ -73,4 +73,3 @@ void _wifiSocketClient::request( string url ){
 	printf("Sent Request\n");
 	send( this->sock, url.c_str() , url.length() , 2 );
 }
-

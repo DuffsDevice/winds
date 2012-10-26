@@ -6,20 +6,22 @@ _imagefile::_imagefile( string fn ) :
 	, _direntry( fn )
 	, pngDecoder( nullptr )
 {
+	//printf("Image-File:%d,%s,%d!\n",this->isExisting(),mimeType2string[this->getMimeType()].c_str(),this->getSize());
+	
 	// Doesn't make sence to 
 	if( !this->isExisting() )
 		return;
 	
 	if( this->getMimeType() == _mime::image_png )
 	{
-		printf("PNG-File!\n");
+		//printf("PNG-File!\n");
 		pngDecoder = new YsRawPngDecoder;
 		
 		pngDecoder->Decode( this->filename.c_str() );
 		
 		if( pngDecoder->wid > 0 && pngDecoder->hei > 0 && pngDecoder->rgba != NULL )
 		{
-			printf("Success: %d , %d\n",pngDecoder->wid,pngDecoder->hei);
+			//printf("Success: %d , %d\n",pngDecoder->wid,pngDecoder->hei);
 			this->width = pngDecoder->wid;
 			this->height = pngDecoder->hei;
 			
@@ -35,7 +37,7 @@ _imagefile::_imagefile( string fn ) :
 	}
 	else if( this->getMimeType() == _mime::image_jpeg )
 	{
-		printf("JPG-File!\n");
+		//printf("JPG-File!\n");
 		_u32 size = this->getSize();
 		_u8* data = new _u8[size];
 		this->read( data , size );

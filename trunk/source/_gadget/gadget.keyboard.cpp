@@ -5,6 +5,7 @@
 #include "func.memory.h"
 
 #include <nds/arm9/background.h>
+#include <nds/arm9/video.h>
 
 #include "_resource/BMP_Grip.h"
 
@@ -89,8 +90,13 @@ void _keyboard::setState( int value )
 			this->gHScreen->scrollY( value );
 		
 		// Topper Screen
-		this->topScreen->scaleY( float(value*value)/(sEnd*sEnd) );
+		//this->topScreen->scaleY( float(value)/(sEnd) );
 		this->topScreen->scrollY( value * 1.77f - SCREEN_HEIGHT );
+		
+		REG_BLDCNT_SUB = ( 1 << 3 ) // 3rd Screen_Layer
+		| ( 3 << 6 ) ; // Det Blend Mode to fade to black ( 2 << 6 ) would be fading to white
+		REG_BLDY_SUB = 31 - float(value*value)/(sEnd*sEnd-1)*31;
+		
 		
 		bgUpdate();
 		
@@ -222,8 +228,8 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -245,7 +251,7 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
 	
-	if( event.getArgs().getKeyCode() == DSWindows::KEY_SHIFT )
+	if( event.getKeyCode() == DSWindows::KEY_SHIFT )
 	{
 		if( event.getType() != "keyClick" || that->shift == 2 )
 			return handled;
@@ -278,7 +284,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 	if( event.getType() == "dragStart" )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
-		if( event.getArgs().getPosY() > 11 )
+		if( event.getPosY() > 11 )
 		{
 			that->dragMe = false;			
 			// Check children
@@ -287,7 +293,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		
 		that->dragMe = true;
 		
-		deltaY = event.getArgs().getPosY();
+		deltaY = event.getPosY();
 		
 		// If y is on the windowbar, drag Me!
 		return handled;
@@ -304,13 +310,13 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		**/
 		
 		// Has the Gadget to move?
-		if( event.getArgs().getDeltaY() == 0 )
+		if( event.getDeltaY() == 0 )
 			return handled;
 		
 		that->animKeyb.terminate();
 		that->animMagnif.terminate();
-		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
-		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getArgs().getPosY( true ) + deltaY ) , sEnd , sStart ) );
+		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getEffectivePosY() + deltaY ) , sEnd , sStart ) );
+		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getEffectivePosY() + deltaY ) , sEnd , sStart ) );
 		
 		// Return
 		return handled;
@@ -339,7 +345,6 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	_gadgetScreen( bgId , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
-	, font( new FONT_CourierNew10() )
 	, shift( false )
 	, mode( false ) // Means "Hidden"
 	, curState( 1 )
@@ -353,11 +358,13 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Reset Keyboard Position
 	this->setState( sStart );
 	
+	_font* fnt = _system_->getFont( "CourierNew10" );
+	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
 		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system_->_runtimeAttributes_->keyboardText[0][i] );
-		this->buttons[i]->setFont( this->font );
+		this->buttons[i]->setFont( fnt );
 		this->addChild( this->buttons[i] );
 	}
 	
@@ -386,9 +393,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 }
 
 _keyboard::~_keyboard()
-{
-	delete this->font;
-	
+{	
 	for( _u8 i = 0 ; i < 46 ; i++ )
 		delete this->buttons[i];
 }

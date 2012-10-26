@@ -18,8 +18,8 @@ _gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
 	_coord myW = bP.getWidth();
 	_coord myH = bP.getHeight();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	

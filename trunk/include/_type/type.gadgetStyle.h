@@ -9,7 +9,7 @@
 **/
 struct _gadgetStyle{
 	void* own;
-	_u32 data;
+	_int data;
 	_u8 resizable : 2;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction **/
 	bool destroyable : 1;	/** Is destroyable? **/
 	bool focused : 1;
@@ -24,7 +24,7 @@ struct _gadgetStyle{
 	bool canReceiveFocus : 1; /** Can receive focus */
 	
 	static _gadgetStyle owner( void* owner );
-	static _gadgetStyle storeData( _u32 data );
+	static _gadgetStyle storeData( _int data );
 	
 } __attribute__(( packed )) ;
 

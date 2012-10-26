@@ -34,6 +34,7 @@ int _lua_textbox::setFont( lua_State* L ){
 		((_textbox*)this->gadget)->setFont( f );
 	return 0;*/
 	//! TODO: implement
+	return 0;
 }
 
 int _lua_textbox::getFont( lua_State* L ){

@@ -87,7 +87,7 @@ class _direntry{
 		_direntry( string path );
 		
 		//! Dtor...
-		~_direntry(){
+		virtual ~_direntry(){
 			this->close();
 		}
 		

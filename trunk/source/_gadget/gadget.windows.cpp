@@ -14,7 +14,7 @@
 	//map<_gadget*,_gadgetEvent*);
 	/*deque<_gadgetEvent> tempEvents = this->events;
 	
-	sort( tempEvents.begin() , tempEvents.end() , [](_gadgetEvent e1 , _gadgetEvent e2)->bool{ return ( e1.getArgs().getDestination() < e2.getArgs().getDestination() ); } );
+	sort( tempEvents.begin() , tempEvents.end() , [](_gadgetEvent e1 , _gadgetEvent e2)->bool{ return ( e1.getDestination() < e2.getDestination() ); } );
 	
 	_gadget* dest = 0;
 	_gadget* tempDest = 0;
@@ -26,14 +26,14 @@
 	
 	for( auto it = tempEvents.begin() ; it != tempEvents.end() ; it++ )
 	{
-		tempDest = (_gadget*) it->getArgs().getDestination();
+		tempDest = (_gadget*) it->getDestination();
 		
-		damaged.push_back( it->getArgs().getRefreshRects() );
-		damaged.push_back( it->getArgs().getDamagedRects() );
+		damaged.push_back( it->getRefreshRects() );
+		damaged.push_back( it->getDamagedRects() );
 		
 		if( dest != 0 && dest != tempDest ){
-			it->getArgs().setDamagedRects( damaged );
-			it->getArgs().setRefreshRects( refresh );
+			it->setDamagedRects( damaged );
+			it->setRefreshRects( refresh );
 			this->events.push_back( *it );
 		}
 		dest = tempDest;
@@ -49,8 +49,8 @@ _gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 		

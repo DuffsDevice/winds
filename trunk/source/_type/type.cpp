@@ -1,7 +1,7 @@
 #include "_type/type.h"
 
-extern int SCREEN_WIDTH = 256;
-extern int SCREEN_HEIGHT = 192;
+_length SCREEN_WIDTH = 256;
+_length SCREEN_HEIGHT = 192;
 
 map<_align,string> align2string = {
 	{ _align::left , "left" },

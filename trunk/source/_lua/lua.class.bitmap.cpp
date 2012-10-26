@@ -118,6 +118,7 @@ int _lua_bitmap::drawChar( lua_State* L ){
 		luaL_checkint( L , 5 ) 
 	) ); return 1;*/
 	//! TODO: implement
+	return 0;
 }
 	
 //! drawString
@@ -133,6 +134,7 @@ int _lua_bitmap::drawString( lua_State* L ){
 		luaL_checkint( L , 5 ) 
 	); return 0; */
 	//! TODO: implement
+	return 0;
 }
 
 //! copy

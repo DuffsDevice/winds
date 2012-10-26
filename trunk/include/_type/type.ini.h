@@ -32,6 +32,8 @@ class _ini
 		
 		string&	getString();
 		
+		virtual ~_ini(){}
+		
 };
 
 

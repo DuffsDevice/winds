@@ -1,9 +1,8 @@
 #ifndef _WIN_T_RECT_
 #define _WIN_T_RECT_
 
-#include "type.h"
+#include "_type/type.h"
 #include <cmath>
-#include <list>
 #include <algorithm>
 
 class _rect{
@@ -17,7 +16,7 @@ class _rect{
 			
 			private:
 				
-				list<_rect> t_rects;
+				_list<_rect> t_rects;
 				
 			public:
 				
@@ -26,8 +25,8 @@ class _rect{
 				_area(){}
 					
 				//! Push-back Aliases
-				void add( const _rect rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
-				void add( _area& cR ){ copy( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
+				void add( const _rect& rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
+				void add( const _area& cR ){ copy( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
 				
 				void cloneTo( _area& ar ){
 					ar.t_rects = t_rects;
@@ -37,8 +36,8 @@ class _rect{
 				void clearRects(){ t_rects.clear(); }
 				
 				//! Iteration
-				list<_rect>::iterator begin(){ return t_rects.begin(); }
-				list<_rect>::iterator end(){ return t_rects.end(); }
+				_list<_rect>::iterator begin(){ return t_rects.begin(); }
+				_list<_rect>::iterator end(){ return t_rects.end(); }
 				
 				//! dump!
 				void dump() const {	for( const _rect &rc : t_rects ) rc.dump(); }
@@ -46,9 +45,9 @@ class _rect{
 				//! Cut the supplied Rectangle off
 				_area& reduce( const _rect dim )
 				{
-					startTimer( reinterpret_cast<void*>(&_rect::reduce) );
+					//startTimer( reinterpret_cast<void*>(&_rect::reduce) );
 					// Temp Rects
-					list<_rect> tR = t_rects;;
+					_list<_rect> tR = t_rects;;
 					
 					// Clear
 					t_rects.clear();
@@ -57,7 +56,7 @@ class _rect{
 						for( const _rect& t : rc.reduce( dim ) )
 							t_rects.push_back( t );
 					
-					stopTimer( reinterpret_cast<void*>(&_rect::reduce) );
+					//stopTimer( reinterpret_cast<void*>(&_rect::reduce) );
 					
 					return *this;
 				}
@@ -65,10 +64,10 @@ class _rect{
 				//! Relativate all t_rects
 				_area& toRelative( const _coord absX , const _coord absY )
 				{
-					startTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+					//startTimer( reinterpret_cast<void*>(&_rect::toRelative) );
 					for( _rect &rc : t_rects )
 						rc.toRelative( absX , absY );
-					stopTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+					//stopTimer( reinterpret_cast<void*>(&_rect::toRelative) );
 					return *this;
 				}
 				
@@ -76,7 +75,7 @@ class _rect{
 				_area& clipToIntersect( const _rect limits )
 				{
 					// Temp Rects
-					list<_rect> tR = t_rects;
+					_list<_rect> tR = t_rects;
 					
 					t_rects.clear();
 					
@@ -146,13 +145,13 @@ class _rect{
 			this->x -= absX; this->y -= absY; return *this;
 		}
 		
-		//! Returns an _area (=list of rectangle-pieces) rooting from an Rectangle AND'ed with this one
+		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one
 		_rect& clipToIntersect( const _rect rect )
 		{
 			return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 		}
 		
-		//! Returns an _area (=list of rectangle-pieces) rooting from an Rectangle OR'd with this one
+		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle OR'd with this one
 		_area combine( const _rect other ) const ;
 		
 		//! Returns a Rectangle containing both this rect and the passed one

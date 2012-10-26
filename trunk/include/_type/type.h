@@ -4,10 +4,16 @@
 
 #include <string>
 #include <map>
+//#include "_type/type.list.h"
+#include <list>
 
 using namespace std;
 
 typedef unsigned char _char;
+template<typename T>
+	using _list = std::list<T>;
+template<typename T,typename T2>
+	using _map = std::map<T,T2>;
 typedef uint8_t _u8;
 typedef int8_t _s8;
 typedef uint16_t _u16;
@@ -26,8 +32,8 @@ typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 typedef float _float;
 
-extern int SCREEN_WIDTH;
-extern int SCREEN_HEIGHT;
+extern _length SCREEN_WIDTH;
+extern _length SCREEN_HEIGHT;
 
 #define u16 _u16
 #include <nds/touch.h>

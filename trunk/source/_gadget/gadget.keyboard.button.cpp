@@ -14,10 +14,10 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		_gadgetEvent ev = _gadgetEvent( "keyClick" );
 		
 		// Set Key-code
-		ev.getArgs().setKeyCode( that->key );
+		ev.setKeyCode( that->key );
 		
 		if( that->getScreen() != nullptr )
-			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+			ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
 		
 		if( that->parent != nullptr )
 			that->parent->handleEvent( ev );
@@ -27,10 +27,10 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		_gadgetEvent ev = _gadgetEvent( "keyDown" );
 		
 		// Set Key-code
-		ev.getArgs().setKeyCode( that->key );
+		ev.setKeyCode( that->key );
 		
 		if( that->getScreen() )
-			ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+			ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
 		
 		if( that->parent )
 			that->parent->handleEvent( ev );
@@ -40,7 +40,7 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		if( _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) )
 		{
 			_gadgetEvent e = _gadgetEvent( "repeater" );
-			e.getArgs().setHeldTime( 0 );
+			e.setHeldTime( 0 );
 			that->triggerEvent( _gadgetEvent( "repeater" ) );
 		}
 		
@@ -51,18 +51,18 @@ _gadgetEventReturnType _keyboardButton::mouseHandler( _gadgetEvent event )
 		if( that->isPressed() ){
 			// Trigger Event
 			_gadgetEvent e = _gadgetEvent( "repeater" );
-			e.getArgs().setHeldTime( event.getArgs().getHeldTime() + 1 );
+			e.setHeldTime( event.getHeldTime() + 1 );
 			that->triggerEvent( e );
 		}
-		if( _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) && event.getArgs().getHeldTime() > _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionDelay" ) && event.getArgs().getHeldTime() % _system::_runtimeAttributes_->user->getIntAttr( "keyRepetitionSpeed" ) == 0 ) 
+		if( _system::_runtimeAttributes_->user->kRD && event.getHeldTime() > _system::_runtimeAttributes_->user->kRD && event.getHeldTime() % _system::_runtimeAttributes_->user->kRS == 0 ) 
 		{
 			_gadgetEvent ev = _gadgetEvent( _gadgetEvent( "keyDown" ) );
 			
 			// Set Key-code
-			ev.getArgs().setKeyCode( that->key );
+			ev.setKeyCode( that->key );
 			
 			if( that->getScreen() != nullptr )
-				ev.getArgs().setCurrentKeyCodes( _system_->getCurrentKeys() );
+				ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
 			
 			if( that->parent != nullptr )
 				that->parent->handleEvent( ev );
@@ -120,8 +120,8 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -131,7 +131,7 @@ _gadgetEventReturnType _keyboardStartButton::refreshHandler( _gadgetEvent event 
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->_runtimeAttributes_->defaultFont , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
+	bP.drawString( 12 , 2 , _system_->getFont() , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
 	
 	if( event.getType() == "dialogClose" )
 		that->bubbleRefresh();

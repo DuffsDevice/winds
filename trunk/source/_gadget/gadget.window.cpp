@@ -8,8 +8,8 @@ _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -85,8 +85,8 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -119,7 +119,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 	if( event.getType() == "dragStart" )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the subject of Dragment :-)
-		if( event.getArgs().getPosY() > 9 ){
+		if( event.getPosY() > 9 ){
 			that->dragMe = false;
 			return use_default;
 		}
@@ -141,11 +141,11 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 		**/
 		
 		// Has the Gadget to move?
-		if( event.getArgs().getDeltaX() == 0 && event.getArgs().getDeltaY() == 0 )
+		if( event.getDeltaX() == 0 && event.getDeltaY() == 0 )
 			return handled;
 		
 		// Move it relatively
-		that->moveRelative( event.getArgs().getDeltaX() , event.getArgs().getDeltaY() );
+		that->moveRelative( event.getDeltaX() , event.getDeltaY() );
 		
 		// Return
 		return handled;

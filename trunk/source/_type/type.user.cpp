@@ -9,21 +9,21 @@
 #include "func.memory.h"
 #include "_type/type.user.h"
 
-_user::_user( string username ) :
-	_registry( "%USERS%/" + username + "/user.ini"  )
-	, userName( username )
-	, userLogo( nullptr )
-	, userImage( nullptr )
+_user::_user( string folderName ) :
+	_registry( "%USERS%/" + folderName + "/user.ini"  )
+	, folderName( folderName )
+	, userLogo( new _bitmap( 14 , 14 ) )
+	, userImage( new _bitmap( 12 , 12 ) )
 { 
 	if( _registry::creation )
 	{
 		this->ini->getMap() = 
 			{ { "_global_" , 
 				{
-					{ "userName" , this->userName } ,
+					{ "userName" , this->folderName } ,
 					{ "desktopImage" , "" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "" } ,
+					{ "userLogo" , "flower.png" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
@@ -47,11 +47,9 @@ _user::_user( string username ) :
 	this->mDA = this->getIntAttr( "maxDoubleClickArea" );
 	this->kRD = this->getIntAttr( "keyRepetitionDelay" );
 	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
-	
-	this->fOH = this->getIntAttr( "fileObjectHeight" );	
+	this->fOH = this->getIntAttr( "fileObjectHeight" );
 	this->sOH = this->getIntAttr( "selectObjectHeight" );	
 	
-	this->userLogo = new _bitmap( 14 , 14 );
 	this->userLogo->reset( RGB( 22 , 22 , 22 ) );
 	this->userLogo->drawCircle( 5 , 5 , 3 , COLOR_RED );
 	this->userLogo->drawPixel( 5 , 5 , COLOR_RED );
@@ -59,33 +57,35 @@ _user::_user( string username ) :
 	this->userLogo->drawPixel( 4 , 6 , COLOR_RED );
 	
 	// Set Currently Working directory
-	string cwd = _direntry::getWorkingDirectory();
-	_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
+	//string cwd = _direntry::getWorkingDirectory();
 	
-	_imagefile* uImage = new _imagefile( _registry::readIndex( "_global_" , "userLogo" ) );
+	//! todo: fix cwd => not Working!
+	//_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
 	
-	_direntry::setWorkingDirectory( cwd );
-	
-	if( uImage->getBitmap() )
-	{
-		_bitmapResizer* bmp = new _bitmapResizer( 13 , 13 , uImage );
+	// Temp
+		_imagefile imagefile = _imagefile( _registry::readIndex( "_global_" , "userLogo" ) );
 		
-		// Create a Logo
-		this->userImage = bmp;
-		
-		// ... and the Raw Image
-		this->userLogo->copy( 0 , 0 , this->userImage );
-	}
+		if( imagefile.getBitmap() )
+		{
+			_bitmapResizer bmp = _bitmapResizer( 12 , 12 , &imagefile );
+			
+			this->userImage->reset( COLOR_WHITE );
+			
+			// Create the Raw Image
+			this->userImage->copyTransparent( 0 , 0 , &bmp );
+			
+			// ... and a Logo
+			this->userLogo->copy( 1 , 1 , userImage );
+		}
+	// Temp
 	
-	delete uImage;
+	//_direntry::setWorkingDirectory( cwd );
 	
 	this->userLogo->drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
 	this->userLogo->drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
 	this->userLogo->drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
 	this->userLogo->drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
 	this->userLogo->drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
-	
-	_direntry::setWorkingDirectory( cwd );
 }
 
 _user::~_user()
@@ -120,16 +120,14 @@ void _user::setPassword( string pw )
 
 void _user::remove()
 {
-	_direntry* d = new _direntry( "%USERS%/" + this->userName );
+	_direntry* d = new _direntry( "%USERS%/" + this->folderName );
 	d->unlink();
 	delete d;
 }
 
 void _user::setUsername( string uN )
 {
-	_direntry* d = new _direntry( "%USERS%/" + this->userName );
-	d->rename( uN );
-	delete d;
+	_registry::writeIndex( "_global_" , "userName" , uN );
 }
 
 _s32 _user::getIntAttr( string idx )
@@ -139,7 +137,7 @@ _s32 _user::getIntAttr( string idx )
 	// Allow formats of RGB( 14 , 6 , 9 ) and rgba( 1 , 20 , 25 , 0 )
 	if( attr.substr( 0 , 3 ) == "RGB" || attr.substr( 0 , 3 ) == "rgb" )
 	{
-		int i = 2 , f = 0;
+		_u8 i = 2 , f = 0;
 		bool hasAlpha = false;
 		_u8 r , b , g , a = 1;
 		

@@ -8,7 +8,7 @@ class _user : public _registry
 {
 	private:
 		
-		string userName;
+		string folderName;
 	
 	public:
 		

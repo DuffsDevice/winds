@@ -9,8 +9,8 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.getArgs().hasClippingRects() )
-		bP.addClippingRects( event.getArgs().getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.resetClippingRects();
 	
@@ -73,7 +73,7 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 	
 	string val = that->getStrValue();
 	
-	switch( event.getArgs().getKeyCode() ){
+	switch( event.getKeyCode() ){
 		case DSWindows::KEY_BACKSPACE:
 		case DSWindows::KEY_B:
 			if( !(val.length()) || that->cursor < 2 ){
@@ -92,9 +92,9 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 			val.length() - that->cursor + 1 > 0 && that->cursor++;
 			break;
 		default:
-			if( DSWindows::isHardwareKey( event.getArgs().getKeyCode() ) )
+			if( DSWindows::isHardwareKey( event.getKeyCode() ) )
 				break;
-			val.insert( that->cursor - 1 , 1 , event.getArgs().getKeyCode() );
+			val.insert( that->cursor - 1 , 1 , event.getKeyCode() );
 			that->cursor++;
 			break;
 	}
@@ -107,7 +107,8 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 _gadgetEventReturnType _textbox::focusHandler( _gadgetEvent event )
 {
 	// Open the Keyboard
-	_system_->_keyboard_->setDestination( event.getGadget() );
+	if( _system_->_keyboard_ )
+		_system_->_keyboard_->setDestination( event.getGadget() );
 	
 	return use_default;
 }
@@ -116,7 +117,8 @@ _gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
-	_system_->_keyboard_->setDestination( nullptr );
+	if( _system_->_keyboard_ )
+		_system_->_keyboard_->setDestination( nullptr );
 	
 	// Remove Cursor!
 	that->cursor = 0;
@@ -136,13 +138,13 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 	
 	else if( event.getType() == "dragging" )
 	{
-		if( !that->getAbsoluteDimensions().contains( event.getArgs().getPosX() , event.getArgs().getPosY() ) )
+		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 			that->pressed = false;
 		else
 			that->pressed = true;
 	}
 	
-	_coord position = event.getArgs().getPosX();
+	_coord position = event.getPosX();
 	
 	if( event.getType() == "dragging" )
 		position -= that->getAbsoluteX();

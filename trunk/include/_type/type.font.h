@@ -23,6 +23,8 @@ class _font{
 		//! Constructor with name
 		_font( string newName );
 		
+		virtual ~_font(){}
+		
 		//! Get the CharacterWidth related to a specific character
 		virtual _u16 getCharacterWidth( _char character , _u8 fontSize = 0 ) const = 0;
 		

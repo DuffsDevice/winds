@@ -19,7 +19,7 @@ class _registry : protected _direntry
 		// Flush the content to disk
 		void flush();
 		
-		~_registry();
+		virtual ~_registry();
 		
 		string readIndex( string section , string name );
 		

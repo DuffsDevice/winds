@@ -19,9 +19,6 @@ class _keyboard : public _gadgetScreen {
 		int			magnifY;
 		float		magnifFactor;
 		
-		//! Font of the Buttons
-		_font*		font;
-		
 		//! Internal Array for Keyboard-Layout
 		static _rect buttonDimensions[];
 		

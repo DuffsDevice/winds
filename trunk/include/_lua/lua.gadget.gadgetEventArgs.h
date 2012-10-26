@@ -92,98 +92,6 @@ class _lua_gadget{
 		//! Lua-Dtor
 		int _delete( lua_State* L);
 		
-		/**
-		 * Lua-GaggetEventargs
-		**/
-		class _lua_gadgetEventArgs : public _gadgetEventArgs {	
-			
-			public:
-				
-				//! Ctor...
-				_lua_gadgetEventArgs( _gadgetEventArgs gea );
-				
-				//! Lua-Ctor...
-				_lua_gadgetEventArgs( lua_State* L );
-				
-				//! reset
-				int reset(lua_State* L);
-				
-				//! getDestination
-				int getDestination(lua_State* L);
-				
-				//! getSource
-				int getSource(lua_State* L);
-				
-				//! setDestination
-				int setDestination(lua_State* L);
-				
-				//! setSource
-				int setSource(lua_State* L);
-				
-				//! Set X
-				int setPosX(lua_State* L);
-				
-				//! Set Y
-				int setPosY(lua_State* L);
-				
-				//! Get X
-				int getPosX(lua_State* L);
-				
-				//! Get Y
-				int getPosY(lua_State* L);
-				
-				//! Set X
-				int setDeltaX(lua_State* L);
-				
-				//! Set Y
-				int setDeltaY(lua_State* L);
-				
-				//! Get X
-				int getDeltaX(lua_State* L);
-				
-				//! Get Y
-				int getDeltaY(lua_State* L);
-				
-				//! Get Key-Code
-				int getKeyCode(lua_State* L);
-				
-				//! Set Key-Code
-				int setKeyCode(lua_State* L);
-				
-				//! Get Held Time of the key that triggered the Event
-				int getHeldTime(lua_State* L);
-				
-				//! Set Held Time of the key that triggered the Event
-				int setHeldTime(lua_State* L);
-				
-				//! Get KeyCode State of that Moment the Event was triggered
-				int getCurrentKeyCodes(lua_State* L);
-				
-				//! Set KeyCode State of that Moment the Event was triggered
-				int setCurrentKeyCodes(lua_State* L);
-				
-				//! Set Damaged Rects(The Rects that have to be repainted by the parent)
-				int setDamagedRects(lua_State* L);
-				
-				//! Get Damaged Rects(The Rects that have to be repainted by the parent)
-				int getDamagedRects(lua_State* L);
-				
-				//! Check if event is a bubble-Refresh-One
-				int isBubblePrevented(lua_State* L);
-				
-				//! Check if event is a bubble-Refresh-One
-				int preventBubble(lua_State* L);
-				
-				//! Check if event has Clipping Rects
-				int hasClippingRects(lua_State* L);
-				
-				
-				//! Lunar !//
-				static const char className[];
-				static Lunar<_lua_gadgetEventArgs>::RegType methods[];
-			
-		};
-		
 		class _lua_gadgetEvent : public _gadgetEvent {
 			
 			public:
@@ -200,15 +108,35 @@ class _lua_gadget{
 				//! getType
 				int getType( lua_State* L );
 				
-				//! getArgs
-				int getArgs( lua_State* L );
-				
-				//! setArgs
-				int setArgs( lua_State* L );
-				
-				
 				//! getGadget
 				int getGadget( lua_State* L );
+				
+				
+				
+				int resetParams(lua_State* L);//! resetParams
+				int getDestination(lua_State* L);//! getDestination
+				int getSource(lua_State* L);//! getSource
+				int setDestination(lua_State* L);//! setDestination
+				int setSource(lua_State* L);//! setSource
+				int setPosX(lua_State* L);//! Set X
+				int setPosY(lua_State* L);//! Set Y
+				int getPosX(lua_State* L);//! Get X
+				int getPosY(lua_State* L);//! Get Y
+				int setDeltaX(lua_State* L);//! Set Delta X
+				int setDeltaY(lua_State* L);//! Set Delta Y
+				int getDeltaX(lua_State* L);//! Get Delta X
+				int getDeltaY(lua_State* L);//! Get Delta Y
+				int getKeyCode(lua_State* L);//! Get Key-Code
+				int setKeyCode(lua_State* L);//! Set Key-Code
+				int getHeldTime(lua_State* L);//! Get Held Time of the key that triggered the Event
+				int setHeldTime(lua_State* L);//! Set Held Time of the key that triggered the Event
+				int getCurrentKeyCodes(lua_State* L);//! Get KeyCode State of that Moment the Event was triggered
+				int setCurrentKeyCodes(lua_State* L);//! Set KeyCode State of that Moment the Event was triggered
+				int setDamagedRects(lua_State* L);//! Set Damaged Rects(The Rects that have to be repainted by the parent)
+				int getDamagedRects(lua_State* L);//! Get Damaged Rects(The Rects that have to be repainted by the parent)
+				int isBubblePrevented(lua_State* L);//! Check if event is a bubble-Refresh-One
+				int preventBubble(lua_State* L);//! Check if event is a bubble-Refresh-One
+				int hasClippingRects(lua_State* L);//! Check if event has Clipping Rects
 				
 				
 				//! Lunar !//
@@ -347,6 +275,5 @@ class _lua_gadget{
 };
 
 typedef _lua_gadget::_lua_gadgetEvent _lua_gadgetEvent;
-typedef _lua_gadget::_lua_gadgetEventArgs _lua_gadgetEventArgs;
 
 #endif
