@@ -51,7 +51,7 @@ _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
@@ -124,8 +124,8 @@ _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 	
 	if( event.getType() == "dragStart" )
 		return handled;
-	else if( event.getType() == "dragging" ){
-		
+	else
+	{
 		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 		{
 			// I'm not pressed anymore!
@@ -181,6 +181,7 @@ void _button::init( string text )
 	this->registerEventHandler( "mouseDown" , &_button::mouseHandler );
 	this->registerEventHandler( "mouseUp" , &_button::mouseHandler );
 	this->registerEventHandler( "dragStart" , &_button::dragHandler );
+	this->registerEventHandler( "dragStop" , &_button::dragHandler );
 	this->registerEventHandler( "dragging" , &_button::dragHandler );
 	this->registerEventHandler( "resize" , &_button::resizeHandler );
 	

@@ -64,7 +64,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
 			
 			// Modify Event
-			event.setPosX( newLastTouch.x ).setPosY( newLastTouch.y ).setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
+			event.setPosX( newNewTouch.x ).setPosY( newNewTouch.y ).setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
 			
 			this->handleEvent( event.setType( "dragging" ) );
 			
@@ -75,12 +75,13 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		{
 			// Compute the dragged Distance
 			// -> Pythagoras!
-			u32 xd = newTouch.x - startTouch.x;
-			u32 yd = newTouch.y - startTouch.y;
-			u32 dragDistance = xd * xd + yd * yd;
+			_u32 xd = newTouch.x - startTouch.x;
+			_u32 yd = newTouch.y - startTouch.y;
+			_u32 dragDistance = xd * xd + yd * yd;
+			_u8 trigger = user->mDD;
 			
 			// Check if Pen has moved the distance already
-			if( dragDistance > user->mDD * user->mDD )
+			if( dragDistance > trigger * trigger )
 			{
 				// Modify Event
 				event.setEffectivePosX( startTouch.x ).setEffectivePosY( startTouch.y ).setPosX( newStartTouch.x ).setPosY( newStartTouch.y );

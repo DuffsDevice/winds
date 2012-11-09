@@ -1,15 +1,16 @@
 #include "_type/type.ini.h"
 #include "_type/type.system.h"
 
-bool _ini::read()
+_s16 _ini::read()
 {
     /* Uses a fair bit of stack (use heap instead if you need to) */
     string line, name , value , section = "_global_";
+	_u16 lineNo = 0;
 
     /* Scan through file line by line */
     while ( getline( this->input , line ) )
 	{
-        if( line[0] == ';' || line[0] == '#') {
+        if( !line.size() || line[0] == '\r' || line[0] == ';' || line[0] == '#') {
             /* Per Python ConfigParser, allow '#' comments at start of line */
         }
         else if ( line[0] == '[' )
@@ -20,16 +21,18 @@ bool _ini::read()
             if ( end != string::npos )
 				section = line.substr( 1 , end - 1 );
 			else
-				return false;
+				return lineNo;
 			
-			this->array[section][""] = "";
+			this->array[section];
         }
         else
 		{
 			/* Must be a name:= value pair! */
 			_length delim = line.find_first_of(":=");
+			
 			if( delim == string::npos )
-				return false;
+				return lineNo;
+			
 			name = line.substr( 0 , delim );
 			value = line.substr( delim + 1 , line.find_first_of(";#") );
 			
@@ -40,7 +43,7 @@ bool _ini::read()
         }
     }
 	
-	return true;
+	return -1;
 }
 
 void _ini::write()

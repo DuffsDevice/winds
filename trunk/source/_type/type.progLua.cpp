@@ -107,6 +107,20 @@ _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadge
 	return string2eventReturnType[ luaL_expectstring( L , -1 , "_gadget::eventHandler" ) ];
 }
 
+//! This Function will be called from _gadget
+void lua_callFunc( lua_State* L , int handler )
+{
+	//! No state registered?
+	if( !L )
+		return;
+	
+	//! Put the Lua-Handler-Function on top of the Stack
+	lua_rawgeti( L , LUA_REGISTRYINDEX, handler );
+	
+	//! Call it with a param
+	lua_pcall( L , 0 , 0 , 0 ); // 1 parameter and 1 return value
+}
+
 
 /**
  * Programm Stuff

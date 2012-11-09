@@ -5,16 +5,10 @@
 _gadgetEventReturnType _selectItem::mouseHandler( _gadgetEvent event )
 {	
 	_selectItem* that = event.getGadget<_selectItem>();
+	_select* parent = (_select*)that->parent;
 	
-	if( event.getType() == "mouseDown" )
-	{
-		that->active = true;
-		((_select*)that->parent)->setSelected( that->intVal );
-	}
-	else if( event.getType() == "unselect" )
-		that->active = false;
-	
-	that->bubbleRefresh( true );
+	parent->triggerEvent( _gadgetEvent( "listener" ) );
+	parent->setSelected( that->intVal );
 	
 	return handled;
 }
@@ -29,10 +23,7 @@ _gadgetEventReturnType _selectItem::refreshHandler( _gadgetEvent event ){
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
-	
-	//_length myH = bP.getHeight();
-	//_length myW = bP.getWidth();
+		bP.normalizeClippingRects();
 	
 	if( that->active )
 	{
@@ -57,7 +48,6 @@ _selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _
 	// Register Event - Handlers
 	this->registerEventHandler( "refresh" , &_selectItem::refreshHandler );
 	this->registerEventHandler( "mouseDown" , &_selectItem::mouseHandler );
-	this->registerEventHandler( "unselect" , &_selectItem::mouseHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

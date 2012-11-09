@@ -38,6 +38,6 @@ class _select : public _gadget, public _interface_input {
 		void	setList( _contextMenuEntryList lst );
 		void	setList( _contextMenuEntryList& lst );
 		
-		_select( _length w , _length h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { -1 , "" } } /* Empty List */ ) , _gadgetStyle style = _defaultStyle_ );
+		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { -1 , "" } } /* Empty List */ ) , _gadgetStyle style = _defaultStyle_ );
 };
 #endif

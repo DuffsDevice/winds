@@ -37,9 +37,9 @@ class _interface_input
 		
 		virtual string getTitle(){ return title; }
 		
-		_interface_input( string val ){ this->setTitle(val); }
+		_interface_input( string val ){ intValue = -1; title = val; align = _align::left; vAlign = _valign::top; }
 		
-		_interface_input(){ }
+		_interface_input(){ intValue = -1; align = _align::left; vAlign = _valign::top; }
 };
 
 #endif

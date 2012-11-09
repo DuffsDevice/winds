@@ -22,7 +22,8 @@ class _ini
 		
 	public:
 		
-		bool read();
+		// Returns either -1 for success or the line number of error
+		_s16 read();
 		
 		void write();
 		

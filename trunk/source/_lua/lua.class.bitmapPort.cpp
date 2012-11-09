@@ -32,8 +32,8 @@ int _lua_bitmapPort::addClippingRects( lua_State* L ){
 	return 0;
 }
 
-int _lua_bitmapPort::resetClippingRects( lua_State* L ){
-	_bitmapPort::resetClippingRects();
+int _lua_bitmapPort::normalizeClippingRects( lua_State* L ){
+	_bitmapPort::normalizeClippingRects();
 	return 0;
 }
 
@@ -137,6 +137,7 @@ int _lua_bitmapPort::drawString( lua_State* L )
 		luaL_checkint( L , 5 ) 
 	); return 0; */
 	//! TODO: implement
+	return 0;
 }
 
 //! copy
@@ -215,7 +216,7 @@ int _lua_bitmapPort::copyHorizontalStretch( lua_State* L )
 const char _lua_bitmapPort::className[] = "_bitmapPort";
 Lunar<_lua_bitmapPort>::RegType _lua_bitmapPort::methods[] = {
 	LUNAR_DECLARE_METHOD(_lua_bitmapPort, addClippingRects),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, resetClippingRects),
+	LUNAR_DECLARE_METHOD(_lua_bitmapPort, normalizeClippingRects),
 	LUNAR_DECLARE_METHOD(_lua_bitmapPort, deleteClippingRects),
 	LUNAR_DECLARE_METHOD(_lua_bitmapPort, get),
 	LUNAR_DECLARE_METHOD(_lua_bitmapPort, getWidth),

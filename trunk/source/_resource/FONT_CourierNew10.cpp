@@ -124,7 +124,7 @@ FONT_CourierNew10::FONT_CourierNew10( unsigned char fixedWidth )
 	33,
 	126,
 	10, // Height
-	7, // Main-Height
+	6, // Main-Height
 	FONT_CourierNew10_data,
 	FONT_CourierNew10_width,
 	FONT_CourierNew10_offset,

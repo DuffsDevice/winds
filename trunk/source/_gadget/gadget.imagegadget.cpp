@@ -10,7 +10,7 @@ _gadgetEventReturnType _imagegadget::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	if( that->img )
 		bP.copyTransparent( 0 , 0 , that->img );

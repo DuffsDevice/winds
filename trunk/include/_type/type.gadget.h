@@ -40,8 +40,23 @@ class _gadget{
 		// Type of the Gadget
 		_gadgetType 	type;
 		
-		static bool 	removeEnhancedCallback( _gadget* g );
-		static bool 	removeCallback( _gadget* g );
+		
+		// Internal
+		static bool 	removeEnhancedCallback( _gadget* g )
+		{
+			if( g->style.enhanced )
+				return false;
+			
+			return _gadget::removeCallback( g );
+		}
+		static bool 	removeCallback( _gadget* g )
+		{
+			if( g->style.focused && g->parent )
+				g->parent->blurChild();
+			
+			g->parent = nullptr;
+			return true;
+		}
 	
 	public:
 	
@@ -257,7 +272,7 @@ class _gadget{
 		 * Remove a specific children
 		**/
 		virtual void removeChild( _gadget* child );
-		virtual void removeChildren( bool preserveEnhanced = false );
+		virtual void removeChildren( bool preserveEnhanced = false , bool remove = false );
 		
 		/**
 		 * Add a child-gadget to this one

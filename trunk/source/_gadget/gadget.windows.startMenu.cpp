@@ -14,7 +14,7 @@
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	_length myW = that->dimensions.width;
 	_length myH = that->dimensions.height;

@@ -31,8 +31,8 @@ class _lua_bitmapPort : public _bitmapPort{
 		//! addClippingRects
 		int addClippingRects( lua_State* L );
 		
-		//! resetClippingRects
-		int resetClippingRects( lua_State* L );
+		//! normalizeClippingRects
+		int normalizeClippingRects( lua_State* L );
 		
 		//! deleteClippingRects
 		int deleteClippingRects( lua_State* L );
