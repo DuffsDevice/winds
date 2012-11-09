@@ -52,7 +52,7 @@ _gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 		
 	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 9 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
 	

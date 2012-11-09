@@ -11,7 +11,7 @@ _gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	_pixel color[] = { 
 		RGB255( 114 , 154 , 250 ) , RGB255( 5 , 88 , 226 ) , RGB255( 75 , 126 , 245 ) , // Blue Values
@@ -88,7 +88,7 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.fill( RGB( 30 , 30 , 29 ) );
 	

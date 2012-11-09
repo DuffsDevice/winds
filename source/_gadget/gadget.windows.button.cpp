@@ -30,7 +30,7 @@ _gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	if( that->isPressed() || that->startMenu->isOpened() )
 		bP.copy( 0 , 0 , that->startButtonPressed );

@@ -320,8 +320,8 @@ void _gadget::moveTo( _coord x , _coord y )
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = x;
 	this->dimensions.y = y;
-	if( this->parent )
-		this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
+	//if( this->parent )
+	//	this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
 	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
@@ -342,26 +342,7 @@ void _gadget::setParent( _gadget* val )
 		this->parent->addChild( this );
 }
 
-// Internal
-bool _gadget::removeEnhancedCallback( _gadget* g )
-{ 
-	if( g->style.enhanced )
-		return false;
-	
-	return _gadget::removeCallback( g );
-}
-
-// Internal
-bool _gadget::removeCallback( _gadget* g )
-{ 
-	if( g->style.focused && g->parent )
-		g->parent->blurChild();
-	
-	g->parent = nullptr;
-	return true;
-}
-
-void _gadget::removeChildren( bool preserveEnhanced )
+void _gadget::removeChildren( bool preserveEnhanced , bool remove )
 {
 	if( preserveEnhanced )
 		this->children.remove_if( this->removeEnhancedCallback );
@@ -516,7 +497,7 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 		bP.deleteClippingRects();
 		
 		// Has the Gadget special Privilegs event.g. it can draw on the Parents reserved areas?
-		if( gadget->isEnhanced() )
+		if( gadget->style.enhanced )
 		{
 			// Special Area for Enhanced Gadgets
 			bP.addClippingRects( damagedEnhancedRects );
@@ -548,20 +529,30 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& event )
 {
 	_gadget* that = event.getGadget();
 	
+	// Temp...
 	_padding p = that->getPadding();
+	_coord posX = event.getPosX();
+	_coord posY = event.getPosY();
 	
 	for( _gadget* gadget : that->children )
 	{
 		
 		// Check if event position was inside this Gadget's Area
-		if( gadget->getDimensions().toRelative( - ( !gadget->style.enhanced ) * p.getLeft() , - ( !gadget->style.enhanced ) * p.getTop() ).contains( event.getPosX() , event.getPosY() ) )
+		if( gadget->getDimensions().toRelative( - ( !gadget->style.enhanced ) * p.getLeft() , - ( !gadget->style.enhanced ) * p.getTop() ).contains( posX , posY ) )
 		{
 			// Rewrite Destination
 			event.setDestination( gadget );
 			
 			// Absolute Position to Relative Position
-			event.setPosX( event.getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
-			event.setPosY( event.getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
+			if( gadget->style.enhanced )
+			{
+				event.setPosX( posX - gadget->getX() );
+				event.setPosY( posY - gadget->getY() );
+			}
+			else{
+				event.setPosX( posX - ( gadget->getX() + p.getLeft() ) );
+				event.setPosY( posY - ( gadget->getY() + p.getTop() ) );
+			}
 			
 			// It doesn't make sense to focus a child of some _gadget that can't be style.focused
 			if( event.getType() == "mouseDown" )
@@ -589,23 +580,34 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	
 	// Temp...
 	_padding p = that->getPadding();
+	_coord posX = event.getPosX();
+	_coord posY = event.getPosY();
 	
 	// Start Dragging
 	if( event.getType() == "dragStart" )
 	{
-		
 		for( _gadget* gadget : that->children )
 		{
-			
+			_rect dims = gadget->getDimensions();
 			// Check if event position was inside this Gadget's Area
-			if( gadget->getDimensions().toRelative( -p.getLeft() , -p.getTop() ).contains( event.getPosX() , event.getPosY() ) )
+			if( 
+				( gadget->style.enhanced && dims.contains( posX , posY ) )
+				|| ( dims.toRelative( -p.getLeft() , -p.getTop() ).contains( posX , posY ) )
+			)
 			{
 				// Rewrite Destination
 				event.setDestination( gadget );
 				
 				// Absolute Position to Relative Position
-				event.setPosX( event.getPosX() - ( gadget->getX() + ( !gadget->style.enhanced ) * p.getLeft() ) );
-				event.setPosY( event.getPosY() - ( gadget->getY() + ( !gadget->style.enhanced ) * p.getTop() ) );
+				if( gadget->style.enhanced )
+				{
+					event.setPosX( posX - gadget->getX() );
+					event.setPosY( posY - gadget->getY() );
+				}
+				else{
+					event.setPosX( posX - ( gadget->getX() + p.getLeft() ) );
+					event.setPosY( posY - ( gadget->getY() + p.getTop() ) );
+				}
 				
 				// Trigger the Event
 				_gadgetEventReturnType ret = gadget->handleEvent( event );
@@ -621,8 +623,19 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 		}
 	}
 	// Stop Dragging
-	else if( event.getType() == "dragStop" && that->dragTemp )
+	else if( that->dragTemp && event.getType() == "dragStop" )
 	{
+		// Absolute Position to Relative Position
+		if( that->dragTemp->style.enhanced )
+		{
+			event.setPosX( posX - that->getX() );
+			event.setPosY( posY - that->getY() );
+		}
+		else{
+			event.setPosX( posX - ( that->getX() + p.getLeft() ) );
+			event.setPosY( posY - ( that->getY() + p.getTop() ) );
+		}
+		
 		// Rewrite Destination andTrigger the Event
 		_gadgetEventReturnType ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
 		
@@ -631,10 +644,24 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 		
 		return ret;
 	}
-	else if( event.getType() == "dragging" && that->dragTemp )
+	else if( that->dragTemp && event.getType() == "dragging" )
 	{
+		// Absolute Position to Relative Position
+		event.setDestination( that->dragTemp );
+		
+		// Absolute Position to Relative Position
+		if( that->dragTemp->style.enhanced )
+		{
+			event.setPosX( posX - that->getX() );
+			event.setPosY( posY - that->getY() );
+		}
+		else{
+			event.setPosX( posX - ( that->getX() + p.getLeft() ) );
+			event.setPosY( posY - ( that->getY() + p.getTop() ) );
+		}
+		
 		// Rewrite Destination andTrigger the Event
-		return that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
+		return that->dragTemp->handleEvent( event );
 	}
 	return not_handled;
 }

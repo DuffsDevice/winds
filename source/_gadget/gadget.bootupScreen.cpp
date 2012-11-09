@@ -11,8 +11,6 @@ _gadgetEventReturnType _bootupScreen::refreshHandler( _gadgetEvent event )
 	
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
-	else
-		bP.resetClippingRects();
 	
 	bP.fill( COLOR_BLACK );
 	

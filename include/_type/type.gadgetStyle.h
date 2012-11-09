@@ -22,6 +22,9 @@ struct _gadgetStyle{
 	bool canTakeFocus : 1;  /** Can blur the focused gadget */
 	bool canLooseFocus : 1; /** Can be blurred */
 	bool canReceiveFocus : 1; /** Can receive focus */
+	bool smallDragTrig : 1;
+	
+	//! 8bytes and 15 bits!
 	
 	static _gadgetStyle owner( void* owner );
 	static _gadgetStyle storeData( _int data );

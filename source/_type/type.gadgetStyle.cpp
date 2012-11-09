@@ -26,5 +26,6 @@ _gadgetStyle _defaultStyle_ = {
 	false , // showsUpInTaskBar
 	true ,  // canTakeFocus
 	true , // canLooseFocus
-	true // canReceiveFocus
+	true , // canReceiveFocus
+	false // smallDragTrig
 };

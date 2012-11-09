@@ -1,5 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.imagefile.h"
+#include "_type/type.callback.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.label.h"

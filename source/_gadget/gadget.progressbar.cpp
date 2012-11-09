@@ -1,5 +1,7 @@
 #include "_gadget/gadget.progressbar.h"
 #include "func.memory.h"
+#include "_type/type.system.h"
+#include "_type/type.callback.derives.h"
 
 _pixel paletteBlue[4] = { RGB255( 94 , 119 , 238 ) , RGB255( 125 , 145 , 210 ) , RGB255( 94 , 119 , 238 ) , RGB255( 44 , 62 , 160 ) };
 _pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) , RGB255( 46 , 211 , 49 ) , RGB255( 121 , 227 , 123 ) };
@@ -7,12 +9,6 @@ _pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) 
 _gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
 	
 	_progressbar* that = event.getGadget<_progressbar>();
-
-	// Run animation
-	if( !that->type && that->anim->finished() )
-		that->anim->start();
-	else if( that->type && !that->anim->finished() )
-		that->anim->terminate();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	_coord myW = bP.getWidth();
@@ -21,7 +17,7 @@ _gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.drawRect( 0 , 0 , myW , myH , RGB( 16 , 16 , 16 ) );
 	
@@ -54,8 +50,7 @@ _gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
 	}
 	else
 	{
-		_length bars = ( myW - 2 + 3 ) >> 2;
-		_coord x = ( ( that->state * ( bars + 3 ) >> 7 ) - 3 ) * 4;
+		_coord x = ( that->state - 3 ) * 4;
 		x++;
 		_u8 cnt = 4;
 		for( int f = 3; x < myW - 2 ; x++ )
@@ -76,15 +71,31 @@ _gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
 	return handled;
 }
 
+void _progressbar::step()
+{
+	_u32 time = _system_->getTime();
+	if( time - this->lastTime > 150 )
+	{
+		if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
+			this->state = 0;
+		this->lastTime = time;
+		bubbleRefresh( true );
+	}
+}
+
+//if( val == this->state ) return; this->state = val; this->bubbleRefresh( true ); }
+
+#define method_cast( t ) reinterpret_cast<void (unknownClass::*)()>(t)
+#define class_cast( t ) reinterpret_cast<unknownClass*>(t)
+
 _progressbar::_progressbar( _length width , _length height , _coord x , _coord y  , bool type , _gadgetStyle style ) :
 	_gadget( _gadgetType::progressbar , width , 8 , x , y , style )
 	, type( type )
 	, value( 70 )
-	, anim( new _animation( 0 , 127 , 1800 ) )
 	, blue( false )
+	, lastTime( _system_->getTime() )
 {
-	anim->setter( [&]( int val ){ if( val == this->state ) return; this->state = val; this->bubbleRefresh( true ); } );
-	anim->finish( [&]( int val ){ this->refreshBitmap(); } );
+	_system_->addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( "mouseDoubleClick" );
@@ -99,7 +110,7 @@ _progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _
 { }
 
 _progressbar::~_progressbar(){
-	delete this->anim;
+	_system_->removeVblListener( _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 }
 
 	

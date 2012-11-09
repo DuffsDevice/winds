@@ -1,47 +1,5 @@
 #include "_type/type.bitmapPort.h"
 
-_bitmapPort::_bitmapPort( _bitmap* bm ) : base( bm ) {}
-
-_bitmapPort::_bitmapPort( _bitmap* bm , _area clippings ) : clippingRects( clippings ) , base( bm ) {}
-
-void _bitmapPort::addClippingRects( _rect cR ){
-	clippingRects.add( cR );
-}
-
-void _bitmapPort::addClippingRects( _area cR ){
-	clippingRects.add( cR );
-}
-
-void _bitmapPort::resetClippingRects(){
-	clippingRects.clearRects();
-	clippingRects.add( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
-}
-
-void _bitmapPort::deleteClippingRects(){
-	clippingRects.clearRects();
-}
-
-_pixel& _bitmapPort::operator()( const _coord x , const _coord y ){
-	return (*this->base)( x , y );
-}
-
-_pixel& _bitmapPort::operator[]( const _u32 n ){
-	return (*this->base)[n];
-}
-
-_length _bitmapPort::getWidth() const {
-	return this->base->getWidth();
-}
-
-_length _bitmapPort::getHeight() const {
-	return this->base->getHeight();
-}
-
-_pixel _bitmapPort::getPixel( const _coord x , const _coord y ) const 
-{
-	return this->base->getPixel( x , y );
-}
-
 void _bitmapPort::drawPixel( _coord x , _coord y , _pixel color )
 {
 	_rect tempRect = this->base->getClippingRect();

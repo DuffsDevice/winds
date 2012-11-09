@@ -31,6 +31,7 @@ typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
 typedef _bit* _bitsMap;
 typedef float _float;
+typedef _u32 _time;
 
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
@@ -256,6 +257,17 @@ enum class _gadgetType : _u8
 	screen,
 	contextmenu,
 	_plain // No type set (is probably not used)
+};
+
+enum class _language : _u8
+{
+	japanese = 0,
+	english,
+	french,
+	german,
+	italian,
+	spanish,
+	chinese
 };
 
 void trim( string& );

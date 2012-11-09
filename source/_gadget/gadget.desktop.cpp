@@ -14,7 +14,7 @@ _gadgetEventReturnType _desktop::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.fill( _system_->_runtimeAttributes_->user->getIntAttr( "desktopColor" ) );
 	

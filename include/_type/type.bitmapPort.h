@@ -24,58 +24,75 @@ class _bitmapPort{
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		**/
-		_bitmapPort( _bitmap* bm );
+		_bitmapPort( _bitmap* bm ) : base( bm ) {}
 		
 		/**
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		 * @param clippings clippingRects to work in
 		**/
-		_bitmapPort( _bitmap* bm , _area clippings );
+		_bitmapPort( _bitmap* bm , _area clippings ) : clippingRects( clippings ) , base( bm ) {}
 		
 		/**
 		 * Add a Clipping Rect to the list
 		 * @param cR the Clipping-Rect to add
 		**/
-		void addClippingRects( _rect cR );
+		void addClippingRects( _rect cR ){
+			clippingRects.add( cR );
+		}
 		
 		/**
 		 * Add a couple of Clipping Rects to the list
 		 * @param cR the Clipping-Rect to add
 		**/
-		void addClippingRects( _area cR );
+		void addClippingRects( _area cR ){
+			clippingRects.add( cR );
+		}
 		
 		/**
-		 * Draw on the full bitmap with no rects
+		 * Add a Clipping-Rect, that is full size
 		**/
-		void resetClippingRects();
+		void normalizeClippingRects(){
+			clippingRects.clearRects();
+			clippingRects.add( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
+		}
 		
 		/**
 		 * Delete all Clipping Rects from the list
 		**/
-		void deleteClippingRects();
+		void deleteClippingRects(){
+			clippingRects.clearRects();
+		}
 		
 		/**
 		 * Operator for [i] to get a specific position of the bmp
 		**/
-		_pixel& operator[]( const _u32 pos );
+		_pixel& operator[]( const _u32 pos ){
+			return (*this->base)[pos];
+		}
 		
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
 		**/
-		_pixel& operator()( const _coord x , const _coord y );
+		_pixel& operator()( const _coord x , const _coord y ){
+			return (*this->base)( x , y );
+		}
 		
 		/**
 		 * Get the Bitmap's Width
 		 * @return u16 Width of the _bitmap
 		**/
-		_length getWidth() const ;
+		_length getWidth() const {
+			return this->base->getWidth();
+		}
 		
 		/**
 		 * Get the Bitmap's Height
 		 * @return u16 Height of the _bitmap
 		**/
-		_length getHeight() const ;
+		_length getHeight() const {
+			return this->base->getHeight();
+		}
 		
 		/**
 		 * Get the Pixel at a specific location
@@ -83,7 +100,9 @@ class _bitmapPort{
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
 		**/
-		_pixel getPixel( const _coord x , const _coord y ) const ;
+		_pixel getPixel( const _coord x , const _coord y ) const {
+			return this->base->getPixel( x , y );
+		}
 		
 		/**
 		 * Set the Pixel at a specific location

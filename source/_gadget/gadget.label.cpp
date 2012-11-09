@@ -72,7 +72,7 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.fill( that->bgColor );
 	
@@ -103,7 +103,7 @@ _gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
 	switch( that->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getAscent( that->fontSize ) + 1 ) >> 1 );
+			y = ( ( myH - 1 ) >> 1 ) - ( ( that->font->getAscent( that->fontSize ) + 1 ) >> 1 );
 			break;
 		case _valign::top:
 			y = 0;
@@ -136,6 +136,7 @@ void _label::setHeight( _u8 height ){
 
 _label::_label( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::label , width , height , x , y , style )
+	, _interface_input()
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
@@ -155,6 +156,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 
 _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	_gadget( _gadgetType::label , 1 , 1 , x , y , style )
+	, _interface_input()
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )

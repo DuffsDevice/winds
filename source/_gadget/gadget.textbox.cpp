@@ -12,7 +12,7 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	// If there is no font it doesn't make sense to paint
 	if( !that->font || !that->font->valid() )

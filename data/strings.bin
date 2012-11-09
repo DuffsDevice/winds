@@ -1,0 +1,110 @@
+[lbl_choose_language]
+e = Choose your language:
+g = Sprache wählen:
+i = Scegli la lingua:
+s = Escoja el idioma:
+f = Choisissez la langue:
+
+[lbl_welcome]
+e = Welcome
+g = Wilkommen
+i = Benvenuto
+s = Bienvenida
+f = Bienvenu
+
+[lbl_welcome_to_winds]
+e = Welcome to WinDS
+g = Willkommen bei WinDS
+i = Benvenuti al WinDS
+s = Bienvenida a WinDS
+f = Bienvenue sur WinDS
+
+[txt_few_step_setup]
+e = Let's spend a few minutes setting
+g = In ein paar Schritten wird WinDS auf
+i = Spendiamo qualche minuto la
+s = Vamos a dedicar unos minutos a
+f = Nous allons consacrer quelques minutes
+
+[txt_few_step_setup_2]
+e = up your DS.
+g = deinem DS installiert.
+i = configurazione del DS.
+s = la configuración de su DS.
+f = à la configuration de votre DS.
+
+[lbl_next]
+e = Next
+g = Weiter
+i = Più
+s = Siga
+f = Continuer
+
+[lbl_prev]
+e = Previous
+g = Zurück
+i = Precedente
+s = Anterior
+f = Précédent
+
+[lbl_to_continue]
+e = To Continue, click [Next]
+g = Zum fortfahren, [Weiter] klicken
+i = di continuare a fare clic su [Più]
+s = para continuar, haga clic [Siga]
+f = Pour continuer, cliquez sur [Continuer]
+
+[lbl_profile]
+e = Your Profile
+g = Dein Profil
+i = Il tuo profilo
+s = Su perfil
+f = Votre Profil
+
+[txt_name]
+e = Name of the Profile:
+g = Name des Profils:
+i = Nome del profilo:
+s = Nombre del Perfil:
+f = Nom du profil:
+
+[txt_profile_icon]
+e = Choose your profile Icon:
+g = Wähle dein Profil Icon:
+i = Scegli il tuo profilo Icona:
+s = Seleccione el icono de su perfil:
+f = Choisissez votre profil Icône:
+
+[lbl_finished]
+e = Setup finished
+g = Fertig
+i = Pronto
+s = Preparado
+f = Configuration terminée
+
+[txt_winds_ready]
+e = WinDS is now ready to be used!
+g = WinDS kann jetzt benutzt werden!
+i = WinDS è ora pronto per essere utilizzato!
+s = WinDS ya está listo para ser utilizado!
+f = WinDS est maintenant prêt à être utilisé!
+
+[txt_restart_ds]
+e = Please restart your Nintendo DS!
+g = Bitte starten sie den Nintendo DS neu!
+i = Riavviare il Nintendo DS!
+s = Reinicia tu Nintendo DS!
+f = S'il vous plaît redémarrer votre Nintendo DS!
+
+[lbl_passcode]
+e = Your Passcode:
+g = Passwort:
+i = Password:
+s = Password:
+f = Votre Passcode:
+
+;[]
+;e = 
+;g = 
+;i = 
+;s = 

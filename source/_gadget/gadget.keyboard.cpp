@@ -231,7 +231,7 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , Grip );
 	bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
@@ -315,8 +315,10 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		
 		that->animKeyb.terminate();
 		that->animMagnif.terminate();
-		that->setState( mid( ( SCREEN_HEIGHT - 10 - event.getEffectivePosY() + deltaY ) , sEnd , sStart ) );
-		that->setMagnification( mid( ( SCREEN_HEIGHT - 10 - event.getEffectivePosY() + deltaY ) , sEnd , sStart ) );
+		
+		_u8 val = mid( ( SCREEN_HEIGHT - 10 - event.getEffectivePosY() + deltaY ) , sEnd , sStart );
+		that->setState( val );
+		that->setMagnification( val );
 		
 		// Return
 		return handled;
@@ -358,18 +360,30 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Reset Keyboard Position
 	this->setState( sStart );
 	
-	_font* fnt = _system_->getFont( "CourierNew10" );
+	_font* fnt 			= _system_->getFont( "CourierNew10" );
+	_font* systemFont 	= _system_->getFont( "Tahoma7" );
 	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
 		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system_->_runtimeAttributes_->keyboardText[0][i] );
-		this->buttons[i]->setFont( fnt );
+		switch( i )
+		{
+			case 45:
+			case 40:
+				this->buttons[i]->setAutoSelect( true );
+			case 41:
+			case 39:
+			case 30:
+			case 29:
+				this->buttons[i]->setFont( systemFont );
+				break;
+			default:
+				this->buttons[i]->setFont( fnt );
+				break;
+		}
 		this->addChild( this->buttons[i] );
 	}
-	
-	this->buttons[45]->setAutoSelect( true );
-	this->buttons[40]->setAutoSelect( true );
 	
 	//! Animations
 	this->animKeyb.setEasing( _animation::_expo::easeOut );

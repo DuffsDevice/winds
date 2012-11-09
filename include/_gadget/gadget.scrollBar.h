@@ -29,11 +29,10 @@ class _scrollBar : public _gadget{
 		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
 		static _gadgetEventReturnType clickHandler( _gadgetEvent event );
 		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		static _gadgetEventReturnType dragHandler( _gadgetEvent e );
 		
 		void refreshCache();
 		void refreshPosition();
-		
-		void init();
 	
 	public:
 		

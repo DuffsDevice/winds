@@ -1,5 +1,6 @@
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.window.h"
 #include "_resource/BMP_WindowsBootLogo.h"
 
 #include <nds/arm9/console.h>
@@ -21,7 +22,7 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-		bP.resetClippingRects();
+		bP.normalizeClippingRects();
 	
 	bP.fill( SUpalette[3] );
 	
@@ -47,10 +48,12 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
+#include "_gadget/gadget.scrollBar.h"
+
 _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	_gadgetScreen( bgId , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
-	, winLogoGadget( new _imagegadget( 5 , 2 , _startupScreen::winLogo ) )
+	, winLogoGadget( new _imagegadget( 4 , 3 , _startupScreen::winLogo ) )
 {	
 	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( "refresh" , &_startupScreen::refreshHandler );
@@ -59,6 +62,8 @@ _startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
 	
 	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
+	
+	this->addChild( new _scrollBar( 40 , 40 , 50 , 10 , 20 , _dimension::vertical ) );
 	
 	//! Refresh me
 	this->refreshBitmap();
@@ -71,4 +76,3 @@ _startupScreen::~_startupScreen()
 	delete this->refresher;
 	delete this->winLogoGadget;
 }
-
