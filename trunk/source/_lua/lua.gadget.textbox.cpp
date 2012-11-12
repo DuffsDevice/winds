@@ -45,18 +45,16 @@ int _lua_textbox::getFont( lua_State* L ){
 
 //! Lua-window
 const char _lua_textbox::className[] = "_textbox";
+Lunar<_lua_textbox>::FunctionType _lua_textbox::methods[] = {
+	GADGET_FUNCS( _lua_textbox ),
+	LUA_CLASS_FUNC_END
+};
 
-Lunar<_lua_textbox>::RegType _lua_textbox::methods[] = {
-	LUNAR_DECLARE_ALL_METHODS_OF( _lua_textbox ),
-	LUNAR_DECLARE_METHOD(_lua_textbox,getColor),
-	LUNAR_DECLARE_METHOD(_lua_textbox,setColor),
-	LUNAR_DECLARE_METHOD(_lua_textbox,getBgColor),
-	LUNAR_DECLARE_METHOD(_lua_textbox,getFont),
-	LUNAR_DECLARE_METHOD(_lua_textbox,setBgColor),
-	LUNAR_DECLARE_METHOD(_lua_textbox,setFont),
-	
-	//! _interface_input (only these two are used)
-	LUNAR_DECLARE_METHOD(_lua_textbox,getStrValue),
-	LUNAR_DECLARE_METHOD(_lua_textbox,setStrValue),
-	{0,0}
+Lunar<_lua_textbox>::PropertyType _lua_textbox::properties[] = {
+	GADGET_ATTRS( _lua_textbox ),
+	LUA_CLASS_ATTR( _lua_textbox , StrValue , "strValue" ),
+	LUA_CLASS_ATTR( _lua_textbox , Font , "font" ),
+	LUA_CLASS_ATTR( _lua_textbox , BgColor , "bgColor" ),
+	LUA_CLASS_ATTR( _lua_textbox , Color , "color" ),
+	LUA_CLASS_ATTR_END
 };

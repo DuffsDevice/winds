@@ -179,6 +179,13 @@ int _direntry::setAttrs( _direntryAttributes attrs )
 	return FAT_setAttr( this->filename.c_str() , attrs );
 }
 
+_direntryAttributes _direntry::getAttrs()
+{	
+	if( !this->fatInited )
+		return 0;
+	return FAT_getAttr( this->filename.c_str() );
+}
+
 bool _direntry::open( const char* mode )
 {
 	if( !this->fatInited || !this->exists )

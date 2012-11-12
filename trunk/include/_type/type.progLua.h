@@ -2,23 +2,11 @@
 #ifndef _WIN_T_LUAPROG_
 #define _WIN_T_LUAPROG_
 
-#include <iostream>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <time.h>
-
 //! Lua
-extern "C"{
-#include "_lua/lua.h"
-#include "_lua/lauxlib.h"
-#include "_lua/lualib.h"
-}
+#include "_lua/lua.hpp"
 
+//! Program
 #include "_type/type.program.h"
-
-using namespace std;
 
 
 class _progLua : public _program
@@ -26,7 +14,7 @@ class _progLua : public _program
 	
 	private:
 		
-		static const luaL_reg 	library[];
+		static const luaL_Reg 	library[];
 		
 		static int createWindow( lua_State* L );
 		

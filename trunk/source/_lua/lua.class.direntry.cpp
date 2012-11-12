@@ -72,6 +72,11 @@ int _lua_direntry::writeString( lua_State* L ){
 
 int _lua_direntry::setAttrs( lua_State* L ){
 	lua_pushboolean( L , _direntry::setAttrs( luaL_checkint( L , 1 ) ) );
+	return 0;
+}
+
+int _lua_direntry::getAttrs( lua_State* L ){
+	lua_pushnumber( L , _direntry::getAttrs() );
 	return 1;
 }
 
@@ -106,30 +111,34 @@ int _lua_direntry::execute( lua_State* L ){
 }
 
 int _lua_direntry::getFileImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( _direntry::getFileImage() ) ) , true );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( _direntry::getFileImage() ) ) );
 	return 1;
 }
 
 //! Lua-_gadget
 const char _lua_direntry::className[] = "_direntry";
-Lunar<_lua_direntry>::RegType _lua_direntry::methods[] = {
-	LUNAR_DECLARE_METHOD(_lua_direntry,open),
-	LUNAR_DECLARE_METHOD(_lua_direntry,openwrite),
-	LUNAR_DECLARE_METHOD(_lua_direntry,openread),
-	LUNAR_DECLARE_METHOD(_lua_direntry,create),
-	LUNAR_DECLARE_METHOD(_lua_direntry,exists),
-	LUNAR_DECLARE_METHOD(_lua_direntry,close),
-	LUNAR_DECLARE_METHOD(_lua_direntry,readChild),
-	LUNAR_DECLARE_METHOD(_lua_direntry,rewindChildren),
-	LUNAR_DECLARE_METHOD(_lua_direntry,readString),
-	LUNAR_DECLARE_METHOD(_lua_direntry,writeString),
-	LUNAR_DECLARE_METHOD(_lua_direntry,setAttrs),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getFileName),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getName),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getExtension),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getMimeTypeString),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getSize),
-	LUNAR_DECLARE_METHOD(_lua_direntry,execute),
-	LUNAR_DECLARE_METHOD(_lua_direntry,getFileImage),
-	{0,0}
+Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
+	LUA_CLASS_FUNC(_lua_direntry,open),
+	LUA_CLASS_FUNC(_lua_direntry,openwrite),
+	LUA_CLASS_FUNC(_lua_direntry,openread),
+	LUA_CLASS_FUNC(_lua_direntry,create),
+	LUA_CLASS_FUNC(_lua_direntry,exists),
+	LUA_CLASS_FUNC(_lua_direntry,close),
+	LUA_CLASS_FUNC(_lua_direntry,readChild),
+	LUA_CLASS_FUNC(_lua_direntry,rewindChildren),
+	LUA_CLASS_FUNC(_lua_direntry,readString),
+	LUA_CLASS_FUNC(_lua_direntry,writeString),
+	LUA_CLASS_FUNC(_lua_direntry,getFileName),
+	LUA_CLASS_FUNC(_lua_direntry,getName),
+	LUA_CLASS_FUNC(_lua_direntry,getExtension),
+	LUA_CLASS_FUNC(_lua_direntry,getMimeTypeString),
+	LUA_CLASS_FUNC(_lua_direntry,getSize),
+	LUA_CLASS_FUNC(_lua_direntry,execute),
+	LUA_CLASS_FUNC(_lua_direntry,getFileImage),
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
+	LUA_CLASS_ATTR( _lua_direntry , Attrs , "attributes" ),
+	LUA_CLASS_ATTR_END
 };

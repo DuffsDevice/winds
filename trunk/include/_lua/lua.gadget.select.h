@@ -1,15 +1,10 @@
 // Check if already included
-#ifndef _WIN_LUA_SELECT_
-#define _WIN_LUA_SELECT_
+#ifndef _WIN_LUASELECT_
+#define _WIN_LUASELECT_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.gadget.gadgetEventArgs.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
+#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.select.h"
 
 /**
@@ -32,7 +27,8 @@ class _lua_select : public _lua_gadget , public _lua_interface_input
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_select>::RegType methods[];
+		static Lunar<_lua_select>::FunctionType methods[];
+		static Lunar<_lua_select>::PropertyType properties[];
 	
 };
 

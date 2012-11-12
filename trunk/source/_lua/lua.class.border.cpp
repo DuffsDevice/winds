@@ -38,14 +38,14 @@ int _lua_border::getBottom(lua_State* L){ lua_pushnumber( L , _border::getBottom
 
 //! Lua-_rect
 const char _lua_border::className[] = "_border";
-Lunar<_lua_border>::RegType _lua_border::methods[] = {
-  LUNAR_DECLARE_METHOD(_lua_border, setLeft),
-  LUNAR_DECLARE_METHOD(_lua_border, setTop),
-  LUNAR_DECLARE_METHOD(_lua_border, setRight),
-  LUNAR_DECLARE_METHOD(_lua_border, setBottom),
-  LUNAR_DECLARE_METHOD(_lua_border, getLeft),
-  LUNAR_DECLARE_METHOD(_lua_border, getTop),
-  LUNAR_DECLARE_METHOD(_lua_border, getRight),
-  LUNAR_DECLARE_METHOD(_lua_border, getBottom),
-  {0,0}
+Lunar<_lua_border>::FunctionType _lua_border::methods[] = {
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_border>::PropertyType _lua_border::properties[] = {
+	LUA_CLASS_ATTR(_lua_border, Left , "left" ),
+	LUA_CLASS_ATTR(_lua_border, Top , "top" ),
+	LUA_CLASS_ATTR(_lua_border, Right , "right" ),
+	LUA_CLASS_ATTR(_lua_border, Bottom , "bottom" ),
+	LUA_CLASS_ATTR_END
 };

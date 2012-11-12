@@ -14,18 +14,20 @@ int _lua_imagegadget::setImage( lua_State* L ){
 }
 
 int _lua_imagegadget::getImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( ((_imagegadget*)_lua_gadget::gadget)->getImage() ) ) , true );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( ((_imagegadget*)_lua_gadget::gadget)->getImage() ) ) );
 	return 1;
 }
 
 //! Lua-window
 const char _lua_imagegadget::className[] = "_imagegadget";
+Lunar<_lua_imagegadget>::FunctionType _lua_imagegadget::methods[] = {
+	GADGET_FUNCS( _lua_imagegadget ),
+	LUA_CLASS_FUNC_END
+};
 
-Lunar<_lua_imagegadget>::RegType _lua_imagegadget::methods[] = {
-	LUNAR_DECLARE_ALL_METHODS_OF( _lua_imagegadget ),
-	
-	//! Specific to _imagegadget
-	LUNAR_DECLARE_METHOD(_lua_imagegadget,getImage),
-	LUNAR_DECLARE_METHOD(_lua_imagegadget,setImage),
-	{0,0}
+Lunar<_lua_imagegadget>::PropertyType _lua_imagegadget::properties[] = {
+	GADGET_ATTRS( _lua_imagegadget ),
+	//! _interface_input (only these two are used)
+	LUA_CLASS_ATTR( _lua_imagegadget , Image , "image" ),
+	LUA_CLASS_ATTR_END
 };

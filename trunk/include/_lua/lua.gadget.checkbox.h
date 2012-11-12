@@ -2,15 +2,10 @@
 #ifndef _WIN_LUACHECKBOX_
 #define _WIN_LUACHECKBOX_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.checkbox.h"
-#include "_lua/lunar.h"
 
 /**
  * Proxy Classes
@@ -29,7 +24,8 @@ class _lua_checkbox : public _lua_gadget , public _lua_interface_input {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_checkbox>::RegType methods[];
+		static Lunar<_lua_checkbox>::FunctionType methods[];
+		static Lunar<_lua_checkbox>::PropertyType properties[];
 	
 };
 

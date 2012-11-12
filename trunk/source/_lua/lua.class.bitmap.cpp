@@ -1,4 +1,5 @@
 #include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.class.rect.h"
 
 
 /*##################################
@@ -174,7 +175,7 @@ int _lua_bitmap::copyHorizontalStretch( lua_State* L ){
 int _lua_bitmap::setClippingRect( lua_State* L ){  _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) this->bm->setClippingRect( *rc ); return 0; }
 
 //! getClippingRect
-int _lua_bitmap::getClippingRect( lua_State* L ){ Lunar<_lua_rect>::push( L , new _lua_rect( this->bm->getClippingRect() ) , true ); return 1; }
+int _lua_bitmap::getClippingRect( lua_State* L ){ Lunar<_lua_rect>::push( L , new _lua_rect( this->bm->getClippingRect() ) ); return 1; }
 
 //! resetClippingRect
 int _lua_bitmap::resetClippingRect( lua_State* L ){ this->bm->resetClippingRect(); return 0; }
@@ -182,34 +183,35 @@ int _lua_bitmap::resetClippingRect( lua_State* L ){ this->bm->resetClippingRect(
 
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "_bitmap";
-Lunar<_lua_bitmap>::RegType _lua_bitmap::methods[] = {
-	LUNAR_DECLARE_METHOD(_lua_bitmap, get),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, getWidth),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, setWidth),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, getHeight),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, setHeight),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, resize),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, getPixel),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawPixel),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, reset),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, fill),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawVerticalLine),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawHorizontalLine),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawFilledRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawVerticalGradient),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawHorizontalGradient),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawCircle),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawFilledCircle),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawEllipse),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawFilledEllipse),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawChar),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, drawString),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, copy),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, copyTransparent),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, copyHorizontalStretch),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, getClippingRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, setClippingRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmap, resetClippingRect),
-	{0,0}
+Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
+	LUA_CLASS_FUNC(_lua_bitmap, resize),
+	LUA_CLASS_FUNC(_lua_bitmap, getPixel),
+	LUA_CLASS_FUNC(_lua_bitmap, drawPixel),
+	LUA_CLASS_FUNC(_lua_bitmap, reset),
+	LUA_CLASS_FUNC(_lua_bitmap, fill),
+	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalLine),
+	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalLine),
+	LUA_CLASS_FUNC(_lua_bitmap, drawRect),
+	LUA_CLASS_FUNC(_lua_bitmap, drawFilledRect),
+	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalGradient),
+	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalGradient),
+	LUA_CLASS_FUNC(_lua_bitmap, drawCircle),
+	LUA_CLASS_FUNC(_lua_bitmap, drawFilledCircle),
+	LUA_CLASS_FUNC(_lua_bitmap, drawEllipse),
+	LUA_CLASS_FUNC(_lua_bitmap, drawFilledEllipse),
+	LUA_CLASS_FUNC(_lua_bitmap, drawChar),
+	LUA_CLASS_FUNC(_lua_bitmap, drawString),
+	LUA_CLASS_FUNC(_lua_bitmap, copy),
+	LUA_CLASS_FUNC(_lua_bitmap, copyTransparent),
+	LUA_CLASS_FUNC(_lua_bitmap, copyHorizontalStretch),
+	LUA_CLASS_FUNC(_lua_bitmap, getClippingRect),
+	LUA_CLASS_FUNC(_lua_bitmap, setClippingRect),
+	LUA_CLASS_FUNC(_lua_bitmap, resetClippingRect),
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_bitmap>::PropertyType _lua_bitmap::properties[] = {
+	LUA_CLASS_ATTR(_lua_bitmap, Width , "width" ),
+	LUA_CLASS_ATTR(_lua_bitmap, Height , "height" ),
+	LUA_CLASS_ATTR_END
 };

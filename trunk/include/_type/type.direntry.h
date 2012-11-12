@@ -125,8 +125,11 @@ class _direntry{
 		virtual bool readChild( string& str );
 		virtual bool rewindChildren();
 		
-		//! Set Attributes of File
+		//! Set UNIX-Attributes of File
 		int setAttrs( _direntryAttributes attrs );
+		
+		//! Get UNIX-Attributes of File
+		_direntryAttributes getAttrs();
 		
 		//! Write an std::string to the end of the file
 		bool writeString( string str );

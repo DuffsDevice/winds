@@ -2,221 +2,365 @@
 #ifndef _WIN_LUNAR_
 #define _WIN_LUNAR_
 
-extern "C" {
-#include "_lua/lua.h"
-#include "_lua/lauxlib.h"
-}
+#include "_type/type.h"
+#include "lua.hpp"
 
-template <typename T> class Lunar {
-public:
-  typedef struct { T *pT; } userdataType;
-  typedef int (T::*mfp)(lua_State *L);
-  typedef struct { const char *name; mfp mfunc; } RegType;
+extern bool luaL_is( lua_State* L , int narg , string type );
 
-  static void Register(lua_State *L) {
-    lua_newtable(L);
-    int methods = lua_gettop(L);
+template < class T > class Lunar {
+    typedef struct {
+	T              *pT;
+    } userdataType;
+    
+  public:
 
-    luaL_newmetatable(L, T::className);
-    int metatable = lua_gettop(L);
+    enum {
+	NUMBER,
+	STRING
+    };
 
-    // store method table in globals so that
-    // scripts can add functions written in Lua.
-    lua_pushvalue(L, methods);
-    set(L, LUA_GLOBALSINDEX, T::className);
+    struct PropertyType {
+	const char     *name;
+	int             (T::*getter) (lua_State *);
+	int             (T::*setter) (lua_State *);
+    };
 
-    // hide metatable from Lua getmetatable()
-    lua_pushvalue(L, methods);
-    set(L, metatable, "__metatable");
+    struct FunctionType {
+	const char     *name;
+	int             (T::*function) (lua_State *);
+    };
+	
+	static void lua_gettablevalue (lua_State * state, int tableindex, int valueindex)
+	{
+		lua_pushnumber (state, valueindex);
+		lua_gettable (state, tableindex);
+		// use lua_to<type>(-1); to get the value.
+	}
 
-    lua_pushvalue(L, methods);
-    set(L, metatable, "__index");
+/*
+  @ check
+  Arguments:
+    * L - Lua State
+    * narg - Position to check
 
-    lua_pushcfunction(L, tostring_T);
-    set(L, metatable, "__tostring");
-
-    lua_pushcfunction(L, gc_T);
-    set(L, metatable, "__gc");
-
-    lua_newtable(L);                // mt for method table
-    lua_pushcfunction(L, new_T);
-    lua_pushvalue(L, -1);           // dup new_T function
-    set(L, methods, "new");         // add new_T to method table
-    set(L, -3, "__call");           // mt.__call = new_T
-    lua_setmetatable(L, methods);
-
-    // fill method table with methods from class T
-    for (RegType *l = T::methods; l->name; l++) {
-      lua_pushstring(L, l->name);
-      lua_pushlightuserdata(L, (void*)l);
-      lua_pushcclosure(L, thunk, 1);
-      lua_settable(L, methods);
+  Description:
+    Retrieves a wrapped class from the arguments passed to the function, specified by narg (position).
+    This function will raise an exception if the argument is not of the correct type.
+*/
+    static T       *check(lua_State * L, int narg) {
+	// Check to see whether we are a table
+	    if (lua_istable(L,narg+1))
+	    {
+		    lua_gettablevalue(L,narg+1,0);
+		    userdataType   *ud =
+				    static_cast <userdataType * >(luaL_checkudata(L, -1, T::className));
+		    if (!ud)
+			    luaL_argerror (L, narg+1, T::className);
+		    lua_pop(L,1);
+		    return ud->pT;		// pointer to T object
+	    }
+	    else
+	    {
+		    luaL_argerror (L, narg+1, T::className);
+	    } 
+		return nullptr;
     }
 
-    lua_pop(L, 2);  // drop metatable and method table
-  }
+/*
+  @ lightcheck
+  Arguments:
+    * L - Lua State
+    * narg - Position to check
 
-  // call named lua method from userdata method table
-  static int call(lua_State *L, const char *method,
-                  int nargs=0, int nresults=LUA_MULTRET, int errfunc=0)
-  {
-    int base = lua_gettop(L) - nargs;  // userdata index
-    if (!luaL_checkudata(L, base, T::className)) {
-      lua_settop(L, base-1);           // drop userdata and args
-      lua_pushfstring(L, "not a valid %s userdata", T::className);
-      return -1;
+  Description:
+    Retrieves a wrapped class from the arguments passed to the function, specified by narg (position).
+    This function will return nullptr if the argument is not of the correct type.  Useful for supporting
+    multiple types of arguments passed to the function
+*/ 
+	static T       *lightcheck(lua_State * L, int narg) {
+		// Check to see whether we are a table
+	    if (lua_istable(L,narg+1))
+	    {
+		    lua_gettablevalue(L,narg+1,0);
+		    userdataType   *ud =
+				    static_cast <userdataType * >(luaL_testudata(L, -1, T::className));
+		    if (!ud)
+			    return nullptr; // lightcheck returns nullptr if not found.
+		    lua_pop(L,1);
+		    return ud->pT;		// pointer to T object
+	    }
+	    else
+	    {
+		    return nullptr;
+	    } 
     }
 
-    lua_pushstring(L, method);         // method name
-    lua_gettable(L, base);             // get method from userdata
-    if (lua_isnil(L, -1)) {            // no method?
-      lua_settop(L, base-1);           // drop userdata and args
-      lua_pushfstring(L, "%s missing method '%s'", T::className, method);
-      return -1;
+/*
+  @ Register
+  Arguments:
+    * L - Lua State
+    * namespac - Namespace to load into
+
+  Description:
+    Registers your class with Lua.  Leave namespac "" if you want to load it into the global space.
+*/
+    // REGISTER CLASS AS A GLOBAL TABLE 
+    static void     Register(lua_State * L, string namespac = "" ) {
+
+		if ( !namespac.length() ) {
+			lua_getglobal(L, namespac.c_str() );
+			lua_pushcfunction(L, &Lunar < T >::constructor);
+			lua_setfield(L, -2, T::className);
+			lua_pop(L, 1);
+		} else {
+			lua_pushcfunction(L, &Lunar < T >::constructor);
+			lua_setglobal(L, T::className);
+		}
+
+		luaL_newmetatable(L, T::className);
+		int             metatable = lua_gettop(L);
+
+		lua_pushstring(L, "__gc");
+		lua_pushcfunction(L, &Lunar < T >::gc_obj);
+		lua_settable(L, metatable);
+
+		lua_pushstring(L, "__index");
+		lua_pushcfunction(L, &Lunar < T >::property_getter);
+		lua_settable(L, metatable);
+
+		lua_pushstring(L, "__newindex");
+		lua_pushcfunction(L, &Lunar < T >::property_setter);
+		lua_settable(L, metatable);
+
     }
-    lua_insert(L, base);               // put method under userdata, args
 
-    int status = lua_pcall(L, 1+nargs, nresults, errfunc);  // call method
-    if (status) {
-      const char *msg = lua_tostring(L, -1);
-      if (msg == nullptr) msg = "(error with no message)";
-      lua_pushfstring(L, "%s:%s status = %d\n%s",
-                      T::className, method, status, msg);
-      lua_remove(L, base);             // remove old message
-      return -1;
+/*
+  @ constructor (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int      constructor(lua_State * L) {
+
+		lua_newtable(L);
+
+		int             newtable = lua_gettop(L);
+
+		lua_pushnumber(L, 0);
+
+		T             **a = (T **) lua_newuserdata(L, sizeof(T *));
+		*a = new T(L);
+
+		int             userdata = lua_gettop(L);
+
+		luaL_getmetatable(L, T::className);
+
+		lua_setmetatable(L, userdata);
+
+		lua_settable(L, newtable);
+
+		luaL_getmetatable(L, T::className);
+		lua_setmetatable(L, newtable);
+
+		luaL_getmetatable(L, T::className);
+
+		for (int i = 0; T::properties[i].name; i++) {
+			lua_pushstring(L, T::properties[i].name);
+			lua_pushnumber(L, i);
+			lua_settable(L, -3);
+		}
+
+		lua_pop(L, 1);
+
+		for (int i = 0; T::methods[i].name; i++) {
+			lua_pushstring(L, T::methods[i].name);
+			lua_pushnumber(L, i);
+			lua_pushcclosure(L, &Lunar < T >::function_dispatch, 1);
+			lua_settable(L, newtable);
+		}
+
+		return 1;
     }
-    return lua_gettop(L) - base + 1;   // number of results
-  }
 
-  // push onto the Lua stack a userdata containing a pointer to T object
-  static int push(lua_State *L, T *obj, bool gc=true) {
-    if (!obj) { lua_pushnil(L); return 0; }
-    luaL_getmetatable(L, T::className);  // lookup metatable in Lua registry
-    if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", T::className);
-    int mt = lua_gettop(L);
-    subtable(L, mt, "userdata", "v");
-    userdataType *ud =
-      static_cast<userdataType*>(pushuserdata(L, obj, sizeof(userdataType)));
-    if (ud) {
-      ud->pT = obj;  // store pointer to object in userdata
-      lua_pushvalue(L, mt);
-      lua_setmetatable(L, -2);
-      if (gc == false) {
-        lua_checkstack(L, 3);
-        subtable(L, mt, "do not trash", "k");
-        lua_pushvalue(L, -2);
-        lua_pushboolean(L, 1);
-        lua_settable(L, -3);
-        lua_pop(L, 1);
-      }
+/*
+  @ createNew
+  Arguments:
+    * L - Lua State
+	T*	- Instance to push
+
+  Description:
+    Loads an instance of the class into the Lua stack, and provides you a pointer so you can modify it.
+*/
+    static void push(lua_State * L, T* instance ) {
+
+		lua_newtable(L);
+
+		int             newtable = lua_gettop(L);
+
+		lua_pushnumber(L, 0);
+
+		T             **a = (T **) lua_newuserdata(L, sizeof(T *));
+		*a = instance;
+
+		int             userdata = lua_gettop(L);
+
+		luaL_getmetatable(L, T::className);
+
+		lua_setmetatable(L, userdata);
+
+		lua_settable(L, newtable);
+
+		luaL_getmetatable(L, T::className);
+		lua_setmetatable(L, newtable);
+
+		luaL_getmetatable(L, T::className);
+
+		for (int i = 0; T::properties[i].name; i++) {
+			// ADD NAME KEY 
+			lua_pushstring(L, T::properties[i].name);
+			lua_pushnumber(L, i);
+			lua_settable(L, -3);
+		}
+
+		lua_pop(L, 1);
+
+		for (int i = 0; T::methods[i].name; i++) {
+			lua_pushstring(L, T::methods[i].name);
+			lua_pushnumber(L, i);
+			lua_pushcclosure(L, &Lunar < T >::function_dispatch, 1);
+			lua_settable(L, newtable);
+		}
+
     }
-    lua_replace(L, mt);
-    lua_settop(L, mt);
-    return mt;  // index of userdata containing pointer to T object
-  }
 
-  // get userdata from Lua stack and return pointer to T object
-  static T *check(lua_State *L, int narg) {
-    userdataType *ud =
-      static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
-    if(!ud) {
-		printf("Arg. #%d is bad; expected %s\n",narg,T::className);
-		//while(true);
-        luaL_typerror(L, narg, T::className);
-        return nullptr;
+/*
+  @ property_getter (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int      property_getter(lua_State * L) {
+
+		lua_pushvalue(L, 2);
+
+		lua_getmetatable(L, 1);
+
+		lua_pushvalue(L, 2);
+		lua_rawget(L, -2);
+
+		if (lua_isnumber(L, -1)) {
+
+			int             _index = lua_tonumber(L, -1);
+
+			lua_pushnumber(L, 0);
+			lua_rawget(L, 1);
+
+			T             **obj =
+			static_cast < T ** >(lua_touserdata(L, -1));
+
+			lua_pushvalue(L, 3);
+
+			int (T::*getter) (lua_State *) = T::properties[_index].getter;
+
+			if( getter )
+				return ((*obj)->*(getter)) (L);
+			else
+				return 0;
+
+		}
+		// PUSH NIL 
+		lua_pushnil(L);
+
+		return 1;
+
     }
-    return ud->pT;  // pointer to T object
-  }
 
-private:
-  Lunar();  // hide default constructor
+/*
+  @ property_setter (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int      property_setter(lua_State * L) {
+		
+		lua_getmetatable(L, 1);
 
-  // member function dispatcher
-  static int thunk(lua_State *L) {
-    // stack has userdata, followed by method args
-    T *obj = check(L, 1);  // get 'self', or if you prefer, 'this'
-    lua_remove(L, 1);  // remove self so member function args start at index 1
-    // get member function from upvalue
-    RegType *l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
-    return (obj->*(l->mfunc))(L);  // call member function
-  }
+		lua_pushvalue(L, 2);
+		lua_rawget(L, -2);
 
-  // create a new T object and
-  // push onto the Lua stack a userdata containing a pointer to T object
-  static int new_T(lua_State *L) {
-    lua_remove(L, 1);   // use classname:new(), instead of classname.new()
-    T *obj = new T(L);  // call constructor for T objects
-    push(L, obj, true); // gc_T will delete this object
-    return 1;           // userdata containing pointer to T object
-  }
+		if (lua_isnil(L, -1)) {
 
-  // garbage collection metamethod
-  static int gc_T(lua_State *L) {
-    /*if (luaL_getmetafield(L, 1, "do not trash")) {
-      lua_pushvalue(L, 1);  // dup userdata
-      lua_gettable(L, -2);
-      if (!lua_isnil(L, -1)) return 0;  // do not delete object
-    }*/
-    userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
-    T *obj = ud->pT;
-    if (obj) delete obj;  // call destructor for T objects
-    return 0;
-  }
+			lua_pop(L, 2);
 
-  static int tostring_T (lua_State *L) {
-    char buff[32];
-    userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
-    T *obj = ud->pT;
-    sprintf(buff, "%p", (void*)obj);
-    lua_pushfstring(L, "%s (%s)", T::className, buff);
+			lua_rawset(L, 1);
 
-    return 1;
-  }
+			return 0;
+		} else {
 
-  static void set(lua_State *L, int table_index, const char *key) {
-    lua_pushstring(L, key);
-    lua_insert(L, -2);  // swap value and key
-    lua_settable(L, table_index);
-  }
+			int             _index = lua_tonumber(L, -1);
 
-  static void weaktable(lua_State *L, const char *mode) {
-    lua_newtable(L);
-    lua_pushvalue(L, -1);  // table is its own metatable
-    lua_setmetatable(L, -2);
-    lua_pushliteral(L, "__mode");
-    lua_pushstring(L, mode);
-    lua_settable(L, -3);   // metatable.__mode = mode
-  }
+			lua_pushnumber(L, 0);
+			lua_rawget(L, 1);
 
-  static void subtable(lua_State *L, int tindex, const char *name, const char *mode) {
-    lua_pushstring(L, name);
-    lua_gettable(L, tindex);
-    if (lua_isnil(L, -1)) {
-      lua_pop(L, 1);
-      lua_checkstack(L, 3);
-      weaktable(L, mode);
-      lua_pushstring(L, name);
-      lua_pushvalue(L, -2);
-      lua_settable(L, tindex);
+			T             **obj =
+			static_cast < T ** >(lua_touserdata(L, -1));
+
+			lua_pushvalue(L, 3);
+
+			int (T::*setter) (lua_State *) = T::properties[_index].setter;
+
+			if( setter )
+				return ((*obj)->*(setter)) (L);
+			else
+				return 0;
+
+		}
+
     }
-  }
 
-  static void *pushuserdata(lua_State *L, void *key, size_t sz) {
-    void *ud = 0;
-    lua_pushlightuserdata(L, key);
-    lua_gettable(L, -2);     // lookup[key]
-    if (lua_isnil(L, -1)) {
-      lua_pop(L, 1);         // drop nil
-      lua_checkstack(L, 3);
-      ud = lua_newuserdata(L, sz);  // create new userdata
-      lua_pushlightuserdata(L, key);
-      lua_pushvalue(L, -2);  // dup userdata
-      lua_settable(L, -4);   // lookup[key] = userdata
+/*
+  @ function_dispatch (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int      function_dispatch(lua_State * L) {
+
+		int             i = (int) lua_tonumber(L, lua_upvalueindex(1));
+
+		lua_pushnumber(L, 0);
+		lua_rawget(L, 1);
+
+		T             **obj = static_cast < T ** >(lua_touserdata(L, -1));
+
+		lua_pop(L, 1);
+
+		return ((*obj)->*(T::methods[i].function)) (L);
     }
-    return ud;
-  }
+
+/*
+  @ gc_obj (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int      gc_obj(lua_State * L) {
+
+		T             **obj =
+			static_cast < T ** >(lua_touserdata(L, -1));
+		
+		if ( *obj )
+		{
+			//printf("Cleaning up a %s.\n", T::className );
+			delete(*obj);
+		}
+
+		return 0;
+    }
+
 };
 
-#define LUNAR_DECLARE_METHOD(Class, Name) {#Name, &Class::Name}
+#define LUA_CLASS_FUNC( class , name ) { #name , &class::name }
+#define LUA_CLASS_ATTR( class , funcName , name ) { #name , &class::get##funcName , &class::set##funcName }
+#define LUA_CLASS_ATTR_EX( class , getter , setter , name ) { #name , &class::getter , &class::setter }
+#define LUA_CLASS_ATTR_RD( class , funcName , name ) { #name , &class::get##funcName , 0 }
+#define LUA_CLASS_ATTR_WR( class , funcName , name ) { #name , 0 , &class::set##funcName }
+#define LUA_CLASS_FUNC_END { 0 , 0 }
+#define LUA_CLASS_ATTR_END { 0 , 0 , 0 }
 
 #endif

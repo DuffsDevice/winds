@@ -54,6 +54,9 @@ class _lua_direntry : public _direntry {
 		//! setAttrs
 		int setAttrs( lua_State* L );
 		
+		//! getAttrs
+		int getAttrs( lua_State* L );
+		
 		//! getFileName
 		int getFileName( lua_State* L );
 		
@@ -77,7 +80,8 @@ class _lua_direntry : public _direntry {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_direntry>::RegType methods[];
+		static Lunar<_lua_direntry>::FunctionType methods[];
+		static Lunar<_lua_direntry>::PropertyType properties[];
 };
 
 #endif

@@ -22,13 +22,14 @@ int _lua_button::isAutoSelect( lua_State* L ){ lua_pushboolean( L , ((_button*)_
 
 //! Lua-button
 const char _lua_button::className[] = "_button";
-Lunar<_lua_button>::RegType _lua_button::methods[] = {
-	LUNAR_DECLARE_ALL_METHODS_OF( _lua_button ),
-	
-	//! _interface_input (only these two are used)
-	LUNAR_DECLARE_METHOD(_lua_button,setTitle),
-	LUNAR_DECLARE_METHOD(_lua_button,getTitle),
-	LUNAR_DECLARE_METHOD(_lua_button,setAutoSelect),
-	LUNAR_DECLARE_METHOD(_lua_button,isAutoSelect),
-	{0,0}
+Lunar<_lua_button>::FunctionType _lua_button::methods[] = {
+	GADGET_FUNCS( _lua_button ),
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_button>::PropertyType _lua_button::properties[] = {
+	GADGET_ATTRS( _lua_button ),
+	LUA_CLASS_ATTR( _lua_button , Title , "text" ),
+	LUA_CLASS_ATTR_EX( _lua_button , isAutoSelect , setAutoSelect , "autoSelect" ),
+	LUA_CLASS_ATTR_END
 };
