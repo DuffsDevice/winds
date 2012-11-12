@@ -14,7 +14,7 @@ void _button::setFont( _font* ft )
 	}
 }
 
-_gadgetEventReturnType _button::resizeHandler( _gadgetEvent event )
+_callbackReturn _button::resizeHandler( _event event )
 {
 	_button* that = event.getGadget<_button>();
 	
@@ -41,7 +41,7 @@ void _button::computeSize()
 		this->setWidth( max( 28 , 7 + this->label->font->getStringWidth( this->getTitle() ) ) );
 }
 
-_gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
+_callbackReturn _button::refreshHandler( _event event )
 {	
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
@@ -117,12 +117,12 @@ _gadgetEventReturnType _button::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
+_callbackReturn _button::dragHandler( _event event )
 {
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 		return handled;
 	else
 	{
@@ -140,17 +140,17 @@ _gadgetEventReturnType _button::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _button::mouseHandler( _gadgetEvent event )
+_callbackReturn _button::mouseHandler( _event event )
 {
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
 	
-	if( event.getType() == "mouseDown" )
+	if( event.getType() == mouseDown )
 		that->pressed = true;
-	else if( event.getType() == "mouseUp" )
+	else if( event.getType() == mouseUp )
 	{
 		if( that->pressed )
-			that->handleEvent( _gadgetEvent( "listener" ) );
+			that->handleEvent( _event( onAction ) );
 		else
 			return handled;
 		that->pressed = false;
@@ -176,14 +176,14 @@ void _button::init( string text )
 	this->addChild( this->label );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "refresh" , &_button::refreshHandler );
-	this->registerEventHandler( "mouseDown" , &_button::mouseHandler );
-	this->registerEventHandler( "mouseUp" , &_button::mouseHandler );
-	this->registerEventHandler( "dragStart" , &_button::dragHandler );
-	this->registerEventHandler( "dragStop" , &_button::dragHandler );
-	this->registerEventHandler( "dragging" , &_button::dragHandler );
-	this->registerEventHandler( "resize" , &_button::resizeHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( refresh , &_button::refreshHandler );
+	this->registerEventHandler( mouseDown , &_button::mouseHandler );
+	this->registerEventHandler( mouseUp , &_button::mouseHandler );
+	this->registerEventHandler( dragStart , &_button::dragHandler );
+	this->registerEventHandler( dragStop , &_button::dragHandler );
+	this->registerEventHandler( dragging , &_button::dragHandler );
+	this->registerEventHandler( onResize , &_button::resizeHandler );
 	
 	// Compute the necesary Width
 	this->computeSize();
@@ -206,7 +206,7 @@ void _button::setHeight( _u8 height ){
 	this->computeH = 0; _gadget::setHeight( height );
 }
 
-_button::_button( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
+_button::_button( _length width , _length height , _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , width , height , x , y , style )
 	, _interface_input( text )
 	, autoSelect( false )
@@ -218,7 +218,7 @@ _button::_button( _length width , _length height , _coord x , _coord y , string 
 	this->init( text );
 }
 
-_button::_button( _coord x , _coord y , string text , _gadgetStyle style ) :
+_button::_button( _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , 32 , 9 , x , y , style )
 	, _interface_input( text )
 	, autoSelect( false )

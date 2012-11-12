@@ -1,7 +1,7 @@
 #include "_gadget/gadget.actionButton.h"
 #include "_resource/BMP_ActionButtons.h"
 
-_gadgetEventReturnType _actionButton::refreshHandler( _gadgetEvent event )
+_callbackReturn _actionButton::refreshHandler( _event event )
 {
 	// Receive Gadget
 	_actionButton* that = event.getGadget<_actionButton>();
@@ -20,13 +20,13 @@ _gadgetEventReturnType _actionButton::refreshHandler( _gadgetEvent event )
 
 _bitmap* _actionButton::bitmaps[] = { new BMP_ActionBtnNext() , new BMP_ActionBtnPrev() };
 
-_actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _gadgetStyle style ) :
+_actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style style ) :
 	_button( 9 , 9 , x , y , "" , style )
 	, type( type )
 {
 	// Register handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "refresh" , &_actionButton::refreshHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( refresh , &_actionButton::refreshHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

@@ -36,6 +36,8 @@ typedef _u32 _time;
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
 
+#define noinline __attribute__ ((noinline))
+
 #define u16 _u16
 #include <nds/touch.h>
 #undef u16

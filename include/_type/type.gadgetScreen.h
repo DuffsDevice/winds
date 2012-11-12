@@ -14,7 +14,7 @@ class _gadgetScreen : public _gadget , public _screen
 		_touch 	touchBefore;
 		_u32 	touchCycles;
 		_u8 	cyclesLastClick;
-		bool 	dragging;
+		bool 	isDragging;
 	
 	protected:
 		
@@ -27,7 +27,7 @@ class _gadgetScreen : public _gadget , public _screen
 		bool processTouch( bool held , _touch touch );
 		
 		//! C-tor
-		_gadgetScreen( int bgId , _gadgetStyle style = _gadgetStyle() );
+		_gadgetScreen( int bgId , _style style = _style() );
 };
 
 #endif

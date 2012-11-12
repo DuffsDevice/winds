@@ -120,7 +120,7 @@ void _keyboard::close()
 	
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr )
-		this->destination->triggerEvent( _gadgetEvent( "blur" ) );
+		this->destination->triggerEvent( _event( blur ) );
 	this->destination = nullptr;
 	
 	this->animKeyb.setToValue( sStart );
@@ -152,7 +152,7 @@ void _keyboard::setDestination( _gadget* dest )
 {
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr && this->destination->getParent() != nullptr )
-		this->destination->triggerEvent( _gadgetEvent( "blur" ) );
+		this->destination->triggerEvent( _event( blur ) );
 	
 	this->destination = dest;
 	
@@ -221,7 +221,7 @@ void _keyboard::setDestination( _gadget* dest )
 	}
 }
 
-_gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
+_callbackReturn _keyboard::refreshHandler( _event event )
 {
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
@@ -246,14 +246,14 @@ _gadgetEventReturnType _keyboard::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
+_callbackReturn _keyboard::keyHandler( _event event )
 {	
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
 	
 	if( event.getKeyCode() == DSWindows::KEY_SHIFT )
 	{
-		if( event.getType() != "keyClick" || that->shift == 2 )
+		if( event.getType() != keyClick || that->shift == 2 )
 			return handled;
 		
 		that->shift = !that->shift;
@@ -270,18 +270,18 @@ _gadgetEventReturnType _keyboard::keyHandler( _gadgetEvent event )
 	return handled;
 }
 
-_gadgetEventReturnType _keyboard::focusHandler( _gadgetEvent event ){
+_callbackReturn _keyboard::focusHandler( _event event ){
 	return handled;
 }
 
-_gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
+_callbackReturn _keyboard::dragHandler( _event event )
 {
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
 	
 	static int deltaY = 0;
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
 		if( event.getPosY() > 11 )
@@ -298,7 +298,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		// If y is on the windowbar, drag Me!
 		return handled;
 	}
-	else if( event.getType() == "dragging" )
+	else if( event.getType() == dragging )
 	{		
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -323,7 +323,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 		// Return
 		return handled;
 	}
-	else if( event.getType() == "dragStop" )
+	else if( event.getType() == dragStop )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -343,7 +343,7 @@ _gadgetEventReturnType _keyboard::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _gadgetStyle style ) :
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _style style ) :
 	_gadgetScreen( bgId , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
@@ -392,15 +392,15 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	this->animMagnif.setter( [&]( int n ){ this->setMagnification( n ); } );
 	
 	//! Register my handler as the default Refresh-Handler
-	this->registerEventHandler( "refresh" , &_keyboard::refreshHandler );
-	this->registerEventHandler( "keyDown" , &_keyboard::keyHandler );
-	this->registerEventHandler( "keyUp" , &_keyboard::keyHandler );
-	this->registerEventHandler( "keyClick" , &_keyboard::keyHandler );
+	this->registerEventHandler( refresh , &_keyboard::refreshHandler );
+	this->registerEventHandler( keyDown , &_keyboard::keyHandler );
+	this->registerEventHandler( keyUp , &_keyboard::keyHandler );
+	this->registerEventHandler( keyClick , &_keyboard::keyHandler );
 	
-	this->registerEventHandler( "dragStart" , &_keyboard::dragHandler );
-	this->registerEventHandler( "dragStop" , &_keyboard::dragHandler );
-	this->registerEventHandler( "dragging" , &_keyboard::dragHandler );
-	this->registerEventHandler( "focus" , &_keyboard::focusHandler );
+	this->registerEventHandler( dragStart , &_keyboard::dragHandler );
+	this->registerEventHandler( dragStop , &_keyboard::dragHandler );
+	this->registerEventHandler( dragging , &_keyboard::dragHandler );
+	this->registerEventHandler( focus , &_keyboard::focusHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

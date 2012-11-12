@@ -45,7 +45,7 @@ void _system::debug( string msg ){
 	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
-_gadgetEventReturnType setupHandler( _gadgetEvent e )
+_callbackReturn setupHandler( _event e )
 {
 	static int state = 0;
 	static _gadget* gadgets[10] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
@@ -57,7 +57,7 @@ _gadgetEventReturnType setupHandler( _gadgetEvent e )
 		if( that->getType() == _gadgetType::selectbox )
 		{
 			_system::setLanguage( (_language)e.getGadget<_select>()->getIntValue() );
-			_system::_gadgetHost_->triggerEvent( _gadgetEvent( "setup" ) );
+			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 			return handled;
 		}
 		if( that->getStyle().data == -1 )
@@ -65,13 +65,13 @@ _gadgetEventReturnType setupHandler( _gadgetEvent e )
 			if( state > 0 )
 			{
 				state--;
-				_system::_gadgetHost_->triggerEvent( _gadgetEvent( "setup" ) );
+				_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 			}
 		}
 		else if( state < 1 )
 		{
 			state++;
-			_system::_gadgetHost_->triggerEvent( _gadgetEvent( "setup" ) );
+			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 		}
 		return handled;
 	}
@@ -86,12 +86,12 @@ _gadgetEventReturnType setupHandler( _gadgetEvent e )
 	// Standard
 	if( state != 0 )
 	{
-		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _gadgetStyle::storeData( -1 ) );
-		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _gadgetStyle::storeData( -1 ) );
+		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeData( -1 ) );
+		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeData( -1 ) );
 		prev->setColor( RGB( 30 , 30 , 30 ) );
 		prev->setAlign( _align::left );
-		prev->registerEventHandler( "mouseClick" , setupHandler );
-		btnPrev->registerEventHandler( "listener" , setupHandler );
+		prev->registerEventHandler( mouseClick , setupHandler );
+		btnPrev->registerEventHandler( onAction , setupHandler );
 		
 		gadgets[1] = btnPrev;
 		gadgets[3] = prev;
@@ -108,16 +108,16 @@ _gadgetEventReturnType setupHandler( _gadgetEvent e )
 		that->addChild( clickNext );
 	}
 	
-	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _gadgetStyle::storeData( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _gadgetStyle::storeData( 1 ) );
+	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeData( 1 ) );
+	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeData( 1 ) );
 	gadgets[0] = btnNext;
 	gadgets[2] = next;
 	next->setColor( RGB( 30 , 30 , 30 ) );
 	next->setAlign( _align::right );
 	
 	// Set Handler
-	next->registerEventHandler( "mouseClick" , setupHandler );
-	btnNext->registerEventHandler( "listener" , setupHandler );
+	next->registerEventHandler( mouseClick , setupHandler );
+	btnNext->registerEventHandler( onAction , setupHandler );
 	that->addChild( btnNext );
 	that->addChild( next );
 	
@@ -128,7 +128,7 @@ _gadgetEventReturnType setupHandler( _gadgetEvent e )
 			_label* lbl = new _label( 79 , 52 , _system::getLocalizedString("lbl_choose_language") );
 			_select* slc = new _select( 90 , 5 , 78 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
 			slc->setIntValue( (_u8)_system::getLanguage() );
-			slc->registerEventHandler( "listener" , setupHandler );
+			slc->registerEventHandler( onAction , setupHandler );
 			gadgets[5] = slc;
 			gadgets[6] = lbl;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
@@ -198,8 +198,8 @@ void _system::setup()
 	_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 	//_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 	
-	_system::_gadgetHost_->registerEventHandler( "setup" , setupHandler );
-	_system::_gadgetHost_->triggerEvent( _gadgetEvent( "setup" ) );
+	_system::_gadgetHost_->registerEventHandler( _internal_ , setupHandler );
+	_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 	
 	_system::fadeMainScreen( true );
 	
@@ -278,6 +278,8 @@ void _system::_vblank_()
 	_system::runVblListeners();
 }
 
+//static int z = 0;
+
 void _system::processEvents()
 {
 	//optimizeEvents();
@@ -288,7 +290,7 @@ void _system::processEvents()
 	// Temp...
 	_gadget* gadget;
 	
-	for( _gadgetEvent& event : _system::eventBuffer[!_system::curEventBuffer] )
+	for( _event& event : _system::eventBuffer[!_system::curEventBuffer] )
 	{
 		gadget = (_gadget*)event.getDestination();
 		
@@ -297,7 +299,8 @@ void _system::processEvents()
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
-		//printf("\n%d",cpuGetTiming()-s);
+		//z += cpuGetTiming()-s;
+		//printf("%d\n",cpuGetTiming()-s);
 	}
 
 	// Erase all Events
@@ -305,6 +308,7 @@ void _system::processEvents()
 	
 	//if( !_system::eventBuffer[_system::curEventBuffer].size() )
 	//{
+	//	j++;
 	//	addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
 	//	addMethod( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler),"refresh");
 	//	addMethod( reinterpret_cast<void*>(&_bitmap::copyTransparent),"copyAlgo");
@@ -312,8 +316,11 @@ void _system::processEvents()
 	//	addMethod( reinterpret_cast<void*>(&_rect::toRelative),"toRelative");
 	//	
 	//	printResults();
-	//	printf("%d\n",cpuGetTiming());
-	//	while(true);
+	//	if( j > 60 )
+	//	{
+	//		printf("%d\n",z);
+	//		while(true);
+	//	}
 	//}
 }
 
@@ -367,7 +374,7 @@ void _system::processInput()
 			if( heldCycles[i] == 0 || ( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 ) )
 			{
 				// Set the Args and Trigger the Event
-				_system::_currentFocus_->handleEvent( _gadgetEvent( "keyDown" ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys ) );
+				_system::_currentFocus_->handleEvent( _event( keyDown ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys ) );
 			}
 			
 			// Increase Cycles
@@ -377,7 +384,7 @@ void _system::processInput()
 		else if( heldCycles[i] > 0 )
 		{
 			// Set the Args
-			_gadgetEvent event = _gadgetEvent( "keyUp" ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys );
+			_event event = _event( keyUp ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys );
 			
 			// Trigger the Event
 			_system::_currentFocus_->handleEvent( event );
@@ -385,7 +392,7 @@ void _system::processInput()
 			
 			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
 			if( heldCycles[i] < user->mCC )
-				_system::_currentFocus_->handleEvent( event.setType( "keyClick" ) );
+				_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
 			
 			// Reset Cycles
 			heldCycles[i] = 0;
@@ -682,7 +689,7 @@ int								_system::cpuUsageTemp;
 
 //! Events
 int								_system::curEventBuffer = 0;
-_list<_gadgetEvent> 			_system::eventBuffer[2];
+_list<_event> 			_system::eventBuffer[2];
 
 // Static system...
 _system* _system_ = nullptr;

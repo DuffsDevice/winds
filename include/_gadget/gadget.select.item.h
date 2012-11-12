@@ -13,8 +13,8 @@ class _selectItem : public _gadget {
 		bool	active;
 		
 		// Event - Handler
-		static _gadgetEventReturnType	refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType	mouseHandler( _gadgetEvent event );
+		static _callbackReturn	refreshHandler( _event event );
+		static _callbackReturn	mouseHandler( _event event );
 	
 	public:
 	
@@ -41,6 +41,6 @@ class _selectItem : public _gadget {
 		}
 		
 		//! Default Constructor
-		_selectItem( _s32 nth , _length width , string str , _s32 value , _gadgetStyle style = _defaultStyle_ );
+		_selectItem( _s32 nth , _length width , string str , _s32 value , _style style = _style() );
 };
 #endif

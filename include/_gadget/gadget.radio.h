@@ -17,9 +17,9 @@ class _radio : public _gadget , public _interface_input {
 		
 		static const _bitmap graphic[4];
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn mouseHandler( _event event );
+		static _callbackReturn dragHandler( _event event );
 		
 	public:
 		
@@ -27,7 +27,7 @@ class _radio : public _gadget , public _interface_input {
 		void setIntValue( _s32 val ){ _interface_input::setIntValue( bool(val) ); this->bubbleRefresh( true ); }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_radio( _coord x , _coord y , _radiogroup* radiogroup , _gadgetStyle style = _defaultStyle_ );
+		_radio( _coord x , _coord y , _radiogroup* radiogroup , _style style = _style() );
 		
 		//! Destrucor
 		~_radio();

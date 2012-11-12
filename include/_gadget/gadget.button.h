@@ -19,14 +19,14 @@ class _button : public _gadget , public _interface_input {
 		_u8 	computeW;
 		_u8 	computeH;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
-		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
+		static _callbackReturn mouseHandler( _event event );
 		
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
+		static _callbackReturn dragHandler( _event event );
 		
 		// Will be called if the butten is resized ->label will also be resized
-		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		static _callbackReturn resizeHandler( _event e );
 		
 		void init( string text );
 		
@@ -78,11 +78,11 @@ class _button : public _gadget , public _interface_input {
 		void setHeight();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_button( _length width , _length height , _coord x , _coord y , string title = "" , _gadgetStyle style = _defaultStyle_ );
+		_button( _length width , _length height , _coord x , _coord y , string title = "" , _style style = _style() );
 		
 		//! Constructor with coordinates, title and optional: Style
 		//! The Width will be computed by the font
-		_button( _coord x , _coord y , string text = "" , _gadgetStyle style = _defaultStyle_ );
+		_button( _coord x , _coord y , string text = "" , _style style = _style() );
 		
 		//! Destrucor
 		~_button();

@@ -7,12 +7,12 @@ class _desktop : public _gadget{
 	
 	private:
 	
-		static _gadgetEventReturnType  refreshHandler( _gadgetEvent e );
+		static _callbackReturn  refreshHandler( _event e );
 	
 	public:
 	
 		// Constructor
-		_desktop( _gadgetStyle style = _defaultStyle_ );
+		_desktop( _style style = _style() );
 	
 };
 

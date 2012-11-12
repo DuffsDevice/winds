@@ -1,23 +1,23 @@
 #include "_type/type.gadget.h"
 #include "_type/type.system.h"
 
-map<_gadgetEventType,_gadgetDefaultEventHandler> _gadget::defaultEventHandlers = {
-	{ "focus" , &_gadget::gadgetFocusHandler },
-	{ "blur" , &_gadget::gadgetFocusHandler },
-	{ "mouseDown" , &_gadget::gadgetMouseHandler },
-	{ "mouseUp" , &_gadget::gadgetMouseHandler },
-	{ "mouseClick" , &_gadget::gadgetMouseHandler },
-	{ "mouseDoubleClick" , &_gadget::gadgetMouseHandler },
-	{ "refresh" , &_gadget::gadgetRefreshHandler },
-	{ "dragStart" , &_gadget::gadgetDragHandler },
-	{ "dragStop" , &_gadget::gadgetDragHandler },
-	{ "dragging" , &_gadget::gadgetDragHandler },
-	{ "keyDown" , &_gadget::gadgetKeyHandler },
-	{ "keyUp" , &_gadget::gadgetKeyHandler },
-	{ "keyClick" , &_gadget::gadgetKeyHandler },
+map<_eventType,_gadgetDefaultEventHandler> _gadget::defaultEventHandlers = {
+	{ focus , &_gadget::gadgetFocusHandler },
+	{ blur , &_gadget::gadgetFocusHandler },
+	{ mouseDown , &_gadget::gadgetMouseHandler },
+	{ mouseUp , &_gadget::gadgetMouseHandler },
+	{ mouseClick , &_gadget::gadgetMouseHandler },
+	{ mouseDoubleClick , &_gadget::gadgetMouseHandler },
+	{ refresh , &_gadget::gadgetRefreshHandler },
+	{ dragStart , &_gadget::gadgetDragHandler },
+	{ dragStop , &_gadget::gadgetDragHandler },
+	{ dragging , &_gadget::gadgetDragHandler },
+	{ keyDown , &_gadget::gadgetKeyHandler },
+	{ keyUp , &_gadget::gadgetKeyHandler },
+	{ keyClick , &_gadget::gadgetKeyHandler },
 };
 
-_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
+_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
 	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , focusedChild( nullptr ) , parent( nullptr )  , dragTemp ( nullptr )
 {
 	if( !doNotAllocateBitmap )
@@ -35,25 +35,9 @@ _gadgetType typeOfGadget( _gadget* g )
 //
 // Delegating Constructors!!!! C++0x I love you!
 //
-_gadget::_gadget( int width , int height , int posX , int posY , _gadgetStyle style , bool doNotAllocateBitmap )
+_gadget::_gadget( int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
 	: _gadget( _gadgetType::_plain , width , height , posX , posY , style , doNotAllocateBitmap )
 { }
-
-void _gadget::setPadding( _padding p ){
-	this->padding = p;
-}
-
-_padding _gadget::getPadding(){ 
-	return this->padding;
-}
-
-bool _gadget::isEnhanced() const { 
-	return this->style.enhanced;
-}
-
-void _gadget::setEnhanced( bool flag ){
-	this->style.enhanced = flag;
-}
 
 _gadget::~_gadget()
 {
@@ -62,15 +46,13 @@ _gadget::~_gadget()
 	delete this->bitmap;
 }
 
-_gadgetType _gadget::getType(){ return this->type; }
-
-void _gadget::triggerEvent( _gadgetEvent event )
+void _gadget::triggerEvent( _event event )
 {
 	event.setDestination( this );
 	_system_->generateEvent( event );
 }
 
-void _gadget::bubbleEvent( _gadgetEvent event , bool includeThis )
+void _gadget::bubbleEvent( _event event , bool includeThis )
 {
 	if( includeThis )
 		this->triggerEvent( event );
@@ -80,22 +62,18 @@ void _gadget::bubbleEvent( _gadgetEvent event , bool includeThis )
 
 void _gadget::refreshBitmap()
 {
-	this->handleEvent( _gadgetEvent( this , "refresh" ).preventBubble( true ) );
+	this->handleEvent( _event( this , refresh ).preventBubble( true ) );
 }
 
-_rect _gadget::getSize() const {
-	return _rect( 0 , 0 , this->dimensions.width , this->dimensions.height );
-}
-
-void _gadget::generateEvent( _gadgetEvent event ){
+void _gadget::generateEvent( _event event ){
 	_system_->generateEvent( event );
 }
 
-void _gadget::bubbleRefresh( bool includeThis , _gadgetEvent event )
+void _gadget::bubbleRefresh( bool includeThis , _event event )
 {
 	// Event not generated yet
 	if( !event.hasClippingRects() )
-		event = _gadgetEvent::refreshEvent( this , { this->getAbsoluteDimensions() } );
+		event = _event::refreshEvent( this , { this->getAbsoluteDimensions() } );
 	
 	if( includeThis )
 		this->handleEvent( event );
@@ -109,24 +87,6 @@ void _gadget::bubbleRefresh( bool includeThis , _gadgetEvent event )
 	}
 }
 
-_bitmapPort _gadget::getBitmapPort() const {
-	return this->bitmap;
-}
-
-_bitmap* _gadget::getBitmap(){
-	return this->bitmap;
-}
-
-_gadgetStyle _gadget::getStyle() const {
-	return this->style;
-}
-
-void _gadget::setStyle( _gadgetStyle style )
-{
-	this->style = style;
-	this->triggerEvent( _gadgetEvent( "refresh" ) );
-}
-
 _gadget* _gadget::getScreen()
 {
 	if( this->type == _gadgetType::screen )
@@ -137,30 +97,7 @@ _gadget* _gadget::getScreen()
 		return nullptr;
 }
 
-bool _gadget::registerEventHandler( _gadgetEventType type , _gadgetEventHandler handler ){
-	// Insert The Handler no matter if there was already one acting to that eventType
-	this->eventHandlers[type] = handler;
-	return true;
-}
-
-bool _gadget::registerLuaEventHandler( _gadgetEventType type , int handler , lua_State* L ){
-	// Insert The Handler no matter if there was already one acting to that eventType
-	this->luaEventHandlers[type] = make_pair( handler , L );
-	return true;
-}
-
-bool _gadget::registerDefaultEventHandler( _gadgetEventType type , _gadgetDefaultEventHandler handler ){
-	// Insert The Handler no matter if there was already one acting to that eventType
-	_gadget::defaultEventHandlers[type] = handler;
-	return true;
-}
-
-void _gadget::unregisterEventHandler( _gadgetEventType type ){
-	// Unbind the Handler
-	this->eventHandlers.erase( type );
-}
-
-int _gadget::unregisterLuaEventHandler( _gadgetEventType type ){
+int _gadget::unregisterLuaEventHandler( _eventType type ){
 	
 	if( this->luaEventHandlers.count( type ) == 0 )
 		return LUA_NOREF;
@@ -182,7 +119,7 @@ bool _gadget::blurChild()
 		focusedChild->style.focused = false;
 		_gadget* t = focusedChild;
 		focusedChild = nullptr;
-		t->handleEvent( _gadgetEvent( "onBlur" ) );
+		t->handleEvent( _event( onBlur ) );
 		_system::_currentFocus_ = nullptr;
 	}
 	return true;
@@ -204,7 +141,7 @@ bool _gadget::focusChild( _gadget* child )
 		_system::_currentFocus_ = child;
 		child->style.focused = true;
 		focusedChild = child;
-		focusedChild->handleEvent( _gadgetEvent( "onFocus" ) );
+		focusedChild->handleEvent( _event( onFocus ) );
 		
 		if( child == this->children.front() )
 			return true;
@@ -220,12 +157,7 @@ bool _gadget::focusChild( _gadget* child )
 	return true;
 }
 
-bool _gadget::canReactTo( _gadgetEventType type ) const {
-	//printf("%s can react to %s: %d\n",gadgetType2string[this->type].c_str(),type.c_str(),this->eventHandlers.count( type ) || this->luaEventHandlers.count( type ));
-	return this->eventHandlers.count( type ) || this->luaEventHandlers.count( type );
-}
-
-_gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent& event )
+_callbackReturn _gadget::handleEventDefault( _event& event )
 {
 	// Use the default EventHandler if available
 	if( _gadget::defaultEventHandlers.count( event.getType() ) )
@@ -235,12 +167,12 @@ _gadgetEventReturnType _gadget::handleEventDefault( _gadgetEvent& event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _gadget::handleEventNormal( _gadgetEvent event )
+_callbackReturn _gadget::handleEventNormal( _event event )
 {
 	// Check for Normal Event Handlers
 	if( this->eventHandlers.count( event.getType() ) )
 	{
-		_gadgetEventReturnType ret = this->eventHandlers[ event.getType() ]( event );
+		_callbackReturn ret = this->eventHandlers[ event.getType() ]( event );
 		
 		if( ret != use_default )
 			return ret;
@@ -250,12 +182,12 @@ _gadgetEventReturnType _gadget::handleEventNormal( _gadgetEvent event )
 	return this->handleEventDefault( event );
 }
 
-_gadgetEventReturnType _gadget::handleEvent( _gadgetEvent event )
+_callbackReturn _gadget::handleEvent( _event event )
 {
 	//startTimer( reinterpret_cast<void*>(&_gadget::handleEvent) );
 	event.setGadget( this );
 	pair<int,lua_State*> data;
-	_gadgetEventReturnType ret = not_handled;
+	_callbackReturn ret = not_handled;
 	
 	// Check for a Handler by lua
 	if( this->luaEventHandlers.count( event.getType() ) )
@@ -288,31 +220,23 @@ _coord _gadget::getAbsoluteY() const {
 	return this->dimensions.y;
 }
 
-_coord _gadget::getX() const {
-	return this->dimensions.x;
-}
-
-_coord _gadget::getY() const {
-	return this->dimensions.y;
-}
-
 void _gadget::setX( _coord val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = val;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::setY( _coord val ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.y = val;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x += dX;
 	this->dimensions.y += dY;
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::moveTo( _coord x , _coord y )
@@ -322,13 +246,7 @@ void _gadget::moveTo( _coord x , _coord y )
 	this->dimensions.y = y;
 	//if( this->parent )
 	//	this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
-	this->bubbleRefresh( false , _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
-}
-
-bool _gadget::hasFocus(){ return this->style.focused; }
-
-_gadget* _gadget::getParent() const {
-	return this->parent;
+	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::setParent( _gadget* val )
@@ -363,7 +281,7 @@ void _gadget::removeChild( _gadget* child )
 	
 	this->children.remove( child );
 	
-	this->bubbleRefresh( true , _gadgetEvent::refreshEvent( this , { absDim } ) );
+	this->bubbleRefresh( true , _event::refreshEvent( this , { absDim } ) );
 	
 	if( child->style.focused )
 		this->blurChild();
@@ -387,10 +305,6 @@ void _gadget::addChild( _gadget* child )
 	child->bubbleRefresh( true );
 }
 
-_rect _gadget::getDimensions() const {
-	return this->dimensions;
-}
-
 _rect _gadget::getAbsoluteDimensions() const { 
 	_rect out = this->dimensions;
 	out.x = this->getAbsoluteX();
@@ -405,20 +319,12 @@ void _gadget::setDimensions( _rect rc ){
 	
 	if( dim.width != this->dimensions.width || this->dimensions.height != dim.height )
 	{
-		this->handleEvent(_gadgetEvent("resize"));
-		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
+		this->handleEvent(_event( onResize ));
+		this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
 	}
 	else
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
-}
-
-_length _gadget::getHeight() const {
-	return this->dimensions.height;
-}
-
-_length _gadget::getWidth() const {
-	return this->dimensions.width;
+		this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::setHeight( _length val )
@@ -428,10 +334,10 @@ void _gadget::setHeight( _length val )
 		this->dimensions.height = val;
 		this->bitmap->setHeight( val );
 		
-		this->handleEvent(_gadgetEvent("resize"));
+		this->handleEvent(_event( onResize ));
 		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
+		this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
 	}
 }
 
@@ -442,22 +348,14 @@ void _gadget::setWidth( _length val )
 		this->dimensions.width = val;
 		this->bitmap->setWidth( val );
 		
-		this->handleEvent(_gadgetEvent("resize"));
+		this->handleEvent(_event( onResize ));
 		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _gadgetEvent::refreshEvent( this , dim.reduce( this->getAbsoluteDimensions() ) ) , true );
+		this->bubbleEvent( _event::refreshEvent( this , dim.reduce( this->getAbsoluteDimensions() ) ) , true );
 	}
 }
 
-_gadget* _gadget::getToppestChild()
-{
-	if( this->children.empty() )
-		return nullptr;
-	else
-		return this->children.front();
-}
-
-_gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
+_callbackReturn _gadget::gadgetRefreshHandler( _event& event )
 {
 	//startTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
 	_gadget* that = event.getGadget();
@@ -525,7 +423,7 @@ _gadgetEventReturnType _gadget::gadgetRefreshHandler( _gadgetEvent& event )
 	return handled;
 }
 
-_gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& event )
+_callbackReturn _gadget::gadgetMouseHandler( _event& event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -555,10 +453,10 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& event )
 			}
 			
 			// It doesn't make sense to focus a child of some _gadget that can't be style.focused
-			if( event.getType() == "mouseDown" )
+			if( event.getType() == mouseDown )
 				that->focusChild( gadget );
-			else if( event.getType() == "mouseDoubleClick" && !gadget->canReactTo( "mouseDoubleClick" ) )
-				event.setType( "mouseClick" );
+			else if( event.getType() == mouseDoubleClick && !gadget->canReactTo( mouseDoubleClick ) )
+				event.setType( mouseClick );
 			
 			// Trigger the Event
 			return gadget->handleEvent( event );
@@ -566,14 +464,14 @@ _gadgetEventReturnType _gadget::gadgetMouseHandler( _gadgetEvent& event )
 	}
 	
 	// If no Gadget received the Mousedown, blur the Focussed Child
-	if( event.getType() == "mouseDown" )
+	if( event.getType() == mouseDown )
 		that->blurChild();
 	
 	return not_handled;
 }
 
 
-_gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
+_callbackReturn _gadget::gadgetDragHandler( _event& event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
@@ -584,7 +482,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	_coord posY = event.getPosY();
 	
 	// Start Dragging
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 	{
 		for( _gadget* gadget : that->children )
 		{
@@ -610,12 +508,13 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 				}
 				
 				// Trigger the Event
-				_gadgetEventReturnType ret = gadget->handleEvent( event );
+				_callbackReturn ret = gadget->handleEvent( event );
 				
 				if( ret != not_handled )
 				{
 					// Set Gadget, which receives all other drag Events until dragStop is called
 					that->dragTemp = gadget;
+					gadget->style.dragged = true;
 				}
 				
 				return ret;
@@ -623,7 +522,7 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 		}
 	}
 	// Stop Dragging
-	else if( that->dragTemp && event.getType() == "dragStop" )
+	else if( that->dragTemp && event.getType() == dragStop )
 	{
 		// Absolute Position to Relative Position
 		if( that->dragTemp->style.enhanced )
@@ -637,14 +536,17 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 		}
 		
 		// Rewrite Destination andTrigger the Event
-		_gadgetEventReturnType ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
+		_callbackReturn ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
+		
+		// Update _style
+		that->dragTemp->style.dragged = false;
 		
 		// No Gadget will receive Events anymore
 		that->dragTemp = nullptr;
 		
 		return ret;
 	}
-	else if( that->dragTemp && event.getType() == "dragging" )
+	else if( that->dragTemp && event.getType() == dragging )
 	{
 		// Absolute Position to Relative Position
 		event.setDestination( that->dragTemp );
@@ -666,19 +568,19 @@ _gadgetEventReturnType _gadget::gadgetDragHandler( _gadgetEvent& event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent& event )
+_callbackReturn _gadget::gadgetFocusHandler( _event& event )
 {
 	_gadget* that = event.getGadget();
 	
 	if( !that->parent )
 		return not_handled;
 	
-	if( event.getType() == "focus" )
+	if( event.getType() == focus )
 	{
 		that->parent->focusChild( that );
 		return handled;
 	}
-	else if( event.getType() == "blur" )
+	else if( event.getType() == blur )
 	{
 		that->parent->blurChild();
 		return handled;
@@ -687,7 +589,7 @@ _gadgetEventReturnType _gadget::gadgetFocusHandler( _gadgetEvent& event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _gadget::gadgetKeyHandler( _gadgetEvent& event )
+_callbackReturn _gadget::gadgetKeyHandler( _event& event )
 {
 	_gadget* that = event.getGadget();
 	

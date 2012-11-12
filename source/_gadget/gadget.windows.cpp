@@ -1,20 +1,13 @@
 #include "_gadget/gadget.windows.h"
 
-//! For Console
-#include <nds/arm9/console.h>
-#include <nds/arm9/input.h>
-
 #include "_type/type.system.h"
-
-//! Graphics
-#include "_resource/BMP_StartButton.h"
 
 //void _windows::optimizeEvents(){
 	//! Optimize refresh-Events
-	//map<_gadget*,_gadgetEvent*);
-	/*deque<_gadgetEvent> tempEvents = this->events;
+	//map<_gadget*,_event*);
+	/*deque<_event> tempEvents = this->events;
 	
-	sort( tempEvents.begin() , tempEvents.end() , [](_gadgetEvent e1 , _gadgetEvent e2)->bool{ return ( e1.getDestination() < e2.getDestination() ); } );
+	sort( tempEvents.begin() , tempEvents.end() , [](_event e1 , _event e2)->bool{ return ( e1.getDestination() < e2.getDestination() ); } );
 	
 	_gadget* dest = 0;
 	_gadget* tempDest = 0;
@@ -42,7 +35,7 @@
 	this->events = tempEvents;*/
 //}
 
-_gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
+_callbackReturn _windows::refreshHandler( _event event )
 {	
 	// Receive Gadget
 	_windows* that = event.getGadget<_windows>();
@@ -60,7 +53,7 @@ _gadgetEventReturnType _windows::refreshHandler( _gadgetEvent event )
 }
 
 //! Constructor
-_windows::_windows( _u8 bgId , _gadgetStyle style ) :
+_windows::_windows( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , style )
 {
 	//! Set Padding
@@ -76,38 +69,8 @@ _windows::_windows( _u8 bgId , _gadgetStyle style ) :
 	this->addChild( this->startButton );
 	
 	//! Register Event-Handlers
-	this->registerEventHandler( "refresh" , &_windows::refreshHandler );
+	this->registerEventHandler( refresh , &_windows::refreshHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();
 }
-
-/*bool _windows::focusChild( _gadget* child )
-{
-	if( !child )
-		return false;
-	
-	_gadgetList::iterator itTemp = find( this->children.begin() , this->children.end() , child );
-	
-	// Blur the Previously focused gadget
-	if( !child->hasFocus() )
-		this->blurEventChild();
-	else
-		return false;
-	
-	child->focused = true;
-	
-	if( child->getType() == _gadgetType::desktop || *itTemp == *( ++this->children.rbegin() ) )
-		return true;
-	
-	// Move the gadget to "top"
-	this->children.splice( this->children.end() , this->children , itTemp );
-	
-	// Move the keyboard top the "top", so the child will be at pos No. 2
-	//this->children.splice( this->children.end() , this->children , find( this->children.begin() , this->children.end() , this->taskboard ) );
-	
-	// Refresh the Gadget
-	child->bubbleRefresh();
-	
-	return true;
-}*/

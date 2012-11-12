@@ -1,5 +1,5 @@
-#ifndef _WIN_T_GADGETSTYLE_
-#define _WIN_T_GADGETSTYLE_
+#ifndef _WIN_T_style_
+#define _WIN_T_style_
 
 
 #include "_type/type.h"
@@ -7,7 +7,7 @@
 /**
  * Specifies the appearence of a gadget
 **/
-struct _gadgetStyle{
+struct _style{
 	void* own;
 	_int data;
 	_u8 resizable : 2;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction **/
@@ -26,11 +26,11 @@ struct _gadgetStyle{
 	
 	//! 8bytes and 15 bits!
 	
-	static _gadgetStyle owner( void* owner );
-	static _gadgetStyle storeData( _int data );
+	static _style owner( void* owner );
+	static _style storeData( _int data );
+	
+	_style();
 	
 } __attribute__(( packed )) ;
-
-extern _gadgetStyle _defaultStyle_;
 
 #endif

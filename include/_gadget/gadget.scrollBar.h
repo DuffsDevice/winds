@@ -26,17 +26,17 @@ class _scrollBar : public _gadget{
 		_button* 	higherHandle;
 		_button* 	lowerHandle;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType clickHandler( _gadgetEvent event );
-		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
-		static _gadgetEventReturnType dragHandler( _gadgetEvent e );
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn clickHandler( _event event );
+		static _callbackReturn resizeHandler( _event e );
+		static _callbackReturn dragHandler( _event e );
 		
 		void refreshCache();
 		void refreshPosition();
 	
 	public:
 		
-		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _gadgetStyle style = _gadgetStyle() );
+		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style style = _style() );
 		
 		void setValue( _u32 value );
 		

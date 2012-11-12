@@ -7,7 +7,7 @@
 
 const _bitmap _radio::graphic[4] = { BMP_RadioChecked() , BMP_RadioUnchecked() , BMP_RadioBorder() , BMP_RadioBorderPressed() };
 
-_gadgetEventReturnType _radio::refreshHandler( _gadgetEvent event )
+_callbackReturn _radio::refreshHandler( _event event )
 {
 	// Receive Gadget
 	_radio* that = (_radio*)event.getGadget();
@@ -29,15 +29,15 @@ _gadgetEventReturnType _radio::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _radio::dragHandler( _gadgetEvent event )
+_callbackReturn _radio::dragHandler( _event event )
 {
 	// Receive Gadget
 	_radio* that = (_radio*)event.getGadget();
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 		return handled;
 	
-	else if( event.getType() == "dragging" )
+	else if( event.getType() == dragging )
 	{	
 		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 		{
@@ -53,18 +53,18 @@ _gadgetEventReturnType _radio::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _radio::mouseHandler( _gadgetEvent event )
+_callbackReturn _radio::mouseHandler( _event event )
 {
 	// Receive Gadget
 	_radio* that = (_radio*)event.getGadget();
 	
-	if( event.getType() == "mouseDown" )
+	if( event.getType() == mouseDown )
 			that->pressed = true;
-	else if( that->pressed && event.getType() == "mouseUp" )
+	else if( that->pressed && event.getType() == mouseUp )
 	{
 		if( !that->getIntValue() )
 			that->radiogroup->enableRadio( that );
-		that->triggerEvent( _gadgetEvent( "change" ) );
+		that->triggerEvent( _event( onChange ) );
 		that->pressed = false;
 	}
 	
@@ -74,7 +74,7 @@ _gadgetEventReturnType _radio::mouseHandler( _gadgetEvent event )
 	return handled;
 }
 
-_radio::_radio( _coord x , _coord y , _radiogroup* group , _gadgetStyle style ) :
+_radio::_radio( _coord x , _coord y , _radiogroup* group , _style style ) :
 	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
 	, _interface_input( "" )
 	, pressed( false )
@@ -85,12 +85,12 @@ _radio::_radio( _coord x , _coord y , _radiogroup* group , _gadgetStyle style ) 
 	this->radiogroup->addRadio( this );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "refresh" , &_radio::refreshHandler );
-	this->registerEventHandler( "mouseDown" , &_radio::mouseHandler );
-	this->registerEventHandler( "mouseUp" , &_radio::mouseHandler );
-	this->registerEventHandler( "dragStart" , &_radio::dragHandler );
-	this->registerEventHandler( "dragging" , &_radio::dragHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( refresh , &_radio::refreshHandler );
+	this->registerEventHandler( mouseDown , &_radio::mouseHandler );
+	this->registerEventHandler( mouseUp , &_radio::mouseHandler );
+	this->registerEventHandler( dragStart , &_radio::dragHandler );
+	this->registerEventHandler( dragging , &_radio::dragHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

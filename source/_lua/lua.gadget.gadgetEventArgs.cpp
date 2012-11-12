@@ -97,7 +97,7 @@ int _lua_gadget::getScreen( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _l
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
-	_gadgetEventType t = luaL_checkstring( L , 1 );
+	_eventType t = string2eventType[ luaL_checkstring( L , 1 ) ];
 	if( lua_isfunction( L , -1 ) ){
 		int i = luaL_ref(L, LUA_REGISTRYINDEX);
 		this->gadget->registerLuaEventHandler( t , i , L ); 
@@ -106,7 +106,7 @@ int _lua_gadget::registerEventHandler( lua_State* L ){
 }
 
 //! unregisterEventHandler
-int _lua_gadget::unregisterEventHandler( lua_State* L ){ _gadgetEventType t = luaL_checkstring( L , 1 ); luaL_unref(L, LUA_REGISTRYINDEX , this->gadget->unregisterLuaEventHandler( t ) ); return 0; }
+int _lua_gadget::unregisterEventHandler( lua_State* L ){ _eventType t = string2eventType[ luaL_checkstring( L , 1 ) ]; luaL_unref(L, LUA_REGISTRYINDEX , this->gadget->unregisterLuaEventHandler( t ) ); return 0; }
 
 //! generateEvent
 int _lua_gadget::generateEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->generateEvent( *e ); return 0; }
@@ -115,7 +115,7 @@ int _lua_gadget::generateEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_
 int _lua_gadget::triggerEvent(lua_State* L){  _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( e ) this->gadget->triggerEvent( *e ); return 0; }
 
 //! canReactTo
-int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->canReactTo( luaL_checkstring( L , 1 ) ) ); return 1; }
+int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->canReactTo( string2eventType[ luaL_checkstring( L , 1 ) ] ) ); return 1; }
 
 //! handleEvent
 int _lua_gadget::handleEvent( lua_State* L ){ _lua_gadgetEvent* e = Lunar<_lua_gadgetEvent>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEvent( *e ) ].c_str() ); return 1; }
@@ -237,114 +237,114 @@ Lunar<_lua_gadget>::RegType _lua_gadget::methods[] = {
 ##         Lua-GadgetEvent        ##
 ##################################*/
 // Ctor...
-_lua_gadgetEvent::_lua_gadgetEvent( _gadgetEvent e ) :
-	_gadgetEvent( e )
+_lua_gadgetEvent::_lua_gadgetEvent( _event e ) :
+	_event( e )
 { }
 
 // Lua-Ctor...
-_lua_gadgetEvent::_lua_gadgetEvent( lua_State* L ) : _gadgetEvent( ){
-	// _gadgetEvent( type , args )
-	if( string("string") == luaL_typename( L , 1 ) )
-		_gadgetEvent::setType( luaL_checkstring( L , 1 ) );
-	// _gadgetEvent( src* , type , args )
+_lua_gadgetEvent::_lua_gadgetEvent( lua_State* L ) : _event( ){
+	// _event( type , args )
+	if( lua_isstring( L , 1 ) )
+		_event::setType( string2eventType[ luaL_checkstring( L , 1 ) ] );
+	// _event( src* , type , args )
 	else if( lua_isuserdata( L , 1 ) )
 	{
 		_lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 );
 		
 		if( g )
-			_gadgetEvent::setSource( g->gadget );
+			_event::setSource( g->gadget );
 		
 		// Is a gadgetEventType?
-		if( string("string") == luaL_typename( L , 2 ) )
-			_gadgetEvent::setType( luaL_checkstring( L , 2 ) );
+		if( lua_isstring( L , 2 ) )
+			_event::setType( string2eventType[ luaL_checkstring( L , 2 ) ] );
 	}
 }
 
 //! setType
-int _lua_gadgetEvent::setType( lua_State* L ){ _gadgetEvent::setType( luaL_checkstring( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setType( lua_State* L ){ _event::setType( string2eventType[ luaL_checkstring( L , 1 ) ] ); return 0; }
 
 //! getType
-int _lua_gadgetEvent::getType( lua_State* L ){ lua_pushstring( L , _gadgetEvent::getType().c_str() ); return 1; }
+int _lua_gadgetEvent::getType( lua_State* L ){ lua_pushstring( L , eventType2string[ _event::getType() ].c_str() ); return 1; }
 
 //! getGadget
-int _lua_gadgetEvent::getGadget( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( _gadgetEvent::getGadget() ) , true ); return 1; }
+int _lua_gadgetEvent::getGadget( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( _event::getGadget() ) , true ); return 1; }
 
 
 
 //! resetParams
-int _lua_gadgetEvent::resetParams(lua_State* L){ _gadgetEvent::resetParams(); return 0; }
+int _lua_gadgetEvent::resetParams(lua_State* L){ _event::resetParams(); return 0; }
 
 //! getDestination
-int _lua_gadgetEvent::getDestination(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_gadgetEvent::getDestination() ) , true ); return 1; }
+int _lua_gadgetEvent::getDestination(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) , true ); return 1; }
 
 //! getSource
-int _lua_gadgetEvent::getSource(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_gadgetEvent::getSource() ) , true ); return 1; }
+int _lua_gadgetEvent::getSource(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) , true ); return 1; }
 
 //! setDestination
-int _lua_gadgetEvent::setDestination(lua_State* L){ _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _gadgetEvent::setDestination( g->gadget ); return 0; }
+int _lua_gadgetEvent::setDestination(lua_State* L){ _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setDestination( g->gadget ); return 0; }
 
 //! setSource
-int _lua_gadgetEvent::setSource(lua_State* L){  _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _gadgetEvent::setSource( g->gadget ); return 0; }
+int _lua_gadgetEvent::setSource(lua_State* L){  _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setSource( g->gadget ); return 0; }
 
 //! Set X
-int _lua_gadgetEvent::setPosX(lua_State* L){ _gadgetEvent::setPosX( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setPosX(lua_State* L){ _event::setPosX( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Set Y
-int _lua_gadgetEvent::setPosY(lua_State* L){ _gadgetEvent::setPosY( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setPosY(lua_State* L){ _event::setPosY( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Get X
-int _lua_gadgetEvent::getPosX(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getPosX() ); return 1; }
+int _lua_gadgetEvent::getPosX(lua_State* L){ lua_pushnumber( L , _event::getPosX() ); return 1; }
 
 //! Get Y
-int _lua_gadgetEvent::getPosY(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getPosY() ); return 1; }
+int _lua_gadgetEvent::getPosY(lua_State* L){ lua_pushnumber( L , _event::getPosY() ); return 1; }
 
 //! Set X
-int _lua_gadgetEvent::setDeltaX(lua_State* L){ _gadgetEvent::setDeltaX( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setDeltaX(lua_State* L){ _event::setDeltaX( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Set Y
-int _lua_gadgetEvent::setDeltaY(lua_State* L){ _gadgetEvent::setDeltaY( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setDeltaY(lua_State* L){ _event::setDeltaY( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Get X
-int _lua_gadgetEvent::getDeltaX(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getDeltaX() ); return 1; }
+int _lua_gadgetEvent::getDeltaX(lua_State* L){ lua_pushnumber( L , _event::getDeltaX() ); return 1; }
 
 //! Get Y
-int _lua_gadgetEvent::getDeltaY(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getDeltaY() ); return 1; }
+int _lua_gadgetEvent::getDeltaY(lua_State* L){ lua_pushnumber( L , _event::getDeltaY() ); return 1; }
 
 //! Get Key-Code
-int _lua_gadgetEvent::getKeyCode(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getKeyCode() ); return 1; }
+int _lua_gadgetEvent::getKeyCode(lua_State* L){ lua_pushnumber( L , _event::getKeyCode() ); return 1; }
 
 //! Set Key-Code
-int _lua_gadgetEvent::setKeyCode(lua_State* L){ _gadgetEvent::setKeyCode( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setKeyCode(lua_State* L){ _event::setKeyCode( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Get Held Time of the key that triggered the Event
-int _lua_gadgetEvent::getHeldTime(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getHeldTime() ); return 1; }
+int _lua_gadgetEvent::getHeldTime(lua_State* L){ lua_pushnumber( L , _event::getHeldTime() ); return 1; }
 
 //! Set Held Time of the key that triggered the Event
-int _lua_gadgetEvent::setHeldTime(lua_State* L){ _gadgetEvent::setHeldTime( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setHeldTime(lua_State* L){ _event::setHeldTime( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Get KeyCode State of that Moment the Event was triggered
-int _lua_gadgetEvent::getCurrentKeyCodes(lua_State* L){ lua_pushnumber( L , _gadgetEvent::getCurrentKeyCodes() ); return 1; }
+int _lua_gadgetEvent::getCurrentKeyCodes(lua_State* L){ lua_pushnumber( L , _event::getCurrentKeyCodes() ); return 1; }
 
 //! Set KeyCode State of that Moment the Event was triggered
-int _lua_gadgetEvent::setCurrentKeyCodes(lua_State* L){ _gadgetEvent::setCurrentKeyCodes( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::setCurrentKeyCodes(lua_State* L){ _event::setCurrentKeyCodes( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Set Damaged Rects(The Rects that have to be repainted by the parent)
-int _lua_gadgetEvent::setDamagedRects(lua_State* L){ _lua_area* a = Lunar<_lua_area>::check( L , 1 ); if( a ) _gadgetEvent::setDamagedRects( *a ); return 0; }
+int _lua_gadgetEvent::setDamagedRects(lua_State* L){ _lua_area* a = Lunar<_lua_area>::check( L , 1 ); if( a ) _event::setDamagedRects( *a ); return 0; }
 
 //! Get Damaged Rects(The Rects that have to be repainted by the parent)
-int _lua_gadgetEvent::getDamagedRects(lua_State* L){  Lunar<_lua_area>::push( L , new _lua_area( _gadgetEvent::getDamagedRects() ) , true ); return 1; }
+int _lua_gadgetEvent::getDamagedRects(lua_State* L){  Lunar<_lua_area>::push( L , new _lua_area( _event::getDamagedRects() ) , true ); return 1; }
 
 //! Check if event is a bubble-Refresh-One
-int _lua_gadgetEvent::isBubblePrevented(lua_State* L){ lua_pushboolean( L , _gadgetEvent::isBubblePrevented() ); return 1; }
+int _lua_gadgetEvent::isBubblePrevented(lua_State* L){ lua_pushboolean( L , _event::isBubblePrevented() ); return 1; }
 
 //! Check if event is a bubble-Refresh-One
-int _lua_gadgetEvent::preventBubble(lua_State* L){ _gadgetEvent::preventBubble( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_gadgetEvent::preventBubble(lua_State* L){ _event::preventBubble( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Check if event has Clipping Rects
-int _lua_gadgetEvent::hasClippingRects(lua_State* L){ lua_pushboolean( L , _gadgetEvent::hasClippingRects() ); return 1; }
+int _lua_gadgetEvent::hasClippingRects(lua_State* L){ lua_pushboolean( L , _event::hasClippingRects() ); return 1; }
 
-//! Lua-_gadgetEvent
-const char _lua_gadgetEvent::className[] = "_gadgetEvent";
+//! Lua-_event
+const char _lua_gadgetEvent::className[] = "_event";
 Lunar<_lua_gadgetEvent>::RegType _lua_gadgetEvent::methods[] = {
   LUNAR_DECLARE_METHOD(_lua_gadgetEvent, setType),
   LUNAR_DECLARE_METHOD(_lua_gadgetEvent, getType),

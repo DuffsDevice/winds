@@ -11,7 +11,7 @@ class _imagegadget : public _gadget {
 	
 		const _bitmap* img;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 		
@@ -19,7 +19,7 @@ class _imagegadget : public _gadget {
 		
 		const _bitmap* getImage(){ return this->img; }
 		
-		_imagegadget( _coord x , _coord y , const _bitmap* bmp , _gadgetStyle style = _defaultStyle_);
+		_imagegadget( _coord x , _coord y , const _bitmap* bmp , _style style = _style());
 };
 
 #endif

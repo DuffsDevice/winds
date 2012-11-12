@@ -19,11 +19,11 @@ class _actionButton : public _button {
 		
 		_actionButtonType type;
 		
-		static _gadgetEventReturnType  refreshHandler( _gadgetEvent );
+		static _callbackReturn  refreshHandler( _event );
 	
 	public:
 		
-		_actionButton( _actionButtonType type , _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );
+		_actionButton( _actionButtonType type , _coord x , _coord y , _style style = _style() );
 };
 
 #endif

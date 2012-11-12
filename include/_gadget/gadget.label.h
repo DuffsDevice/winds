@@ -30,7 +30,7 @@ class _label : public _gadget , public _interface_input {
 		void computeSize();
 		
 		//! Refresh-Handler
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 		
@@ -68,10 +68,10 @@ class _label : public _gadget , public _interface_input {
 		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
-		_label( _length width , _length height , _coord x , _coord y , string value , _gadgetStyle style = _defaultStyle_ );
+		_label( _length width , _length height , _coord x , _coord y , string value , _style style = _style() );
 		
 		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string text , _gadgetStyle style = _defaultStyle_ );
+		_label( _coord x , _coord y , string text , _style style = _style() );
 		
 		// Methods to set Size
 		void setWidth( _u8 width );

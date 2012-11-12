@@ -6,7 +6,7 @@
 _pixel paletteBlue[4] = { RGB255( 94 , 119 , 238 ) , RGB255( 125 , 145 , 210 ) , RGB255( 94 , 119 , 238 ) , RGB255( 44 , 62 , 160 ) };
 _pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) , RGB255( 46 , 211 , 49 ) , RGB255( 121 , 227 , 123 ) };
 
-_gadgetEventReturnType _progressbar::refreshHandler( _gadgetEvent event ){
+_callbackReturn _progressbar::refreshHandler( _event event ){
 	
 	_progressbar* that = event.getGadget<_progressbar>();
 	
@@ -88,7 +88,7 @@ void _progressbar::step()
 #define method_cast( t ) reinterpret_cast<void (unknownClass::*)()>(t)
 #define class_cast( t ) reinterpret_cast<unknownClass*>(t)
 
-_progressbar::_progressbar( _length width , _length height , _coord x , _coord y  , bool type , _gadgetStyle style ) :
+_progressbar::_progressbar( _length width , _length height , _coord x , _coord y  , bool type , _style style ) :
 	_gadget( _gadgetType::progressbar , width , 8 , x , y , style )
 	, type( type )
 	, value( 70 )
@@ -98,14 +98,14 @@ _progressbar::_progressbar( _length width , _length height , _coord x , _coord y
 	_system_->addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "refresh" , &_progressbar::refreshHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( refresh , &_progressbar::refreshHandler );
 	
 	// refresh!
 	this->refreshBitmap();
 }
 
-_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _gadgetStyle style ) : 
+_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style style ) : 
 	_progressbar( width , 8 , x , y , type , style )
 { }
 

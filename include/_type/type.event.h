@@ -8,32 +8,63 @@
 /**
  * Specifies how the event was handled
 **/
-enum _gadgetEventReturnType : _u8
+enum _callbackReturn : _u8
 {
-	handled = 1,
-	use_default = 2,
-	use_normal = 3,
-	not_handled = 0, // If returned on dragStart -> dragging will be prevented
+	not_handled, // If returned on dragStart -> dragging will be prevented
+	handled,
+	use_default,
+	use_normal,
 };
 
 /**
  * Specifies the Type of an Event
 **/
-typedef string _gadgetEventType;
+enum _eventType : _u8
+{
+	_none_,
+	_internal_,
+	refresh,
+	mouseClick,
+	mouseDoubleClick,
+	mouseDown,
+	mouseUp,
+	keyDown,
+	keyUp,
+	keyClick,
+	dragStart,
+	dragStop,
+	dragging,
+	blur,
+	focus,
+	close,
+	onResize,
+	onAction,
+	onChange,
+	onBlur,
+	onFocus,
+	onClose
+};
+
+
+//typedef string _eventType;
 
 // Predefines
-extern map<_gadgetEventReturnType,string> eventReturnType2string;
-extern map<string,_gadgetEventReturnType> string2eventReturnType;
+extern _map<_callbackReturn,string> eventReturnType2string;
+extern _map<string,_callbackReturn> string2eventReturnType;
+
+
+extern _map<_eventType,string> eventType2string;
+extern _map<string,_eventType> string2eventType;
 
 class _gadget;
 
-class _gadgetEvent
+class _event
 {
 	private:
 		
 		friend class _gadget;
 		
-		_gadgetEventType type;
+		_eventType type;
 		
 		_gadget* that;
 		
@@ -60,20 +91,20 @@ class _gadgetEvent
 	public:
 		
 		//! Default Constructor
-		_gadgetEvent( _gadget* src = nullptr , _gadgetEventType type = "none" );
+		_event( _gadget* src = nullptr , _eventType type = _none_ );
 		
 		//! Common Constructor
-		_gadgetEvent( _gadgetEventType type );
+		_event( _eventType type );
 		
 		//! Specific Events:
-		static _gadgetEvent refreshEvent( _gadget* src ,  _area damagedRects = _area() );
-		static _gadgetEvent dialogClose( _gadget* src , _s32 intVal , string strVal );
+		static _event refreshEvent( _gadget* src ,  _area damagedRects = _area() );
+		static _event dialogClose( _gadget* src , _s32 intVal , string strVal );
 		
 		//! Manually set Event Type
-		_gadgetEvent& setType( _gadgetEventType type ){ this->type = type; return *this; }
+		_event& setType( _eventType type ){ this->type = type; return *this; }
 		
 		//! Get the Type of the Event
-		_gadgetEventType getType(){	return this->type; }
+		_eventType getType(){	return this->type; }
 
 		//! Get the Current handling Gadget
 		_gadget* getGadget(){ return this->that; }
@@ -93,19 +124,19 @@ class _gadgetEvent
 		void resetParams( void* dest = nullptr );//!............................<= Reset All Arguments
 		
 		//! Setters...
-		_gadgetEvent& setDestination( void* newVal ){ this->dest = newVal; return *this; }//!..........<= Set the Destination
-		_gadgetEvent& setSource( void* newVal ){ this->src = newVal; return *this; }//!................<= Set the Source
-		_gadgetEvent& setPosX( _coord val ){ this->posX = val; return *this; }//!......................<= Set Triggering Point X
-		_gadgetEvent& setPosY( _coord val ){ this->posY = val; return *this; }//!......................<= Set Triggering Point Y
-		_gadgetEvent& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!.......<= Set Triggering Point X which results in the position on the screen that the user effectively touched
-		_gadgetEvent& setEffectivePosY( _coord val ){ this->effectiveY = val; return *this; }//!.......<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
-		_gadgetEvent& setDeltaX( _coord val ){ this->deltaX = val; return *this; }//!..................<= Set Triggering Point X
-		_gadgetEvent& setDeltaY( _coord val ){ this->deltaY = val; return *this; }//!..................<= Set Triggering Point Y
-		_gadgetEvent& setKeyCode( _key code ){ this->keyCode = code; return *this; }//!................<= Set triggering KeyCode
-		_gadgetEvent& setHeldTime( _u32 heldTime ){ this->heldTime = heldTime; return *this; }//!......<= Set Held Time of the key that triggered the Event
-		_gadgetEvent& setCurrentKeyCodes( _key code ){ this->currentKeyCodes = code; return *this; }//!<= Set KeyCode State of that Moment the Event was triggered
-		_gadgetEvent& preventBubble( bool bR = true ){ this->bubble = bR; return *this; }//!...........<= Set if this event was auto-generated
-		_gadgetEvent& setDamagedRects( _area rects ){ this->damagedRects = rects; return *this; }//!...<= Set Rects to be repainted
+		_event& setDestination( void* newVal ){ this->dest = newVal; return *this; }//!..........<= Set the Destination
+		_event& setSource( void* newVal ){ this->src = newVal; return *this; }//!................<= Set the Source
+		_event& setPosX( _coord val ){ this->posX = val; return *this; }//!......................<= Set Triggering Point X
+		_event& setPosY( _coord val ){ this->posY = val; return *this; }//!......................<= Set Triggering Point Y
+		_event& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!.......<= Set Triggering Point X which results in the position on the screen that the user effectively touched
+		_event& setEffectivePosY( _coord val ){ this->effectiveY = val; return *this; }//!.......<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
+		_event& setDeltaX( _coord val ){ this->deltaX = val; return *this; }//!..................<= Set Triggering Point X
+		_event& setDeltaY( _coord val ){ this->deltaY = val; return *this; }//!..................<= Set Triggering Point Y
+		_event& setKeyCode( _key code ){ this->keyCode = code; return *this; }//!................<= Set triggering KeyCode
+		_event& setHeldTime( _u32 heldTime ){ this->heldTime = heldTime; return *this; }//!......<= Set Held Time of the key that triggered the Event
+		_event& setCurrentKeyCodes( _key code ){ this->currentKeyCodes = code; return *this; }//!<= Set KeyCode State of that Moment the Event was triggered
+		_event& preventBubble( bool bR = true ){ this->bubble = bR; return *this; }//!...........<= Set if this event was auto-generated
+		_event& setDamagedRects( _area rects ){ this->damagedRects = rects; return *this; }//!...<= Set Rects to be repainted
 		
 		//! Getters
 		void* getDestination(){ return this->dest; }//!.........................<= Get Destination Gadget

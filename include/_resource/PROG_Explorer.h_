@@ -22,7 +22,7 @@ class PROG_Explorer : public _progC {
 		int			main( _cmdArgs& args );
 		void		destruct();
 		
-		static _gadgetEventReturnType handler( _gadgetEvent event );
+		static _callbackReturn handler( _event event );
 		
 	public:
 		

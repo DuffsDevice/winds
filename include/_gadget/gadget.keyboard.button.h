@@ -10,7 +10,7 @@ class _keyboardButton : public _button {
 		
 		_key key;
 		
-		static _gadgetEventReturnType  mouseHandler( _gadgetEvent );
+		static _callbackReturn  mouseHandler( _event );
 		
 		void init();
 	
@@ -20,9 +20,9 @@ class _keyboardButton : public _button {
 		
 		void setKey( _key key );
 		
-		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style = _defaultStyle_ );
+		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style = _style() );
 		
-		_keyboardButton( _key key , _coord x , _coord y , string text , _gadgetStyle style = _defaultStyle_ );
+		_keyboardButton( _key key , _coord x , _coord y , string text , _style style = _style() );
 };
 
 class _keyboardStartButton : public _button {
@@ -35,13 +35,13 @@ class _keyboardStartButton : public _button {
 		
 		_startMenu*		startMenu;
 		
-		static _gadgetEventReturnType  refreshHandler( _gadgetEvent );
+		static _callbackReturn  refreshHandler( _event );
 		
-		static _gadgetEventReturnType  mouseHandler( _gadgetEvent );
+		static _callbackReturn  mouseHandler( _event );
 	
 	public:
 		
-		_keyboardStartButton( _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );
+		_keyboardStartButton( _coord x , _coord y , _style style = _style() );
 };
 
 #endif

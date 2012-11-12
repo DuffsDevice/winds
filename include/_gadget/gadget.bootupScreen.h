@@ -13,11 +13,11 @@ class _bootupScreen : public _gadgetScreen
 		_gadget* 		refresher;
 		_progressbar* 	bar;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 	
-		_bootupScreen( _u8 bgId , _gadgetStyle style = _gadgetStyle() );
+		_bootupScreen( _u8 bgId , _style style = _style() );
 		
 		~_bootupScreen();
 	

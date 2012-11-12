@@ -8,11 +8,11 @@ class _startMenu : public _contextMenu{
 	
 	private:
 	
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent e );
+		static _callbackReturn refreshHandler( _event e );
 	
 	public:
 	
-		_startMenu( _gadget* owner , _gadgetStyle style = _defaultStyle_ );
+		_startMenu( _gadget* owner , _style style = _style() );
 
 };	
 

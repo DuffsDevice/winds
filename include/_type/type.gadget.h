@@ -8,30 +8,23 @@
 #include "_type/type.event.h"
 
 //! For the Lua-Part of the gadget
-#include "_lua/lua.h"
-#include "_lua/lauxlib.h"
+#include "_lua/lua.hpp"
 
 // STD-Standards
-#include <forward_list>
-#include <utility>
-using namespace std;
-
 #include <nds/memory.h>
 
 class _gadget;
 
-extern _gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadgetEvent e );
+extern _callbackReturn lua_callEventHandler( lua_State* L , int handler , _event e );
 
 // _gagdetEventHandler
-typedef _gadgetEventReturnType (*_gadgetEventHandler)(_gadgetEvent);
+typedef _callbackReturn (*_gadgetEventHandler)(_event);
 
 // _gadgetList
-typedef forward_list<_gadget*> _gadgetList;
+typedef _list<_gadget*> _gadgetList;
 
 // _gadgetDefaultEventHandler
-typedef _gadgetEventReturnType (*_gadgetDefaultEventHandler)(_gadgetEvent&);
-
-extern _gadgetType typeOfGadget( _gadget* );
+typedef _callbackReturn (*_gadgetDefaultEventHandler)(_event&);
 
 class _gadget{
 	
@@ -63,7 +56,7 @@ class _gadget{
 		// Attributes
 		_padding		padding;
 		_rect 			dimensions;
-		_gadgetStyle 	style;
+		_style 	style;
 		
 		// Children
 		_gadgetList		children;
@@ -78,16 +71,16 @@ class _gadget{
 		_gadget*		dragTemp;
 		
 		// Event-Handlers
-		map<_gadgetEventType,pair<int,lua_State*>> 				luaEventHandlers;
-		map<_gadgetEventType,_gadgetEventHandler> 				eventHandlers;
-		static map<_gadgetEventType,_gadgetDefaultEventHandler> defaultEventHandlers;
+		_map<_eventType,pair<int,lua_State*>> 				luaEventHandlers;
+		_map<_eventType,_gadgetEventHandler> 				eventHandlers;
+		static _map<_eventType,_gadgetDefaultEventHandler> defaultEventHandlers;
 		
 		// Standard EventHandler
-		static _gadgetEventReturnType	gadgetRefreshHandler( _gadgetEvent& event ) ITCM_CODE ;
-		static _gadgetEventReturnType	gadgetDragHandler( _gadgetEvent& event ) ITCM_CODE ;
-		static _gadgetEventReturnType	gadgetMouseHandler( _gadgetEvent& event ) ITCM_CODE ;
-		static _gadgetEventReturnType	gadgetFocusHandler( _gadgetEvent& event ) ITCM_CODE ;
-		static _gadgetEventReturnType	gadgetKeyHandler( _gadgetEvent& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetRefreshHandler( _event& event );
+		static _callbackReturn	gadgetDragHandler( _event& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetMouseHandler( _event& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetFocusHandler( _event& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetKeyHandler( _event& event ) ITCM_CODE ;
 		
 		// Bitmap of the Gadget
 		_bitmap*		bitmap;
@@ -97,8 +90,8 @@ class _gadget{
 		/**
 		 * Constructor
 		**/
-		_gadget( _gadgetType type , int width , int height , int posX , int posY , _gadgetStyle style = _defaultStyle_ , bool doNotAllocateBitmap = false );
-		_gadget( int width , int height , int posX , int posY , _gadgetStyle style = _defaultStyle_ , bool doNotAllocateBitmap = false );
+		_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
+		_gadget( int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
 		
 		/**
 		 * Destructor
@@ -108,33 +101,33 @@ class _gadget{
 		/**
 		 * Set the Padding of the Gadget
 		**/
-		void setPadding( _padding p );
+		void setPadding( _padding p ){ this->padding = p; }
 		
 		/**
 		 * Get the Padding of the Gadget
 		**/
-		_padding getPadding();
+		_padding getPadding(){ return this->padding; }
 		
 		/**
 		 * Check whether this Gadget can also be on the reserved area of the parent
 		**/
-		bool isEnhanced() const;
+		bool isEnhanced() const { return this->style.enhanced; }
 		
 		/**
 		 * Set whether this Gadget can also be on the reserved area of the parent
 		**/
-		void setEnhanced( bool flag = true );
+		void setEnhanced( bool flag = true ){ this->style.enhanced = flag; }
 		
 		/**
 		 * Let an Event bubble from child to parent and so on...
 		**/
-		void bubbleEvent( _gadgetEvent e , bool includeThis = false ) ;
+		void bubbleEvent( _event e , bool includeThis = false ) ;
 		
 		/**
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		**/
-		void bubbleRefresh( bool includeThis = false , _gadgetEvent e = _gadgetEvent() ) ITCM_CODE ;
+		void bubbleRefresh( bool includeThis = false , _event e = _event() );
 		
 		/**
 		 * Method to refresh itself
@@ -144,22 +137,22 @@ class _gadget{
 		/**
 		 * Receive a Bitmap Port
 		**/
-		_bitmapPort getBitmapPort() const ;
+		_bitmapPort getBitmapPort() const { return this->bitmap; }
 		
 		/**
 		 * Get The Bitmap of the Gadget
 		**/
-		_bitmap* getBitmap();
+		_bitmap* getBitmap() const { return this->bitmap; }
 		
 		/**
 		 * Get the style of that Gadget
 		**/
-		_gadgetStyle getStyle() const ;
+		_style getStyle() const { return this->style; }
 		
 		/**
 		 * Set the style of that Gadget
 		**/
-		void setStyle( _gadgetStyle style );
+		void setStyle( _style style ){ this->style = style; /*this->triggerEvent( _event( refresh ) );*/ }
 		
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
@@ -169,64 +162,76 @@ class _gadget{
 		/**
 		 * Method to check whether the Gadget has Focus
 		**/
-		bool hasFocus();
+		bool hasFocus(){ return this->style.focused; }
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
 		**/
-		bool registerEventHandler( _gadgetEventType type , _gadgetEventHandler handler );
+		void registerEventHandler( _eventType type , _gadgetEventHandler handler ){
+			// Insert The Handler no matter if there was already one acting to that eventType
+			this->eventHandlers[type] = handler;
+		}
 		
 		/**
 		 * Register a Lua Event Handler to catch some events thrown on this Gadget
 		**/
-		bool registerLuaEventHandler( _gadgetEventType type , int handler , lua_State* L );
+		void registerLuaEventHandler( _eventType type , int handler , lua_State* L ){
+			// Insert The Handler no matter if there was already one acting to that eventType
+			this->luaEventHandlers[type] = make_pair( handler , L );
+		}
 		
 		/**
 		 * Register a Default Event Handler to catch 
 		 * some events thrown on this Gadget and not handled by 
 		 * any other EventHandlers
 		**/
-		static bool registerDefaultEventHandler( _gadgetEventType type , _gadgetDefaultEventHandler handler );
+		static void registerDefaultEventHandler( _eventType type , _gadgetDefaultEventHandler handler ){
+			// Insert The Handler no matter if there was already one acting to that eventType
+			_gadget::defaultEventHandlers[type] = handler;
+		}
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
 		**/
-		void unregisterEventHandler( _gadgetEventType type );
+		void unregisterEventHandler( _eventType type ){
+			// Unbind the Handler
+			this->eventHandlers.erase( type );
+		}
 		
 		/**
 		 * Unbind a LuaEventHandler from this Gadget
 		**/
-		int unregisterLuaEventHandler( _gadgetEventType type );
+		int unregisterLuaEventHandler( _eventType type );
 		
 		/**
 		 * Method to push an event onto the stack
 		**/
-		void generateEvent( _gadgetEvent event );
+		void generateEvent( _event event );
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically)
 		**/
-		void triggerEvent( _gadgetEvent event );
+		void triggerEvent( _event event );
 		
 		/**
 		 * Check if this Gadget has an EventHandler registered reacting on the specified type
 		**/
-		bool canReactTo( _gadgetEventType type ) const ;
+		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ) || this->luaEventHandlers.count( type ); }
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		**/
-		_gadgetEventReturnType handleEvent( _gadgetEvent event ) ;
+		_callbackReturn handleEvent( _event event ) ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
 		**/
-		_gadgetEventReturnType handleEventNormal( _gadgetEvent event ) ;
+		_callbackReturn handleEventNormal( _event event ) ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
 		**/
-		_gadgetEventReturnType handleEventDefault( _gadgetEvent& event ) ;
+		_callbackReturn handleEventDefault( _event& event ) ;
 		
 		/**
 		 * Get the absolute X-position
@@ -241,12 +246,12 @@ class _gadget{
 		/**
 		 * Get the Relative X-position
 		**/
-		_coord getX() const ;
+		_coord getX() const { return this->dimensions.x; }
 		
 		/**
 		 * Get the Relative Y-position
 		**/
-		_coord getY() const ;
+		_coord getY() const { return this->dimensions.y; }
 		
 		/**
 		 * Set the Relative X-Position
@@ -261,7 +266,7 @@ class _gadget{
 		/**
 		 * Get the Gadgets Parent
 		**/
-		_gadget* getParent() const ;
+		_gadget* getParent() const { return this->parent; }
 		
 		/**
 		 * Set the Gadgets Parent
@@ -287,7 +292,7 @@ class _gadget{
 		/**
 		 * Get Dimensions of the Gadget (including Coords)
 		**/
-		_rect getDimensions() const ;
+		_rect getDimensions() const { return this->dimensions; }
 		
 		/**
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
@@ -297,7 +302,7 @@ class _gadget{
 		/**
 		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}
 		**/
-		_rect getSize() const;
+		_rect getSize() const { return _rect( 0 , 0 , this->dimensions.width , this->dimensions.height ); }
 		
 		/**
 		 * Set Dimensions of the Gadget (including Coords)
@@ -307,12 +312,12 @@ class _gadget{
 		/**
 		 * Get the height of the Gadget
 		**/
-		_length getHeight() const ;
+		_length getHeight() const { return this->dimensions.height; }
 		
 		/**
 		 * Get the width of the Gadget
 		**/
-		_length getWidth() const ;
+		_length getWidth() const { return this->dimensions.width; }
 		
 		/**
 		 * Move the Gadget relatively to its current position
@@ -337,17 +342,19 @@ class _gadget{
 		/**
 		 * Get the toppest child owned by the parent
 		**/
-		_gadget* getToppestChild();
+		_gadget* getToppestChild(){	return this->children.front(); }
 		
 		/**
 		 * Get the Type of the Gadget (enum)
 		 * @see type.h:111
 		**/
-		_gadgetType getType();
+		_gadgetType getType(){ return this->type; }
 		
 		/**
 		 * There's no setType, because you can't change the type of a Gadget
 		**/
 };
+
+inline _gadgetType typeOfGadget( _gadget* g );
 
 #endif

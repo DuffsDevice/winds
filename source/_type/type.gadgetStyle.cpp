@@ -1,31 +1,31 @@
 #include "_type/type.gadgetStyle.h"
 
-_gadgetStyle _gadgetStyle::owner( void* owner ){
-	_gadgetStyle g = _gadgetStyle();
+_style _style::owner( void* owner ){
+	_style g = _style();
 	g.own = owner;
 	return g;
 }
 
-_gadgetStyle _gadgetStyle::storeData( _int d ){
-	_gadgetStyle g = _gadgetStyle();
+_style _style::storeData( _int d ){
+	_style g = _style();
 	g.data = d;
 	return g;
 }
 
-_gadgetStyle _defaultStyle_ = { 
-	nullptr , // Owner
-	0 , // Value
-	BIT(1) | BIT(0) , // Resizable (X|Y)
-	true , // destroyable
-	false , // focused
-	false , // pressed
-	false , // enhanced
-	false , // dragged
-	false , // draggable
-	true , // editable
-	false , // showsUpInTaskBar
-	true ,  // canTakeFocus
-	true , // canLooseFocus
-	true , // canReceiveFocus
-	false // smallDragTrig
-};
+_style::_style() :
+	own( nullptr )
+	, data( 0 )
+	, resizable( BIT(1) | BIT(0) ) // Resizable (X|Y)
+	, destroyable( true )
+	, focused( false )
+	, pressed( false )
+	, enhanced( false )
+	, dragged( false )
+	, draggable( false )
+	, editable( true )
+	, showsUpInTaskBar( false )
+	, canTakeFocus( true )
+	, canLooseFocus( true )
+	, canReceiveFocus( true )
+	, smallDragTrig( false )
+{}

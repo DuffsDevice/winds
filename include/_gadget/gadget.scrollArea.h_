@@ -37,9 +37,9 @@ class _scrollArea : public _gadget {
 		
 		_gadgetList	nonEnhancedChildren;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
-		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn dragHandler( _event event );
+		static _callbackReturn resizeHandler( _event e );
 		
 		void		computeCanvasSize();
 		void		computeClipSize();
@@ -83,7 +83,7 @@ class _scrollArea : public _gadget {
 		void removeChild( _gadget* child );
 		
 		//! Default Constructor width optional scrolltypes
-		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _gadgetStyle style = _defaultStyle_ );
+		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _gadgetStyle style = _style() );
 		
 		//! Destrucor
 		~_scrollArea();

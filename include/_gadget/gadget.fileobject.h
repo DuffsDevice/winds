@@ -28,14 +28,14 @@ class _fileobject : public _gadget {
 		_label*			label;
 		_imagegadget*	icon;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
-		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
-		static _gadgetEventReturnType doubleClickHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn dragHandler( _event event );
+		static _callbackReturn focusHandler( _event event );
+		static _callbackReturn doubleClickHandler( _event event );
 		
 	public:
 	
-		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::liste , _gadgetStyle style = _defaultStyle_ );
+		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::liste , _style style = _style() );
 		
 };
 

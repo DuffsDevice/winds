@@ -11,7 +11,7 @@ class _contextMenu : public _gadget{
 	
 	private:
 		
-		static _gadgetEventReturnType blurHandler( _gadgetEvent e );
+		static _callbackReturn blurHandler( _event e );
 		
 		_align			xDir; // can either be left or right
 		_valign			yDir; // Can either bo top or bottom
@@ -32,12 +32,12 @@ class _contextMenu : public _gadget{
 		
 		void setOwner( _gadget* owner );
 		
-		// For ContextMenu entries to close the cM and submit their value ( this event type must be _gadgetEvent::dialogClose )
-		static _gadgetEventReturnType closeAndSend( _gadgetEvent e );
+		// For ContextMenu entries to close the cM and submit their value ( this event type must be _event::dialogClose )
+		static _callbackReturn closeAndSend( _event e );
 		
 		_gadget* getOwner();
 		
-		_contextMenu( _length width , _length height , _gadget* owner , _gadgetStyle style = _defaultStyle_ );
+		_contextMenu( _length width , _length height , _gadget* owner , _style style = _style() );
 		
 };
 
