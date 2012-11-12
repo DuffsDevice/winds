@@ -7,7 +7,7 @@
 _bitmap* _windowsStartButton::startButton = new BMP_StartButton();
 _bitmap* _windowsStartButton::startButtonPressed = new BMP_StartButtonPressed();
 
-_gadgetEventReturnType _windowsStartButton::mouseHandler( _gadgetEvent event ){
+_callbackReturn _windowsStartButton::mouseHandler( _event event ){
 	
 	// Receive Gadget
 	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
@@ -18,7 +18,7 @@ _gadgetEventReturnType _windowsStartButton::mouseHandler( _gadgetEvent event ){
 
 }
 
-_gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
+_callbackReturn _windowsStartButton::refreshHandler( _event event )
 {
 	static string sBT = _system_->_runtimeAttributes_->user->getStrAttr( "startButtonText" );
 	
@@ -38,21 +38,17 @@ _gadgetEventReturnType _windowsStartButton::refreshHandler( _gadgetEvent event )
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->getFont() , sBT , _system_->_runtimeAttributes_->user->getIntAttr( "startButtonTextColor" ) );
-	
-	if( event.getType() == "dialogClose" )
-		that->bubbleRefresh();
+	bP.drawString( 12 , 2 , _system_->getFont() , sBT , _system_->_runtimeAttributes_->user->sBTC );
 	
 	return use_default;
 }
 
-_windowsStartButton::_windowsStartButton( _coord x , _coord y , _gadgetStyle style ) :
+_windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
 	_button( 38 , 10 , x , y , "" , style )
 	, startMenu( new _startMenu( this ) )
 {
-	this->registerEventHandler( "mouseClick" , &_windowsStartButton::mouseHandler );
-	this->registerEventHandler( "refresh" , &_windowsStartButton::refreshHandler );
-	this->registerEventHandler( "dialogClose" , &_windowsStartButton::refreshHandler );
+	this->registerEventHandler( onAction , &_windowsStartButton::mouseHandler );
+	this->registerEventHandler( refresh , &_windowsStartButton::refreshHandler );
 	
 	this->refreshBitmap();
 }

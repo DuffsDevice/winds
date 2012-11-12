@@ -117,7 +117,7 @@ void _scrollArea::computeClipSize()
 	}
 }
 
-_gadgetEventReturnType _scrollArea::resizeHandler( _gadgetEvent event )
+_callbackReturn _scrollArea::resizeHandler( _event event )
 {
 	_scrollArea* that = event.getGadget<_scrollArea>();
 	
@@ -167,7 +167,7 @@ void _scrollArea::computeCanvasSize(){
 	}
 }
 
-_gadgetEventReturnType _scrollArea::dragHandler( _gadgetEvent event ){
+_callbackReturn _scrollArea::dragHandler( _event event ){
 	
 	// Receive Gadget
 	_scrollArea* that = event.getGadget<_scrollArea>();
@@ -250,7 +250,7 @@ void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->refresh();
 }
 
-_scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _gadgetStyle style ) :
+_scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
 	, scrollX( 0 )
 	, scrollY( 0 )

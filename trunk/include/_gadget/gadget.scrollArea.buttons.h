@@ -20,12 +20,12 @@ class _scrollButton : public _gadget{
 		
 		_scrollButtonType type;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
-		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		static _callbackReturn resizeHandler( _event e );
 		
 	public:
 		
-		_scrollButton( _scrollButtonType type , _coord x , _coord y , _length length = 0 , _gadgetStyle style = _defaultStyle_ );
+		_scrollButton( _scrollButtonType type , _coord x , _coord y , _length length = 0 , _style style = _style() );
 };	
 #endif

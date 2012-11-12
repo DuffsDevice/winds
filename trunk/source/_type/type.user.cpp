@@ -49,6 +49,8 @@ _user::_user( string folderName ) :
 	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
 	this->fOH = this->getIntAttr( "fileObjectHeight" );
 	this->sOH = this->getIntAttr( "selectObjectHeight" );	
+	this->sFE = this->getIntAttr( "showFileExtension" );	
+	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	
 	this->userLogo->reset( RGB( 22 , 22 , 22 ) );
 	this->userLogo->drawCircle( 5 , 5 , 3 , COLOR_RED );

@@ -1,14 +1,12 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-#include <nds/arm9/console.h>
-
-_gadgetScreen::_gadgetScreen( int bgId , _gadgetStyle style ) :
+_gadgetScreen::_gadgetScreen( int bgId , _style style ) :
 	_gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style , true )
 	, _screen( bgId )
 	, touchCycles( 0 )
 	, cyclesLastClick( 0 )
-	, dragging( false )
+	, isDragging( false )
 {
 	//! Allocate bitmap using the base Memory of the Background-Layer
 	this->bitmap = new _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT );
@@ -27,7 +25,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	const _user* user = _system_->_runtimeAttributes_->user;
 	
 	// Temp...
-	_gadgetEvent event;
+	_event event;
 	
 	// Increase clickCycles and prevent overflow
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )
@@ -48,7 +46,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		{
 			// Trigger the Event
 			if( newTouchInside )
-				this->handleEvent( event.setType( "mouseDown" ) );
+				this->handleEvent( event.setType( mouseDown ) );
 			
 			// Set the starting Point of the mouseDown here!
 			this->startTouch = newTouch;
@@ -58,7 +56,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		_touch newStartTouch = _gadgetScreen::adjustTouch( startTouch );
 		
 		//! Check if the Pen is dragging something
-		if( this->dragging )
+		if( this->isDragging )
 		{
 			// Trigger the Event
 			_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
@@ -66,7 +64,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			// Modify Event
 			event.setPosX( newNewTouch.x ).setPosY( newNewTouch.y ).setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
 			
-			this->handleEvent( event.setType( "dragging" ) );
+			this->handleEvent( event.setType( dragging ) );
 			
 			this->lastTouch = newTouch;
 		}		
@@ -87,8 +85,8 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				event.setEffectivePosX( startTouch.x ).setEffectivePosY( startTouch.y ).setPosX( newStartTouch.x ).setPosY( newStartTouch.y );
 				
 				// start dragging
-				this->handleEvent( event.setType( "dragStart" ) );
-				dragging = true;
+				this->handleEvent( event.setType( dragStart ) );
+				this->isDragging = true;
 				
 				this->lastTouch = this->startTouch;	
 			}
@@ -106,13 +104,13 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y );		
 		
 		//! Maybe DragStop-Event?
-		if( this->dragging )
+		if( this->isDragging )
 		{
 			//! Trigger Event
-			this->handleEvent( event.setType( "dragStop" ) );
+			this->handleEvent( event.setType( dragStop ) );
 			
 			// Set touchDragging to false!
-			this->dragging = false;
+			this->isDragging = false;
 		}
 		//! Maybe Click-Event?
 		else if( this->touchCycles < user->mCC )
@@ -125,20 +123,20 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			if( this->cyclesLastClick && this->cyclesLastClick < user->mDC && deltaTouch < user->mDA * user->mDA )
 			{
 				// Trigger the Event
-				this->handleEvent( event.setType( "mouseDoubleClick" ) );
+				this->handleEvent( event.setType( mouseDoubleClick ) );
 				this->cyclesLastClick = 0;
 			}
 			else
 			{
 				// Trigger the Event
-				this->handleEvent( event.setType( "mouseClick" )  );
+				this->handleEvent( event.setType( mouseClick )  );
 				
 				this->cyclesLastClick = 1;
 			}
 		}
 		
 		// Trigger the Event
-		this->handleEvent( event.setType( "mouseUp" ) );
+		this->handleEvent( event.setType( mouseUp ) );
 		
 		touchBefore = lastTouch;
 		

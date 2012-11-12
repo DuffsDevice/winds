@@ -8,10 +8,10 @@
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.progressbar.h"
 
-_gadgetEventReturnType dragHandler( _gadgetEvent event ){
+_callbackReturn dragHandler( _event event ){
 	_gadget* that = event.getGadget();
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 		return handled;
 	// Has the Gadget to move?
 	if( event.getDeltaX() == 0 && event.getDeltaY() == 0 )

@@ -2,18 +2,18 @@
 #include "_gadget/gadget.select.h"
 #include "_type/type.system.h"
 
-_gadgetEventReturnType _selectItem::mouseHandler( _gadgetEvent event )
+_callbackReturn _selectItem::mouseHandler( _event event )
 {	
 	_selectItem* that = event.getGadget<_selectItem>();
 	_select* parent = (_select*)that->parent;
 	
-	parent->triggerEvent( _gadgetEvent( "listener" ) );
+	parent->triggerEvent( _event( onAction ) );
 	parent->setSelected( that->intVal );
 	
 	return handled;
 }
 
-_gadgetEventReturnType _selectItem::refreshHandler( _gadgetEvent event ){
+_callbackReturn _selectItem::refreshHandler( _event event ){
 	
 	// Receive Gadget
 	_selectItem* that = event.getGadget<_selectItem>();
@@ -39,15 +39,15 @@ _gadgetEventReturnType _selectItem::refreshHandler( _gadgetEvent event ){
 	return use_default;
 }
 
-_selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _gadgetStyle style ) :
+_selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _style style ) :
 	_gadget( _gadgetType::selectitem , width , _system_->_runtimeAttributes_->user->sOH , 0 , nth * _system_->_runtimeAttributes_->user->sOH , style )
 	, strVal( str )
 	, intVal( value )
 	, active( false )
 {
 	// Register Event - Handlers
-	this->registerEventHandler( "refresh" , &_selectItem::refreshHandler );
-	this->registerEventHandler( "mouseDown" , &_selectItem::mouseHandler );
+	this->registerEventHandler( refresh , &_selectItem::refreshHandler );
+	this->registerEventHandler( mouseDown , &_selectItem::mouseHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

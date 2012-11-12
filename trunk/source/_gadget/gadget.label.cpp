@@ -62,7 +62,7 @@ void _label::computeSize()
 	}
 }
 
-_gadgetEventReturnType _label::refreshHandler( _gadgetEvent event )
+_callbackReturn _label::refreshHandler( _event event )
 {	
 	// Receive Gadget
 	_label* that = event.getGadget<_label>();
@@ -134,7 +134,7 @@ void _label::setHeight( _u8 height ){
 }
 
 
-_label::_label( _length width , _length height , _coord x , _coord y , string text , _gadgetStyle style ) :
+_label::_label( _length width , _length height , _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::label , width , height , x , y , style )
 	, _interface_input()
 	, color( RGB( 0 , 0 , 0 ) )
@@ -148,13 +148,13 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	_interface_input::setStrValue( text );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( "refresh" , &_label::refreshHandler );
+	this->registerEventHandler( refresh , &_label::refreshHandler );
 	
 	// Refresh
 	this->refreshBitmap();
 }
 
-_label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
+_label::_label( _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::label , 1 , 1 , x , y , style )
 	, _interface_input()
 	, color( RGB( 0 , 0 , 0 ) )
@@ -168,8 +168,8 @@ _label::_label( _coord x , _coord y , string text , _gadgetStyle style ) :
 	_interface_input::setStrValue( text );
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "refresh" , &_label::refreshHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( refresh , &_label::refreshHandler );
 	
 	// Refresh
 	this->computeSize();

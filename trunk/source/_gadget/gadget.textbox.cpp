@@ -2,7 +2,7 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
-_gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
+_callbackReturn _textbox::refreshHandler( _event event )
 {
 	// Receive Gadget
 	_textbox* that = event.getGadget<_textbox>();
@@ -67,7 +67,7 @@ _gadgetEventReturnType _textbox::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
+_callbackReturn _textbox::keyHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
@@ -104,7 +104,7 @@ _gadgetEventReturnType _textbox::keyHandler( _gadgetEvent event )
 	return handled;
 }
 
-_gadgetEventReturnType _textbox::focusHandler( _gadgetEvent event )
+_callbackReturn _textbox::focusHandler( _event event )
 {
 	// Open the Keyboard
 	if( _system_->_keyboard_ )
@@ -113,7 +113,7 @@ _gadgetEventReturnType _textbox::focusHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
+_callbackReturn _textbox::blurHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
@@ -129,14 +129,14 @@ _gadgetEventReturnType _textbox::blurHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
+_callbackReturn _textbox::mouseHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 		return handled;
 	
-	else if( event.getType() == "dragging" )
+	else if( event.getType() == dragging )
 	{
 		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 			that->pressed = false;
@@ -146,7 +146,7 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 	
 	_coord position = event.getPosX();
 	
-	if( event.getType() == "dragging" )
+	if( event.getType() == dragging )
 		position -= that->getAbsoluteX();
 	
 	position = max( 0 , (int)position );
@@ -165,7 +165,7 @@ _gadgetEventReturnType _textbox::mouseHandler( _gadgetEvent event )
 	return handled;
 }
 
-_textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetStyle style ) :
+_textbox::_textbox( _coord x , _coord y , _length width , string text , _style style ) :
 	_label( width , 10 , x , y , text , style )
 	, cursor( 0 )
 	, pressed( false )
@@ -178,14 +178,14 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _gadgetS
 	_label::setColor( RGB( 3 , 3 , 3 ) );
 	
 	// Regsiter Handling Functions for events
-	this->unregisterEventHandler( "mouseDoubleClick" );
-	this->registerEventHandler( "onFocus" , &_textbox::focusHandler );
-	this->registerEventHandler( "onBlur" , &_textbox::blurHandler );
-	this->registerEventHandler( "refresh" , &_textbox::refreshHandler );
-	this->registerEventHandler( "mouseDown" , &_textbox::mouseHandler );
-	this->registerEventHandler( "keyDown" , &_textbox::keyHandler );
-	this->registerEventHandler( "dragStart" , &_textbox::mouseHandler );
-	this->registerEventHandler( "dragging" , &_textbox::mouseHandler );
+	this->unregisterEventHandler( mouseDoubleClick );
+	this->registerEventHandler( onFocus , &_textbox::focusHandler );
+	this->registerEventHandler( onBlur , &_textbox::blurHandler );
+	this->registerEventHandler( refresh , &_textbox::refreshHandler );
+	this->registerEventHandler( mouseDown , &_textbox::mouseHandler );
+	this->registerEventHandler( keyDown , &_textbox::keyHandler );
+	this->registerEventHandler( dragStart , &_textbox::mouseHandler );
+	this->registerEventHandler( dragging , &_textbox::mouseHandler );
 	
 	// Refresh Myself
 	this->refreshBitmap();

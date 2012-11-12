@@ -1,7 +1,7 @@
 #include "_gadget/gadget.window.h"
 #include "_type/type.system.h"
 
-_gadgetEventReturnType _windowButton::refreshHandler( _gadgetEvent event )
+_callbackReturn _windowButton::refreshHandler( _event event )
 {
 	// Get Source
 	_windowButton* that = event.getGadget<_windowButton>();
@@ -63,12 +63,12 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
 	_button( 8 , 8 , x , y , "" )
 	, buttonType( buttonType )
 {
-	this->registerEventHandler( "refresh" , &_windowButton::refreshHandler );
+	this->registerEventHandler( refresh , &_windowButton::refreshHandler );
 	this->refreshBitmap();
 }
 
 ////////////////////////////////////////////
-_gadgetEventReturnType _window::resizeHandler( _gadgetEvent event )
+_callbackReturn _window::resizeHandler( _event event )
 {
 	_window* that = event.getGadget<_window>();
 	
@@ -78,7 +78,7 @@ _gadgetEventReturnType _window::resizeHandler( _gadgetEvent event )
 	return handled;
 }
 
-_gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
+_callbackReturn _window::refreshHandler( _event event )
 {
 	// Get Source
 	_window* that = (_window*)event.getGadget();
@@ -111,12 +111,12 @@ _gadgetEventReturnType _window::refreshHandler( _gadgetEvent event )
 	return use_default;
 }
 
-_gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
+_callbackReturn _window::dragHandler( _event event )
 {	
 	// Get Source
 	_window* that = (_window*)event.getGadget();
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the subject of Dragment :-)
 		if( event.getPosY() > 9 ){
@@ -129,7 +129,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 		// If y is on the windowbar, drag Me!
 		return handled;
 	}
-	else if( event.getType() == "dragging" )
+	else if( event.getType() == dragging )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -150,7 +150,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 		// Return
 		return handled;
 	}
-	else if( event.getType() == "dragStop" )
+	else if( event.getType() == dragStop )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -165,7 +165,7 @@ _gadgetEventReturnType _window::dragHandler( _gadgetEvent event )
 	return not_handled;
 }
 
-_gadgetEventReturnType _window::closeHandler( _gadgetEvent event )
+_callbackReturn _window::closeHandler( _event event )
 {	
 	// Get Source
 	event.getGadget()->getParent()->setParent( nullptr ); 
@@ -173,7 +173,7 @@ _gadgetEventReturnType _window::closeHandler( _gadgetEvent event )
 	return handled;
 }
 
-_window::_window( _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style ) :
+_window::_window( _length width , _length height , _coord x , _coord y , string title , _style style ) :
 	_gadget( _gadgetType::window , width , height , x , y , style ),
 	_interface_input( title )
 {
@@ -198,13 +198,13 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->addChild( this->button[0] );
 	this->addChild( this->button[1] );
 	this->addChild( this->button[2] );
-	this->button[0]->registerEventHandler( "mouseClick" , &_window::closeHandler );
+	this->button[0]->registerEventHandler( onAction , &_window::closeHandler );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( "refresh" , &_window::refreshHandler );
-	this->registerEventHandler( "dragging" , &_window::dragHandler );
-	this->registerEventHandler( "dragStart" , &_window::dragHandler );
-	this->registerEventHandler( "dragStop" , &_window::dragHandler );
+	this->registerEventHandler( refresh , &_window::refreshHandler );
+	this->registerEventHandler( dragging , &_window::dragHandler );
+	this->registerEventHandler( dragStart , &_window::dragHandler );
+	this->registerEventHandler( dragStop , &_window::dragHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();

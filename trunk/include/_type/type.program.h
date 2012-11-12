@@ -3,7 +3,6 @@
 #define _WIN_T_PROGRAM_
 
 #include "_type/type.gadget.h"
-using namespace std;
 
 enum class _programType
 {

@@ -13,11 +13,11 @@ class _startupScreen : public _gadgetScreen
 		static _bitmap*	winLogo;
 		_gadget*		winLogoGadget;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 	
-		_startupScreen( _u8 bgId , _gadgetStyle style = _gadgetStyle() );
+		_startupScreen( _u8 bgId , _style style = _style() );
 		
 		~_startupScreen();
 	

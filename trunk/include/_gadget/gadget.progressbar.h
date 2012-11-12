@@ -15,7 +15,7 @@ class _progressbar : public _gadget {
 		bool	blue;
 		_u32	lastTime;
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
 		void	step();
 	
@@ -43,10 +43,10 @@ class _progressbar : public _gadget {
 		void setCol( bool blue ){ this->blue = blue; }
 		
 		//! Constructor
-		_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _gadgetStyle style = _defaultStyle_ );
+		_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );
 		
 		//! Constructor
-		_progressbar( _length width , _coord x , _coord y  , bool type = true , _gadgetStyle style = _defaultStyle_ );
+		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() );
 		
 		//! Destructor
 		~_progressbar();

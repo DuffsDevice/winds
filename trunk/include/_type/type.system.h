@@ -37,7 +37,7 @@ class _system{
 		
 		//! Events
 		static int					curEventBuffer;
-		static _list<_gadgetEvent> 	eventBuffer[2];
+		static _list<_event> 	eventBuffer[2];
 		static void eventsSwapBuffer(){ _system::curEventBuffer = !_system::curEventBuffer; }
 		static void processEvents();
 		
@@ -96,7 +96,7 @@ class _system{
 		static void addVblListener( const _callback* cb ){
 			_system::_vblListeners_.push_back( cb );
 		}
-		static void generateEvent( _gadgetEvent event ){ _system::eventBuffer[_system::curEventBuffer].push_back( event ); }
+		static void generateEvent( _event event ){ _system::eventBuffer[_system::curEventBuffer].push_back( event ); }
 		
 		//! Things for termination
 		static void terminateProgram( _program* prog ){ 
@@ -128,7 +128,7 @@ class _system{
 		static void removeEventsOf( _gadget* g )
 		{
 			// Delete events
-			_system::eventBuffer[_system::curEventBuffer].remove_if( [&]( _gadgetEvent event )->bool{ return event.getDestination() == g; } );
+			_system::eventBuffer[_system::curEventBuffer].remove_if( [&]( _event event )->bool{ return event.getDestination() == g; } );
 		}
 		
 		// Constructor

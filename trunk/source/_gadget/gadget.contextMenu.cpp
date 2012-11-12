@@ -14,7 +14,7 @@ _gadget* _contextMenu::getOwner(){
 	return this->owner;
 }
 
-_gadgetEventReturnType _contextMenu::closeAndSend( _gadgetEvent event )
+_callbackReturn _contextMenu::closeAndSend( _event event )
 {
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
@@ -28,12 +28,12 @@ _gadgetEventReturnType _contextMenu::closeAndSend( _gadgetEvent event )
 	return handled;
 }
 
-_gadgetEventReturnType _contextMenu::blurHandler( _gadgetEvent event )
+_callbackReturn _contextMenu::blurHandler( _event event )
 {
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
 	that->parent->blurChild();
-	that->triggerEvent( _gadgetEvent::dialogClose( that , -1 , "" ) );
+	that->triggerEvent( _event::dialogClose( that , -1 , "" ) );
 	
 	return use_default;
 }
@@ -76,7 +76,7 @@ void _contextMenu::show( _coord x , _coord y )
 	this->setParent( _system_->_gadgetHost_ );
 	
 	// Focus
-	this->handleEvent( _gadgetEvent( "focus" ) );
+	this->handleEvent( _event( focus ) );
 }
 
 void _contextMenu::hide()
@@ -96,11 +96,11 @@ void _contextMenu::toggle( _coord x , _coord y )
 		this->show( x , y );
 }
 
-_contextMenu::_contextMenu( _length width , _length height , _gadget* owner , _gadgetStyle style ) :
+_contextMenu::_contextMenu( _length width , _length height , _gadget* owner , _style style ) :
 	_gadget( _gadgetType::contextmenu , width , height , 0 , 0 , style )
 	, owner( owner )
 	, opened( false )
 {	
-	this->registerEventHandler( "blur" , &_contextMenu::blurHandler );	
-	this->registerEventHandler( "dialogClose" , &_contextMenu::closeAndSend );	
+	this->registerEventHandler( blur , &_contextMenu::blurHandler );	
+	this->registerEventHandler( close , &_contextMenu::closeAndSend );	
 }

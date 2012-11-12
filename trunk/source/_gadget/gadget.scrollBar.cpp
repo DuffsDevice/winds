@@ -54,37 +54,37 @@ void drawArrow( _bitmapPort& bP , _u8 dir )
 }
 	
 
-_scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _gadgetStyle style ) :
+_scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style style ) :
 	_gadget( _gadgetType::scrollbar , dim == _dimension::horizontal ? gadgetLength : 8 ,  dim == _dimension::vertical ? gadgetLength : 8  , x , y , style ) ,
 	value( 0 ) , length( length ) , length2( length2 ) , step( 1 ) , dim( dim )
 {
 	if( dim == _dimension::horizontal )
 	{
-		this->dragHandle = new _button( 8 , 8 , 8 , 0 , "" , _gadgetStyle::storeData( _u8(dim) + 0 ) );
-		this->higherHandle = new _button( 8 , 8 , this->dimensions.width - 8 , 0 , "" , _gadgetStyle::storeData( _u8(dim) + 2 ) );
-		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _gadgetStyle::storeData( _u8(dim) + 1 ) );
+		this->dragHandle = new _button( 8 , 8 , 8 , 0 , "" , _style::storeData( _u8(dim) + 0 ) );
+		this->higherHandle = new _button( 8 , 8 , this->dimensions.width - 8 , 0 , "" , _style::storeData( _u8(dim) + 2 ) );
+		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _style::storeData( _u8(dim) + 1 ) );
 	}
 	else
 	{
-		this->dragHandle = new _button( 8 , 8 , 0 , 8 , "" , _gadgetStyle::storeData( _u8(dim) + 0 ) );
-		this->higherHandle = new _button( 8 , 8 , 0 , this->dimensions.height - 8 , "" , _gadgetStyle::storeData( _u8(dim) + 1 ) );
-		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _gadgetStyle::storeData( _u8(dim) + 2 ) );
+		this->dragHandle = new _button( 8 , 8 , 0 , 8 , "" , _style::storeData( _u8(dim) + 0 ) );
+		this->higherHandle = new _button( 8 , 8 , 0 , this->dimensions.height - 8 , "" , _style::storeData( _u8(dim) + 1 ) );
+		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _style::storeData( _u8(dim) + 2 ) );
 	}
 	
 	//! Register Event-Handlers
-	this->registerEventHandler( "refresh" , refreshHandler );
-	this->registerEventHandler( "resize" , resizeHandler );
+	this->registerEventHandler( refresh , refreshHandler );
+	this->registerEventHandler( onResize , resizeHandler );
 	
-	this->dragHandle->registerEventHandler( "refresh" , refreshHandler );
-	this->dragHandle->registerEventHandler( "dragStart" , dragHandler );
-	this->dragHandle->registerEventHandler( "dragging" , dragHandler );
+	this->dragHandle->registerEventHandler( refresh , refreshHandler );
+	this->dragHandle->registerEventHandler( dragStart , dragHandler );
+	this->dragHandle->registerEventHandler( dragging , dragHandler );
 	this->dragHandle->style.smallDragTrig = true;
 	
-	this->higherHandle->registerEventHandler( "refresh" , refreshHandler );
-	this->higherHandle->registerEventHandler( "listener" , clickHandler );
+	this->higherHandle->registerEventHandler( refresh , refreshHandler );
+	this->higherHandle->registerEventHandler( onAction , clickHandler );
 	
-	this->lowerHandle->registerEventHandler( "refresh" , refreshHandler );
-	this->lowerHandle->registerEventHandler( "listener" , clickHandler );
+	this->lowerHandle->registerEventHandler( refresh , refreshHandler );
+	this->lowerHandle->registerEventHandler( onAction , clickHandler );
 	
 	//! Re-refresh the Buttons with the new event-handlers
 	this->dragHandle->refreshBitmap();
@@ -102,12 +102,12 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->refreshBitmap();
 }
 
-_gadgetEventReturnType _scrollBar::dragHandler( _gadgetEvent event )
+_callbackReturn _scrollBar::dragHandler( _event event )
 {	
 	static int deltaY = 0;
 	static int deltaX = 0;
 	
-	if( event.getType() == "dragStart" )
+	if( event.getType() == dragStart )
 	{
 		deltaY = event.getPosY();
 		deltaX = event.getPosX();
@@ -155,7 +155,7 @@ void _scrollBar::refreshCache()
 		this->dragHandle->setHeight( length );
 }
 
-_gadgetEventReturnType _scrollBar::clickHandler( _gadgetEvent event ) {
+_callbackReturn _scrollBar::clickHandler( _event event ) {
 	
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
@@ -172,7 +172,7 @@ _gadgetEventReturnType _scrollBar::clickHandler( _gadgetEvent event ) {
 				bar->setValue( bar->length2 - bar->length );
 			else
 				bar->setValue( bar->value + bar->step );
-			bar->triggerEvent( _gadgetEvent( "listener" ) );
+			bar->triggerEvent( _event( onAction ) );
 			break;
 		case 5:
 		case 1:
@@ -182,16 +182,16 @@ _gadgetEventReturnType _scrollBar::clickHandler( _gadgetEvent event ) {
 				bar->setValue( 0 );
 			else
 				bar->setValue( bar->value - bar->step );
-			bar->triggerEvent( _gadgetEvent( "listener" ) );
+			bar->triggerEvent( _event( onAction ) );
 			break;
 	}
 	
 	return handled;
 }
 
-_gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
+_callbackReturn _scrollBar::refreshHandler( _event event ) {
 	
-	if( typeOfGadget( event.getGadget() ) == _gadgetType::button )
+	if( event.getGadget()->getType() == _gadgetType::button )
 	{
 		// Receive Gadget
 		_button* that = event.getGadget<_button>();
@@ -230,6 +230,27 @@ _gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
 					bP.copy( 0 , myH - 8 , &btn_background_pressed );
+					
+					if( myH > 9 )
+					{
+						bP.normalizeClippingRects();
+						if( myH < 12 )
+						{
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 60975 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 60975 );
+						}
+						else
+						{
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 60975 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 60975 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 60975 );
+						}
+					}
 				}
 				else
 				{
@@ -243,6 +264,27 @@ _gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
 					bP.copy( 0 , myH - 8 , &btn_background_released );
+					
+					if( myH > 9 )
+					{
+						bP.normalizeClippingRects();
+						if( myH < 12 )
+						{
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 61074 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 61074 );
+						}
+						else
+						{
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 61074 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 61074 );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 61074 );
+						}
+					}
 				}
 				break;
 			case 0:
@@ -258,6 +300,27 @@ _gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
 					bP.copy( myW - 8 , 0 , &btn_background_pressed );
+					
+					if( myW > 9 )
+					{
+						bP.normalizeClippingRects();
+						if( myW < 12 )
+						{
+							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , 60975 );
+							bP.drawHorizontalLine( ( myW >> 1 ) , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , 60975 );
+						}
+						else
+						{
+							bP.drawHorizontalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , 60975 );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) , 4 , 2 , 60975 );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 2 , 2 , 4 , 60975 );
+						}
+					}
 				}
 				else
 				{
@@ -271,6 +334,27 @@ _gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
 					bP.copy( myW - 8 , 0 , &btn_background_released );
+					
+					if( myW > 9 )
+					{
+						bP.normalizeClippingRects();
+						if( myW < 12 )
+						{
+							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , 61074 );
+							bP.drawHorizontalLine( ( myW >> 1 ) , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , 61074 );
+						}
+						else
+						{
+							bP.drawHorizontalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , 61074 );
+							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) , 4 , 2 , 61074 );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawHorizontalLine( ( myW >> 1 ) + 2 , 2 , 4 , 61074 );
+						}
+					}
 				}
 				break;
 			default:
@@ -301,7 +385,7 @@ _gadgetEventReturnType _scrollBar::refreshHandler( _gadgetEvent event ) {
 	return use_default;
 }
 
-_gadgetEventReturnType _scrollBar::resizeHandler( _gadgetEvent event ){
+_callbackReturn _scrollBar::resizeHandler( _event event ){
 	
 	_scrollBar* that = event.getGadget<_scrollBar>();
 	
@@ -320,9 +404,9 @@ void _scrollBar::refreshPosition(){
 	_u32 perc = div32( this->value << 8 , this->length2 );
 	
 	if( this->dim == _dimension::horizontal )
-		this->dragHandle->setX( 8 + ( perc * ( this->dimensions.width - 15 + this->cache ) >> 8 ) );
+		this->dragHandle->setX( 8 + ( perc * ( this->dimensions.width - 14 + this->cache ) >> 8 ) );
 	else
-		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 15 + this->cache ) >> 8 ) );
+		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 14 + this->cache ) >> 8 ) );
 }
 
 void _scrollBar::setValue( _u32 value )
@@ -338,30 +422,30 @@ void _scrollBar::setDimension( _dimension dim )
 	
 	this->dim = dim;
 	
-	this->unregisterEventHandler( "resize" );
+	this->unregisterEventHandler( onResize );
 	
 	if( dim == _dimension::horizontal )
 	{
 		this->setWidth( this->dimensions.height );
 		this->setHeight( 8 );
 		this->dragHandle->setDimensions( _rect( 8 , 0 , 8 , 8 ) );
-		this->dragHandle->setStyle( _gadgetStyle::storeData( 0 ) );
+		this->dragHandle->setStyle( _style::storeData( 0 ) );
 		this->higherHandle->moveTo( this->dimensions.width - 8 , 0 );
-		this->higherHandle->setStyle( _gadgetStyle::storeData( 2 ) );
-		this->lowerHandle->setStyle( _gadgetStyle::storeData( 1 ) );
+		this->higherHandle->setStyle( _style::storeData( 2 ) );
+		this->lowerHandle->setStyle( _style::storeData( 1 ) );
 	}
 	else
 	{
 		this->setHeight( this->dimensions.width );
 		this->setWidth( 8 );
 		this->dragHandle->setDimensions( _rect( 0 , 8 , 8 , 8 ) );
-		this->dragHandle->setStyle( _gadgetStyle::storeData( 3 ) );
+		this->dragHandle->setStyle( _style::storeData( 3 ) );
 		this->higherHandle->moveTo( 0 , this->dimensions.height - 8 );
-		this->higherHandle->setStyle( _gadgetStyle::storeData( 4 ) );
-		this->lowerHandle->setStyle( _gadgetStyle::storeData( 5 ) );
+		this->higherHandle->setStyle( _style::storeData( 4 ) );
+		this->lowerHandle->setStyle( _style::storeData( 5 ) );
 	}
 	
-	this->registerEventHandler( "resize" , resizeHandler );
+	this->registerEventHandler( onResize , resizeHandler );
 	
 	refreshCache();
 	refreshPosition();

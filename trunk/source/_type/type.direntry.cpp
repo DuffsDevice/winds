@@ -6,7 +6,9 @@ extern "C"{
 #include "_library/_fat/file_allocation_table.h"
 }
 
+namespace unistd{
 #include <unistd.h>
+}
 
 #include "_resource/BMP_FileIcon.h"
 #include "_resource/BMP_ExeIcon.h"
@@ -437,7 +439,7 @@ string _direntry::getWorkingDirectory()
 	char* val = new char[PATH_MAX];
 	
 	// Get working directory
-	getcwd( val , PATH_MAX );
+	unistd::getcwd( val , PATH_MAX );
 	
 	// Copy to std::string
 	string ret = val;
@@ -451,7 +453,7 @@ string _direntry::getWorkingDirectory()
 void _direntry::setWorkingDirectory( string dir )
 {
 	//printf("change dir to %s = %d",replaceASSOCS(dir).c_str(),chdir( replaceASSOCS(dir).c_str()) );
-	chdir( replaceASSOCS(dir).c_str() );
+	unistd::chdir( replaceASSOCS(dir).c_str() );
 }
 
 bool _direntry::execute()

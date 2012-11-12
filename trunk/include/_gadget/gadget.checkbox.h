@@ -18,11 +18,11 @@ class _checkbox : public _gadget , public _interface_input {
 		
 		static const _bitmap graphic[3];
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
-		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
+		static _callbackReturn mouseHandler( _event event );
 		
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
+		static _callbackReturn dragHandler( _event event );
 		
 	public:
 		
@@ -30,7 +30,7 @@ class _checkbox : public _gadget , public _interface_input {
 		void setIntValue( _s32 val ){ _interface_input::setIntValue( val ); this->bubbleRefresh( true ); }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_checkbox( _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );
+		_checkbox( _coord x , _coord y , _style style = _style() );
 		
 		//! Destrucor
 		~_checkbox();

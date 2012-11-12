@@ -41,11 +41,11 @@ class _keyboard : public _gadgetScreen {
 		//! Label on the top of the button
 		_keyboardButton* buttons[46];
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
-		static _gadgetEventReturnType mouseHandler( _gadgetEvent event );
-		static _gadgetEventReturnType keyHandler( _gadgetEvent event );
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
-		static _gadgetEventReturnType focusHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn mouseHandler( _event event );
+		static _callbackReturn keyHandler( _event event );
+		static _callbackReturn dragHandler( _event event );
+		static _callbackReturn focusHandler( _event event );
 		
 		void setState( int val );
 		void setMagnification( int val );
@@ -71,7 +71,7 @@ class _keyboard : public _gadgetScreen {
 		void screenVBL();
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _gadgetStyle style = _defaultStyle_ );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _style style = _style() );
 		
 		//! Destrucor
 		~_keyboard();

@@ -12,7 +12,7 @@
 class _windowButton : public _button{
 	private:
 		_u8 buttonType;
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 	public:
 		_windowButton( _coord x , _coord y , _u8 buttonType );
 };
@@ -27,14 +27,14 @@ class _window : public _gadget , public _interface_input {
 		
 		_windowButton* button[3];
 		
-		static _gadgetEventReturnType refreshHandler( _gadgetEvent event );
+		static _callbackReturn refreshHandler( _event event );
 		
-		static _gadgetEventReturnType dragHandler( _gadgetEvent event );
+		static _callbackReturn dragHandler( _event event );
 		
-		static _gadgetEventReturnType closeHandler( _gadgetEvent event );
+		static _callbackReturn closeHandler( _event event );
 		
 		// Will be called if the window is resized ->label will also be resized
-		static _gadgetEventReturnType resizeHandler( _gadgetEvent e );
+		static _callbackReturn resizeHandler( _event e );
 		
 	public:
 		
@@ -42,7 +42,7 @@ class _window : public _gadget , public _interface_input {
 		
 		string getTitle(){ if( this->label ) return this->label->getStrValue(); return ""; }
 		
-		_window( _length width , _length height , _coord x , _coord y , string title , _gadgetStyle style = _defaultStyle_);
+		_window( _length width , _length height , _coord x , _coord y , string title , _style style = _style());
 };
 
 #endif

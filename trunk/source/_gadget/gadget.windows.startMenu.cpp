@@ -5,7 +5,7 @@
 #define CONST_BOTTOM_BAR_HEIGHT 11
 #define CONST_TOP_BAR_HEIGHT 16
 
- _gadgetEventReturnType _startMenu::refreshHandler( _gadgetEvent event ){
+ _callbackReturn _startMenu::refreshHandler( _event event ){
 	
 	_startMenu* that = event.getGadget<_startMenu>();
 	
@@ -48,7 +48,7 @@
 
 }
 
-_startMenu::_startMenu( _gadget* owner , _gadgetStyle style ) :
+_startMenu::_startMenu( _gadget* owner , _style style ) :
 	_contextMenu( 110 , 110 , owner , style )
 {
 	// Reset Bitmap
@@ -70,7 +70,7 @@ _startMenu::_startMenu( _gadget* owner , _gadgetStyle style ) :
 	this->addChild( usrName );
 	
 	// Registering Event Handlers
-	this->registerEventHandler( "refresh" , _startMenu::refreshHandler );
+	this->registerEventHandler( refresh , _startMenu::refreshHandler );
 	
 	// Refresh...
 	this->refreshBitmap();

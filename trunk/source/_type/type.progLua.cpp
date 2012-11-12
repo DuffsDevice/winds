@@ -90,7 +90,7 @@ luaL_Reg windowsLibrary[] = {
 
 
 //! This Function will be called from _gadget
-_gadgetEventReturnType lua_callEventHandler( lua_State* L , int handler , _gadgetEvent e )
+_callbackReturn lua_callEventHandler( lua_State* L , int handler , _event e )
 {
 	//! No state registered?
 	if( !L )

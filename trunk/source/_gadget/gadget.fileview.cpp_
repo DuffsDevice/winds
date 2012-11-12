@@ -4,7 +4,7 @@
 #define FAT_EMULATORf
 
 
-_fileview::_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype , _scrollType scrollTypeX , _scrollType scrollTypeY , _gadgetStyle style ) :
+_fileview::_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
 	_scrollArea( width , height , x , y , scrollTypeX , scrollTypeY , style ) 
 	, directory( path )
 	, viewType( viewtype )

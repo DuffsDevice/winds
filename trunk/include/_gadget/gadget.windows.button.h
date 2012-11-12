@@ -14,13 +14,13 @@ class _windowsStartButton : public _button {
 		
 		_startMenu*		startMenu;
 		
-		static _gadgetEventReturnType  refreshHandler( _gadgetEvent );
+		static _callbackReturn  refreshHandler( _event );
 		
-		static _gadgetEventReturnType  mouseHandler( _gadgetEvent );
+		static _callbackReturn  mouseHandler( _event );
 	
 	public:
 		
-		_windowsStartButton( _coord x , _coord y , _gadgetStyle style = _defaultStyle_ );
+		_windowsStartButton( _coord x , _coord y , _style style = _style() );
 };
 
 #endif

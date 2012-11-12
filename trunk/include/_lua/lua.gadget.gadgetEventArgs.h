@@ -92,12 +92,12 @@ class _lua_gadget{
 		//! Lua-Dtor
 		int _delete( lua_State* L);
 		
-		class _lua_gadgetEvent : public _gadgetEvent {
+		class _lua_gadgetEvent : public _event {
 			
 			public:
 				
 				// Ctor...
-				_lua_gadgetEvent( _gadgetEvent e );
+				_lua_gadgetEvent( _event e );
 				
 				// Lua-Ctor...
 				_lua_gadgetEvent( lua_State* L );

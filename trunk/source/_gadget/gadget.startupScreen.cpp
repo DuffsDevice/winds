@@ -13,7 +13,7 @@ _pixel SUpalette[] = {
 
 _u8 accntPos = 110;
 
-_gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
+_callbackReturn _startupScreen::refreshHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -50,20 +50,18 @@ _gadgetEventReturnType _startupScreen::refreshHandler( _gadgetEvent event )
 
 #include "_gadget/gadget.scrollBar.h"
 
-_startupScreen::_startupScreen( _u8 bgId , _gadgetStyle style ) :
+_startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
 	, winLogoGadget( new _imagegadget( 4 , 3 , _startupScreen::winLogo ) )
 {	
 	refresher->style.canReceiveFocus = false;
-	refresher->registerEventHandler( "refresh" , &_startupScreen::refreshHandler );
+	refresher->registerEventHandler( refresh , &_startupScreen::refreshHandler );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	
 	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
-	
-	this->addChild( new _scrollBar( 40 , 40 , 50 , 10 , 20 , _dimension::vertical ) );
 	
 	//! Refresh me
 	this->refreshBitmap();

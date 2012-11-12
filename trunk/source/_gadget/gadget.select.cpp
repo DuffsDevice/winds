@@ -4,13 +4,13 @@
 
 _bitmap* graphic;// = new BMP_ScrollButtonBottom();
 
-_gadgetEventReturnType _select::dragHandler( _gadgetEvent event )
+_callbackReturn _select::dragHandler( _event event )
 {
 	
 	return use_default;
 }
 
-_gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
+_callbackReturn _select::refreshHandler( _event event ){
 	
 	// Receive Gadget
 	_select* that = event.getGadget<_select>();
@@ -28,7 +28,7 @@ _gadgetEventReturnType _select::refreshHandler( _gadgetEvent event ){
 	return use_default;
 }
 
-_select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _gadgetStyle style ) :
+_select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style style ) :
 	_gadget( _gadgetType::selectbox , width , height * _system_->_runtimeAttributes_->user->sOH + 2 , x , y , style )
 	, entries( lst )
 	, selected( -1 )
@@ -37,10 +37,10 @@ _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMen
 	this->setPadding( _padding( 1 , 1 , 1 , 1 ) );
 	
 	// Register Event - Handlers
-	this->registerEventHandler( "refresh" , &_select::refreshHandler );
-	this->registerEventHandler( "dragging" , &_select::dragHandler );
-	this->registerEventHandler( "dragStart" , &_select::dragHandler );
-	this->registerEventHandler( "dragStop" , &_select::dragHandler );
+	this->registerEventHandler( refresh , &_select::refreshHandler );
+	this->registerEventHandler( dragging , &_select::dragHandler );
+	this->registerEventHandler( dragStart , &_select::dragHandler );
+	this->registerEventHandler( dragStop , &_select::dragHandler );
 	
 	// Refresh Me
 	this->refreshBitmap();
