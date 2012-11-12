@@ -49,7 +49,8 @@ class _lua_border : public _border {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_border>::RegType methods[];
+		static Lunar<_lua_border>::FunctionType methods[];
+		static Lunar<_lua_border>::PropertyType properties[];
 	
 };
 

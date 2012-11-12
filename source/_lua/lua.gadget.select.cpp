@@ -29,14 +29,16 @@ int _lua_select::removeIndex( lua_State* L ){
 
 //! Lua-button
 const char _lua_select::className[] = "_select";
-Lunar<_lua_select>::RegType _lua_select::methods[] = {
-	LUNAR_DECLARE_ALL_METHODS_OF( _lua_select ),
-	
-	//! _interface_input (only these two are used)
-	LUNAR_DECLARE_METHOD(_lua_select,addIndex),
-	LUNAR_DECLARE_METHOD(_lua_select,removeIndex),
-	LUNAR_DECLARE_METHOD(_lua_select,setIntValue),
-	LUNAR_DECLARE_METHOD(_lua_select,getIntValue),
-	LUNAR_DECLARE_METHOD(_lua_select,getStrValue),
-	{0,0}
+Lunar<_lua_select>::FunctionType _lua_select::methods[] = {
+	GADGET_FUNCS( _lua_select ),
+	LUA_CLASS_FUNC(_lua_select,addIndex),
+	LUA_CLASS_FUNC(_lua_select,removeIndex),
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_select>::PropertyType _lua_select::properties[] = {
+	GADGET_ATTRS( _lua_select ),
+	LUA_CLASS_ATTR(_lua_select,IntValue,"intValue"),
+	LUA_CLASS_ATTR_RD(_lua_select,StrValue,"strValue"),
+	LUA_CLASS_ATTR_END
 };

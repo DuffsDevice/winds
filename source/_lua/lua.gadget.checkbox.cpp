@@ -13,14 +13,14 @@ _lua_checkbox::_lua_checkbox( lua_State* L ) :
 
 //! Lua-window
 const char _lua_checkbox::className[] = "_checkbox";
+Lunar<_lua_checkbox>::FunctionType _lua_checkbox::methods[] = {
+	GADGET_FUNCS( _lua_checkbox ),
+	LUA_CLASS_FUNC_END
+};
 
-Lunar<_lua_checkbox>::RegType _lua_checkbox::methods[] = {
-	LUNAR_DECLARE_ALL_METHODS_OF( _lua_checkbox ),
-	
+Lunar<_lua_checkbox>::PropertyType _lua_checkbox::properties[] = {
+	GADGET_ATTRS( _lua_checkbox ),
 	//! _interface_input (only these two are used)
-	LUNAR_DECLARE_METHOD(_lua_checkbox,setTitle),
-	LUNAR_DECLARE_METHOD(_lua_checkbox,getTitle),
-	LUNAR_DECLARE_METHOD(_lua_checkbox,getIntValue),
-	LUNAR_DECLARE_METHOD(_lua_checkbox,setIntValue),
-	{0,0}
+	LUA_CLASS_ATTR( _lua_checkbox , IntValue , "intValue" ),
+	LUA_CLASS_ATTR_END
 };

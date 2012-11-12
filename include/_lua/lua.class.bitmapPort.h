@@ -2,18 +2,8 @@
 #ifndef _WIN_LUABITMAPPORT_
 #define _WIN_LUABITMAPPORT_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
 #include "_lua/lunar.h"
-//#include "_lua/lua.class.font.h"
-#include "_lua/lua.class.rect.h"
 #include "_type/type.bitmapPort.h"
-
-extern bool luaL_is( lua_State* L , int narg , string type );
-
 
 /**
  * Proxy Classes
@@ -102,7 +92,8 @@ class _lua_bitmapPort : public _bitmapPort{
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_bitmapPort>::RegType methods[];
+		static Lunar<_lua_bitmapPort>::FunctionType methods[];
+		static Lunar<_lua_bitmapPort>::PropertyType properties[];
 };
 
 #endif

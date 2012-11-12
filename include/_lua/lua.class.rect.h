@@ -1,49 +1,14 @@
 // Check if already included
-#ifndef _WIN_LUARECTAREA_
-#define _WIN_LUARECTAREA_
+#ifndef _WIN_LUARECT_
+#define _WIN_LUARECT_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
 #include "_lua/lunar.h"
 #include "_type/type.rect.h"
 
 /**
  * Proxy Classes
 **/
-class _lua_rect : public _rect {	
-	
-	public:
-		
-		class _lua_area : public _area	{
-			public:
-				
-				_lua_area( _area a );
-				
-				//! Constructor
-				_lua_area( lua_State* L );
-				
-				//! Push-back
-				int add( lua_State* L );
-				
-				//! reduce
-				int reduce( lua_State* L );
-				
-				//! clear
-				int clearRects(lua_State* L);
-				
-				//! toRelative
-				int toRelative(lua_State* L);
-				
-				//! clipToIntersect
-				int clipToIntersect(lua_State* L);
-				
-				//! Lunar !//
-				static const char className[];
-				static Lunar<_lua_area>::RegType methods[];
-		};
+class _lua_rect : public _rect {
 		
 	public:
 		
@@ -117,10 +82,9 @@ class _lua_rect : public _rect {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_rect>::RegType methods[];
+		static Lunar<_lua_rect>::FunctionType methods[];
+		static Lunar<_lua_rect>::PropertyType properties[];
 	
 };
-
-typedef _lua_rect::_lua_area _lua_area;
 
 #endif

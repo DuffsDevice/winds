@@ -2,15 +2,10 @@
 #ifndef _WIN_LUATEXTBOX_
 #define _WIN_LUATEXTBOX_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.textbox.h"
-#include "_lua/lunar.h"
 
 /**
  * Proxy Classes
@@ -44,7 +39,8 @@ class _lua_textbox : public _lua_gadget , public _lua_interface_input {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_textbox>::RegType methods[];
+		static Lunar<_lua_textbox>::FunctionType methods[];
+		static Lunar<_lua_textbox>::PropertyType properties[];
 	
 };
 

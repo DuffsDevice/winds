@@ -6,12 +6,14 @@
  * Proxy Classes
 **/
 #include "_lua/lua.class.rect.h"
+#include "_lua/lua.class.area.h"
 #include "_lua/lua.class.border.h"
-//#include "_lua/lua.class.font.h"
+#include "_lua/lua.class.font.h"
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
-#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lua.class.gadget.h"
+#include "_lua/lua.class.event.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.imagegadget.h"
@@ -100,7 +102,7 @@ _callbackReturn lua_callEventHandler( lua_State* L , int handler , _event e )
 	lua_rawgeti( L , LUA_REGISTRYINDEX, handler );
 	
 	//! Call it with a param
-	Lunar<_lua_gadgetEvent>::push( L , new _lua_gadgetEvent( e ) , true );
+	Lunar<_lua_event>::push( L , new _lua_event( e ) );
 	lua_pcall( L , 1 , 1 , 0 ); // 1 parameter and 1 return value
 	
 	//! Return the Value returned by the Handler
@@ -138,12 +140,12 @@ _progLua::_progLua( string prog ) :
 	//! Register Base Classes
 	Lunar<_lua_rect>::Register( this->state );
 	Lunar<_lua_border>::Register( this->state );
-	//Lunar<_lua_font>::Register( this->state );
+	Lunar<_lua_font>::Register( this->state );
 	Lunar<_lua_direntry>::Register( this->state );
 	Lunar<_lua_area>::Register( this->state );
 	Lunar<_lua_bitmap>::Register( this->state );
 	Lunar<_lua_bitmapPort>::Register( this->state );
-	Lunar<_lua_gadgetEvent>::Register( this->state );
+	Lunar<_lua_event>::Register( this->state );
 	Lunar<_lua_gadget>::Register( this->state );
 	
 	//! Register Gadgets

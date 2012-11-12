@@ -2,11 +2,6 @@
 #ifndef _WIN_LUAFONT_
 #define _WIN_LUAFONT_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
 #include "_lua/lunar.h"
 #include "_type/type.freetypefont.h"
 
@@ -30,7 +25,8 @@ class _lua_font{
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_font>::RegType methods[];
+		static Lunar<_lua_font>::FunctionType methods[];
+		static Lunar<_lua_font>::PropertyType properties[];
 };
 
 #endif

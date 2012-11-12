@@ -2,14 +2,9 @@
 #ifndef _WIN_LUABUTTON_
 #define _WIN_LUABUTTON_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.gadget.gadgetEventArgs.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
+#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.button.h"
 
 /**
@@ -35,7 +30,8 @@ class _lua_button : public _lua_gadget , public _lua_interface_input{
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_button>::RegType methods[];
+		static Lunar<_lua_button>::FunctionType methods[];
+		static Lunar<_lua_button>::PropertyType properties[];
 	
 };
 

@@ -2,15 +2,10 @@
 #ifndef _WIN_LUAIMAGEGADGET_
 #define _WIN_LUAIMAGEGADGET_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_gadget/gadget.imagegadget.h"
-#include "_lua/lunar.h"
 
 /**
  * Proxy Classes
@@ -30,7 +25,8 @@ class _lua_imagegadget : public _lua_gadget {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_imagegadget>::RegType methods[];
+		static Lunar<_lua_imagegadget>::FunctionType methods[];
+		static Lunar<_lua_imagegadget>::PropertyType properties[];
 	
 };
 

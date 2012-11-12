@@ -1,5 +1,7 @@
 #include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.class.rect.h"
+#include "_lua/lua.class.area.h"
 
 /*##################################
 ##         Lua-Bitmap-Port        ##
@@ -214,30 +216,34 @@ int _lua_bitmapPort::copyHorizontalStretch( lua_State* L )
 
 //! Lua-_gadget
 const char _lua_bitmapPort::className[] = "_bitmapPort";
-Lunar<_lua_bitmapPort>::RegType _lua_bitmapPort::methods[] = {
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, addClippingRects),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, normalizeClippingRects),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, deleteClippingRects),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, get),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, getWidth),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, getHeight),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, getPixel),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawPixel),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, fill),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawVerticalLine),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawHorizontalLine),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawFilledRect),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawVerticalGradient),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawHorizontalGradient),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawCircle),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawFilledCircle),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawEllipse),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawFilledEllipse),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawChar),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, drawString),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, copy),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, copyTransparent),
-	LUNAR_DECLARE_METHOD(_lua_bitmapPort, copyHorizontalStretch),
-	{0,0}
+Lunar<_lua_bitmapPort>::FunctionType _lua_bitmapPort::methods[] = {
+	LUA_CLASS_FUNC(_lua_bitmapPort, addClippingRects),
+	LUA_CLASS_FUNC(_lua_bitmapPort, normalizeClippingRects),
+	LUA_CLASS_FUNC(_lua_bitmapPort, deleteClippingRects),
+	LUA_CLASS_FUNC(_lua_bitmapPort, get),
+	LUA_CLASS_FUNC(_lua_bitmapPort, getPixel),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawPixel),
+	LUA_CLASS_FUNC(_lua_bitmapPort, fill),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawVerticalLine),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalLine),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawRect),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawFilledRect),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawVerticalGradient),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalGradient),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawCircle),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawFilledCircle),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawEllipse),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawFilledEllipse),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawChar),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawString),
+	LUA_CLASS_FUNC(_lua_bitmapPort, copy),
+	LUA_CLASS_FUNC(_lua_bitmapPort, copyTransparent),
+	LUA_CLASS_FUNC(_lua_bitmapPort, copyHorizontalStretch),
+	LUA_CLASS_FUNC_END
+};
+
+Lunar<_lua_bitmapPort>::PropertyType _lua_bitmapPort::properties[] = {
+	LUA_CLASS_ATTR_RD(_lua_bitmapPort, Width , "width" ),
+	LUA_CLASS_ATTR_RD(_lua_bitmapPort, Height , "height" ),
+	LUA_CLASS_ATTR_END
 };

@@ -20,7 +20,11 @@ int _lua_font::getStringWidth( lua_State* L ){ lua_pushnumber( L , this->font->g
 
 //! Lua-_gadget
 const char _lua_font::className[] = "_freetypefont";
-Lunar<_lua_font>::RegType _lua_font::methods[] = {
-  LUNAR_DECLARE_METHOD( _lua_font , getStringWidth ),
+Lunar<_lua_font>::FunctionType _lua_font::methods[] = {
+  LUA_CLASS_FUNC( _lua_font , getStringWidth ),
   {0,0}
+};
+
+Lunar<_lua_font>::PropertyType _lua_font::properties[] = {
+	LUA_CLASS_ATTR_END
 };
