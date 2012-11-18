@@ -61,12 +61,10 @@ _windows::_windows( _u8 bgId , _style style ) :
 	
 	//! Add startButton
 	this->startButton = new _windowsStartButton( 0 , SCREEN_HEIGHT - 9 );
-	this->startButton->setEnhanced( true );
 	
-	//! Allocate new _desktop
-	this->desktop = new _desktop();
-	this->addChild( this->desktop );
-	this->addChild( this->startButton );
+	//! Allocate new _desktop and bind the _startButton
+	this->addChild( this->desktop = new _desktop() );
+	this->addEnhancedChild( this->startButton );
 	
 	//! Register Event-Handlers
 	this->registerEventHandler( refresh , &_windows::refreshHandler );

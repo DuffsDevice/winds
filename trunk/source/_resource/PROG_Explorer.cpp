@@ -1,5 +1,6 @@
 #include "_resource/PROG_Explorer.h"
 #include "_gadget/gadget.select.h"
+#include "_gadget/gadget.actionButton.h"
 
 //bool created = false;
 //_label* b2 = nullptr;
@@ -16,10 +17,10 @@ void PROG_Explorer::init( _cmdArgs& args )
 	
 	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" , _style::owner( this ) );
 	this->fileview = new _fileview( 118 , 47 , 0 , 12 , this->path , _style::owner( this ) );
-	this->addressbar = new _textbox( 1 , 1 , 98 , this->path , _style::owner( this ) );
-	this->submitbutton = new _button( 17 , 10 , 100 , 1 , "->" , _style::owner( this ) );
+	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::owner( this ) );
+	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::owner( this ) );
 	
-	this->submitbutton->registerEventHandler( "listener" , PROG_Explorer::handler );
+	this->submitbutton->registerEventHandler( onAction , PROG_Explorer::handler );
 	
 	this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );

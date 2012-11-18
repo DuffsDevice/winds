@@ -16,7 +16,7 @@ _callbackReturn _fileobject::focusHandler( _event event )
 	// Receive Gadget
 	_fileobject* that = event.getGadget<_fileobject>();
 	
-	if( event.getType() == focus )
+	if( event.getType() == onFocus )
 	{
 		that->label->setBgColor( RGB255( 10 , 36 , 106 ) );
 		that->label->setColor( COLOR_WHITE );
@@ -48,8 +48,8 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	this->registerEventHandler( dragging , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStart , &_fileobject::dragHandler );
 	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
-	this->registerEventHandler( focus , &_fileobject::focusHandler );
-	this->registerEventHandler( blur , &_fileobject::focusHandler );
+	this->registerEventHandler( onFocus , &_fileobject::focusHandler );
+	this->registerEventHandler( onBlur , &_fileobject::focusHandler );
 	this->registerEventHandler( mouseDoubleClick , &_fileobject::doubleClickHandler );
 	
 	switch( this->viewType )

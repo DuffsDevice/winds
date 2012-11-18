@@ -4,17 +4,22 @@
 
 #include "_type/type.h"
 
+class _gadget;
+
 /**
  * Specifies the appearence of a gadget
 **/
 struct _style{
+	friend class _gadget;
 	void* own;
 	_int data;
 	_u8 resizable : 2;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction **/
 	bool destroyable : 1;	/** Is destroyable? **/
 	bool focused : 1;
 	bool pressed : 1;
+	private:
 	bool enhanced : 1;
+	public:
 	bool dragged : 1;
 	bool draggable : 1;
 	bool editable : 1;		/** Is editable? **/

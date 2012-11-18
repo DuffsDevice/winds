@@ -43,11 +43,11 @@ class _rect{
 				void dump() const {	for( const _rect &rc : t_rects ) rc.dump(); }
 				
 				//! Cut the supplied Rectangle off
-				_area& reduce( const _rect dim )
+				_area& reduce( const _rect& dim )
 				{
 					//startTimer( reinterpret_cast<void*>(&_rect::reduce) );
 					// Temp Rects
-					_list<_rect> tR = t_rects;;
+					_list<_rect> tR = t_rects;
 					
 					// Clear
 					t_rects.clear();
@@ -128,7 +128,7 @@ class _rect{
 			return ( x < this->x || y < this->y || x > getX2() || y > getY2() ) ? false : true;
 		}
 		
-		bool contains( const _rect rc ) const {
+		bool contains( const _rect& rc ) const {
 			return ( rc.x < x || rc.y < y || rc.getX2() > getX2() || rc.getY2() > getY2() ) ? false : true;
 		}
 		
@@ -145,46 +145,63 @@ class _rect{
 			this->x -= absX; this->y -= absY; return *this;
 		}
 		
+		//! Make the Rect Relative to a specific position
+		//! absX and absY specify to what the resulting rectangle will be relative
+		_rect relativeVersion( const _coord absX , const _coord absY ) const
+		{
+			return _rect( this->x - absX, this->y - absY , this->width , this->height );
+		}
+		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one
-		_rect& clipToIntersect( const _rect rect )
+		_rect& clipToIntersect( const _rect& rect )
 		{
 			return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 		}
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle OR'd with this one
-		_area combine( const _rect other ) const ;
+		_area combine( const _rect& other ) const ;
 		
 		//! Returns a Rectangle containing both this rect and the passed one
-		_rect& expandToInclude( const _rect rect )
+		_rect& expandToInclude( const _rect& rect )
 		{
 			return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
 		}
 		
 		//! Expand the rect by applying a margin
-		_rect& applyMargin( const _margin p )
+		_rect& applyMargin( const _margin& p )
 		{
 			return (*this = _rect::fromCoords( this->x - p.getLeft() , this->y - p.getTop() , this->getX2() + p.getRight() , this->getY2() + p.getBottom() ) );
 		}
 		
 		//! Crop the Rect by applying a padding
-		_rect& applyPadding( const _padding p )
+		_rect& applyPadding( const _padding& p )
 		{
 			return (*this = _rect::fromCoords( this->x + p.getLeft() , this->y + p.getTop() , this->getX2() - p.getRight() , this->getY2() - p.getBottom() ) ); 
 		}
 		
 		//! Cut 'other' off of me
-		_area reduce( const _rect other ) const ;
+		_area reduce( const _rect& other ) const ;
 		
 		//! Check if the rect equals another
-		bool equals( const _rect other ) const {
+		bool equals( const _rect& other ) const {
 			return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
 		}
 		
-		bool intersectsWith( const _rect other ) const 
+		bool intersectsWith( const _rect& other ) const 
 		{
 			return ( this->x > other.getX2() || this->getX2() < other.x || this->y > other.getY2() || this->getY2() < other.y ) ? false : true; 
 		}
-		bool intersectsWith( const _area other ) const;
+		bool intersectsWith( const _area& other ) const;
+		
+		bool operator==( const _rect& other )
+		{
+			return !( other.x != this->x || other.y != this->y || other.width != this->width || other.height != this->height );
+		}
+		
+		noinline bool operator!=( const _rect& other )
+		{
+			return other.x != this->x || other.y != this->y || other.width != this->width || other.height != this->height;
+		}
 };
 
 typedef _rect::_area _area;

@@ -35,12 +35,14 @@ class _gadget{
 		
 		
 		// Internal
-		static bool 	removeEnhancedCallback( _gadget* g )
+		static bool 	removeDeleteCallback( _gadget* g )
 		{
-			if( g->style.enhanced )
-				return false;
+			if( g->style.focused && g->parent )
+				g->parent->blurChild();
 			
-			return _gadget::removeCallback( g );
+			g->parent = nullptr;
+			delete g;
+			return true;
 		}
 		static bool 	removeCallback( _gadget* g )
 		{
@@ -50,6 +52,7 @@ class _gadget{
 			g->parent = nullptr;
 			return true;
 		}
+		static _gadget* getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* parent );
 	
 	public:
 	
@@ -60,6 +63,7 @@ class _gadget{
 		
 		// Children
 		_gadgetList		children;
+		_gadgetList		enhancedChildren;
 		_gadget*		focusedChild;
 		
 		_area			dirtyRects;
@@ -106,17 +110,12 @@ class _gadget{
 		/**
 		 * Get the Padding of the Gadget
 		**/
-		_padding getPadding(){ return this->padding; }
+		const _padding& getPadding() const { return this->padding; }
 		
 		/**
 		 * Check whether this Gadget can also be on the reserved area of the parent
 		**/
 		bool isEnhanced() const { return this->style.enhanced; }
-		
-		/**
-		 * Set whether this Gadget can also be on the reserved area of the parent
-		**/
-		void setEnhanced( bool flag = true ){ this->style.enhanced = flag; }
 		
 		/**
 		 * Let an Event bubble from child to parent and so on...
@@ -147,7 +146,7 @@ class _gadget{
 		/**
 		 * Get the style of that Gadget
 		**/
-		_style getStyle() const { return this->style; }
+		const _style& getStyle() const { return this->style; }
 		
 		/**
 		 * Set the style of that Gadget
@@ -246,12 +245,12 @@ class _gadget{
 		/**
 		 * Get the Relative X-position
 		**/
-		_coord getX() const { return this->dimensions.x; }
+		const _coord& getX() const { return this->dimensions.x; }
 		
 		/**
 		 * Get the Relative Y-position
 		**/
-		_coord getY() const { return this->dimensions.y; }
+		const _coord& getY() const { return this->dimensions.y; }
 		
 		/**
 		 * Set the Relative X-Position
@@ -272,17 +271,20 @@ class _gadget{
 		 * Set the Gadgets Parent
 		**/
 		void setParent( _gadget* val );
+		void enhanceToParent( _gadget* val );
 		
 		/**
 		 * Remove a specific children
 		**/
 		virtual void removeChild( _gadget* child );
-		virtual void removeChildren( bool preserveEnhanced = false , bool remove = false );
+		void removeChildren( bool remove = false );
+		void removeEnhancedChildren( bool remove = false );
 		
 		/**
 		 * Add a child-gadget to this one
 		**/
 		virtual void addChild( _gadget* child );
+		virtual void addEnhancedChild( _gadget* child );
 		
 		// Tries to focus a child and returns whether it succeded
 		/// @param inform whether to also trigger the 'blur'/'focus' event on the gadget
@@ -292,7 +294,7 @@ class _gadget{
 		/**
 		 * Get Dimensions of the Gadget (including Coords)
 		**/
-		_rect getDimensions() const { return this->dimensions; }
+		const _rect& getDimensions() const { return this->dimensions; }
 		
 		/**
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
@@ -312,12 +314,12 @@ class _gadget{
 		/**
 		 * Get the height of the Gadget
 		**/
-		_length getHeight() const { return this->dimensions.height; }
+		const _length& getHeight() const { return this->dimensions.height; }
 		
 		/**
 		 * Get the width of the Gadget
 		**/
-		_length getWidth() const { return this->dimensions.width; }
+		const _length& getWidth() const { return this->dimensions.width; }
 		
 		/**
 		 * Move the Gadget relatively to its current position
@@ -353,6 +355,13 @@ class _gadget{
 		/**
 		 * There's no setType, because you can't change the type of a Gadget
 		**/
+		
+	private:
+		
+		/**
+		 * Set whether this Gadget can also be on the reserved area of the parent
+		**/
+		void setEnhanced( bool flag = true ){ this->style.enhanced = flag; }
 };
 
 inline _gadgetType typeOfGadget( _gadget* g );

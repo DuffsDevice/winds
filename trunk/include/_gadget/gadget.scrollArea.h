@@ -15,9 +15,6 @@ enum class _scrollType : _u8{
 class _scrollArea : public _gadget {
 	
 	private:
-	
-		_length scrollX;
-		_length scrollY;
 		
 		_scrollType scrollTypeX;
 		_scrollType scrollTypeY;
@@ -32,38 +29,44 @@ class _scrollArea : public _gadget {
 		_length		canvasWidth;
 		_length		canvasHeight;
 		
-		bool		computeCanvasWidth;
-		bool		computeCanvasHeight;
+		_u8			computeCanvasWidth;
+		_u8			computeCanvasHeight;
 		
 		_gadgetList	nonEnhancedChildren;
 		
 		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
-		static _callbackReturn resizeHandler( _event e );
+		static _callbackReturn resizeHandler( _event event );
+		static _callbackReturn scrollHandler( _event event );
 		
 		void		computeCanvasSize();
 		void		computeClipSize();
-		void		refresh();
+		void		updateScrollBars();
 		
 	public:
 	
 		// Method to "manually set the Area, that should be scrolled" or "to tell this scrollArea to compute the scrolling Area on its own by passing 0"
 		void setCanvasWidth( _length canvasWidth = 0 ){ 
-			this->computeCanvasWidth = !canvasWidth;
 			if( canvasWidth )
+			{
 				this->canvasWidth = canvasWidth;
+				computeCanvasWidth = 0;
+			}
 			else
-				this->computeCanvasSize();
-			refresh();
+				computeCanvasWidth = 2;
+			this->computeCanvasSize();
+			updateScrollBars();
 		}
 		
 		void setCanvasHeight( _length canvasHeight = 0 ){
-			this->computeCanvasHeight = !canvasHeight;
 			if( canvasHeight )
+			{
 				this->canvasHeight = canvasHeight;
+				computeCanvasHeight = 0;
+			}
 			else
-				this->computeCanvasSize();
-			refresh();
+				computeCanvasHeight = 2;
+			this->computeCanvasSize();
+			updateScrollBars();
 		}
 		
 		// Methods to scroll to a position
@@ -83,7 +86,7 @@ class _scrollArea : public _gadget {
 		void removeChild( _gadget* child );
 		
 		//! Default Constructor width optional scrolltypes
-		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _gadgetStyle style = _style() );
+		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );
 		
 		//! Destrucor
 		~_scrollArea();

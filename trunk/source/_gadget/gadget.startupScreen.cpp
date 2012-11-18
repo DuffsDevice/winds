@@ -1,6 +1,6 @@
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.imagegadget.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.fileview.h"
 #include "_resource/BMP_WindowsBootLogo.h"
 
 #include <nds/arm9/console.h>
@@ -48,8 +48,6 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 	return use_default;
 }
 
-#include "_gadget/gadget.scrollBar.h"
-
 _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
@@ -62,6 +60,9 @@ _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	
 	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
+	
+	//this->addChild( new _fileview( 100 , 70 , 1,1,"/NDS",_style()) );
+	//this->addChild( new _button( 0 ,0 , "Hello") );
 	
 	//! Refresh me
 	this->refreshBitmap();

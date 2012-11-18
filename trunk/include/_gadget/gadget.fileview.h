@@ -26,11 +26,11 @@ class _fileview : public _scrollArea {
 		string			getPath(){ return this->directory.getFileName(); }
 		
 		// Full Ctor
-		_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype = _fileviewType::liste , _scrollType scrollTypeX = _scrollType::prevent , _scrollType scrollTypeY = _scrollType::scroll , _style style = _style() );
+		_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype = _fileviewType::liste , _scrollType scrollTypeX = _scrollType::meta , _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );
 		
 		// Simple Ctor
 		_fileview( _length width , _length height , _coord x , _coord y , string path , _style style = _style() ) :
-			_fileview( width , height , x , y , path , _fileviewType::liste , _scrollType::prevent , _scrollType::scroll , style )
+			_fileview( width , height , x , y , path , _fileviewType::liste , _scrollType::meta , _scrollType::meta , style )
 		{ }
 		
 		~_fileview();

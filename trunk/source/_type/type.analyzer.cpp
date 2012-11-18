@@ -25,8 +25,8 @@ void addMethod( void* address , _string name )
 }
 
 void printResults(){
-	consoleClear();
-	_u32 time = cpuGetTiming();
-	for( pair<void*,_string> s : address2Name )
-		printf("%s: %d = %d%%\n",s.second.c_str(),address2Time[s.first],div32( address2Time[s.first] , time/100 ) );
+	//consoleClear();
+	//_u32 time = cpuGetTiming();
+	//for( pair<void*,_string> s : address2Name )
+		//printf("%s: %d = %d%%\n",s.second.c_str(),address2Time[s.first],div32( address2Time[s.first] , time/100 ) );
 }

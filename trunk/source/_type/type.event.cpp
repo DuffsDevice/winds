@@ -7,6 +7,7 @@ _event::_event( _gadget* src , _eventType type ){
 
 _event::_event( _eventType type ){
 	this->type = type;
+	resetParams();
 }
 
 _event _event::refreshEvent( _gadget* src , _area damagedRects ){
@@ -26,6 +27,8 @@ void _event::resetParams( void* dest ){//!<= Reset All Arguments
 	this->posY = 0;
 	this->effectiveX = 0;
 	this->effectiveY = 0;
+	this->deltaX = 0;
+	this->deltaY = 0;
 	this->keyCode = 0;
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
