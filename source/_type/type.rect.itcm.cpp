@@ -1,6 +1,6 @@
 #include "_type/type.rect.h"
 
-bool _rect::intersectsWith( const _area other ) const {
+bool _rect::intersectsWith( const _area& other ) const {
 	for( const _rect& r : other.t_rects )
 	{
 		if( this->x > r.getX2() || this->getX2() < r.x || this->y > r.getY2() || this->getY2() < r.y )
@@ -12,10 +12,10 @@ bool _rect::intersectsWith( const _area other ) const {
 }
 
 void _rect::dump() const {
-	printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
+	//printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
 }
 
-_area _rect::reduce( const _rect r2 ) const 
+_area _rect::reduce( const _rect& r2 ) const 
 {
 	_area out;
 	
@@ -45,7 +45,7 @@ _area _rect::reduce( const _rect r2 ) const
 	return out;
 }
 
-_area _rect::combine( const _rect r2 ) const 
+_area _rect::combine( const _rect& r2 ) const 
 {
 	_area out;
 	

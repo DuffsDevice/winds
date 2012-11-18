@@ -12,11 +12,14 @@ typedef enum{
 	text_plain ,
 	text_html ,
 	text_xml ,
+	text_x_ini ,
 	application_octet_stream ,
 	application_microsoft_installer,
 	application_x_lua_bytecode,
 	application_x_ms_shortcut,
-	application_x_internet_shortcut
+	application_x_internet_shortcut,
+	application_x_nintendo_ds_rom,
+	application_x_nintendo_gba_rom
 }_mime;
 
 extern map<string,_mime> string2mimeType;

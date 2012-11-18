@@ -92,7 +92,7 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->lowerHandle->refreshBitmap();
 	
 	//! Refresh my cached values
-	refreshCache();
+	refreshHandleWidth();
 	
 	// Add Buttons
 	this->addChild( this->dragHandle );
@@ -100,6 +100,23 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->addChild( this->lowerHandle );
 	
 	this->refreshBitmap();
+}
+
+void _scrollBar::internalSetValue( _u32 val )
+{
+	val = mid( 0 , (int)val , int( this->length2 - this->length ) );
+	if( val != this->value )
+	{
+		_s16 delta = val - this->value;
+		this->value = val;
+		
+		this->refreshPosition();
+		
+		if( this->dim == _dimension::horizontal )
+			this->triggerEvent( _event( onChange ).setDeltaX( delta ).setPosX( val ) );
+		else
+			this->triggerEvent( _event( onChange ).setDeltaY( delta ).setPosY( val ) );
+	}
 }
 
 _callbackReturn _scrollBar::dragHandler( _event event )
@@ -111,7 +128,6 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	{
 		deltaY = event.getPosY();
 		deltaX = event.getPosX();
-		
 		return handled;
 	}
 	
@@ -126,21 +142,30 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	
 	// Set The value
 	if( bar->dim == _dimension::horizontal )
-		bar->setValue( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->dimensions.width - 15 + bar->cache ) >> 8 );
+		bar->internalSetValue( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->dimensions.width - 15 + bar->cache ) >> 8 );
 	else
-		bar->setValue( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->dimensions.height - 15 + bar->cache ) >> 8 );
+		bar->internalSetValue( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->dimensions.height - 15 + bar->cache ) >> 8 );
 	
 	return handled;
 }
 
-void _scrollBar::refreshCache()
+void _scrollBar::refreshHandleWidth()
 {
+	if( this->length >= this->length2 )
+	{
+		if( this->dim == _dimension::horizontal )
+			this->dragHandle->setWidth( int( this->dimensions.width - 15 ) );
+		else
+			this->dragHandle->setHeight( int( this->dimensions.height - 15 ) );
+		return;
+	}
+		
 	int length = div32( this->length << 8 , this->length2 );
 	
 	if( this->dim == _dimension::horizontal )
-		length *= int( this->dimensions.width - 16 );
+		length *= int( this->dimensions.width - 15 );
 	else
-		length *= int( this->dimensions.height - 16 );
+		length *= int( this->dimensions.height - 15 );
 	
 	length = ( length + 16 ) >> 8;
 	int i = length;
@@ -169,20 +194,18 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 			if( bar->value + bar->length >= bar->length2 )
 				break;
 			if( bar->value + bar->length + bar->step >= bar->length2 )
-				bar->setValue( bar->length2 - bar->length );
+				bar->internalSetValue( bar->length2 - bar->length );
 			else
-				bar->setValue( bar->value + bar->step );
-			bar->triggerEvent( _event( onAction ) );
+				bar->internalSetValue( bar->value + bar->step );
 			break;
 		case 5:
 		case 1:
 			if( bar->value <= 0 )
 				break;
 			if( (int)bar->value - (int)bar->step < 0 )
-				bar->setValue( 0 );
+				bar->internalSetValue( 0 );
 			else
-				bar->setValue( bar->value - bar->step );
-			bar->triggerEvent( _event( onAction ) );
+				bar->internalSetValue( bar->value - bar->step );
 			break;
 	}
 	
@@ -306,19 +329,19 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 						bP.normalizeClippingRects();
 						if( myW < 12 )
 						{
-							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , 60975 );
-							bP.drawHorizontalLine( ( myW >> 1 ) , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , 60975 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 60975 );
+							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 60975 );
 						}
 						else
 						{
-							bP.drawHorizontalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , 60975 );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) , 4 , 2 , 60975 );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 2 , 2 , 4 , 60975 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 60975 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 60975 );
+							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 60975 );
 						}
 					}
 				}
@@ -340,19 +363,19 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 						bP.normalizeClippingRects();
 						if( myW < 12 )
 						{
-							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , 61074 );
-							bP.drawHorizontalLine( ( myW >> 1 ) , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , 61074 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 61074 );
+							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 61074 );
 						}
 						else
 						{
-							bP.drawHorizontalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 2 , 2 , 4 , 61074 );
-							bP.drawHorizontalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) , 4 , 2 , 61074 );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( ( myW >> 1 ) + 2 , 2 , 4 , 61074 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 61074 );
+							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 61074 );
+							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+							bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 61074 );
 						}
 					}
 				}
@@ -389,7 +412,7 @@ _callbackReturn _scrollBar::resizeHandler( _event event ){
 	
 	_scrollBar* that = event.getGadget<_scrollBar>();
 	
-	that->refreshCache();
+	that->refreshHandleWidth();
 	that->refreshPosition();
 	
 	if( that->dim == _dimension::horizontal )
@@ -400,7 +423,8 @@ _callbackReturn _scrollBar::resizeHandler( _event event ){
 	return handled;
 }
 
-void _scrollBar::refreshPosition(){
+void _scrollBar::refreshPosition()
+{
 	_u32 perc = div32( this->value << 8 , this->length2 );
 	
 	if( this->dim == _dimension::horizontal )
@@ -411,8 +435,11 @@ void _scrollBar::refreshPosition(){
 
 void _scrollBar::setValue( _u32 value )
 {
-	this->value = mid( 0 , (int)value , int( this->length2 - this->length ) );
-	refreshPosition();
+	if( this->value != value )
+	{
+		this->value = mid( 0 , (int)value , int( this->length2 - this->length ) );
+		refreshPosition();
+	}
 }
 
 void _scrollBar::setDimension( _dimension dim )
@@ -447,7 +474,7 @@ void _scrollBar::setDimension( _dimension dim )
 	
 	this->registerEventHandler( onResize , resizeHandler );
 	
-	refreshCache();
+	refreshHandleWidth();
 	refreshPosition();
 	
 	this->bubbleRefresh( true );
@@ -455,14 +482,19 @@ void _scrollBar::setDimension( _dimension dim )
 
 void _scrollBar::setLength( _u32 value )
 {
+	if( this->length == value )
+		return;
+	
 	this->length = value;
-	refreshCache();
+	refreshHandleWidth();
 	this->bubbleRefresh( true );
 }
 
 void _scrollBar::setLength2( _u32 value )
 {
+	if( this->length2 == value )
+		return;
+	
 	this->length2 = value;
-	refreshCache();
-	this->bubbleRefresh( true );
+	refreshHandleWidth();
 }

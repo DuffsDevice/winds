@@ -10,7 +10,7 @@
 #include "strings_bin.h"
 
 //! Resources we need
-//#include "_resource/PROG_Explorer.h"
+#include "_resource/PROG_Explorer.h"
 #include "_resource/BMP_Checkboxes.h"
 #include "_resource/FONT_ArialBlack10.h"
 #include "_resource/FONT_CourierNew10.h"
@@ -42,7 +42,7 @@ void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
 	_system::_debugFile_->writeString( asctime( t ) + msg + "\r\n" );
-	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
+	//printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
 _callbackReturn setupHandler( _event e )
@@ -198,6 +198,8 @@ void _system::setup()
 	_system::_gadgetHost_ = new _startupScreen( bgIdBack );
 	//_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
 	
+	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/NDS/"}});
+	
 	_system::_gadgetHost_->registerEventHandler( _internal_ , setupHandler );
 	_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 	
@@ -294,13 +296,13 @@ void _system::processEvents()
 	{
 		gadget = (_gadget*)event.getDestination();
 		
-		//int s = cpuGetTiming();
+		int s = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
 		//z += cpuGetTiming()-s;
-		//printf("%d\n",cpuGetTiming()-s);
+		//printf("%d\n",z);
 	}
 
 	// Erase all Events
@@ -399,6 +401,8 @@ void _system::processInput()
 		}
 	}
 }
+
+#include "func.md5.h"
 
 _system::_system()
 {
@@ -650,9 +654,9 @@ void _system::main()
 }
 
 _program* _system::getBuiltInProgram( string qualifiedName ){
-	/*if( qualifiedName == "explorer.exe" ){
+	if( qualifiedName == "explorer.exe" ){
 		return new PROG_Explorer();
-	}*/
+	}
 	return nullptr;
 }
 

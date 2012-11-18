@@ -28,6 +28,7 @@ void memSet( void* dst , const unsigned short int val , unsigned int hwn )
 void memCpy( void* dst , const void* src , unsigned int hwn )
 {
 	DC_FlushRange( src , hwn << 1 );
+	DC_FlushRange( dst , hwn << 1 );
 	dmaCopyHalfWords( 0 , src , dst , hwn << 1 );
 }
 

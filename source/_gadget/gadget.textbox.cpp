@@ -110,6 +110,8 @@ _callbackReturn _textbox::focusHandler( _event event )
 	if( _system_->_keyboard_ )
 		_system_->_keyboard_->setDestination( event.getGadget() );
 	
+	event.getGadget<_textbox>()->pressed = true;
+	
 	return use_default;
 }
 
@@ -122,6 +124,7 @@ _callbackReturn _textbox::blurHandler( _event event )
 	
 	// Remove Cursor!
 	that->cursor = 0;
+	that->pressed = false;
 	
 	// Refresh
 	that->bubbleRefresh( true );
@@ -136,18 +139,10 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	if( event.getType() == dragStart )
 		return handled;
 	
-	else if( event.getType() == dragging )
-	{
-		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
-			that->pressed = false;
-		else
-			that->pressed = true;
-	}
-	
 	_coord position = event.getPosX();
 	
 	if( event.getType() == dragging )
-		position -= that->getAbsoluteX();
+		position -= that->getX();
 	
 	position = max( 0 , (int)position );
 	

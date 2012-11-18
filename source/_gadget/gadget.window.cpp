@@ -181,23 +181,19 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	
 	// Create a Label
 	this->label = new _label( this->getWidth() - 30 , 6 , 2 , 2 , title );
-	this->label->setEnhanced();
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( RGB( 31 , 31 , 31 ) );
 	
 	// Append it to this button
-	this->addChild( this->label );
+	this->addEnhancedChild( this->label );
 	
 	this->button[0] = new _windowButton( this->getWidth() - 10 , 1 , 0 );
 	this->button[1] = new _windowButton( this->getWidth() - 19 , 1 , 1 );
 	this->button[2] = new _windowButton( this->getWidth() - 28 , 1 , 2 );
-	this->button[0]->setEnhanced();
-	this->button[1]->setEnhanced();
-	this->button[2]->setEnhanced();
-	this->addChild( this->button[0] );
-	this->addChild( this->button[1] );
-	this->addChild( this->button[2] );
+	this->addEnhancedChild( this->button[0] );
+	this->addEnhancedChild( this->button[1] );
+	this->addEnhancedChild( this->button[2] );
 	this->button[0]->registerEventHandler( onAction , &_window::closeHandler );
 	
 	// Register my handler as the default Refresh-Handler

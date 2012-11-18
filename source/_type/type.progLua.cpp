@@ -25,7 +25,7 @@ int luaL_expectint(lua_State* L , int narg , string name )
 {
 	if( !lua_isnumber(L,narg) )
 	{
-		printf("Arg. #%d of %s is bad: %s\n",narg,name.c_str(),luaL_typename(L,narg));
+		//printf("Arg. #%d of %s is bad: %s\n",narg,name.c_str(),luaL_typename(L,narg));
 		lua_pop( L , 1 );
 		return 0;
 	}
@@ -37,7 +37,7 @@ int luaL_expectint(lua_State* L , int narg , string name )
 string luaL_expectstring(lua_State* L , int narg , string name )
 {
 	if( !lua_isstring(L,narg) ){
-		printf("Arg. #%d of %s is bad: %s\n",narg,name.c_str(),luaL_typename(L,narg));
+		//printf("Arg. #%d of %s is bad: %s\n",narg,name.c_str(),luaL_typename(L,narg));
 		lua_pop( L , 1 );
 		return "";
 	}

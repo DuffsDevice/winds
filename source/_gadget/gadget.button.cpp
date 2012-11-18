@@ -124,16 +124,14 @@ _callbackReturn _button::dragHandler( _event event )
 	
 	if( event.getType() == dragStart )
 		return handled;
-	else
+	
+	else if( event.getType() == dragStop || !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 	{
-		if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
-		{
-			// I'm not pressed anymore!
-			that->pressed = false;
-			
-			// Refresh my parents
-			that->bubbleRefresh( true );
-		}
+		// I'm not pressed anymore!
+		that->pressed = false;
+		
+		// Refresh my parents
+		that->bubbleRefresh( true );
 		return handled;
 	}
 	

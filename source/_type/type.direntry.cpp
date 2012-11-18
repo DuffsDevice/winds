@@ -14,6 +14,9 @@ namespace unistd{
 #include "_resource/BMP_ExeIcon.h"
 #include "_resource/BMP_TxtIcon.h"
 #include "_resource/BMP_XmlIcon.h"
+#include "_resource/BMP_NdsIcon.h"
+#include "_resource/BMP_GbaIcon.h"
+#include "_resource/BMP_IniIcon.h"
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
@@ -31,6 +34,9 @@ _bitmap* icon_msi = new BMP_FileIcon();
 _bitmap* icon_plain = new BMP_FileIcon();
 _bitmap* icon_txt = new BMP_TxtIcon();
 _bitmap* icon_xml = new BMP_XmlIcon();
+_bitmap* icon_ini = new BMP_IniIcon();
+_bitmap* icon_nds = new BMP_NdsIcon();
+_bitmap* icon_gba = new BMP_GbaIcon();
 _bitmap* icon_folder = new BMP_FolderIcon();
 
 int _direntry::fatInited = -1;
@@ -498,22 +504,22 @@ const _bitmap* _direntry::getFileImage()
 	switch( this->getMimeType() ){
 		case _mime::directory:
 			return icon_folder;
-			break;
 		case _mime::application_octet_stream:
 			return icon_exe;
-			break;
 		case _mime::application_x_lua_bytecode:
 			return icon_lua;
-			break;
 		case _mime::application_microsoft_installer:
 			return icon_msi;
-			break;
 		case _mime::text_plain:
 			return icon_txt;
-			break;
 		case _mime::text_xml:
 			return icon_xml;
-			break;
+		case _mime::text_x_ini:
+			return icon_ini;
+		case _mime::application_x_nintendo_ds_rom:
+			return icon_nds;
+		case _mime::application_x_nintendo_gba_rom:
+			return icon_gba;
 		default:
 			break;
 	}

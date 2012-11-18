@@ -31,8 +31,10 @@ class _scrollBar : public _gadget{
 		static _callbackReturn resizeHandler( _event e );
 		static _callbackReturn dragHandler( _event e );
 		
-		void refreshCache();
+		void refreshHandleWidth();
 		void refreshPosition();
+		
+		void internalSetValue( _u32 );
 	
 	public:
 		

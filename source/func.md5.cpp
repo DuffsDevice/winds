@@ -35,12 +35,10 @@ documentation and/or software.
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
 
+#include <string.h>
+
 
 /* system implementation headers */
-#include <stdio.h>
-#include <iostream>
-#include <string.h>
-using namespace std;
 
 
 // a small class for calculating MD5 hashes of strings or byte arrays
@@ -391,25 +389,22 @@ MD5& MD5::finalize()
 
 //////////////////////////////
 
+const char* lut = "0123456789abcdef";
+
 // return hex representation of digest as string
 string MD5::hexdigest() const
-{
+{	
 	if (!finalized)
 		return "";
 
-	char buf[33];
-	for (int i=0; i<16; i++)
-		sprintf(buf+i*2, "%02x", digest[i]);
-	buf[32]=0;
+	string out;
+	for ( int i = 0 ; i != 16 ; i++)
+	{
+		out.push_back( lut[ digest[i] >> 4 ] );
+		out.push_back( lut[ digest[i] & 15 ] );
+	}
 
-	return string(buf);
-}
-
-//////////////////////////////
-
-ostream& operator<<(ostream& out, MD5 md5)
-{
-	return out << md5.hexdigest();
+	return out;
 }
 
 //////////////////////////////

@@ -66,10 +66,10 @@ _wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode )
 			this->succeeded = true;
 		}
 	}
-	printf("->%d\n",this->succeeded);
+	//printf("->%d\n",this->succeeded);
 }
 
 void _wifiSocketClient::request( string url ){
-	printf("Sent Request\n");
+	//printf("Sent Request\n");
 	send( this->sock, url.c_str() , url.length() , 2 );
 }

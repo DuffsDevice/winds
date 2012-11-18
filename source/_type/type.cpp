@@ -3,6 +3,11 @@
 _length SCREEN_WIDTH = 256;
 _length SCREEN_HEIGHT = 192;
 
+void* operator new(size_t size)		{	return malloc(size);	}
+void operator delete(void *p)		{	free(p);				}
+void* operator new[](size_t size)	{	return malloc(size);	}
+void operator delete[](void *p)		{	free(p);				}
+
 map<_align,string> align2string = {
 	{ _align::left , "left" },
 	{ _align::center , "center" },

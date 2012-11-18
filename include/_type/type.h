@@ -2,12 +2,18 @@
 #ifndef _WIN_TYPES_
 #define _WIN_TYPES_
 
+//#include "_type/type.list.h"
+#include <malloc.h>
+#include <list>
 #include <string>
 #include <map>
-//#include "_type/type.list.h"
-#include <list>
-
 using namespace std;
+
+//! Overload new and delete
+void* operator new(size_t size);
+void operator delete(void *p);
+void* operator new[](size_t size);
+void operator delete[](void *p);
 
 typedef unsigned char _char;
 template<typename T>
@@ -204,6 +210,16 @@ class _border
 		void setRight( _length val ){ right = val; }
 		void setTop( _length val ){ top = val; }
 		void setBottom( _length val ){ bottom = val; }
+		
+		bool operator==( const _border& other )
+		{
+			return !( other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom );
+		}
+		
+		bool operator!=( const _border& other )
+		{
+			return other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom;
+		}
 };
 
 typedef _border _padding;
