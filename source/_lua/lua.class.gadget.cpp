@@ -154,6 +154,9 @@ int _lua_gadget::getParent( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _l
 //! setParent
 int _lua_gadget::setParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->setParent( g->gadget ); return 0; }
 
+//! enhanceToParent
+int _lua_gadget::enhanceToParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->enhanceToParent( g->gadget ); return 0; }
+
 //! removeChild
 int _lua_gadget::removeChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->removeChild( g->gadget ); return 0; }
 
@@ -162,6 +165,9 @@ int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( l
 
 //! addChild
 int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->addChild( g->gadget ); return 0; }
+
+//! addEnhancedChild
+int _lua_gadget::addEnhancedChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->addEnhancedChild( g->gadget ); return 0; }
 
 //! getDimensions
 int _lua_gadget::getDimensions( lua_State* L ){ Lunar<_lua_rect>::push( L , new _lua_rect( this->gadget->getDimensions() ) ); return 1; }
@@ -207,9 +213,6 @@ int _lua_gadget::setPadding(lua_State* L){ _lua_border* rc = Lunar<_lua_border>:
 
 //! getPadding
 int _lua_gadget::getPadding(lua_State* L){ Lunar<_lua_border>::push( L , new _lua_border( this->gadget->getPadding() ) ); return 1; }
-
-//! setEnhanced
-int _lua_gadget::setEnhanced(lua_State* L){ this->gadget->setPadding( luaL_optint( L , 1 , 1 ) ); return 0; }
 
 //! isEnhanced
 int _lua_gadget::isEnhanced(lua_State* L){ lua_pushboolean( L , this->gadget->isEnhanced() ); return 1; }

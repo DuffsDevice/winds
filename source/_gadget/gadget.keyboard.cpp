@@ -205,7 +205,7 @@ void _keyboard::setDestination( _gadget* dest )
 		
 		this->animMagnif.setFromValue( sStart );
 		this->animMagnif.setToValue( sEnd );
-		this->animMagnif.finish();
+		this->animMagnif.finish( nullptr );
 		this->animMagnif.start();
 	}
 	else if( this->mode && !dest )
@@ -233,11 +233,17 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , Grip );
-	bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
-	bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , RGB( 3 , 3 , 3 ) );
-	bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
-	bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
+	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , Grip );
+	//bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
+	//bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , RGB( 3 , 3 , 3 ) );
+	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
+	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
+	bP.copyTransparent( that->handlePosition , 0 , Grip );
+	bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
+	bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
+	bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
+	
+	bP.drawFilledRect( 0 , 10 , SCREEN_WIDTH , 111 , RGB(19,19,19) );
 	bP.drawHorizontalLine( 0 , 9+1 , SCREEN_WIDTH , RGB( 12 , 12 , 12 ) );
 	bP.drawHorizontalLine( 0 , 9+2 , SCREEN_WIDTH , RGB( 14 , 14 , 14 ) );
 	bP.drawHorizontalLine( 0 , 9+3 , SCREEN_WIDTH , RGB( 16 , 16 , 16 ) );
@@ -260,8 +266,8 @@ _callbackReturn _keyboard::keyHandler( _event event )
 		
 		for( _u8 i = 0 ; i < 46 ; i++ )
 		{
-			that->buttons[i]->setTitle( _system_->_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
-			that->buttons[i]->setKey( _system_->_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
+			that->buttons[i]->setTitle( _system::_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
+			that->buttons[i]->setKey( _system::_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
 		}
 	}
 	else if( that->destination != nullptr )
@@ -344,9 +350,14 @@ _callbackReturn _keyboard::dragHandler( _event event )
 }
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _style style ) :
+	_keyboard( bgId , gadgetHost , topScreen , SCREEN_WIDTH - 40 , style )
+{}
+
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 position , _style style ) :
 	_gadgetScreen( bgId , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
+	, handlePosition( position )
 	, shift( false )
 	, mode( false ) // Means "Hidden"
 	, curState( 1 )
@@ -360,13 +371,13 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Reset Keyboard Position
 	this->setState( sStart );
 	
-	_font* fnt 			= _system_->getFont( "CourierNew10" );
-	_font* systemFont 	= _system_->getFont( "Tahoma7" );
+	_font* fnt 			= _system::getFont( "CourierNew10" );
+	_font* systemFont 	= _system::getFont( "Tahoma7" );
 	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _system_->_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system_->_runtimeAttributes_->keyboardText[0][i] );
+		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
 		switch( i )
 		{
 			case 45:

@@ -8,28 +8,18 @@ _animation::_animation( int from , int to , _u32 dur ) :
 	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
 { }
 
-_animation::~_animation()
-{
-	this->terminate();
-}
-
 void _animation::start(){
 	this->deltaValue = this->toValue - this->fromValue;
 	this->runs = true;
-	this->startTime = _system_->getTime();
-	_system_->executeAnimation( this );
-}
-
-void _animation::setter( _s32* destination )
-{	
-	this->destination = destination;
+	this->startTime = _system::getTime();
+	_system::executeAnimation( this );
 }
 
 void _animation::terminate()
 {
 	if( this->runs )
 	{
-		_system_->terminateAnimation( this );
+		_system::terminateAnimation( this );
 		this->runs = false;
 	}
 }
@@ -44,7 +34,6 @@ void _animation::step( _u32 curTime )
 	if( tElapsed > this->duration )
 	{
 		this->runs = false;
-		//printf("end, %d,%p\n", this->finished(), this );
 		if( this->setterFunc != nullptr )
 			this->setterFunc( this->toValue );
 		if( this->destination != nullptr )
@@ -62,7 +51,6 @@ void _animation::step( _u32 curTime )
 			*this->destination = value;
 	}
 }
-
 
 _float _animation::_linear::ease( _float t , _float b , _float c , _float d ){ return c*t/d + b; }
 

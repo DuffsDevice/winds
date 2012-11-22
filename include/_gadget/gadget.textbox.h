@@ -20,10 +20,12 @@ class _textbox : public _label {
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
+		static void getFontPosition( _coord& x , _coord& y , _textbox* box );
+		
 	public:
 		
 		//! Construcor excluding dimensions and including font
-		_textbox( _coord x , _coord y , _length width , string value , _style style = _style() );
+		_textbox( _coord x , _coord y , _length width , string value = "" , _style style = _style() );
 };
 
 #endif

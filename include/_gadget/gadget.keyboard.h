@@ -18,6 +18,7 @@ class _keyboard : public _gadgetScreen {
 		int			magnifX;
 		int			magnifY;
 		float		magnifFactor;
+		_u8			handlePosition;
 		
 		//! Internal Array for Keyboard-Layout
 		static _rect buttonDimensions[];
@@ -72,6 +73,8 @@ class _keyboard : public _gadgetScreen {
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _style style = _style() );
+		
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition , _style style = _style() );
 		
 		//! Destrucor
 		~_keyboard();

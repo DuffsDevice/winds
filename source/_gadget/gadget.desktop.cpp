@@ -16,13 +16,13 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	bP.fill( _system_->_runtimeAttributes_->user->getIntAttr( "desktopColor" ) );
+	bP.fill( _system::_runtimeAttributes_->user->getIntAttr( "desktopColor" ) );
 	
-	if(  _system_->_runtimeAttributes_->wallpaper != nullptr )
+	if(  _system::_runtimeAttributes_->wallpaper != nullptr )
 	{
-		switch( _system_->_runtimeAttributes_->wallpaperView ){
+		switch( _system::_runtimeAttributes_->wallpaperView ){
 			case WALLPAPER_ORIG:{
-				_bitmap* wp = _system_->_runtimeAttributes_->wallpaper;
+				_bitmap* wp = _system::_runtimeAttributes_->wallpaper;
 				bP.copy( 128 - ( wp->getWidth() >> 1 ) , 96 - ( wp->getHeight() >> 1 ) , wp );
 				break;
 			}
@@ -31,7 +31,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 		}
 	}
 	
-	//bP.copy( 0 , 0 , _system_->_runtimeAttributes_->user->userLogo );
+	//bP.copy( 0 , 0 , _system::_runtimeAttributes_->user->userLogo );
 	//if( ft )
 		//bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	

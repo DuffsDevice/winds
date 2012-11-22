@@ -3,11 +3,13 @@
 
 map<_string,_scrollType> string2scrollType = {
 	{ "scroll" , _scrollType::scroll },
+	{ "meta" , _scrollType::meta },
 	{ "hidden" , _scrollType::hidden },
 	{ "prevent" , _scrollType::prevent }
 };
 map<_scrollType,_string> scrollType2string = {
 	{ _scrollType::scroll , "scroll" },
+	{ _scrollType::meta , "meta" },
 	{ _scrollType::hidden , "hidden" },
 	{ _scrollType::prevent , "prevent" }
 };
@@ -201,6 +203,16 @@ void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->updateScrollBars();
 }
 
+//_callbackReturn handler( _event e )
+//{
+//	if( e.getGadget()->getStyle().data )
+//		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 0 , 0 , true );
+//	else
+//		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 4342 , 23423 , true );
+//	
+//	return handled;
+//}
+
 _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
 	, scrollTypeX( scrollTypeX )
@@ -227,8 +239,12 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	this->computeClipSize();
 	this->updateScrollBars();
 	
-	//this->addChild( new _button( 20 , 30 , 10 , 90 , "Hallo" ) );
-	//this->addChild( new _button( 20 , 30 , 89 , 90 , "Hallo" ) );
+	//auto b = new _button( 20 , 30 , 110 , 90 , "Hallo" , _style::storeData( 1 ) );
+	//b->registerEventHandler( onAction , &handler );
+	//auto b2 = new _button( 50 , 50 , 1 , 1 , "Hallo" );
+	//b2->registerEventHandler( onAction , &handler );
+	//this->addChild( b );
+	//this->addChild( b2 );
 }
 
 _scrollArea::~_scrollArea(){

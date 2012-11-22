@@ -5,40 +5,46 @@
 #include "_type/type.direntry.h"
 #include "_type/type.callback.h"
 #include "_type/type.animation.h"
-#include "_type/type.progLua.h"
-#include "_type/type.progC.h"
+#include "_type/type.program.h"
 #include "_type/type.event.h"
 #include "_type/type.runtimeAttributes.h"
 #include "_type/type.registry.h"
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.freetypefont.h"
+#include "_type/type.system.controller.h"
 #include "_gadget/gadget.keyboard.h"
-#include "fat.h"
 
-#include <tr1/memory>
+//! For inlining even functions with libnds
+extern "C"{
+extern _u32 cpuGetTiming();
+extern _u32 keysHeld();
+}
 
 class _system{
 	
 	private:
-		
-		friend class _freetypefont;
-		static bool 				sleeping;
-		static string 				curLanguageShortcut;
-		
+	
 		//! Attributes
-		static _list<_animation*>	_animations_;
-		static _list<const 
-					_callback*>		_vblListeners_;
-		static _map<string,_font*>	_fonts_;
-		static _list<pair<_program*
-					,_cmdArgs>> 	_programs_;
-		static _direntry*			_debugFile_;
-		static _gadget*				_currentFocus_;
+		static _list<_animation*>				_animations_;
+		static _list<const _callback*>			_vblListeners_;
+		static _map<string,_font*>				_fonts_;
+		static _list<pair<_program*,_cmdArgs>> 	_programs_;
+		static _direntry*						_debugFile_;
+		static _gadget*							_currentFocus_;
+		
+		//! Internal
+		static int 								_bgIdFront_;
+		static int 								_bgIdBack_;
+		static int 								_bgIdSub_;
+		static int 								_cpuUsageTemp_;
+		static string 							_curLanguageShortcut_;
+		static bool 							_sleeping_;
 		
 		//! Events
-		static int					curEventBuffer;
-		static _list<_event> 	eventBuffer[2];
-		static void eventsSwapBuffer(){ _system::curEventBuffer = !_system::curEventBuffer; }
+		static int								_curEventBuffer_;
+		static _list<_event> 					_eventBuffer_[2];
+		
+		static void eventsSwapBuffer(){ _curEventBuffer_ = !_curEventBuffer_; }
 		static void processEvents();
 		
 		//! Screen-Animations
@@ -47,9 +53,12 @@ class _system{
 		//! Process User Inputs
 		static void processInput();
 		
-		static void runAnimations(){ _system::_animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( _system::getTime() ); return anim->finished(); } ); }
-		static void runPrograms(){
-			_system::_programs_.remove_if( 
+		//! The daily Vertical Blank and its methods:
+		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( getTime() ); return anim->finished(); } ); }
+		static void runVblListeners(){ for( const _callback* cb : _vblListeners_ ) (*cb)(); }
+		static void runPrograms()
+		{
+			_programs_.remove_if( 
 				[]( pair<_program*,_cmdArgs>& prog )->bool{
 					if( prog.first->main( prog.second ) == 1 && prog.first->autoDelete ){ 
 						delete prog.first; return true; 
@@ -58,25 +67,21 @@ class _system{
 				}
 			);
 		}
-		static void runVblListeners(){
-			for( const _callback* cb : _system::_vblListeners_ )
-				(*cb)();
-		}
-		static void displayMemUsage();
-		
-		//! Different Scenarios
-		static void initializeComponents();
-		static void setup();
-		static void loginPage();
 		
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
 		
+		//! Misc...
+		static void displayMemUsage();
 		
-		static void _vblank_();
-		static void _newErrorFunc_();
+		//! Internal Handler
+		static void vblHandler();
+		static void newHandler();
 		
+		//! Friends
+		friend class _systemController;
+		friend class _freetypefont;
 		friend class _gadget;
 		friend class _program;
 		friend class _animation;
@@ -85,36 +90,35 @@ class _system{
 		
 		//! Add Thinks for execution
 		static void executeAnimation(_animation* anim ){
-			_system::_animations_.remove_if( [&]( _animation* a )->bool{ return a == anim; } );
-			_system::_animations_.push_back( anim );
+			_animations_.remove( anim );
+			_animations_.push_back( anim );
 		}
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() )
 		{
-			_system::_programs_.push_back( make_pair( prog , args ) );
-			prog->init( _system::_gadgetHost_ , args );
+			_programs_.push_back( make_pair( prog , args ) );
+			prog->init( _gadgetHost_ , args );
 		}
 		static void addVblListener( const _callback* cb ){
-			_system::_vblListeners_.push_back( cb );
+			_vblListeners_.push_back( cb );
 		}
-		static void generateEvent( _event event ){ _system::eventBuffer[_system::curEventBuffer].push_back( event ); }
+		static void generateEvent( _event event ){ _eventBuffer_[_curEventBuffer_].push_back( event ); }
 		
 		//! Things for termination
 		static void terminateProgram( _program* prog ){ 
 			// Erase the Program-Instance in the list of running instances
-			_system::_programs_.remove_if( [&]( pair<_program*,_cmdArgs> s )->bool{ return s.first == prog; } );
+			_programs_.remove_if( [&]( pair<_program*,_cmdArgs> s )->bool{ return s.first == prog; } );
 			delete prog;
 		}
-		static void removeVblListener( const _callback& cb )
-		{
-			_system::_vblListeners_.remove_if( [&]( const _callback* data )->bool{ if( *data == cb ){ delete data; return true; } return false; } );
+		static void terminateAnimation( _animation* anim ){ _animations_.remove( anim ); }
+		static void removeVblListener( const _callback& cb ){
+			_vblListeners_.remove_if( 
+				[&]( const _callback* data )->bool{
+					if( *data == cb )
+					{ delete data; return true; }
+					return false; 
+				}
+			);
 		}
-		static void terminateAnimation( const _animation* anim ){ _system::_animations_.remove_if( [&]( _animation* a )->bool{ return a == anim; } ); }
-		
-		static int 	bgIdFront;
-		static int 	bgIdBack;
-		static int 	bgIdSub;
-		
-		static int 	cpuUsageTemp;
 		
 	public:
 	
@@ -127,36 +131,35 @@ class _system{
 		
 		static void removeEventsOf( _gadget* g )
 		{
-			// Delete events
-			_system::eventBuffer[_system::curEventBuffer].remove_if( [&]( _event event )->bool{ return event.getDestination() == g; } );
+			_eventBuffer_[_curEventBuffer_].remove_if( [&]( _event event )->bool{ return event.getDestination() == g; } ); // Delete events
 		}
 		
-		// Constructor
-		_system();
+		//! Constructor
+		static void start();
 		
-		// Destructor
-		~_system();
+		//! Destructor
+		static void end();
 		
 		//! Get a Built in Program
 		static _program* getBuiltInProgram( string qualifiedName );
 		
 		//! Get Current Time (time since system startup)
-		static _time getTime();
+		static _time getTime(){ return cpuGetTiming() >> 15; }
 		
 		//! Get a Font by Name
 		static _font* getFont( string font )
 		{
-			if( font.empty() || !_system::_fonts_.count( font ) )
-				return _system::_fonts_[ _system::_runtimeAttributes_->defaultFont ];
+			if( font.empty() || !_fonts_.count( font ) )
+				return _fonts_[ _runtimeAttributes_->defaultFont ];
 			
-			return _system::_fonts_[font];
+			return _fonts_[font];
 		}
-		static _font* getFont(){ return _system::_fonts_[ _system::_runtimeAttributes_->defaultFont ]; }
+		static _font* getFont(){ return _fonts_[ _runtimeAttributes_->defaultFont ]; }
 		
-		static _u8 getCpuUsage(){ return _system::cpuUsageTemp; }
+		static _u8 getCpuUsage(){ return _cpuUsageTemp_; }
 		
 		//! Obtain current Keys
-		static _u16 getCurrentKeys();
+		static _u16 getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
 		
 		//! Get string
 		static string& getLocalizedString( string name );
@@ -179,7 +182,5 @@ class _system{
 		//! Debugging
 		static void debug( string msg );
 };
-
-extern _system* _system_;
 
 #endif

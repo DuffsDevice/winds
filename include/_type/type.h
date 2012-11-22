@@ -123,25 +123,7 @@ static constexpr inline _u8 RGB_GETA( _pixel c ){
 #define ROR64(value,shift) ((value) >> (shift)) | ((value) << (64 - (shift)))
 
 //! Calculate the Median value
-template <typename name> name mid( name a , name b , name c ){
-	name mi = min( a , min( b , c ) );
-	name ma = max( a , max( b , c ) );
-	if( a == ma ){
-		if( b == mi )
-			return c;
-		return b;
-	}
-	if( b == ma ){
-		if( a == mi )
-			return c;
-		return a;
-	}
-	else{
-		if( b == mi )
-			return a;
-		return b;
-	}
-}
+_s32 mid( _s32 a , _s32 b , _s32 c );
 
 namespace DSWindows
 {

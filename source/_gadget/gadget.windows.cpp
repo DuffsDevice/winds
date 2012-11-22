@@ -47,7 +47,7 @@ _callbackReturn _windows::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 		
-	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 9 , SCREEN_WIDTH - 33 , _system_->_runtimeAttributes_->windowBar );
+	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 9 , SCREEN_WIDTH - 33 , _system::_runtimeAttributes_->windowBar );
 	
 	return use_default;
 }

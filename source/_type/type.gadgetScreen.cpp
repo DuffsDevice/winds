@@ -22,7 +22,7 @@ _touch _gadgetScreen::adjustTouch( _touch touch )
 bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 {
 	// Shortcut...
-	const _user* user = _system_->_runtimeAttributes_->user;
+	const _user* user = _system::_runtimeAttributes_->user;
 	
 	// Temp...
 	_event event;
@@ -39,6 +39,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	 **/
 	if( held )
 	{
+		
 		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
 			
 		//! Check if this is the first Cycle the pen is down
@@ -145,5 +146,5 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		
 	}
 	
-	return newTouchInside || dragging;
+	return newTouchInside || isDragging;
 }

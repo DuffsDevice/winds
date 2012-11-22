@@ -26,7 +26,7 @@ _direntry _shortcut::getDestination(){
 
 const _bitmap* _shortcut::getFileImage()
 {
-	static _u8 fOH = _system_->_runtimeAttributes_->user->getIntAttr( "fileObjectHeight" );
+	static _u8 fOH = _system::_runtimeAttributes_->user->fOH;
 	
 	if( this->image )
 		return this->image;

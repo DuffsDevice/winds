@@ -28,19 +28,19 @@ _callbackReturn _selectItem::refreshHandler( _event event ){
 	if( that->active )
 	{
 		bP.fill( RGB255( 10 , 36 , 106 ) );
-		bP.drawString( 1 , 1 , _system_->getFont() , that->getStrValue() , COLOR_WHITE , _system_->_runtimeAttributes_->defaultFontSize );
+		bP.drawString( 1 , 1 , _system::getFont() , that->getStrValue() , COLOR_WHITE , _system::_runtimeAttributes_->defaultFontSize );
 	}
 	else
 	{
 		bP.fill( COLOR_WHITE );
-		bP.drawString( 1 , 1 , _system_->getFont() , that->getStrValue() , COLOR_BLACK , _system_->_runtimeAttributes_->defaultFontSize );
+		bP.drawString( 1 , 1 , _system::getFont() , that->getStrValue() , COLOR_BLACK , _system::_runtimeAttributes_->defaultFontSize );
 	}
 	
 	return use_default;
 }
 
 _selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _style style ) :
-	_gadget( _gadgetType::selectitem , width , _system_->_runtimeAttributes_->user->sOH , 0 , nth * _system_->_runtimeAttributes_->user->sOH , style )
+	_gadget( _gadgetType::selectitem , width , _system::_runtimeAttributes_->user->sOH , 0 , nth * _system::_runtimeAttributes_->user->sOH , style )
 	, strVal( str )
 	, intVal( value )
 	, active( false )

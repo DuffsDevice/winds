@@ -1,9 +1,12 @@
 #include "_type/type.system.h"
 #include "func.memory.h"
-#include <nds.h>
 #include <time.h>
-#include "stdio.h"
+#include <stdio.h>
 #include <nds/timers.h>
+#include <nds/arm9/video.h>
+#include <nds/arm9/background.h>
+#include <nds/arm9/console.h>
+#include <nds/interrupts.h>
 #include <dswifi9.h>
 #include <fat.h>
 
@@ -15,12 +18,6 @@
 #include "_resource/FONT_ArialBlack10.h"
 #include "_resource/FONT_CourierNew10.h"
 #include "_resource/FONT_Tahoma7.h"
-
-#include "_gadget/gadget.windows.h"
-#include "_gadget/gadget.select.h"
-#include "_gadget/gadget.startupScreen.h"
-#include "_gadget/gadget.bootupScreen.h"
-#include "_gadget/gadget.actionButton.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -43,127 +40,6 @@ void _system::debug( string msg ){
 	struct tm* t = localtime( &rawtime );
 	_system::_debugFile_->writeString( asctime( t ) + msg + "\r\n" );
 	//printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
-}
-
-_callbackReturn setupHandler( _event e )
-{
-	static int state = 0;
-	static _gadget* gadgets[10] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
-	
-	_gadget* that = e.getGadget();
-	
-	if( that->getType() != _gadgetType::screen )
-	{
-		if( that->getType() == _gadgetType::selectbox )
-		{
-			_system::setLanguage( (_language)e.getGadget<_select>()->getIntValue() );
-			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
-			return handled;
-		}
-		if( that->getStyle().data == -1 )
-		{
-			if( state > 0 )
-			{
-				state--;
-				_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
-			}
-		}
-		else if( state < 1 )
-		{
-			state++;
-			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
-		}
-		return handled;
-	}
-	
-	for( int i = 0; i < 10 ; i++ )
-		if( gadgets[i] )
-		{
-			delete gadgets[i];
-			gadgets[i] = 0;
-		}
-	
-	// Standard
-	if( state != 0 )
-	{
-		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeData( -1 ) );
-		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeData( -1 ) );
-		prev->setColor( RGB( 30 , 30 , 30 ) );
-		prev->setAlign( _align::left );
-		prev->registerEventHandler( mouseClick , setupHandler );
-		btnPrev->registerEventHandler( onAction , setupHandler );
-		
-		gadgets[1] = btnPrev;
-		gadgets[3] = prev;
-		that->addChild( prev );
-		that->addChild( btnPrev );
-	}
-	else
-	{
-		_label* clickNext = new _label( 180 , 9 , 71 , 6 , _system::getLocalizedString("lbl_to_continue") );
-		clickNext->setColor( RGB( 17 , 17 , 31 ) );
-		clickNext->setAlign( _align::right );
-		
-		gadgets[4] = clickNext;
-		that->addChild( clickNext );
-	}
-	
-	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeData( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeData( 1 ) );
-	gadgets[0] = btnNext;
-	gadgets[2] = next;
-	next->setColor( RGB( 30 , 30 , 30 ) );
-	next->setAlign( _align::right );
-	
-	// Set Handler
-	next->registerEventHandler( mouseClick , setupHandler );
-	btnNext->registerEventHandler( onAction , setupHandler );
-	that->addChild( btnNext );
-	that->addChild( next );
-	
-	switch( state )
-	{
-		case 0:
-		{
-			_label* lbl = new _label( 79 , 52 , _system::getLocalizedString("lbl_choose_language") );
-			_select* slc = new _select( 90 , 5 , 78 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
-			slc->setIntValue( (_u8)_system::getLanguage() );
-			slc->registerEventHandler( onAction , setupHandler );
-			gadgets[5] = slc;
-			gadgets[6] = lbl;
-			lbl->setColor( RGB( 30 , 30 , 30 ) );
-			that->addChild( slc );
-			that->addChild( lbl );
-			break;
-		}
-		case 1:
-		{
-			// Create Label with shadow
-			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_welcome_to_winds") );
-			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_welcome_to_winds") );
-			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_few_step_setup") );
-			_label* lbl4 = new _label( 20 , 70 , _system::getLocalizedString("txt_few_step_setup_2") );
-			gadgets[5] = lbl;
-			gadgets[6] = lbl2;
-			gadgets[7] = lbl3;
-			gadgets[8] = lbl4;
-			lbl->setColor( RGB( 2 , 5 , 15 ) );
-			lbl2->setColor( RGB( 30 , 30 , 30 ) );
-			lbl3->setColor( RGB( 30 , 30 , 30 ) );
-			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system_->getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system_->getFont( "ArialBlack10" ) );
-			that->addChild( lbl );
-			that->addChild( lbl2 );
-			that->addChild( lbl3 );
-			that->addChild( lbl4 );
-			break;
-		}
-		case 2:
-			that->addChild( new _label( 13 , 13 , "Second Setup Page" ) );
-			break;
-	}
-	return handled;
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
@@ -189,59 +65,6 @@ void _system::fadeMainScreen( bool out , bool anim )
 	} 
 }
 
-void _system::setup()
-{	
-	// Clean up
-	_system::deleteGadgetHost();
-	_system::deleteKeyboard();
-	
-	_system::_gadgetHost_ = new _startupScreen( bgIdBack );
-	//_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
-	
-	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/NDS/"}});
-	
-	_system::_gadgetHost_->registerEventHandler( _internal_ , setupHandler );
-	_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
-	
-	_system::fadeMainScreen( true );
-	
-	while( true )
-		swiWaitForVBlank();
-}
-
-void _system::loginPage()
-{
-	// Clean up
-	_system::deleteGadgetHost();
-	
-	_system::_gadgetHost_ = new _startupScreen( bgIdBack );
-	_system::_keyboard_ = new _keyboard( bgIdFront , _system::_gadgetHost_ , _system::_topScreen_ );
-	
-	_system::fadeMainScreen( true );
-}
-
-void _system::initializeComponents()
-{
-	// Clean up	
-	_system::deleteGadgetHost();
-	
-	_time time = _system::getTime();
-	
-	// -----------------------------------------------
-	// Create BootLogo
-	// -----------------------------------------------
-		
-	_bootupScreen* screen;
-	_system::_gadgetHost_ = screen = new _bootupScreen( bgIdBack );
-	
-	_system::fadeMainScreen( true );
-	
-	// End!
-	while( _system::getTime() - time < 2000 )
-		swiWaitForVBlank();
-	
-	_system::fadeMainScreen( false );
-}
 
 void _system::deleteGadgetHost()
 {
@@ -269,7 +92,7 @@ void _system::deleteKeyboard()
 	}
 }
 
-void _system::_vblank_()
+void _system::vblHandler()
 {
 	if( _system::_gadgetHost_ )
 		_system::processInput();
@@ -292,11 +115,11 @@ void _system::processEvents()
 	// Temp...
 	_gadget* gadget;
 	
-	for( _event& event : _system::eventBuffer[!_system::curEventBuffer] )
+	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
 	{
 		gadget = (_gadget*)event.getDestination();
 		
-		int s = cpuGetTiming();
+		//int s = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
@@ -306,9 +129,9 @@ void _system::processEvents()
 	}
 
 	// Erase all Events
-	_system::eventBuffer[!_system::curEventBuffer].clear();
+	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
 	
-	//if( !_system::eventBuffer[_system::curEventBuffer].size() )
+	//if( !_system::_eventBuffer_[_system::_curEventBuffer_].size() )
 	//{
 	//	j++;
 	//	addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
@@ -326,11 +149,6 @@ void _system::processEvents()
 	//}
 }
 
-_u16 _system::getCurrentKeys()
-{
-	return keysHeld() & (~(KEY_TOUCH|KEY_LID));
-}
-
 
 void _system::processInput()
 {
@@ -346,7 +164,7 @@ void _system::processInput()
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	
 	// Shortcut...
-	const _user* user = _system_->_runtimeAttributes_->user;
+	const _user* user = _system::_runtimeAttributes_->user;
 	
 	_key keys = keysHeld();
 	
@@ -402,9 +220,7 @@ void _system::processInput()
 	}
 }
 
-#include "func.md5.h"
-
-_system::_system()
+void _system::start()
 {
 	// ------------------------------------------------------------------------
 	// Display 
@@ -429,9 +245,9 @@ _system::_system()
 		vramSetBankD( VRAM_D_MAIN_BG );
 		
 		//! Init Backgrounds
-		_system::bgIdFront = bgInit(2, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
-		_system::bgIdBack = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
-		_system::bgIdSub = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		_system::_bgIdFront_ = bgInit(2, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+		_system::_bgIdBack_ = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
+		_system::_bgIdSub_ = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		
 		setBackdropColor( COLOR_BLACK );
 		setBackdropColorSub( COLOR_BLACK );
@@ -448,7 +264,7 @@ _system::_system()
 	
 		//! Set the VBLANK Interrupt handler
 		SetYtrigger( 0 );
-		irqSet( IRQ_VBLANK , _system::_vblank_ );
+		irqSet( IRQ_VBLANK , _system::vblHandler );
 		//irqSet( IRQ_VCOUNT , _system::_vcount_ );
 		irqEnable( IRQ_VCOUNT | IRQ_VBLANK );
 		
@@ -480,7 +296,7 @@ _system::_system()
 		srand( time(NULL) );
 		
 		//! Set Memory-Alloc-Error-Handler
-		set_new_handler( &_system::_newErrorFunc_ );
+		set_new_handler( &_system::newHandler );
 		
 		_system::setLanguage( (_language) PersonalData->language );
 	
@@ -520,7 +336,7 @@ _system::_system()
 	// Gadget-System
 	// -----------------------------------------------
 		
-		_system::_topScreen_ = new _screen( bgIdSub );
+		_system::_topScreen_ = new _screen( _bgIdSub_ );
 		
 	// -----------------------------------------------
 	// Fonts
@@ -541,7 +357,7 @@ _language _system::getLanguage()
 		,{ "s" , _language::spanish }
 	};
 	
-	return mp[_system::curLanguageShortcut];
+	return mp[_system::_curLanguageShortcut_];
 }
 
 void _system::setLanguage( _language lang )
@@ -551,31 +367,31 @@ void _system::setLanguage( _language lang )
 		case _language::japanese: // Japanese
 		case _language::english: // English
 		case _language::chinese: // Chinese
-			_system::curLanguageShortcut = "e";
+			_system::_curLanguageShortcut_ = "e";
 			break;
 		case _language::french: // French
-			_system::curLanguageShortcut = "f";
+			_system::_curLanguageShortcut_ = "f";
 			break;
 		case _language::german: // German
-			_system::curLanguageShortcut = "g";
+			_system::_curLanguageShortcut_ = "g";
 			break;
 		case _language::italian: // Italian
-			_system::curLanguageShortcut = "i";
+			_system::_curLanguageShortcut_ = "i";
 			break;
 		case _language::spanish: // Spanish
-			_system::curLanguageShortcut = "s";
+			_system::_curLanguageShortcut_ = "s";
 			break;
 		default:
-			_system::curLanguageShortcut = "e";
+			_system::_curLanguageShortcut_ = "e";
 	}
 }
 
-void _system::_newErrorFunc_()
+void _system::newHandler()
 {
 	//_system::blueScreen(121,"Not enough Memory!");
 }
 
-_system::~_system()
+void _system::end()
 {
 	delete _system::_registry_;
 	delete _system::_debugFile_;
@@ -593,49 +409,18 @@ void _system::submit(){
 		scanKeys();
 }
 
-_u32 _system::getTime(){
-	return cpuGetTiming()>>15;
-}
-
 void _system::main()
-{	
-	// Fist of all, the Boot up
-	//initializeComponents();
+{
+	_systemController::main();
 	
-	// After the Boot up finishes,
-	// see if this is a new Setup
-	if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
-		setup();
-	
-	
-	//_direntry d = _direntry("hallo.exe");
-	//d.execute();
-	//int i = 0;
-	/*_bitmap bmp = _bitmap( bgGetGfxPtr(_system::bgIdBack) , SCREEN_WIDTH , SCREEN_HEIGHT );
-			cpuStartTiming(0);
-			bmp.move( 0 , 0 , 10, 10 , 10 , 10 );
-			bmp.move( 10 , 10 , 20, 20 , 10 , 10 );
-			printf("%d\n",cpuGetTiming() );*/
-	//int t = 0;
 	while(true)
 	{
-		//printf( "%d\n" , cpuUsageTemp );
-		_system::runPrograms();
 		//consoleClear();
 		//if( _currentFocus_ )
 			//printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
 		/*for( _gadget* g : _gadgetHost_->children )
 			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );*/
-		//BG_PALETTE_SUB[0] = RGB( 20 , 20 , 20 );
-		_system::cpuUsageTemp = ( _system::cpuUsageTemp + _system::cpuUsageTemp + REG_VCOUNT - 192 ) / 3;
-		
-		// wait until line 0 
-		swiIntrWait( 0, IRQ_VCOUNT );
-		
-		swiWaitForVBlank();
-		
-		/*//BG_PALETTE_SUB[0] = RGB( 31 , 31 , 31 );
-		if( ++i > 120 )
+		/*if( ++i > 120 )
 		{
 			const unsigned int FreeMemSeg=8*1024;
 			
@@ -661,23 +446,22 @@ _program* _system::getBuiltInProgram( string qualifiedName ){
 }
 
 void _system::shutDown(){
-	if( _system_ )
-		delete _system_;
+	end();
 }
 
 string& _system::getLocalizedString( string name )
 {
-	return _system::_localizationTable_->getMap()[name][_system::curLanguageShortcut];
+	return _system::_localizationTable_->getMap()[name][_system::_curLanguageShortcut_];
 }
 
 
 //! Static Attributes...
-bool 							_system::sleeping = false;
+bool 							_system::_sleeping_ = false;
 _list<_animation*>				_system::_animations_;
 _list<const _callback*>			_system::_vblListeners_;
 _map<string,_font*>				_system::_fonts_;
 _ini*							_system::_localizationTable_;
-string							_system::curLanguageShortcut;
+string							_system::_curLanguageShortcut_;
 _list<pair<_program*,_cmdArgs>>	_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;
 _screen*						_system::_topScreen_ = nullptr;
@@ -686,14 +470,11 @@ _registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry*						_system::_debugFile_ = nullptr;
 _gadget*						_system::_currentFocus_ = nullptr;
-int								_system::bgIdFront;
-int								_system::bgIdBack;
-int								_system::bgIdSub;
-int								_system::cpuUsageTemp;
+int								_system::_bgIdFront_;
+int								_system::_bgIdBack_;
+int								_system::_bgIdSub_;
+int								_system::_cpuUsageTemp_;
 
 //! Events
-int								_system::curEventBuffer = 0;
-_list<_event> 			_system::eventBuffer[2];
-
-// Static system...
-_system* _system_ = nullptr;
+int								_system::_curEventBuffer_ = 0;
+_list<_event> 					_system::_eventBuffer_[2];

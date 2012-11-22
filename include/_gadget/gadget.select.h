@@ -17,7 +17,6 @@ class _select : public _gadget, public _interface_input {
 		
 		// Event-Handler
 		static _callbackReturn	refreshHandler( _event event );
-		static _callbackReturn	dragHandler( _event event );
 		
 		void refreshChildren();
 		
