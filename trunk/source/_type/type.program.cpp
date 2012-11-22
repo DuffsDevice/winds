@@ -6,9 +6,9 @@ void _program::init( _gadget* w , _cmdArgs& args  ){
 }
 
 void _program::execute( _cmdArgs args ){
-	_system_->executeProgram( this , args );
+	_system::executeProgram( this , args );
 }
 
 void _program::terminate(){
-	_system_->terminateProgram( this ); // Kotzen
+	_system::terminateProgram( this ); // Kotzen
 }

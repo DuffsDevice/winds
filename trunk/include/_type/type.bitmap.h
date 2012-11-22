@@ -53,9 +53,19 @@ class _bitmap
 		 * @param bm Source Bitmap
 		 * @return void
 		**/
-		_bitmap( const _bitmap &bm )
-			: bmp( bm.getBitmap() ) , width( bm.getWidth() ), height( bm.getHeight() ) , wasAllocated( false )
-		{ this->resetClippingRect(); }
+		_bitmap( const _bitmap &bm ){ *this = bm; }
+		
+		/**
+		 * Move-Constructor
+		 * @param bm Source Bitmap
+		 * @return void
+		**/
+		_bitmap( _bitmap &&bm )
+			: bmp( bm.bmp ) , width( bm.width ), height( bm.height ) , wasAllocated( bm.wasAllocated )
+		{
+			bm.wasAllocated = false;
+			this->activeClippingRect = bm.activeClippingRect;
+		}
 		
 		/**
 		 * Destructor
@@ -64,6 +74,12 @@ class _bitmap
 		~_bitmap(){ 
 			this->destruct();
 		}
+		
+		/**
+		 * Check if a bitmap has valid attributes
+		 * @return bool
+		**/
+		bool isValid() const { return !( !this->bmp || !this->width || !this->height ); }
 		
 		/**
 		 * Manual Data-Erase
@@ -484,6 +500,11 @@ class _bitmap
 		}
 		
 		/**
+		 * Copy Bitmap (copy its data onto mine)
+		**/
+		_bitmap& operator=( const _bitmap& bmp );
+		
+		/**
 		 * Check if a Rectangle specified by borders is visible if it gets clipped by the activeClippingRect
 		 * @param s16 left Left side of the Rectangle to check
 		 * @param s16 top Top side of the Rectangle to check
@@ -491,7 +512,7 @@ class _bitmap
 		 * @param s16 bottom Bottom side of the Rectangle to check
 		 * @return bool Whether it is visible (true) or not (false)
 		**/
-		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom );
+		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const ;
 		public:
 };
 

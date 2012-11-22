@@ -8,21 +8,24 @@ class _user : public _registry
 {
 	private:
 		
-		string folderName;
+		string		folderName;
+		_bitmap		userLogo;
 	
 	public:
 		
+		static _bitmap getUserLogoFromImage( const _bitmap& image );
+		static _bitmap getUserImage( string path );
+		
 		// Touch Parameters
 		_u32 	mDD, mCC, mDC, mDA, kRD, kRS, fOH, sOH, sFE, sBTC;
-		
-		_bitmap* userLogo;
-		_bitmap* userImage;
 		
 		_user( string username );
 		
 		~_user();
 		
 		string getUsername();
+		
+		const _bitmap& getLogo(){ return this->userLogo; }
 		
 		bool checkPassword( string pw );
 		

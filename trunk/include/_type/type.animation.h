@@ -37,16 +37,16 @@ class _animation{
 	
 		_animation( _s32 from , _s32 to , _u32 dur );
 		
-		~_animation();
+		~_animation(){ this->terminate(); }
 		
 		//! Set Address of the Variable to write
-		void setter( _s32* destination );
+		void setter( _s32* destination ){ this->destination = destination; }
 		
 		//! Set a lamda-expression to be the setter
 		void setter( function<void(int)> setterFunc ){ this->setterFunc = setterFunc; }
 		
 		//! Set a lamda-expression to be called at the end of the animation
-		void finish( function<void(int)> finishFunc = NULL ){ this->finishFunc = finishFunc; }
+		void finish( function<void(int)> finishFunc ){ this->finishFunc = finishFunc; }
 		
 		//! Start the animation
 		void start();

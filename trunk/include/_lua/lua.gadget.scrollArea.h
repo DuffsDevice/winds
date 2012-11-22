@@ -7,7 +7,7 @@ extern "C"{
 	#include "_lua/lauxlib.h"
 	#include "_lua/lualib.h"
 }
-#include "_lua/lua.gadget.gadgetEventArgs.h"
+#include "_lua/lua.class.gadget.h"
 #include "_lua/lunar.h"
 #include "_gadget/gadget.scrollArea.h"
 
@@ -30,17 +30,20 @@ class _lua_scrollArea : public _lua_gadget{
 		//! setScrollTypeY
 		int setScrollTypeY( lua_State* L );
 		
-		//! setInnerWidth
-		int setInnerWidth( lua_State* L );
+		//! setCanvasWidth
+		int setCanvasWidth( lua_State* L );
 		
-		//! setInnerHeight
-		int setInnerHeight( lua_State* L );
+		//! setCanvasHeight
+		int setCanvasHeight( lua_State* L );
 		
 		//! scrollToX
 		int scrollToX( lua_State* L );
 		
 		//! scrollToY
 		int scrollToY( lua_State* L );
+		
+		//! scrollTo
+		int scrollTo( lua_State* L );
 		
 		//! getScrollY
 		int getScrollY( lua_State* L );
@@ -51,7 +54,8 @@ class _lua_scrollArea : public _lua_gadget{
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_scrollArea>::RegType methods[];
+		static Lunar<_lua_scrollArea>::FunctionType methods[];
+		static Lunar<_lua_scrollArea>::PropertyType properties[];
 	
 };
 

@@ -17,7 +17,7 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 		ev.setKeyCode( that->key );
 		
 		if( that->getScreen() != nullptr )
-			ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
+			ev.setCurrentKeyCodes( _system::getCurrentKeys() );
 		
 		if( that->parent != nullptr )
 			that->parent->handleEvent( ev );
@@ -30,7 +30,7 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 		ev.setKeyCode( that->key );
 		
 		if( that->getScreen() )
-			ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
+			ev.setCurrentKeyCodes( _system::getCurrentKeys() );
 		
 		if( that->parent )
 			that->parent->handleEvent( ev );
@@ -62,7 +62,7 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 			ev.setKeyCode( that->key );
 			
 			if( that->getScreen() != nullptr )
-				ev.setCurrentKeyCodes( _system_->getCurrentKeys() );
+				ev.setCurrentKeyCodes( _system::getCurrentKeys() );
 			
 			if( that->parent != nullptr )
 				that->parent->handleEvent( ev );
@@ -114,7 +114,7 @@ _callbackReturn _keyboardStartButton::mouseHandler( _event event ){
 
 _callbackReturn _keyboardStartButton::refreshHandler( _event event )
 {
-	static string sBT = _system_->_runtimeAttributes_->user->getStrAttr( "startButtonText" );
+	static string sBT = _system::_runtimeAttributes_->user->getStrAttr( "startButtonText" );
 	// Receive Gadget
 	_keyboardStartButton* that = event.getGadget<_keyboardStartButton>();
 	
@@ -131,7 +131,7 @@ _callbackReturn _keyboardStartButton::refreshHandler( _event event )
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system_->getFont() , sBT , _system_->_runtimeAttributes_->user->sBTC );
+	bP.drawString( 12 , 2 , _system::getFont() , sBT , _system::_runtimeAttributes_->user->sBTC );
 	
 	if( event.getType() == close )
 		that->bubbleRefresh();

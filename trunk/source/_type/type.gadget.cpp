@@ -49,7 +49,7 @@ _gadget::~_gadget()
 void _gadget::triggerEvent( _event event )
 {
 	event.setDestination( this );
-	_system_->generateEvent( event );
+	_system::generateEvent( event );
 }
 
 void _gadget::bubbleEvent( _event event , bool includeThis )
@@ -66,7 +66,7 @@ void _gadget::refreshBitmap()
 }
 
 void _gadget::generateEvent( _event event ){
-	_system_->generateEvent( event );
+	_system::generateEvent( event );
 }
 
 void _gadget::bubbleRefresh( bool includeThis , _event event )

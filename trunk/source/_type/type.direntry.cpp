@@ -1,5 +1,7 @@
 #include "_type/type.direntry.h"
 #include "_type/type.system.h"
+#include "_type/type.progLua.h"
+
 extern "C"{
 #include "_library/_fat/partition.h"
 #include "_library/_fat/fatfile.h"
@@ -68,7 +70,7 @@ string dirname( string path )
 
 string replaceASSOCS( string path )
 {
-	for( auto& assoc : _system_->_runtimeAttributes_->assocDirectories )
+	for( auto& assoc : _system::_runtimeAttributes_->assocDirectories )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )
@@ -491,7 +493,7 @@ bool _direntry::execute()
 			break;
 		}
 		case _mime::directory:
-			_system_->getBuiltInProgram( "explorer.exe" )->execute({{"path",this->filename}});
+			_system::getBuiltInProgram( "explorer.exe" )->execute({{"path",this->filename}});
 			break;
 		default:
 			return false;

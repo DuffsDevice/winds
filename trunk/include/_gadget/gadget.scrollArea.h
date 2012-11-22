@@ -70,12 +70,13 @@ class _scrollArea : public _gadget {
 		}
 		
 		// Methods to scroll to a position
-		void scrollToX( _length position , bool ease = false );
-		void scrollToY( _length position , bool ease = false );
+		void scrollToX( _length position , bool ease = true ){ this->scrollBarX->setValue( position , ease ); }
+		void scrollToY( _length position , bool ease = true ){ this->scrollBarY->setValue( position , ease ); }
+		void scrollTo( _length posX , _length posY , bool ease = true ){ this->scrollBarX->setValue( posX , ease ); this->scrollBarY->setValue( posY , ease ); }
 		
 		// Get the current scroll
-		_length getScrollY();
-		_length getScrollX();
+		_length getScrollY(){ return this->scrollBarY->getValue(); }
+		_length getScrollX(){ return this->scrollBarX->getValue(); }
 		
 		// Set scrollTypes
 		void setScrollTypeX( _scrollType typeX );

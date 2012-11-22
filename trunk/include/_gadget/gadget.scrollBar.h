@@ -2,6 +2,7 @@
 #define _WIN_G_SCROLLBAR_
 
 #include "_type/type.gadget.h"
+#include "_type/type.animation.h"
 #include "_gadget/gadget.button.h"
 
 enum class _dimension : _u8{
@@ -26,6 +27,8 @@ class _scrollBar : public _gadget{
 		_button* 	higherHandle;
 		_button* 	lowerHandle;
 		
+		_animation	anim;
+		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn clickHandler( _event event );
 		static _callbackReturn resizeHandler( _event e );
@@ -33,14 +36,16 @@ class _scrollBar : public _gadget{
 		
 		void refreshHandleWidth();
 		void refreshPosition();
-		
-		void internalSetValue( _u32 );
 	
 	public:
 		
 		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style style = _style() );
 		
+		//! Simply set the value
+		//! @note: this triggers a onScroll-Event!
 		void setValue( _u32 value );
+		
+		void setValue( _u32 value , bool ease );
 		
 		void setDimension( _dimension dim );
 		

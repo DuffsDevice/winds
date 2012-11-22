@@ -2,6 +2,36 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
+void _textbox::getFontPosition( _coord& x , _coord& y , _textbox* box )
+{
+	switch( box->getAlign() )
+	{
+		case _align::center:
+			x = ( box->getWidth() >> 1 ) - ( ( box->font->getStringWidth( box->getStrValue() ) - 1 ) >> 1 );
+			break;
+		case _align::left:
+		case _align::optimize:
+			x = 3;
+			break;
+		case _align::right:
+			x = box->getWidth() - box->font->getStringWidth( box->getStrValue() );
+			break;
+	}
+	
+	switch( box->getVAlign() )
+	{
+		case _valign::middle:
+			y = ( ( box->getHeight() + 1 ) >> 1 ) - ( ( box->font->getAscent() + 1 ) >> 1 );
+			break;
+		case _valign::top:
+			y = 2;
+			break;
+		case _valign::bottom:
+			y = box->getHeight() - box->font->getAscent();
+			break;
+	}
+}
+
 _callbackReturn _textbox::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -18,40 +48,15 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	if( !that->font || !that->font->valid() )
 		return use_default;
 	
-	_length myH = that->bitmap->getHeight();
-	_length myW = that->bitmap->getWidth();
+	_length myH = that->getHeight();
+	_length myW = that->getWidth();
 	
 	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->bgColor );
 	
 	_coord x = 0;
 	_coord y = 0;
 	
-	switch( that->getAlign() )
-	{
-		case _align::center:
-			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() ) - 1 ) >> 1 );
-			break;
-		case _align::left:
-		case _align::optimize:
-			x = 2;
-			break;
-		case _align::right:
-			x = myW - that->font->getStringWidth( that->getStrValue() );
-			break;
-	}
-	
-	switch( that->getVAlign() )
-	{
-		case _valign::middle:
-			y = ( ( myH + 1 ) >> 1 ) - ( ( that->font->getAscent() + 1 ) >> 1 );
-			break;
-		case _valign::top:
-			y = 2;
-			break;
-		case _valign::bottom:
-			y = myH - that->font->getAscent();
-			break;
-	}
+	_textbox::getFontPosition( x , y , that );
 	
 	// Draw Text...
 	bP.drawString( x , y , that->font , that->getStrValue() , that->color );
@@ -62,7 +67,7 @@ _callbackReturn _textbox::refreshHandler( _event event )
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
 	
 	if( that->cursor )
-		bP.drawVerticalLine( that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor-1 ) ) + 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
+		bP.drawVerticalLine( that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor-1 ) ) + x - 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
 	
 	return use_default;
 }
@@ -77,7 +82,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 		case DSWindows::KEY_BACKSPACE:
 		case DSWindows::KEY_B:
 			if( !(val.length()) || that->cursor < 2 ){
-				//_system_->errorTone();
+				//_system::errorTone();
 				break;
 			}
 			val = val.erase( that->cursor - 2 , 1 );
@@ -99,6 +104,8 @@ _callbackReturn _textbox::keyHandler( _event event )
 			break;
 	}
 	
+	that->triggerEvent( _event( onChange ) );
+	
 	that->setStrValue( val );
 	
 	return handled;
@@ -107,8 +114,8 @@ _callbackReturn _textbox::keyHandler( _event event )
 _callbackReturn _textbox::focusHandler( _event event )
 {
 	// Open the Keyboard
-	if( _system_->_keyboard_ )
-		_system_->_keyboard_->setDestination( event.getGadget() );
+	if( _system::_keyboard_ )
+		_system::_keyboard_->setDestination( event.getGadget() );
 	
 	event.getGadget<_textbox>()->pressed = true;
 	
@@ -119,8 +126,8 @@ _callbackReturn _textbox::blurHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
-	if( _system_->_keyboard_ )
-		_system_->_keyboard_->setDestination( nullptr );
+	if( _system::_keyboard_ )
+		_system::_keyboard_->setDestination( nullptr );
 	
 	// Remove Cursor!
 	that->cursor = 0;
@@ -144,14 +151,19 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	if( event.getType() == dragging )
 		position -= that->getX();
 	
-	position = max( 0 , (int)position );
-	
 	string 	str = that->getStrValue();
 	_length strLen = str.length();
 	_length pos = 0;
 	
-	for( _coord l = 0 ; l < position + 1 && pos <= strLen; pos++ )
-		l += that->font->getCharacterWidth( str[pos] ) + 1;
+	_coord x = 0;
+	_coord y = 0;
+	
+	_textbox::getFontPosition( x , y , that );
+	
+	position = max( x , (int)position );
+	
+	for( ; x <= position + 2 && pos <= strLen; pos++ )
+		x += that->font->getCharacterWidth( str[pos] ) + 1;
 	
 	that->cursor = pos;
 	

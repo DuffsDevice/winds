@@ -89,7 +89,7 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	
 	const _u16* pixelData = this->charData + this->charOffsets[ ch - this->firstChar ];
 	
-	_length pixelsPerRow = this->getCharacterWidth( ch );
+	_int pixelsPerRow = this->getCharacterWidth( ch );
 	
 	// Abort if there is nothing to render
 	if ((clipY2 < y0) ||

@@ -73,7 +73,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 
 void _progressbar::step()
 {
-	_u32 time = _system_->getTime();
+	_u32 time = _system::getTime();
 	if( time - this->lastTime > 150 )
 	{
 		if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
@@ -93,9 +93,9 @@ _progressbar::_progressbar( _length width , _length height , _coord x , _coord y
 	, type( type )
 	, value( 70 )
 	, blue( false )
-	, lastTime( _system_->getTime() )
+	, lastTime( _system::getTime() )
 {
-	_system_->addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
+	_system::addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
@@ -110,7 +110,7 @@ _progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _
 { }
 
 _progressbar::~_progressbar(){
-	_system_->removeVblListener( _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
+	_system::removeVblListener( _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 }
 
 	

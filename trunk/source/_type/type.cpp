@@ -74,3 +74,23 @@ void trim( string& str )
 		str = str.substr( startpos );
 	}
 }
+
+_s32 mid( _s32 a , _s32 b , _s32 c ){
+	_s32 mi = min( a , min( b , c ) );
+	_s32 ma = max( a , max( b , c ) );
+	if( a == ma ){
+		if( b == mi )
+			return c;
+		return b;
+	}
+	if( b == ma ){
+		if( a == mi )
+			return c;
+		return a;
+	}
+	else{
+		if( b == mi )
+			return a;
+		return b;
+	}
+}

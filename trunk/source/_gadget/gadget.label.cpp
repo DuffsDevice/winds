@@ -142,8 +142,8 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, computeW( 0 )
 	, computeH( 0 )
 {
-	this->font = _system_->getFont();
-	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
+	this->font = _system::getFont();
+	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );
 	
@@ -162,8 +162,8 @@ _label::_label( _coord x , _coord y , string text , _style style ) :
 	, computeW( 2 )
 	, computeH( 2 )
 {
-	this->font = _system_->getFont();
-	this->fontSize = _system_->_runtimeAttributes_->defaultFontSize;
+	this->font = _system::getFont();
+	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
 	
 	_interface_input::setStrValue( text );
 	

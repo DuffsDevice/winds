@@ -56,8 +56,9 @@ void drawArrow( _bitmapPort& bP , _u8 dir )
 
 _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style style ) :
 	_gadget( _gadgetType::scrollbar , dim == _dimension::horizontal ? gadgetLength : 8 ,  dim == _dimension::vertical ? gadgetLength : 8  , x , y , style ) ,
-	value( 0 ) , length( length ) , length2( length2 ) , step( 1 ) , dim( dim )
+	value( 0 ) , length( length ) , length2( length2 ) , step( 1 ) , dim( dim ) , anim( 0 , 1 , 600 )
 {
+	anim.setEasing( _animation::_cubic::easeInOut );
 	if( dim == _dimension::horizontal )
 	{
 		this->dragHandle = new _button( 8 , 8 , 8 , 0 , "" , _style::storeData( _u8(dim) + 0 ) );
@@ -102,9 +103,9 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->refreshBitmap();
 }
 
-void _scrollBar::internalSetValue( _u32 val )
+void _scrollBar::setValue( _u32 val )
 {
-	val = mid( 0 , (int)val , int( this->length2 - this->length ) );
+	val = mid( 0 , val , this->length2 - this->length );
 	if( val != this->value )
 	{
 		_s16 delta = val - this->value;
@@ -117,6 +118,20 @@ void _scrollBar::internalSetValue( _u32 val )
 		else
 			this->triggerEvent( _event( onChange ).setDeltaY( delta ).setPosY( val ) );
 	}
+}
+
+void _scrollBar::setValue( _u32 val , bool ease )
+{
+	if( ease )
+	{
+		this->anim.terminate();
+		this->anim.setFromValue( this->value );
+		this->anim.setToValue( mid( 0 , (int)val , int( this->length2 - this->length ) ) );
+		this->anim.setter( [&]( _int val ){ this->setValue( val ); } );
+		this->anim.start();
+	}
+	else
+		this->setValue( val );
 }
 
 _callbackReturn _scrollBar::dragHandler( _event event )
@@ -142,9 +157,9 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	
 	// Set The value
 	if( bar->dim == _dimension::horizontal )
-		bar->internalSetValue( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->dimensions.width - 15 + bar->cache ) >> 8 );
+		bar->setValue( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->dimensions.width - 15 + bar->cache ) >> 8 );
 	else
-		bar->internalSetValue( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->dimensions.height - 15 + bar->cache ) >> 8 );
+		bar->setValue( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->dimensions.height - 15 + bar->cache ) >> 8 );
 	
 	return handled;
 }
@@ -194,18 +209,18 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 			if( bar->value + bar->length >= bar->length2 )
 				break;
 			if( bar->value + bar->length + bar->step >= bar->length2 )
-				bar->internalSetValue( bar->length2 - bar->length );
+				bar->setValue( bar->length2 - bar->length );
 			else
-				bar->internalSetValue( bar->value + bar->step );
+				bar->setValue( bar->value + bar->step );
 			break;
 		case 5:
 		case 1:
 			if( bar->value <= 0 )
 				break;
 			if( (int)bar->value - (int)bar->step < 0 )
-				bar->internalSetValue( 0 );
+				bar->setValue( 0 );
 			else
-				bar->internalSetValue( bar->value - bar->step );
+				bar->setValue( bar->value - bar->step );
 			break;
 	}
 	
@@ -431,15 +446,6 @@ void _scrollBar::refreshPosition()
 		this->dragHandle->setX( 8 + ( perc * ( this->dimensions.width - 14 + this->cache ) >> 8 ) );
 	else
 		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 14 + this->cache ) >> 8 ) );
-}
-
-void _scrollBar::setValue( _u32 value )
-{
-	if( this->value != value )
-	{
-		this->value = mid( 0 , (int)value , int( this->length2 - this->length ) );
-		refreshPosition();
-	}
 }
 
 void _scrollBar::setDimension( _dimension dim )

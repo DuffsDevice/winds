@@ -17,9 +17,11 @@
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.checkbox.h"
+#include "_lua/lua.gadget.textbox.h"
 
 int luaL_expectint(lua_State* L , int narg , string name )
 {
@@ -61,12 +63,12 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
-int registerWindow( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( !g ) return 0; _system_->_gadgetHost_->addChild( g->gadget ); return 0; }
+int registerWindow( lua_State* L ){ _lua_gadget* g = Lunar<_lua_window>::check( L , 1 ); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
 
-int readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system_->_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
-int writeRegistryIndex( lua_State* L ){ _system_->_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
-int deleteRegistryIndex( lua_State* L ){ _system_->_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
-int deleteRegistrySection( lua_State* L ){ _system_->_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
+int readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system::_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
+int writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
+int deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
+int deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
 
 int luaRGB( lua_State* L ){ lua_pushnumber( L , RGB( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) ); return 1; }
 int luaRGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) ); return 1; }
@@ -155,6 +157,8 @@ _progLua::_progLua( string prog ) :
 	Lunar<_lua_select>::Register( this->state );
 	Lunar<_lua_checkbox>::Register( this->state );
 	Lunar<_lua_label>::Register( this->state );
+	Lunar<_lua_scrollArea>::Register( this->state );
+	Lunar<_lua_textbox>::Register( this->state );
 	
 	// Load our lua-piece
 	luaL_loadstring( this->state , this->code.c_str() );
@@ -178,7 +182,7 @@ _progLua::_progLua( string prog ) :
 	
 	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
-		_system_->debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
+		_system::debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
 	}
 	
 }
@@ -201,7 +205,7 @@ void _progLua::init( _cmdArgs& args )
 		}
 		
 		if( lua_pcall( this->state , 1 /* One Argument */ , 0 , 0 ) )
-			_system_->debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
+			_system::debug( string( "Lua-Error in init(): " ) + lua_tostring( this->state , -1 ) );
 	}
 }
 
@@ -224,7 +228,7 @@ int _progLua::main( _cmdArgs& args )
 		}
 		
 		if( lua_pcall( this->state , 1 /* One Argument */ , LUA_MULTRET , 0 ) )
-			_system_->debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
+			_system::debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
 	}
 	
 	// Get Return-value

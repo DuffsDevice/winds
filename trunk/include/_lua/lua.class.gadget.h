@@ -26,15 +26,17 @@
 	LUA_CLASS_FUNC(g,removeChild), \
 	LUA_CLASS_FUNC(g,removeChildren), \
 	LUA_CLASS_FUNC(g,addChild), \
+	LUA_CLASS_FUNC(g,addEnhancedChild), \
 	LUA_CLASS_FUNC(g,getAbsoluteDimensions), \
 	LUA_CLASS_FUNC(g,getSize), \
 	LUA_CLASS_FUNC(g,moveTo), \
 	LUA_CLASS_FUNC(g,moveRelative), \
-	LUA_CLASS_FUNC(g,toDerived) \
-
+	LUA_CLASS_FUNC(g,toDerived), \
+	LUA_CLASS_FUNC(g,enhanceToParent), \
+	LUA_CLASS_FUNC(g,isEnhanced) \
+	
 #define GADGET_ATTRS(g) \
 	LUA_CLASS_ATTR(g,Padding,"padding"), \
-	LUA_CLASS_ATTR_EX(g,isEnhanced,setEnhanced,"enhanced"), \
 	LUA_CLASS_ATTR(g,X,"x"), \
 	LUA_CLASS_ATTR(g,Y,"y"), \
 	LUA_CLASS_ATTR(g,Parent,"parent"), \
@@ -149,6 +151,9 @@ class _lua_gadget{
 		//! setParent
 		int setParent( lua_State* L );
 		
+		//! enhanceToParent
+		int enhanceToParent( lua_State* L );
+		
 		//! removeChild
 		int removeChild( lua_State* L );
 		
@@ -157,6 +162,9 @@ class _lua_gadget{
 		
 		//! addChild
 		int addChild( lua_State* L );
+		
+		//! addEnhancedChild
+		int addEnhancedChild( lua_State* L );
 		
 		//! getDimensions
 		int getDimensions( lua_State* L );
@@ -172,9 +180,6 @@ class _lua_gadget{
 		
 		//! getPadding
 		int getPadding( lua_State* L );
-		
-		//! setEnhanced
-		int setEnhanced( lua_State* L );
 		
 		//! isEnhanced
 		int isEnhanced( lua_State* L );

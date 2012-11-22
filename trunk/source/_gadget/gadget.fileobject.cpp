@@ -39,7 +39,7 @@ _callbackReturn _fileobject::dragHandler( _event event )
 }
 
 _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system_->_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
 	this->bitmap->reset( NO_COLOR );
@@ -59,19 +59,19 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			string ext = file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system_->_runtimeAttributes_->user->sFE || file.isDirectory() || !ext.length() )
+			if( !_system::_runtimeAttributes_->user->sFE || file.isDirectory() || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
 			
 			this->label = new _label( 11 , 0 , file.getName() + ext );
-			this->label->setHeight( _system_->_runtimeAttributes_->user->fOH );
+			this->label->setHeight( _system::_runtimeAttributes_->user->fOH );
 			this->label->setVAlign( _valign::middle );
 			
 			const _bitmap* fileIcon = file.getFileImage();
 			
 			// Set Icon
-			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system_->_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
+			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
 			
 			// Resize
 			_rect dim = this->getDimensions();

@@ -1,6 +1,5 @@
 //! Standard Headers
 #include "time.h"
-#include <sstream>
 
 //! Types
 #include "_type/type.imagefile.h"
@@ -9,11 +8,44 @@
 #include "func.memory.h"
 #include "_type/type.user.h"
 
+_bitmap _user::getUserLogoFromImage( const _bitmap& bmp )
+{
+	_bitmap logo = _bitmap( 14 , 14 );
+	
+	// Check if valid
+	if( !bmp.isValid() )
+	{
+		logo.reset( RGB( 22 , 22 , 22 ) );
+		logo.drawCircle( 5 , 5 , 3 , COLOR_RED );
+		logo.drawPixel( 5 , 5 , COLOR_RED );
+		logo.drawPixel( 6 , 4 , COLOR_RED );
+		logo.drawPixel( 4 , 6 , COLOR_RED );
+	}
+	else
+		logo.copy( 1 , 1 , &bmp );
+	
+	logo.drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
+	logo.drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
+	
+	return logo;
+}
+
+_bitmap _user::getUserImage( string path )
+{
+	_imagefile imagefile = _imagefile( path );
+		
+	if( imagefile.isValid() )
+		return _bitmapResizer( 12 , 12 , &imagefile );
+	
+	return _bitmap();
+}
+
 _user::_user( string folderName ) :
 	_registry( "%USERS%/" + folderName + "/user.ini"  )
 	, folderName( folderName )
-	, userLogo( new _bitmap( 14 , 14 ) )
-	, userImage( new _bitmap( 12 , 12 ) )
 { 
 	if( _registry::creation )
 	{
@@ -52,52 +84,27 @@ _user::_user( string folderName ) :
 	this->sFE = this->getIntAttr( "showFileExtension" );	
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	
-	this->userLogo->reset( RGB( 22 , 22 , 22 ) );
-	this->userLogo->drawCircle( 5 , 5 , 3 , COLOR_RED );
-	this->userLogo->drawPixel( 5 , 5 , COLOR_RED );
-	this->userLogo->drawPixel( 6 , 4 , COLOR_RED );
-	this->userLogo->drawPixel( 4 , 6 , COLOR_RED );
-	
 	// Set Currently Working directory
 	//string cwd = _direntry::getWorkingDirectory();
 	
 	//! todo: fix cwd => not Working!
 	//_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
 	
-	// Temp
-		_imagefile imagefile = _imagefile( _registry::readIndex( "_global_" , "userLogo" ) );
-		
-		if( imagefile.getBitmap() )
-		{
-			_bitmapResizer bmp = _bitmapResizer( 12 , 12 , &imagefile );
-			
-			this->userImage->reset( COLOR_WHITE );
-			
-			// Create the Raw Image
-			this->userImage->copyTransparent( 0 , 0 , &bmp );
-			
-			// ... and a Logo
-			this->userLogo->copy( 1 , 1 , userImage );
-		}
-	// Temp
+	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
+	
+	if( bmp.isValid() )
+		// ... and a Logo
+		this->userLogo = _user::getUserLogoFromImage( bmp );
 	
 	//_direntry::setWorkingDirectory( cwd );
-	
-	this->userLogo->drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
-	this->userLogo->drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
-	this->userLogo->drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
 }
 
 _user::~_user()
 {
-	stringstream s;
-	s << time(NULL);
-	_registry::writeIndex( "_global_" , "lastTimeLogIn" , s.str() );
-	
-	delete this->userLogo;
-	delete this->userImage;
+	char buffer[18];
+	sprintf( buffer , "%ld" , time(NULL) );
+	string str = buffer;
+	_registry::writeIndex( "_global_" , "lastTimeLogIn" , str );
 }
 
 string _user::getUsername()
