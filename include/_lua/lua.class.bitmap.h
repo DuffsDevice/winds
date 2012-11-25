@@ -12,7 +12,8 @@ class _lua_bitmap{
 	
 	public:
 		
-		_bitmap* bm;
+		bool 		wasAllocated;
+		_bitmap* 	bm;
 		
 		// Ctor
 		_lua_bitmap( _bitmap* b );

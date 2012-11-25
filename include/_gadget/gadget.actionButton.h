@@ -15,7 +15,7 @@ class _actionButton : public _button {
 	
 	private:
 		
-		static _bitmap* bitmaps[];
+		static _bitmap bitmaps[2];
 		
 		_actionButtonType type;
 		

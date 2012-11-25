@@ -42,7 +42,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	// Reset Bitamp
-	this->bitmap->reset( NO_COLOR );
+	this->bitmap.reset( NO_COLOR );
 	
 	// Register Handlers
 	this->registerEventHandler( dragging , &_fileobject::dragHandler );
@@ -68,10 +68,10 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			this->label->setHeight( _system::_runtimeAttributes_->user->fOH );
 			this->label->setVAlign( _valign::middle );
 			
-			const _bitmap* fileIcon = file.getFileImage();
+			const _bitmap& fileIcon = file.getFileImage();
 			
 			// Set Icon
-			this->icon = new _imagegadget( 5 - ( fileIcon->getWidth() >> 1 ) , ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon->getHeight() >> 1 ) , fileIcon );
+			this->icon = new _imagegadget( 5 - ( fileIcon.getWidth() >> 1 ) , ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) , fileIcon );
 			
 			// Resize
 			_rect dim = this->getDimensions();

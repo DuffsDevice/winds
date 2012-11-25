@@ -2,6 +2,7 @@
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.textbox.h"
+#include "_gadget/gadget.imagegadget.h"
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.bootupScreen.h"
 #include "_gadget/gadget.actionButton.h"
@@ -9,7 +10,7 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::bootup );
+	changeState( _systemState::setup );
 	
 	while( true )
 	{
@@ -79,7 +80,9 @@ void _systemController::setupPage()
 _callbackReturn _systemController::setupHandler( _event e )
 {
 	static int state = 0;
-	static _gadget* gadgets[10] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
+	static _gadget* gadgets[20] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
+	static string profileName = "Admin";
+	static _u8 profileIcon = 0;
 	
 	_gadget* that = e.getGadget();
 	
@@ -91,6 +94,73 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 			return handled;
 		}
+		//
+		// For writing the profile-name
+		//
+		else if( that->getType() == _gadgetType::label )
+		{
+			if( that->getStyle().data > 2 )
+			{
+				profileName = e.getGadget<_textbox>()->getStrValue();
+				return handled;
+			}
+		}
+		//
+		// For choosing the profile-Icon
+		//
+		else if( that->getType() == _gadgetType::imagegadget )
+		{
+			if( e.getType() == onFocus )
+			{
+				profileIcon = that->getStyle().data;
+				e.getGadget()->bubbleRefresh( true );
+				for( int i = 10 ; i < 18 ; i++ )
+					if( i != profileIcon )
+						gadgets[i]->bubbleRefresh( true );
+				return handled;
+			}
+			
+			// Receive Gadget
+			_imagegadget* that = e.getGadget<_imagegadget>();
+			
+			_bitmapPort bP = that->getBitmapPort();
+			
+			if( e.hasClippingRects() )
+				bP.addClippingRects( e.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+			else
+				bP.normalizeClippingRects();
+			
+			if( that->getImage().isValid() )
+				bP.copyTransparent( 0 , 0 , that->getImage() );
+			
+			if( that->getStyle().data != profileIcon )
+			{
+				for (_u32 i = 0; i != bP.getWidth(); i++ )
+				{
+					for (_u32 j = 0; j != bP.getHeight() ; j++ )
+					{
+						_pixel color = bP(i, j);
+						
+						// Extract individual components
+						u8 r = (color >> 0) & 31;
+						u8 g = (color >> 5) & 31;
+						u8 b = (color >> 10) & 31;
+						
+						r = r + RGB_GETR( RGBHEX( 0x5A7EDC ) ) >> 1;
+						g = g + RGB_GETG( RGBHEX( 0x5A7EDC ) ) >> 1;
+						b = b + RGB_GETB( RGBHEX( 0x5A7EDC ) ) >> 1;
+						
+						color = RGB(r,g,b);
+						
+						// Plot the pixel
+						bP.drawPixel(i, j, color);
+					}
+				}
+			}
+			
+			return use_default;
+		}
+		
 		if( that->getStyle().data == -1 )
 		{
 			if( state > 0 )
@@ -107,7 +177,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 		return handled;
 	}
 	
-	for( int i = 0; i < 10 ; i++ )
+	for( int i = 0; i < 20 ; i++ )
 		if( gadgets[i] )
 		{
 			delete gadgets[i];
@@ -197,12 +267,35 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_profile") );
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
-			_textbox* txtName = new _textbox( 18 , 70 , 80 , "Admin" );
+			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeData( 4 ) );
+			txtName->registerEventHandler( onChange , setupHandler );
+			
+			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeData( 1 ) );
+			_imagegadget* image2 = new _imagegadget( 42 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/guitarl.png" ) ) , _style::storeData( 2 ) );
+			_imagegadget* image3 = new _imagegadget( 62 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/horsesl.png" ) ) , _style::storeData( 3 ) );
+			_imagegadget* image4 = new _imagegadget( 82 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/red flowerl.png" ) ) , _style::storeData( 4 ) );
+			_imagegadget* image5 = new _imagegadget( 102 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/balll.png" ) ) , _style::storeData( 5 ) );
+			_imagegadget* image6 = new _imagegadget( 122 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/dripl.png" ) ) , _style::storeData( 6 ) );
+			_imagegadget* image7 = new _imagegadget( 142 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/beachl.png" ) ) , _style::storeData( 7 ) );
+			_imagegadget* image8 = new _imagegadget( 162 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/astronautl.png" ) ) , _style::storeData( 8 ) );
 			gadgets[5] = lbl;
 			gadgets[6] = lbl2;
 			gadgets[7] = lbl3;
 			gadgets[8] = lbl4;
 			gadgets[9] = txtName;
+			gadgets[10] = image1;
+			gadgets[11] = image2;
+			gadgets[12] = image3;
+			gadgets[13] = image4;
+			gadgets[14] = image5;
+			gadgets[15] = image6;
+			gadgets[16] = image7;
+			gadgets[17] = image8;
+			for( int i = 10 ; i < 18 ; i++ )
+			{
+				gadgets[i]->registerEventHandler( refresh , setupHandler );
+				gadgets[i]->registerEventHandler( onFocus , setupHandler );
+			}
 			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
@@ -214,6 +307,14 @@ _callbackReturn _systemController::setupHandler( _event e )
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
 			that->addChild( txtName );
+			that->addChild( image1 );
+			that->addChild( image2 );
+			that->addChild( image3 );
+			that->addChild( image4 );
+			that->addChild( image5 );
+			that->addChild( image6 );
+			that->addChild( image7 );
+			that->addChild( image8 );
 			break;
 		}
 	}
@@ -254,7 +355,15 @@ void _systemController::bootupPage()
 
 void _systemController::desktopPage()
 {
+	// Clean up	
+	_system::deleteGadgetHost();
+	_system::deleteKeyboard();
 	
+	// Create BootupScreen
+	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
+	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
+	
+	_system::getBuiltInProgram( "explorer.exe")->execute();
 }
 
 

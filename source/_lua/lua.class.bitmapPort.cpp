@@ -14,7 +14,7 @@ _lua_bitmapPort::_lua_bitmapPort( _bitmapPort b ) :
 
 // Lua-Ctor
 _lua_bitmapPort::_lua_bitmapPort( lua_State* L ) :
-	_bitmapPort( Lunar<_lua_bitmap>::check( L , 3 )->bm )
+	_bitmapPort( *Lunar<_lua_bitmap>::check( L , 1 )->bm )
 { }
 
 //! opertor[pos] and operator(x,y)
@@ -145,72 +145,35 @@ int _lua_bitmapPort::drawString( lua_State* L )
 //! copy
 int _lua_bitmapPort::copy( lua_State* L )
 { 
-	if( luaL_is( L , 3 , "_bitmap" ) ){
-		_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) ,	b->bm );
-	}
-	else{
-		_lua_bitmapPort* b = Lunar<_lua_bitmapPort>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) ,	*b );
-	} 
+	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
+	if( !b )
+		return 0;
+	_bitmapPort::copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) , *b->bm );
 	return 0;
 }
 
 //! copyTransparent
 int _lua_bitmapPort::copyTransparent( lua_State* L )
 { 
-	if( luaL_is( L , 3 , "_bitmap" ) ){
-		_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copyTransparent( 
-			luaL_checkint( L , 1 ) ,
-			luaL_checkint( L , 2 ) ,
-			b->bm
-		);
-	}
-	else{
-		_lua_bitmapPort* b = Lunar<_lua_bitmapPort>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copyTransparent( 
-			luaL_checkint( L , 1 ) ,
-			luaL_checkint( L , 2 ) ,
-			*b 
-		);
-	}
+	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
+	if( !b )
+		return 0;
+	_bitmapPort::copyTransparent( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ,	*b->bm );
 	return 0;
 }
 
 //! copyHorizontalStretch
 int _lua_bitmapPort::copyHorizontalStretch( lua_State* L )
 { 
-	if( luaL_is( L , 3 , "_bitmap" ) ){
-		_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copyHorizontalStretch( 
-			luaL_checkint( L , 1 ) ,
-			luaL_checkint( L , 2 ) ,
-			luaL_checkint( L , 3 ) ,
-			b->bm
-		);
-	}
-	else{
-		_lua_bitmapPort* b = Lunar<_lua_bitmapPort>::check( L , 3 );
-		if( !b )
-			return 0;
-		_bitmapPort::copyHorizontalStretch( 
-			luaL_checkint( L , 1 ) ,
-			luaL_checkint( L , 2 ) ,
-			luaL_checkint( L , 3 ) ,
-			*b
-		);
-	}
+	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
+	if( !b )
+		return 0;
+	_bitmapPort::copyHorizontalStretch( 
+		luaL_checkint( L , 1 ) ,
+		luaL_checkint( L , 2 ) ,
+		luaL_checkint( L , 3 ) ,
+		*b->bm
+	);
 	return 0;
 }
 

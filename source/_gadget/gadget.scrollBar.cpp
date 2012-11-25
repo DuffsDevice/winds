@@ -250,24 +250,24 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 			case 2:
 			case 1:
 				if( that->isPressed() )
-					bP.copy( 0 , 0 , &btn_background_pressed  );
+					bP.copy( 0 , 0 , btn_background_pressed  );
 				else
-					bP.copy( 0 , 0 , &btn_background_released  );
+					bP.copy( 0 , 0 , btn_background_released  );
 				drawArrow( bP , that->style.data );
 				break;
 			case 3:
 				if( that->isPressed() )
 				{
-					_bitmap bm = { snip_pressed_bmp , 8 , 1 };
-					bP.copyVerticalStretch( 0 , 2 , myH - 4 , &bm );
+					_bitmap bm = _bitmap( snip_pressed_bmp , 8 , 1 );
+					bP.copyVerticalStretch( 0 , 2 , myH - 4 , bm );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , 0 , 8 , 2 ) );
-					bP.copy( 0 , 0 , &btn_background_pressed );
+					bP.copy( 0 , 0 , btn_background_pressed );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
-					bP.copy( 0 , myH - 8 , &btn_background_pressed );
+					bP.copy( 0 , myH - 8 , btn_background_pressed );
 					
 					if( myH > 9 )
 					{
@@ -292,16 +292,16 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 				}
 				else
 				{
-					_bitmap bm = { snip_released_bmp , 8 , 1 };
-					bP.copyVerticalStretch( 0 , 2 , myH - 4 , &bm );
+					_bitmap bm = _bitmap( snip_released_bmp , 8 , 1 );
+					bP.copyVerticalStretch( 0 , 2 , myH - 4 , bm );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , 0 , 8 , 2 ) );
-					bP.copy( 0 , 0 , &btn_background_released );
+					bP.copy( 0 , 0 , btn_background_released );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
-					bP.copy( 0 , myH - 8 , &btn_background_released );
+					bP.copy( 0 , myH - 8 , btn_background_released );
 					
 					if( myH > 9 )
 					{
@@ -328,16 +328,16 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 			case 0:
 				if( that->isPressed() )
 				{
-					_bitmap bm = { snip_pressed_bmp , 1 , 8 };
-					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , &bm );
+					_bitmap bm = _bitmap( snip_pressed_bmp , 1 , 8 );
+					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , bm );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , 0 , 2 , 8 ) );
-					bP.copy( 0 , 0 , &btn_background_pressed );
+					bP.copy( 0 , 0 , btn_background_pressed );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
-					bP.copy( myW - 8 , 0 , &btn_background_pressed );
+					bP.copy( myW - 8 , 0 , btn_background_pressed );
 					
 					if( myW > 9 )
 					{
@@ -362,16 +362,16 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 				}
 				else
 				{
-					_bitmap bm = { snip_released_bmp , 1 , 8 };
-					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , &bm );
+					_bitmap bm = _bitmap( snip_released_bmp , 1 , 8 );
+					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , bm );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( 0 , 0 , 2 , 8 ) );
-					bP.copy( 0 , 0 , &btn_background_released );
+					bP.copy( 0 , 0 , btn_background_released );
 					
 					bP.deleteClippingRects();
 					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
-					bP.copy( myW - 8 , 0 , &btn_background_released );
+					bP.copy( myW - 8 , 0 , btn_background_released );
 					
 					if( myW > 9 )
 					{
@@ -415,9 +415,9 @@ _callbackReturn _scrollBar::refreshHandler( _event event ) {
 		
 		// Show Scrollbar-Backgrounds
 		if( that->dim == _dimension::horizontal )
-			bP.copyHorizontalStretch( 8 , 0 , that->dimensions.width - 16 , &scroll_bg_vert );
+			bP.copyHorizontalStretch( 8 , 0 , that->dimensions.width - 16 , scroll_bg_vert );
 		else
-			bP.copyVerticalStretch( 0 , 8 , that->dimensions.height - 16 , &scroll_bg_horiz );
+			bP.copyVerticalStretch( 0 , 8 , that->dimensions.height - 16 , scroll_bg_horiz );
 		
 	}
 	return use_default;

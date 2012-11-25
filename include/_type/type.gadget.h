@@ -87,7 +87,7 @@ class _gadget{
 		static _callbackReturn	gadgetKeyHandler( _event& event ) ITCM_CODE ;
 		
 		// Bitmap of the Gadget
-		_bitmap*		bitmap;
+		_bitmap	 				bitmap;
 	
 	public:
 		
@@ -105,7 +105,7 @@ class _gadget{
 		/**
 		 * Set the Padding of the Gadget
 		**/
-		void setPadding( _padding p ){ this->padding = p; }
+		void setPadding( const _padding& p );
 		
 		/**
 		 * Get the Padding of the Gadget
@@ -136,12 +136,12 @@ class _gadget{
 		/**
 		 * Receive a Bitmap Port
 		**/
-		_bitmapPort getBitmapPort() const { return this->bitmap; }
+		_bitmapPort getBitmapPort(){ return this->bitmap; }
 		
 		/**
 		 * Get The Bitmap of the Gadget
 		**/
-		_bitmap* getBitmap() const { return this->bitmap; }
+		_bitmap& getBitmap(){ return this->bitmap; }
 		
 		/**
 		 * Get the style of that Gadget

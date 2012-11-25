@@ -12,17 +12,18 @@ _bitmap _user::getUserLogoFromImage( const _bitmap& bmp )
 {
 	_bitmap logo = _bitmap( 14 , 14 );
 	
+	logo.reset( RGB( 22 , 22 , 22 ) );
+	
 	// Check if valid
 	if( !bmp.isValid() )
 	{
-		logo.reset( RGB( 22 , 22 , 22 ) );
 		logo.drawCircle( 5 , 5 , 3 , COLOR_RED );
 		logo.drawPixel( 5 , 5 , COLOR_RED );
 		logo.drawPixel( 6 , 4 , COLOR_RED );
 		logo.drawPixel( 4 , 6 , COLOR_RED );
 	}
 	else
-		logo.copy( 1 , 1 , &bmp );
+		logo.copy( 1 , 1 , bmp );
 	
 	logo.drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
 	logo.drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
@@ -36,7 +37,7 @@ _bitmap _user::getUserLogoFromImage( const _bitmap& bmp )
 _bitmap _user::getUserImage( string path )
 {
 	_imagefile imagefile = _imagefile( path );
-		
+	
 	if( imagefile.isValid() )
 		return _bitmapResizer( 12 , 12 , &imagefile );
 	
@@ -83,6 +84,7 @@ _user::_user( string folderName ) :
 	this->sOH = this->getIntAttr( "selectObjectHeight" );	
 	this->sFE = this->getIntAttr( "showFileExtension" );	
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
+	this->dTC = this->getIntAttr( "desktopColor" );	
 	
 	// Set Currently Working directory
 	//string cwd = _direntry::getWorkingDirectory();

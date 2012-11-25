@@ -1,5 +1,13 @@
 #include "_gadget/gadget.imagegadget.h"
 
+void _imagegadget::setImage( const _bitmap& img )
+{
+	this->img = img;
+	this->setHeight( img.getHeight() );
+	this->setWidth( img.getWidth() );
+	this->bubbleRefresh( true );
+}
+
 _callbackReturn _imagegadget::refreshHandler( _event event )
 {	
 	// Receive Gadget
@@ -12,17 +20,15 @@ _callbackReturn _imagegadget::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	if( that->img )
+	if( that->img.isValid() )
 		bP.copyTransparent( 0 , 0 , that->img );
 	
 	return use_default;
 }
 
-_imagegadget::_imagegadget( _coord x , _coord y , const _bitmap* img , _style style ) :
-	_gadget( _gadgetType::imagegadget , img->getWidth() , img->getHeight() , x , y , style ) , img( img )
+_imagegadget::_imagegadget( _coord x , _coord y , const _bitmap& img , _style style ) :
+	_gadget( _gadgetType::imagegadget , img.getWidth() , img.getHeight() , x , y , style ) , img( img )
 {
-	this->bitmap->reset( NO_COLOR );
-	
 	// Register Event-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_imagegadget::refreshHandler );

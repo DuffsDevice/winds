@@ -4,8 +4,8 @@
 //! Graphics
 #include "_resource/BMP_StartButton.h"
 
-_bitmap* _windowsStartButton::startButton = new BMP_StartButton();
-_bitmap* _windowsStartButton::startButtonPressed = new BMP_StartButtonPressed();
+_bitmap _windowsStartButton::startButton = BMP_StartButton();
+_bitmap _windowsStartButton::startButtonPressed = BMP_StartButtonPressed();
 
 _callbackReturn _windowsStartButton::mouseHandler( _event event ){
 	
@@ -38,7 +38,7 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 		bP.copy( 0 , 0 , that->startButton );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 2 , _system::getFont() , sBT , _system::_runtimeAttributes_->user->sBTC );
+	bP.drawString( 12 , 1 , _system::getFont() , sBT , _system::_runtimeAttributes_->user->sBTC );
 	
 	return use_default;
 }

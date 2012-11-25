@@ -18,7 +18,7 @@ _callbackReturn _actionButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_bitmap* _actionButton::bitmaps[] = { new BMP_ActionBtnNext() , new BMP_ActionBtnPrev() };
+_bitmap _actionButton::bitmaps[] = { BMP_ActionBtnNext() , BMP_ActionBtnPrev() };
 
 _actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style style ) :
 	_button( 9 , 9 , x , y , "" , style )

@@ -9,8 +9,8 @@ class _windowsStartButton : public _button {
 	private:
 	
 		//! Images...
-		static _bitmap* startButton;
-		static _bitmap* startButtonPressed;
+		static _bitmap	startButton;
+		static _bitmap	startButtonPressed;
 		
 		_startMenu*		startMenu;
 		

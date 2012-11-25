@@ -1,7 +1,7 @@
 #include "_gadget/gadget.bootupScreen.h"
 #include "_resource/BMP_WindowsBootLogo.h"
 
-_bitmap* bootLogo = new BMP_WindowsBootLogo();
+_bitmap bootLogo = BMP_WindowsBootLogo();
 
 _callbackReturn _bootupScreen::refreshHandler( _event event )
 {
@@ -29,7 +29,6 @@ _bootupScreen::_bootupScreen( _u8 bgId , _style style ) :
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	
-	refresher->style.canReceiveFocus = false;
 	bar->setCol( true );
 	this->addChild( bar );
 	

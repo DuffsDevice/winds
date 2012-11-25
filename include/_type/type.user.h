@@ -17,7 +17,7 @@ class _user : public _registry
 		static _bitmap getUserImage( string path );
 		
 		// Touch Parameters
-		_u32 	mDD, mCC, mDC, mDA, kRD, kRS, fOH, sOH, sFE, sBTC;
+		_u32 	mDD, mCC, mDC, mDA, kRD, kRS, fOH, sOH, sFE, sBTC, dTC;
 		
 		_user( string username );
 		

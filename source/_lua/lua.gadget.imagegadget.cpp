@@ -5,16 +5,16 @@
 ##################################*/
 
 _lua_imagegadget::_lua_imagegadget( lua_State* L ) : 
-	_lua_gadget( new _imagegadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , Lunar<_lua_bitmap>::check( L , 3 )->bm ) )
+	_lua_gadget( new _imagegadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , *Lunar<_lua_bitmap>::check( L , 3 )->bm ) )
 { }
 
 int _lua_imagegadget::setImage( lua_State* L ){
-	((_imagegadget*)_lua_gadget::gadget)->setImage( Lunar<_lua_bitmap>::check( L , 1 )->bm );
+	((_imagegadget*)_lua_gadget::gadget)->setImage( *Lunar<_lua_bitmap>::check( L , 1 )->bm );
 	return 0;
 }
 
 int _lua_imagegadget::getImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( ((_imagegadget*)_lua_gadget::gadget)->getImage() ) ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( &((_imagegadget*)_lua_gadget::gadget)->getImage() ) ) );
 	return 1;
 }
 

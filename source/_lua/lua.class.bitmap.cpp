@@ -7,10 +7,10 @@
 ##################################*/
 
 // Ctor
-_lua_bitmap::_lua_bitmap( _bitmap* b ){ this->bm = b; }
+_lua_bitmap::_lua_bitmap( _bitmap* b ) : wasAllocated( false ) { this->bm = b; }
 
 // Lua-Ctor
-_lua_bitmap::_lua_bitmap( lua_State* L ){
+_lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
 	if( lua_gettop(L) == 3 )
 		this->bm = new _bitmap( (_pixelArray)luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) );
 	else
@@ -18,7 +18,7 @@ _lua_bitmap::_lua_bitmap( lua_State* L ){
 }
 
 //! Dtor
-_lua_bitmap::~_lua_bitmap(){ if( this->bm != NULL ){ delete this->bm; this->bm = NULL; } }
+_lua_bitmap::~_lua_bitmap(){ if( this->bm != nullptr && this->wasAllocated ){ delete this->bm; this->bm = nullptr; } }
 
 //! opertor[pos] and operator(x,y)
 int _lua_bitmap::get( lua_State* L ){ 
@@ -143,7 +143,7 @@ int _lua_bitmap::copy( lua_State* L ){
 	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
 	if( !b )
 		return 0;
-	this->bm->copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) ,	b->bm ); return 0; 
+	this->bm->copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) ,	*b->bm ); return 0; 
 }
 
 //! copyTransparent
@@ -154,7 +154,7 @@ int _lua_bitmap::copyTransparent( lua_State* L ){
 	this->bm->copyTransparent( 
 		luaL_checkint( L , 1 ) ,
 		luaL_checkint( L , 2 ) ,
-		b->bm
+		*b->bm
 	); return 0; 
 }
 
@@ -167,7 +167,7 @@ int _lua_bitmap::copyHorizontalStretch( lua_State* L ){
 		luaL_checkint( L , 1 ) ,
 		luaL_checkint( L , 2 ) ,
 		luaL_checkint( L , 3 ) ,
-		b->bm
+		*b->bm
 	); return 0; 
 }
 
