@@ -18,12 +18,13 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	
 	bP.fill( _system::_runtimeAttributes_->user->getIntAttr( "desktopColor" ) );
 	
-	if(  _system::_runtimeAttributes_->wallpaper != nullptr )
-	{
+	const _bitmap& wp = _system::_runtimeAttributes_->wallpaper;
+	
+	if( _system::_runtimeAttributes_->wallpaper.isValid() )
+	{		
 		switch( _system::_runtimeAttributes_->wallpaperView ){
 			case WALLPAPER_ORIG:{
-				_bitmap* wp = _system::_runtimeAttributes_->wallpaper;
-				bP.copy( 128 - ( wp->getWidth() >> 1 ) , 96 - ( wp->getHeight() >> 1 ) , wp );
+				bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
 				break;
 			}
 			default:

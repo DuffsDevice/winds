@@ -22,9 +22,9 @@ _callbackReturn _radio::refreshHandler( _event event )
 	bP.fill( NO_COLOR );
 	
 	// Content
-	bP.copyTransparent( 0 , 0 , &that->graphic[ that->pressed + 2 ]);
+	bP.copyTransparent( 0 , 0 , that->graphic[ that->pressed + 2 ]);
 	
-	bP.copyTransparent( 2 , 2 , &that->graphic[ that->getIntValue() ]);
+	bP.copyTransparent( 2 , 2 , that->graphic[ that->getIntValue() ]);
 	
 	return use_default;
 }

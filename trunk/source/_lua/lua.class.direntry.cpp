@@ -111,7 +111,7 @@ int _lua_direntry::execute( lua_State* L ){
 }
 
 int _lua_direntry::getFileImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( _direntry::getFileImage() ) ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( &_direntry::getFileImage() ) ) );
 	return 1;
 }
 

@@ -45,7 +45,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 			if( ++f == 4 )
 				f = 0;
 			else
-				bP.copy( x , 2 , &bmp );
+				bP.copy( x , 2 , bmp );
 		}
 	}
 	else
@@ -62,7 +62,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 				f = 0;
 			}
 			else if( x > 1 )
-				bP.copy( x , 2 , &bmp );
+				bP.copy( x , 2 , bmp );
 		}
 	}
 	

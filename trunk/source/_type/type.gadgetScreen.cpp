@@ -9,7 +9,7 @@ _gadgetScreen::_gadgetScreen( int bgId , _style style ) :
 	, isDragging( false )
 {
 	//! Allocate bitmap using the base Memory of the Background-Layer
-	this->bitmap = new _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT );
+	this->bitmap = _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT );
 }
 
 _touch _gadgetScreen::adjustTouch( _touch touch )

@@ -2,11 +2,9 @@
 #ifndef _WIN_T_BITMAPPORT_
 #define _WIN_T_BITMAPPORT_
 
-#include "type.bitmap.h"
-#include "type.rect.h"
-#include "type.h"
-
-using namespace std;
+#include "_type/type.bitmap.h"
+#include "_type/type.rect.h"
+#include "_type/type.h"
 
 class _bitmapPort{
 	
@@ -24,14 +22,14 @@ class _bitmapPort{
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		**/
-		_bitmapPort( _bitmap* bm ) : base( bm ) {}
+		_bitmapPort( _bitmap& bm ) : base( &bm ) {}
 		
 		/**
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		 * @param clippings clippingRects to work in
 		**/
-		_bitmapPort( _bitmap* bm , _area clippings ) : clippingRects( clippings ) , base( bm ) {}
+		_bitmapPort( _bitmap& bm , _area clippings ) : clippingRects( clippings ) , base( &bm ) {}
 		
 		/**
 		 * Add a Clipping Rect to the list
@@ -194,7 +192,7 @@ class _bitmapPort{
 		 * @param color Color of the Circle
 		 * @return void
 		**/
-		void drawCircle( _coord xc, _coord yc, _length radius, _pixel color);
+		void drawCircle( _coord xc, _coord yc, _length radius, _pixel color );
 		
 		/**
 		 * Draw a filled Circle onto the bmp
@@ -204,7 +202,7 @@ class _bitmapPort{
 		 * @param color Color of the Circle
 		 * @return void
 		**/
-		void drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color);
+		void drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color );
 		
 		/**
 		 * Draw a filled Ellipse onto the bmp
@@ -216,7 +214,7 @@ class _bitmapPort{
 		 * @return void
 		 * @see 99392 ticks on dimensions 256*192
 		**/
-		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color);
+		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
 		
 		/**
 		 * Draw an Ellipse onto the bmp
@@ -227,7 +225,7 @@ class _bitmapPort{
 		 * @param color Color of the Ellipse
 		 * @return void
 		**/
-		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color);
+		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
 		
 		/**
 		 * Draw a single Character to a specific Position and returns the width it used
@@ -258,8 +256,7 @@ class _bitmapPort{
 		 * @param data 		Other _bitmap
 		 * @return void
 		**/
-		void copy( _coord x , _coord y , const _bitmap* data );
-		void copy( _coord x , _coord y , _bitmapPort data );
+		void copy( _coord x , _coord y , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap but with respecting the alpha channel
@@ -268,8 +265,7 @@ class _bitmapPort{
 		 * @param data Other _bitmap
 		 * @return void
 		**/
-		void copyTransparent( _coord x , _coord y , const _bitmap* data );
-		void copyTransparent( _coord x , _coord y , _bitmapPort data );
+		void copyTransparent( _coord x , _coord y , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the line x=0 and stretching that line over width
@@ -279,8 +275,7 @@ class _bitmapPort{
 		 * @param data Other _bitmap to copy
 		 * @return void
 		**/
-		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap* data );
-		void copyHorizontalStretch( _coord x , _coord y , _length width , _bitmapPort data );
+		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the row y=0 and stretching that line over width
@@ -290,8 +285,7 @@ class _bitmapPort{
 		 * @param data Other _bitmap to copy
 		 * @return void
 		**/
-		void copyVerticalStretch( _coord x , _coord y , _length width , const _bitmap* data );
-		void copyVerticalStretch( _coord x , _coord y , _length width , _bitmapPort data );
+		void copyVerticalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 };
 
 #endif

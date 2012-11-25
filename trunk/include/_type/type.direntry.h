@@ -155,7 +155,7 @@ class _direntry{
 		virtual bool execute();
 		
 		//! Get File-Image
-		virtual const _bitmap* getFileImage();
+		virtual const _bitmap& getFileImage();
 		
 		//! Check if the File at 'filename' exists
 		virtual bool isExisting(){ return this->exists; }

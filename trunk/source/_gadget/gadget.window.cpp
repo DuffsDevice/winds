@@ -96,9 +96,9 @@ _callbackReturn _window::refreshHandler( _event event )
 	bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar );
 	
 	// Bottom Border
-	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , (*_system::_runtimeAttributes_->windowBar)[0] );
-	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , (*_system::_runtimeAttributes_->windowBar)[9] );
-	bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , (*_system::_runtimeAttributes_->windowBar)[9] );
+	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[0] );
+	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[9] );
+	bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar[9] );
 	
 	that->label->refreshBitmap();
 	

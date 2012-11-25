@@ -21,10 +21,7 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , focusedChild( nullptr ) , parent( nullptr )  , dragTemp ( nullptr )
 {
 	if( !doNotAllocateBitmap )
-	{
-		this->bitmap = new _bitmap( max( 1 , width ) , max( 1 , height ) );
-		this->bitmap->reset( COLOR_WHITE );
-	}
+		this->bitmap = _bitmap( this->getWidth() , this->getHeight() );
 }
 
 _gadgetType typeOfGadget( _gadget* g )
@@ -43,7 +40,15 @@ _gadget::~_gadget()
 {
 	if( this->parent != nullptr )
 		this->parent->removeChild( this );
-	delete this->bitmap;
+}
+
+void _gadget::setPadding( const _padding& p )
+{
+	if( this->padding != p )
+	{
+		this->padding = p;
+		this->bubbleRefresh( true );
+	}
 }
 
 void _gadget::triggerEvent( _event event )
@@ -394,8 +399,8 @@ void _gadget::setDimensions( _rect rc )
 	
 	if( dim.width != this->dimensions.width || this->dimensions.height != dim.height )
 	{
-		this->bitmap->resize( rc.width , rc.height );
-		this->handleEvent(_event( onResize ));
+		this->bitmap.resize( rc.width , rc.height );
+		this->handleEvent( _event( onResize ) );
 		this->bubbleEvent( _event::refreshEvent( this , absDim.combine( this->getAbsoluteDimensions() ) ) , true );
 	}
 	else if( dim.x != this->dimensions.x || dim.y != this->dimensions.y )
@@ -410,9 +415,9 @@ void _gadget::setHeight( _length val )
 	
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.height = val;
-	this->bitmap->setHeight( val );
+	this->bitmap.setHeight( val );
 	
-	this->handleEvent(_event( onResize ));
+	this->handleEvent( _event( onResize ) );
 	
 	// Delete the parts that originally were gadget, but became damaged
 	this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
@@ -425,9 +430,9 @@ void _gadget::setWidth( _length val )
 	
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.width = val;
-	this->bitmap->setWidth( val );
+	this->bitmap.setWidth( val );
 	
-	this->handleEvent(_event( onResize ));
+	this->handleEvent( _event( onResize ) );
 	
 	// Delete the parts that originally were gadget, but became damaged
 	this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );

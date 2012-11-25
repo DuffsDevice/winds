@@ -9,7 +9,7 @@
 
 #include "_resource/BMP_Grip.h"
 
-static _bitmap* Grip = new BMP_Grip();
+_bitmap Grip = BMP_Grip();
 
 const int sStart = 0;
 const int sSwap = 34;
@@ -364,10 +364,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, destination( nullptr )
 	, animKeyb( 0 , 0 , 800 )
 	, animMagnif( sStart , sEnd , 800 )
-{
-	//! Set my bitmap
-	this->bitmap->reset( NO_COLOR );
-	
+{	
 	//! Reset Keyboard Position
 	this->setState( sStart );
 	

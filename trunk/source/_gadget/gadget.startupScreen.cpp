@@ -51,7 +51,7 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
-	, winLogoGadget( new _imagegadget( 4 , 3 , _startupScreen::winLogo ) )
+	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo ) )
 {	
 	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( refresh , &_startupScreen::refreshHandler );
@@ -61,6 +61,7 @@ _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
 	
+	//this->addChild( new _scrollArea( 256 , 192 , 0,0 ) );
 	//this->addChild( new _fileview( 100 , 70 , 1,1,"/NDS",_style()) );
 	//this->addChild( new _button( 0 ,0 , "Hello") );
 	

@@ -30,16 +30,16 @@ namespace unistd{
 #include "image_bin.h"
 #endif
 
-_bitmap* icon_exe = new BMP_ExeIcon();
-_bitmap* icon_lua = new BMP_LuaIcon();
-_bitmap* icon_msi = new BMP_FileIcon();
-_bitmap* icon_plain = new BMP_FileIcon();
-_bitmap* icon_txt = new BMP_TxtIcon();
-_bitmap* icon_xml = new BMP_XmlIcon();
-_bitmap* icon_ini = new BMP_IniIcon();
-_bitmap* icon_nds = new BMP_NdsIcon();
-_bitmap* icon_gba = new BMP_GbaIcon();
-_bitmap* icon_folder = new BMP_FolderIcon();
+_bitmap icon_exe = BMP_ExeIcon();
+_bitmap icon_lua = BMP_LuaIcon();
+_bitmap icon_msi = BMP_FileIcon();
+_bitmap icon_plain = BMP_FileIcon();
+_bitmap icon_txt = BMP_TxtIcon();
+_bitmap icon_xml = BMP_XmlIcon();
+_bitmap icon_ini = BMP_IniIcon();
+_bitmap icon_nds = BMP_NdsIcon();
+_bitmap icon_gba = BMP_GbaIcon();
+_bitmap icon_folder = BMP_FolderIcon();
 
 int _direntry::fatInited = -1;
 
@@ -501,7 +501,7 @@ bool _direntry::execute()
 	return true;
 }
 
-const _bitmap* _direntry::getFileImage()
+const _bitmap& _direntry::getFileImage()
 {
 	switch( this->getMimeType() ){
 		case _mime::directory:

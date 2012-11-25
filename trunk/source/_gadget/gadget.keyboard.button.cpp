@@ -95,8 +95,8 @@ _keyboardButton::_keyboardButton( _key key , _coord x , _coord y , string text ,
 //			Start-button		//
 // ---------------------------- //
 
-_bitmap* _keyboardStartButton::startButton = new BMP_StartButton();
-_bitmap* _keyboardStartButton::startButtonPressed = new BMP_StartButtonPressed();
+_bitmap _keyboardStartButton::startButton = BMP_StartButton();
+_bitmap _keyboardStartButton::startButtonPressed = BMP_StartButtonPressed();
 
 _callbackReturn _keyboardStartButton::mouseHandler( _event event ){
 	
@@ -115,6 +115,7 @@ _callbackReturn _keyboardStartButton::mouseHandler( _event event ){
 _callbackReturn _keyboardStartButton::refreshHandler( _event event )
 {
 	static string sBT = _system::_runtimeAttributes_->user->getStrAttr( "startButtonText" );
+	
 	// Receive Gadget
 	_keyboardStartButton* that = event.getGadget<_keyboardStartButton>();
 	

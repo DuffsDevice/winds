@@ -80,8 +80,8 @@ _callbackReturn _label::refreshHandler( _event event )
 	if( !that->font || !that->font->valid() )
 		return use_default;
 	
-	_length myH = that->bitmap->getHeight();
-	_length myW = that->bitmap->getWidth();
+	_length myH = that->getHeight();
+	_length myW = that->getWidth();
 	
 	_coord x = 0;
 	_coord y = 0;

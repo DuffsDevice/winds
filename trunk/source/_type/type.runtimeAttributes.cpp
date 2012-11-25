@@ -6,12 +6,12 @@
 #include "_resource/BMP_WindowsWallpaper.h"
 
 _runtimeAttributes::_runtimeAttributes() :
-	wallpaper( new BMP_WindowsWallpaper() ) 
+	wallpaper( BMP_WindowsWallpaper() ) 
 	, wallpaperView( WALLPAPER_ORIG ) 
 	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )
 	, defaultFont( "Tahoma7" )
 	, defaultFontSize( 8 ) 
-	, windowBar( new BMP_WindowHeader() )
+	, windowBar( BMP_WindowHeader() )
 {
 	this->assocDirectories = { { "%WINDIR%" , "/windows" } , { "%APPDATA%" , "/windows/appdata" } , { "%USERS%" , "/windows/users" } };
 	

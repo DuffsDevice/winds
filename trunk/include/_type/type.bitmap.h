@@ -2,9 +2,10 @@
 #ifndef _WIN_T_BITMAP_
 #define _WIN_T_BITMAP_
 
-#include "_type/type.h"
-#include "_type/type.font.h"
-#include "_type/type.rect.h"
+#include "type.h"
+#include "type.font.h"
+#include "type.rect.h"
+#include "func.memory.h"
 
 class _font;
 
@@ -21,6 +22,16 @@ class _bitmap
 		_rect		activeClippingRect;
 		
 		bool		wasAllocated;
+		
+		/**
+		 * Manual Data-Erase
+		 * ( only deletes the Data if it was allocated by the bitmap itself)
+		 * @return void
+		**/
+		void destruct(){ 
+			if( this->wasAllocated )
+				delete[] this->bmp;
+		}
 	
 	public:
 		
@@ -31,9 +42,14 @@ class _bitmap
 		 * @param h Height of the bmp
 		 * @return void
 		**/
-		_bitmap( _pixelArray base , _length w , _length h )
-			: bmp( base ) , width( w ), height( h ) , wasAllocated( false )
-		{ this->resetClippingRect(); }
+		_bitmap( _pixelArray base , _length w , _length h ) :
+			bmp( base )
+			, width( w )
+			, height( h )
+			, wasAllocated( false )
+		{
+			this->resetClippingRect();
+		}
 		
 		/**
 		 * Construcor: Make Bitmap out of dimensions (data will be allocated automatically)
@@ -41,8 +57,10 @@ class _bitmap
 		 * @param h Height of the bmp
 		 * @return void
 		**/
-		_bitmap( _length w , _length h )
-			: width( w ), height( h ) , wasAllocated( true )
+		_bitmap( _length w , _length h ) :
+			width( w )
+			, height( h )
+			, wasAllocated( true )
 		{
 			this->bmp = new _pixel[w*h];
 			this->resetClippingRect();
@@ -53,7 +71,16 @@ class _bitmap
 		 * @param bm Source Bitmap
 		 * @return void
 		**/
-		_bitmap( const _bitmap &bm ){ *this = bm; }
+		_bitmap( const _bitmap &bm ) :
+			bmp( bm.wasAllocated ? new _pixel[bm.width*bm.height] : bm.bmp )
+			, width( bm.width )
+			, height( bm.height )
+			, wasAllocated( bm.wasAllocated )
+		{
+			if( wasAllocated )
+				memCpy( bmp , bm.bmp , width * height );
+			this->resetClippingRect();
+		}
 		
 		/**
 		 * Move-Constructor
@@ -61,17 +88,33 @@ class _bitmap
 		 * @return void
 		**/
 		_bitmap( _bitmap &&bm )
-			: bmp( bm.bmp ) , width( bm.width ), height( bm.height ) , wasAllocated( bm.wasAllocated )
+			: bmp( bm.bmp )
+			, width( bm.width )
+			, height( bm.height )
+			, wasAllocated( bm.wasAllocated )
 		{
+			//! Move!
 			bm.wasAllocated = false;
-			this->activeClippingRect = bm.activeClippingRect;
+			bm.bmp = nullptr;
+			this->resetClippingRect();
 		}
+		
+		/**
+		 * Default constructor
+		 * @return void
+		**/
+		_bitmap() :
+			bmp( nullptr )
+			, width( 0 )
+			, height( 0 )
+			, wasAllocated( false )
+		{}
 		
 		/**
 		 * Destructor
 		 * @return void
 		**/
-		~_bitmap(){ 
+		~_bitmap(){
 			this->destruct();
 		}
 		
@@ -82,25 +125,18 @@ class _bitmap
 		bool isValid() const { return !( !this->bmp || !this->width || !this->height ); }
 		
 		/**
-		 * Manual Data-Erase
-		 * ( only deletes the Data if it was allocated by the bitmap itself)
-		 * @return void
+		 * Copy Bitmap (copy its data onto mine)
+		 * @param bmp Source Bitmap
+		 * @return _bitmap
 		**/
-		private:
-		void destruct(){ 
-			if( this->wasAllocated ){
-				delete[] this->bmp;
-			}
-		}
-		public:
+		_bitmap& operator=( const _bitmap& bmp );
 		
 		/**
-		 * Default constructor
-		 * @return void
+		 * Move Bitmap
+		 * @param bmp Source Bitmap
+		 * @return _bitmap
 		**/
-		_bitmap()
-			: bmp( nullptr ) , width( 0 ), height( 0 ) , wasAllocated( false )
-		{ this->resetClippingRect(); }
+		_bitmap& operator=( _bitmap&& bmp );
 		
 		/**
 		 * Get the Bitmap Base
@@ -316,6 +352,17 @@ class _bitmap
 		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
+		 * Draw a horizontal Line onto the bmp
+		 * @param x1 Start-X-Position
+		 * @param y1 Start-Y-Position
+		 * @param x2 End-X-Position
+		 * @param y2 End-Y-Position
+		 * @param color Color of the Line
+		 * @return void
+		**/
+		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
+		
+		/**
 		 * Draw a Rectangle onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start (top)
@@ -441,7 +488,7 @@ class _bitmap
 		 * @param bitmapY 	Y-Origin of copying on the _bitmap (optional)
 		 * @return void
 		**/
-		void copy( _coord x , _coord y , const _bitmap* data );
+		void copy( _coord x , _coord y , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap but with respecting the alpha channel
@@ -450,7 +497,7 @@ class _bitmap
 		 * @param data Other _bitmap
 		 * @return void
 		**/
-		void copyTransparent( _coord x , _coord y , const _bitmap* data );
+		void copyTransparent( _coord x , _coord y , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the line x=0 and stretching that line over width
@@ -459,7 +506,7 @@ class _bitmap
 		 * @param width Width to stretch it to
 		 * @return void
 		**/
-		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap* data );
+		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the row y=0 and stretching that line over width
@@ -468,7 +515,7 @@ class _bitmap
 		 * @param height Height to stretch it to
 		 * @return void
 		**/
-		void copyVerticalStretch( _coord x , _coord y , _length height , const _bitmap* data );
+		void copyVerticalStretch( _coord x , _coord y , _length height , const _bitmap& data );
 		
 		/**
 		 * Move a part of the bitmap to another location
@@ -498,11 +545,6 @@ class _bitmap
 		void resetClippingRect(){
 			this->activeClippingRect = _rect( 0 , 0 , this->width , this->height );
 		}
-		
-		/**
-		 * Copy Bitmap (copy its data onto mine)
-		**/
-		_bitmap& operator=( const _bitmap& bmp );
 		
 		/**
 		 * Check if a Rectangle specified by borders is visible if it gets clipped by the activeClippingRect

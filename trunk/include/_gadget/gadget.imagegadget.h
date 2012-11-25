@@ -9,17 +9,17 @@ class _imagegadget : public _gadget {
 	
 	private:
 	
-		const _bitmap* img;
+		_bitmap img;
 		
 		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 		
-		void setImage( const _bitmap* img ){ this->img = img; this->setWidth( img->getWidth() ); this->setHeight( img->getHeight() ); this->bubbleRefresh( true ); }
+		void setImage( const _bitmap& img );
 		
-		const _bitmap* getImage(){ return this->img; }
+		const _bitmap& getImage(){ return this->img; }
 		
-		_imagegadget( _coord x , _coord y , const _bitmap* bmp , _style style = _style());
+		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style style = _style());
 };
 
 #endif

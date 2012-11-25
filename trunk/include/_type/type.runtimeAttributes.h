@@ -16,13 +16,13 @@ class _runtimeAttributes
 {
 	public:
 
-		_bitmap*		wallpaper;
+		_bitmap			wallpaper;
 		_wallpaperViewType wallpaperView;
 		string			defaultFont;
 		_u8				defaultFontSize;
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
-		_bitmap*		windowBar;
+		_bitmap			windowBar;
 		_pixel			selectForeground;
 		_pixel			selectBackground;
 		_pixel			defaultForeground;

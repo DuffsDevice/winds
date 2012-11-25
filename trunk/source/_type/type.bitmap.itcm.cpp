@@ -1,7 +1,7 @@
 #include "_type/type.bitmap.h"
 #include "func.memory.h"
 
-#include <nds/timers.h>
+//#include <nds/timers.h>
 #include <nds/arm9/math.h>
 
 void _bitmap::setWidth( _length w )
@@ -17,9 +17,7 @@ void _bitmap::setWidth( _length w )
 		memSet( newBmp , 0 , w * this->height );
 	}
 	else
-	{
 		newBmp = this->bmp;
-	}
 		
 	if( w < this->width )
 	{
@@ -51,7 +49,7 @@ void _bitmap::setHeight( _length h )
 	if( this->wasAllocated )
 	{
 		newBmp = new _pixel[ h * this->width ];
-		memSet( newBmp , 0 , h * this->width );
+		//memSet( newBmp , 0 , h * this->width );
 	}
 	else
 		newBmp = this->bmp;
@@ -72,28 +70,27 @@ void _bitmap::resize( _length w , _length h )
 {
 	if( this->width == w && this->height == h )
 		return;
+	
 	_pixelArray newBmp;	
 	
 	if( this->wasAllocated )
 	{
 		newBmp = new _pixel[ w * this->height ];
-		memSet( newBmp , 0 , w * this->height );
+		//memSet( newBmp , 0 , w * this->height );
 	}
 	else
 		newBmp = this->bmp;
 	
-	_length minH = min( this->height , h );
-	
 	if( w < this->width )
 	{
-		for( _u32 y = 0; y != minH ; y++ )
+		for( _u32 y = 0; y != min( this->height , h ) ; y++ )
 			for( _u32 x = 0; x != w ; x++ )
 				newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
 	}
 	else
 	{
-		for( _int y = minH ; y != 0 ; y-- )
-			for( _int x = this->width ; x != 0 ; x-- )
+		for( _u32 y = min( this->height , h ) ; y != 0 ; y-- )
+			for( _u32 x = this->width ; x != 0 ; x-- )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
 	}
 	
@@ -110,18 +107,8 @@ void _bitmap::resize( _length w , _length h )
 
 void _bitmap::drawPixel( _coord x , _coord y , _pixel color )
 {
-	
-	_coord clipX1 = x;
-	_coord clipY1 = y;
-	_coord clipX2 = x;
-	_coord clipY2 = y;
-
-	// Attempt to clip and draw
-	if ( ! this->clipCoordinates( clipX1, clipY1, clipX2, clipY2 )) return;
-	
-	_u32 position = y * this->width + x;
-	
-	this->bmp[position] = color;
+	if( activeClippingRect.contains( x , y ) )
+		this->bmp[y * this->width + x] = color;
 }
 
 void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
@@ -160,8 +147,11 @@ void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pi
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	for( _u32 i = 0; i != length; ++i , ptr += this->width << 2 )
+	while( length-- )
+	{
 		*ptr = color;
+		ptr += this->width << 1;
+	}
 }
 
 void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
@@ -177,7 +167,7 @@ void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel 
 	length = x2 - x + 1 ;
 	
 	// Draw the line
-	this->blitFill( x, y, color, length );
+	memSet( this->bmp + x + y * this->width , color , length );
 	
 }
 
@@ -197,14 +187,16 @@ void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	for( _u32 i = 0; i != length; ++i , ptr++ )
+	while( length-- )
+	{
 		*ptr++ = color;
+		ptr++;
+	}
 	
 }
 
 void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
-{
-	
+{	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
 	_coord y2 = y + h - 1;
@@ -218,12 +210,16 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	
 	_pixelArray to = this->bmp + y * this->width + x;
 	
-	// Draw the rectangle
-	while( h-- )
-	{
-		memSet( to ,  color , w );
-		to += this->width;
-	}
+	if( w == this->width )
+		memSet( to , color , w * h ); // optimize Algorithm for drawing on whole bitmap
+	else
+		// Draw the rectangle
+		while( h-- )
+		{
+			memSet( to , color , w );
+			to += this->width;
+		}
+	
 }
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
@@ -253,7 +249,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	//! Gradient Computations
 		
 		_pixelArray gradTable = new _pixel[h];
-		_pixelArray temp = gradTable + dY;
+		_pixelArray temp = gradTable;
 		_pixelArray end = gradTable + h;
 		
 		// Difference between color values
@@ -278,7 +274,12 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
-			*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			*temp++ = ( curR >> 11 ) & ( 31 << 0  ) // Adjust and bitwise and width 31
+					| ( curG >> 6  ) & ( 31 << 5  )
+					| ( curB >> 1  ) & ( 31 << 10 )
+					| ( 1 << 15 );
+			// Faster because of less bitshifts
 		
 	// Draw the rectangle
 	for ( _u32 i = 0; i != h; i++)
@@ -295,7 +296,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	}
 	
 	_length gradWidth = w;
-	_coord gradX = x;
+	_coord origX = x;
 	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
@@ -307,12 +308,12 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	// Calculate new width/height
 	w = x2 - x + 1;
 	h = y2 - y + 1;
-	int dX = x - gradX;
+	int dX = x - origX;
 	
 	//! Gradient Computations
 		
 		_pixelArray gradTable = new _pixel[w];
-		_pixelArray start = gradTable + dX;
+		_pixelArray start = gradTable;
 		_pixelArray temp = start;
 		_pixelArray end = gradTable + w;
 		
@@ -342,14 +343,19 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
-			*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			*temp++ = ( curR >> 11 ) & ( 31 << 0  ) // Adjust and bitwise and width 31
+					| ( curG >> 6  ) & ( 31 << 5  )
+					| ( curB >> 1  ) & ( 31 << 10 )
+					| ( 1 << 15 );
+			// Faster because of less bitshifts
 		
 	// Draw Set Bitmap-starting-ptr
 	_pixelArray pos = this->bmp + y * this->width + x;
 	_u16 part = this->width - ( w + x );
 	
 	// Fill the rect
-	for ( _u32 i = 0; i != h; ++i )
+	while( h-- )
 	{
 		temp = start;
 		while( temp != end )
@@ -519,20 +525,20 @@ void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pi
 	}
 }
 
-void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
+void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 {
-	if( !data->isValid() )
+	if( !data.isValid() )
 		return;
 	
-	_coord x2 = x + data->getWidth() - 1;
-	_coord y2 = y + data->getHeight() - 1;
+	_coord x2 = x + data.getWidth() - 1;
+	_coord y2 = y + data.getHeight() - 1;
 	_coord origX = x;
 	_coord origY = y;
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
-	_pixelArray copyData = data->getBitmap( x - origX , y - origY );
+	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
 	
 	if( !copyData )
 		return;
@@ -545,26 +551,26 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap* data )
 	while( h-- )
 	{
 		memCpy( myData , copyData , w );
-		copyData += data->getWidth();
+		copyData += data.getWidth();
 		myData += this->width;
 	}
 }
 
-void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data )
+void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 {
 	//asm volatile("@Here I Start");
-	if( !data->isValid() )
+	if( !data.isValid() )
 		return;
 	
-	_coord x2 = x + data->getWidth() - 1;
-	_coord y2 = y + data->getHeight() - 1;
+	_coord x2 = x + data.getWidth() - 1;
+	_coord y2 = y + data.getHeight() - 1;
 	_coord origX = x;
 	_coord origY = y;
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
-	_pixelArray copyData = data->getBitmap( x - origX , y - origY );
+	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
 	if( !copyData )
 		return;
 	_pixelArray myData	= this->getBitmap( x , y );
@@ -579,24 +585,24 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap* data )
 			if( copyData[j] >> 15 ) // Check if this pixel of the data is non-transparent
 				myData[j] = copyData[j];
 		}
-		copyData += data->getWidth();
+		copyData += data.getWidth();
 		myData += this->width;
 	}
 }
 
-void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap* data )
+void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
 {
 	_coord x2 = x + w - 1;
-	_coord y2 = y + data->getHeight() - 1;
+	_coord y2 = y + data.getHeight() - 1;
 	_coord origY = y;
 	
-	if( !data->isValid() )
+	if( !data.isValid() )
 		return;
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
-	_pixelArray copyData = data->getBitmap();
+	_pixelArray copyData = data.getBitmap();
 	if( !copyData )
 		return;
 	_pixelArray myData	= &this->bmp[ y * this->width + x ];
@@ -611,20 +617,20 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 	}
 }
 
-void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap* data )
+void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap& data )
 {
-	_coord x2 = x + data->getWidth() - 1;
+	_coord x2 = x + data.getWidth() - 1;
 	_coord y2 = y + h - 1;
 	_coord origX = x;
 	
-	if( !data->isValid() )
+	if( !data.isValid() )
 		return;
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
 	// Get Data
-	_pixelArray copyData = &data->operator[]( + x - origX );
+	_pixelArray copyData = &data.operator[]( + x - origX );
 	if( !copyData )
 		return;
 	_pixelArray myData	= &this->bmp[ y * this->width + x ];
@@ -718,7 +724,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 		_pixelArray dst = this->bmp + destX + this->width * ( destY + height - 1 );
 		
 		// Copy down
-		for ( _int i = height - 1 ; i != -1; --i , src -= this->width , dst -= this->width )
+		for ( _u32 i = height ; i ; --i , src -= this->width , dst -= this->width )
 			memCpy( dst , src , width );
 	}
 }
@@ -732,8 +738,8 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	// Ensure values don't exceed clipping rectangle
 	left 	= max( left , activeClippingRect.x );
 	top 	= max( top , activeClippingRect.y );
-	right 	= min( _length( right ) , activeClippingRect.x + activeClippingRect.width - 1 );
-	bottom 	= min( _length( bottom ) , activeClippingRect.y + activeClippingRect.height - 1 );
+	right 	= min( right , activeClippingRect.x + _coord( activeClippingRect.width ) - 1 );
+	bottom 	= min( bottom , activeClippingRect.y + _coord( activeClippingRect.height ) - 1 );
 	
 	// Return false if no box to draw
 	if ( ( right < left ) || ( bottom < top ) ) return false;
@@ -763,16 +769,114 @@ void _bitmap::setClippingRect( _rect rc ){
 	this->activeClippingRect.setY2( min( this->activeClippingRect.getY2() , _coord( this->height ) ) );
 }
 
+void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+{
+    int yStep = this->width;
+    int xStep = 1;      
+    int xDiff = x2 - x1;
+    int yDiff = y2 - y1;
+ 
+    int errorTerm = 0;
+    int offset = y1 * this->width + x1; 
+    int i; 
+    
+    //need to adjust if y1 > y2
+    if (yDiff < 0)       
+    {                  
+       yDiff = -yDiff;   //absolute value
+       yStep = -yStep;   //step up instead of down   
+    }
+    
+    //same for x
+    if (xDiff < 0) 
+    {           
+       xDiff = -xDiff;            
+       xStep = -xStep;            
+    }        
+ 
+    //case for changes more in X than in Y	 
+    if (xDiff > yDiff) 
+    {                            
+       for (i = 0; i < xDiff + 1; i++)
+       {                           
+          this->bmp[offset] = color;  
+ 
+          offset += xStep;           
+ 
+          errorTerm += yDiff;     
+ 
+          if (errorTerm > xDiff) 
+          {  
+             errorTerm -= xDiff;     
+             offset += yStep;        
+          }
+       }
+    }//end if xdiff > ydiff
+    //case for changes more in Y than in X
+    else 
+    {                       
+       for (i = 0; i < yDiff + 1; i++) 
+       {  
+          this->bmp[offset] = color;  
+ 
+          offset += yStep;           
+ 
+          errorTerm += xDiff;    
+ 
+          if (errorTerm > yDiff) 
+          {     
+             errorTerm -= yDiff;  
+             offset += xStep;     
+ 
+          }
+       }
+    }
+ 
+}
+
 _bitmap& _bitmap::operator=( const _bitmap& bmp )
 {
+	// Copy..
 	if( this == &bmp )
 		return *this;
+	
 	this->destruct();
-	this->width = max( _length( 1 ) , bmp.width );
-	this->height = max( _length( 1 ) , bmp.height );
-	this->activeClippingRect = bmp.activeClippingRect;
-	this->wasAllocated = true;
-	this->bmp = new _pixel[this->width*this->height];
-	memCpy( this->bmp , bmp.bmp , this->width*this->height );
+	this->width = bmp.width;
+	this->height = bmp.height;
+	this->wasAllocated = bmp.wasAllocated;
+	
+	if( wasAllocated )
+	{
+		this->bmp = new _pixel[this->width*this->height];
+		memCpy( this->bmp , bmp.bmp , this->width * this->height );
+	}
+	else
+		this->bmp = bmp.bmp;
+	
+	this->resetClippingRect();
+	
+	return *this;
+}
+
+_bitmap& _bitmap::operator=( _bitmap&& bmp )
+{
+	// Just in case...
+	if( this == &bmp )
+		return *this;
+	
+	this->destruct();
+	this->width = bmp.width;
+	this->height = bmp.height;
+	this->wasAllocated = bmp.wasAllocated;
+	
+	// Copy, if memory is owned by the bitmap or write, if just pointing to memory
+	this->bmp = bmp.bmp;
+	
+	// Reset
+	bmp.wasAllocated = false;
+	bmp.bmp = nullptr;
+	
+	this->resetClippingRect();
+	
 	return *this;
 }

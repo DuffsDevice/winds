@@ -10,7 +10,7 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	, viewType( viewtype )
 {
 	// Reset Bitamp
-	this->bitmap->reset( ( 1 << 16 ) - 1 );
+	this->bitmap.reset( COLOR_WHITE );
 	
 	// Generate _fileobject's
 	this->generateChildren();

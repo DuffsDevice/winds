@@ -80,9 +80,9 @@ class _shortcut : public _direntry {
 	
 	private:
 		
-		_direntry destination;
+		_direntry	destination;
 		
-		_bitmap* image;
+		_bitmap		image;
 		
 	public:
 		
@@ -95,9 +95,7 @@ class _shortcut : public _direntry {
 		
 		const string getExtension() const;
 		
-		const _bitmap* getFileImage();
-		
-		~_shortcut();
+		const _bitmap& getFileImage();
 };
 
 #endif

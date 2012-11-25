@@ -27,7 +27,7 @@ _callbackReturn _checkbox::refreshHandler( _event event )
 		bP.drawRect( 0 	, 0 , 9 , 9 , 54829 );
 	
 	// Content
-	bP.copy( 1 , 1 , &that->graphic[ mid( 0 , that->getIntValue() , 2 ) ]);
+	bP.copy( 1 , 1 , that->graphic[ mid( 0 , that->getIntValue() , 2 ) ]);
 	
 	return use_default;
 }

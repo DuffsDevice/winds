@@ -1,5 +1,5 @@
 #include "_gadget/gadget.windows.startMenu.h"
-//#include "_gadget/gadget.fileview.h"
+#include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
 #define CONST_BOTTOM_BAR_HEIGHT 11
@@ -51,17 +51,14 @@
 _startMenu::_startMenu( _gadget* owner , _style style ) :
 	_contextMenu( 110 , 110 , owner , style )
 {
-	// Reset Bitmap
-	this->bitmap->reset( COLOR_WHITE );
-	
 	// Left Side
-	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
+	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// Right Side
-	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
+	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// User-Image
-	//this->addChild( new _imagegadget( 3 , 2 , _system::_runtimeAttributes_->user->userLogo ) );
+	this->addChild( new _imagegadget( 3 , 2 , _system::_runtimeAttributes_->user->getLogo() ) );
 	
 	// Username
 	_label* usrName = new _label( this->dimensions.width - 19 - 2 , 14 , 19 , 2 , _system::_runtimeAttributes_->user->getUsername() );
