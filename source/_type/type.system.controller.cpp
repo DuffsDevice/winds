@@ -1,6 +1,9 @@
 #include "_type/type.system.h"
+#include "_type/type.radiogroup.h"
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.select.h"
+#include "_gadget/gadget.counter.h"
+#include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.imagegadget.h"
 #include "_gadget/gadget.startupScreen.h"
@@ -10,7 +13,7 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::setup );
+	changeState( _systemState::bootup );
 	
 	while( true )
 	{
@@ -146,9 +149,9 @@ _callbackReturn _systemController::setupHandler( _event e )
 						u8 g = (color >> 5) & 31;
 						u8 b = (color >> 10) & 31;
 						
-						r = r + RGB_GETR( RGBHEX( 0x5A7EDC ) ) >> 1;
-						g = g + RGB_GETG( RGBHEX( 0x5A7EDC ) ) >> 1;
-						b = b + RGB_GETB( RGBHEX( 0x5A7EDC ) ) >> 1;
+						r = ( r + RGB_GETR( RGBHEX( 0x5A7EDC ) ) ) >> 1;
+						g = ( g + RGB_GETG( RGBHEX( 0x5A7EDC ) ) ) >> 1;
+						b = ( b + RGB_GETB( RGBHEX( 0x5A7EDC ) ) ) >> 1;
 						
 						color = RGB(r,g,b);
 						
@@ -169,11 +172,13 @@ _callbackReturn _systemController::setupHandler( _event e )
 				_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 			}
 		}
-		else if( state < 2 )
+		else if( state < 3 )
 		{
 			state++;
 			_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 		}
+		else
+			changeState( _systemState::desktop );
 		return handled;
 	}
 	
@@ -261,6 +266,50 @@ _callbackReturn _systemController::setupHandler( _event e )
 			break;
 		}
 		case 2:
+		{
+			// Create Label with shadow
+			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_system_preferences") );
+			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_system_preferences") );
+			_label* lbl3 = new _label( 32 , 60 , _system::getLocalizedString("txt_system_clock") );
+			_label* lbl4 = new _label( 32 , 140 , _system::getLocalizedString("txt_system_clock_auto_fetch_1") );
+			_label* lbl5 = new _label( 32 , 150 , _system::getLocalizedString("txt_system_clock_auto_fetch_2") );
+			_counter* cnt1 = new _counter( 85 , 75 , 25 , true , 0 , 23 , 0 );
+			_counter* cnt2 = new _counter( 115 , 75 , 25 , true , 0 , 59 , 0 );
+			_counter* cnt3 = new _counter( 145 , 75 , 25 , true , 0 , 59 , 0 );
+			_radiogroup* radgrp = new _radiogroup();
+			_radio* rad1 = new _radio( 20 , 139 , radgrp );
+			_radio* rad2 = new _radio( 20 , 59 , radgrp );
+			gadgets[5] = lbl;
+			gadgets[6] = lbl2;
+			gadgets[7] = lbl3;
+			gadgets[8] = lbl4;
+			gadgets[9] = lbl5;
+			gadgets[10] = rad1;
+			gadgets[11] = rad2;
+			gadgets[12] = cnt1;
+			gadgets[13] = cnt2;
+			gadgets[14] = cnt3;
+			gadgets[15] = (_gadget*)radgrp;
+			lbl->setColor( RGB( 2 , 5 , 15 ) );
+			lbl2->setColor( RGB( 30 , 30 , 30 ) );
+			lbl3->setColor( RGB( 30 , 30 , 30 ) );
+			lbl4->setColor( RGB( 30 , 30 , 30 ) );
+			lbl5->setColor( RGB( 30 , 30 , 30 ) );
+			lbl->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			that->addChild( lbl );
+			that->addChild( lbl2 );
+			that->addChild( lbl3 );
+			that->addChild( lbl4 );
+			that->addChild( lbl5 );
+			that->addChild( rad1 );
+			that->addChild( rad2 );
+			that->addChild( cnt1 );
+			that->addChild( cnt2 );
+			that->addChild( cnt3 );
+			break;
+		}
+		case 3:
 		{
 			// Create Label with shadow
 			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_profile") );
@@ -363,7 +412,7 @@ void _systemController::desktopPage()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
-	_system::getBuiltInProgram( "explorer.exe")->execute();
+	_system::getBuiltInProgram( "explorer.exe")->execute({{"path","/NDS"}});
 }
 
 

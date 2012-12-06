@@ -243,6 +243,7 @@ enum class _gadgetType : _u8
 	checkbox,
 	radiobox,
 	textbox,
+	counter,
 	selectbox,
 	selectitem,
 	progressbar,

@@ -43,7 +43,19 @@ void _bitmapPort::drawHorizontalLine( _coord x , _coord y , _length length , _pi
 		this->base->setClippingRect( rc );
 		
 		//! Standard Bitmap Routine
-		this->base->drawHorizontalLine( x , y  , length , color );
+		this->base->drawHorizontalLine( x , y , length , color );
+		//! Standard Bitmap Routine
+	}
+}
+
+void _bitmapPort::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base->setClippingRect( rc );
+		
+		//! Standard Bitmap Routine
+		this->base->drawLine( x1 , y1 , x2 , y2 , color );
 		//! Standard Bitmap Routine
 	}
 }

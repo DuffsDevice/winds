@@ -122,14 +122,14 @@ class _rect{
 		void dump() const ;
 		
 		//! Check for reasonable dimensions
-		bool isValid() const { return ( width > 0 && height > 0 ) ? true : false; }
+		bool isValid() const { return !( width < 1 || height < 1 ); }
 		
 		bool contains( const _coord x , const _coord y ) const {
-			return ( x < this->x || y < this->y || x > getX2() || y > getY2() ) ? false : true;
+			return !( x < this->x || y < this->y || x > getX2() || y > getY2() );
 		}
 		
 		bool contains( const _rect& rc ) const {
-			return ( rc.x < x || rc.y < y || rc.getX2() > getX2() || rc.getY2() > getY2() ) ? false : true;
+			return !( rc.x < x || rc.y < y || rc.getX2() > getX2() || rc.getY2() > getY2() );
 		}
 		
 		//! Methods to generate a Rect

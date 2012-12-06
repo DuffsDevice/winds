@@ -253,7 +253,7 @@ void _system::start()
 		setBackdropColorSub( COLOR_BLACK );
 		consoleDemoInit();
 		
-		_system::fadeMainScreen( false , false );
+		//_system::fadeMainScreen( false , false );
 		
 		//memSet( BG_GFX_SUB , 0 , SCREEN_HEIGHT*SCREEN_WIDTH );
 		//consoleInit	( nullptr , 1 , BgType_Text4bpp , BgSize_T_256x256 , 31 , 0 , true , true );
@@ -411,10 +411,17 @@ void _system::submit(){
 
 void _system::main()
 {
+	//_bitmap _screen_ = _bitmap( BG_GFX , 256 , 192 );
+	//_screen_.drawHorizontalLine( 1 , 16 , 8 , COLOR_RED );
+	//_screen_.drawVerticalLine( 16 , 1 , 8 , COLOR_RED );
+	//_screen_.setClippingRect( _rect::fromCoords( 0 , 0 , 14 , 14 ) );
+	//_screen_.fill( COLOR_WHITE );
+	//_screen_.drawLine( 1 , 1 , 8 , 8 , COLOR_RED );
 	_systemController::main();
 	
 	while(true)
 	{
+		swiWaitForVBlank();
 		//consoleClear();
 		//if( _currentFocus_ )
 			//printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());

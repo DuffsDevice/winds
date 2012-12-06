@@ -75,6 +75,28 @@ i = Scegli il tuo profilo Icona:
 s = Seleccione el icono de su perfil:
 f = Choisissez votre profil Icône:
 
+[lbl_system_preferences]
+e = System Preferences
+g = System-Einstellungen
+i = Impostazioni di sistema
+s = Ajustes sistema
+f = Paramètres système
+
+[txt_system_clock]
+e = Please adjust the system clock:
+g = Bitte stelle Die Uhrzeit ein:
+i = Regolate il clock di sistema:
+s = Ajuste el reloj del sistema:
+f = Réglez l'horloge système:
+
+[txt_system_clock_auto_fetch_1]
+e = Reference time from the Internet (Needs WiFi)
+g = Uhrzeit über das Internet bestimmen (Benötigt WiFi)
+
+[txt_system_clock_auto_fetch_2]
+e = (Needs WiFi)
+g = (Benötigt WiFi)
+
 [lbl_finished]
 e = Setup finished
 g = Fertig

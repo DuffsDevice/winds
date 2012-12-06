@@ -79,7 +79,6 @@ class _bitmap
 		{
 			if( wasAllocated )
 				memCpy( bmp , bm.bmp , width * height );
-			this->resetClippingRect();
 		}
 		
 		/**
@@ -361,6 +360,10 @@ class _bitmap
 		 * @return void
 		**/
 		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
+		private:
+		void drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
+		static _u8 getClipLineOutCode( _coord x , _coord y , _coord xMin , _coord yMin , _coord xMax , _coord yMax );
+		public:
 		
 		/**
 		 * Draw a Rectangle onto the bmp

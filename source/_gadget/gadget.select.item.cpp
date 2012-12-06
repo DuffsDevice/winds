@@ -40,7 +40,7 @@ _callbackReturn _selectItem::refreshHandler( _event event ){
 }
 
 _selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _style style ) :
-	_gadget( _gadgetType::selectitem , width , _system::_runtimeAttributes_->user->sOH , 0 , nth * _system::_runtimeAttributes_->user->sOH , style )
+	_gadget( _gadgetType::selectitem , width , _system::_runtimeAttributes_->user->sOH , 1 , nth * _system::_runtimeAttributes_->user->sOH + 1 , style )
 	, strVal( str )
 	, intVal( value )
 	, active( false )

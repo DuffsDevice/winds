@@ -364,7 +364,9 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, destination( nullptr )
 	, animKeyb( 0 , 0 , 800 )
 	, animMagnif( sStart , sEnd , 800 )
-{	
+{
+	_screen::getBitmap()->reset( NO_COLOR );
+	
 	//! Reset Keyboard Position
 	this->setState( sStart );
 	

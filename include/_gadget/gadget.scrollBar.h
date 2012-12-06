@@ -3,7 +3,7 @@
 
 #include "_type/type.gadget.h"
 #include "_type/type.animation.h"
-#include "_gadget/gadget.button.h"
+#include "_gadget/gadget.scrollBar.button.h"
 
 enum class _dimension : _u8{
 	horizontal = 0 ,
@@ -23,9 +23,9 @@ class _scrollBar : public _gadget{
 		
 		_dimension 	dim;
 		
-		_button* 	dragHandle;
-		_button* 	higherHandle;
-		_button* 	lowerHandle;
+		_scrollButton* 	dragHandle;
+		_scrollButton* 	higherHandle;
+		_scrollButton* 	lowerHandle;
 		
 		_animation	anim;
 		
