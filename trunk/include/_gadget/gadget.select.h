@@ -4,9 +4,10 @@
 #include "_type/type.h"
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.select.item.h"
-#include "_type/type.system.h"
+#include "_gadget/gadget.scrollArea.h"
+#include "_gadget/gadget.contextMenu.h"
 
-class _select : public _gadget, public _interface_input {
+class _select : public _scrollArea , public _interface_input {
 	
 	private:
 		
@@ -15,27 +16,28 @@ class _select : public _gadget, public _interface_input {
 		_contextMenuEntryList 	entries;
 		_s32					selected;
 		
-		// Event-Handler
-		static _callbackReturn	refreshHandler( _event event );
-		
 		void refreshChildren();
 		
 		void setSelected( _s32 val );
 		
+		static _callbackReturn refreshHandler( _event event );
+		
 	public:
 	
 		// To receive/set the value
-		string	getStrValue();
-		_s32	getIntValue();
+		string	getStrValue(){ return this->entries[this->selected]; }
+		_s32	getIntValue(){ return this->selected; }
 		
-		void	setIntValue( int value );
+		void	setIntValue( int value ){ this->setSelected( value ); }
 		
 		void	refreshList();
 		
 		// To manipulate the list
-		_contextMenuEntryList&	getList();
-		void	setList( _contextMenuEntryList lst );
-		void	setList( _contextMenuEntryList& lst );
+		_contextMenuEntryList&	getList(){ return this->entries; }
+		void	setList( const _contextMenuEntryList& lst ){
+			this->entries = lst;
+			this->refreshList();
+		}
 		
 		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { -1 , "" } } /* Empty List */ ) , _style style = _style() );
 };

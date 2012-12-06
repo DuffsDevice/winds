@@ -139,6 +139,17 @@ class _bitmapPort{
 		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
+		 * Draw a horizontal Line onto the bmp
+		 * @param x1 Start-X-Position
+		 * @param y1 Start-Y-Position
+		 * @param x2 End-X-Position
+		 * @param y2 End-Y-Position
+		 * @param color Color of the Line
+		 * @return void
+		**/
+		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
+		
+		/**
 		 * Draw a Rectangle onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start (top)

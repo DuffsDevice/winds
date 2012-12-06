@@ -1,5 +1,6 @@
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.fileview.h"
 #include "_resource/BMP_WindowsBootLogo.h"
 
@@ -61,7 +62,7 @@ _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
 	
-	//this->addChild( new _scrollArea( 256 , 192 , 0,0 ) );
+	//this->addChild( new _counter( 10 , 10 , 30 , true , 0 , 59 , 0 ) );
 	//this->addChild( new _fileview( 100 , 70 , 1,1,"/NDS",_style()) );
 	//this->addChild( new _button( 0 ,0 , "Hello") );
 	

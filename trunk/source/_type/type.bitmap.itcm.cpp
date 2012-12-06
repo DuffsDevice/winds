@@ -1,7 +1,7 @@
 #include "_type/type.bitmap.h"
 #include "func.memory.h"
 
-//#include <nds/timers.h>
+#include <nds/timers.h>
 #include <nds/arm9/math.h>
 
 void _bitmap::setWidth( _length w )
@@ -123,12 +123,17 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 	// Calculate new height
 	length = y2 - y + 1;
 	
+	if( length < 1 )
+		return;
+	
 	// Pointer to BitMapBase
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	for( _u32 i = 0; i != length; ++i , ptr += this->width )
+	do{
 		*ptr = color;
+		ptr += this->width;
+	}while( --length );
 }
 
 void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
@@ -168,7 +173,6 @@ void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel 
 	
 	// Draw the line
 	memSet( this->bmp + x + y * this->width , color , length );
-	
 }
 
 void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color )
@@ -219,7 +223,6 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 			memSet( to , color , w );
 			to += this->width;
 		}
-	
 }
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
@@ -275,10 +278,10 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
 			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
-			*temp++ = ( curR >> 11 ) & ( 31 << 0  ) // Adjust and bitwise and width 31
-					| ( curG >> 6  ) & ( 31 << 5  )
-					| ( curB >> 1  ) & ( 31 << 10 )
-					| ( 1 << 15 );
+			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise and width 31
+					| ( ( curG >> 6  ) & ( 31 << 5  ) )
+					| ( ( curB >> 1  ) & ( 31 << 10 ) )
+					| ( ( 1 << 15 ) );
 			// Faster because of less bitshifts
 		
 	// Draw the rectangle
@@ -344,10 +347,10 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
 			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
-			*temp++ = ( curR >> 11 ) & ( 31 << 0  ) // Adjust and bitwise and width 31
-					| ( curG >> 6  ) & ( 31 << 5  )
-					| ( curB >> 1  ) & ( 31 << 10 )
-					| ( 1 << 15 );
+			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise and width 31
+					| ( ( curG >> 6  ) & ( 31 << 5  ) )
+					| ( ( curB >> 1  ) & ( 31 << 10 ) )
+					| ( ( 1 << 15 ) );
 			// Faster because of less bitshifts
 		
 	// Draw Set Bitmap-starting-ptr
@@ -548,12 +551,15 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
 	
-	while( h-- )
+	if( h < 1 || w < 1 )
+		return;
+	
+	do
 	{
 		memCpy( myData , copyData , w );
 		copyData += data.getWidth();
 		myData += this->width;
-	}
+	}while( --h );
 }
 
 void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
@@ -571,23 +577,28 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
-	if( !copyData )
-		return;
-	_pixelArray myData	= this->getBitmap( x , y );
+	_pixelArray myData = this->getBitmap( x , y );
 	
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
-	int j;
-	while( h-- )
-	{
+	
+	if( h < 1 || w < 1 )
+		return;
+	
+	_int j;
+	w--;
+	
+	do{
 		j = w;
-		while( j-- ){
+		do{
 			if( copyData[j] >> 15 ) // Check if this pixel of the data is non-transparent
 				myData[j] = copyData[j];
-		}
+		}while( j-- );
+		
+		// Increase
 		copyData += data.getWidth();
 		myData += this->width;
-	}
+	}while( --h );
 }
 
 void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
@@ -738,8 +749,8 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	// Ensure values don't exceed clipping rectangle
 	left 	= max( left , activeClippingRect.x );
 	top 	= max( top , activeClippingRect.y );
-	right 	= min( right , activeClippingRect.x + _coord( activeClippingRect.width ) - 1 );
-	bottom 	= min( bottom , activeClippingRect.y + _coord( activeClippingRect.height ) - 1 );
+	right 	= min( right , activeClippingRect.getX2() );
+	bottom 	= min( bottom , activeClippingRect.getY2() );
 	
 	// Return false if no box to draw
 	if ( ( right < left ) || ( bottom < top ) ) return false;
@@ -758,80 +769,226 @@ void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length ){
 }
 
 void _bitmap::setClippingRect( _rect rc ){
-	this->activeClippingRect = rc;
-	_coord dX = max( -this->activeClippingRect.x , 0 );
-	_coord dY = max( -this->activeClippingRect.y , 0 );
-	this->activeClippingRect.x += dX;
-	this->activeClippingRect.width -= dX;
-	this->activeClippingRect.y += dY;
-	this->activeClippingRect.height -= dY;
-	this->activeClippingRect.setX2( min( this->activeClippingRect.getX2() , _coord( this->width ) ) );
-	this->activeClippingRect.setY2( min( this->activeClippingRect.getY2() , _coord( this->height ) ) );
+	this->activeClippingRect = _rect::fromCoords( rc.x < 0 ? 0 : rc.x , rc.y < 0 ? 0 : rc.y , min( rc.getX2() , _coord( this->width ) ) , min( rc.getY2() , _coord( this->height ) ) );
+}
+
+// Internal routine
+void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+{
+	// Get the Bitmap pointer
+    _pixelArray offset = this->bmp + y1 * this->width + x1;
+	
+	_s32 errorTerm = 0;
+    _s32 i;
+	
+    _s32 xDiff = x2 - x1;
+    _s32 yDiff = y2 - y1;
+	
+	_s32 xStep;
+	_s32 yStep;
+	
+	// Compute xStep
+	if( xDiff < 0 )
+	{
+		xStep = -1;
+		xDiff--;
+		xDiff = -xDiff; // Increase and make positive
+	}
+	else
+	{
+		xDiff++;
+		xStep = 1;
+	}
+	
+	// Compute yStep
+	if( yDiff < 0 )
+	{
+		yStep = -this->width;
+		yDiff--;
+		yDiff = -yDiff; // Increase and make positive
+	}
+	else
+	{
+		yDiff++;
+		yStep = this->width;
+	}
+ 
+    //case for changes more in X than in Y
+    if ( xDiff > yDiff )
+    {
+		i = xDiff;
+		
+		errorTerm = yDiff >> 1;
+		
+		do
+		{
+			*offset = color;
+			
+			errorTerm += yDiff;
+			
+			if (errorTerm >= xDiff)
+			{  
+				errorTerm -= xDiff;
+				offset += yStep + xStep;
+			}
+			else
+				offset += xStep;
+		}while( --i );
+		
+    }//end if xdiff > ydiff
+    //case for changes more in Y than in X
+    else if( xDiff < yDiff )
+    {
+		i = yDiff;
+		
+		errorTerm = xDiff >> 1;
+		
+		// We already know that yDiff cannot be 0
+		do
+		{
+			*offset = color;
+			
+			errorTerm += xDiff;
+			
+			if (errorTerm >= yDiff)
+			{
+				errorTerm -= yDiff;
+				offset += xStep + yStep;
+			}
+			else
+				offset += yStep;
+			
+		}while( --i );
+    }
+	else // For straight diagonal Line
+	{
+		i = yDiff;
+		
+		do
+		{
+			*offset = color;
+			offset += xStep + yStep;
+		}while( --i );
+	}
+}
+
+_u8 _bitmap::getClipLineOutCode( _coord x , _coord y , _coord xMin , _coord yMin , _coord xMax , _coord yMax )
+{
+	_u8 code = 0;
+	
+	if( y > yMax )
+		code |= 1;
+	else if( y < yMin )
+		code |= 2;
+	
+	if( x > xMax )
+		code |= 4;
+	else if(x < xMin)
+		code |= 8;
+	
+	return code;
 }
 
 void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
 {
-    int yStep = this->width;
-    int xStep = 1;      
-    int xDiff = x2 - x1;
-    int yDiff = y2 - y1;
- 
-    int errorTerm = 0;
-    int offset = y1 * this->width + x1; 
-    int i; 
-    
-    //need to adjust if y1 > y2
-    if (yDiff < 0)       
-    {                  
-       yDiff = -yDiff;   //absolute value
-       yStep = -yStep;   //step up instead of down   
-    }
-    
-    //same for x
-    if (xDiff < 0) 
-    {           
-       xDiff = -xDiff;            
-       xStep = -xStep;            
-    }        
- 
-    //case for changes more in X than in Y	 
-    if (xDiff > yDiff) 
-    {                            
-       for (i = 0; i < xDiff + 1; i++)
-       {                           
-          this->bmp[offset] = color;  
- 
-          offset += xStep;           
- 
-          errorTerm += yDiff;     
- 
-          if (errorTerm > xDiff) 
-          {  
-             errorTerm -= xDiff;     
-             offset += yStep;        
-          }
-       }
-    }//end if xdiff > ydiff
-    //case for changes more in Y than in X
-    else 
-    {                       
-       for (i = 0; i < yDiff + 1; i++) 
-       {  
-          this->bmp[offset] = color;  
- 
-          offset += yStep;           
- 
-          errorTerm += xDiff;    
- 
-          if (errorTerm > yDiff) 
-          {     
-             errorTerm -= yDiff;  
-             offset += xStep;     
- 
-          }
-       }
-    }
- 
+	// Choose shortcut for horizontal or vertical lines
+	if ( x1 == x2 )
+	{
+		drawVerticalLine( x1 , min( y1 , y2 ) , abs( y2 - y1 ) + 1 , color );
+		return;
+	}
+	else if ( y1 == y2 )
+	{
+		drawHorizontalLine( min( x1 , x2 ) , y1 , abs( x2 - x1 ) + 1 , color );
+		return;
+	}
+
+	// Extract data from cliprect
+	_coord minX = activeClippingRect.x;
+	_coord minY = activeClippingRect.y;
+	_coord maxX = activeClippingRect.getX2();
+	_coord maxY = activeClippingRect.getY2();
+		
+	// Get outcodes for each point
+	_u8 code1 = getClipLineOutCode(x1, y1, minX, minY, maxX, maxY);
+	_u8 code2 = getClipLineOutCode(x2, y2, minX, minY, maxX, maxY);
+	
+	// Clip
+	while( true )
+	{
+		// Check for trivial cases
+		if ( !( code1 | code2 ) )
+		{
+			// Line entirely within visible region
+			// Draw the line
+			this->drawClippedLine(x1, y1, x2, y2, color);
+			break;
+		}
+		else if( code1 & code2 )
+			// Both end points fall within the same off-screen region
+			break;
+		else {
+			
+			// No trivial accept
+			_coord x = 0;
+			_coord y = 0;
+			_s32 t = 0;
+			
+			// Choose one of the end points to manipulate (only choose
+			// the end point that is still off screen)
+			_u8 codeout = code1 ? code1 : code2;
+			
+			// Check each region
+			if( codeout & 1 )
+			{
+				// Check top value
+				t = ((maxY - y1) << 8) / (y2 - y1);
+				x = x1 + ((t * (x2 - x1)) >> 8);
+				y = maxY;
+			}
+			else if( codeout & 2 )
+			{
+				// Check bottom value
+				t = ((minY - y1) << 8) / (y2 - y1);
+				x = x1 + ((t * (x2 - x1)) >> 8);
+				y = minY;
+			}
+			else if( codeout & 4 )
+			{
+				// Check right value
+				t = ((maxX - x1) << 8) / (x2 - x1);
+				y = y1 + ((t * (y2 - y1)) >> 8);
+				x = maxX;
+			}
+			else if( codeout & 8 )
+			{
+				// Check left value
+				t = ((minX - x1) << 8) / (x2 - x1);
+				y = y1 + ((t * (y2 - y1)) >> 8);
+				x = minX;
+			}
+			
+			// Check to see which endpoint we clipped
+			if( codeout == code1 )
+			{
+				// First endpoint clipped; update first point
+				x1 = x;
+				y1 = y;
+				
+				// Clip again
+				code1 = getClipLineOutCode(x1, y1, minX, minY, maxX, maxY);
+			}
+			else
+			{
+				// Second endpoint clipped; update second point
+				x2 = x;
+				y2 = y;
+				
+				// Clip again
+				code2 = getClipLineOutCode(x2, y2, minX, minY, maxX, maxY);
+			}
+		}
+	}
 }
 
 _bitmap& _bitmap::operator=( const _bitmap& bmp )

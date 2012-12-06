@@ -1,58 +1,10 @@
 #include "_gadget/gadget.scrollBar.h"
 #include "_resource/BMP_ScrollButtons.h"
+
 #include "nds/arm9/math.h"
 
-_bitmap btn_background_released = BMP_ScrollButton();
-_bitmap btn_background_pressed 	= BMP_ScrollButtonPressed();
 _bitmap scroll_bg_vert 			= BMP_ScrollBgSnipVertical();
 _bitmap scroll_bg_horiz 		= BMP_ScrollBgSnipHorizontal();
-_pixel 	snip_released_bmp[8] 	= { 64311, 65369, 65368, 65368, 65367, 65367, 64311, 60015 };
-_pixel 	snip_pressed_bmp[8]		= { 61008, 63153, 63121, 63122, 63154, 63155, 63187, 64278 };
-
-void drawArrow( _bitmapPort& bP , _u8 dir )
-{
-	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-	static _u8 x[10];
-	static _u8 y[10];
-	switch( dir )
-	{
-		case 5:
-		case 4:
-			x[0] = 3;x[1] = 4;x[2] = 2;x[3] = 3;x[4] = 4;x[5] = 5;x[6] = 1;x[7] = 2;x[8] = 5;x[9] = 6;
-			break;
-		case 2:
-			x[0] = 5;x[1] = 5;x[2] = 4;x[3] = 4;x[4] = 4;x[5] = 4;x[6] = 3;x[7] = 3;x[8] = 3;x[9] = 3;
-			break;
-		case 1:
-			x[0] = 2;x[1] = 2;x[2] = 3;x[3] = 3;x[4] = 3;x[5] = 3;x[6] = 4;x[7] = 4;x[8] = 4;x[9] = 4;
-			break;
-	}
-	switch( dir )
-	{
-		case 5:
-			y[0] = 2;y[1] = 2;y[2] = 3;y[3] = 3;y[4] = 3;y[5] = 3;y[6] = 4;y[7] = 4;y[8] = 4;y[9] = 4;
-			break;
-		case 4:
-			y[0] = 5;y[1] = 5;y[2] = 4;y[3] = 4;y[4] = 4;y[5] = 4;y[6] = 3;y[7] = 3;y[8] = 3;y[9] = 3;
-			break;
-		case 2:
-		case 1:
-			y[0] = 3;y[1] = 4;y[2] = 2;y[3] = 3;y[4] = 4;y[5] = 5;y[6] = 1;y[7] = 2;y[8] = 5;y[9] = 6;
-			break;
-	}
-	bP.drawPixel( x[0] , y[0] , RGB255( 77 , 97 , 133 ) );
-	bP.drawPixel( x[1] , y[1] , RGB255( 77 , 97 , 133 ) );
-	bP.drawPixel( x[2] , y[2] , RGB255( 77 , 97 , 133 ) );
-	bP.drawPixel( x[3] , y[3] , RGB255( 107 , 129 , 169 ) );
-	bP.drawPixel( x[4] , y[4] , RGB255( 107 , 129 , 169 ) );
-	bP.drawPixel( x[5] , y[5] , RGB255( 77 , 97 , 133 ) );
-	bP.drawPixel( x[6] , y[6] , RGB255( 148 , 164 , 192 ) );
-	bP.drawPixel( x[7] , y[7] , RGB255( 107 , 129 , 169 ) );
-	bP.drawPixel( x[8] , y[8] , RGB255( 107 , 129 , 169 ) );
-	bP.drawPixel( x[9] , y[9] , RGB255( 148 , 164 , 192 ) );
-	#pragma GCC diagnostic warning "-Wmaybe-uninitialized"
-}
-	
 
 _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style style ) :
 	_gadget( _gadgetType::scrollbar , dim == _dimension::horizontal ? gadgetLength : 8 ,  dim == _dimension::vertical ? gadgetLength : 8  , x , y , style ) ,
@@ -61,30 +13,28 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	anim.setEasing( _animation::_cubic::easeInOut );
 	if( dim == _dimension::horizontal )
 	{
-		this->dragHandle = new _button( 8 , 8 , 8 , 0 , "" , _style::storeData( _u8(dim) + 0 ) );
-		this->higherHandle = new _button( 8 , 8 , this->dimensions.width - 8 , 0 , "" , _style::storeData( _u8(dim) + 2 ) );
-		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _style::storeData( _u8(dim) + 1 ) );
+		this->dragHandle = new _scrollButton( 8 , 8 , 8 , 0 , _scrollButtonType::buttonHandleX );
+		this->higherHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 8 , 0 , _scrollButtonType::buttonRight );
+		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft );
 	}
 	else
 	{
-		this->dragHandle = new _button( 8 , 8 , 0 , 8 , "" , _style::storeData( _u8(dim) + 0 ) );
-		this->higherHandle = new _button( 8 , 8 , 0 , this->dimensions.height - 8 , "" , _style::storeData( _u8(dim) + 1 ) );
-		this->lowerHandle = new _button( 8 , 8 , 0 , 0 , "" , _style::storeData( _u8(dim) + 2 ) );
+		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY );
+		this->higherHandle = new _scrollButton( 8 , 8 , 0 , this->dimensions.height - 8 , _scrollButtonType::buttonBottom );
+		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop );
 	}
 	
 	//! Register Event-Handlers
 	this->registerEventHandler( refresh , refreshHandler );
 	this->registerEventHandler( onResize , resizeHandler );
 	
-	this->dragHandle->registerEventHandler( refresh , refreshHandler );
-	this->dragHandle->registerEventHandler( dragStart , dragHandler );
-	this->dragHandle->registerEventHandler( dragging , dragHandler );
 	this->dragHandle->style.smallDragTrig = true;
 	
-	this->higherHandle->registerEventHandler( refresh , refreshHandler );
-	this->higherHandle->registerEventHandler( onAction , clickHandler );
+	//! Action Handlers
+	this->dragHandle->registerEventHandler( dragStart , dragHandler );
+	this->dragHandle->registerEventHandler( dragging , dragHandler );
 	
-	this->lowerHandle->registerEventHandler( refresh , refreshHandler );
+	this->higherHandle->registerEventHandler( onAction , clickHandler );
 	this->lowerHandle->registerEventHandler( onAction , clickHandler );
 	
 	//! Re-refresh the Buttons with the new event-handlers
@@ -227,199 +177,26 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 	return handled;
 }
 
-_callbackReturn _scrollBar::refreshHandler( _event event ) {
+_callbackReturn _scrollBar::refreshHandler( _event event )
+{
+	// Receive Gadget
+	_scrollBar* that = event.getGadget<_scrollBar>();
 	
-	if( event.getGadget()->getType() == _gadgetType::button )
-	{
-		// Receive Gadget
-		_button* that = event.getGadget<_button>();
-		
-		_bitmapPort bP = that->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
-		else
-			bP.normalizeClippingRects();
-		
-		_length myH = bP.getHeight();
-		_length myW = bP.getWidth();
-		
-		switch( that->style.data ){
-			case 5:
-			case 4:
-			case 2:
-			case 1:
-				if( that->isPressed() )
-					bP.copy( 0 , 0 , btn_background_pressed  );
-				else
-					bP.copy( 0 , 0 , btn_background_released  );
-				drawArrow( bP , that->style.data );
-				break;
-			case 3:
-				if( that->isPressed() )
-				{
-					_bitmap bm = _bitmap( snip_pressed_bmp , 8 , 1 );
-					bP.copyVerticalStretch( 0 , 2 , myH - 4 , bm );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , 0 , 8 , 2 ) );
-					bP.copy( 0 , 0 , btn_background_pressed );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
-					bP.copy( 0 , myH - 8 , btn_background_pressed );
-					
-					if( myH > 9 )
-					{
-						bP.normalizeClippingRects();
-						if( myH < 12 )
-						{
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 60975 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 60975 );
-						}
-						else
-						{
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 60975 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 60975 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 60975 );
-						}
-					}
-				}
-				else
-				{
-					_bitmap bm = _bitmap( snip_released_bmp , 8 , 1 );
-					bP.copyVerticalStretch( 0 , 2 , myH - 4 , bm );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , 0 , 8 , 2 ) );
-					bP.copy( 0 , 0 , btn_background_released );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , myH - 2 , 8 , 2 ) );
-					bP.copy( 0 , myH - 8 , btn_background_released );
-					
-					if( myH > 9 )
-					{
-						bP.normalizeClippingRects();
-						if( myH < 12 )
-						{
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 61074 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 61074 );
-						}
-						else
-						{
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 61074 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 61074 );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 61074 );
-						}
-					}
-				}
-				break;
-			case 0:
-				if( that->isPressed() )
-				{
-					_bitmap bm = _bitmap( snip_pressed_bmp , 1 , 8 );
-					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , bm );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , 0 , 2 , 8 ) );
-					bP.copy( 0 , 0 , btn_background_pressed );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
-					bP.copy( myW - 8 , 0 , btn_background_pressed );
-					
-					if( myW > 9 )
-					{
-						bP.normalizeClippingRects();
-						if( myW < 12 )
-						{
-							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 60975 );
-							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 60975 );
-						}
-						else
-						{
-							bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 60975 );
-							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 60975 );
-							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 60975 );
-						}
-					}
-				}
-				else
-				{
-					_bitmap bm = _bitmap( snip_released_bmp , 1 , 8 );
-					bP.copyHorizontalStretch( 2 , 0 , myW - 4 , bm );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( 0 , 0 , 2 , 8 ) );
-					bP.copy( 0 , 0 , btn_background_released );
-					
-					bP.deleteClippingRects();
-					bP.addClippingRects( _rect( myW - 2 , 0 , 2 , 8 ) );
-					bP.copy( myW - 8 , 0 , btn_background_released );
-					
-					if( myW > 9 )
-					{
-						bP.normalizeClippingRects();
-						if( myW < 12 )
-						{
-							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 61074 );
-							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 61074 );
-						}
-						else
-						{
-							bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 61074 );
-							bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 61074 );
-							bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-							bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 61074 );
-						}
-					}
-				}
-				break;
-			default:
-				break;
-		}
-	}
+	_bitmapPort bP = that->getBitmapPort();
+	
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
-	{
-		// Receive Gadget
-		_scrollBar* that = event.getGadget<_scrollBar>();
-		
-		_bitmapPort bP = that->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
-		else
-			bP.normalizeClippingRects();
-		
-		bP.fill( COLOR_WHITE );
-		
-		// Show Scrollbar-Backgrounds
-		if( that->dim == _dimension::horizontal )
-			bP.copyHorizontalStretch( 8 , 0 , that->dimensions.width - 16 , scroll_bg_vert );
-		else
-			bP.copyVerticalStretch( 0 , 8 , that->dimensions.height - 16 , scroll_bg_horiz );
-		
-	}
+		bP.normalizeClippingRects();
+	
+	bP.fill( COLOR_WHITE );
+	
+	// Show Scrollbar-Backgrounds
+	if( that->dim == _dimension::horizontal )
+		bP.copyHorizontalStretch( 8 , 0 , that->dimensions.width - 16 , scroll_bg_vert );
+	else
+		bP.copyVerticalStretch( 0 , 8 , that->dimensions.height - 16 , scroll_bg_horiz );
+	
 	return use_default;
 }
 

@@ -19,6 +19,8 @@ class _imagegadget : public _gadget {
 		
 		const _bitmap& getImage(){ return this->img; }
 		
+		_bitmap& getModifyableImage(){ return this->img; }
+		
 		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style style = _style());
 };
 

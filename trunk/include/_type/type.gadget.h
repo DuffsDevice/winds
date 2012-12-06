@@ -352,9 +352,12 @@ class _gadget{
 		**/
 		_gadgetType getType(){ return this->type; }
 		
+	protected:
+		
 		/**
-		 * There's no setType, because you can't change the type of a Gadget
+		 * There's no public setType, because you shouldn't change the type of a Gadget
 		**/
+		void setType( _gadgetType type ){ this->type = type; }
 		
 	private:
 		

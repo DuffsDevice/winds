@@ -1,5 +1,7 @@
 #include "func.memory.h"
-#include "malloc.h"
+#include <malloc.h>
+#include <stdio.h>
+
 
 #include <nds/dma.h>
 #include <nds/arm9/cache.h>
@@ -47,4 +49,13 @@ int string2int(const char *p){
         x = -x;
     }
     return x;
+}
+
+string int2string( _int val )
+{
+	char result[32]; // string which will contain the number
+
+	sprintf( result, "%d", val ); // %d makes the result be a decimal integer 
+	
+	return result;
 }

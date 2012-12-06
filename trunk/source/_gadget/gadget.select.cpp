@@ -1,11 +1,10 @@
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.button.h"
 #include "_resource/BMP_ScrollButtons.h"
+#include "_type/type.system.h"
 
-_bitmap* graphic;// = new BMP_ScrollButtonBottom();
-
-_callbackReturn _select::refreshHandler( _event event ){
-	
+_callbackReturn _select::refreshHandler( _event event )
+{
 	// Receive Gadget
 	_select* that = event.getGadget<_select>();
 	
@@ -16,25 +15,23 @@ _callbackReturn _select::refreshHandler( _event event ){
 	else
 		bP.normalizeClippingRects();
 	
-	// Border
-	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 20 , 20 , 20 ) );
+	bP.fill( COLOR_WHITE );
+	
+	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
 	
 	return use_default;
 }
 
 _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style style ) :
-	_gadget( _gadgetType::selectbox , width , height * _system::_runtimeAttributes_->user->sOH + 2 , x , y , style )
+	_scrollArea( width , height * _system::_runtimeAttributes_->user->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , style )
 	, entries( lst )
 	, selected( -1 )
 {
-	// Set Padding
-	this->setPadding( _padding( 1 , 1 , 1 , 1 ) );
+	this->setType( _gadgetType::selectbox );
 	
-	// Register Event - Handlers
 	this->registerEventHandler( refresh , &_select::refreshHandler );
 	
 	// Refresh Me
-	this->refreshBitmap();
 	this->refreshList();
 }
 
@@ -50,31 +47,6 @@ void _select::setSelected( _s32 val )
 				s->setActive( false );
 		this->selected = val;
 	}
-}
-
-_contextMenuEntryList& _select::getList(){
-	return this->entries;
-}
-
-void _select::setList( _contextMenuEntryList lst ){
-	this->entries = lst;
-	this->refreshList();
-}
-
-void _select::setList( _contextMenuEntryList& lst ){
-	this->entries = lst;
-	this->refreshList();
-}
-
-string	_select::getStrValue(){
-	return this->entries[this->selected];
-}
-_s32	_select::getIntValue(){
-	return this->selected;
-}
-
-void	_select::setIntValue( int value ){
-	this->setSelected( value );
 }
 
 void	_select::refreshList()
