@@ -73,7 +73,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 
 void _progressbar::step()
 {
-	_u32 time = _system::getTime();
+	_u32 time = _system::getHighResTime();
 	if( time - this->lastTime > 150 )
 	{
 		if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
@@ -93,7 +93,7 @@ _progressbar::_progressbar( _length width , _length height , _coord x , _coord y
 	, type( type )
 	, value( 70 )
 	, blue( false )
-	, lastTime( _system::getTime() )
+	, lastTime( _system::getHighResTime() )
 {
 	_system::addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
 	

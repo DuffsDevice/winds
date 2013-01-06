@@ -42,10 +42,10 @@ int _lua_event::getGadget( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lu
 int _lua_event::resetParams(lua_State* L){ _event::resetParams(); return 0; }
 
 //! getDestination
-int _lua_event::getDestination(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) ); return 1; }
+int _lua_event::getDestination(lua_State* L){ Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) ); return 1; }
 
 //! getSource
-int _lua_event::getSource(lua_State* L){  Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) ); return 1; }
+int _lua_event::getSource(lua_State* L){ Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) ); return 1; }
 
 //! setDestination
 int _lua_event::setDestination(lua_State* L){ _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setDestination( g->gadget ); return 0; }
@@ -121,16 +121,16 @@ Lunar<_lua_event>::FunctionType _lua_event::methods[] = {
 };
 
 Lunar<_lua_event>::PropertyType _lua_event::properties[] = {
-	LUA_CLASS_ATTR( _lua_event , Type , "type" ),
-	LUA_CLASS_ATTR( _lua_event , Source , "source" ),
-	LUA_CLASS_ATTR( _lua_event , Destination , "destination" ),
-	LUA_CLASS_ATTR( _lua_event , PosX , "posX" ),
-	LUA_CLASS_ATTR( _lua_event , PosY , "posY" ),
-	LUA_CLASS_ATTR( _lua_event , DeltaX , "deltaX" ),
-	LUA_CLASS_ATTR( _lua_event , DeltaY , "deltaY" ),
-	LUA_CLASS_ATTR( _lua_event , KeyCode , "keyCode" ),
-	LUA_CLASS_ATTR( _lua_event , HeldTime , "heldTime" ),
-	LUA_CLASS_ATTR( _lua_event , CurrentKeyCodes , "currentKeyCodes" ),
-	LUA_CLASS_ATTR( _lua_event , DamagedRects , "damagedRects" ),
+	{ "type" , &_lua_event::getType , &_lua_event::setType },
+	{ "source" , &_lua_event::getSource , &_lua_event::setSource },
+	{ "destination" , &_lua_event::getDestination , &_lua_event::setDestination },
+	{ "posX" , &_lua_event::getPosX , &_lua_event::setPosX },
+	{ "posY" , &_lua_event::getPosY , &_lua_event::setPosY },
+	{ "deltaX" , &_lua_event::getDeltaX , &_lua_event::setDeltaX },
+	{ "deltaY" , &_lua_event::getDeltaY , &_lua_event::setDeltaY },
+	{ "keyCode" , &_lua_event::getKeyCode , &_lua_event::setKeyCode },
+	{ "heldTime" , &_lua_event::getHeldTime , &_lua_event::setHeldTime },
+	{ "currentKeyCodes" , &_lua_event::getCurrentKeyCodes , &_lua_event::setCurrentKeyCodes },
+	{ "damagedRects" , &_lua_event::getDamagedRects , &_lua_event::setDamagedRects },
 	LUA_CLASS_ATTR_END
 };

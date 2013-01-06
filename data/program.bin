@@ -1,49 +1,54 @@
-local w
-local b
-local c
-local created = false
-local ende = 0
-local select
+system.require("_window")
+system.require("_button")
+system.require("_checkbox")
+system.require("_select")
+system.require("_gadget")
+system.require("_direntry")
+system.require("_event")
+
+local w;
+local w2;
+local b;
+local c;
+local created = false;
+local ende = 0;
+local select;
 
 function init()
 	-- create Gadgets
-	w = _window( 150 , 80 , 20 , 20 , "Neues Fenster" )
-	b = _button( 30 , 20 , 20 , 20 , "Click!" )
-	c = _checkbox( 10 , 11 )
-	select = _select( 40 , 7 , 40 )
+	w = _window( 150 , 80 , 20 , 20 , "Neues Fenster" );
+	c = _checkbox( 10 , 11 );
+	b = _button( 50,10,"Tehhjwsx" );
+	select = _select( 40 , 2 , 40 , 40 );
+	select.addIndex( 0 , "Hello" );
 
 	-- construct the Tree
-	w:addChild( b )
-	w:addChild( c )
-	w:addChild( select )
-	--System.registerWindow( w )
+	w.addChild( c );
+	w.addChild( select );
+	w.addChild( b );
+	system.addChild( w );
 
 	-- register Handler-Functions
-	w:registerEventHandler( "dragging" , dragHandler )
-	w:registerEventHandler( "dragStart" , dragHandler )
-	b:registerEventHandler( "mouseClick" , clickHandler )
-
-	-- customize them
-	b:setAutoSelect()
+	w.registerEventHandler( "dragging" , dragHandler );
+	w.registerEventHandler( "dragStart" , dragHandler );
+	b.registerEventHandler( "onAction" , clickHandler );
 	
-	local dir = _direntry("/fat.h")
-	dir:create()
+	--local dir = _direntry("/fat.h")
+	--dir.create()
 
 end
 
 -- dragHandler to display Dragging-Params in window-title
 function dragHandler( e )
-	local dest = e:getArgs():getDestination():toDerived()
-	if e:getType() == "dragging" then
-		dest:setTitle( string.format( "%i - Delta: %i" , e:getArgs():getPosX() , e:getArgs():getDeltaX() ) )
-	elseif e:getType() == "dragStart" then
-		--dest:handleEventDefault( e )
+	local dest = e.destination
+	if e.type == "dragging" then
+		dest.strValue = string.format( "%i - Delta. %i" , e.posX , e.deltaX )
 	end
 	return "handled"
 end
 
 function main()
-	--w:setTitle( string.format( "%i - Delta: %i" , math.random( 400 ) , 23544124 ) )
+	--w.strValue = string.format( "%i - Delta. %i" , math.random( 400 ) , 23544124 )
 	return ende
 end
 
@@ -51,20 +56,20 @@ end
 function clickHandler()
 	if created then
 		-- ready for garbage collection
-		--b2:delete()
+		--b2.delete()
 		--b2 = nil
 	end
 	b2 = _button( math.random( 40 ) , 45 , " rfdv" )
 	---b2 = _button( 40 , 10 , "ewf" )
-	w:addChild( b2 )
-	b2:registerEventHandler( "mouseClick" , setValue )
-	select:addIndex( -1 , "Hello" )
+	w.addChild( b2 )
+	b2.registerEventHandler( "mouseClick" , setValue )
+	select.addIndex( -1 , "Hello" )
 	created = true
 	return "handled"
 end
 
 function setValue()
-	c:setIntValue( math.random( 0 , 2 ) )
-	ende = 1
+	c.intValue = math.random( 0 , 2 );
+	system.exit()
 	return "handled"
 end

@@ -211,7 +211,7 @@ Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 };
 
 Lunar<_lua_bitmap>::PropertyType _lua_bitmap::properties[] = {
-	LUA_CLASS_ATTR(_lua_bitmap, Width , "width" ),
-	LUA_CLASS_ATTR(_lua_bitmap, Height , "height" ),
+	{ "width" , &_lua_bitmap::getWidth , &_lua_bitmap::setWidth },
+	{ "height" , &_lua_bitmap::getHeight , &_lua_bitmap::setHeight },
 	LUA_CLASS_ATTR_END
 };

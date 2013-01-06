@@ -21,6 +21,6 @@ Lunar<_lua_checkbox>::FunctionType _lua_checkbox::methods[] = {
 Lunar<_lua_checkbox>::PropertyType _lua_checkbox::properties[] = {
 	GADGET_ATTRS( _lua_checkbox ),
 	//! _interface_input (only these two are used)
-	LUA_CLASS_ATTR( _lua_checkbox , IntValue , "intValue" ),
+	{ "intValue" , &_lua_checkbox::getIntValue , &_lua_checkbox::setIntValue },
 	LUA_CLASS_ATTR_END
 };

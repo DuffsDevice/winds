@@ -9,6 +9,7 @@
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.select.h"
+#include "_type/type.system.h"
 
 map<_gadget*,int> garbageDeterminer;
 
@@ -18,29 +19,47 @@ map<_gadget*,int> garbageDeterminer;
 
 _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 	
-	if( luaL_is( L , 1 , "_window" ) )
-		return Lunar<_lua_window>::check( L , narg ); 
-	else if( luaL_is( L , 1 , "_button" ) )
-		return Lunar<_lua_button>::check( L , narg ); 
-	else if( luaL_is( L , 1 , "_checkbox" ) )
-		return Lunar<_lua_checkbox>::check( L , narg ); 
-	else if( luaL_is( L , 1 , "_select" ) )
-		return Lunar<_lua_select>::check( L , narg ); 
-	else if( luaL_is( L , 1 , "_textbox" ) )
-		return Lunar<_lua_textbox>::check( L , narg ); 
-	return Lunar<_lua_gadget>::check( L , narg ); 
+	_lua_gadget* tmp;
+
+	if( ( tmp = Lunar<_lua_window>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_button>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_checkbox>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_select>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_textbox>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	return Lunar<_lua_gadget>::check( L , 2 );
 }
 
-_lua_gadget::_lua_gadget( _gadget* w ){ this->gadget = w; garbageDeterminer[this->gadget]++; }
+_lua_gadget::_lua_gadget( _gadget* w )
+{
+	this->gadget = w;
+	if( w )
+		garbageDeterminer[this->gadget]++;
+}
 
-void _lua_gadget::setGadget( _gadget* w ){ this->gadget = w; garbageDeterminer[this->gadget]++; }
+void _lua_gadget::setGadget( _gadget* w ){
+	// Unregister current gadget
+	if( this->gadget )
+		garbageDeterminer[this->gadget]--;
+	
+	// Register new gadget
+	this->gadget = w;
+	garbageDeterminer[w]++;
+}
 
 //! Lua-Ctor
-_lua_gadget::_lua_gadget( lua_State* L ){ this->gadget = new _gadget( _gadgetType::_plain , luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); }
+_lua_gadget::_lua_gadget( lua_State* L )
+{
+	this->gadget = new _gadget( _gadgetType::_plain , luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) );
+}
 
 //! Lua-Dtor
 _lua_gadget::~_lua_gadget()
-{ 
+{
 	if( this->gadget != nullptr )
 	{
 		auto it = garbageDeterminer.find( this->gadget );
@@ -58,24 +77,6 @@ _lua_gadget::~_lua_gadget()
 			garbageDeterminer.erase(this->gadget);
 		}
 	} 
-}
-
-//! Lua-Dtor
-int _lua_gadget::_delete( lua_State* L)
-{
-	if( this->gadget != nullptr )
-	{
-		auto it = garbageDeterminer.find( this->gadget );
-		
-		// Check for non existence->must already be deleted!
-		if( it == garbageDeterminer.end() )
-			return 0;
-			
-		//printf("%p had references: %d\n",this->gadget,(*it).second);
-		delete this->gadget;
-		garbageDeterminer.erase(this->gadget);
-	}
-	return 0;
 }
 
 //! bubbleEvent
@@ -121,6 +122,9 @@ int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->
 //! handleEvent
 int _lua_gadget::handleEvent( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEvent( *e ) ].c_str() ); return 1; }
 
+//! handleEventNormal
+int _lua_gadget::handleEventNormal( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEventNormal( *e ) ].c_str() ); return 1; }
+
 //! handleEventDefault
 int _lua_gadget::handleEventDefault( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEventDefault( *e ) ].c_str() ); return 1; }
 
@@ -164,7 +168,7 @@ int _lua_gadget::removeChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = t
 int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( luaL_optint( L , 1 , 0 ) ); return 0; }
 
 //! addChild
-int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->addChild( g->gadget ); return 0; }
+int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = this->getLuaGadget( L , 1 ); if( g ) this->gadget->addChild( g->gadget ); return 0; }
 
 //! addEnhancedChild
 int _lua_gadget::addEnhancedChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->addEnhancedChild( g->gadget ); return 0; }

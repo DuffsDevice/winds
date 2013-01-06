@@ -3,11 +3,8 @@
 #define _WIN_G_LABEL_
 
 #include "_type/type.gadget.h"
-#include "interface.input.h"
 
-using namespace std;
-
-class _label : public _gadget , public _interface_input {
+class _label : public _gadget {
 	
 	protected:
 	
@@ -26,6 +23,13 @@ class _label : public _gadget , public _interface_input {
 		_font* 	font;
 		_u8		fontSize;
 		
+		//! Alignment
+		_align	align;
+		_valign vAlign;
+		
+		//! String to be displayed
+		string 	strValue;
+		
 		//! Method to cumpute Space-Requirements
 		void computeSize();
 		
@@ -36,6 +40,9 @@ class _label : public _gadget , public _interface_input {
 		
 		//! Set the Text to be displayed
 		void setStrValue( string val );
+		
+		//! Get the Text of the label
+		string getStrValue(){ return this->strValue; }
 		
 		//! Set Text Color
 		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
@@ -55,11 +62,17 @@ class _label : public _gadget , public _interface_input {
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }
 		
-		//! Refresh on Align-setting
-		void setAlign( _align align ){ _interface_input::setAlign( align ); this->bubbleRefresh( true ); }
+		//! Align-setting
+		void setAlign( _align align ){ this->align = align; this->bubbleRefresh( true ); }
 		
-		//! Refresh on Align-setting
-		void setVAlign( _valign vAlign ){ _interface_input::setVAlign( vAlign ); this->bubbleRefresh( true ); }
+		//! Vertical-Align-setting
+		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->bubbleRefresh( true ); }
+		
+		//! Get Alignment of the Label
+		_align getAlign(){ return this->align; }
+		
+		//! Get Vertical Alignment of the Label
+		_valign getVAlign(){ return this->vAlign; }
 		
 		//! Set Text Font
 		void setFont( _font* ft );

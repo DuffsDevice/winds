@@ -266,7 +266,7 @@ _callbackReturn _keyboard::keyHandler( _event event )
 		
 		for( _u8 i = 0 ; i < 46 ; i++ )
 		{
-			that->buttons[i]->setTitle( _system::_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
+			that->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
 			that->buttons[i]->setKey( _system::_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
 		}
 	}

@@ -10,7 +10,7 @@
 /**
  * Proxy Classes
 **/
-class _lua_select : public _lua_gadget , public _lua_interface_input
+class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
 {	
 	
 	public:
@@ -24,6 +24,9 @@ class _lua_select : public _lua_gadget , public _lua_interface_input
 		
 		//! removeIndex
 		int removeIndex( lua_State* L );
+		
+		//! clearList
+		int clearList( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

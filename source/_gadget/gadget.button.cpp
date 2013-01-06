@@ -18,9 +18,6 @@ _callbackReturn _button::resizeHandler( _event event )
 {
 	_button* that = event.getGadget<_button>();
 	
-	if( !that->label )
-		return handled;
-	
 	that->label->setWidth( max( _length(1) , that->getWidth() - 2 ) );
 	that->label->setHeight( max( _length(1) , that->getHeight() - 2 ) );
 	
@@ -29,7 +26,7 @@ _callbackReturn _button::resizeHandler( _event event )
 
 void _button::computeSize()
 {
-	if( !this->label || !this->label->font || !this->label->font->valid() )
+	if( !this->label->font || !this->label->font->valid() )
 		return;
 	
 	// Compute Height
@@ -38,7 +35,7 @@ void _button::computeSize()
 	
 	// Compute Width
 	if( this->computeW == 2 && ( this->computeW = 1 ) )
-		this->setWidth( max( 28 , 7 + this->label->font->getStringWidth( this->getTitle() ) ) );
+		this->setWidth( max( 28 , 7 + this->label->font->getStringWidth( this->getStrValue() ) ) );
 }
 
 _callbackReturn _button::refreshHandler( _event event )
@@ -206,7 +203,6 @@ void _button::setHeight( _u8 height ){
 
 _button::_button( _length width , _length height , _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , width , height , x , y , style )
-	, _interface_input( text )
 	, autoSelect( false )
 	, pressed( false )
 	, computeW( 0 )
@@ -218,7 +214,6 @@ _button::_button( _length width , _length height , _coord x , _coord y , string 
 
 _button::_button( _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , 32 , 9 , x , y , style )
-	, _interface_input( text )
 	, autoSelect( false )
 	, pressed( false )
 	, computeW( 2 )

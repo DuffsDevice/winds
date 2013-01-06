@@ -52,9 +52,9 @@ Lunar<_lua_textbox>::FunctionType _lua_textbox::methods[] = {
 
 Lunar<_lua_textbox>::PropertyType _lua_textbox::properties[] = {
 	GADGET_ATTRS( _lua_textbox ),
-	LUA_CLASS_ATTR( _lua_textbox , StrValue , "strValue" ),
-	LUA_CLASS_ATTR( _lua_textbox , Font , "font" ),
-	LUA_CLASS_ATTR( _lua_textbox , BgColor , "bgColor" ),
-	LUA_CLASS_ATTR( _lua_textbox , Color , "color" ),
+	{ "strValue" , &_lua_textbox::getStrValue , &_lua_textbox::setStrValue },
+	{ "color" , &_lua_textbox::getColor , &_lua_textbox::setColor },
+	{ "bgColor" , &_lua_textbox::getBgColor , &_lua_textbox::setBgColor },
+	{ "font" , &_lua_textbox::getFont , &_lua_textbox::setFont },
 	LUA_CLASS_ATTR_END
 };

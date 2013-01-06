@@ -10,7 +10,6 @@ void _textbox::getFontPosition( _coord& x , _coord& y , _textbox* box )
 			x = ( box->getWidth() >> 1 ) - ( ( box->font->getStringWidth( box->getStrValue() ) - 1 ) >> 1 );
 			break;
 		case _align::left:
-		case _align::optimize:
 			x = 3;
 			break;
 		case _align::right:

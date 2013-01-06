@@ -206,7 +206,7 @@ Lunar<_lua_bitmapPort>::FunctionType _lua_bitmapPort::methods[] = {
 };
 
 Lunar<_lua_bitmapPort>::PropertyType _lua_bitmapPort::properties[] = {
-	LUA_CLASS_ATTR_RD(_lua_bitmapPort, Width , "width" ),
-	LUA_CLASS_ATTR_RD(_lua_bitmapPort, Height , "height" ),
+	{ "width" , &_lua_bitmapPort::getWidth , nullptr },
+	{ "height" , &_lua_bitmapPort::getHeight , nullptr },
 	LUA_CLASS_ATTR_END
 };

@@ -95,7 +95,8 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	if ((clipY2 < y0) ||
 		(clipY1 > y0 + this->height - 1 ) ||
 		(x0 > clipX2) ||
-		(x0 + pixelsPerRow - 1 < clipX1)) return 0;
+		(x0 + pixelsPerRow - 1 < clipX1))
+			return pixelsPerRow;
 
 	// If no colour is specified, default to black
 	if (!color) color = COLOR_BLACK;

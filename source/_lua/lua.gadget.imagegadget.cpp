@@ -28,6 +28,6 @@ Lunar<_lua_imagegadget>::FunctionType _lua_imagegadget::methods[] = {
 Lunar<_lua_imagegadget>::PropertyType _lua_imagegadget::properties[] = {
 	GADGET_ATTRS( _lua_imagegadget ),
 	//! _interface_input (only these two are used)
-	LUA_CLASS_ATTR( _lua_imagegadget , Image , "image" ),
+	{ "image" , &_lua_imagegadget::getImage , &_lua_imagegadget::setImage },
 	LUA_CLASS_ATTR_END
 };

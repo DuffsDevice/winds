@@ -174,8 +174,7 @@ _callbackReturn _window::closeHandler( _event event )
 }
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _style style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style ),
-	_interface_input( title )
+	_gadget( _gadgetType::window , width , height , x , y , style )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	

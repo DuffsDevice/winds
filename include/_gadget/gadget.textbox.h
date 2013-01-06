@@ -4,7 +4,6 @@
 
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.label.h"
-#include "interface.input.h"
 
 class _textbox : public _label {
 	

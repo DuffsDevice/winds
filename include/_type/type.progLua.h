@@ -8,7 +8,6 @@
 //! Program
 #include "_type/type.program.h"
 
-
 class _progLua : public _program
 {
 	

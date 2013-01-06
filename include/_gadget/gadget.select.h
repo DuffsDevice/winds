@@ -7,7 +7,7 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.contextMenu.h"
 
-class _select : public _scrollArea , public _interface_input {
+class _select : public _scrollArea {
 	
 	private:
 		
@@ -39,6 +39,6 @@ class _select : public _scrollArea , public _interface_input {
 			this->refreshList();
 		}
 		
-		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { -1 , "" } } /* Empty List */ ) , _style style = _style() );
+		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { 0 , "" } } /* Empty List */ ) , _style style = _style() );
 };
 #endif

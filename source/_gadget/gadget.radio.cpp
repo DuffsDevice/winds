@@ -76,12 +76,10 @@ _callbackReturn _radio::mouseHandler( _event event )
 
 _radio::_radio( _coord x , _coord y , _radiogroup* group , _style style ) :
 	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
-	, _interface_input( "" )
 	, pressed( false )
+	, intValue( 0 )
 	, radiogroup( group )
-{
-	this->setIntValue(0);
-	
+{	
 	this->radiogroup->addRadio( this );
 	
 	// Register my handler as the default Refresh-Handler
