@@ -2,14 +2,10 @@
 #ifndef _WIN_LUASCROLLAREA_
 #define _WIN_LUASCROLLAREA_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
-#include "_lua/lua.class.gadget.h"
 #include "_lua/lunar.h"
+#include "_lua/lua.class.gadget.h"
 #include "_gadget/gadget.scrollArea.h"
+
 
 /**
  * Proxy Classes

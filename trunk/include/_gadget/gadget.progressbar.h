@@ -21,7 +21,7 @@ class _progressbar : public _gadget {
 	public:
 	
 		//! Set Receiver of Key-Events
-		void setIntValue( _u8 value ){
+		void setIntValue( _u8 value ){ // 0 - 127
 			if( value != this->value )
 			{
 				this->value = value;
@@ -29,8 +29,13 @@ class _progressbar : public _gadget {
 			}
 		}
 		
+		//! getIntValue
+		_u8 getIntValue(){ // 0 - 127
+			return this->value = value;
+		}
+		
 		//! Whether the bar shows "progress" (=false) or shows the actual state (=true)
-		void setType( bool type )
+		void setBarType( bool type )
 		{
 			if( type != this->type )
 			{
@@ -39,7 +44,21 @@ class _progressbar : public _gadget {
 			}
 		}
 		
-		void setCol( bool blue ){ this->blue = blue; }
+		//! Get Scrollbar-Type
+		bool getBarType(){ return this->type; }
+		
+		//! set Color Scheme ( true for the blue theme used at the bootup )
+		void setColorScheme( bool blue )
+		{
+			if( this->blue != blue )
+			{
+				this->blue = blue;
+				this->bubbleRefresh( true );
+			}
+		}
+		
+		//! get Color Scheme
+		bool getColorScheme(){ return this->blue; }
 		
 		//! Constructor
 		_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );

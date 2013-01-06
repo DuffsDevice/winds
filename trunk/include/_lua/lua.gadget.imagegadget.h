@@ -16,10 +16,13 @@ class _lua_imagegadget : public _lua_gadget {
 		
 		_lua_imagegadget( lua_State* L );
 		
-		_lua_imagegadget( _imagegadget* c ) : _lua_gadget( c ) { }
+		_lua_imagegadget( _imagegadget* c ) : _lua_gadget( c )
+		{ }
 		
+		//! getImage
 		int getImage( lua_State* L );
 		
+		//! getImage
 		int setImage( lua_State* L );
 		
 		

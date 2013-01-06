@@ -6,10 +6,12 @@
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.button.h"
+#include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.select.h"
+#include "_lua/lua.gadget.radio.h"
 #include "_type/type.system.h"
 
 map<_gadget*,int> garbageDeterminer;
@@ -33,6 +35,10 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 	if( ( tmp = Lunar<_lua_textbox>::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	if( ( tmp = Lunar<_lua_counter>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_progressbar>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_radio>::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	return Lunar<_lua_gadget>::check( L , 2 );
 }
@@ -98,7 +104,7 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) ); return 1; }
 
 //! getScreen
-int _lua_gadget::getScreen( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getScreen() ) ); return 1; }
+int _lua_gadget::getScreen( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getScreen() ) ); return 1; }
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
@@ -150,7 +156,7 @@ int _lua_gadget::moveTo(lua_State* L){ this->gadget->moveTo( luaL_checkint( L , 
 int _lua_gadget::moveRelative(lua_State* L){ this->gadget->moveRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 
 //! getParent
-int _lua_gadget::getParent( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() ) ); return 1; }
+int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() ) ); return 1; }
 
 //! setParent
 int _lua_gadget::setParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->setParent( g->gadget ); return 0; }

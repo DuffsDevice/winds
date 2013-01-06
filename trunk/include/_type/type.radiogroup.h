@@ -18,7 +18,7 @@ class _radiogroup{
 		 * Add a _radio to the list
 		 * @return the Index to identify the radio later
 		**/
-		_s32 addRadio( _radio* radio );
+		void addRadio( _radio* radio , _s32 assocValue );
 		
 		void removeRadio( _radio* radio );
 		

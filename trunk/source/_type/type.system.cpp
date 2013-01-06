@@ -185,12 +185,12 @@ void _system::processEvents()
 	{
 		gadget = (_gadget*)event.getDestination();
 		
-		int t = cpuGetTiming();
+		//int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
-		printf("%d\n",cpuGetTiming()-t);
+		//printf("%d\n",cpuGetTiming()-t);
 	}
 
 	// Erase all Events
