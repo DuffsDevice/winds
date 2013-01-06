@@ -466,6 +466,11 @@ void _systemController::loginPage()
 	
 	_direntry entry = _direntry("/HelloWorld.lua");
 	entry.execute();
+	
+	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
+	
+	_direntry entry = _direntry("/HelloWorld.lua");
+	entry.execute();
 }
 
 void _systemController::bootupPage()

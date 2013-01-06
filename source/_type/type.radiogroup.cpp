@@ -10,22 +10,34 @@ void _radiogroup::removeRadio( _radio* radio )
 			break;
 	
 	if( iter != this->radios.end() )
+	{
 		this->radios.erase( iter );
+		radio->radiogroup = nullptr;
+	}
 }
 
-_s32 _radiogroup::addRadio( _radio* radio )
-{	
-	// Cache the "end()" ->faster
-	auto end = radios.end();
+void _radiogroup::addRadio( _radio* radio , _s32 assocValue )
+{
+	if( !radio )
+		return;
 	
-	int i = 0;
+	if( radio->radiogroup )
+		radio->radiogroup->removeRadio( radio );
 	
-	// The "IntValue" is basically the index of the radio in the list
-	for( auto iter = radios.begin() ; iter != end ; iter++ , i++ );
+	if( assocValue != -1 )
+		// Cache the "end()" ->faster
+		this->radios[assocValue] = radio;
+	else
+	{
+		int i = -1;
+		// Look for ne entry
+		while( !this->radios.count( ++i ) );
+		
+		// Push new entry
+		this->radios[i] = radio;
+	}
 	
-	this->radios[i] = radio;
-	
-	return i;
+	radio->radiogroup = this;
 }
 
 void _radiogroup::enableRadio( _radio* radio )
@@ -45,11 +57,11 @@ void _radiogroup::setIntValue( _s32 value )
 {
 	_radio* rd = this->radios[value];
 	
-	if( !rd )
-		return;
-	
 	if( this->activeRadio )
 		this->activeRadio->setIntValue( 0 );
+	
+	if( !rd )
+		return;
 	
 	this->activeRadio = rd;
 	this->activeRadio->setIntValue( 1 );

@@ -62,8 +62,11 @@ _callbackReturn _radio::mouseHandler( _event event )
 			that->pressed = true;
 	else if( that->pressed && event.getType() == mouseUp )
 	{
+		// Ensure it is not check already
 		if( !that->getIntValue() )
+		{
 			that->radiogroup->enableRadio( that );
+		}
 		that->triggerEvent( _event( onChange ) );
 		that->pressed = false;
 	}
@@ -74,13 +77,14 @@ _callbackReturn _radio::mouseHandler( _event event )
 	return handled;
 }
 
-_radio::_radio( _coord x , _coord y , _radiogroup* group , _style style ) :
+_radio::_radio( _coord x , _coord y , _radiogroup* group , _s32 assocValue , _style style ) :
 	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
 	, pressed( false )
 	, intValue( 0 )
 	, radiogroup( group )
-{	
-	this->radiogroup->addRadio( this );
+{
+	if( group )
+		group->addRadio( this , assocValue );
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );

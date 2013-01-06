@@ -35,6 +35,13 @@ class _progLua : public _program
 		static int lua_RGB_GETB( lua_State* L );
 		static int lua_RGB_GETA( lua_State* L );
 		
+		static int lua_keyboardIsRegistered( lua_State* L );
+		static int lua_keyboardIsOpened( lua_State* L );
+		static int lua_keyboardOpen( lua_State* L );
+		static int lua_keyboardClose( lua_State* L );
+		static int lua_keyboardGetDestination( lua_State* L );
+		static int lua_keyboardSetDestination( lua_State* L );
+		
 		// system.exit() method
 		static int lua_exit( lua_State* L );
 		

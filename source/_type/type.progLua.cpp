@@ -16,15 +16,19 @@
 #include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.event.h"
-#include "_lua/lua.gadget.window.h"
-#include "_lua/lua.gadget.label.h"
-#include "_lua/lua.gadget.imagegadget.h"
-#include "_lua/lua.gadget.scrollArea.h"
+#include "_lua/lua.class.radiogroup.h"
+
 #include "_lua/lua.gadget.button.h"
-#include "_lua/lua.gadget.counter.h"
-#include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.checkbox.h"
+#include "_lua/lua.gadget.counter.h"
+#include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.label.h"
+#include "_lua/lua.gadget.scrollArea.h"
+#include "_lua/lua.gadget.progressbar.h"
+#include "_lua/lua.gadget.radio.h"
+#include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.textbox.h"
+#include "_lua/lua.gadget.window.h"
 
 bool luaL_checkboolean( lua_State* L , int narg )
 {
@@ -61,6 +65,19 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
+int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _system::_keyboard_ != nullptr ); return 1; }
+int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; lua_pushboolean( L , _system::_keyboard_->isOpened() ); return 1; }
+int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
+int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
+int _progLua::lua_keyboardGetDestination( lua_State* L ){ if( !_system::_keyboard_ || !_system::_keyboard_->getDestination() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_keyboard_->getDestination() ) ); return 1; }
+int _progLua::lua_keyboardSetDestination( lua_State* L ){
+	_lua_gadget* g;
+	if( !_system::_keyboard_ || ( g = _lua_gadget::getLuaGadget( L , 1 ) ) )
+		return 0;
+	_system::_keyboard_->setDestination( g->gadget );
+	return 0;
+}
+
 int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
 int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( new _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
 int _progLua::lua_terminateTimer( lua_State* L ){ _system::terminateTimer( _luaCallback( L , 1 ) ); return 0; }
@@ -87,6 +104,7 @@ int _progLua::lua_requirePackage( lua_State* L )
 	else if( name == "_direntry" )		Lunar<_lua_direntry>::Register( L );
 	else if( name == "_area" ) 			Lunar<_lua_area>::Register( L );
 	else if( name == "_bitmap" ) 		Lunar<_lua_bitmap>::Register( L );
+	else if( name == "_radiogroup" ) 	Lunar<_lua_radiogroup>::Register( L );
 	else if( name == "_bitmapPort" )	Lunar<_lua_bitmapPort>::Register( L );
 	else if( name == "_event" ) 		Lunar<_lua_event>::Register( L );
 	else if( name == "_gadget" ) 		Lunar<_lua_gadget>::Register( L );
@@ -99,7 +117,9 @@ int _progLua::lua_requirePackage( lua_State* L )
 	else if( name == "_select" ) 		Lunar<_lua_select>::Register( L );
 	else if( name == "_checkbox" ) 		Lunar<_lua_checkbox>::Register( L );
 	else if( name == "_label" ) 		Lunar<_lua_label>::Register( L );
+	else if( name == "_radio" ) 		Lunar<_lua_radio>::Register( L );
 	else if( name == "_scrollArea" )	Lunar<_lua_scrollArea>::Register( L );
+	else if( name == "_progressbar" )	Lunar<_lua_progressbar>::Register( L );
 	else if( name == "_textbox" ) 		Lunar<_lua_textbox>::Register( L );
 	else{
 		// Return false
@@ -127,6 +147,12 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"require",					lua_requirePackage},
 	{"executeTimer",			lua_executeTimer},
 	{"terminateTimer",			lua_terminateTimer},
+	{"keyboardIsRegistered",	lua_keyboardIsRegistered},
+	{"keyboardIsOpened",		lua_keyboardIsOpened},
+	{"keyboardOpen",			lua_keyboardOpen},
+	{"keyboardClose",			lua_keyboardClose},
+	{"keyboardGetDestination",	lua_keyboardGetDestination},
+	{"keyboardSetDestination",	lua_keyboardSetDestination},
 	{ NULL , NULL }
 };
 
@@ -155,6 +181,7 @@ _progLua::_progLua( string prog ) :
 		lua_settable( this->state , -3 );
 	}
 	
+	//! Generate exit function
 	lua_pushstring( this->state , "exit" );
 	lua_pushlightuserdata( this->state , this );
 	lua_pushcclosure( this->state , lua_exit , 1 );

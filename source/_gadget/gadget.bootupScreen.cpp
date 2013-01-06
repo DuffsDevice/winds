@@ -29,7 +29,7 @@ _bootupScreen::_bootupScreen( _u8 bgId , _style style ) :
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	
-	bar->setCol( true );
+	bar->setColorScheme( true );
 	this->addChild( bar );
 	
 	//! Refresh me

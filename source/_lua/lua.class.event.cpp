@@ -36,16 +36,16 @@ int _lua_event::setType( lua_State* L ){ _event::setType( string2eventType[ luaL
 int _lua_event::getType( lua_State* L ){ lua_pushstring( L , eventType2string[ _event::getType() ].c_str() ); return 1; }
 
 //! getGadget
-int _lua_event::getGadget( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _lua_gadget( _event::getGadget() ) ); return 1; }
+int _lua_event::getGadget( lua_State* L ){ if( !_event::getGadget() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _event::getGadget() ) ); return 1; }
 
 //! resetParams
 int _lua_event::resetParams(lua_State* L){ _event::resetParams(); return 0; }
 
 //! getDestination
-int _lua_event::getDestination(lua_State* L){ Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) ); return 1; }
+int _lua_event::getDestination(lua_State* L){ if( !_event::getDestination() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) ); return 1; }
 
 //! getSource
-int _lua_event::getSource(lua_State* L){ Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) ); return 1; }
+int _lua_event::getSource(lua_State* L){ if( !_event::getSource() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) ); return 1; }
 
 //! setDestination
 int _lua_event::setDestination(lua_State* L){ _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setDestination( g->gadget ); return 0; }
