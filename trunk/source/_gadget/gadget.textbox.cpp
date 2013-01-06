@@ -159,7 +159,8 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	
 	_textbox::getFontPosition( x , y , that );
 	
-	position = max( x , (int)position );
+	// Ensure you cannot have the iterator before the first letter
+	position = max( x , position );
 	
 	for( ; x <= position + 2 && pos <= strLen; pos++ )
 		x += that->font->getCharacterWidth( str[pos] ) + 1;

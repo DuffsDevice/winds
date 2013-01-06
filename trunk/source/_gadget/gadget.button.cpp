@@ -18,8 +18,8 @@ _callbackReturn _button::resizeHandler( _event event )
 {
 	_button* that = event.getGadget<_button>();
 	
-	that->label->setWidth( max( _length(1) , that->getWidth() - 2 ) );
-	that->label->setHeight( max( _length(1) , that->getHeight() - 2 ) );
+	that->label->setWidth( max( 1 , that->getWidth() - 2 ) );
+	that->label->setHeight( max( 1 , that->getHeight() - 2 ) );
 	
 	return handled;
 }
@@ -59,9 +59,9 @@ _callbackReturn _button::refreshHandler( _event event )
 		bP.fill( RGB( 25 , 25 , 25 ) );
 		
 		// Inner Shadow
-		bP.drawHorizontalLine( 1 	, 1 	  , myW - 3 , RGB( 20 , 20 , 20 ) );
-		bP.drawHorizontalLine( 2 	, myH - 2 , myW - 4 , RGB( 29 , 29 , 28 ) );
-		bP.drawVerticalLine( 1 , 2 	  , myH - 4 , RGB( 20 , 20 , 20 ) );
+		bP.drawHorizontalLine( 1 , 1 , myW - 3 , RGB( 20 , 20 , 20 ) );
+		bP.drawHorizontalLine( 2 , myH - 2 , myW - 4 , RGB( 29 , 29 , 28 ) );
+		bP.drawVerticalLine( 1 , 2 , myH - 4 , RGB( 20 , 20 , 20 ) );
 	}
 	else
 	{
@@ -72,7 +72,7 @@ _callbackReturn _button::refreshHandler( _event event )
 		{
 			// Inner Shadow
 			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , RGB( 18 , 22 , 31 ) );
-			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , RGB( 24 , 28 , 31 ) );
+			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , RGB( 26 , 29 , 31 ) );
 		}
 		else
 		{
@@ -192,7 +192,7 @@ void _button::setWidth( _u8 width ){
 	if( width <= 0 ){ this->computeW = 2; this->computeSize(); return; }
 	this->computeW = 0; _gadget::setWidth( width );
 }
-void _button::setDimensions( _rect dim ){ 
+void _button::setDimensions( _rect dim ){
 	if( !dim.isValid() ){ this->computeH = 2; this->computeW = 2; this->computeSize(); return; }
 	this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim );
 }

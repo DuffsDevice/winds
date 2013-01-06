@@ -47,6 +47,27 @@ i = Precedente
 s = Anterior
 f = Précédent
 
+[lbl_ok]
+e = Submit
+g = Bestätigen
+i = OK
+s = Confirmar
+f = OK
+
+[lbl_cancel]
+e = Cancel
+g = Abbrechen
+i = Annula
+s = Confirmar
+f = Annuler
+
+[lbl_dismiss]
+e = Dismiss
+g = Ignorieren
+i = 
+s =
+f =
+
 [lbl_to_continue]
 e = To Continue, click [Next]
 g = Zum fortfahren, [Weiter] klicken
@@ -90,8 +111,11 @@ s = Ajuste el reloj del sistema:
 f = Réglez l'horloge système:
 
 [txt_system_clock_auto_fetch_1]
-e = Reference time from the Internet (Needs WiFi)
-g = Uhrzeit über das Internet bestimmen (Benötigt WiFi)
+e = Reference time from the Internet
+g = Uhrzeit über das Internet bestimmen
+i = 
+s = 
+f = 
 i = 
 s = 
 f = 

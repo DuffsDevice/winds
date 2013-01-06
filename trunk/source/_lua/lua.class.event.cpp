@@ -11,23 +11,9 @@ _lua_event::_lua_event( _event e ) :
 { }
 
 // Lua-Ctor...
-_lua_event::_lua_event( lua_State* L ) : _event( ){
-	// _event( type , args )
-	if( lua_isstring( L , 1 ) )
-		_event::setType( string2eventType[ luaL_checkstring( L , 1 ) ] );
-	// _event( src* , type , args )
-	else if( lua_isuserdata( L , 1 ) )
-	{
-		_lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 );
-		
-		if( g )
-			_event::setSource( g->gadget );
-		
-		// Is a gadgetEventType?
-		if( lua_isstring( L , 2 ) )
-			_event::setType( string2eventType[ luaL_checkstring( L , 2 ) ] );
-	}
-}
+_lua_event::_lua_event( lua_State* L ) : 
+	_event( string2eventType[ luaL_optstring( L , 1 , "_none_" ) ] )
+{ }
 
 //! setType
 int _lua_event::setType( lua_State* L ){ _event::setType( string2eventType[ luaL_checkstring( L , 1 ) ] ); return 0; }
@@ -44,14 +30,8 @@ int _lua_event::resetParams(lua_State* L){ _event::resetParams(); return 0; }
 //! getDestination
 int _lua_event::getDestination(lua_State* L){ if( !_event::getDestination() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getDestination() ) ); return 1; }
 
-//! getSource
-int _lua_event::getSource(lua_State* L){ if( !_event::getSource() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( (_gadget*)_event::getSource() ) ); return 1; }
-
 //! setDestination
 int _lua_event::setDestination(lua_State* L){ _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setDestination( g->gadget ); return 0; }
-
-//! setSource
-int _lua_event::setSource(lua_State* L){  _lua_gadget* g = Lunar<_lua_gadget>::check( L , 1 ); if( g ) _event::setSource( g->gadget ); return 0; }
 
 //! Set X
 int _lua_event::setPosX(lua_State* L){ _event::setPosX( luaL_checkint( L , 1 ) ); return 0; }
@@ -122,7 +102,6 @@ Lunar<_lua_event>::FunctionType _lua_event::methods[] = {
 
 Lunar<_lua_event>::PropertyType _lua_event::properties[] = {
 	{ "type" , &_lua_event::getType , &_lua_event::setType },
-	{ "source" , &_lua_event::getSource , &_lua_event::setSource },
 	{ "destination" , &_lua_event::getDestination , &_lua_event::setDestination },
 	{ "posX" , &_lua_event::getPosX , &_lua_event::setPosX },
 	{ "posY" , &_lua_event::getPosY , &_lua_event::setPosY },

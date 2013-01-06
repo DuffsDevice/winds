@@ -73,7 +73,41 @@ _callbackReturn _window::resizeHandler( _event event )
 	_window* that = event.getGadget<_window>();
 	
 	if( that->label != nullptr )
-		that->label->setWidth( that->getWidth() - 30 ); 
+		that->label->setWidth( that->getWidth() - ( that->isDestroyable() ? 10 : 0 ) - ( that->isResizeable() ? 10 : 0 ) - ( that->isMinimizeable() ? 10 : 0 ) - 3 );
+	
+	if( that->isDestroyable() )
+		that->button[0]->setX( that->getWidth() - 10 );
+	
+	if( that->isResizeable() )
+		that->button[1]->setX( that->getWidth() - ( that->isDestroyable() ? 9 : 0 ) - 10 );
+	
+	if( that->isMinimizeable() )
+		that->button[2]->setX( that->getWidth() - ( that->isDestroyable() ? 9 : 0 ) - ( that->isResizeable() ? 9 : 0 ) - 10 );
+	
+	return handled;
+}
+
+_callbackReturn _window::restyleHandler( _event event )
+{
+	_window* that = event.getGadget<_window>();
+	
+	// Toggle Window->Buttons (Close, Minimize, Restore etc...)
+	if( that->isDestroyable() )
+		that->button[0]->show();
+	else
+		that->button[0]->hide();
+	
+	if( that->isResizeable() )
+		that->button[1]->show();
+	else
+		that->button[1]->hide();
+	
+	if( that->isMinimizeable() )
+		that->button[2]->show();
+	else
+		that->button[2]->hide();
+	
+	that->handleEvent( onResize );
 	
 	return handled;
 }
@@ -82,6 +116,12 @@ _callbackReturn _window::refreshHandler( _event event )
 {
 	// Get Source
 	_window* that = (_window*)event.getGadget();
+	
+	if( event.getType() == onBlur || event.getType() == onFocus )
+	{
+		that->bubbleRefresh( true );
+		return handled;
+	}
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
@@ -92,13 +132,26 @@ _callbackReturn _window::refreshHandler( _event event )
 	
 	bP.fill( RGB( 30 , 30 , 29 ) );
 	
-	// Window-Bar
-	bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar );
-	
-	// Bottom Border
-	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[0] );
-	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[9] );
-	bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar[9] );
+	if( that->hasFocus() )
+	{
+		// Window-Bar
+		bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar );
+		
+		// Bottom Border
+		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[0] );
+		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar[9] );
+	}
+	else
+	{
+		// Window-Bar
+		bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBarBlurred );
+		
+		// Bottom Border
+		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[0] );
+		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[9] );
+		bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBarBlurred[9] );
+	}
 	
 	that->label->refreshBitmap();
 	
@@ -166,9 +219,13 @@ _callbackReturn _window::dragHandler( _event event )
 }
 
 _callbackReturn _window::closeHandler( _event event )
-{	
+{
 	// Get Source
-	event.getGadget()->getParent()->setParent( nullptr ); 
+	_callbackReturn cr = event.getGadget()->getParent()->handleEvent( onClose );
+	
+	// Close the window
+	if( cr == not_handled || cr == use_default )
+		event.getGadget()->getParent()->setParent( nullptr );
 	
 	return handled;
 }
@@ -179,7 +236,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	
 	// Create a Label
-	this->label = new _label( this->getWidth() - 30 , 6 , 2 , 2 , title );
+	this->label = new _label( this->getWidth() - 2 , 6 , 2 , 2 , title );
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( RGB( 31 , 31 , 31 ) );
@@ -190,18 +247,35 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->button[0] = new _windowButton( this->getWidth() - 10 , 1 , 0 );
 	this->button[1] = new _windowButton( this->getWidth() - 19 , 1 , 1 );
 	this->button[2] = new _windowButton( this->getWidth() - 28 , 1 , 2 );
-	this->addEnhancedChild( this->button[0] );
-	this->addEnhancedChild( this->button[1] );
-	this->addEnhancedChild( this->button[2] );
+	
+	// Register close-handler
 	this->button[0]->registerEventHandler( onAction , new _staticCallback( &_window::closeHandler ) );
+	
+	this->button[0]->enhanceToParent( this );
+	this->button[1]->enhanceToParent( this );
+	this->button[2]->enhanceToParent( this );
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_window::refreshHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_window::refreshHandler ) );
+	this->registerEventHandler( onFocus , new _staticCallback( &_window::refreshHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( dragStart , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( dragStop , new _staticCallback( &_window::dragHandler ) );
+	this->registerEventHandler( onStyleSet , new _staticCallback( &_window::restyleHandler ) );
+	this->registerEventHandler( onResize , new _staticCallback( &_window::resizeHandler ) );
+	
+	// Refresh Window-Buttons
+	this->triggerEvent( onStyleSet );
 	
 	// Refresh Me
 	this->refreshBitmap();
-	
+}
+
+_window::~_window()
+{
+	delete this->button[0];
+	delete this->button[1];
+	delete this->button[2];
+	delete this->label;
 }

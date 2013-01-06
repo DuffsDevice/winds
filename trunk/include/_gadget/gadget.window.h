@@ -32,6 +32,8 @@ class _window : public _gadget {
 		
 		static _callbackReturn closeHandler( _event event );
 		
+		static _callbackReturn restyleHandler( _event event );
+		
 		// Will be called if the window is resized ->label will also be resized
 		static _callbackReturn resizeHandler( _event e );
 		
@@ -41,7 +43,11 @@ class _window : public _gadget {
 		
 		string getStrValue(){ return this->label->getStrValue(); }
 		
-		_window( _length width , _length height , _coord x , _coord y , string title , _style style = _style());
+		//! Ctor
+		_window( _length width , _length height , _coord x , _coord y , string title , _style style = _style() );
+		
+		//! Dtor
+		~_window();
 };
 
 #endif

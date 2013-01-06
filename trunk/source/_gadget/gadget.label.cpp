@@ -51,14 +51,14 @@ void _label::computeSize()
 	// Compute Height
 	if( this->computeH == 2 )
 	{
-		_gadget::setHeight( this->font->getHeight( this->fontSize ) );
+		_gadget::setHeight( max( _length( 1 ) , this->font->getHeight( this->fontSize ) ) );
 		this->computeH = 1;
 	}
 	
 	// Compute Width
 	if( this->computeW == 2 )
 	{
-		_gadget::setWidth( this->font->getStringWidth( this->getStrValue() , this->fontSize ) );
+		_gadget::setWidth( max( this->font->getStringWidth( this->getStrValue() , this->fontSize ) , _length(1) ) );
 		this->computeW = 1;
 	}
 }

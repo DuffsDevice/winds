@@ -1,6 +1,7 @@
 #include "_type/type.system.h"
 #include "_type/type.radiogroup.h"
 #include "_type/type.time.h"
+#include "_type/type.dialog.h"
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.counter.h"
@@ -17,7 +18,7 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::login );
+	changeState( _systemState::bootup );
 	
 	while( true )
 	{
@@ -68,6 +69,13 @@ void _systemController::main()
 		
 		// Wait for VBlank
 		swiWaitForVBlank();
+		
+		//printf("\x1b[2J");
+		//if( _currentFocus_ )
+		//	printf("cF: %s\n",gadgetType2string[_system::_currentFocus_->getType()].c_str());
+		//printf("CF:%p",_system::_gadgetHost_->focusedChild);
+		//for( _gadget* g : _system::_gadgetHost_->children )
+		//	printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
 	}	
 }
 
@@ -107,7 +115,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 		//
 		else if( that->getType() == _gadgetType::label )
 		{
-			if( that->getStyle().data > 2 )
+			if( that->getStyle().val > 2 )
 			{
 				profileName = e.getGadget<_textbox>()->getStrValue();
 				return handled;
@@ -120,11 +128,11 @@ _callbackReturn _systemController::setupHandler( _event e )
 		{
 			systemTime.hour = ((_counter*)gadgets[12])->getIntValue();
 			systemTime.minute = ((_counter*)gadgets[13])->getIntValue();
-			systemTime.second = ((_counter*)gadgets[14])->getIntValue();
 			
 			_imagegadget* clkImage = (_imagegadget*)(gadgets[16]);
 			_bitmap& clkBmp = clkImage->getModifyableImage();
 			
+			clkBmp.reset( RGBHEX( 0x5A7EDC ) );
 			clkBmp.resetClippingRect();
 			clkBmp.drawFilledCircle( 25 , 25 , 25 , RGBHEX( 0x6082E3 ) );
 			
@@ -145,17 +153,11 @@ _callbackReturn _systemController::setupHandler( _event e )
 				clkBmp.drawPixel( 25 + c2 , 25 + s2 , COLOR_WHITE );
 			}
 			
-			// Seconds
-			clkBmp.drawLine( 25 , 25 
-				, 25 - cos( float( systemTime.second + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
-				, 25 - sin( float( systemTime.second + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
-				, RGB( 21 , 24 , 31 )
-			);
 			// Minute
 			clkBmp.drawLine( 25 , 25
 				, 25 - cos( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
 				, 25 - sin( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
-				, RGB( 4 , 11 , 25 )
+				, RGB( 21 , 24 , 31 )
 			);
 			// Hour
 			clkBmp.drawLine( 25 , 25 
@@ -174,7 +176,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 		{
 			if( e.getType() == onFocus )
 			{
-				profileIcon = that->getStyle().data;
+				profileIcon = that->getStyle().val;
 				e.getGadget()->bubbleRefresh( true );
 				for( int i = 10 ; i < 18 ; i++ )
 					if( i != profileIcon )
@@ -195,7 +197,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			if( that->getImage().isValid() )
 				bP.copyTransparent( 0 , 0 , that->getImage() );
 			
-			if( that->getStyle().data != profileIcon )
+			if( that->getStyle().val != profileIcon )
 			{
 				for (_u32 i = 0; i != bP.getWidth(); i++ )
 				{
@@ -224,7 +226,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 		}
 		
 		// Event must be from "next"- or "prev"-buttons
-		if( that->getStyle().data == -1 )
+		if( that->getStyle().val == -1 )
 		{
 			if( state > 0 )
 			{
@@ -252,8 +254,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 	// Standard
 	if( state != 0 )
 	{
-		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeData( -1 ) );
-		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeData( -1 ) );
+		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeInt( -1 ) );
+		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
 		prev->setColor( RGB( 30 , 30 , 30 ) );
 		prev->setAlign( _align::left );
 		prev->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
@@ -274,8 +276,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 		that->addChild( clickNext );
 	}
 	
-	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeData( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeData( 1 ) );
+	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeInt( 1 ) );
+	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
 	gadgets[0] = btnNext;
 	gadgets[2] = next;
 	next->setColor( RGB( 30 , 30 , 30 ) );
@@ -337,17 +339,17 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_bitmap bmp = _bitmap( 51 , 51 );
 			
 			_imagegadget* clockImg = new _imagegadget( 102 , 65 , bmp );
-			_counter* cnt1 = new _counter( 85 , 120 , 25 , true , systemTime.hour , 23 , 0 );
-			_counter* cnt2 = new _counter( 115 , 120 , 25 , true , systemTime.minute , 59 , 0 );
-			_counter* cnt3 = new _counter( 145 , 120 , 25 , true , systemTime.second , 59 , 0 );
+			_counter* cnt1 = new _counter( 100 , 120 , 25 , true , systemTime.hour , 23 , 0 );
+			_counter* cnt2 = new _counter( 130 , 120 , 25 , true , systemTime.minute , 59 , 0 );
 			
 			cnt1->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			cnt2->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
-			cnt3->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
 			_radiogroup* radgrp = new _radiogroup();
-			_radio* rad1 = new _radio( 20 , 139 , radgrp );
-			_radio* rad2 = new _radio( 20 , 54 , radgrp );
+			_radio* rad1 = new _radio( 20 , 54 , radgrp );
+			_radio* rad2 = new _radio( 20 , 139 , radgrp );
+			radgrp->enableRadio( rad1 );
+			
 			gadgets[5] = lbl;
 			gadgets[6] = lbl2;
 			gadgets[7] = lbl3;
@@ -357,7 +359,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			gadgets[11] = rad2;
 			gadgets[12] = cnt1;
 			gadgets[13] = cnt2;
-			gadgets[14] = cnt3;
+			
 			gadgets[15] = (_gadget*)radgrp;
 			gadgets[16] = clockImg;
 			lbl->setColor( RGB( 2 , 5 , 15 ) );
@@ -376,7 +378,6 @@ _callbackReturn _systemController::setupHandler( _event e )
 			that->addChild( rad2 );
 			that->addChild( cnt1 );
 			that->addChild( cnt2 );
-			that->addChild( cnt3 );
 			
 			// Refresh Clock-Image
 			cnt1->handleEvent( _event( onChange ) );
@@ -393,17 +394,17 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_profile") );
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
-			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeData( 4 ) );
+			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeInt( 4 ) );
 			txtName->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
-			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeData( 1 ) );
-			_imagegadget* image2 = new _imagegadget( 42 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/guitarl.png" ) ) , _style::storeData( 2 ) );
-			_imagegadget* image3 = new _imagegadget( 62 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/horsesl.png" ) ) , _style::storeData( 3 ) );
-			_imagegadget* image4 = new _imagegadget( 82 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/red flowerl.png" ) ) , _style::storeData( 4 ) );
-			_imagegadget* image5 = new _imagegadget( 102 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/balll.png" ) ) , _style::storeData( 5 ) );
-			_imagegadget* image6 = new _imagegadget( 122 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/dripl.png" ) ) , _style::storeData( 6 ) );
-			_imagegadget* image7 = new _imagegadget( 142 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/beachl.png" ) ) , _style::storeData( 7 ) );
-			_imagegadget* image8 = new _imagegadget( 162 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/astronautl.png" ) ) , _style::storeData( 8 ) );
+			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeInt( 1 ) );
+			_imagegadget* image2 = new _imagegadget( 42 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/guitarl.png" ) ) , _style::storeInt( 2 ) );
+			_imagegadget* image3 = new _imagegadget( 62 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/horsesl.png" ) ) , _style::storeInt( 3 ) );
+			_imagegadget* image4 = new _imagegadget( 82 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/red flowerl.png" ) ) , _style::storeInt( 4 ) );
+			_imagegadget* image5 = new _imagegadget( 102 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/balll.png" ) ) , _style::storeInt( 5 ) );
+			_imagegadget* image6 = new _imagegadget( 122 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/dripl.png" ) ) , _style::storeInt( 6 ) );
+			_imagegadget* image7 = new _imagegadget( 142 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/beachl.png" ) ) , _style::storeInt( 7 ) );
+			_imagegadget* image8 = new _imagegadget( 162 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/astronautl.png" ) ) , _style::storeInt( 8 ) );
 			gadgets[5] = lbl;
 			gadgets[6] = lbl2;
 			gadgets[7] = lbl3;
@@ -447,6 +448,14 @@ _callbackReturn _systemController::setupHandler( _event e )
 	return handled;
 }
 
+_dialog dia;
+
+//int hello ( int i )
+//{
+//	printf("Dialog Finish: %d\n",i);
+//	printf("Str-Value: %s\n",dia.getStrResult().c_str());
+//}
+
 void _systemController::loginPage()
 {
 	// After the Boot up finishes,
@@ -462,15 +471,16 @@ void _systemController::loginPage()
 	_system::deleteKeyboard();
 	
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
-	//_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
-	
-	_direntry entry = _direntry("/HelloWorld.lua");
-	entry.execute();
+	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
 	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
 	
-	_direntry entry = _direntry("/HelloWorld.lua");
-	entry.execute();
+	//_dialog::errorDialog( dia , "Evil Monkeys!!!" , "Error" , "Dismiss!" , "Retry" );
+	//dia.execute();
+	//dia.onExit( new _staticCallback( & hello ) );
+	
+	//_direntry entry = _direntry("/LUA/Noel.lua");
+	//entry.execute();
 }
 
 void _systemController::bootupPage()
@@ -485,8 +495,8 @@ void _systemController::bootupPage()
 	static _animation anim = _animation( 0 , 1 , 2000 );
 	anim.finish( 
 		new _inlineCallback(
-			static_cast<function<int(int)>>
-				( [&](int){ _systemController::changeState( _systemState::login ); return 1; } )
+			static_cast<function<void()>>
+				( [&](){ _systemController::changeState( _systemState::desktop ); } )
 		)
 	);
 	anim.start();

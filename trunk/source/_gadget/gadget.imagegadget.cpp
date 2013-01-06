@@ -32,6 +32,8 @@ _imagegadget::_imagegadget( _coord x , _coord y , const _bitmap& img , _style st
 	// Register Event-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , new _staticCallback( &_imagegadget::refreshHandler ) );
+	
+	this->bitmap.reset( NO_COLOR );
 
 	// Refresh Me
 	this->refreshBitmap();

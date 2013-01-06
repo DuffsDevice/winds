@@ -22,6 +22,10 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 {
 	if( !doNotAllocateBitmap )
 		this->bitmap = _bitmap( this->getWidth() , this->getHeight() );
+	
+	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_gadget::gadgetMouseHandler ) );
+	
+	this->triggerEvent( onStyleSet );
 }
 
 _gadgetType typeOfGadget( _gadget* g )
@@ -40,6 +44,13 @@ _gadget::~_gadget()
 {
 	if( this->parent != nullptr )
 		this->parent->removeChild( this );
+	
+	// Unbind event Handler
+	for( const _pair<_eventType,const _callback*>& data : this->eventHandlers )
+	{
+		if( data.second )
+			delete data.second;
+	}
 }
 
 void _gadget::setPadding( const _padding& p )
@@ -72,7 +83,7 @@ void _gadget::bubbleEvent( _event event , bool includeThis )
 
 void _gadget::refreshBitmap()
 {
-	this->handleEvent( _event( this , refresh ).preventBubble( true ) );
+	this->handleEvent( _event( refresh ).preventBubble( true ) );
 }
 
 void _gadget::generateEvent( _event event ){
@@ -83,7 +94,7 @@ void _gadget::bubbleRefresh( bool includeThis , _event event )
 {
 	// Event not generated yet
 	if( !event.hasClippingRects() )
-		event = _event::refreshEvent( this , { this->getAbsoluteDimensions() } );
+		event = _event::refreshEvent( { this->getAbsoluteDimensions() } );
 	
 	if( includeThis )
 		this->handleEvent( event );
@@ -108,16 +119,49 @@ _gadget* _gadget::getScreen()
 		return nullptr;
 }
 
+void _gadget::blinkHandler()
+{
+	if( this->style.unused2 > 5 )
+	{
+		_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
+		this->style.unused2 = 0;
+		return;
+	}
+	if( this->style.unused2++ % 2 )
+		this->show();
+	else
+		this->hide();
+}
+
+void _gadget::blink()
+{
+	_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
+	_system::executeTimer( new _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
+}
+
 bool _gadget::blurChild()
 {
-	if( focusedChild )
+	if( this->focusedChild )
 	{
-		if( !focusedChild->style.canLooseFocus || !focusedChild->blurChild() )
+		if( !this->focusedChild->style.canLooseFocus )
+		{
+			this->focusedChild->blink();
 			return false;
-		focusedChild->style.focused = false;
+		}
+		
+		if( !this->focusedChild->blurChild() )
+			return false;
+		
+		this->focusedChild->style.focused = false;
+		
 		_gadget* t = focusedChild;
-		focusedChild = nullptr;
-		t->handleEvent( _event( onBlur ) );
+		
+		this->focusedChild = nullptr;
+		
+		// trigger onBlur - event
+		t->handleEvent( onBlur );
+		
+		// Remove current focus
 		_system::_currentFocus_ = nullptr;
 	}
 	return true;
@@ -125,23 +169,36 @@ bool _gadget::blurChild()
 
 bool _gadget::focusChild( _gadget* child )
 {
-	if( !child || !child->style.canTakeFocus )
+	// If child
+	// - is not valid or
+	// - the child cannot even take the focus or 
+	// - the child is unvisible
+	// return false;
+	if( !child || !child->style.canTakeFocus || !child->isVisible() )
 		return false;
-	if( child->style.focused )
+	
+	// Return true if the child already has focus
+	if( child->hasFocus() )
 		return true;
 	
 	// Blur the Previously style.focused gadget
 	if( !this->blurChild() )
 		return false;
 	
+	// Check if the child can receive focus
 	if( child->style.canReceiveFocus )
 	{
+		// Set focusedChild-attribute
 		_system::_currentFocus_ = child;
+		
+		// 'focus' the child
 		child->style.focused = true;
 		focusedChild = child;
-		focusedChild->handleEvent( _event( onFocus ) );
 		
-		// Move to top
+		// Trigger the 'onfocus'-event
+		focusedChild->handleEvent( onFocus );
+		
+		// Move to front of children
 		if( child->isEnhanced() )
 		{
 			if( child == this->enhancedChildren.front() )
@@ -157,7 +214,7 @@ bool _gadget::focusChild( _gadget* child )
 			this->children.push_front( child );
 		}
 		
-		// Refresh the Gadget
+		// Refresh the Gadget so that it appears at the front
 		child->bubbleRefresh();
 	}
 	
@@ -194,14 +251,14 @@ _callbackReturn _gadget::handleEvent( _event event )
 
 _coord _gadget::getAbsoluteX() const {
 	if( this->parent != nullptr )
-		return this->parent->getAbsoluteX() + this->dimensions.x + ( this->style.enhanced ? 0 : this->parent->getPadding().left );
+		return this->parent->getAbsoluteX() + this->dimensions.x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
 	
 	return this->dimensions.x;
 }
 
 _coord _gadget::getAbsoluteY() const {
 	if( this->parent != nullptr )
-		return this->parent->getAbsoluteY() + this->dimensions.y + ( this->style.enhanced ? 0 : this->parent->getPadding().top );
+		return this->parent->getAbsoluteY() + this->dimensions.y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
 	
 	return this->dimensions.y;
 }
@@ -211,7 +268,7 @@ void _gadget::setX( _coord val ){
 		return;
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x = val;
-	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::setY( _coord val ){
@@ -219,7 +276,7 @@ void _gadget::setY( _coord val ){
 		return;
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.y = val;
-	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::moveRelative( _s16 dX , _s16 dY ){
@@ -228,7 +285,7 @@ void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.x += dX;
 	this->dimensions.y += dY;
-	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::moveTo( _coord x , _coord y )
@@ -240,7 +297,7 @@ void _gadget::moveTo( _coord x , _coord y )
 	this->dimensions.y = y;
 	//if( this->parent )
 	//	this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
-	this->bubbleRefresh( false , _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) );
+	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
 
 void _gadget::enhanceToParent( _gadget* val )
@@ -309,15 +366,24 @@ void _gadget::removeChild( _gadget* child )
 	// Erase it on my bitmap
 	_rect absDim = child->getAbsoluteDimensions();
 	
+	// Remove focus
+	if( child->hasFocus() )
+	{
+		child->style.focused = false;
+		
+		if( this->focusedChild == child )
+			this->focusedChild = nullptr;
+			
+		// Remove current focus
+		_system::_currentFocus_ = nullptr;
+	}
+	
 	if( child->isEnhanced() )
 		this->enhancedChildren.remove( child );
 	else
 		this->children.remove( child );
 	
-	this->bubbleRefresh( true , _event::refreshEvent( this , { absDim } ) );
-	
-	if( child->style.focused )
-		this->blurChild();
+	this->bubbleRefresh( true , _event::refreshEvent( { absDim } ) );
 	
 	// Erase the Connection on both sides
 	child->parent = nullptr;
@@ -331,8 +397,10 @@ void _gadget::addChild( _gadget* child )
 	// Add it!
 	this->children.push_front( child );
 	
+	// Adjust style-object (kind of reset)
 	child->style.focused = false;
 	child->style.enhanced = false;
+	child->style.visible = true;
 	child->parent = this;
 	
 	//! Paint it on my bmp
@@ -347,8 +415,10 @@ void _gadget::addEnhancedChild( _gadget* child )
 	// Add it!
 	this->enhancedChildren.push_front( child );
 	
+	// Adjust style-object (kind of reset)
 	child->style.focused = false;
 	child->style.enhanced = true;
+	child->style.visible = true;
 	child->parent = this;
 	
 	//! Paint it on my bmp
@@ -364,49 +434,56 @@ _rect _gadget::getAbsoluteDimensions() const {
 
 void _gadget::setDimensions( _rect rc )
 {
-	_rect dim = this->getDimensions();
 	_rect absDim = this->getAbsoluteDimensions();
-	this->dimensions = rc;
 	
-	if( dim.width != this->dimensions.width || this->dimensions.height != dim.height )
+	// Respect Fixed width/height of the gadget
+	if( !this->isResizeableX() )
+		rc.width = this->dimensions.width;
+	if( !this->isResizeableY() )
+		rc.height = this->dimensions.height;
+	
+	this->dimensions = rc;
+	_rect newAbsDim = this->getAbsoluteDimensions();
+	
+	if( newAbsDim.width != absDim.width || newAbsDim.height != absDim.height )
 	{
 		this->bitmap.resize( rc.width , rc.height );
-		this->handleEvent( _event( onResize ) );
-		this->bubbleEvent( _event::refreshEvent( this , absDim.combine( this->getAbsoluteDimensions() ) ) , true );
+		this->handleEvent( onResize );
+		this->bubbleEvent( _event::refreshEvent( absDim.combine( newAbsDim ) ) , true );
 	}
-	else if( dim.x != this->dimensions.x || dim.y != this->dimensions.y )
+	else if( newAbsDim.x != absDim.x || newAbsDim.y != absDim.y )
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleEvent( _event::refreshEvent( this , absDim.combine( this->getAbsoluteDimensions() ) ) );
+		this->bubbleEvent( _event::refreshEvent( absDim.combine( newAbsDim ) ) );
 }
 
 void _gadget::setHeight( _length val )
 {
-	if( val == this->dimensions.height )
+	if( !this->isResizeableY() || val == this->dimensions.height )
 		return;
 	
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.height = val;
 	this->bitmap.setHeight( val );
 	
-	this->handleEvent( _event( onResize ) );
+	this->handleEvent( onResize );
 	
 	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
+	this->bubbleEvent( _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) , true );
 }
 
 void _gadget::setWidth( _length val )
 {
-	if( val == this->dimensions.width )
+	if( !this->isResizeableX() || val == this->dimensions.width )
 		return;
 	
 	_rect dim = this->getAbsoluteDimensions();
 	this->dimensions.width = val;
 	this->bitmap.setWidth( val );
 	
-	this->handleEvent( _event( onResize ) );
+	this->handleEvent( onResize );
 	
 	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
+	this->bubbleEvent( _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) , true );
 }
 
 _callbackReturn _gadget::gadgetRefreshHandler( _event event )
@@ -441,6 +518,9 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 	
 	for( _gadget* gadget : that->children )
 	{
+		if( !gadget->isVisible() || gadget->isMinimized() )
+			continue;
+		
 		_rect dim = gadget->getDimensions().relativeVersion( -padding.left , -padding.top );
 		
 		// Reset clipping Rects
@@ -458,6 +538,8 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 	
 	for( _gadget* gadget : that->enhancedChildren )
 	{
+		if( !gadget->isVisible() || gadget->isMinimized() )
+			continue;
 		const _rect& dim = gadget->getDimensions();
 		
 		// Reset clipping Rects
@@ -533,14 +615,17 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			event	.setPosX( posPadX - mouseContain->getX() )
 					.setPosY( posPadY - mouseContain->getY() );
 		
-		// It doesn't make sense to focus a child of some _gadget that can't be style.focused
+		// It doesn't make sense to focus a child of some _gadget that can't be focused
 		if( event.getType() == mouseDown )
 			that->focusChild( mouseContain );
 		else if( event.getType() == mouseDoubleClick && !mouseContain->canReactTo( mouseDoubleClick ) )
 			event.setType( mouseClick );
 		
-		// Trigger the Event
-		return mouseContain->handleEvent( event );
+		// Trigger the Event if the gadget is now focused or if it never will have any focus,
+		// because then it wouldn't make any sence to forward the event!
+		if( mouseContain->hasFocus() || !mouseContain->style.canTakeFocus || !mouseContain->style.canReceiveFocus )
+			return mouseContain->handleEvent( event );
+		return not_handled;
 	}
 	
 	// If no Gadget received the Mousedown, blur the Focussed Child
@@ -582,6 +667,11 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 				event	.setPosX( posPadX - mouseContain->getX() )
 						.setPosY( posPadY - mouseContain->getY() );
 			
+			// Trigger the Event if the gadget is now focused or if it never will have any focus,
+			// because then it wouldn't make any sence to forward the event!
+			if( !mouseContain->hasFocus() && mouseContain->style.canTakeFocus && mouseContain->style.canReceiveFocus )
+				return not_handled;
+			
 			// Trigger the Event
 			_callbackReturn ret = mouseContain->handleEvent( event );
 			
@@ -599,7 +689,7 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 	else if( that->dragTemp && event.getType() == dragStop )
 	{
 		// Absolute Position to Relative Position
-		if( that->dragTemp->style.enhanced )
+		if( that->dragTemp->isEnhanced() )
 			event	.setPosX( posX - that->getX() )
 					.setPosY( posY - that->getY() );
 		else
@@ -623,7 +713,7 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 		event.setDestination( that->dragTemp );
 		
 		// Absolute Position to Relative Position
-		if( that->dragTemp->style.enhanced )
+		if( that->dragTemp->isEnhanced() )
 			event	.setPosX( posX - that->getX() )
 					.setPosY( posY - that->getY() );
 		else

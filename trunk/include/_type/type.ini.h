@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 #include <map>
-#include <sstream>
-using namespace std;
 
 #include "_type/type.h"
 
@@ -15,7 +13,7 @@ class _ini
 	
 	private:
 		
-		istringstream input;
+		string input;
 		string output;
 		
 		_iniStructure array;

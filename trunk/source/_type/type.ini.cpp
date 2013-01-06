@@ -6,17 +6,35 @@ _s16 _ini::read()
     /* Uses a fair bit of stack (use heap instead if you need to) */
     string line, name , value , section = "_global_";
 	_u16 lineNo = 0;
+	
+	_u32 pos = 0;
 
     /* Scan through file line by line */
-    while ( getline( this->input , line ) )
+    while ( true )
 	{
+		_u32 tmp = pos;
+		
+		if( tmp == string::npos )
+			break;
+		
+		pos = this->input.find_first_of( "\n\r" , tmp );
+		
+		if( pos != string::npos )
+		{
+			line = this->input.substr( tmp , pos - tmp );
+			// Move beyond the line delimiter
+			pos++;
+		}
+		else
+			line = this->input.substr( tmp );
+		
         if( !line.size() || line[0] == '\r' || line[0] == ';' || line[0] == '#') {
             /* Per Python ConfigParser, allow '#' comments at start of line */
         }
         else if ( line[0] == '[' )
 		{
             /* A "[section]" line */
-			_length end = line.find_first_of("]");
+			size_t end = line.find_first_of("]");
 			
             if ( end != string::npos )
 				section = line.substr( 1 , end - 1 );
@@ -28,7 +46,7 @@ _s16 _ini::read()
         else
 		{
 			/* Must be a name:= value pair! */
-			_length delim = line.find_first_of(":=");
+			size_t delim = line.find_first_of(":=");
 			
 			if( delim == string::npos )
 				return lineNo;

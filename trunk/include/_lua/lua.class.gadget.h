@@ -6,34 +6,46 @@
 #include "_type/type.gadget.h"
 
 #define GADGET_FUNCS( g ) \
+	LUA_CLASS_FUNC(g,applyStyle), \
+	LUA_CLASS_FUNC(g,hasFocus), \
+	LUA_CLASS_FUNC(g,isEnhanced), \
+	LUA_CLASS_FUNC(g,isVisible), \
+	LUA_CLASS_FUNC(g,isMinimized), \
+	LUA_CLASS_FUNC(g,isMinimizeable), \
+	LUA_CLASS_FUNC(g,isResizeable), \
+	LUA_CLASS_FUNC(g,isResizeableX), \
+	LUA_CLASS_FUNC(g,isResizeableY), \
 	LUA_CLASS_FUNC(g,bubbleEvent), \
 	LUA_CLASS_FUNC(g,bubbleRefresh), \
 	LUA_CLASS_FUNC(g,refreshBitmap), \
-	LUA_CLASS_FUNC(g,getBitmap), \
 	LUA_CLASS_FUNC(g,getBitmapPort), \
+	LUA_CLASS_FUNC(g,getBitmap), \
 	LUA_CLASS_FUNC(g,getScreen), \
-	LUA_CLASS_FUNC(g,hasFocus), \
 	LUA_CLASS_FUNC(g,registerEventHandler), \
 	LUA_CLASS_FUNC(g,unregisterEventHandler), \
 	LUA_CLASS_FUNC(g,generateEvent), \
 	LUA_CLASS_FUNC(g,triggerEvent), \
 	LUA_CLASS_FUNC(g,canReactTo), \
 	LUA_CLASS_FUNC(g,handleEvent), \
-	LUA_CLASS_FUNC(g,handleEventNormal), \
 	LUA_CLASS_FUNC(g,handleEventDefault), \
 	LUA_CLASS_FUNC(g,getAbsoluteX), \
 	LUA_CLASS_FUNC(g,getAbsoluteY), \
+	LUA_CLASS_FUNC(g,hide), \
+	LUA_CLASS_FUNC(g,show), \
+	LUA_CLASS_FUNC(g,enhanceToParent), \
 	LUA_CLASS_FUNC(g,removeChild), \
 	LUA_CLASS_FUNC(g,removeChildren), \
+	LUA_CLASS_FUNC(g,removeEnhancedChildren), \
 	LUA_CLASS_FUNC(g,addChild), \
 	LUA_CLASS_FUNC(g,addEnhancedChild), \
+	LUA_CLASS_FUNC(g,focusChild), \
+	LUA_CLASS_FUNC(g,blurChild), \
 	LUA_CLASS_FUNC(g,getAbsoluteDimensions), \
 	LUA_CLASS_FUNC(g,getSize), \
 	LUA_CLASS_FUNC(g,moveTo), \
 	LUA_CLASS_FUNC(g,moveRelative), \
 	LUA_CLASS_FUNC(g,toDerived), \
-	LUA_CLASS_FUNC(g,enhanceToParent), \
-	LUA_CLASS_FUNC(g,isEnhanced) \
+	LUA_CLASS_FUNC(g,getToppestChild)
 	
 #define GADGET_ATTRS(g) \
 	{ "padding" , &_lua_gadget::getPadding , &_lua_gadget::setPadding }, \
@@ -92,6 +104,9 @@ class _lua_gadget{
 		//! hasFocus
 		int hasFocus( lua_State* );
 		
+		//! applyStyle
+		int applyStyle( lua_State* );
+		
 		//! getBitmap
 		int getBitmap( lua_State* L );
 		
@@ -118,9 +133,6 @@ class _lua_gadget{
 		
 		//! handleEvent
 		int handleEvent( lua_State* L );
-		
-		//! handleEventNormal
-		int handleEventNormal( lua_State* L );
 		
 		//! handleEventDefault
 		int handleEventDefault( lua_State* L );
@@ -155,6 +167,9 @@ class _lua_gadget{
 		//! setParent
 		int setParent( lua_State* L );
 		
+		//! getToppestChild
+		int getToppestChild( lua_State* L );
+		
 		//! enhanceToParent
 		int enhanceToParent( lua_State* L );
 		
@@ -163,6 +178,9 @@ class _lua_gadget{
 		
 		//! removeChildren
 		int removeChildren( lua_State* L );
+		
+		//! removeEnhancedChildren
+		int removeEnhancedChildren(lua_State* L);
 		
 		//! addChild
 		int addChild( lua_State* L );
@@ -188,6 +206,24 @@ class _lua_gadget{
 		//! isEnhanced
 		int isEnhanced( lua_State* L );
 		
+		//! isVisible
+		int isVisible( lua_State* L );
+		
+		//! isMinimized
+		int isMinimized( lua_State* L );
+		
+		//! isResizeable
+		int isResizeable( lua_State* L );
+		
+		//! isResizeableX
+		int isResizeableX( lua_State* L );
+		
+		//! isResizeableY
+		int isResizeableY( lua_State* L );
+		
+		//! isMinimizeable
+		int isMinimizeable( lua_State* L );
+		
 		//! getHeight
 		int getHeight( lua_State* L );
 		
@@ -200,8 +236,20 @@ class _lua_gadget{
 		//! setHeight
 		int setHeight(lua_State* L);
 		
+		//! blurChild
+		int blurChild(lua_State* L);
+		
+		//! focusChild
+		int focusChild(lua_State* L);
+		
 		//! getSize
 		int getSize( lua_State* L );
+		
+		//! hide
+		int hide( lua_State* L );
+		
+		//! show
+		int show( lua_State* L );
 		
 		//! getType
 		int getType( lua_State* L );

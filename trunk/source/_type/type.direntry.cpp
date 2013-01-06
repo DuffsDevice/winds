@@ -116,8 +116,8 @@ _direntry::_direntry( string fn ) :
 	else
 	{
 		// Set Extension
-		_length pos = this->filename.find_last_of(".");
-		_length npos = this->filename.find_last_of("/");
+		_u64 pos = this->filename.find_last_of(".");
+		_u64 npos = this->filename.find_last_of("/");
 		if( pos > npos && pos != this->filename.npos )
 			this->extension = this->filename.substr( pos + 1 );
 		
@@ -576,8 +576,8 @@ bool _direntry::rename( string newName )
 		else
 		{
 			// Set Extension
-			_length pos = this->filename.find_last_of(".");
-			_length npos = this->filename.find_last_of("/");
+			size_t pos = this->filename.find_last_of(".");
+			size_t npos = this->filename.find_last_of("/");
 			if( pos > npos && pos != this->filename.npos )
 				this->extension = this->filename.substr( pos + 1 );
 			

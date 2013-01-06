@@ -12,11 +12,14 @@
 #include <nds/memory.h>
 
 class _gadget;
+class _lua_gadget;
 
 // _gadgetList
 typedef _list<_gadget*> _gadgetList;
 
 class _gadget{
+	
+	friend class _lua_gadget;
 	
 	private:
 	
@@ -43,6 +46,10 @@ class _gadget{
 			return true;
 		}
 		static _gadget* getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* parent );
+		
+		// Let the gadget blink! this is used if anything can't loose focus
+		void blink();
+		void blinkHandler();
 	
 	public:
 	
@@ -100,11 +107,33 @@ class _gadget{
 		 * Get the Padding of the Gadget
 		**/
 		const _padding& getPadding() const { return this->padding; }
+	
+		/** Method to check whether the Gadget has Focus **/
+		bool hasFocus(){ return this->style.focused; }
 		
-		/**
-		 * Check whether this Gadget can also be on the reserved area of the parent
-		**/
+		/** Check whether this Gadget can also be on the reserved area of the parent **/
 		bool isEnhanced() const { return this->style.enhanced; }
+		
+		/** Check whether this Gadget can also be on the reserved area of the parent **/
+		bool isVisible() const { return this->style.visible; }
+		
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		bool isMinimized() const { return this->style.minimized; }
+		
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		bool isMinimizeable() const { return this->style.minimizeable; }
+		
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		bool isDestroyable() const { return this->style.destroyable; }
+		
+		/** true if resizeable in x- or y-direction **/
+		bool isResizeable() const { return this->style.resizeableX || this->style.resizeableY; }
+		
+		/** true if resizeable in x-direction **/
+		bool isResizeableX() const { return this->style.resizeableX; }
+		
+		/** true if resizeable in y-direction **/
+		bool isResizeableY() const { return this->style.resizeableY; }
 		
 		/**
 		 * Let an Event bubble from child to parent and so on...
@@ -140,17 +169,12 @@ class _gadget{
 		/**
 		 * Set the style of that Gadget
 		**/
-		void setStyle( _style style ){ this->style = style; /*this->triggerEvent( _event( refresh ) );*/ }
+		void setStyle( _style style ){ this->style = style; this->triggerEvent( _event( onStyleSet ) ); }
 		
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
 		**/
 		_gadget* getScreen();
-		
-		/**
-		 * Method to check whether the Gadget has Focus
-		**/
-		bool hasFocus(){ return this->style.focused; }
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
@@ -235,6 +259,16 @@ class _gadget{
 		 * Set the Relative Y-Position
 		**/
 		void setY( _coord val );
+		
+		/**
+		 * Hide the Gadget
+		**/
+		void hide(){ if( !this->style.visible ) return; this->style.visible = false; this->bubbleRefresh(); }
+		
+		/**
+		 * Unhide the Gadget
+		**/
+		void show(){ if( this->style.visible ) return; this->style.visible = true; this->bubbleRefresh(); }
 		
 		/**
 		 * Get the Gadgets Parent

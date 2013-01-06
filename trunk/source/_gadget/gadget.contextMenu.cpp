@@ -32,8 +32,8 @@ _callbackReturn _contextMenu::blurHandler( _event event )
 {
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
-	that->parent->blurChild();
-	that->triggerEvent( _event::dialogClose( that , -1 , "" ) );
+	that->handleEvent( blur );
+	that->triggerEvent( _event::dialogClose( -1 , "" ) );
 	
 	return use_default;
 }

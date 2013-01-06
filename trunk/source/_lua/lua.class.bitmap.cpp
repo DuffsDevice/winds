@@ -56,11 +56,20 @@ int _lua_bitmap::reset( lua_State* L ){ this->bm->reset( luaL_checkint( L , 1 ) 
 //! fill
 int _lua_bitmap::fill( lua_State* L ){ this->bm->fill( luaL_checkint( L , 1 ) ); return 0; }
 
-//! drawVerticalLine
-int _lua_bitmap::drawVerticalLine( lua_State* L ){ this->bm->drawVerticalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
+//! drawLine
+int _lua_bitmap::drawLine( lua_State* L ){ this->bm->drawLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkint( L , 5 ) ); return 0; }
 
 //! drawHorizontalLine
 int _lua_bitmap::drawHorizontalLine( lua_State* L ){ this->bm->drawHorizontalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
+
+//! drawVerticalLine
+int _lua_bitmap::drawVerticalLine( lua_State* L ){ this->bm->drawVerticalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
+
+//! drawHorizontalDottedLine
+int _lua_bitmap::drawHorizontalDottedLine( lua_State* L ){ this->bm->drawHorizontalDottedLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
+
+//! drawVerticalDottedLine
+int _lua_bitmap::drawVerticalDottedLine( lua_State* L ){ this->bm->drawVerticalDottedLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
 
 //! drawRect
 int _lua_bitmap::drawRect( lua_State* L ){ this->bm->drawRect( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkint( L , 5 )); return 0; }
@@ -189,8 +198,11 @@ Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmap, drawPixel),
 	LUA_CLASS_FUNC(_lua_bitmap, reset),
 	LUA_CLASS_FUNC(_lua_bitmap, fill),
+	LUA_CLASS_FUNC(_lua_bitmap, drawLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalLine),
+	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalDottedLine),
+	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalDottedLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawRect),
 	LUA_CLASS_FUNC(_lua_bitmap, drawFilledRect),
 	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalGradient),

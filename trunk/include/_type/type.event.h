@@ -42,7 +42,8 @@ enum _eventType : _u8
 	onChange,
 	onBlur,
 	onFocus,
-	onClose
+	onClose,
+	onStyleSet
 };
 
 
@@ -74,7 +75,6 @@ class _event
 		/**
 		 * Parameters
 		**/
-		void* 	src;			//! Triggering Gadget not defined sometimes
 		void* 	dest;			//! Gadget to receive the Event
 		_coord 	posX;			//! X-Position of the Mouse when the Event was triggered
 		_coord 	posY;			//! Y-Position of the Mouse when the Event was triggered
@@ -91,14 +91,11 @@ class _event
 	public:
 		
 		//! Default Constructor
-		_event( _gadget* src = nullptr , _eventType type = _none_ );
-		
-		//! Common Constructor
-		_event( _eventType type );
+		_event( _eventType type = _none_ );
 		
 		//! Specific Events:
-		static _event refreshEvent( _gadget* src ,  _area damagedRects = _area() );
-		static _event dialogClose( _gadget* src , _s32 intVal , string strVal );
+		static _event refreshEvent( _area damagedRects = _area() );
+		static _event dialogClose( _s32 intVal , string strVal );
 		
 		//! Manually set Event Type
 		_event& setType( _eventType type ){ this->type = type; return *this; }
@@ -125,7 +122,6 @@ class _event
 		
 		//! Setters...
 		_event& setDestination( void* newVal ){ this->dest = newVal; return *this; }//!..........<= Set the Destination
-		_event& setSource( void* newVal ){ this->src = newVal; return *this; }//!................<= Set the Source
 		_event& setPosX( _coord val ){ this->posX = val; return *this; }//!......................<= Set Triggering Point X
 		_event& setPosY( _coord val ){ this->posY = val; return *this; }//!......................<= Set Triggering Point Y
 		_event& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!.......<= Set Triggering Point X which results in the position on the screen that the user effectively touched
@@ -140,7 +136,6 @@ class _event
 		
 		//! Getters
 		void* getDestination(){ return this->dest; }//!.........................<= Get Destination Gadget
-		void* getSource(){ return this->src; }//!...............................<= Get Trigger Gadget
 		_coord getPosX(){ return this->posX; }//!...............................<= Get Triggering Point X
 		_coord getPosY(){ return this->posY; }//!...............................<= Get Triggering Point Y
 		_coord getEffectivePosX(){ return this->effectiveX; }//!................<= Get effective Triggering Point X

@@ -18,7 +18,6 @@ class _animation{
 		friend class _system;
 		_tempTime			startTime;
 		_tempTime			duration; //! In Milliseconds
-		_s32*				destination;
 		
 		//! Additionally: call a setter function
 		const _callback* 	setterFunc;

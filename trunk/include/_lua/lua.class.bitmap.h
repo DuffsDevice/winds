@@ -60,6 +60,15 @@ class _lua_bitmap{
 		//! drawHorizontalLine
 		int drawHorizontalLine( lua_State* L );
 		
+		//! drawVerticalDottedLine
+		int drawVerticalDottedLine( lua_State* L );
+		
+		//! drawHorizontalDottedLine
+		int drawHorizontalDottedLine( lua_State* L );
+		
+		//! drawLine
+		int drawLine( lua_State* L );
+		
 		//! drawRect
 		int drawRect( lua_State* L );
 		

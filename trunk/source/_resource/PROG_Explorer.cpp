@@ -15,10 +15,10 @@ void PROG_Explorer::main( _cmdArgs& args )
 	if( args["path"].length() )
 		this->path = args["path"];
 	
-	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" , _style::owner( this ) );
-	this->fileview = new _fileview( 118 , 47 , 0 , 12 , this->path , _style::owner( this ) );
-	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::owner( this ) );
-	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::owner( this ) );
+	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" , _style::storeHost( this ) );
+	this->fileview = new _fileview( 118 , 47 , 0 , 12 , this->path , _style::storeHost( this ) );
+	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
+	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );
 	
 	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
 	
@@ -44,7 +44,7 @@ _callbackReturn PROG_Explorer::handler( _event event )
 {
 	
 	_gadget* that = event.getGadget();
-	PROG_Explorer* prog = (PROG_Explorer*)that->getStyle().own;
+	PROG_Explorer* prog = (PROG_Explorer*)that->getStyle().host;
 	
 	if( that->getType() == _gadgetType::button )
 	{
