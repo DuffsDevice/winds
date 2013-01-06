@@ -185,13 +185,13 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _style s
 	
 	// Regsiter Handling Functions for events
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( onFocus , &_textbox::focusHandler );
-	this->registerEventHandler( onBlur , &_textbox::blurHandler );
-	this->registerEventHandler( refresh , &_textbox::refreshHandler );
-	this->registerEventHandler( mouseDown , &_textbox::mouseHandler );
-	this->registerEventHandler( keyDown , &_textbox::keyHandler );
-	this->registerEventHandler( dragStart , &_textbox::mouseHandler );
-	this->registerEventHandler( dragging , &_textbox::mouseHandler );
+	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::blurHandler ) );
+	this->registerEventHandler( refresh , new _staticCallback( &_textbox::refreshHandler ) );
+	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_textbox::mouseHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_textbox::mouseHandler ) );
 	
 	// Refresh Myself
 	this->refreshBitmap();

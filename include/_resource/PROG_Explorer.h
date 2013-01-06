@@ -18,8 +18,7 @@ class PROG_Explorer : public _progC {
 		_textbox*	addressbar;
 		_button*	submitbutton;
 		
-		void		init( _cmdArgs& args );
-		int			main( _cmdArgs& args );
+		void		main( _cmdArgs& args );
 		void		destruct();
 		
 		static _callbackReturn handler( _event event );

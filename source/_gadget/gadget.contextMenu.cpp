@@ -101,6 +101,6 @@ _contextMenu::_contextMenu( _length width , _length height , _gadget* owner , _s
 	, owner( owner )
 	, opened( false )
 {	
-	this->registerEventHandler( blur , &_contextMenu::blurHandler );	
-	this->registerEventHandler( close , &_contextMenu::closeAndSend );	
+	this->registerEventHandler( blur , new _staticCallback( &_contextMenu::blurHandler ) );
+	this->registerEventHandler( close , new _staticCallback( &_contextMenu::closeAndSend ) );
 }

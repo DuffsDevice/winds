@@ -25,7 +25,7 @@ _bootupScreen::_bootupScreen( _u8 bgId , _style style ) :
 	, bar( new _progressbar( 51 , 102 , 125 , false ) )
 {	
 	refresher->style.canReceiveFocus = false;
-	refresher->registerEventHandler( refresh , &_bootupScreen::refreshHandler );
+	refresher->registerEventHandler( refresh , new _staticCallback( &_bootupScreen::refreshHandler ) );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	

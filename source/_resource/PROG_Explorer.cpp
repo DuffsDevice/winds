@@ -6,11 +6,11 @@
 //_label* b2 = nullptr;
 
 PROG_Explorer::PROG_Explorer() :
-	_progC( static_cast<void (_progC::*)(_cmdArgs&)>( &PROG_Explorer::init) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) , static_cast<int (_progC::*)(_cmdArgs&)>( &PROG_Explorer::main) )
+	_progC( static_cast<void (_progC::*)(_cmdArgs&)>( &PROG_Explorer::main) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) )
 	, path( "/" )
 { }
 
-void PROG_Explorer::init( _cmdArgs& args )
+void PROG_Explorer::main( _cmdArgs& args )
 {
 	if( args["path"].length() )
 		this->path = args["path"];
@@ -20,7 +20,7 @@ void PROG_Explorer::init( _cmdArgs& args )
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::owner( this ) );
 	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::owner( this ) );
 	
-	this->submitbutton->registerEventHandler( onAction , PROG_Explorer::handler );
+	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
 	
 	this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );
@@ -63,10 +63,4 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		//((_label*)that)->setStrValue( "hello" );
 	
 	return handled;
-}
-
-
-int PROG_Explorer::main( _cmdArgs& args )
-{
-	return 0;
 }

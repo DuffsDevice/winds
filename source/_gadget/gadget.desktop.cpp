@@ -46,7 +46,7 @@ _desktop::_desktop( _style style ) :
 	this->style.canReceiveFocus = false;
 	//ft = new _freetypefont("/font.ttf");
 	
-	this->registerEventHandler( refresh , &_desktop::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_desktop::refreshHandler ) );
 	
 	// Refresh
 	this->refreshBitmap();

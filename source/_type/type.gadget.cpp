@@ -1,20 +1,20 @@
 #include "_type/type.gadget.h"
 #include "_type/type.system.h"
 
-map<_eventType,_gadgetDefaultEventHandler> _gadget::defaultEventHandlers = {
-	{ focus , &_gadget::gadgetFocusHandler },
-	{ blur , &_gadget::gadgetFocusHandler },
-	{ mouseDown , &_gadget::gadgetMouseHandler },
-	{ mouseUp , &_gadget::gadgetMouseHandler },
-	{ mouseClick , &_gadget::gadgetMouseHandler },
-	{ mouseDoubleClick , &_gadget::gadgetMouseHandler },
-	{ refresh , &_gadget::gadgetRefreshHandler },
-	{ dragStart , &_gadget::gadgetDragHandler },
-	{ dragStop , &_gadget::gadgetDragHandler },
-	{ dragging , &_gadget::gadgetDragHandler },
-	{ keyDown , &_gadget::gadgetKeyHandler },
-	{ keyUp , &_gadget::gadgetKeyHandler },
-	{ keyClick , &_gadget::gadgetKeyHandler },
+_map<_eventType,const _callback*> _gadget::defaultEventHandlers = {
+	{ focus , new _staticCallback( &_gadget::gadgetFocusHandler ) },
+	{ blur , new _staticCallback( &_gadget::gadgetFocusHandler ) },
+	{ mouseDown , new _staticCallback( &_gadget::gadgetMouseHandler ) },
+	{ mouseUp , new _staticCallback( &_gadget::gadgetMouseHandler ) },
+	{ mouseClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
+	{ mouseDoubleClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
+	{ refresh , new _staticCallback( &_gadget::gadgetRefreshHandler ) },
+	{ dragStart , new _staticCallback( &_gadget::gadgetDragHandler ) },
+	{ dragStop , new _staticCallback( &_gadget::gadgetDragHandler ) },
+	{ dragging , new _staticCallback( &_gadget::gadgetDragHandler ) },
+	{ keyDown , new _staticCallback( &_gadget::gadgetKeyHandler ) },
+	{ keyUp , new _staticCallback( &_gadget::gadgetKeyHandler ) },
+	{ keyClick , new _staticCallback( &_gadget::gadgetKeyHandler ) },
 };
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
@@ -108,19 +108,6 @@ _gadget* _gadget::getScreen()
 		return nullptr;
 }
 
-int _gadget::unregisterLuaEventHandler( _eventType type ){
-	
-	if( this->luaEventHandlers.count( type ) == 0 )
-		return LUA_NOREF;
-	
-	int d = this->luaEventHandlers[ type ].first;
-	
-	// Unbind the Handler
-	this->luaEventHandlers.erase( type );
-	
-	return d;
-}
-
 bool _gadget::blurChild()
 {
 	if( focusedChild )
@@ -177,65 +164,44 @@ bool _gadget::focusChild( _gadget* child )
 	return true;
 }
 
-_callbackReturn _gadget::handleEventDefault( _event& event )
+_callbackReturn _gadget::handleEventDefault( _event event )
 {
 	// Use the default EventHandler if available
 	if( _gadget::defaultEventHandlers.count( event.getType() ) )
-		return _gadget::defaultEventHandlers[ event.getType() ]( event );
+	{
+		event.setGadget( this );
+		return (*defaultEventHandlers[ event.getType() ])( event );
+	}
 	
 	// If the Handler for the given event doesn't exist, return 
 	return not_handled;
 }
 
-_callbackReturn _gadget::handleEventNormal( _event event )
+_callbackReturn _gadget::handleEvent( _event event )
 {
 	// Check for Normal Event Handlers
 	if( this->eventHandlers.count( event.getType() ) )
 	{
-		_callbackReturn ret = this->eventHandlers[ event.getType() ]( event );
-		
+		event.setGadget( this );
+		_callbackReturn ret = (*eventHandlers[ event.getType() ])( event );
 		if( ret != use_default )
 			return ret;
 	}
 	
-	// If the Handler doesn't exist, return 
+	// If the Handler doesn't exist, return the default Handler
 	return this->handleEventDefault( event );
-}
-
-_callbackReturn _gadget::handleEvent( _event event )
-{
-	//startTimer( reinterpret_cast<void*>(&_gadget::handleEvent) );
-	event.setGadget( this );
-	pair<int,lua_State*> data;
-	_callbackReturn ret = not_handled;
-	
-	// Check for a Handler by lua
-	if( this->luaEventHandlers.count( event.getType() ) )
-	{
-		ret = lua_callEventHandler( (data = this->luaEventHandlers[ event.getType() ]).second , data.first , event );
-		if( ret == use_default )
-		{
-			return this->handleEventDefault( event ); // Use the default EventHandler if available	
-		}
-		else if( ret != use_normal )
-		{
-			return ret;
-		}
-	}
-	// Use the default EventHandler if available
-	return this->handleEventNormal( event ); 
 }
 
 _coord _gadget::getAbsoluteX() const {
 	if( this->parent != nullptr )
-		return this->parent->getAbsoluteX() + this->dimensions.x + ( this->style.enhanced ? 0 : this->parent->getPadding().getLeft() );
+		return this->parent->getAbsoluteX() + this->dimensions.x + ( this->style.enhanced ? 0 : this->parent->getPadding().left );
 	
 	return this->dimensions.x;
 }
 
 _coord _gadget::getAbsoluteY() const {
 	if( this->parent != nullptr )
-		return this->parent->getAbsoluteY() + this->dimensions.y + ( this->style.enhanced ? 0 : this->parent->getPadding().getTop() );
+		return this->parent->getAbsoluteY() + this->dimensions.y + ( this->style.enhanced ? 0 : this->parent->getPadding().top );
 	
 	return this->dimensions.y;
 }
@@ -443,7 +409,7 @@ void _gadget::setWidth( _length val )
 	this->bubbleEvent( _event::refreshEvent( this , dim.combine( this->getAbsoluteDimensions() ) ) , true );
 }
 
-_callbackReturn _gadget::gadgetRefreshHandler( _event& event )
+_callbackReturn _gadget::gadgetRefreshHandler( _event event )
 {
 	//startTimer( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler) );
 	_gadget* that = event.getGadget();
@@ -475,7 +441,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event& event )
 	
 	for( _gadget* gadget : that->children )
 	{
-		_rect dim = gadget->getDimensions().relativeVersion( -padding.getLeft() , -padding.getTop() );
+		_rect dim = gadget->getDimensions().relativeVersion( -padding.left , -padding.top );
 		
 		// Reset clipping Rects
 		bP.deleteClippingRects();
@@ -520,8 +486,8 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event& event )
 _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* parent)
 {
 	const _padding& p = parent->getPadding();
-	_coord posPadX = posX - p.getLeft();
-	_coord posPadY = posY - p.getTop();
+	_coord posPadX = posX - p.left;
+	_coord posPadY = posY - p.top;
 	
 	for( _gadget* gadget : parent->enhancedChildren )
 	{
@@ -540,7 +506,7 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* par
 	return nullptr;
 }
 
-_callbackReturn _gadget::gadgetMouseHandler( _event& event )
+_callbackReturn _gadget::gadgetMouseHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -548,8 +514,8 @@ _callbackReturn _gadget::gadgetMouseHandler( _event& event )
 	
 	_coord posX = event.getPosX();
 	_coord posY = event.getPosY();
-	_coord posPadX = posX - p.getLeft();
-	_coord posPadY = posY - p.getTop();
+	_coord posPadX = posX - p.left;
+	_coord posPadY = posY - p.top;
 	
 	// Temp...
 	_gadget* mouseContain = getGadgetOfMouseDown( posX , posY , that );
@@ -585,7 +551,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event& event )
 }
 
 
-_callbackReturn _gadget::gadgetDragHandler( _event& event )
+_callbackReturn _gadget::gadgetDragHandler( _event event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
@@ -594,8 +560,8 @@ _callbackReturn _gadget::gadgetDragHandler( _event& event )
 	const _padding& p = that->getPadding();
 	_coord posX = event.getPosX();
 	_coord posY = event.getPosY();
-	_coord posPadX = posX - p.getLeft();
-	_coord posPadY = posY - p.getTop();
+	_coord posPadX = posX - p.left;
+	_coord posPadY = posY - p.top;
 	
 	// Start Dragging
 	if( event.getType() == dragStart )
@@ -637,8 +603,8 @@ _callbackReturn _gadget::gadgetDragHandler( _event& event )
 			event	.setPosX( posX - that->getX() )
 					.setPosY( posY - that->getY() );
 		else
-			event	.setPosX( posX - ( that->getX() + p.getLeft() ) )
-					.setPosY( posY - ( that->getY() + p.getTop() ) );
+			event	.setPosX( posX - ( that->getX() + p.left ) )
+					.setPosY( posY - ( that->getY() + p.top) );
 		
 		// Rewrite Destination andTrigger the Event
 		_callbackReturn ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
@@ -661,8 +627,8 @@ _callbackReturn _gadget::gadgetDragHandler( _event& event )
 			event	.setPosX( posX - that->getX() )
 					.setPosY( posY - that->getY() );
 		else
-			event	.setPosX( posX - ( that->getX() + p.getLeft() ) )
-					.setPosY( posY - ( that->getY() + p.getTop() ) );
+			event	.setPosX( posX - ( that->getX() + p.left ) )
+					.setPosY( posY - ( that->getY() + p.top ) );
 		
 		// Rewrite Destination andTrigger the Event
 		return that->dragTemp->handleEvent( event );
@@ -670,7 +636,7 @@ _callbackReturn _gadget::gadgetDragHandler( _event& event )
 	return not_handled;
 }
 
-_callbackReturn _gadget::gadgetFocusHandler( _event& event )
+_callbackReturn _gadget::gadgetFocusHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -685,7 +651,7 @@ _callbackReturn _gadget::gadgetFocusHandler( _event& event )
 	return handled;
 }
 
-_callbackReturn _gadget::gadgetKeyHandler( _event& event )
+_callbackReturn _gadget::gadgetKeyHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	

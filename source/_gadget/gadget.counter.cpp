@@ -70,12 +70,13 @@ _callbackReturn _counter::refreshHandler( _event event )
 	return use_default;
 }
 
-_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _style style ) :
+_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style style ) :
 	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , style )
 	, circular( circular )
 	, intValue( value )
 	, lowerBound( lowerBound )
 	, upperBound( upperBound )
+	, numbersystem( numbersystem )
 {
 	// Read the number of decimals we have to fill with letters
 	refreshDecimals();
@@ -83,19 +84,19 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop );
 	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom );
 	
-	this->valueLabel = new _label( this->getWidth() - 9 , this->getHeight() - 2 , 0 , 1 , int2string( value , this->decimals ) );
+	this->valueLabel = new _label( this->getWidth() - 9 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
 	this->valueLabel->setAlign( _align::center );
 	this->valueLabel->setVAlign( _valign::middle );
 	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
 	
-	this->increaseHandle->registerEventHandler( onAction , &_counter::changeHandler );
-	this->decreaseHandle->registerEventHandler( onAction , &_counter::changeHandler );
+	this->increaseHandle->registerEventHandler( onAction , new _staticCallback( &_counter::changeHandler ) );
+	this->decreaseHandle->registerEventHandler( onAction , new _staticCallback( &_counter::changeHandler ) );
 	
 	//! Refresh - Handler
-	this->registerEventHandler( refresh , &_counter::refreshHandler );
-	this->registerEventHandler( keyDown , &_counter::changeHandler );
-	this->registerEventHandler( onBlur , &_counter::changeHandler );
-	this->registerEventHandler( onFocus , &_counter::changeHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_counter::refreshHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_counter::changeHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_counter::changeHandler ) );
+	this->registerEventHandler( onFocus , new _staticCallback( &_counter::changeHandler ) );
 	
 	this->addEnhancedChild( this->increaseHandle );
 	this->addEnhancedChild( this->decreaseHandle );
@@ -106,7 +107,7 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 }
 
 _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _style style ) :
-	_counter( x , y , width , circular , value , circular ? 1000 : 2147483647 , circular ? 0 : -2147483647 , style )
+	_counter( x , y , width , circular , value , 99 , 0 , 10 , style )
 { }
 
 void _counter::setIntValue( int value )
@@ -119,6 +120,6 @@ void _counter::setIntValue( int value )
 	if( value != this->intValue )
 	{
 		this->intValue = value;
-		this->valueLabel->setStrValue( int2string( value , this->decimals ) );
+		this->valueLabel->setStrValue( int2string( value , this->decimals , this->numbersystem ) );
 	}
 }

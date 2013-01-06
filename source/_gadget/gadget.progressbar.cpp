@@ -73,33 +73,22 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 
 void _progressbar::step()
 {
-	_u32 time = _system::getHighResTime();
-	if( time - this->lastTime > 150 )
-	{
-		if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
-			this->state = 0;
-		this->lastTime = time;
-		bubbleRefresh( true );
-	}
+	if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
+		this->state = 0;
+	bubbleRefresh( true );
 }
-
-//if( val == this->state ) return; this->state = val; this->bubbleRefresh( true ); }
-
-#define method_cast( t ) reinterpret_cast<void (unknownClass::*)()>(t)
-#define class_cast( t ) reinterpret_cast<unknownClass*>(t)
 
 _progressbar::_progressbar( _length width , _length height , _coord x , _coord y  , bool type , _style style ) :
 	_gadget( _gadgetType::progressbar , width , 8 , x , y , style )
 	, type( type )
 	, value( 70 )
 	, blue( false )
-	, lastTime( _system::getHighResTime() )
 {
-	_system::addVblListener( new _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
+	_system::executeTimer( new _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_progressbar::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_progressbar::refreshHandler ) );
 	
 	// refresh!
 	this->refreshBitmap();
@@ -110,7 +99,5 @@ _progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _
 { }
 
 _progressbar::~_progressbar(){
-	_system::removeVblListener( _classCallback( class_cast( this ) , method_cast( &_progressbar::step ) ) );
+	_system::terminateTimer( _classCallback( this , &_progressbar::step ) );
 }
-
-	

@@ -6,25 +6,15 @@
 #include "_type/type.gadgetStyle.h"
 #include "_type/type.bitmapPort.h"
 #include "_type/type.event.h"
-
-//! For the Lua-Part of the gadget
-#include "_lua/lua.hpp"
+#include "_type/type.callback.h"
 
 // STD-Standards
 #include <nds/memory.h>
 
 class _gadget;
 
-extern _callbackReturn lua_callEventHandler( lua_State* L , int handler , _event e );
-
-// _gagdetEventHandler
-typedef _callbackReturn (*_gadgetEventHandler)(_event);
-
 // _gadgetList
 typedef _list<_gadget*> _gadgetList;
-
-// _gadgetDefaultEventHandler
-typedef _callbackReturn (*_gadgetDefaultEventHandler)(_event&);
 
 class _gadget{
 	
@@ -75,16 +65,15 @@ class _gadget{
 		_gadget*		dragTemp;
 		
 		// Event-Handlers
-		_map<_eventType,pair<int,lua_State*>> 				luaEventHandlers;
-		_map<_eventType,_gadgetEventHandler> 				eventHandlers;
-		static _map<_eventType,_gadgetDefaultEventHandler> defaultEventHandlers;
+		_map<_eventType,const _callback*> 			eventHandlers;
+		static _map<_eventType,const _callback*> 	defaultEventHandlers;
 		
 		// Standard EventHandler
-		static _callbackReturn	gadgetRefreshHandler( _event& event );
-		static _callbackReturn	gadgetDragHandler( _event& event ) ITCM_CODE ;
-		static _callbackReturn	gadgetMouseHandler( _event& event ) ITCM_CODE ;
-		static _callbackReturn	gadgetFocusHandler( _event& event ) ITCM_CODE ;
-		static _callbackReturn	gadgetKeyHandler( _event& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetDragHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetMouseHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetFocusHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetKeyHandler( _event event ) ITCM_CODE ;
 		
 		// Bitmap of the Gadget
 		_bitmap	 				bitmap;
@@ -166,17 +155,9 @@ class _gadget{
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
 		**/
-		void registerEventHandler( _eventType type , _gadgetEventHandler handler ){
+		void registerEventHandler( _eventType type , const _callback* handler ){
 			// Insert The Handler no matter if there was already one acting to that eventType
 			this->eventHandlers[type] = handler;
-		}
-		
-		/**
-		 * Register a Lua Event Handler to catch some events thrown on this Gadget
-		**/
-		void registerLuaEventHandler( _eventType type , int handler , lua_State* L ){
-			// Insert The Handler no matter if there was already one acting to that eventType
-			this->luaEventHandlers[type] = make_pair( handler , L );
 		}
 		
 		/**
@@ -184,7 +165,7 @@ class _gadget{
 		 * some events thrown on this Gadget and not handled by 
 		 * any other EventHandlers
 		**/
-		static void registerDefaultEventHandler( _eventType type , _gadgetDefaultEventHandler handler ){
+		static void registerDefaultEventHandler( _eventType type , const _callback* handler ){
 			// Insert The Handler no matter if there was already one acting to that eventType
 			_gadget::defaultEventHandlers[type] = handler;
 		}
@@ -194,13 +175,11 @@ class _gadget{
 		**/
 		void unregisterEventHandler( _eventType type ){
 			// Unbind the Handler
+			const _callback* data = this->eventHandlers[type];
+			if( data )
+				delete data;
 			this->eventHandlers.erase( type );
 		}
-		
-		/**
-		 * Unbind a LuaEventHandler from this Gadget
-		**/
-		int unregisterLuaEventHandler( _eventType type );
 		
 		/**
 		 * Method to push an event onto the stack
@@ -215,22 +194,17 @@ class _gadget{
 		/**
 		 * Check if this Gadget has an EventHandler registered reacting on the specified type
 		**/
-		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ) || this->luaEventHandlers.count( type ); }
+		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ); }
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		**/
-		_callbackReturn handleEvent( _event event ) ;
-		
-		/**
-		 * Make The Gadget act onto a specific GadgetEvent by using the Normal C++ event-handler if available
-		**/
-		_callbackReturn handleEventNormal( _event event ) ;
+		_callbackReturn handleEvent( _event event );
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
 		**/
-		_callbackReturn handleEventDefault( _event& event ) ;
+		_callbackReturn handleEventDefault( _event event );
 		
 		/**
 		 * Get the absolute X-position

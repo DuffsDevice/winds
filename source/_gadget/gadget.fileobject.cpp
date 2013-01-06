@@ -45,12 +45,12 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	this->bitmap.reset( NO_COLOR );
 	
 	// Register Handlers
-	this->registerEventHandler( dragging , &_fileobject::dragHandler );
-	this->registerEventHandler( dragStart , &_fileobject::dragHandler );
-	this->registerEventHandler( dragStop , &_fileobject::dragHandler );
-	this->registerEventHandler( onFocus , &_fileobject::focusHandler );
-	this->registerEventHandler( onBlur , &_fileobject::focusHandler );
-	this->registerEventHandler( mouseDoubleClick , &_fileobject::doubleClickHandler );
+	this->registerEventHandler( dragging , new _staticCallback( &_fileobject::dragHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_fileobject::dragHandler ) );
+	this->registerEventHandler( dragStop , new _staticCallback( &_fileobject::dragHandler ) );
+	this->registerEventHandler( onFocus , new _staticCallback( &_fileobject::focusHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_fileobject::focusHandler ) );
+	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_fileobject::doubleClickHandler ) );
 	
 	switch( this->viewType )
 	{

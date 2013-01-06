@@ -1,5 +1,5 @@
 #include "_type/type.h"
-#include <stdio.h>
+#include <nds/bios.h>
 
 _length SCREEN_WIDTH = 256;
 _length SCREEN_HEIGHT = 192;
@@ -113,18 +113,80 @@ int string2int( const char *p ){
     return x;
 }
 
-string int2string( _int val , _u8 zeroFill )
+const char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+string int2string( _int val , _u8 zeroFill , _u8 numbersystem )
 {
 	char result[32]; // string which will contain the number
-	char format[32];
-
-	if( !zeroFill )
-		sprintf( result , "%d", val ); // %d makes the result be a decimal integer
-	else
+	int i = 31;
+	while( val != 0 )
 	{
-		sprintf( format , "%%0%dd" , zeroFill ); // Write the actual format string
-		sprintf( result , format , val ); // %d makes the result be a decimal integer
+		int remainder;
+		swiDivMod( val , numbersystem , &val , &remainder );
+		result[--i] = numbers[remainder];
 	}
 	
-	return result;
+	if( zeroFill )
+		while( i > 31 - zeroFill )
+			result[--i] = '0';
+	
+	result[31] = 0; // Delimiter
+	
+	return &result[i];
+}
+
+int countDecimals( _s32 value , _u8 numbersystem )
+{
+	int i = 0;
+	switch( numbersystem )
+	{
+		case 0:
+		case 1:
+			i = 1;
+			break;
+		case 2:
+			while( value != 0 )
+			{
+				i++;
+				value >>= 1;
+			}
+			break;
+		case 4:
+			while( value != 0 )
+			{
+				i++;
+				value >>= 2;
+			}
+			break;
+		case 8:
+			while( value != 0 )
+			{
+				i++;
+				value >>= 3;
+			}
+			break;
+		case 16:
+			while( value != 0 )
+			{
+				i++;
+				value >>= 4;
+			}
+			break;
+		case 32:
+			while( value != 0 )
+			{
+				i++;
+				value >>= 5;
+			}
+			break;
+		default:
+			while( value != 0 )
+			{
+				i++;
+				value /= numbersystem;
+			}
+			break;
+	}
+	
+	return i;
 }

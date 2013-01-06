@@ -47,7 +47,7 @@ void _system::fadeMainScreen( bool out , bool anim )
 	_tempTime time = _system::getHighResTime();
 	
 	REG_BLDCNT = ( 1 << 3 ) | ( 1 << 2 ) // 3rd and 2nd Screen_Layer
-	| ( 3 << 6 ) ; // Det Blend Mode to fade to black ( 2 << 6 ) would be fading to white
+	| ( 3 << 6 ) ; // Set Blend Mode to fade to black ( 2 << 6 ) would be fading to white
 	
 	if( out )
 	{
@@ -62,9 +62,75 @@ void _system::fadeMainScreen( bool out , bool anim )
 			REG_BLDY = float(_system::getHighResTime() - time )/(200)*31;
 		
 		REG_BLDY = 31;
-	} 
+	}
 }
 
+//! the speed in which the timer ticks in hertz.
+//! #define BUS_CLOCK (33513982)
+//! BUS_CLOCK >> 15 - BUS_CLOCK >> 21 - BUS_CLOCK >> 22 = 1000 * rawTime
+//! There you get milliseconds from rawTime!
+
+_tempTime _system::getHighResTime(){
+	_tempTime tmp = cpuGetTiming();
+	return ( tmp >> 15 ) - ( tmp >> 21 ) - ( tmp >> 22 );
+}
+
+void _system::executeTimer( const _callback* cb , _tempTime duration , bool isRepeating )
+{
+	_timers_.push_back(
+		make_pair(
+			cb , 
+			_callbackData( { getHighResTime() , duration , isRepeating } )
+		)
+	);
+}
+
+void _system::terminateTimer( const _callback& cb ){
+	_timers_.remove_if(
+		[&]( _pair<const _callback*,_callbackData> data )->bool{
+			if( ( *data.first == cb ) == 1 )
+			{
+				delete data.first;
+				return true;
+			}
+			return false;
+		}
+	);
+}
+
+void _system::runTimers()
+{
+	_tempTime curTime = getHighResTime();
+	
+	_timers_.remove_if( 
+		[&]( _pair<const _callback*,_callbackData>& cb )->bool
+		{
+			_callbackData& data = cb.second;
+			while( curTime > data.duration + data.startTime ) // "while" instead of "if" to make sure even high-frequency timers get called the right times
+			{
+				(*cb.first)();
+				if( data.repeating )
+					data.startTime += data.duration;
+				else
+					return true;
+			}
+			return false;
+		}
+	);
+}
+
+void _system::runPrograms()
+{
+	_programs_.remove_if(
+		[]( pair<_program*,_cmdArgs>& prog )->bool{
+			if( prog.first->autoDelete ){
+				delete prog.first;
+				return true;
+			}
+			return false;
+		}
+	);
+}
 
 void _system::deleteGadgetHost()
 {
@@ -100,7 +166,7 @@ void _system::vblHandler()
 	//	_system::_keyboard_->screenVBL();
 	_system::processEvents();
 	_system::runAnimations();
-	_system::runVblListeners();
+	_system::runTimers();
 }
 
 //static int z = 0;
@@ -464,11 +530,12 @@ string& _system::getLocalizedString( string name )
 //! Static Attributes...
 bool 							_system::_sleeping_ = false;
 _list<_animation*>				_system::_animations_;
-_list<const _callback*>			_system::_vblListeners_;
+_list<_pair<const _callback*,
+		_callbackData>>			_system::_timers_;
 _map<string,_font*>				_system::_fonts_;
 _ini*							_system::_localizationTable_;
 string							_system::_curLanguageShortcut_;
-_list<pair<_program*,_cmdArgs>>	_system::_programs_;
+_list<_pair<_program*,_cmdArgs>>_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;
 _screen*						_system::_topScreen_ = nullptr;
 _keyboard*						_system::_keyboard_ = nullptr;

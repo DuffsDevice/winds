@@ -55,7 +55,7 @@ _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo ) )
 {	
 	refresher->style.canReceiveFocus = false;
-	refresher->registerEventHandler( refresh , &_startupScreen::refreshHandler );
+	refresher->registerEventHandler( refresh , new _staticCallback( &_startupScreen::refreshHandler ) );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
 	

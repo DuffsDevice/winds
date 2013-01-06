@@ -164,8 +164,8 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_label::refreshHandler );
-	this->registerEventHandler( onResize , &_label::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );
+	this->registerEventHandler( onResize , new _staticCallback( &_label::refreshHandler ) );
 	
 	// Refresh
 	this->refreshBitmap();
@@ -184,7 +184,7 @@ _label::_label( _coord x , _coord y , string text , _style style ) :
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_label::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );
 	
 	// Refresh
 	this->computeSize();

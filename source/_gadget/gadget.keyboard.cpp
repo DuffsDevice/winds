@@ -78,7 +78,7 @@ void _keyboard::screenVBL()
 int _x = 0 , _y = 0;
 float _factor = 1;
 
-void _keyboard::setState( int value )
+int _keyboard::setState( int value )
 {
 	if( value != this->curState )
 	{
@@ -103,6 +103,7 @@ void _keyboard::setState( int value )
 		this->setY( SCREEN_HEIGHT - value );
 	}
 	this->curState = value;
+	return value;
 }
 
 void _keyboard::open()
@@ -111,6 +112,11 @@ void _keyboard::open()
 	this->animKeyb.setToValue( sEnd );
 	this->mode = true;
 	this->animKeyb.start();
+}
+
+void reset( void )
+{
+	_factor = 1; _x = 0; _y = 0;
 }
 
 void _keyboard::close()
@@ -125,16 +131,16 @@ void _keyboard::close()
 	
 	this->animKeyb.setToValue( sStart );
 	this->animMagnif.setToValue( sStart );
-	this->animMagnif.finish( [&]( int v ){ _factor = 1; _x = 0; _y = 0; } );
+	this->animMagnif.finish( new _staticCallback( &reset ) );
 	this->mode = false;
 	this->animMagnif.start();
 	this->animKeyb.start();
 }
 
-void _keyboard::setMagnification( int value )
+int _keyboard::setMagnification( int value )
 {
 	if( _factor == 1 && _x == 0 && _y == 0 )
-		return;
+		return value;
 	
 	// Scale Lower Screen
 	float percent = float(value) / sEnd;
@@ -146,6 +152,7 @@ void _keyboard::setMagnification( int value )
 	this->gHScreen->scrollY( -percent * ( 0 - _y ) );
 	
 	bgUpdate();
+	return value;
 }
 
 void _keyboard::setDestination( _gadget* dest )
@@ -215,7 +222,7 @@ void _keyboard::setDestination( _gadget* dest )
 		this->animKeyb.start();
 		this->animMagnif.setFromValue( this->curState );
 		this->animMagnif.setToValue( sStart );
-		this->animMagnif.finish( [&]( int v ){ _factor = 1; _x = 0; _y = 0; } );
+		this->animMagnif.finish( new _staticCallback( &reset ) );
 		this->animMagnif.start();
 		this->mode = false;
 	}
@@ -397,20 +404,20 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	
 	//! Animations
 	this->animKeyb.setEasing( _animation::_expo::easeOut );
-	this->animKeyb.setter( [&]( int n ){ this->setState( n ); } );
+	this->animKeyb.setter( new _classCallback( this , &_keyboard::setState ) );
 	this->animMagnif.setEasing( _animation::_expo::easeOut );
-	this->animMagnif.setter( [&]( int n ){ this->setMagnification( n ); } );
+	this->animMagnif.setter( new _classCallback( this , &_keyboard::setMagnification ) );
 	
 	//! Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , &_keyboard::refreshHandler );
-	this->registerEventHandler( keyDown , &_keyboard::keyHandler );
-	this->registerEventHandler( keyUp , &_keyboard::keyHandler );
-	this->registerEventHandler( keyClick , &_keyboard::keyHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_keyboard::refreshHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_keyboard::keyHandler ) );
+	this->registerEventHandler( keyUp , new _staticCallback( &_keyboard::keyHandler ) );
+	this->registerEventHandler( keyClick , new _staticCallback( &_keyboard::keyHandler ) );
 	
-	this->registerEventHandler( dragStart , &_keyboard::dragHandler );
-	this->registerEventHandler( dragStop , &_keyboard::dragHandler );
-	this->registerEventHandler( dragging , &_keyboard::dragHandler );
-	this->registerEventHandler( focus , &_keyboard::focusHandler );
+	this->registerEventHandler( dragStart , new _staticCallback( &_keyboard::dragHandler ) );
+	this->registerEventHandler( dragStop , new _staticCallback( &_keyboard::dragHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_keyboard::dragHandler ) );
+	this->registerEventHandler( focus , new _staticCallback( &_keyboard::focusHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

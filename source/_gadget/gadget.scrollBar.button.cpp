@@ -234,5 +234,5 @@ _scrollButton::_scrollButton( _length width , _length height , _coord x , _coord
 	_button( width , height , x , y , "" , style )
 	, type( type )
 {
-	this->registerEventHandler( refresh , _scrollButton::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( _scrollButton::refreshHandler ) );
 }

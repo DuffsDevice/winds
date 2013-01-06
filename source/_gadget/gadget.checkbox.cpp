@@ -83,11 +83,11 @@ _checkbox::_checkbox( _coord x , _coord y , _style style ) :
 {
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_checkbox::refreshHandler );
-	this->registerEventHandler( mouseDown , &_checkbox::mouseHandler );
-	this->registerEventHandler( mouseUp , &_checkbox::mouseHandler );
-	this->registerEventHandler( dragStart , &_checkbox::dragHandler );
-	this->registerEventHandler( dragging , &_checkbox::dragHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_checkbox::refreshHandler ) );
+	this->registerEventHandler( mouseDown , new _staticCallback( &_checkbox::mouseHandler ) );
+	this->registerEventHandler( mouseUp , new _staticCallback( &_checkbox::mouseHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_checkbox::dragHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_checkbox::dragHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

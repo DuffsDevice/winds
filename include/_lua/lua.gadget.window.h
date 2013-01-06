@@ -16,10 +16,8 @@ class _lua_window : public _lua_gadget , public _lua_interface_input<_window> {
 		
 		_lua_window( lua_State* L );
 		
-		_lua_window( _window* b ){ 
-			this->setGadget( b );
-			_lua_interface_input::input = (_window*)this->gadget;
-		}
+		_lua_window( _window* w ) : _lua_gadget( w ) , _lua_interface_input( w )
+		{ }
 		
 		
 		//! Lunar !//

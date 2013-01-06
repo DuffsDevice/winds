@@ -26,9 +26,10 @@ class _system{
 	
 		//! Attributes
 		static _list<_animation*>				_animations_;
-		static _list<const _callback*>			_vblListeners_;
+		static _list<_pair<const _callback*,
+						_callbackData>>			_timers_;
 		static _map<string,_font*>				_fonts_;
-		static _list<pair<_program*,_cmdArgs>> 	_programs_;
+		static _list<_pair<_program*,_cmdArgs>>	_programs_;
 		static _direntry*						_debugFile_;
 		static _gadget*							_currentFocus_;
 		
@@ -55,18 +56,8 @@ class _system{
 		
 		//! The daily Vertical Blank and its methods:
 		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( getHighResTime() ); return anim->finished(); } ); }
-		static void runVblListeners(){ for( const _callback* cb : _vblListeners_ ) (*cb)(); }
-		static void runPrograms()
-		{
-			_programs_.remove_if( 
-				[]( pair<_program*,_cmdArgs>& prog )->bool{
-					if( prog.first->main( prog.second ) == 1 && prog.first->autoDelete ){ 
-						delete prog.first; return true; 
-					}
-					return false;
-				}
-			);
-		}
+		static void runTimers();
+		static void runPrograms();
 		
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
@@ -96,11 +87,9 @@ class _system{
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() )
 		{
 			_programs_.push_back( make_pair( prog , args ) );
-			prog->init( _gadgetHost_ , args );
+			prog->main( _gadgetHost_ , args );
 		}
-		static void addVblListener( const _callback* cb ){
-			_vblListeners_.push_back( cb );
-		}
+		static void executeTimer( const _callback* cb , _tempTime duration , bool isRepeating = false );
 		static void generateEvent( _event event ){ _eventBuffer_[_curEventBuffer_].push_back( event ); }
 		
 		//! Things for termination
@@ -110,15 +99,7 @@ class _system{
 			delete prog;
 		}
 		static void terminateAnimation( _animation* anim ){ _animations_.remove( anim ); }
-		static void removeVblListener( const _callback& cb ){
-			_vblListeners_.remove_if( 
-				[&]( const _callback* data )->bool{
-					if( *data == cb )
-					{ delete data; return true; }
-					return false; 
-				}
-			);
-		}
+		static void terminateTimer( const _callback& cb );
 		
 	public:
 	
@@ -143,8 +124,8 @@ class _system{
 		//! Get a Built in Program
 		static _program* getBuiltInProgram( string qualifiedName );
 		
-		//! Get Current Time (time since system startup)
-		static _tempTime getHighResTime(){ return cpuGetTiming() >> 15; }
+		//! Get Current Time (milliseconds since system startup)
+		static _tempTime getHighResTime();
 		
 		//! Get a Font by Name
 		static _font* getFont( string font )

@@ -78,9 +78,9 @@ void _keyboardButton::setKey( _key key ){ this->key = key; }
 void _keyboardButton::init()
 {
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( mouseClick , &_keyboardButton::mouseHandler );
-	this->registerEventHandler( mouseDown , &_keyboardButton::mouseHandler );
-	this->registerEventHandler( _internal_ , &_keyboardButton::mouseHandler );
+	this->registerEventHandler( mouseClick , new _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->registerEventHandler( mouseDown , new _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->registerEventHandler( _internal_ , new _staticCallback( &_keyboardButton::mouseHandler ) );
 }
 
 _keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style )
@@ -144,9 +144,9 @@ _keyboardStartButton::_keyboardStartButton( _coord x , _coord y , _style style )
 	_button( 38 , 10 , x , y , "" , style )
 	, startMenu( new _startMenu( this ) )
 {
-	this->registerEventHandler( mouseClick , &_keyboardStartButton::mouseHandler );
-	this->registerEventHandler( refresh , &_keyboardStartButton::refreshHandler );
-	this->registerEventHandler( close , &_keyboardStartButton::refreshHandler );
+	this->registerEventHandler( mouseClick , new _staticCallback( &_keyboardStartButton::mouseHandler ) );
+	this->registerEventHandler( refresh , new _staticCallback( &_keyboardStartButton::refreshHandler ) );
+	this->registerEventHandler( close , new _staticCallback( &_keyboardStartButton::refreshHandler ) );
 	
 	this->refreshBitmap();
 }

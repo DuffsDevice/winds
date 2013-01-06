@@ -20,22 +20,27 @@ template<typename T>
 	using _list = std::list<T>;
 template<typename T,typename T2>
 	using _map = std::map<T,T2>;
-typedef uint8_t _u8;
-typedef int8_t _s8;
-typedef uint16_t _u16;
-typedef int16_t _s16;
-typedef uint32_t _u32;
-typedef int32_t _s32;
-typedef uint64_t _u64;
-typedef int64_t _s64;
-typedef _u32 _length;
-typedef _s32 _coord;
-typedef int _int;
-typedef _u16 _key;
-typedef short unsigned int _pixel;
-typedef _pixel* _pixelArray;
-typedef float _float;
-typedef _u32 _tempTime;
+template<typename T,typename T2>
+	using _pair = std::pair<T,T2>;
+typedef uint8_t 			_u8;
+typedef int8_t 				_s8;
+typedef uint16_t 			_u16;
+typedef int16_t 			_s16;
+typedef uint32_t 			_u32;
+typedef int32_t 			_s32;
+typedef uint64_t 			_u64;
+typedef int64_t 			_s64;
+typedef _u32 				_length;
+typedef _s32 				_coord;
+typedef int 				_int;
+typedef _u16 				_key;
+typedef short unsigned int 	_pixel;
+typedef _pixel* 			_pixelArray;
+typedef float 				_float;
+typedef _u64 				_tempTime;
+typedef basic_string<char> 	_string;
+
+typedef _map<string,string>	_cmdArgs;
 
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
@@ -46,11 +51,7 @@ extern _length SCREEN_HEIGHT;
 
 #define noinline __attribute__ ((noinline))
 #define DEPRECATED __attribute__((deprecated))
-#define needless __attribute__(( unused ))
-
-typedef basic_string<char> _string;
-
-typedef map<string,string> _cmdArgs;
+#define needless __attribute__((unused))
 
 //! Convert red, green, blue to 15bit Triplette
 static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
@@ -90,19 +91,9 @@ static constexpr inline _u8 RGB_GETA( _pixel c ){
 	return ( c >> 15 ) & 1;
 }
 
-static needless int getDecimals( _s32 value )
-{
-	int i = 0;
-	while( value > 0 )
-	{
-		i++;
-		value /= 10;
-	}
-	return i;
-}
-
-extern int string2int( const char * );
-extern string int2string( _int val , _u8 zeroFill = 0 );
+extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
+extern int string2int( const char * str );
+extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 
 #define COLOR_TRANSPARENT (_pixel(0))
 #define COLOR_YELLOW 	(RGB(31,31,0))
@@ -179,38 +170,26 @@ enum class _valign : _u8 {
 	bottom
 };
 
-class _border
+struct _border
 {
-	private:
-		_length left;
-		_length top;
-		_length right;
-		_length bottom;
-		
-	public:
-		_border( _length l , _length t , _length r , _length b ) : left(l) , top(t) , right(r) , bottom(b) {}
-		_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
-		_border() : left(0) , top(0) , right(0) , bottom(0) {}
-		
-		_length getLeft() const { return left; }
-		_length getRight() const { return right; }
-		_length getTop() const { return top; }
-		_length getBottom() const { return bottom; }
-		
-		void setLeft( _length val ){ left = val; }
-		void setRight( _length val ){ right = val; }
-		void setTop( _length val ){ top = val; }
-		void setBottom( _length val ){ bottom = val; }
-		
-		bool operator==( const _border& other )
-		{
-			return !( other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom );
-		}
-		
-		bool operator!=( const _border& other )
-		{
-			return other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom;
-		}
+	_length left;
+	_length top;
+	_length right;
+	_length bottom;
+	
+	_border( _length l , _length t , _length r , _length b ) : left(l) , top(t) , right(r) , bottom(b) {}
+	_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
+	_border() : left(0) , top(0) , right(0) , bottom(0) {}
+	
+	bool operator==( const _border& other )
+	{
+		return !( other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom );
+	}
+	
+	bool operator!=( const _border& other )
+	{
+		return other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom;
+	}
 };
 
 typedef _border _padding;

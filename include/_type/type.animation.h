@@ -3,50 +3,46 @@
 
 #include <time.h>
 #include "_type/type.h"
-#include <functional>
-//#include <deque>
+#include "_type/type.callback.h"
 
-using namespace std;
+typedef _float (_easingFunction)( _float t , _float b , _float c , _float d );
 
 // t = elapsed Time since Start
 // b = startValue
 // c = deltaValue
-// d duration of the whole effect
+// d = duration of the whole effect
 class _animation{
 	
 	private:
 	
 		friend class _system;
-		_tempTime	startTime;
-		_u32		duration; //! In Milliseconds
-		_s32*		destination;
+		_tempTime			startTime;
+		_tempTime			duration; //! In Milliseconds
+		_s32*				destination;
 		
 		//! Additionally: call a setter function
-		function<void(int)> setterFunc;
-		function<void(int)> finishFunc;
+		const _callback* 	setterFunc;
+		const _callback* 	finishFunc;
 		
-		_float		(*easeFunc)( _float t , _float b , _float c , _float d );
+		_easingFunction*	easeFunc;
 		
-		int			fromValue;
-		int			toValue;
-		int			deltaValue;
+		int					fromValue;
+		int					toValue;
+		int					deltaValue;
 		
-		bool		runs;
+		bool				runs;
 		
 	public:
 	
-		_animation( _s32 from , _s32 to , _u32 dur );
+		_animation( _s32 from , _s32 to , _tempTime dur );
 		
-		~_animation(){ this->terminate(); }
-		
-		//! Set Address of the Variable to write
-		void setter( _s32* destination ){ this->destination = destination; }
+		~_animation();
 		
 		//! Set a lamda-expression to be the setter
-		void setter( function<void(int)> setterFunc ){ this->setterFunc = setterFunc; }
+		void setter( const _callback* setterFunc ){ if( this->setterFunc ) delete this->setterFunc; this->setterFunc = setterFunc; }
 		
 		//! Set a lamda-expression to be called at the end of the animation
-		void finish( function<void(int)> finishFunc ){ this->finishFunc = finishFunc; }
+		void finish( const _callback* finishFunc ){ if( this->finishFunc ) delete this->finishFunc; this->finishFunc = finishFunc; }
 		
 		//! Start the animation
 		void start();
@@ -55,8 +51,23 @@ class _animation{
 		void terminate();
 		
 		//! Set fromValue
+		void setDuration( _tempTime val ){
+			this->duration = val;
+		}
+		
+		//! get fromValue
+		_tempTime getDuration(){
+			return this->duration;
+		}
+		
+		//! Set fromValue
 		void setFromValue( int fromValue ){
 			this->fromValue = fromValue;
+		}
+		
+		//! get fromValue
+		int getFromValue(){
+			return this->fromValue;
 		}
 		
 		//! setToValue
@@ -64,11 +75,22 @@ class _animation{
 			this->toValue = toValue;
 		}
 		
+		//! getToValue
+		int getToValue(){
+			return this->toValue;
+		}
+		
 		//! Apply the Value
 		void step( _tempTime curTime );
 		
-		void setEasing( _float (*easeFunc)( _float t , _float b , _float c , _float d ) ){
+		//! setEasing
+		void setEasing( _easingFunction* easeFunc ){
 			this->easeFunc = easeFunc;
+		}
+		
+		//! getEasing
+		_easingFunction* getEasing(  ){
+			return this->easeFunc;
 		}
 		
 		//! Check if animation is finished
@@ -135,5 +157,8 @@ class _animation{
 			static _float easeInOut( _float t , _float b , _float c , _float d );
 		};
 };
+
+extern map<string,_easingFunction*> string2easingFunc;
+extern map<_easingFunction*,string> easingFunc2string;
 
 #endif

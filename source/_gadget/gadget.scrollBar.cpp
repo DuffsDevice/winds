@@ -25,17 +25,17 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	}
 	
 	//! Register Event-Handlers
-	this->registerEventHandler( refresh , refreshHandler );
-	this->registerEventHandler( onResize , resizeHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_scrollBar::refreshHandler ) );
+	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );
 	
 	this->dragHandle->style.smallDragTrig = true;
 	
 	//! Action Handlers
-	this->dragHandle->registerEventHandler( dragStart , dragHandler );
-	this->dragHandle->registerEventHandler( dragging , dragHandler );
+	this->dragHandle->registerEventHandler( dragStart , new _staticCallback( &_scrollBar::dragHandler ) );
+	this->dragHandle->registerEventHandler( dragging , new _staticCallback( &_scrollBar::dragHandler ) );
 	
-	this->higherHandle->registerEventHandler( onAction , clickHandler );
-	this->lowerHandle->registerEventHandler( onAction , clickHandler );
+	this->higherHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
+	this->lowerHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
 	
 	//! Re-refresh the Buttons with the new event-handlers
 	this->dragHandle->refreshBitmap();
@@ -53,10 +53,10 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->refreshBitmap();
 }
 
-void _scrollBar::setValue( _u32 val )
+int _scrollBar::setValue( int val )
 {
 	val = mid( 0 , val , this->length2 - this->length );
-	if( val != this->value )
+	if( val != (int)this->value )
 	{
 		_s16 delta = val - this->value;
 		this->value = val;
@@ -68,6 +68,7 @@ void _scrollBar::setValue( _u32 val )
 		else
 			this->triggerEvent( _event( onChange ).setDeltaY( delta ).setPosY( val ) );
 	}
+	return val;
 }
 
 void _scrollBar::setValue( _u32 val , bool ease )
@@ -77,7 +78,7 @@ void _scrollBar::setValue( _u32 val , bool ease )
 		this->anim.terminate();
 		this->anim.setFromValue( this->value );
 		this->anim.setToValue( mid( 0 , (int)val , int( this->length2 - this->length ) ) );
-		this->anim.setter( [&]( _int val ){ this->setValue( val ); } );
+		this->anim.setter( new _classCallback( this , &_scrollBar::setValue ) );
 		this->anim.start();
 	}
 	else
@@ -257,7 +258,7 @@ void _scrollBar::setDimension( _dimension dim )
 		this->lowerHandle->setStyle( _style::storeData( 5 ) );
 	}
 	
-	this->registerEventHandler( onResize , resizeHandler );
+	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );
 	
 	refreshHandleWidth();
 	refreshPosition();

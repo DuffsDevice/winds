@@ -54,9 +54,9 @@ void _scrollArea::updateScrollBars()
 	
 	if( needX )
 	{
-		this->scrollBarX->setY( this->dimensions.height - 8 );
-		this->scrollBarX->setWidth( this->dimensions.width - ( needY ? 8 : 0 ) );
-		this->scrollBarX->setLength( this->clipWidth );
+		this->scrollBarX->setY( this->dimensions.height - 8 - this->offset.top );
+		this->scrollBarX->setWidth( this->dimensions.width - ( needY ? 8 : 0 ) - this->offset.left - this->offset.right );
+		this->scrollBarX->setLength( this->clipWidth - this->offset.left - this->offset.right );
 		this->scrollBarX->setLength2( this->canvasWidth );
 		
 		if( !this->scrollBarX->parent )
@@ -67,9 +67,9 @@ void _scrollArea::updateScrollBars()
 	
 	if( needY )
 	{
-		this->scrollBarY->setX( this->dimensions.width - 8 );
-		this->scrollBarY->setHeight( this->dimensions.height - ( needX ? 8 : 0 ) );
-		this->scrollBarY->setLength( this->clipHeight );
+		this->scrollBarY->setX( this->dimensions.width - 8 - this->offset.right );
+		this->scrollBarY->setHeight( this->dimensions.height - ( needX ? 8 : 0 ) - this->offset.top - this->offset.bottom );
+		this->scrollBarY->setLength( this->clipHeight - this->offset.top - this->offset.bottom );
 		this->scrollBarY->setLength2( this->canvasHeight );
 		
 		
@@ -79,7 +79,7 @@ void _scrollArea::updateScrollBars()
 	else if( this->scrollBarY->parent )
 		this->scrollBarY->setParent( nullptr );
 	
-	_padding p = _padding( 0 , 0 , needY ? 8 : 0 , needX ? 8 : 0 );
+	_padding p = _padding( this->offset.left , this->offset.top , ( needY ? 8 : 0 ) + this->offset.right , ( needX ? 8 : 0 ) + this->offset.bottom );
 	
 	// Crop children Area
 	this->setPadding( p );
@@ -218,21 +218,22 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	, scrollTypeY( scrollTypeY )
 	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::horizontal ) )
 	, scrollBarY( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::vertical ) )
+	, offset( _padding( 0 , 0 , 0 , 0 ) )
 	, canvasWidth( width )
 	, canvasHeight( height )
 	, computeCanvasWidth( 1 )
 	, computeCanvasHeight( 1 )
 {
 	this->scrollBarX->setStep( 5 );
-	this->scrollBarX->registerEventHandler( onChange , &_scrollArea::scrollHandler );
+	this->scrollBarX->registerEventHandler( onChange , new _staticCallback( &_scrollArea::scrollHandler ) );
 	
 	this->scrollBarY->setStep( 5 );
-	this->scrollBarY->registerEventHandler( onChange , &_scrollArea::scrollHandler );
+	this->scrollBarY->registerEventHandler( onChange , new _staticCallback( &_scrollArea::scrollHandler ) );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( onResize , &_scrollArea::resizeHandler );
-	this->registerEventHandler( refresh , &_scrollArea::resizeHandler );
-	this->registerEventHandler( _internal_ , &_scrollArea::resizeHandler );
+	this->registerEventHandler( onResize , new _staticCallback( &_scrollArea::resizeHandler ) );
+	this->registerEventHandler( refresh , new _staticCallback( &_scrollArea::resizeHandler ) );
+	this->registerEventHandler( _internal_ , new _staticCallback( &_scrollArea::resizeHandler ) );
 	
 	// Refresh Me	
 	this->computeClipSize();
