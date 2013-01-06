@@ -3,17 +3,16 @@
 #define _WIN_G_RADIO_
 
 #include "_type/type.gadget.h"
-#include "interface.input.h"
 
 class _radiogroup;
 
-class _radio : public _gadget , public _interface_input {
+class _radio : public _gadget {
 	
 	private:
 		
-		bool pressed;
-		
-		_radiogroup* radiogroup;
+		bool			pressed;
+		bool			intValue;
+		_radiogroup* 	radiogroup;
 		
 		static const _bitmap graphic[4];
 		
@@ -24,7 +23,9 @@ class _radio : public _gadget , public _interface_input {
 	public:
 		
 		//! setIntValue
-		void setIntValue( _s32 val ){ _interface_input::setIntValue( bool(val) ); this->bubbleRefresh( true ); }
+		void setIntValue( _s32 val ){ this->intValue = val; this->bubbleRefresh( true ); }
+		
+		_s32 getIntValue(){ return this->intValue; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_radio( _coord x , _coord y , _radiogroup* radiogroup , _style style = _style() );

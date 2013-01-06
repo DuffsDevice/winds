@@ -4,9 +4,8 @@
 
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.label.h"
-#include "interface.input.h"
 
-class _button : public _gadget , public _interface_input {
+class _button : public _gadget {
 	
 	protected:
 		
@@ -35,22 +34,22 @@ class _button : public _gadget , public _interface_input {
 	public:
 		
 		//! Set Alignment of the Button
-		void setAlign( _align align ){ if( this->label ) this->label->setAlign(align); }
+		void setAlign( _align align ){ this->label->setAlign(align); }
 		
 		//! Get Alignment of the Button
-		_align getAlign(){ if( this->label ) return this->label->getAlign(); return _align::left; }
+		_align getAlign(){ return this->label->getAlign(); }
 		
 		//! Set Vertical Alignment of the Button
-		void setVAlign( _valign vAlign ){ if( this->label ) this->label->setVAlign(vAlign); }
+		void setVAlign( _valign vAlign ){ this->label->setVAlign(vAlign); }
 		
 		//! Get Vertical Alignment of the Button
-		_valign getVAlign(){ if( this->label ) return this->label->getVAlign(); return _valign::top; }
+		_valign getVAlign(){ return this->label->getVAlign(); }
 		
 		//! Set Title to be displayed on top of the button
-		void setTitle( string val ){ if( this->label ) this->label->setStrValue(val); this->computeSize(); }
+		void setStrValue( string val ){ this->label->setStrValue(val); this->computeSize(); }
 		
 		//! Get Title of the button
-		string getTitle(){ if( this->label ) return this->label->getStrValue(); return ""; }
+		string getStrValue(){ return this->label->getStrValue(); }
 		
 		//! Whether the button should be outlined by a blue line
 		void setAutoSelect( bool aS );
@@ -65,7 +64,7 @@ class _button : public _gadget , public _interface_input {
 		void setFont( _font* ft );
 		
 		//! Get Text Font
-		_font* getFont(){ if( !this->label ) return nullptr; return this->label->getFont(); }
+		_font* getFont(){ return this->label->getFont(); }
 		
 		// Methods to set Size
 		void setWidth( _u8 width );

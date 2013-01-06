@@ -21,6 +21,6 @@ Lunar<_lua_window>::FunctionType _lua_window::methods[] = {
 
 Lunar<_lua_window>::PropertyType _lua_window::properties[] = {
 	GADGET_ATTRS( _lua_window ),
-	LUA_CLASS_ATTR( _lua_window , Title , "title" ),
+	{ "strValue" , &_lua_window::getStrValue , &_lua_window::setStrValue },
 	LUA_CLASS_ATTR_END
 };

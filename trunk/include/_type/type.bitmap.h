@@ -531,7 +531,11 @@ class _bitmap
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		**/
-		void setClippingRect( _rect rc );
+		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = rc; }
+		
+		void setClippingRect( _rect rc ){
+			this->activeClippingRect = _rect::fromCoords( rc.x < 0 ? 0 : rc.x , rc.y < 0 ? 0 : rc.y , min( rc.getX2() , _coord( this->width ) ) , min( rc.getY2() , _coord( this->height ) ) );
+		}
 		
 		/**
 		 * Get the active ClippingRect

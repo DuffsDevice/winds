@@ -80,18 +80,10 @@ int _lua_rect::intersectsWith(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::c
 //! Lua-_rect
 const char _lua_rect::className[] = "_rect";
 Lunar<_lua_rect>::FunctionType _lua_rect::methods[] = {
-  LUA_CLASS_FUNC(_lua_rect, setX),
-  LUA_CLASS_FUNC(_lua_rect, setY),
-  LUA_CLASS_FUNC(_lua_rect, getX),
-  LUA_CLASS_FUNC(_lua_rect, getY),
   LUA_CLASS_FUNC(_lua_rect, setX2),
   LUA_CLASS_FUNC(_lua_rect, setY2),
   LUA_CLASS_FUNC(_lua_rect, getX2),
   LUA_CLASS_FUNC(_lua_rect, getY2),
-  LUA_CLASS_FUNC(_lua_rect, setWidth),
-  LUA_CLASS_FUNC(_lua_rect, setHeight),
-  LUA_CLASS_FUNC(_lua_rect, getWidth),
-  LUA_CLASS_FUNC(_lua_rect, getHeight),
   LUA_CLASS_FUNC(_lua_rect, isValid),
   LUA_CLASS_FUNC(_lua_rect, contains),
   LUA_CLASS_FUNC(_lua_rect, fromCoords),
@@ -105,5 +97,9 @@ Lunar<_lua_rect>::FunctionType _lua_rect::methods[] = {
 };
 
 Lunar<_lua_rect>::PropertyType _lua_rect::properties[] = {
+	{ "x" , &_lua_rect::getX , &_lua_rect::setX },
+	{ "y" , &_lua_rect::getY , &_lua_rect::setY },
+	{ "width" , &_lua_rect::getWidth , &_lua_rect::setWidth },
+	{ "height" , &_lua_rect::getHeight , &_lua_rect::setHeight },
 	LUA_CLASS_ATTR_END
 };

@@ -92,10 +92,16 @@ f = Réglez l'horloge système:
 [txt_system_clock_auto_fetch_1]
 e = Reference time from the Internet (Needs WiFi)
 g = Uhrzeit über das Internet bestimmen (Benötigt WiFi)
+i = 
+s = 
+f = 
 
 [txt_system_clock_auto_fetch_2]
 e = (Needs WiFi)
 g = (Benötigt WiFi)
+i = 
+s = 
+f = 
 
 [lbl_finished]
 e = Setup finished

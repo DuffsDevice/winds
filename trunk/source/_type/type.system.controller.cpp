@@ -1,5 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.radiogroup.h"
+#include "_type/type.time.h"
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.counter.h"
@@ -10,10 +11,13 @@
 #include "_gadget/gadget.bootupScreen.h"
 #include "_gadget/gadget.actionButton.h"
 #include <nds/interrupts.h>
+#include <math.h>
+
+#define M_PI		3.14159265358979323846
 
 void _systemController::main()
 {
-	changeState( _systemState::bootup );
+	changeState( _systemState::login );
 	
 	while( true )
 	{
@@ -86,6 +90,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 	static _gadget* gadgets[20] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
 	static string profileName = "Admin";
 	static _u8 profileIcon = 0;
+	static _time systemTime = _time::now();
 	
 	_gadget* that = e.getGadget();
 	
@@ -107,6 +112,60 @@ _callbackReturn _systemController::setupHandler( _event e )
 				profileName = e.getGadget<_textbox>()->getStrValue();
 				return handled;
 			}
+		}
+		//
+		// For modifying the clock-icon
+		//
+		else if( that->getType() == _gadgetType::counter )
+		{
+			systemTime.hour = ((_counter*)gadgets[12])->getIntValue();
+			systemTime.minute = ((_counter*)gadgets[13])->getIntValue();
+			systemTime.second = ((_counter*)gadgets[14])->getIntValue();
+			
+			_imagegadget* clkImage = (_imagegadget*)(gadgets[16]);
+			_bitmap& clkBmp = clkImage->getModifyableImage();
+			
+			clkBmp.resetClippingRect();
+			clkBmp.drawFilledCircle( 25 , 25 , 25 , RGBHEX( 0x6082E3 ) );
+			
+			// Dots
+			for( float i = 0 ; i < 4 ; i+= 1 )
+			{
+				int c = cos( i * 30 / 180 * M_PI ) * 25;
+				int s = sin( i * 30 / 180 * M_PI ) * 25;
+				int c2 = c * 25/24;
+				int s2 = s * 25/24;
+				clkBmp.drawPixel( 25 - c , 25 - s , COLOR_WHITE );
+				clkBmp.drawPixel( 25 + c , 25 - s , COLOR_WHITE );
+				clkBmp.drawPixel( 25 - c , 25 + s , COLOR_WHITE );
+				clkBmp.drawPixel( 25 + c , 25 + s , COLOR_WHITE );
+				clkBmp.drawPixel( 25 - c2 , 25 - s2 , COLOR_WHITE );
+				clkBmp.drawPixel( 25 + c2 , 25 - s2 , COLOR_WHITE );
+				clkBmp.drawPixel( 25 - c2 , 25 + s2 , COLOR_WHITE );
+				clkBmp.drawPixel( 25 + c2 , 25 + s2 , COLOR_WHITE );
+			}
+			
+			// Seconds
+			clkBmp.drawLine( 25 , 25 
+				, 25 - cos( float( systemTime.second + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
+				, 25 - sin( float( systemTime.second + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
+				, RGB( 21 , 24 , 31 )
+			);
+			// Minute
+			clkBmp.drawLine( 25 , 25
+				, 25 - cos( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
+				, 25 - sin( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
+				, RGB( 4 , 11 , 25 )
+			);
+			// Hour
+			clkBmp.drawLine( 25 , 25 
+				, 25 - cos( ( float( systemTime.hour + 3 ) * 30 + float( systemTime.minute ) / 2 ) / 180 * M_PI ) * 12 + 0.5
+				, 25 - sin( ( float( systemTime.hour + 3 ) * 30 + float( systemTime.minute ) / 2 ) / 180 * M_PI ) * 12 + 0.5
+				, RGB( 0 , 6 , 15 )
+			);
+			
+			clkImage->bubbleRefresh( true );
+			return handled;
 		}
 		//
 		// For choosing the profile-Icon
@@ -164,6 +223,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			return use_default;
 		}
 		
+		// Event must be from "next"- or "prev"-buttons
 		if( that->getStyle().data == -1 )
 		{
 			if( state > 0 )
@@ -270,15 +330,24 @@ _callbackReturn _systemController::setupHandler( _event e )
 			// Create Label with shadow
 			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_system_preferences") );
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_system_preferences") );
-			_label* lbl3 = new _label( 32 , 60 , _system::getLocalizedString("txt_system_clock") );
+			_label* lbl3 = new _label( 32 , 55 , _system::getLocalizedString("txt_system_clock") );
 			_label* lbl4 = new _label( 32 , 140 , _system::getLocalizedString("txt_system_clock_auto_fetch_1") );
 			_label* lbl5 = new _label( 32 , 150 , _system::getLocalizedString("txt_system_clock_auto_fetch_2") );
-			_counter* cnt1 = new _counter( 85 , 75 , 25 , true , 0 , 23 , 0 );
-			_counter* cnt2 = new _counter( 115 , 75 , 25 , true , 0 , 59 , 0 );
-			_counter* cnt3 = new _counter( 145 , 75 , 25 , true , 0 , 59 , 0 );
+			
+			_bitmap bmp = _bitmap( 51 , 51 );
+			
+			_imagegadget* clockImg = new _imagegadget( 102 , 65 , bmp );
+			_counter* cnt1 = new _counter( 85 , 120 , 25 , true , systemTime.hour , 23 , 0 );
+			_counter* cnt2 = new _counter( 115 , 120 , 25 , true , systemTime.minute , 59 , 0 );
+			_counter* cnt3 = new _counter( 145 , 120 , 25 , true , systemTime.second , 59 , 0 );
+			
+			cnt1->registerEventHandler( onChange , setupHandler );
+			cnt2->registerEventHandler( onChange , setupHandler );
+			cnt3->registerEventHandler( onChange , setupHandler );
+			
 			_radiogroup* radgrp = new _radiogroup();
 			_radio* rad1 = new _radio( 20 , 139 , radgrp );
-			_radio* rad2 = new _radio( 20 , 59 , radgrp );
+			_radio* rad2 = new _radio( 20 , 54 , radgrp );
 			gadgets[5] = lbl;
 			gadgets[6] = lbl2;
 			gadgets[7] = lbl3;
@@ -290,6 +359,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			gadgets[13] = cnt2;
 			gadgets[14] = cnt3;
 			gadgets[15] = (_gadget*)radgrp;
+			gadgets[16] = clockImg;
 			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
@@ -307,6 +377,13 @@ _callbackReturn _systemController::setupHandler( _event e )
 			that->addChild( cnt1 );
 			that->addChild( cnt2 );
 			that->addChild( cnt3 );
+			
+			// Refresh Clock-Image
+			cnt1->handleEvent( _event( onChange ) );
+			
+			// Then add it
+			that->addChild( clockImg );
+			
 			break;
 		}
 		case 3:
@@ -374,18 +451,21 @@ void _systemController::loginPage()
 {
 	// After the Boot up finishes,
 	// see if this is a new Setup
-	if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
-	{
-		_systemController::changeState( _systemState::setup );
-		return;
-	}
-	
+	//if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
+	//{
+	//	_systemController::changeState( _systemState::setup );
+	//	return;
+	//}
 	
 	// Clean up
 	_system::deleteGadgetHost();
+	_system::deleteKeyboard();
 	
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
-	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
+	//_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
+	
+	_direntry entry = _direntry("/HelloWorld.lua");
+	entry.execute();
 }
 
 void _systemController::bootupPage()
@@ -412,7 +492,7 @@ void _systemController::desktopPage()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
-	_system::getBuiltInProgram( "explorer.exe")->execute({{"path","/NDS"}});
+	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
 }
 
 

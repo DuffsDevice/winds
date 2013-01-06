@@ -59,6 +59,11 @@ void _gadget::triggerEvent( _event event )
 
 void _gadget::bubbleEvent( _event event , bool includeThis )
 {
+	if( event.getType() == refresh )
+	{
+		this->bubbleRefresh( includeThis , event );
+		return;
+	}
 	if( includeThis )
 		this->handleEvent( event );
 	if( this->parent != nullptr )

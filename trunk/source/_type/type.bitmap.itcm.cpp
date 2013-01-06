@@ -9,7 +9,7 @@ void _bitmap::setWidth( _length w )
 	if( this->width == w )
 		return;
 	
-	_pixelArray newBmp;	
+	_pixelArray newBmp;
 	
 	if( this->wasAllocated )
 	{
@@ -285,7 +285,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 			// Faster because of less bitshifts
 		
 	// Draw the rectangle
-	for ( _u32 i = 0; i != h; i++)
+	for ( _u32 i = 0 ; i != h; i++ )
 		this->blitFill( x , y + i , gradTable[dY+i] , w );
 	
 	delete[] gradTable;
@@ -533,7 +533,8 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 	if( !data.isValid() )
 		return;
 	
-	_coord x2 = x + data.getWidth() - 1;
+	_length dataWidth = data.getWidth();
+	_coord x2 = x + dataWidth - 1;
 	_coord y2 = y + data.getHeight() - 1;
 	_coord origX = x;
 	_coord origY = y;
@@ -541,30 +542,26 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
 	
-	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
-	
-	if( !copyData )
-		return;
-	
-	_pixelArray myData	= this->getBitmap( x , y );
-	
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
 	
-	if( h < 1 || w < 1 )
+	if( h <= 0 || w <= 0 )
 		return;
+	
+	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
+	_pixelArray myData= this->getBitmap( x , y );
 	
 	do
 	{
 		memCpy( myData , copyData , w );
-		copyData += data.getWidth();
+		copyData += dataWidth;
 		myData += this->width;
+		
 	}while( --h );
 }
 
 void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 {
-	//asm volatile("@Here I Start");
 	if( !data.isValid() )
 		return;
 	
@@ -582,23 +579,30 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
 	
-	if( h < 1 || w < 1 )
+	if( h <= 0 || w <= 0 )
 		return;
-	
-	_int j;
-	w--;
-	
-	do{
-		j = w;
-		do{
-			if( copyData[j] >> 15 ) // Check if this pixel of the data is non-transparent
-				myData[j] = copyData[j];
-		}while( j-- );
 		
-		// Increase
-		copyData += data.getWidth();
-		myData += this->width;
-	}while( --h );
+	_int j = w;
+	
+	int dataDiff = data.getWidth() - w;
+	int myDiff = this->width - w;
+	
+	while(true)
+	{
+		unsigned short val = *copyData++;
+		if( val >> 15 ) // Check if this pixel of the data is non-transparent
+			*myData = val;
+		myData++;
+		
+		if( !--j )
+		{
+			copyData += dataDiff;
+			myData += myDiff;
+			j = w;
+			if( !--h )
+				break;
+		}
+	}
 }
 
 void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
@@ -743,20 +747,27 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 
 bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
 {
-	if( !activeClippingRect.isValid() )
+	
+	if( !this->activeClippingRect.isValid() )
 		return false;
 	
+	_coord x = activeClippingRect.x;
+	
 	// Ensure values don't exceed clipping rectangle
-	left 	= max( left , activeClippingRect.x );
-	top 	= max( top , activeClippingRect.y );
-	right 	= min( right , activeClippingRect.getX2() );
-	bottom 	= min( bottom , activeClippingRect.getY2() );
+	left 	= max( left , x );
+	right 	= min( right , x + _coord( activeClippingRect.width ) - 1 );
+	
+	if( right < left )
+		return false;
+	
+	_coord y = activeClippingRect.y;
+	
+	top 	= max( top , y );
+	bottom 	= min( bottom , y + _coord( activeClippingRect.height ) - 1  );
 	
 	// Return false if no box to draw
-	if ( ( right < left ) || ( bottom < top ) ) return false;
-	
 	// Return true as box can be drawn
-	return true;
+	return bottom >= top;
 }
 
 _u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize ){
@@ -766,10 +777,6 @@ _u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel 
 
 void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length ){
 	memSet( &this->bmp[ y * this->width + x ] , color , length );
-}
-
-void _bitmap::setClippingRect( _rect rc ){
-	this->activeClippingRect = _rect::fromCoords( rc.x < 0 ? 0 : rc.x , rc.y < 0 ? 0 : rc.y , min( rc.getX2() , _coord( this->width ) ) , min( rc.getY2() , _coord( this->height ) ) );
 }
 
 // Internal routine

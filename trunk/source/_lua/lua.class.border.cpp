@@ -43,9 +43,9 @@ Lunar<_lua_border>::FunctionType _lua_border::methods[] = {
 };
 
 Lunar<_lua_border>::PropertyType _lua_border::properties[] = {
-	LUA_CLASS_ATTR(_lua_border, Left , "left" ),
-	LUA_CLASS_ATTR(_lua_border, Top , "top" ),
-	LUA_CLASS_ATTR(_lua_border, Right , "right" ),
-	LUA_CLASS_ATTR(_lua_border, Bottom , "bottom" ),
+	{ "left" , &_lua_border::getLeft , &_lua_border::setLeft },
+	{ "top" , &_lua_border::getTop , &_lua_border::setTop },
+	{ "right" , &_lua_border::getRight , &_lua_border::setRight },
+	{ "bottom" , &_lua_border::getBottom , &_lua_border::setBottom },
 	LUA_CLASS_ATTR_END
 };

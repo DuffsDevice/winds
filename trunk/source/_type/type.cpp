@@ -1,4 +1,5 @@
 #include "_type/type.h"
+#include <stdio.h>
 
 _length SCREEN_WIDTH = 256;
 _length SCREEN_HEIGHT = 192;
@@ -93,4 +94,37 @@ _s32 mid( _s32 a , _s32 b , _s32 c ){
 			return a;
 		return b;
 	}
+}
+
+int string2int( const char *p ){
+    int x = 0;
+    bool neg = false;
+    if (*p == '-') {
+        neg = true;
+        ++p;
+    }
+    while (*p >= '0' && *p <= '9') {
+        x = (x*10) + (*p - '0');
+        ++p;
+    }
+    if (neg) {
+        x = -x;
+    }
+    return x;
+}
+
+string int2string( _int val , _u8 zeroFill )
+{
+	char result[32]; // string which will contain the number
+	char format[32];
+
+	if( !zeroFill )
+		sprintf( result , "%d", val ); // %d makes the result be a decimal integer
+	else
+	{
+		sprintf( format , "%%0%dd" , zeroFill ); // Write the actual format string
+		sprintf( result , format , val ); // %d makes the result be a decimal integer
+	}
+	
+	return result;
 }

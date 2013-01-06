@@ -11,7 +11,7 @@ _animation::_animation( int from , int to , _u32 dur ) :
 void _animation::start(){
 	this->deltaValue = this->toValue - this->fromValue;
 	this->runs = true;
-	this->startTime = _system::getTime();
+	this->startTime = _system::getHighResTime();
 	_system::executeAnimation( this );
 }
 
@@ -24,7 +24,7 @@ void _animation::terminate()
 	}
 }
 
-void _animation::step( _u32 curTime )
+void _animation::step( _tempTime curTime )
 {
 	if( !this->runs )
 		return;

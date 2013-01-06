@@ -22,7 +22,7 @@ class _progressbar : public _gadget {
 	public:
 	
 		//! Set Receiver of Key-Events
-		void setValue( _u8 value  ){
+		void setIntValue( _u8 value ){
 			if( value != this->value )
 			{
 				this->value = value;

@@ -31,22 +31,22 @@ typedef int64_t _s64;
 typedef _u32 _length;
 typedef _s32 _coord;
 typedef int _int;
-typedef unsigned short int _key;
-typedef bool _bit;
+typedef _u16 _key;
 typedef short unsigned int _pixel;
 typedef _pixel* _pixelArray;
-typedef _bit* _bitsMap;
 typedef float _float;
-typedef _u32 _time;
+typedef _u32 _tempTime;
 
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
 
-#define noinline __attribute__ ((noinline))
-
 #define u16 _u16
 #include <nds/touch.h>
 #undef u16
+
+#define noinline __attribute__ ((noinline))
+#define DEPRECATED __attribute__((deprecated))
+#define needless __attribute__(( unused ))
 
 typedef basic_string<char> _string;
 
@@ -90,6 +90,20 @@ static constexpr inline _u8 RGB_GETA( _pixel c ){
 	return ( c >> 15 ) & 1;
 }
 
+static needless int getDecimals( _s32 value )
+{
+	int i = 0;
+	while( value > 0 )
+	{
+		i++;
+		value /= 10;
+	}
+	return i;
+}
+
+extern int string2int( const char * );
+extern string int2string( _int val , _u8 zeroFill = 0 );
+
 #define COLOR_TRANSPARENT (_pixel(0))
 #define COLOR_YELLOW 	(RGB(31,31,0))
 #define COLOR_GREEN 	(RGB(0,31,0))
@@ -100,8 +114,6 @@ static constexpr inline _u8 RGB_GETA( _pixel c ){
 #define COLOR_BLACK 	(_pixel(1<<15))
 #define COLOR_WHITE 	(_pixel((1<<16)-1))
 #define NO_COLOR 0
-
-#define DEPRECATED __attribute__((deprecated))
 
 
 //! Returns a number with the nth bit set
@@ -155,13 +167,10 @@ namespace DSWindows
 // Libnds Keys to Windows-Keys
 extern _char libnds2key[12];
 
-
-
 enum class _align : _u8 {
 	left,
 	center,
-	right,
-	optimize
+	right
 };
 
 enum class _valign : _u8 {
@@ -207,7 +216,8 @@ class _border
 typedef _border _padding;
 typedef _border _margin;
 
-struct _touch{
+struct _touch
+{
 	_coord x;
 	_coord y;
 	

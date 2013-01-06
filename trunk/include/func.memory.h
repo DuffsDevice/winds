@@ -5,9 +5,6 @@
 
 unsigned int getFreeMemory();
 
-int string2int(const char *p);
-string int2string( _int val );
-
 /*//! Tonc-lib
 void memset32(void *dst, unsigned int src, unsigned int wdn);
 void memset16(void *dst, unsigned short int val, unsigned int hwn);

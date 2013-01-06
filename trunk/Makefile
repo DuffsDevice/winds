@@ -18,7 +18,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/_resource source/_gadget source/_lua source/_type source/_library source/_library/_freetype
+SOURCES		:=	source source/_resource source/_gadget source/_lua source/_type source/_library source/_library/_freetype source/_asm
 INCLUDES	:=	include
 DATA		:=	data  
 GRAPHICS	:=	gfx

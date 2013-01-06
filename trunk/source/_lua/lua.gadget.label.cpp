@@ -53,9 +53,9 @@ Lunar<_lua_label>::FunctionType _lua_label::methods[] = {
 Lunar<_lua_label>::PropertyType _lua_label::properties[] = {
 	GADGET_ATTRS( _lua_label ),
 	//! _interface_input (only these two are used)
-	LUA_CLASS_ATTR( _lua_label , StrValue , "strValue" ),
-	LUA_CLASS_ATTR( _lua_label , Color , "color" ),
-	LUA_CLASS_ATTR( _lua_label , BgColor , "bgColor" ),
-	LUA_CLASS_ATTR( _lua_label , Font , "font" ),
+	{ "strValue" , &_lua_label::getStrValue , &_lua_label::setStrValue },
+	{ "color" , &_lua_label::getColor , &_lua_label::setColor },
+	{ "bgColor" , &_lua_label::getBgColor , &_lua_label::setBgColor },
+	{ "font" , &_lua_label::getFont , &_lua_label::setFont },
 	LUA_CLASS_ATTR_END
 };

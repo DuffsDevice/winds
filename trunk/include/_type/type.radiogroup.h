@@ -5,7 +5,7 @@
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.radio.h"
 
-class _radiogroup : public _interface_input{
+class _radiogroup{
 	
 	private:
 		

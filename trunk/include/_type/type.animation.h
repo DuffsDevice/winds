@@ -17,7 +17,7 @@ class _animation{
 	private:
 	
 		friend class _system;
-		clock_t		startTime;
+		_tempTime	startTime;
 		_u32		duration; //! In Milliseconds
 		_s32*		destination;
 		
@@ -65,7 +65,7 @@ class _animation{
 		}
 		
 		//! Apply the Value
-		void step( _u32 curTime );
+		void step( _tempTime curTime );
 		
 		void setEasing( _float (*easeFunc)( _float t , _float b , _float c , _float d ) ){
 			this->easeFunc = easeFunc;

@@ -12,23 +12,23 @@ bool _rect::intersectsWith( const _area& other ) const {
 }
 
 void _rect::dump() const {
-	//printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
+	printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
 }
 
 _area _rect::reduce( const _rect& r2 ) const 
 {
 	_area out;
 	
+	_coord this_x2 = this->getX2();
+	_coord this_y2 = this->getY2();
+	_coord r2_x2 = r2.getX2();
+	_coord r2_y2 = r2.getY2();
+	
 	if( !this->intersectsWith( r2 ) )
 	{
 		out.add( *this );
 		return out;
 	}
-	
-	_coord this_x2 = this->getX2();
-	_coord this_y2 = this->getY2();
-	_coord r2_x2 = r2.getX2();
-	_coord r2_y2 = r2.getY2();
 	
 	// Left Top Right Bottom
 	bool overlapping[4] = { r2.x > this->x , r2.y > this->y , r2_x2 < this_x2 , r2_y2 < this_y2 };
@@ -70,7 +70,7 @@ _area _rect::combine( const _rect& r2 ) const
 		case 0:
 			out.add( *this );
 			break;
-		case 1:		
+		case 1:
 			out.add( *this );
 			if( overlapping[0] )
 				out.add( _rect( r2.x , r2.y , this->x - r2.x , r2.height ) );

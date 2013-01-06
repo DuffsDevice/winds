@@ -78,11 +78,9 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 
 _checkbox::_checkbox( _coord x , _coord y , _style style ) :
 	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , style )
-	, _interface_input()
 	, pressed( false )
+	, intValue( 0 )
 {
-	this->setIntValue(0);
-	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , &_checkbox::refreshHandler );

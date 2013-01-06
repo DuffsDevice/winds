@@ -6,7 +6,6 @@
 #include "_type/type.gadget.h"
 
 #define GADGET_FUNCS( g ) \
-	{"delete",&g::_delete}, \
 	LUA_CLASS_FUNC(g,bubbleEvent), \
 	LUA_CLASS_FUNC(g,bubbleRefresh), \
 	LUA_CLASS_FUNC(g,refreshBitmap), \
@@ -20,6 +19,7 @@
 	LUA_CLASS_FUNC(g,triggerEvent), \
 	LUA_CLASS_FUNC(g,canReactTo), \
 	LUA_CLASS_FUNC(g,handleEvent), \
+	LUA_CLASS_FUNC(g,handleEventNormal), \
 	LUA_CLASS_FUNC(g,handleEventDefault), \
 	LUA_CLASS_FUNC(g,getAbsoluteX), \
 	LUA_CLASS_FUNC(g,getAbsoluteY), \
@@ -36,14 +36,14 @@
 	LUA_CLASS_FUNC(g,isEnhanced) \
 	
 #define GADGET_ATTRS(g) \
-	LUA_CLASS_ATTR(g,Padding,"padding"), \
-	LUA_CLASS_ATTR(g,X,"x"), \
-	LUA_CLASS_ATTR(g,Y,"y"), \
-	LUA_CLASS_ATTR(g,Parent,"parent"), \
-	LUA_CLASS_ATTR(g,Dimensions,"dimensions"), \
-	LUA_CLASS_ATTR(g,Height,"height"), \
-	LUA_CLASS_ATTR(g,Width,"width"), \
-	LUA_CLASS_ATTR_RD(g,Type,"type") \
+	{ "padding" , &_lua_gadget::getPadding , &_lua_gadget::setPadding }, \
+	{ "x" , &_lua_gadget::getX , &_lua_gadget::setX }, \
+	{ "y" , &_lua_gadget::getY , &_lua_gadget::setY }, \
+	{ "parent" , &_lua_gadget::getParent , &_lua_gadget::setParent }, \
+	{ "dimensions" , &_lua_gadget::getDimensions , &_lua_gadget::setDimensions }, \
+	{ "height" , &_lua_gadget::getHeight , &_lua_gadget::setHeight }, \
+	{ "width" , &_lua_gadget::getWidth , &_lua_gadget::setWidth }, \
+	{ "type" , &_lua_gadget::getType , nullptr } \
 
 
 /**
@@ -53,11 +53,12 @@ class _lua_gadget{
 	
 	private:
 		
-		_lua_gadget* getLuaGadget( lua_State* L , int narg );
-		
 		_lua_gadget* pushLuaGadget( lua_State* L , _lua_gadget* g );
 		
 	public:
+		
+		// Check for _lua_gadget's and derived
+		static _lua_gadget* getLuaGadget( lua_State* L , int narg );
 		
 		_gadget* gadget;
 		
@@ -117,6 +118,9 @@ class _lua_gadget{
 		
 		//! handleEvent
 		int handleEvent( lua_State* L );
+		
+		//! handleEventNormal
+		int handleEventNormal( lua_State* L );
 		
 		//! handleEventDefault
 		int handleEventDefault( lua_State* L );

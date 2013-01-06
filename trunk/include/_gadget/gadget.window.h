@@ -6,7 +6,6 @@
 #include "_type/type.bitmap.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.button.h"
-#include "interface.input.h"
 #include "_type/type.runtimeAttributes.h"
 
 class _windowButton : public _button{
@@ -17,7 +16,7 @@ class _windowButton : public _button{
 		_windowButton( _coord x , _coord y , _u8 buttonType );
 };
 
-class _window : public _gadget , public _interface_input {
+class _window : public _gadget {
 	
 	private:
 		
@@ -38,9 +37,9 @@ class _window : public _gadget , public _interface_input {
 		
 	public:
 		
-		void setTitle( string title ){ if( this->label ) this->label->setStrValue( title ); }
+		void setStrValue( string title ){ this->label->setStrValue( title ); }
 		
-		string getTitle(){ if( this->label ) return this->label->getStrValue(); return ""; }
+		string getStrValue(){ return this->label->getStrValue(); }
 		
 		_window( _length width , _length height , _coord x , _coord y , string title , _style style = _style());
 };

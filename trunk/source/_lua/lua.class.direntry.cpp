@@ -139,6 +139,6 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 };
 
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
-	LUA_CLASS_ATTR( _lua_direntry , Attrs , "attributes" ),
+	{ "attributes" , &_lua_direntry::getAttrs , &_lua_direntry::setAttrs },
 	LUA_CLASS_ATTR_END
 };

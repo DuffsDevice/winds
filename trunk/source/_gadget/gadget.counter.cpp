@@ -5,6 +5,39 @@
 
 _callbackReturn _counter::changeHandler( _event event )
 {
+	// Blur and Focus changes the style of the label
+	if( event.getType() == onFocus )
+	{
+		_counter* that = event.getGadget<_counter>();
+		
+		that->valueLabel->setBgColor( RGB255( 10 , 36 , 106 ) );
+		that->valueLabel->setColor( COLOR_WHITE );
+		return handled;
+	}
+	if( event.getType() == onBlur )
+	{
+		_counter* that = event.getGadget<_counter>();
+		
+		that->valueLabel->setBgColor( COLOR_WHITE );
+		that->valueLabel->setColor( COLOR_BLACK );
+		return handled;
+	}
+	
+	// For Key-Events
+	if( event.getType() == keyDown )
+	{
+		_counter* that = event.getGadget<_counter>();
+		
+		if( event.getKeyCode() == DSWindows::KEY_UP )
+			that->increase();
+		else if( event.getKeyCode() == DSWindows::KEY_DOWN )
+			that->decrease();
+		
+		that->handleEvent( _event( onChange ) );
+		
+		return handled;
+	}
+	
 	_scrollButton* that = event.getGadget<_scrollButton>();
 	_counter* cntr = ((_counter*)that->parent);
 	
@@ -12,6 +45,8 @@ _callbackReturn _counter::changeHandler( _event event )
 		cntr->increase();
 	else if( that == cntr->decreaseHandle )
 		cntr->decrease();
+	
+	cntr->handleEvent( _event( onChange ) );
 	
 	return handled;
 }
@@ -42,9 +77,13 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	, lowerBound( lowerBound )
 	, upperBound( upperBound )
 {
+	// Read the number of decimals we have to fill with letters
+	refreshDecimals();
+	
 	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop );
 	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom );
-	this->valueLabel = new _label( this->getWidth() - 9 , this->getHeight() - 2 , 0 , 1 , int2string( value ) );
+	
+	this->valueLabel = new _label( this->getWidth() - 9 , this->getHeight() - 2 , 0 , 1 , int2string( value , this->decimals ) );
 	this->valueLabel->setAlign( _align::center );
 	this->valueLabel->setVAlign( _valign::middle );
 	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
@@ -54,6 +93,9 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	
 	//! Refresh - Handler
 	this->registerEventHandler( refresh , &_counter::refreshHandler );
+	this->registerEventHandler( keyDown , &_counter::changeHandler );
+	this->registerEventHandler( onBlur , &_counter::changeHandler );
+	this->registerEventHandler( onFocus , &_counter::changeHandler );
 	
 	this->addEnhancedChild( this->increaseHandle );
 	this->addEnhancedChild( this->decreaseHandle );
@@ -67,7 +109,6 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	_counter( x , y , width , circular , value , circular ? 1000 : 2147483647 , circular ? 0 : -2147483647 , style )
 { }
 
-
 void _counter::setIntValue( int value )
 {
 	if( value > this->upperBound )
@@ -78,6 +119,6 @@ void _counter::setIntValue( int value )
 	if( value != this->intValue )
 	{
 		this->intValue = value;
-		this->valueLabel->setStrValue( int2string( value ) );
+		this->valueLabel->setStrValue( int2string( value , this->decimals ) );
 	}
 }

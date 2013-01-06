@@ -39,27 +39,27 @@ void _system::debug( string msg ){
 	time_t rawtime = time(NULL);
 	struct tm* t = localtime( &rawtime );
 	_system::_debugFile_->writeString( asctime( t ) + msg + "\r\n" );
-	//printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
+	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
 {
-	_time time = _system::getTime();
+	_tempTime time = _system::getHighResTime();
 	
 	REG_BLDCNT = ( 1 << 3 ) | ( 1 << 2 ) // 3rd and 2nd Screen_Layer
 	| ( 3 << 6 ) ; // Det Blend Mode to fade to black ( 2 << 6 ) would be fading to white
 	
 	if( out )
 	{
-		while( anim && time + 200 > _system::getTime() )
-			REG_BLDY = 31 - float(_system::getTime() - time )/(200)*31;
+		while( anim && time + 200 > _system::getHighResTime() )
+			REG_BLDY = 31 - float(_system::getHighResTime() - time )/(200)*31;
 		
 		REG_BLDY = 0;
 	}
 	else
 	{
-		while( anim && time + 200 > _system::getTime() )
-			REG_BLDY = float(_system::getTime() - time )/(200)*31;
+		while( anim && time + 200 > _system::getHighResTime() )
+			REG_BLDY = float(_system::getHighResTime() - time )/(200)*31;
 		
 		REG_BLDY = 31;
 	} 
@@ -119,13 +119,12 @@ void _system::processEvents()
 	{
 		gadget = (_gadget*)event.getDestination();
 		
-		//int s = cpuGetTiming();
+		int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
-		//z += cpuGetTiming()-s;
-		//printf("%d\n",z);
+		printf("%d\n",cpuGetTiming()-t);
 	}
 
 	// Erase all Events
@@ -277,7 +276,7 @@ void _system::start()
 		for( _rect rc : b )
 			bmp.drawRect( rc.x , rc.y , rc.width , rc.height , RGB( 0 , 0 , 31 ) );
 			
-		_area a = _rect( 40 , 40 , 40 , 40 ).reduce(_rect( 50 , 50 , 40 , 40 ));
+		_area a = _rect( 40 , 40 , 40 , 40 ).combine(_rect( 40 , 40 , 50 , 40 ));
 		
 		int i = -6;
 		for( _rect rc : a )

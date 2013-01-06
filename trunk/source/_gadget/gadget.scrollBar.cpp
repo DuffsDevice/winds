@@ -148,14 +148,14 @@ void _scrollBar::refreshHandleWidth()
 _callbackReturn _scrollBar::clickHandler( _event event ) {
 	
 	// Receive Gadget
-	_button* that = event.getGadget<_button>();
+	_scrollButton* that = event.getGadget<_scrollButton>();
 	
 	_scrollBar* bar = ((_scrollBar*)that->parent);
 	
-	switch( that->style.data ){
-		
-		case 4:
-		case 2:
+	switch( that->getButtonType() )
+	{
+		case _scrollButtonType::buttonRight :
+		case _scrollButtonType::buttonBottom :
 			if( bar->value + bar->length >= bar->length2 )
 				break;
 			if( bar->value + bar->length + bar->step >= bar->length2 )
@@ -163,14 +163,16 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 			else
 				bar->setValue( bar->value + bar->step );
 			break;
-		case 5:
-		case 1:
+		case _scrollButtonType::buttonTop :
+		case _scrollButtonType::buttonLeft :
 			if( bar->value <= 0 )
 				break;
 			if( (int)bar->value - (int)bar->step < 0 )
 				bar->setValue( 0 );
 			else
 				bar->setValue( bar->value - bar->step );
+			break;
+		default:
 			break;
 	}
 	

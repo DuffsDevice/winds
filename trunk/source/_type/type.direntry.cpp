@@ -22,7 +22,7 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-//#define FAT_EMULATOR_
+#define FAT_EMULATOR_
 
 
 #ifdef FAT_EMULATOR_
@@ -370,8 +370,13 @@ bool _direntry::writeString( string str )
 
 string _direntry::readString( _u32 size )
 {
+	#ifdef FAT_EMULATOR_
+	string str = (const char*)program_bin;
+	return str;
+	#else
 	if( !this->fatInited || this->isDirectory() )
 		return "";
+	#endif
 	
 	if( !size )
 		size = this->getSize();
@@ -476,6 +481,7 @@ bool _direntry::execute()
 	//!TODO: remove Comment
 	//if( !this->fatInited )
 	//	return false;
+	
 	_mimeType mime = _mimeType::fromExtension( this->getExtension() );
 	switch( mime )
 	{

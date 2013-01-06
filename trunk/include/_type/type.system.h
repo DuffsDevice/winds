@@ -54,7 +54,7 @@ class _system{
 		static void processInput();
 		
 		//! The daily Vertical Blank and its methods:
-		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( getTime() ); return anim->finished(); } ); }
+		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( getHighResTime() ); return anim->finished(); } ); }
 		static void runVblListeners(){ for( const _callback* cb : _vblListeners_ ) (*cb)(); }
 		static void runPrograms()
 		{
@@ -144,7 +144,7 @@ class _system{
 		static _program* getBuiltInProgram( string qualifiedName );
 		
 		//! Get Current Time (time since system startup)
-		static _time getTime(){ return cpuGetTiming() >> 15; }
+		static _tempTime getHighResTime(){ return cpuGetTiming() >> 15; }
 		
 		//! Get a Font by Name
 		static _font* getFont( string font )
