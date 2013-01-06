@@ -755,7 +755,7 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	
 	// Ensure values don't exceed clipping rectangle
 	left 	= max( left , x );
-	right 	= min( right , x + _coord( activeClippingRect.width ) - 1 );
+	right 	= min( right , _coord( x + _coord( activeClippingRect.width ) - 1 ) );
 	
 	if( right < left )
 		return false;
@@ -763,7 +763,7 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	_coord y = activeClippingRect.y;
 	
 	top 	= max( top , y );
-	bottom 	= min( bottom , y + _coord( activeClippingRect.height ) - 1  );
+	bottom 	= min( bottom , _coord( y + _coord( activeClippingRect.height ) - 1 ) );
 	
 	// Return false if no box to draw
 	// Return true as box can be drawn

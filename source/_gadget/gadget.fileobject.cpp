@@ -6,6 +6,7 @@ _callbackReturn _fileobject::doubleClickHandler( _event event ){
 	// Receive Gadget
 	_fileobject* that = event.getGadget<_fileobject>();
 	
+	// Execute!
 	that->file.execute();
 	
 	return handled;

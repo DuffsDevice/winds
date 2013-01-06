@@ -3,7 +3,8 @@
 #define _WIN_LUNAR_
 
 #include "_type/type.h"
-#include "lua.hpp"
+#include "_type/type.system.h"
+#include "_lua/lua.hpp"
 #include <string.h> // For strlen
 
 extern bool luaL_is( lua_State* L , int narg , string type );
@@ -214,13 +215,15 @@ template < class T > class Lunar {
 			
 			if( !obj || !*obj )
 			{
-				printf( "Internal error, no object given!");
+				_system::debug( "Internal error, no object given!" );
 				return 0;
 			}
 			
 			if( _index >> 8 ) // Try to set a func
 			{
-				printf( "Trying to set the method [%s] of class [%s]",(*obj)->T::methods[_index ^ ( 1 << 8 ) ].name ,T::className);
+				char c[128];
+				sprintf( c , "Trying to set the method [%s] of class [%s]" , (*obj)->T::methods[_index ^ ( 1 << 8 ) ].name , T::className );
+				_system::debug( c );
 				return 0;
 			}
 			

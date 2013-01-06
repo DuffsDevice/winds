@@ -1,27 +1,19 @@
 #include "_type/type.event.h"
 
-_event::_event( _gadget* src , _eventType type ){
-	this->type = type;
-	this->src = src;
-}
-
 _event::_event( _eventType type ){
 	this->type = type;
 	resetParams();
 }
 
-_event _event::refreshEvent( _gadget* src , _area damagedRects ){
-	return _event( src , refresh ).setDamagedRects( damagedRects ).preventBubble( true );
+_event _event::refreshEvent( _area damagedRects ){
+	return _event( refresh ).setDamagedRects( damagedRects ).preventBubble( true );
 }
 
-_event _event::dialogClose( _gadget* src , _s32 intValue , string strValue ){
-	return _event( src , close );
-	//e.intValue = intValue;
-	//e.strValue = strValue;
+_event _event::dialogClose( _s32 intValue , string strValue ){
+	return _event( onClose );
 }
 
 void _event::resetParams( void* dest ){//!<= Reset All Arguments
-	this->src = nullptr;
 	this->dest = dest;
 	this->posX = 0;
 	this->posY = 0;
@@ -72,7 +64,8 @@ _map<string,_eventType> string2eventType = {
 	{ "onChange" , onChange },
 	{ "onBlur" , onBlur },
 	{ "onFocus" , onFocus },
-	{ "onClose" , onClose }
+	{ "onClose" , onClose },
+	{ "onStyleSet" , onStyleSet }
 };
 
 _map<_eventType,string> eventType2string = {
@@ -97,5 +90,6 @@ _map<_eventType,string> eventType2string = {
 	{ onChange , "onChange" },
 	{ onBlur , "onBlur" },
 	{ onFocus , "onFocus" },
-	{ onClose , "onClose" }
+	{ onClose , "onClose" },
+	{ onStyleSet , "onStyleSet" }
 };

@@ -28,9 +28,7 @@ class _lua_event : public _event {
 		
 		int resetParams(lua_State* L);//! resetParams
 		int getDestination(lua_State* L);//! getDestination
-		int getSource(lua_State* L);//! getSource
 		int setDestination(lua_State* L);//! setDestination
-		int setSource(lua_State* L);//! setSource
 		int setPosX(lua_State* L);//! Set X
 		int setPosY(lua_State* L);//! Set Y
 		int getPosX(lua_State* L);//! Get X

@@ -242,20 +242,20 @@ void _scrollBar::setDimension( _dimension dim )
 		this->setWidth( this->dimensions.height );
 		this->setHeight( 8 );
 		this->dragHandle->setDimensions( _rect( 8 , 0 , 8 , 8 ) );
-		this->dragHandle->setStyle( _style::storeData( 0 ) );
+		this->dragHandle->setStyle( _style::storeInt( 0 ) );
 		this->higherHandle->moveTo( this->dimensions.width - 8 , 0 );
-		this->higherHandle->setStyle( _style::storeData( 2 ) );
-		this->lowerHandle->setStyle( _style::storeData( 1 ) );
+		this->higherHandle->setStyle( _style::storeInt( 2 ) );
+		this->lowerHandle->setStyle( _style::storeInt( 1 ) );
 	}
 	else
 	{
 		this->setHeight( this->dimensions.width );
 		this->setWidth( 8 );
 		this->dragHandle->setDimensions( _rect( 0 , 8 , 8 , 8 ) );
-		this->dragHandle->setStyle( _style::storeData( 3 ) );
+		this->dragHandle->setStyle( _style::storeInt( 3 ) );
 		this->higherHandle->moveTo( 0 , this->dimensions.height - 8 );
-		this->higherHandle->setStyle( _style::storeData( 4 ) );
-		this->lowerHandle->setStyle( _style::storeData( 5 ) );
+		this->higherHandle->setStyle( _style::storeInt( 4 ) );
+		this->lowerHandle->setStyle( _style::storeInt( 5 ) );
 	}
 	
 	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );

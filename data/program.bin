@@ -1,5 +1,6 @@
 system.require("_window")
 system.require("_button")
+system.require("_bitmap")
 system.require("_animation")
 system.require("_checkbox")
 system.require("_select")
@@ -10,6 +11,7 @@ system.require("_counter")
 system.require("_progressbar")
 system.require("_radio")
 system.require("_radiogroup")
+system.require("_dialog")
 
 local w;
 local b;
@@ -50,6 +52,7 @@ end
 -- clickHandler to handle Click Events on Button1
 function clickHandler()
 	a.start();
+	--dialog();
 	b2 = _button( math.random( 40 ) , 45 , " rfdv" )
 	rg.intValue = math.random( 0 , 1 );
 	---b2 = _button( 40 , 10 , "ewf" )
@@ -64,6 +67,22 @@ function noel()
 	else
 		system.keyboardOpen()
 	end
+end
+
+local dia;
+
+function diaCB( res )
+	print("Hello From LUA!" .. res );
+end
+
+function dialog()
+	dia = _dialog();
+	bmp = _bitmap( 20 , 20 );
+	bmp.fill( system.rgb( 13,0 , 24 ) );
+	bmp.drawLine( 1 , 1 , 5 , 14 , system.rgb( 31 , 31 , 0 ) );
+	dia.imageDialog( "Evil Monkeys!!!" , "Error" , bmp , "Dismiss!" , "Retry" );
+	dia.execute();
+	dia.onExit( diaCB );
 end
 
 function setter( i )

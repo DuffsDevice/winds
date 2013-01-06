@@ -81,7 +81,7 @@ _radio::_radio( _coord x , _coord y , _radiogroup* group , _s32 assocValue , _st
 	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
 	, pressed( false )
 	, intValue( 0 )
-	, radiogroup( group )
+	, radiogroup( nullptr ) // Will be set when the _radio will be added to the _radiogroup
 {
 	if( group )
 		group->addRadio( this , assocValue );

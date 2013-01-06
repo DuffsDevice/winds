@@ -186,8 +186,8 @@ class _bitmap
 		**/
 		_pixel& operator()( _coord x , _coord y ) const {
 			
-			x = min( _length(x) , this->width - 1 );
-			y = min( _length(y) , this->height -1 );
+			x = min( x , _coord( this->width - 1 ) );
+			y = min( y , _coord( this->height - 1 ) );
 			
 			_u32 position = y * this->width + x;
 			
@@ -236,11 +236,14 @@ class _bitmap
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
 		**/
 		_pixel getPixel( _coord x , _coord y ) const 
-		{
+		{			
+			// Prevent Overflows
+			if( x >= _coord( this->width ) || y >= _coord( this->height ) )
+				return NO_COLOR;
+			
 			_u32 position = y * this->width + x;
 			
-			// Prevent Overflows
-			if( position > (this->height * this->width - 1 ) || _length(x) >= this->width || _length(y) >= this->height )
+			if( position + 1 > _length( this->height * this->width ) )
 				return NO_COLOR;
 			
 			return this->bmp[position];
@@ -253,7 +256,7 @@ class _bitmap
 		 * @return _pixel The Pixel at the specified location
 		**/
 		private:
-		_pixel getPixelFast( _coord x , _coord y ) const {
+		_pixel getPixelNoCheck( _coord x , _coord y ) const {
 			return this->bmp[ y * this->width + x ];
 		}
 		public:

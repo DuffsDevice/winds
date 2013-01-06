@@ -23,6 +23,7 @@ class _runtimeAttributes
 		vector<_char>	keyboardChar[2];
 		vector<string>	keyboardText[2];
 		_bitmap			windowBar;
+		_bitmap			windowBarBlurred;
 		_pixel			selectForeground;
 		_pixel			selectBackground;
 		_pixel			defaultForeground;

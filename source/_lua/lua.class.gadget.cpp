@@ -104,7 +104,10 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) ); return 1; }
 
 //! getScreen
-int _lua_gadget::getScreen( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getScreen() ) ); return 1; }
+int _lua_gadget::getScreen( lua_State* L ){ _gadget* g = this->gadget->getScreen(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g ) ); return 1; }
+
+//! getToppestChild
+int _lua_gadget::getToppestChild( lua_State* L ){ _gadget* g = this->gadget->getToppestChild(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g ) ); return 1; }
 
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
@@ -155,6 +158,12 @@ int _lua_gadget::moveTo(lua_State* L){ this->gadget->moveTo( luaL_checkint( L , 
 //! moveRelative
 int _lua_gadget::moveRelative(lua_State* L){ this->gadget->moveRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 
+//! focusChild
+int _lua_gadget::focusChild( lua_State* L ){ _lua_gadget* g = this->getLuaGadget( L , 1 ); if( g ) this->gadget->focusChild( g->gadget ); return 0; }
+
+//! blurChild
+int _lua_gadget::blurChild( lua_State* L ){ this->gadget->blurChild(); return 0; }
+
 //! getParent
 int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() ) ); return 1; }
 
@@ -168,7 +177,10 @@ int _lua_gadget::enhanceToParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g
 int _lua_gadget::removeChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->removeChild( g->gadget ); return 0; }
 
 //! removeChildren
-int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( luaL_optint( L , 1 , 0 ) ); return 0; }
+int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( luaL_optboolean( L , 1 , false ) ); return 0; }
+
+//! removeEnhancedChildren
+int _lua_gadget::removeEnhancedChildren( lua_State* L ){ this->gadget->removeEnhancedChildren( luaL_optboolean( L , 1 , false ) ); return 0; }
 
 //! addChild
 int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = this->getLuaGadget( L , 1 ); if( g ) this->gadget->addChild( g->gadget ); return 0; }
@@ -221,8 +233,35 @@ int _lua_gadget::setPadding(lua_State* L){ _lua_border* rc = Lunar<_lua_border>:
 //! getPadding
 int _lua_gadget::getPadding(lua_State* L){ Lunar<_lua_border>::push( L , new _lua_border( this->gadget->getPadding() ) ); return 1; }
 
+//! applyStyle
+int _lua_gadget::applyStyle(lua_State* L){ applyString2style( this->gadget->style , luaL_checkstring( L , 1 ) ); return 0; }
+
+//! hide
+int _lua_gadget::hide(lua_State* L){ this->gadget->hide(); return 0; }
+
+//! show
+int _lua_gadget::show(lua_State* L){ this->gadget->show(); return 0; }
+
 //! isEnhanced
 int _lua_gadget::isEnhanced(lua_State* L){ lua_pushboolean( L , this->gadget->isEnhanced() ); return 1; }
+
+//! isVisible
+int _lua_gadget::isVisible(lua_State* L){ lua_pushboolean( L , this->gadget->isVisible() ); return 1; }
+
+//! isMinimized
+int _lua_gadget::isMinimized(lua_State* L){ lua_pushboolean( L , this->gadget->isMinimized() ); return 1; }
+
+//! isResizeable
+int _lua_gadget::isResizeable(lua_State* L){ lua_pushboolean( L , this->gadget->isResizeable() ); return 1; }
+
+//! isResizeableX
+int _lua_gadget::isResizeableX(lua_State* L){ lua_pushboolean( L , this->gadget->isResizeableX() ); return 1; }
+
+//! isResizeableY
+int _lua_gadget::isResizeableY(lua_State* L){ lua_pushboolean( L , this->gadget->isResizeableY() ); return 1; }
+
+//! isMinimizeable
+int _lua_gadget::isMinimizeable(lua_State* L){ lua_pushboolean( L , this->gadget->isMinimizeable() ); return 1; }
 
 //! hasFocus
 int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }

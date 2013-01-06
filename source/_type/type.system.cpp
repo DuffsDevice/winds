@@ -521,8 +521,11 @@ void _system::shutDown(){
 	end();
 }
 
-string& _system::getLocalizedString( string name )
+const string& _system::getLocalizedString( string name )
 {
+	auto& tmp = _system::_localizationTable_->getMap();
+	if( !tmp.count( name ) || !tmp[name].count( _system::_curLanguageShortcut_ ) )
+		return "[]";
 	return _system::_localizationTable_->getMap()[name][_system::_curLanguageShortcut_];
 }
 

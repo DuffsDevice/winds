@@ -114,7 +114,7 @@ void _keyboard::open()
 	this->animKeyb.start();
 }
 
-void reset( void )
+void reset()
 {
 	_factor = 1; _x = 0; _y = 0;
 }
@@ -126,12 +126,12 @@ void _keyboard::close()
 	
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr )
-		this->destination->triggerEvent( _event( blur ) );
+		this->destination->triggerEvent( blur );
 	this->destination = nullptr;
 	
 	this->animKeyb.setToValue( sStart );
 	this->animMagnif.setToValue( sStart );
-	this->animMagnif.finish( new _staticCallback( &reset ) );
+	this->animMagnif.finish( new _staticCallback( reset ) );
 	this->mode = false;
 	this->animMagnif.start();
 	this->animKeyb.start();

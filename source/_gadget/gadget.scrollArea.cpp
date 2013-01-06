@@ -153,28 +153,32 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 
 void _scrollArea::computeCanvasSize(){
 	// Return if there's nothing to do
-	if( this->computeCanvasWidth != 2 && this->computeCanvasHeight != 2 )
-		return;
-	
-	int maxX = 0;
-	int maxY = 0;
-	
-	for( _gadget* child : this->children )
+	if( this->computeCanvasWidth == 2 || this->computeCanvasHeight == 2 )
 	{
-		const _rect& dim = child->getDimensions();
-		maxX = max( dim.getX2() , maxX );
-		maxY = max( dim.getY2() , maxY );
-	}
 	
-	if( this->computeCanvasWidth == 2 ){
-		maxX += 2 + this->scrollBarX->getValue();
-		this->canvasWidth = maxX;
-		this->computeCanvasWidth = 1;
-	}
-	if( this->computeCanvasHeight == 2 ){
-		maxY += 2 + this->scrollBarY->getValue();
-		this->canvasHeight = maxY;
-		this->computeCanvasHeight = 1;
+		_coord maxX = 0;
+		_coord maxY = 0;
+		
+		for( _gadget* child : this->children )
+		{
+			const _rect& dim = child->getDimensions();
+			maxX = max( dim.getX2() , maxX );
+			maxY = max( dim.getY2() , maxY );
+		}
+		
+		// Check for auto-compute of Width
+		if( this->computeCanvasWidth == 2 ){
+			maxX += 2 + this->scrollBarX->getValue();
+			this->canvasWidth = maxX;
+			this->computeCanvasWidth = 1;
+		}
+		
+		// Check for auto-compute of Height
+		if( this->computeCanvasHeight == 2 ){
+			maxY += 2 + this->scrollBarY->getValue();
+			this->canvasHeight = maxY;
+			this->computeCanvasHeight = 1;
+		}
 	}
 }
 

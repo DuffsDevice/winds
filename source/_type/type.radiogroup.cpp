@@ -10,10 +10,8 @@ void _radiogroup::removeRadio( _radio* radio )
 			break;
 	
 	if( iter != this->radios.end() )
-	{
 		this->radios.erase( iter );
-		radio->radiogroup = nullptr;
-	}
+	radio->radiogroup = nullptr;
 }
 
 void _radiogroup::addRadio( _radio* radio , _s32 assocValue )
@@ -31,7 +29,7 @@ void _radiogroup::addRadio( _radio* radio , _s32 assocValue )
 	{
 		int i = -1;
 		// Look for ne entry
-		while( !this->radios.count( ++i ) );
+		while( this->radios.count( ++i ) != 0 );
 		
 		// Push new entry
 		this->radios[i] = radio;

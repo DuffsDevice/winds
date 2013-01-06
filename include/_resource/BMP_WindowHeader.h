@@ -13,4 +13,13 @@ class BMP_WindowHeader : public _bitmap {
 		BMP_WindowHeader() : _bitmap(const_cast<_pixelArray>(BMP_WindowHeader_bmp), 1, 10) { }
 };
 
+static const _pixel BMP_WindowHeaderBlurred_bmp[10] = {
+57900, 57933, 56811, 56811, 56811, 56811, 56843, 57867, 56811, 52617
+};
+
+class BMP_WindowHeaderBlurred : public _bitmap {
+	public:
+		BMP_WindowHeaderBlurred() : _bitmap(const_cast<_pixelArray>(BMP_WindowHeaderBlurred_bmp), 1, 10) { }
+};
+
 #endif

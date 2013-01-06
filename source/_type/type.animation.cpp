@@ -5,7 +5,7 @@
 #define  M_PI        3.14159265358979323846
 
 _animation::_animation( int from , int to , _tempTime dur ) :
-	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
+	startTime( 0 ) , duration( dur ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
 { }
 
 _animation::~_animation()
@@ -45,8 +45,11 @@ void _animation::step( _tempTime curTime )
 		this->runs = false;
 		if( this->setterFunc != nullptr )
 			(*this->setterFunc)( this->toValue );
-		if( this->finishFunc )
+		if( this->finishFunc != nullptr )
+		{
+			(*this->finishFunc)();
 			(*this->finishFunc)( this->toValue );
+		}
 		return;
 	}
 	if( this->easeFunc != nullptr )

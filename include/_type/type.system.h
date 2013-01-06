@@ -89,7 +89,6 @@ class _system{
 			_programs_.push_back( make_pair( prog , args ) );
 			prog->main( _gadgetHost_ , args );
 		}
-		static void executeTimer( const _callback* cb , _tempTime duration , bool isRepeating = false );
 		static void generateEvent( _event event ){ _eventBuffer_[_curEventBuffer_].push_back( event ); }
 		
 		//! Things for termination
@@ -143,7 +142,10 @@ class _system{
 		static _u16 getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
 		
 		//! Get string
-		static string& getLocalizedString( string name );
+		static const string& getLocalizedString( string name );
+		
+		//! Execute the passed callback after duration d and repeat if requested
+		static void executeTimer( const _callback* cb , _tempTime d , bool isRepeating = false );
 		
 		//! Turn Device off
 		static void shutDown();

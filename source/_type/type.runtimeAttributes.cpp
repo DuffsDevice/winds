@@ -12,6 +12,7 @@ _runtimeAttributes::_runtimeAttributes() :
 	, defaultFont( "Tahoma7" )
 	, defaultFontSize( 8 ) 
 	, windowBar( BMP_WindowHeader() )
+	, windowBarBlurred( BMP_WindowHeaderBlurred() )
 {
 	this->assocDirectories = { { "%WINDIR%" , "/windows" } , { "%APPDATA%" , "/windows/appdata" } , { "%USERS%" , "/windows/users" } };
 	
