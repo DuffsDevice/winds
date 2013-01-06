@@ -9,20 +9,16 @@ class _progC : public _program{
 		
 	private:
 		
-		void 		(_progC::*initFunc)( _cmdArgs& args );
-		int 		(_progC::*mainFunc)( _cmdArgs& args );
+		void 		(_progC::*mainFunc)( _cmdArgs& args );
 		void 		(_progC::*destructFunc)();
 		
 	public:
 		
-		_progC( void (_progC::*init)(_cmdArgs&) , void (_progC::*destruct)() , int (_progC::*main)(_cmdArgs&) );
+		_progC( void (_progC::*main)(_cmdArgs&) , void (_progC::*destruct)() );
 		
 		~_progC();
 		
-		int main( _cmdArgs& args );
-		
-		void init( _cmdArgs& args );
-		
+		void main( _cmdArgs& args );
 };
 
 #endif

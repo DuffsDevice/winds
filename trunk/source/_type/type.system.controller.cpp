@@ -80,7 +80,7 @@ void _systemController::setupPage()
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , 117 );
 	
-	_system::_gadgetHost_->registerEventHandler( _internal_ , _systemController::setupHandler );
+	_system::_gadgetHost_->registerEventHandler( _internal_ , new _staticCallback( _systemController::setupHandler ) );
 	_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 }
 
@@ -256,8 +256,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeData( -1 ) );
 		prev->setColor( RGB( 30 , 30 , 30 ) );
 		prev->setAlign( _align::left );
-		prev->registerEventHandler( mouseClick , setupHandler );
-		btnPrev->registerEventHandler( onAction , setupHandler );
+		prev->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
+		btnPrev->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
 		
 		gadgets[1] = btnPrev;
 		gadgets[3] = prev;
@@ -282,8 +282,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 	next->setAlign( _align::right );
 	
 	// Set Handler
-	next->registerEventHandler( mouseClick , setupHandler );
-	btnNext->registerEventHandler( onAction , setupHandler );
+	next->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
+	btnNext->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
 	that->addChild( btnNext );
 	that->addChild( next );
 	
@@ -294,7 +294,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl = new _label( 79 , 52 , _system::getLocalizedString("lbl_choose_language") );
 			_select* slc = new _select( 90 , 5 , 78 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
 			slc->setIntValue( (_u8)_system::getLanguage() );
-			slc->registerEventHandler( onAction , setupHandler );
+			slc->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
 			gadgets[5] = slc;
 			gadgets[6] = lbl;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
@@ -341,9 +341,9 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_counter* cnt2 = new _counter( 115 , 120 , 25 , true , systemTime.minute , 59 , 0 );
 			_counter* cnt3 = new _counter( 145 , 120 , 25 , true , systemTime.second , 59 , 0 );
 			
-			cnt1->registerEventHandler( onChange , setupHandler );
-			cnt2->registerEventHandler( onChange , setupHandler );
-			cnt3->registerEventHandler( onChange , setupHandler );
+			cnt1->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
+			cnt2->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
+			cnt3->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
 			_radiogroup* radgrp = new _radiogroup();
 			_radio* rad1 = new _radio( 20 , 139 , radgrp );
@@ -394,7 +394,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
 			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeData( 4 ) );
-			txtName->registerEventHandler( onChange , setupHandler );
+			txtName->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
 			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeData( 1 ) );
 			_imagegadget* image2 = new _imagegadget( 42 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/guitarl.png" ) ) , _style::storeData( 2 ) );
@@ -419,8 +419,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 			gadgets[17] = image8;
 			for( int i = 10 ; i < 18 ; i++ )
 			{
-				gadgets[i]->registerEventHandler( refresh , setupHandler );
-				gadgets[i]->registerEventHandler( onFocus , setupHandler );
+				gadgets[i]->registerEventHandler( refresh , new _staticCallback( setupHandler ) );
+				gadgets[i]->registerEventHandler( onFocus , new _staticCallback( setupHandler ) );
 			}
 			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
@@ -478,7 +478,12 @@ void _systemController::bootupPage()
 	_system::_gadgetHost_ = new _bootupScreen( _system::_bgIdBack_ );
 	
 	static _animation anim = _animation( 0 , 1 , 2000 );
-	anim.finish( [&]( _u32 ){ _systemController::changeState( _systemState::login ); } );
+	anim.finish( 
+		new _inlineCallback(
+			static_cast<function<int(int)>>
+				( [&](int){ _systemController::changeState( _systemState::login ); return 1; } )
+		)
+	);
 	anim.start();
 }
 

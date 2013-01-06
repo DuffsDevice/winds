@@ -27,9 +27,10 @@ _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMen
 	, entries( lst )
 	, selected( -1 )
 {
+	this->setPaddingOffset( _padding( 1 , 1 , 1 , 1 ) );
 	this->setType( _gadgetType::selectbox );
 	
-	this->registerEventHandler( refresh , &_select::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_select::refreshHandler ) );
 	
 	// Refresh Me
 	this->refreshList();
@@ -41,7 +42,7 @@ void _select::setSelected( _s32 val )
 	{
 		_selectItem* s;
 		for( _gadget* g : this->children )
-			if( ( s = ((_selectItem*)g)) -> getIntValue() == val )
+			if( ( s = (_selectItem*)g) -> getIntValue() == val )
 				s->setActive( true );
 			else
 				s->setActive( false );
@@ -55,6 +56,18 @@ void	_select::refreshList()
 	
 	int nth = 0;
 	
+	_selectItem* test = nullptr;
+	
 	for( pair<const _s32,string>& entry : this->entries )
-		this->addChild( new _selectItem( nth++ , this->dimensions.width - 2 , entry.second , entry.first ) );
+	{
+		if( selected == entry.first )
+			this->addChild( test = new _selectItem( nth++ , this->dimensions.width - 2 , entry.second , entry.first ) );
+		else
+			this->addChild( new _selectItem( nth++ , this->dimensions.width - 2 , entry.second , entry.first ) );
+	}
+	
+	if( !test )
+		this->selected = -1;
+	else
+		test->setActive( true );
 }

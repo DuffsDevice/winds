@@ -26,7 +26,7 @@ _actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _st
 {
 	// Register handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_actionButton::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_actionButton::refreshHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

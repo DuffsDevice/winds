@@ -47,8 +47,8 @@ _windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
 	_button( 38 , 10 , x , y , "" , style )
 	, startMenu( new _startMenu( this ) )
 {
-	this->registerEventHandler( onAction , &_windowsStartButton::mouseHandler );
-	this->registerEventHandler( refresh , &_windowsStartButton::refreshHandler );
+	this->registerEventHandler( onAction , new _staticCallback( &_windowsStartButton::mouseHandler ) );
+	this->registerEventHandler( refresh , new _staticCallback( &_windowsStartButton::refreshHandler ) );
 	
 	this->refreshBitmap();
 }

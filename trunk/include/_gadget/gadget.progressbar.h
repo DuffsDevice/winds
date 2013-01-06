@@ -13,7 +13,6 @@ class _progressbar : public _gadget {
 		_u8		value;
 		_u8		state;
 		bool	blue;
-		_u32	lastTime;
 		
 		static _callbackReturn refreshHandler( _event event );
 		

@@ -1,29 +1,33 @@
 system.require("_window")
 system.require("_button")
+system.require("_animation")
 system.require("_checkbox")
 system.require("_select")
 system.require("_gadget")
 system.require("_direntry")
 system.require("_event")
+system.require("_counter")
 
 local w;
 local w2;
 local b;
 local c;
-local created = false;
-local ende = 0;
 local select;
+local a;
 
-function init()
+function main()
 	-- create Gadgets
 	w = _window( 150 , 80 , 20 , 20 , "Neues Fenster" );
 	c = _checkbox( 10 , 11 );
 	b = _button( 50,10,"Tehhjwsx" );
-	select = _select( 40 , 2 , 40 , 40 );
+	cnt = _counter( 4,40,40,true );
+	select = _select( 50 , 2 , 30 , 40 );
 	select.addIndex( 0 , "Hello" );
+	select.setList( { "HAllo" , "test!" ; "%Allright" } );
 
 	-- construct the Tree
 	w.addChild( c );
+	w.addChild( cnt );
 	w.addChild( select );
 	w.addChild( b );
 	system.addChild( w );
@@ -35,6 +39,10 @@ function init()
 	
 	--local dir = _direntry("/fat.h")
 	--dir.create()
+	
+	a = _animation( 0 , 50 , 1000 );
+	a.easing = "elastic:easeOut";
+	a.onSet( setter );
 
 end
 
@@ -47,29 +55,26 @@ function dragHandler( e )
 	return "handled"
 end
 
-function main()
-	--w.strValue = string.format( "%i - Delta. %i" , math.random( 400 ) , 23544124 )
-	return ende
-end
-
 -- clickHandler to handle Click Events on Button1
 function clickHandler()
-	if created then
-		-- ready for garbage collection
-		--b2.delete()
-		--b2 = nil
-	end
+	a.start();
 	b2 = _button( math.random( 40 ) , 45 , " rfdv" )
 	---b2 = _button( 40 , 10 , "ewf" )
 	w.addChild( b2 )
 	b2.registerEventHandler( "mouseClick" , setValue )
-	select.addIndex( -1 , "Hello" )
-	created = true
+	select.addIndex( 2 , "Test" )
 	return "handled"
 end
 
 function setValue()
 	c.intValue = math.random( 0 , 2 );
-	system.exit()
+	for k,v in ipairs( select.getList() ) do
+		print(v[1] .. ":" .. v[2] .. "\n" );
+	end
+	--system.exit()
 	return "handled"
+end
+
+function setter( i )
+	b.x = i;
 end

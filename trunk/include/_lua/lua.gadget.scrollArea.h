@@ -20,9 +20,8 @@ class _lua_scrollArea : public _lua_gadget{
 		
 		_lua_scrollArea( lua_State* L );
 		
-		_lua_scrollArea( _scrollArea* s ){ 
-			this->setGadget( s );
-		}
+		_lua_scrollArea( _scrollArea* s ) : _lua_gadget( s )
+		{ }
 		
 		//! setScrollTypeX
 		int setScrollTypeX( lua_State* L );

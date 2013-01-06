@@ -84,11 +84,11 @@ _radio::_radio( _coord x , _coord y , _radiogroup* group , _style style ) :
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_radio::refreshHandler );
-	this->registerEventHandler( mouseDown , &_radio::mouseHandler );
-	this->registerEventHandler( mouseUp , &_radio::mouseHandler );
-	this->registerEventHandler( dragStart , &_radio::dragHandler );
-	this->registerEventHandler( dragging , &_radio::dragHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_radio::refreshHandler ) );
+	this->registerEventHandler( mouseDown , new _staticCallback( &_radio::mouseHandler ) );
+	this->registerEventHandler( mouseUp , new _staticCallback( &_radio::mouseHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_radio::dragHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_radio::dragHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

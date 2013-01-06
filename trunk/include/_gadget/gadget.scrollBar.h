@@ -43,7 +43,7 @@ class _scrollBar : public _gadget{
 		
 		//! Simply set the value
 		//! @note: this triggers a onScroll-Event!
-		void setValue( _u32 value );
+		int setValue( int value );
 		
 		void setValue( _u32 value , bool ease );
 		

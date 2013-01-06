@@ -48,8 +48,8 @@ class _keyboard : public _gadgetScreen {
 		static _callbackReturn dragHandler( _event event );
 		static _callbackReturn focusHandler( _event event );
 		
-		void setState( int val );
-		void setMagnification( int val );
+		int setState( int val );
+		int setMagnification( int val );
 	
 	public:
 	

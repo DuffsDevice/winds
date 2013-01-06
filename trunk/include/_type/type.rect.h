@@ -153,7 +153,7 @@ class _rect{
 		}
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one
-		_rect& clipToIntersect( const _rect& rect )
+		_rect& clipToIntersect( const _rect rect )
 		{
 			return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 		}
@@ -162,28 +162,28 @@ class _rect{
 		_area combine( const _rect& other ) const ;
 		
 		//! Returns a Rectangle containing both this rect and the passed one
-		_rect& expandToInclude( const _rect& rect )
+		_rect& expandToInclude( const _rect rect )
 		{
 			return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
 		}
 		
 		//! Expand the rect by applying a margin
-		_rect& applyMargin( const _margin& p )
+		_rect& applyMargin( const _margin p )
 		{
-			return (*this = _rect::fromCoords( this->x - p.getLeft() , this->y - p.getTop() , this->getX2() + p.getRight() , this->getY2() + p.getBottom() ) );
+			return (*this = _rect::fromCoords( this->x - p.left , this->y - p.top , this->getX2() + p.right , this->getY2() + p.bottom ) );
 		}
 		
 		//! Crop the Rect by applying a padding
-		_rect& applyPadding( const _padding& p )
+		_rect& applyPadding( const _padding p )
 		{
-			return (*this = _rect::fromCoords( this->x + p.getLeft() , this->y + p.getTop() , this->getX2() - p.getRight() , this->getY2() - p.getBottom() ) ); 
+			return (*this = _rect::fromCoords( this->x + p.left , this->y + p.top , this->getX2() - p.right , this->getY2() - p.bottom ) ); 
 		}
 		
 		//! Cut 'other' off of me
 		_area reduce( const _rect& other ) const ;
 		
 		//! Check if the rect equals another
-		bool equals( const _rect& other ) const {
+		bool equals( const _rect other ) const {
 			return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
 		}
 		
@@ -193,12 +193,12 @@ class _rect{
 		}
 		bool intersectsWith( const _area& other ) const;
 		
-		bool operator==( const _rect& other )
+		bool operator==( const _rect other )
 		{
 			return !( other.x != this->x || other.y != this->y || other.width != this->width || other.height != this->height );
 		}
 		
-		noinline bool operator!=( const _rect& other )
+		noinline bool operator!=( const _rect other )
 		{
 			return other.x != this->x || other.y != this->y || other.width != this->width || other.height != this->height;
 		}

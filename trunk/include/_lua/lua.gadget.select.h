@@ -17,7 +17,7 @@ class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
 		
 		_lua_select( lua_State* L );
 		
-		_lua_select( _select* b ) : _lua_gadget( b ) , _lua_interface_input( b ) { }
+		_lua_select( _select* s ) : _lua_gadget( s ) , _lua_interface_input( s ) { }
 		
 		//! addIndex
 		int addIndex( lua_State* L );
@@ -27,6 +27,15 @@ class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
 		
 		//! clearList
 		int clearList( lua_State* L );
+		
+		//! getList
+		int getList( lua_State* L );
+		
+		//! setList
+		int setList( lua_State* L );
+		
+		//! getEntryFromNumber
+		int getEntryFromNumber( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

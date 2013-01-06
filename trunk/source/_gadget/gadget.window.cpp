@@ -63,7 +63,7 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
 	_button( 8 , 8 , x , y , "" )
 	, buttonType( buttonType )
 {
-	this->registerEventHandler( refresh , &_windowButton::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_windowButton::refreshHandler ) );
 	this->refreshBitmap();
 }
 
@@ -193,13 +193,13 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->addEnhancedChild( this->button[0] );
 	this->addEnhancedChild( this->button[1] );
 	this->addEnhancedChild( this->button[2] );
-	this->button[0]->registerEventHandler( onAction , &_window::closeHandler );
+	this->button[0]->registerEventHandler( onAction , new _staticCallback( &_window::closeHandler ) );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , &_window::refreshHandler );
-	this->registerEventHandler( dragging , &_window::dragHandler );
-	this->registerEventHandler( dragStart , &_window::dragHandler );
-	this->registerEventHandler( dragStop , &_window::dragHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_window::refreshHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_window::dragHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_window::dragHandler ) );
+	this->registerEventHandler( dragStop , new _staticCallback( &_window::dragHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

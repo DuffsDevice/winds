@@ -67,7 +67,7 @@ _windows::_windows( _u8 bgId , _style style ) :
 	this->addEnhancedChild( this->startButton );
 	
 	//! Register Event-Handlers
-	this->registerEventHandler( refresh , &_windows::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_windows::refreshHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

@@ -31,7 +31,7 @@ _imagegadget::_imagegadget( _coord x , _coord y , const _bitmap& img , _style st
 {
 	// Register Event-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_imagegadget::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_imagegadget::refreshHandler ) );
 
 	// Refresh Me
 	this->refreshBitmap();

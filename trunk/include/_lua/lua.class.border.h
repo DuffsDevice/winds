@@ -2,11 +2,6 @@
 #ifndef _WIN_LUABORDER_
 #define _WIN_LUABORDER_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
 #include "_lua/lunar.h"
 #include "_type/type.h"
 
@@ -20,7 +15,7 @@ class _lua_border : public _border {
 		_lua_border( _border rc );
 		
 		//! Constructor
-		_lua_border( lua_State* L);
+		_lua_border( lua_State* L );
 		
 		//! getLeft
 		int getLeft(lua_State* L);

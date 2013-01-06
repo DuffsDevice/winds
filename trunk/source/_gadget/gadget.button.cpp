@@ -172,13 +172,13 @@ void _button::init( string text )
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
-	this->registerEventHandler( refresh , &_button::refreshHandler );
-	this->registerEventHandler( mouseDown , &_button::mouseHandler );
-	this->registerEventHandler( mouseUp , &_button::mouseHandler );
-	this->registerEventHandler( dragStart , &_button::dragHandler );
-	this->registerEventHandler( dragStop , &_button::dragHandler );
-	this->registerEventHandler( dragging , &_button::dragHandler );
-	this->registerEventHandler( onResize , &_button::resizeHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_button::refreshHandler ) );
+	this->registerEventHandler( mouseDown , new _staticCallback( &_button::mouseHandler ) );
+	this->registerEventHandler( mouseUp , new _staticCallback( &_button::mouseHandler ) );
+	this->registerEventHandler( dragStart , new _staticCallback( &_button::dragHandler ) );
+	this->registerEventHandler( dragStop , new _staticCallback( &_button::dragHandler ) );
+	this->registerEventHandler( dragging , new _staticCallback( &_button::dragHandler ) );
+	this->registerEventHandler( onResize , new _staticCallback( &_button::resizeHandler ) );
 	
 	// Compute the necesary Width
 	this->computeSize();

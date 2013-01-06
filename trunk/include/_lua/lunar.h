@@ -8,6 +8,7 @@
 
 extern bool luaL_is( lua_State* L , int narg , string type );
 extern bool luaL_checkboolean( lua_State* L , int narg );
+extern bool luaL_optboolean( lua_State* L , int narg , bool val );
 
 template < class T > class Lunar {
   public:

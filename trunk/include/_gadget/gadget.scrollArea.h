@@ -22,6 +22,8 @@ class _scrollArea : public _gadget {
 		_scrollBar*	scrollBarX;
 		_scrollBar*	scrollBarY;
 		
+		_padding	offset;
+		
 		// Size of scrolling Area
 		_length		clipWidth;
 		_length		clipHeight;
@@ -85,6 +87,9 @@ class _scrollArea : public _gadget {
 		// Replace children-functions
 		void addChild( _gadget* child );
 		void removeChild( _gadget* child );
+		
+		void setPaddingOffset( _padding p ){ this->offset = p; }
+		_padding getPaddingOffset(){ return this->offset; }
 		
 		//! Default Constructor width optional scrolltypes
 		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );

@@ -2,11 +2,6 @@
 #ifndef _WIN_LUAFILE_
 #define _WIN_LUAFILE_
 
-extern "C"{
-	#include "_lua/lua.h"
-	#include "_lua/lauxlib.h"
-	#include "_lua/lualib.h"
-}
 #include "_lua/lunar.h"
 #include "_type/type.direntry.h"
 

@@ -156,6 +156,4 @@ class _event
 		bool hasClippingRects(){ return !this->damagedRects.empty(); } //!......<= Check if the Event crops the area to be painted on
 };
 
-#include "_type/type.gadget.h"
-
 #endif

@@ -16,7 +16,7 @@ class _lua_textbox : public _lua_gadget , public _lua_interface_input<_textbox> 
 		
 		_lua_textbox( lua_State* L );
 		
-		_lua_textbox( _textbox* c ) : _lua_gadget( c ) , _lua_interface_input( c ) { }
+		_lua_textbox( _textbox* t ) : _lua_gadget( t ) , _lua_interface_input( t ) { }
 		
 		//! setColor
 		int setColor( lua_State* L );

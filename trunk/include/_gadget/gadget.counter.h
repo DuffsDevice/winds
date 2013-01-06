@@ -13,6 +13,7 @@ class _counter : public _gadget{
 		_s32 lowerBound;
 		_s32 upperBound;
 		_u8	 decimals;
+		_u8	 numbersystem;
 		
 		void increase(){ this->setIntValue( this->intValue + 1 ); }
 		void decrease(){ this->setIntValue( this->intValue - 1 ); }
@@ -26,7 +27,7 @@ class _counter : public _gadget{
 		
 		void refreshDecimals()
 		{
-			this->decimals = max( getDecimals( upperBound ) , getDecimals( lowerBound ) );
+			this->decimals = max( countDecimals( this->upperBound , this->numbersystem ) , countDecimals( this->lowerBound , this->numbersystem ) );
 		}
 		
 	public:
@@ -47,8 +48,12 @@ class _counter : public _gadget{
 			refreshDecimals();
 		}
 		
+		_s32 getLowerBound(){ return this->lowerBound; }
+		
+		_s32 getUpperBound(){ return this->upperBound; }
+		
 		_counter( _coord x , _coord y , _length width , bool circular = false , _s32 value = 0 , _style style = _style() );
-		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _style style = _style() );
+		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _u8 numbersystem = 10 , _style style = _style() );
 		
 };
 #endif

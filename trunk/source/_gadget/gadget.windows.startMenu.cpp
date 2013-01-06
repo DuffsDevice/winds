@@ -67,7 +67,7 @@ _startMenu::_startMenu( _gadget* owner , _style style ) :
 	this->addChild( usrName );
 	
 	// Registering Event Handlers
-	this->registerEventHandler( refresh , _startMenu::refreshHandler );
+	this->registerEventHandler( refresh , new _staticCallback( &_startMenu::refreshHandler ) );
 	
 	// Refresh...
 	this->refreshBitmap();

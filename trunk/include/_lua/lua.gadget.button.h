@@ -18,7 +18,7 @@ class _lua_button : public _lua_gadget , public _lua_interface_input<_button> {
 		
 		_lua_button( _button* b ){ 
 			this->setGadget( b );
-			_lua_interface_input::input = (_button*)this->gadget;
+			_lua_interface_input::input = b;
 		}
 		
 		//! setAutoSelect

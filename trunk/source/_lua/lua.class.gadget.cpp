@@ -6,6 +6,7 @@
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.button.h"
+#include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.select.h"
@@ -30,6 +31,8 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 	if( ( tmp = Lunar<_lua_select>::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	if( ( tmp = Lunar<_lua_textbox>::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar<_lua_counter>::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	return Lunar<_lua_gadget>::check( L , 2 );
 }
@@ -100,15 +103,12 @@ int _lua_gadget::getScreen( lua_State* L ){ Lunar<_lua_gadget>::push( L , new _l
 //! registerEventHandler
 int _lua_gadget::registerEventHandler( lua_State* L ){ 
 	_eventType t = string2eventType[ luaL_checkstring( L , 1 ) ];
-	if( lua_isfunction( L , -1 ) ){
-		int i = luaL_ref(L, LUA_REGISTRYINDEX);
-		this->gadget->registerLuaEventHandler( t , i , L ); 
-	}
+	this->gadget->registerEventHandler( t , new _luaCallback( L , 2 ) );
 	return 0;
 }
 
 //! unregisterEventHandler
-int _lua_gadget::unregisterEventHandler( lua_State* L ){ _eventType t = string2eventType[ luaL_checkstring( L , 1 ) ]; luaL_unref(L, LUA_REGISTRYINDEX , this->gadget->unregisterLuaEventHandler( t ) ); return 0; }
+int _lua_gadget::unregisterEventHandler( lua_State* L ){ _eventType t = string2eventType[ luaL_checkstring( L , 1 ) ]; this->gadget->unregisterEventHandler( t ); return 0; }
 
 //! generateEvent
 int _lua_gadget::generateEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->generateEvent( *e ); return 0; }
@@ -121,9 +121,6 @@ int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->
 
 //! handleEvent
 int _lua_gadget::handleEvent( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEvent( *e ) ].c_str() ); return 1; }
-
-//! handleEventNormal
-int _lua_gadget::handleEventNormal( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEventNormal( *e ) ].c_str() ); return 1; }
 
 //! handleEventDefault
 int _lua_gadget::handleEventDefault( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , eventReturnType2string[ this->gadget->handleEventDefault( *e ) ].c_str() ); return 1; }

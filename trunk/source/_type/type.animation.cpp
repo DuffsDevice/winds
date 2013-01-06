@@ -4,9 +4,18 @@
 #include <cmath>
 #define  M_PI        3.14159265358979323846
 
-_animation::_animation( int from , int to , _u32 dur ) :
+_animation::_animation( int from , int to , _tempTime dur ) :
 	startTime( 0 ) , duration( dur ) , destination( nullptr ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
 { }
+
+_animation::~_animation()
+{
+	this->terminate();
+	if( setterFunc )
+		delete setterFunc;
+	if( finishFunc )
+		delete finishFunc;
+}
 
 void _animation::start(){
 	this->deltaValue = this->toValue - this->fromValue;
@@ -35,20 +44,16 @@ void _animation::step( _tempTime curTime )
 	{
 		this->runs = false;
 		if( this->setterFunc != nullptr )
-			this->setterFunc( this->toValue );
-		if( this->destination != nullptr )
-			*this->destination = this->toValue;
+			(*this->setterFunc)( this->toValue );
 		if( this->finishFunc )
-				this->finishFunc( this->toValue );
+			(*this->finishFunc)( this->toValue );
 		return;
 	}
 	if( this->easeFunc != nullptr )
 	{
 		int value = this->easeFunc( tElapsed , this->fromValue , this->deltaValue , this->duration ) + 0.5;
 		if( this->setterFunc != nullptr )
-			this->setterFunc(value);
-		if( this->destination != nullptr )
-			*this->destination = value;
+			(*this->setterFunc)(value);
 	}
 }
 
@@ -134,3 +139,75 @@ _float _animation::_expo::easeOut( _float t , _float b , _float c , _float d ){
 	return (t==d) ? b+c : c * (-pow(2, -10 * t/d) + 1) + b; 
 }
 _float _animation::_expo::easeInOut( _float t , _float b , _float c , _float d ){ if (t==0) return b; if (t==d) return b+c; if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b; return c/2 * (-pow(2, -10 * --t) + 2) + b; }
+
+
+map<string,_easingFunction*> string2easingFunc = {
+	{ "linear:ease" , _animation::_linear::ease },
+	
+	{ "quad:easeIn" , _animation::_quad::easeIn },
+	{ "quad:easeOut" , _animation::_quad::easeOut },
+	{ "quad:easeInOut" , _animation::_quad::easeInOut },
+	
+	{ "sinus:easeIn" , _animation::_sinus::easeIn },
+	{ "sinus:easeOut" , _animation::_sinus::easeOut },
+	{ "sinus:easeInOut" , _animation::_sinus::easeInOut },
+	
+	{ "bounce:easeIn" , _animation::_bounce::easeIn },
+	{ "bounce:easeOut" , _animation::_bounce::easeOut },
+	{ "bounce:easeInOut" , _animation::_bounce::easeInOut },
+	
+	{ "back:easeIn" , _animation::_back::easeIn },
+	{ "back:easeOut" , _animation::_back::easeOut },
+	{ "back:easeInOut" , _animation::_back::easeInOut },
+	
+	{ "circular:easeIn" , _animation::_circular::easeIn },
+	{ "circular:easeOut" , _animation::_circular::easeOut },
+	{ "circular:easeInOut" , _animation::_circular::easeInOut },
+	
+	{ "cubic:easeIn" , _animation::_cubic::easeIn },
+	{ "cubic:easeOut" , _animation::_cubic::easeOut },
+	{ "cubic:easeInOut" , _animation::_cubic::easeInOut },
+	
+	{ "elastic:easeIn" , _animation::_elastic::easeIn },
+	{ "elastic:easeOut" , _animation::_elastic::easeOut },
+	{ "elastic:easeInOut" , _animation::_elastic::easeInOut },
+	
+	{ "expo:easeIn" , _animation::_expo::easeIn },
+	{ "expo:easeOut" , _animation::_expo::easeOut },
+	{ "expo:easeInOut" , _animation::_expo::easeInOut }
+};
+map<_easingFunction*,string> easingFunc2string = {
+	{ _animation::_linear::ease , "linear:ease" },
+	
+	{ _animation::_quad::easeIn , "quad:easeIn" },
+	{ _animation::_quad::easeOut , "quad:easeOut" },
+	{ _animation::_quad::easeInOut , "quad:easeInOut" },
+	
+	{ _animation::_sinus::easeIn , "sinus:easeIn" },
+	{ _animation::_sinus::easeOut , "sinus:easeOut" },
+	{ _animation::_sinus::easeInOut , "sinus:easeInOut" },
+	
+	{ _animation::_bounce::easeIn , "bounce:easeIn" },
+	{ _animation::_bounce::easeOut , "bounce:easeOut" },
+	{ _animation::_bounce::easeInOut , "bounce:easeInOut" },
+	
+	{ _animation::_back::easeIn , "back:easeIn" },
+	{ _animation::_back::easeOut , "back:easeOut" },
+	{ _animation::_back::easeInOut , "back:easeInOut" },
+	
+	{ _animation::_circular::easeIn , "circular:easeIn" },
+	{ _animation::_circular::easeOut , "circular:easeOut" },
+	{ _animation::_circular::easeInOut , "circular:easeInOut" },
+	
+	{ _animation::_cubic::easeIn , "cubic:easeIn" },
+	{ _animation::_cubic::easeOut , "cubic:easeOut" },
+	{ _animation::_cubic::easeInOut , "cubic:easeInOut" },
+	
+	{ _animation::_elastic::easeIn , "elastic:easeIn" },
+	{ _animation::_elastic::easeOut , "elastic:easeOut" },
+	{ _animation::_elastic::easeInOut , "elastic:easeInOut" },
+	
+	{ _animation::_expo::easeIn , "expo:easeIn" },
+	{ _animation::_expo::easeOut , "expo:easeOut" },
+	{ _animation::_expo::easeInOut , "expo:easeInOut" },
+};
