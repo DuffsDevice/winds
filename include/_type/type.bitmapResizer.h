@@ -9,14 +9,14 @@ class _bitmapResizer : public _bitmap
 	
 	private:
 		
-		void scaleRect( _bitmap* dest , _bitmap* src, _rect srcArea = _rect() );
+		void scaleRect( _bitmap& dest , const _bitmap& src, _rect srcArea = _rect() );
 		
-		_bitmap* src;
-		_rect	 srcArea;
+		const _bitmap*	src;
+		_rect	 		srcArea;
 		
 	public:
 		
-		_bitmapResizer( _length width , _length height , _bitmap* src , _rect srcArea = _rect() , bool doNotCompute = false );
+		_bitmapResizer( _length width , _length height , const _bitmap& src , _rect srcArea = _rect() , bool doNotCompute = false );
 		
 		// Does the computing
 		void compute();

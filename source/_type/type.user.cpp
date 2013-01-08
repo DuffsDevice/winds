@@ -1,5 +1,5 @@
 //! Standard Headers
-#include "time.h"
+#include <time.h>
 
 //! Types
 #include "_type/type.imagefile.h"
@@ -8,22 +8,15 @@
 #include "func.memory.h"
 #include "_type/type.user.h"
 
+//! BMP_DefaultUserIcon
+#include "_resource/BMP_DefaultUserIcon.h"
+#include "_resource/BMP_WindowsWallpaper.h"
+
 _bitmap _user::getUserLogoFromImage( const _bitmap& bmp )
 {
 	_bitmap logo = _bitmap( 14 , 14 );
 	
-	logo.reset( RGB( 22 , 22 , 22 ) );
-	
-	// Check if valid
-	if( !bmp.isValid() )
-	{
-		logo.drawCircle( 5 , 5 , 3 , COLOR_RED );
-		logo.drawPixel( 5 , 5 , COLOR_RED );
-		logo.drawPixel( 6 , 4 , COLOR_RED );
-		logo.drawPixel( 4 , 6 , COLOR_RED );
-	}
-	else
-		logo.copy( 1 , 1 , bmp );
+	logo.copy( 1 , 1 , bmp );
 	
 	logo.drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
 	logo.drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
@@ -39,9 +32,14 @@ _bitmap _user::getUserImage( string path )
 	_imagefile imagefile = _imagefile( path );
 	
 	if( imagefile.isValid() )
-		return _bitmapResizer( 12 , 12 , &imagefile );
+		return _bitmapResizer( 12 , 12 , imagefile );
 	
-	return _bitmap();
+	// Create default image
+	_bitmap bmp = _bitmap( 12 , 12 );
+	
+	bmp.copy( 0 , 0 , BMP_DefaultUserIcon() );
+	
+	return bmp;
 }
 
 _user::_user( string folderName ) :
@@ -54,9 +52,10 @@ _user::_user( string folderName ) :
 			{ { "_global_" , 
 				{
 					{ "userName" , this->folderName } ,
-					{ "desktopImage" , "" } ,
+					{ "wallpaper" , "wallpaper.png" } ,
+					{ "wallpaperView" , "0" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "flower.png" } ,
+					{ "userLogo" , "guest.png" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
@@ -93,10 +92,28 @@ _user::_user( string folderName ) :
 	//_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
 	
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
+
+	// ... and a Logo
+	this->userLogo = _user::getUserLogoFromImage( bmp );
 	
-	if( bmp.isValid() )
-		// ... and a Logo
-		this->userLogo = _user::getUserLogoFromImage( bmp );
+	// ... and a very nice Wallpaper!
+	this->wallpaper = _imagefile( _registry::readIndex( "_global_" , "wallpaper" ) );
+	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
+	
+	if( !this->wallpaper.isValid() )
+		this->wallpaper = BMP_WindowsWallpaper();
+	
+	switch( this->wallpaperView ){
+		//case WALLPAPER_ORIG:
+		case WALLPAPER_ADJUST:
+			this->wallpaper = _bitmapResizer( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , this->wallpaper );
+			break;
+		case WALLPAPER_PATTERN:
+			//bP.copyPattern( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 8 , wp , 128 , 96 );
+			break;
+		default:
+			break;
+	}
 	
 	//_direntry::setWorkingDirectory( cwd );
 }

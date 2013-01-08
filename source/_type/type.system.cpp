@@ -380,7 +380,7 @@ void _system::start()
 	// -----------------------------------------------
 	
 		_system::_runtimeAttributes_ = new _runtimeAttributes;
-		_system::_runtimeAttributes_->user = new _user("Jakob");
+		_system::_runtimeAttributes_->user = new _user("Guest");
 	
 	// -----------------------------------------------
 	//	Open necesary Files

@@ -6,10 +6,7 @@
 #include "_resource/BMP_WindowsWallpaper.h"
 
 _runtimeAttributes::_runtimeAttributes() :
-	wallpaper( BMP_WindowsWallpaper() ) 
-	, wallpaperView( WALLPAPER_ORIG ) 
-	//, wallpaperBgColor( RGB( 7 , 13 , 20 ) )
-	, defaultFont( "Tahoma7" )
+	defaultFont( "Tahoma7" )
 	, defaultFontSize( 8 ) 
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )

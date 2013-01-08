@@ -16,8 +16,6 @@ class _contextMenu : public _gadget{
 		_align			xDir; // can either be left or right
 		_valign			yDir; // Can either bo top or bottom
 		
-		_gadget*		owner;
-		
 		bool			opened;
 		
 	public:
@@ -28,16 +26,13 @@ class _contextMenu : public _gadget{
 		
 		void toggle( _coord x , _coord y );
 		
-		bool isOpened();
+		bool isOpened(){ return this->opened; }
 		
 		void setOwner( _gadget* owner );
 		
-		// For ContextMenu entries to close the cM and submit their value ( this event type must be _event::dialogClose )
-		static _callbackReturn closeAndSend( _event e );
-		
 		_gadget* getOwner();
 		
-		_contextMenu( _length width , _length height , _gadget* owner , _style style = _style() );
+		_contextMenu( _length width , _length height , _style style = _style() );
 		
 };
 

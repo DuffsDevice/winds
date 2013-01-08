@@ -12,6 +12,7 @@
 #include <nds/memory.h>
 
 class _gadget;
+class _gadgetScreen;
 class _lua_gadget;
 
 // _gadgetList
@@ -56,7 +57,8 @@ class _gadget{
 		// Attributes
 		_padding		padding;
 		_rect 			dimensions;
-		_style 	style;
+		_rect 			normalDimensions; // When something is maximized its old dimensions are written in here
+		_style			style;
 		
 		// Children
 		_gadgetList		children;
@@ -120,6 +122,9 @@ class _gadget{
 		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
 		bool isMinimized() const { return this->style.minimized; }
 		
+		/** Check whether this Gadget is maximized ( probably only available with _window's ) **/
+		bool isMaximized() const { return this->style.maximized; }
+		
 		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
 		bool isMinimizeable() const { return this->style.minimizeable; }
 		
@@ -174,7 +179,7 @@ class _gadget{
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
 		**/
-		_gadget* getScreen();
+		_gadgetScreen* getScreen();
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
@@ -269,6 +274,26 @@ class _gadget{
 		 * Unhide the Gadget
 		**/
 		void show(){ if( this->style.visible ) return; this->style.visible = true; this->bubbleRefresh(); }
+		
+		/**
+		 * Minimize the Gadget
+		**/
+		void minimize();
+		
+		/**
+		 * Restore the Gadget
+		**/
+		void restore(){ if( !this->style.minimized ) return; this->style.minimized = false; this->bubbleRefresh(); }
+		
+		/**
+		 * Maximize the Gadget
+		**/
+		void maximize();
+		
+		/**
+		 * unMaximize (Restore) the Gadget
+		**/
+		void unMaximize();
 		
 		/**
 		 * Get the Gadgets Parent

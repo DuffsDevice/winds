@@ -26,8 +26,8 @@ class _styleAttr
 		template<int t> constexpr _styleAttr operator |( const _nStyleAttr<t> attrs ) const { _u16 s = sum; s &= ( _u32( 1 << 16 ) - 1 ) ^ t; return _styleAttr( s ); }
 		
 		// This all works completely at compile-time!
-		template<int t> void operator |=( const _pStyleAttr<t> attrs ){ sum |= t; }
-		template<int t> void operator |=( const _nStyleAttr<t> attrs ){ sum &= ( _u32( 1 << 16 ) - 1 ) ^ t; }
+		template<int t> _styleAttr& operator |=( const _pStyleAttr<t> attrs ){ sum |= t; return *this; }
+		template<int t> _styleAttr& operator |=( const _nStyleAttr<t> attrs ){ sum &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
 		
 		// Default ctor
 		_styleAttr();
@@ -104,6 +104,7 @@ struct _style
 	bool enhanced : 1;
 	bool visible : 1;
 	bool minimized : 1;
+	bool maximized : 1;
 	public:
 	
 	union
