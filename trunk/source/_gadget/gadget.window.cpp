@@ -1,4 +1,5 @@
 #include "_gadget/gadget.window.h"
+#include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
 _callbackReturn _windowButton::refreshHandler( _event event )
@@ -19,8 +20,11 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 		RGB255( 186 , 61 , 239 ) // Violet (Blue =/= Red)
 	};
 	
+	bP.fill( NO_COLOR );
+	
 	switch( that->buttonType ){
 		case 0:
+			// Close
 			bP.drawRect( 0 , 0 , 8 , 8 , color[3] );
 			bP.drawRect( 1 , 1 , 6 , 6 , color[4] );
 			bP.drawRect( 2 , 2 , 4 , 4 , color[4] );
@@ -31,15 +35,28 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 			bP.drawPixel( 5 , 5 , color[5] );
 			break;
 		case 1:
-			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
-			bP.drawRect( 1 , 1 , 6 , 6 , color[1] );
-			bP.drawRect( 3 , 3 , 2 , 2 , color[1] );
-			bP.drawRect( 2 , 2 , 4 , 4 , color[0] );
-			bP.drawHorizontalLine( 2 , 2 , 4 , RGB( 31 , 31 , 31 ) );
+			// Maximize/Restore
+			bP.drawRect( 0 , 0 , 8 , 8 , color[0] ); // White Border
+			
+			if( that->getParent()->isMaximized() )
+			{
+				bP.drawRect( 3 , 2 , 3 , 3 , color[0] ); // Semi-White Line
+				bP.drawRect( 2 , 4 , 2 , 2 , color[0] ); // Semi-White Line
+				bP.drawHorizontalLine( 3 , 2 , 3 , COLOR_WHITE ); // White Topper Line
+				bP.drawHorizontalLine( 2 , 4 , 2 , COLOR_WHITE ); // White Topper Line
+			}
+			else
+			{
+				//bP.drawRect( 1 , 1 , 6 , 6 , color[1] );
+				//bP.drawRect( 3 , 3 , 2 , 2 , color[1] );
+				bP.drawRect( 2 , 2 , 4 , 4 , color[0] ); // Semi-White Line
+				bP.drawHorizontalLine( 2 , 2 , 4 , COLOR_WHITE ); // White Topper Line
+			}
 			break;
 		case 2:
+			// Minimize
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
-			bP.drawFilledRect( 1 , 1 , 6 , 6 , color[1] );
+			//bP.drawFilledRect( 1 , 1 , 6 , 6 , color[1] );
 			bP.drawHorizontalLine( 2 , 5 , 3 , RGB( 31 , 31 , 31 ) );
 			break;
 	}
@@ -63,6 +80,9 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
 	_button( 8 , 8 , x , y , "" )
 	, buttonType( buttonType )
 {
+	// Reset Bitmap
+	this->bitmap.reset( NO_COLOR );
+	
 	this->registerEventHandler( refresh , new _staticCallback( &_windowButton::refreshHandler ) );
 	this->refreshBitmap();
 }
@@ -103,9 +123,17 @@ _callbackReturn _window::restyleHandler( _event event )
 		that->button[1]->hide();
 	
 	if( that->isMinimizeable() )
+	{
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->registerTask( that );
 		that->button[2]->show();
+	}
 	else
+	{
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->removeTask( that );
 		that->button[2]->hide();
+	}
 	
 	that->handleEvent( onResize );
 	
@@ -120,6 +148,11 @@ _callbackReturn _window::refreshHandler( _event event )
 	if( event.getType() == onBlur || event.getType() == onFocus )
 	{
 		that->bubbleRefresh( true );
+		
+		// Refresh Button
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->refreshTask( that );
+		
 		return handled;
 	}
 	
@@ -135,31 +168,34 @@ _callbackReturn _window::refreshHandler( _event event )
 	if( that->hasFocus() )
 	{
 		// Window-Bar
-		bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar );
+		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , _system::_runtimeAttributes_->windowBar );
 		
 		// Bottom Border
 		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[0] );
 		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[9] );
-		bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , _system::_runtimeAttributes_->windowBar[9] );
 	}
 	else
 	{
 		// Window-Bar
-		bP.copyHorizontalStretch( 1 , 0 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBarBlurred );
+		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , _system::_runtimeAttributes_->windowBarBlurred );
 		
 		// Bottom Border
 		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[0] );
 		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[9] );
-		bP.drawHorizontalLine( 1 , that->getHeight() - 1 , that->getWidth() - 2 , _system::_runtimeAttributes_->windowBarBlurred[9] );
+		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , _system::_runtimeAttributes_->windowBarBlurred[9] );
 	}
 	
 	that->label->refreshBitmap();
 	
 	// Set my Corners to transparent
-	bP.drawPixel( 0 , 0 , NO_COLOR );
-	bP.drawPixel( that->getWidth() - 1 , 0 , NO_COLOR );
-	bP.drawPixel( bP.getWidth() - 1 , that->getHeight() - 1 , NO_COLOR );
-	bP.drawPixel( 0 , that->getHeight() - 1 , NO_COLOR );
+	if( !that->isMaximized() )
+	{
+		bP.drawPixel( 0 , 0 , NO_COLOR );
+		bP.drawPixel( that->getWidth() - 1 , 0 , NO_COLOR );
+		bP.drawPixel( bP.getWidth() - 1 , that->getHeight() - 1 , NO_COLOR );
+		bP.drawPixel( 0 , that->getHeight() - 1 , NO_COLOR );
+	}
 	
 	return use_default;
 }
@@ -180,6 +216,8 @@ _callbackReturn _window::dragHandler( _event event )
 		that->dragMe = true;
 		
 		// If y is on the windowbar, drag Me!
+		if( that->isMaximized() )
+			return not_handled; // Don't try to drag a window while its maximized
 		return handled;
 	}
 	else if( event.getType() == dragging )
@@ -218,14 +256,36 @@ _callbackReturn _window::dragHandler( _event event )
 	return not_handled;
 }
 
-_callbackReturn _window::closeHandler( _event event )
+_callbackReturn _window::buttonHandler( _event event )
 {
-	// Get Source
-	_callbackReturn cr = event.getGadget()->getParent()->handleEvent( onClose );
-	
-	// Close the window
-	if( cr == not_handled || cr == use_default )
-		event.getGadget()->getParent()->setParent( nullptr );
+	// Close
+	if( event.getGadget<_windowButton>() == this->button[0] )
+	{
+		// Get Source
+		_callbackReturn cr = this->handleEvent( onClose );
+		
+		// Close the window
+		if( cr == not_handled || cr == use_default )
+			this->setParent( nullptr );
+		
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->removeTask( this );
+	}
+	// maximize or restore
+	else if( event.getGadget<_windowButton>() == this->button[1] )
+	{
+		if( this->isMaximized() )
+			this->unMaximize();
+		else
+			this->maximize();
+	}
+	// Minimize
+	if( event.getGadget<_windowButton>() == this->button[2] )
+	{
+		this->minimize();
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->refreshTask( this );
+	}
 	
 	return handled;
 }
@@ -249,7 +309,9 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->button[2] = new _windowButton( this->getWidth() - 28 , 1 , 2 );
 	
 	// Register close-handler
-	this->button[0]->registerEventHandler( onAction , new _staticCallback( &_window::closeHandler ) );
+	this->button[0]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
+	this->button[1]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
+	this->button[2]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
 	
 	this->button[0]->enhanceToParent( this );
 	this->button[1]->enhanceToParent( this );

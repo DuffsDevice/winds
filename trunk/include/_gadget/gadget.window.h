@@ -27,11 +27,8 @@ class _window : public _gadget {
 		_windowButton* button[3];
 		
 		static _callbackReturn refreshHandler( _event event );
-		
 		static _callbackReturn dragHandler( _event event );
-		
-		static _callbackReturn closeHandler( _event event );
-		
+		_callbackReturn buttonHandler( _event event ); // Handler for _window-Buttons
 		static _callbackReturn restyleHandler( _event event );
 		
 		// Will be called if the window is resized ->label will also be resized

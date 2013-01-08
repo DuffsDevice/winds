@@ -9,18 +9,18 @@ class _color{
 	private:
 		
 		//! Color
-		_pixel color;
+		_pixel	color;
 		
-		_u16 hue; // from 0 to 360
-		_u8  sat; // from 0 to 100 (satt)
-		_u8  lum; // from 0 to 100 (hell)
+		_u16	hue; // from 0 to 360
+		_u8		sat; // from 0 to 100 (satt)
+		_u8		lum; // from 0 to 100 (hell)
 	
-		_u8  red; // from 0 to 31
-		_u8  gre; // from 0 to 31
-		_u8  blu; // from 0 to 31
+		_u8		red; // from 0 to 31
+		_u8		gre; // from 0 to 31
+		_u8		blu; // from 0 to 31
 			
-		_u8 maxRGB;
-		_u8 minRGB;
+		_u8		maxRGB;
+		_u8		minRGB;
 		
 	public:
 		

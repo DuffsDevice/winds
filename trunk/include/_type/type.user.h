@@ -4,28 +4,45 @@
 #include "_type/type.h"
 #include "_type/type.registry.h"
 
+enum _wallpaperViewType{
+	WALLPAPER_ORIG = 0,
+	WALLPAPER_ADJUST = 1,
+	WALLPAPER_PATTERN = 2,
+};
+
 class _user : public _registry
 {
 	private:
 		
-		string		folderName;
-		_bitmap		userLogo;
+		string				folderName;
+		_bitmap				userLogo;
+		_bitmap				wallpaper;
+		_wallpaperViewType	wallpaperView;
 	
 	public:
 		
 		static _bitmap getUserLogoFromImage( const _bitmap& image );
 		static _bitmap getUserImage( string path );
 		
-		// Touch Parameters
+		// Fast Int Attributes
 		_u32 	mDD, mCC, mDC, mDA, kRD, kRS, fOH, sOH, sFE, sBTC, dTC;
 		
+		//! Ctor
 		_user( string username );
 		
+		//! Dtor
 		~_user();
 		
 		string getUsername();
 		
-		const _bitmap& getLogo(){ return this->userLogo; }
+		//! Get User-Logo
+		const _bitmap& getLogo() const { return this->userLogo; }
+		
+		//! Get the wallpaper
+		const _bitmap& getWallpaper() const { return this->wallpaper; }
+		
+		//! For view type of wallpaper
+		_wallpaperViewType getWallpaperViewType() const { return this->wallpaperView; }
 		
 		bool checkPassword( string pw );
 		

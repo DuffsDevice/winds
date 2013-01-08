@@ -142,7 +142,7 @@ _callbackReturn _keyboardStartButton::refreshHandler( _event event )
 
 _keyboardStartButton::_keyboardStartButton( _coord x , _coord y , _style style ) :
 	_button( 38 , 10 , x , y , "" , style )
-	, startMenu( new _startMenu( this ) )
+	, startMenu( new _startMenu() )
 {
 	this->registerEventHandler( mouseClick , new _staticCallback( &_keyboardStartButton::mouseHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_keyboardStartButton::refreshHandler ) );

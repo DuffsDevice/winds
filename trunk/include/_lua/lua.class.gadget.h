@@ -11,6 +11,7 @@
 	LUA_CLASS_FUNC(g,isEnhanced), \
 	LUA_CLASS_FUNC(g,isVisible), \
 	LUA_CLASS_FUNC(g,isMinimized), \
+	LUA_CLASS_FUNC(g,isMaximized), \
 	LUA_CLASS_FUNC(g,isMinimizeable), \
 	LUA_CLASS_FUNC(g,isResizeable), \
 	LUA_CLASS_FUNC(g,isResizeableX), \
@@ -223,6 +224,9 @@ class _lua_gadget{
 		
 		//! isMinimizeable
 		int isMinimizeable( lua_State* L );
+		
+		//! isMaximized
+		int isMaximized( lua_State* L );
 		
 		//! getHeight
 		int getHeight( lua_State* L );

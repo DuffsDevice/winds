@@ -1,39 +1,16 @@
 #include "_gadget/gadget.contextMenu.h"
 #include "_type/type.system.h"
 
-bool _contextMenu::isOpened(){
-	return this->opened;
-}
-
-void _contextMenu::setOwner( _gadget* owner )
-{
-	this->owner = owner;
-}
-
-_gadget* _contextMenu::getOwner(){
-	return this->owner;
-}
-
-_callbackReturn _contextMenu::closeAndSend( _event event )
-{
-	_contextMenu* that = event.getGadget<_contextMenu>();
-	
-	// Delete
-	that->opened = false;
-	that->setParent( nullptr );
-	
-	if( that->owner )
-		that->owner->handleEvent( event );
-	
-	return handled;
-}
 
 _callbackReturn _contextMenu::blurHandler( _event event )
 {
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
-	that->handleEvent( blur );
-	that->triggerEvent( _event::dialogClose( -1 , "" ) );
+	// Hide
+	that->hide();
+	
+	// Trigger Dummy-Event
+	that->handleEvent( onClose );
 	
 	return use_default;
 }
@@ -76,7 +53,7 @@ void _contextMenu::show( _coord x , _coord y )
 	this->setParent( _system::_gadgetHost_ );
 	
 	// Focus
-	this->handleEvent( _event( focus ) );
+	this->handleEvent( focus );
 }
 
 void _contextMenu::hide()
@@ -84,6 +61,7 @@ void _contextMenu::hide()
 	if( this->opened == false )
 		return;
 	
+	// Unbind from the tree
 	this->setParent( nullptr );
 	this->opened = false;
 }
@@ -96,11 +74,9 @@ void _contextMenu::toggle( _coord x , _coord y )
 		this->show( x , y );
 }
 
-_contextMenu::_contextMenu( _length width , _length height , _gadget* owner , _style style ) :
+_contextMenu::_contextMenu( _length width , _length height , _style style ) :
 	_gadget( _gadgetType::contextmenu , width , height , 0 , 0 , style )
-	, owner( owner )
 	, opened( false )
-{	
-	this->registerEventHandler( blur , new _staticCallback( &_contextMenu::blurHandler ) );
-	this->registerEventHandler( close , new _staticCallback( &_contextMenu::closeAndSend ) );
+{
+	this->registerEventHandler( onBlur , new _staticCallback( &_contextMenu::blurHandler ) );
 }

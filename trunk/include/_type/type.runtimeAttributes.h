@@ -5,19 +5,11 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.user.h"
 
-enum _wallpaperViewType{
-	WALLPAPER_ADJUST,
-	WALLPAPER_SMALL,
-	WALLPAPER_ORIG
-};
-
 
 class _runtimeAttributes
 {
 	public:
 
-		_bitmap			wallpaper;
-		_wallpaperViewType wallpaperView;
 		string			defaultFont;
 		_u8				defaultFontSize;
 		vector<_char>	keyboardChar[2];

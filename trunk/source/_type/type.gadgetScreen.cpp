@@ -1,9 +1,10 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-_gadgetScreen::_gadgetScreen( int bgId , _style style ) :
+_gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _style style ) :
 	_gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style , true )
 	, _screen( bgId )
+	, screenType( sType )
 	, touchCycles( 0 )
 	, cyclesLastClick( 0 )
 	, isDragging( false )

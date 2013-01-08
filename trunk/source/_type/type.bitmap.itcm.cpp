@@ -75,7 +75,7 @@ void _bitmap::resize( _length w , _length h )
 	
 	if( this->wasAllocated )
 	{
-		newBmp = new _pixel[ w * this->height ];
+		newBmp = new _pixel[ w * h ];
 		//memSet( newBmp , 0 , w * this->height );
 	}
 	else

@@ -48,20 +48,20 @@
 
 }
 
-_startMenu::_startMenu( _gadget* owner , _style style ) :
-	_contextMenu( 110 , 110 , owner , style )
+_startMenu::_startMenu( _style style ) :
+	_contextMenu( 110 , 110 , style )
 {
 	// Left Side
 	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// Right Side
-	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
+	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// User-Image
 	this->addChild( new _imagegadget( 3 , 2 , _system::_runtimeAttributes_->user->getLogo() ) );
 	
 	// Username
-	_label* usrName = new _label( this->dimensions.width - 19 - 2 , 14 , 19 , 2 , _system::_runtimeAttributes_->user->getUsername() );
+	_label* usrName = new _label( this->dimensions.width - 20 - 2 , 14 , 20 , 2 , _system::_runtimeAttributes_->user->getUsername() );
 	usrName->setVAlign( _valign::middle );
 	usrName->setColor( COLOR_WHITE );
 	this->addChild( usrName );

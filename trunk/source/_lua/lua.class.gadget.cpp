@@ -263,6 +263,9 @@ int _lua_gadget::isResizeableY(lua_State* L){ lua_pushboolean( L , this->gadget-
 //! isMinimizeable
 int _lua_gadget::isMinimizeable(lua_State* L){ lua_pushboolean( L , this->gadget->isMinimizeable() ); return 1; }
 
+//! isMaximized
+int _lua_gadget::isMaximized(lua_State* L){ lua_pushboolean( L , this->gadget->isMaximized() ); return 1; }
+
 //! hasFocus
 int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }
 

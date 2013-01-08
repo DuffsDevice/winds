@@ -1,4 +1,5 @@
 #include "_type/type.gadget.h"
+#include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
 _map<_eventType,const _callback*> _gadget::defaultEventHandlers = {
@@ -109,14 +110,13 @@ void _gadget::bubbleRefresh( bool includeThis , _event event )
 	}
 }
 
-_gadget* _gadget::getScreen()
+_gadgetScreen* _gadget::getScreen()
 {
 	if( this->type == _gadgetType::screen )
-		return this;
+		return (_gadgetScreen*)this;
 	else if( this->parent != nullptr )
 		return this->parent->getScreen();
-	else
-		return nullptr;
+	return nullptr;
 }
 
 void _gadget::blinkHandler()
@@ -171,52 +171,63 @@ bool _gadget::focusChild( _gadget* child )
 {
 	// If child
 	// - is not valid or
-	// - the child cannot even take the focus or 
+	// - the child cannot even receive the focus or 
 	// - the child is unvisible
 	// return false;
-	if( !child || !child->style.canTakeFocus || !child->isVisible() )
+	if( !child || !child->isVisible() || child->isMinimized() )
 		return false;
 	
 	// Return true if the child already has focus
 	if( child->hasFocus() )
 		return true;
 	
-	// Blur the Previously style.focused gadget
-	if( !this->blurChild() )
+	// Blur the Previously style.focused gadget (try to)
+	// Return false, if the child cannot take the focus from the currently still focused gadget
+	if( focusedChild )
+	{
+		if( !child->style.canTakeFocus )
+			return false;
+		
+		if( !this->blurChild() )
+			return false;
+	}
+	
+	// Return false, if the gadget cannot receive focus
+	if( !child->style.canReceiveFocus )
 		return false;
 	
-	// Check if the child can receive focus
-	if( child->style.canReceiveFocus )
+	// Set _currentFocus_
+	_system::_currentFocus_ = child;
+	
+	// 'focus' the child
+	child->style.focused = true;
+	focusedChild = child;
+	
+	// Trigger the 'onfocus'-event
+	child->handleEvent( onFocus );
+	
+	// Move to front of children
+	if( child->isEnhanced() )
 	{
-		// Set focusedChild-attribute
-		_system::_currentFocus_ = child;
+		// no moving neccesary?
+		if( child == this->enhancedChildren.front() )
+			return true;
 		
-		// 'focus' the child
-		child->style.focused = true;
-		focusedChild = child;
-		
-		// Trigger the 'onfocus'-event
-		focusedChild->handleEvent( onFocus );
-		
-		// Move to front of children
-		if( child->isEnhanced() )
-		{
-			if( child == this->enhancedChildren.front() )
-				return true;
-			this->enhancedChildren.remove( child );
-			this->enhancedChildren.push_front( child );
-		}
-		else
-		{
-			if( child == this->children.front() )
-				return true;
-			this->children.remove( child );
-			this->children.push_front( child );
-		}
-		
-		// Refresh the Gadget so that it appears at the front
-		child->bubbleRefresh();
+		this->enhancedChildren.remove( child );
+		this->enhancedChildren.push_front( child );
 	}
+	else
+	{
+		// no moving neccesary?
+		if( child == this->children.front() )
+			return true;
+		
+		this->children.remove( child );
+		this->children.push_front( child );
+	}
+	
+	// Refresh the Gadget so that it appears at the front
+	child->bubbleRefresh();
 	
 	return true;
 }
@@ -434,6 +445,9 @@ _rect _gadget::getAbsoluteDimensions() const {
 
 void _gadget::setDimensions( _rect rc )
 {
+	//if( !rc.isValid() )
+	//	return;
+	
 	_rect absDim = this->getAbsoluteDimensions();
 	
 	// Respect Fixed width/height of the gadget
@@ -458,6 +472,9 @@ void _gadget::setDimensions( _rect rc )
 
 void _gadget::setHeight( _length val )
 {
+	if( !val )
+		val = 1;
+	
 	if( !this->isResizeableY() || val == this->dimensions.height )
 		return;
 	
@@ -473,6 +490,9 @@ void _gadget::setHeight( _length val )
 
 void _gadget::setWidth( _length val )
 {
+	if( !val )
+		val = 1;
+	
 	if( !this->isResizeableX() || val == this->dimensions.width )
 		return;
 	
@@ -574,14 +594,14 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* par
 	for( _gadget* gadget : parent->enhancedChildren )
 	{
 		// Check if event position was inside this Gadget's Area
-		if( gadget->getDimensions().contains( posX , posY ) )
+		if( gadget->isVisible() && !gadget->isMinimized() && gadget->getDimensions().contains( posX , posY ) )
 			return gadget;
 	}
 	
 	for( _gadget* gadget : parent->children )
 	{
 		// Check if event position was inside this Gadget's Area
-		if( gadget->getDimensions().contains( posPadX , posPadY ) )
+		if( gadget->isVisible() && !gadget->isMinimized() && gadget->getDimensions().contains( posPadX , posPadY ) )
 			return gadget;
 	}
 	
@@ -735,10 +755,57 @@ _callbackReturn _gadget::gadgetFocusHandler( _event event )
 	
 	if( event.getType() == focus )
 		that->parent->focusChild( that );
-	else if( event.getType() == blur )
+	else if( event.getType() == blur && that->hasFocus() )
 		that->parent->blurChild();
 	
 	return handled;
+}
+
+void _gadget::maximize()
+{
+	if( this->style.maximized || !this->isResizeable() )
+		return;
+	
+	_gadgetScreen* screen = this->getScreen();
+	
+	// Fail
+	if( screen == nullptr )
+		return;
+	
+	// Fetch maximized Dimensions from the _screen
+	_rect maxDim = screen->getMaximizedDimensions();
+	
+	if( maxDim.isValid() )
+	{
+		this->style.maximized = true;
+		this->normalDimensions = this->dimensions;
+		
+		// Maximizing
+		this->setDimensions( maxDim );
+	}
+}
+
+void _gadget::unMaximize()
+{
+	if( !this->style.maximized )
+		return;
+	
+	this->style.maximized = false;
+	
+	// Set back the old dimensions
+	this->setDimensions( this->normalDimensions );
+}
+
+void _gadget::minimize()
+{
+	if( this->style.minimized || !this->style.minimizeable )
+		return;
+	
+	// Blur
+	this->handleEvent( blur );
+	
+	this->style.minimized = true;
+	this->bubbleRefresh();
 }
 
 _callbackReturn _gadget::gadgetKeyHandler( _event event )

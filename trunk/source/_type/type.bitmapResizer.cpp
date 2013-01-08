@@ -2,16 +2,16 @@
 #include "func.memory.h"
 
 void _bitmapResizer::compute(){
-	this->scaleRect( this , this->src , this->srcArea );
+	this->scaleRect( *this , *this->src , this->srcArea );
 }
 
 void _bitmapResizer::setSrcRect( _rect area ){
 	this->srcArea = area;
 }
 
-_bitmapResizer::_bitmapResizer( _length width , _length height , _bitmap* src , _rect srcArea , bool doNotCompute ) :
+_bitmapResizer::_bitmapResizer( _length width , _length height , const _bitmap& src , _rect srcArea , bool doNotCompute ) :
 	_bitmap( width , height )
-	, src( src )
+	, src( &src )
 	, srcArea( srcArea )
 {
 	if( !doNotCompute )
@@ -20,20 +20,20 @@ _bitmapResizer::_bitmapResizer( _length width , _length height , _bitmap* src , 
 
 // Fast Bitmap Resizing using the
 // Coarse scaling by Bresenham algorithm
-void _bitmapResizer::scaleRect( _bitmap* dest , _bitmap* src, _rect srcArea )
+void _bitmapResizer::scaleRect( _bitmap& dest , const _bitmap& src, _rect srcArea )
 {
-	_length realDestWidth = dest->getWidth();
-	_length realSrcWidth = src->getWidth();
+	_length realDestWidth = dest.getWidth();
+	_length realSrcWidth = src.getWidth();
 	if( !srcArea.isValid() )
-		srcArea = _rect( 0 , 0 , realSrcWidth , src->getHeight() );
+		srcArea = _rect( 0 , 0 , realSrcWidth , src.getHeight() );
 	_length srcWidth = srcArea.width;
 	_length srcHeight = srcArea.height;
-	_length destWidth = dest->getWidth();
-	_length destHeight = dest->getHeight();
+	_length destWidth = dest.getWidth();
+	_length destHeight = dest.getHeight();
 	
 	_pixelArray prevSrcData = nullptr;
-	_pixelArray srcData = src->getBitmap();
-	_pixelArray destData = dest->getBitmap();
+	_pixelArray srcData = src.getBitmap();
+	_pixelArray destData = dest.getBitmap();
 	
 	for( _length y = destHeight , intPart = ( srcHeight / destHeight ) * realSrcWidth , fractPart = srcHeight % destHeight , trigY = 0 ; y ; y-- )
 	{

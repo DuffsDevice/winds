@@ -1,8 +1,10 @@
 #include "_gadget/gadget.desktop.h"
 #include "_type/type.system.h"
-#include "_type/type.freetypefont.h"
+#include "_type/type.bitmapResizer.h"
+#include "_type/type.color.h"
+//#include "_type/type.freetypefont.h"
 
-_freetypefont* ft = nullptr;
+//_freetypefont* ft = nullptr;
 
 _callbackReturn _desktop::refreshHandler( _event event )
 {
@@ -16,21 +18,15 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	bP.fill( _system::_runtimeAttributes_->user->getIntAttr( "desktopColor" ) );
+	_color c;
+	c.setColor( _system::_runtimeAttributes_->user->dTC )->setL( c.getL() + 22 );
 	
-	const _bitmap& wp = _system::_runtimeAttributes_->wallpaper;
+	bP.drawVerticalGradient( 0 , 0 , bP.getWidth() , bP.getHeight() , c.getColor() , _system::_runtimeAttributes_->user->dTC );
 	
-	if( _system::_runtimeAttributes_->wallpaper.isValid() )
-	{		
-		switch( _system::_runtimeAttributes_->wallpaperView ){
-			case WALLPAPER_ORIG:{
-				bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
-				break;
-			}
-			default:
-				break;
-		}
-	}
+	const _bitmap& wp = _system::_runtimeAttributes_->user->getWallpaper();
+	
+	if( wp.isValid() )
+		bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
 	
 	//bP.copy( 0 , 0 , _system::_runtimeAttributes_->user->userLogo );
 	//if( ft )
@@ -41,7 +37,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 
 
 _desktop::_desktop( _style style ) :
-	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style )
+	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
 {
 	this->style.canReceiveFocus = false;
 	//ft = new _freetypefont("/font.ttf");

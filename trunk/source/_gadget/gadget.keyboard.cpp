@@ -361,7 +361,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 {}
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 position , _style style ) :
-	_gadgetScreen( bgId , style )
+	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
 	, handlePosition( position )

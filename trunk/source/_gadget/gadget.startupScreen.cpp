@@ -50,7 +50,7 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 }
 
 _startupScreen::_startupScreen( _u8 bgId , _style style ) :
-	_gadgetScreen( bgId , style )
+	_gadgetScreen( bgId , _gadgetScreenType::startUp , style )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
 	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo ) )
 {	

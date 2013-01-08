@@ -12,20 +12,38 @@
 
 class _windows : public _gadgetScreen
 {
-	
 	private:
 		
 		//! Start-Button
-		_windowsStartButton*	startButton;
+		_windowsStartButton*		startButton;
+		
+		_list<_windowsTaskButton*>	tasks;
 		
 		//! Desktop-Gadget
-		_desktop*				desktop;
+		_desktop*					desktop;
 		
 		//! Standard Function to be executed on refresh
 		static _callbackReturn	refreshHandler( _event );
 		
-	public:		
-	
+		//! register a gadget to shown in the taskbar
+		void registerTask( _window* w );
+		
+		//! unregister a gadget from the taskbar
+		void removeTask( _window* w );
+		
+		//! refresh all Task-Buttons
+		void refreshTasks();
+		
+		//! Refresh the taskbutton of the window passed
+		void refreshTask( _window* w );
+		
+		friend class _window;
+		
+	public:
+		
+		//! Maximized Dimensions for (mainly) _windows, that are maximized
+		_rect getMaximizedDimensions(){ return _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 ); }
+		
 		//! Constructor with style
 		_windows( _u8 bgId , _style style = _style() );
 		
