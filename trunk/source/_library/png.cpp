@@ -724,7 +724,7 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 			bytePtr+=4;
 
 			// Feed len bytes
-			int i;
+			unsigned int i;
 			for(i=0; i<len; i++)  // 2010/02/08
 			{
 				output->Output(dat[bytePtr+i]);

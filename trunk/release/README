@@ -1,8 +1,10 @@
 Usage:
 
-	- Put an executable file in the Root of your SD-Card
-	- It is then executed within WinDS
+	- Put an "executable" file in the Root of your SD-Card
+	- This can either be a .lua or .exe-file both having the program to execute as content in ASCII-Format
+	- When Started up: Navigate to the directory within the filebrowser
+	- Duoble-Click the file to execute
 
-More Help:
+More Help at:
 	
-	http://sourceforge.net/p/winds/wiki/indroduction/
+	http://palmato.com/WinDS

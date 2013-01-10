@@ -86,10 +86,10 @@ _user::_user( string folderName ) :
 	this->dTC = this->getIntAttr( "desktopColor" );	
 	
 	// Set Currently Working directory
-	//string cwd = _direntry::getWorkingDirectory();
+	string cwd = _direntry::getWorkingDirectory();
 	
 	//! todo: fix cwd => not Working!
-	//_direntry::setWorkingDirectory( "%USERS%/" + this->userName );
+	_direntry::setWorkingDirectory( "%USERS%/" + this->folderName );
 	
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
 
@@ -115,7 +115,7 @@ _user::_user( string folderName ) :
 			break;
 	}
 	
-	//_direntry::setWorkingDirectory( cwd );
+	_direntry::setWorkingDirectory( cwd );
 }
 
 _user::~_user()

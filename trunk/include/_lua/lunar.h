@@ -38,8 +38,6 @@ template < class T > class Lunar {
     static T* check(lua_State * L, int narg)
 	{
 		T** obj = static_cast <T **>(luaL_checkudata(L, narg, T::className));
-		if ( !obj )
-			return nullptr; // lightcheck returns nullptr if not found.
 		return *obj;		// pointer to T object
 	}
 
@@ -73,6 +71,7 @@ template < class T > class Lunar {
     // REGISTER CLASS AS A GLOBAL TABLE 
     static void Register(lua_State * L, const char *namespac = NULL ) {
 
+		/// This is just uncommented because of Memory usage
 		//if ( namespac && strlen(namespac) )
 		//{
 		//	lua_getglobal(L, namespac);
@@ -164,23 +163,25 @@ template < class T > class Lunar {
 */
     static int property_getter(lua_State * L)
 	{
+		// Object is at 1
+		// Name is at 2
 		lua_getmetatable(L, 1); // Look up the index of a name
 		lua_pushvalue(L, 2);	// Push the name
 		lua_rawget(L, -2);		// Get the index
+		// Top has _index
 		
-		if (lua_isnumber(L, -1)) { // Check if we got a valid index
-			
+		if ( lua_isnumber(L, -1) ) // Check if we got a valid index
+		{
+			// get Index
 			int _index = lua_tonumber(L, -1);
 			
-			T** obj = static_cast<T**>(lua_touserdata(L, 1));
-			
-			lua_pushvalue(L, 3);
+			T** obj = static_cast<T**>( lua_touserdata( L , 1 ) );
 			
 			if( _index & ( 1 << 8 ) ) // A func
 			{
-				lua_pushnumber(L, _index ^ ( 1 << 8 ) ); // Push the right func index
-				lua_pushlightuserdata(L, obj);
-				lua_pushcclosure(L, &Lunar < T >::function_dispatch, 2);
+				lua_pushnumber(L, _index ^ ( 1 << 8 ) ); 	// Push the right func index
+				lua_pushlightuserdata(L, obj); 				// and the corresponding object onto the stack
+				lua_pushcclosure(L, &Lunar < T >::function_dispatch, 2); // Push a C Closure having the index and the object as upvalues
 				return 1; // Return a func
 			}
 			
@@ -211,7 +212,7 @@ template < class T > class Lunar {
 			
 			int _index = lua_tonumber(L, -1);
 			
-			T** obj = static_cast<T**>(lua_touserdata(L, 1));
+			T** obj = static_cast<T**>( lua_touserdata( L , 1 ) );
 			
 			if( !obj || !*obj )
 			{
@@ -244,8 +245,11 @@ template < class T > class Lunar {
 */
     static int function_dispatch(lua_State * L)
 	{
-		int i = (int) lua_tonumber(L, lua_upvalueindex(1));
-		T** obj = static_cast < T ** >(lua_touserdata(L, lua_upvalueindex(2)));
+		// Fetch function index
+		int i = (int) lua_tonumber( L , lua_upvalueindex(1) );
+		
+		// Fetch object
+		T** obj = static_cast <T**>( lua_touserdata( L , lua_upvalueindex(2) ) );
 		
 		return ((*obj)->*(T::methods[i].func)) (L);
     }
@@ -257,22 +261,27 @@ template < class T > class Lunar {
 */
     static int gc_obj(lua_State * L)
 	{
-		T** obj = static_cast < T ** >(lua_touserdata(L, -1));
+		T** obj = static_cast <T**>( lua_touserdata( L , -1 ) );
 		
 		if( obj && *obj )
 			delete(*obj);
 		
 		return 0;
     }
-	
+
+/*
+  @ to_string (internal)
+  Arguments:
+    * L - Lua State
+*/
 	static int to_string(lua_State* L)
 	{
 		T** obj = static_cast<T**>(lua_touserdata(L, -1));
 		
 		if( obj )
-			lua_pushfstring(L, "%s (%p)", T::className, (void*)*obj);
+			lua_pushfstring( L , "%s (%p)" , T::className , (void*)( *obj ) );
 		else
-			lua_pushstring(L,"Empty object");
+			lua_pushstring( L , "Empty object" );
 		
 		return 1;
 	}
