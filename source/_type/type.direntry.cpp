@@ -22,7 +22,7 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-#define FAT_EMULATOR_
+//#define FAT_EMULATOR_
 
 
 #ifdef FAT_EMULATOR_
@@ -110,22 +110,23 @@ _direntry::_direntry( string fn ) :
 	if( this->isDirectory() )
 	{
 		this->mimeType = _mime::directory;
-		if( *(this->filename.rbegin()+1) != '/' )
+		if( *( this->filename.rbegin() + 1 ) != '/' )
 			this->filename += "/";
 	}
 	else
 	{
 		// Set Extension
-		_u64 pos = this->filename.find_last_of(".");
-		_u64 npos = this->filename.find_last_of("/");
-		if( pos > npos && pos != this->filename.npos )
-			this->extension = this->filename.substr( pos + 1 );
+		_u64 lastDot = this->filename.find_last_of(".");
+		_u64 lastSlash = this->filename.find_last_of("/");
+		
+		if( ( lastSlash == string::npos || lastDot > lastSlash ) && lastDot != string::npos ) // Valid filename with extension?
+			this->extension = this->filename.substr( lastDot + 1 );
 		
 		this->mimeType = _mimeType::fromExtension( this->getExtension() );
 	}
 	
-	if( this->filename.front() != '/' )
-		this->filename.insert( 0 , 1 , '/' );
+	//if( this->filename.front() != '/' )
+	//	this->filename.insert( 0 , 1 , '/' );
 }
 
 bool _direntry::close()
@@ -456,18 +457,12 @@ _u32 _direntry::getSize()
 
 string _direntry::getWorkingDirectory()
 {
-	char* val = new char[PATH_MAX];
+	char val[PATH_MAX];
 	
 	// Get working directory
 	unistd::getcwd( val , PATH_MAX );
 	
-	// Copy to std::string
-	string ret = val;
-	
-	// Free temorary storage
-	delete[] val;
-	
-	return ret;
+	return val;
 }
 
 void _direntry::setWorkingDirectory( string dir )

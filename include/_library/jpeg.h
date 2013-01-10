@@ -440,7 +440,7 @@ namespace Jpeg
         }
 
         inline void _DecodeBlock(Component* c, unsigned char* out) {
-            unsigned char code;
+            unsigned char code = 0;
             int value, coef = 0;
             memset(ctx.block, 0, sizeof(ctx.block));
             c->dcpred += _GetVLC(&ctx.vlctab[c->dctabsel][0], NULL);

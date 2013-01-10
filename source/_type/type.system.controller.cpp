@@ -27,7 +27,7 @@ void _systemController::main()
 			// Fade down Screen
 			_system::fadeMainScreen( false );
 			
-			// Go back to start
+			// Set start
 			start:
 			
 			_systemController::dirty = false;
@@ -70,14 +70,14 @@ void _systemController::main()
 		// Wait for VBlank
 		swiWaitForVBlank();
 		
-		printf("\x1b[2J");
+		//printf("\x1b[2J");
 		//if( _system::_currentFocus_ )
 		//	printf("cF: %s\n",gadgetType2string[_system::_currentFocus_->getType()].c_str());
 		//printf("CF:%p",_system::_gadgetHost_->focusedChild);
-		for( _gadget* g : _system::_gadgetHost_->children )
-			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
-		for( _gadget* g : _system::_gadgetHost_->enhancedChildren )
-			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
+		//for( _gadget* g : _system::_gadgetHost_->children )
+		//	printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
+		//for( _gadget* g : _system::_gadgetHost_->enhancedChildren )
+		//	printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
 	}	
 }
 

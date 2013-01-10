@@ -4,34 +4,47 @@
 _s16 _ini::read()
 {
     /* Uses a fair bit of stack (use heap instead if you need to) */
-    string line, name , value , section = "_global_";
-	_u16 lineNo = 0;
+    string 	line, name , value , section = "_global_";
+	_u16 	lineNo = 0;
+	_u16 	errorNo = -1; // Line with error
 	
-	_u32 pos = 0;
+	_u32 end = 0, start;
 
     /* Scan through file line by line */
     while ( true )
 	{
-		_u32 tmp = pos;
+		start = end;
 		
-		if( tmp == string::npos )
+		if( start == string::npos )
 			break;
 		
-		pos = this->input.find_first_of( "\n\r" , tmp );
+		// Find Delimiter (end of line)
+		end = this->input.find_first_of( "\n\r" , start );
 		
-		if( pos != string::npos )
+		if( end != string::npos )
 		{
-			line = this->input.substr( tmp , pos - tmp );
-			// Move beyond the line delimiter
-			pos++;
+			// Get text from Start (start) to End (end)
+			line = this->input.substr( start , end - start );
+			
+			// Move beyond delimiter
+			end++;
 		}
 		else
-			line = this->input.substr( tmp );
+			line = this->input.substr( start );
 		
-        if( !line.size() || line[0] == '\r' || line[0] == ';' || line[0] == '#') {
-            /* Per Python ConfigParser, allow '#' comments at start of line */
+		
+		/**
+		 * Choose right Action
+		**/
+        if( !line.size() || line[0] == ';' || line[0] == '#' )
+		{
+            /* Per Python ConfigParser, allow '#' and ';' comments at start of line */
         }
-        else if ( line[0] == '[' )
+		else if( line[0] == '\r' || line[0] == '\n' )
+		{
+			end++;
+		}
+        else if( line[0] == '[' )
 		{
             /* A "[section]" line */
 			size_t end = line.find_first_of("]");
@@ -39,7 +52,10 @@ _s16 _ini::read()
             if ( end != string::npos )
 				section = line.substr( 1 , end - 1 );
 			else
-				return lineNo;
+			{
+				errorNo = lineNo;
+				continue;
+			}
 			
 			this->array[section];
         }
@@ -49,7 +65,10 @@ _s16 _ini::read()
 			size_t delim = line.find_first_of(":=");
 			
 			if( delim == string::npos )
-				return lineNo;
+			{
+				errorNo = lineNo;
+				continue;
+			}
 			
 			name = line.substr( 0 , delim );
 			value = line.substr( delim + 1 , line.find_first_of(";#") );
@@ -61,7 +80,7 @@ _s16 _ini::read()
         }
     }
 	
-	return -1;
+	return errorNo;
 }
 
 void _ini::write()

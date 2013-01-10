@@ -523,9 +523,12 @@ void _system::shutDown(){
 
 const string& _system::getLocalizedString( string name )
 {
+	// Use static variable instead of just returning "[]", because of warning!
+	static string def = "[]";
+	
 	auto& tmp = _system::_localizationTable_->getMap();
 	if( !tmp.count( name ) || !tmp[name].count( _system::_curLanguageShortcut_ ) )
-		return "[]";
+		return def;
 	return _system::_localizationTable_->getMap()[name][_system::_curLanguageShortcut_];
 }
 
