@@ -9,6 +9,7 @@ typedef enum{
 	image_jpeg ,
 	image_png ,
 	image_gif ,
+	image_bmp ,
 	text_plain ,
 	text_html ,
 	text_xml ,
