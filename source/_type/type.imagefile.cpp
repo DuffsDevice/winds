@@ -70,6 +70,27 @@ _imagefile::_imagefile( string fn ) :
 		delete data;
 		delete this->jpgDecoder;
 	}
+	else if( this->getMimeType() == _mime::image_bmp )
+	{
+		//printf("BMP-File!\n");
+		_u32 size = this->getSize();
+		_u8* data = new _u8[size];
+		this->read( data , size );
+		
+		_u32 width;
+		_u32 height;
+		
+		_pixelArray pixeldata = GenericBMPDecoder::decode( data , width , height );
+		
+		if ( pixeldata != nullptr )
+		{
+			//printf("Success: %d , %d\n",width,height);
+			this->bmp = pixeldata;
+			this->width = width;
+			this->height = height;
+		}
+		delete data;
+	}
 }
 
 _imagefile::~_imagefile()
