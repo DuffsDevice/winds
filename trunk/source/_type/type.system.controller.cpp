@@ -115,7 +115,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 		//
 		// For writing the profile-name
 		//
-		else if( that->getType() == _gadgetType::label )
+		else if( that->getType() == _gadgetType::textbox )
 		{
 			if( that->getStyle().val > 2 )
 			{
@@ -192,7 +192,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_bitmapPort bP = that->getBitmapPort();
 			
 			if( e.hasClippingRects() )
-				bP.addClippingRects( e.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+				bP.addClippingRects( e.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 			else
 				bP.normalizeClippingRects();
 			
@@ -495,7 +495,7 @@ void _systemController::bootupPage()
 	_system::_gadgetHost_ = new _bootupScreen( _system::_bgIdBack_ );
 	
 	static _animation anim = _animation( 0 , 1 , 2000 );
-	anim.finish( 
+	anim.finish(
 		new _inlineCallback(
 			static_cast<function<void()>>
 				( [&](){ _systemController::changeState( _systemState::desktop ); } )
@@ -504,17 +504,23 @@ void _systemController::bootupPage()
 	anim.start();
 }
 
+//#include "_gadget/gadget.scrollBar.h"
+
 void _systemController::desktopPage()
 {
+	
 	// Clean up	
 	_system::deleteGadgetHost();
 	_system::deleteKeyboard();
-	
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
 	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
+	_direntry entry = _direntry("/LUA/Noel.lua");
+	entry.execute();
+	//_system::_gadgetHost_->addChild( new _button( 8 , 8 , 8 , 8 , "" ) );
+	//_system::_gadgetHost_->addChild( new _scrollButton( 8 , 8 , 8 , 0 , _scrollButtonType::buttonHandleX ) );
 }
 
 

@@ -256,7 +256,7 @@ class _bitmap
 		 * @return _pixel The Pixel at the specified location
 		**/
 		private:
-		_pixel getPixelNoCheck( _coord x , _coord y ) const {
+		_pixel getPixelUnsafe( _coord x , _coord y ) const {
 			return this->bmp[ y * this->width + x ];
 		}
 		public:
@@ -290,7 +290,7 @@ class _bitmap
 		 * @return void
 		**/
 		private:
-		void drawPixelNoCheck( _coord x , _coord y , _pixel color ){
+		void drawPixelUnsafe( _coord x , _coord y , _pixel color ){
 			this->bmp[y * this->width + x] = color;
 		}
 		public:
@@ -312,6 +312,14 @@ class _bitmap
 		void fill( _pixel color ){
 			this->drawFilledRect( 0 , 0 , this->width , this->height , color );
 		}
+		
+		/**
+		 * Replace all pixels of a certain color with another
+		 * @param color The Color to replace
+		 * @param replace The Color to replace with
+		 * @return void
+		**/
+		void replaceColor( _pixel color , _pixel replace );
 		
 		/**
 		 * Draw a vertical Line onto the bmp
@@ -472,7 +480,19 @@ class _bitmap
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
 		**/
-		_u16 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 );
+		_u16 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
+		{
+			// Check if font is valid
+			if( !font || !font->valid() ) 
+				return 0;
+			
+			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
+		}
+		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
+		{
+			// Let the font do the hard work!
+			return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
+		}
 		
 		/**
 		 * Draw a String to a specific Position

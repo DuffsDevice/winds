@@ -1,52 +1,71 @@
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.windows.h"
-void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
+#include "_type/type.system.h"
 
+void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
 bool _button::isAutoSelect(){ return this->autoSelect; }
+
+void _button::setStrValue( string val )
+{
+	// Set Value...
+	this->strValue = val;
+	
+	if( this->computeW == 1 ){
+		this->computeW = 2;
+		this->computeSize();
+	}
+	this->bubbleRefresh( true );
+}
 
 void _button::setFont( _font* ft )
 {
-	if( this->label )
-	{
-		this->label->setFont( ft );
-		this->computeSize();
-		this->bubbleRefresh( true );
-	}
+	if( this->font == ft )
+		return;
+	
+	this->font = ft;
+	
+	this->computeSize();
+	this->bubbleRefresh( true );
 }
 
-_callbackReturn _button::resizeHandler( _event event )
+void _button::setFontSize( _u8 fontSize )
 {
-	_button* that = event.getGadget<_button>();
+	if( this->fontSize == fontSize )
+		return;
 	
-	that->label->setWidth( max( 1 , that->getWidth() - 2 ) );
-	that->label->setHeight( max( 1 , that->getHeight() - 2 ) );
-	
-	return handled;
+	// Set FontSize...
+	this->fontSize = fontSize;
+	if( this->computeW )
+		this->computeW = 2;
+	if( this->computeH )
+		this->computeH = 2;
+	this->computeSize();
+	this->bubbleRefresh( true );
 }
 
 void _button::computeSize()
 {
-	if( !this->label->font || !this->label->font->valid() )
+	if( !this->font->valid() )
 		return;
 	
 	// Compute Height
 	if( this->computeH == 2 && ( this->computeH = 1 ) )
-		this->setHeight( this->label->font->getHeight() + 2 );
+		this->setHeight( this->font->getHeight() + 2 );
 	
 	// Compute Width
 	if( this->computeW == 2 && ( this->computeW = 1 ) )
-		this->setWidth( max( 28 , 7 + this->label->font->getStringWidth( this->getStrValue() ) ) );
+		this->setWidth( max( 28 , 7 + this->font->getStringWidth( this->getStrValue() ) ) );
 }
 
 _callbackReturn _button::refreshHandler( _event event )
-{	
+{
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -70,7 +89,7 @@ _callbackReturn _button::refreshHandler( _event event )
 		
 		if( that->autoSelect )
 		{
-			// Inner Shadow
+			// Blue Border
 			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , RGB( 18 , 22 , 31 ) );
 			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , RGB( 26 , 29 , 31 ) );
 		}
@@ -81,6 +100,7 @@ _callbackReturn _button::refreshHandler( _event event )
 			bP.drawVerticalLine( myW - 2 	, 2 	  , myH - 4 , RGB( 25 , 25 , 25 ) );
 			bP.drawHorizontalLine( 2 	, 1 , myW - 4 , RGB( 29 , 29 , 29 ) );
 			bP.drawVerticalLine( 1 	, 2 	  , myH - 4 , RGB( 29 , 29 , 29 ) );
+			// Corners
 			bP.drawPixel( myW - 2 	, myH - 2 , RGB( 23 , 23 , 23 ) );
 			bP.drawPixel( myW - 2 	, 1 	   , RGB( 23 , 23 , 23 ) );
 			bP.drawPixel( 1			, 1 	   , RGB( 23 , 23 , 23 ) );
@@ -110,6 +130,47 @@ _callbackReturn _button::refreshHandler( _event event )
 	bP.drawPixel( myW - 1 , 0 , NO_COLOR );
 	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
 	bP.drawPixel( 0 , myH - 1 , NO_COLOR );
+	
+	//
+	// TEXT PAINTING!
+	//
+	
+	
+	// If there is no font it doesn't make sense to paint
+	if( !that->font || !that->font->valid() )
+		return use_default;
+	
+	_coord x = 0;
+	_coord y = 0;
+	
+	switch( that->getAlign() )
+	{
+		case _align::center:
+			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) - 1 ) >> 1 );
+			break;
+		case _align::left:
+			x = 0;
+			break;
+		case _align::right:
+			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() , that->fontSize );
+			break;
+	}
+	
+	switch( that->getVAlign() )
+	{
+		case _valign::middle:
+			y = ( ( myH - 1 ) >> 1 ) - ( ( that->font->getAscent( that->fontSize ) + 1 ) >> 1 );
+			break;
+		case _valign::top:
+			y = 0;
+			break;
+		case _valign::bottom:
+			y = that->dimensions.height - that->font->getAscent( that->fontSize );
+			break;
+	}
+	
+	// Draw Text...
+	bP.drawString( x , y , that->font , that->getStrValue() , that->fontColor , that->fontSize );
 	
 	return use_default;
 }
@@ -158,17 +219,17 @@ _callbackReturn _button::mouseHandler( _event event )
 }
 
 void _button::init( string text )
-{	
-	// Create a Label
-	this->label = new _label( this->getWidth() - 2 , this->getHeight() - 2 , 1 , 1 , text );
-	//this->label->setBgColor( RGB( 31 , 0 , 0 ) );
-	this->label->setAlign( _align::center );
-	this->label->setVAlign( _valign::middle );
+{
+	// Font
+	this->strValue = text;
+	this->font = _system::getFont();
+	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
+	this->fontColor = COLOR_BLACK;
 	
 	this->pressed = false;
 	
-	// Append it to this button
-	this->addChild( this->label );
+	this->vAlign = _valign::middle;
+	this->align = _align::center;
 	
 	// Register my handler as the default Refresh-Handler
 	this->unregisterEventHandler( mouseDoubleClick );
@@ -178,7 +239,6 @@ void _button::init( string text )
 	this->registerEventHandler( dragStart , new _staticCallback( &_button::dragHandler ) );
 	this->registerEventHandler( dragStop , new _staticCallback( &_button::dragHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_button::dragHandler ) );
-	this->registerEventHandler( onResize , new _staticCallback( &_button::resizeHandler ) );
 	
 	// Compute the necesary Width
 	this->computeSize();
@@ -188,16 +248,16 @@ void _button::init( string text )
 }
 
 // Methods to set Size
-void _button::setWidth( _u8 width ){ 
-	if( width <= 0 ){ this->computeW = 2; this->computeSize(); return; }
+void _button::setWidth( _length width ){ 
+	if( !width ){ this->computeW = 2; this->computeSize(); return; }
 	this->computeW = 0; _gadget::setWidth( width );
 }
 void _button::setDimensions( _rect dim ){
 	if( !dim.isValid() ){ this->computeH = 2; this->computeW = 2; this->computeSize(); return; }
 	this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim );
 }
-void _button::setHeight( _u8 height ){
-	if( height <= 0 ){ this->computeH = 2; this->computeSize(); return; }
+void _button::setHeight( _length height ){
+	if( !height ){ this->computeH = 2; this->computeSize(); return; }
 	this->computeH = 0; _gadget::setHeight( height );
 }
 
@@ -221,8 +281,4 @@ _button::_button( _coord x , _coord y , string text , _style style ) :
 {	
 	// Link to Constructor
 	this->init( text );	
-}
-
-_button::~_button(){
-	delete this->label;
 }

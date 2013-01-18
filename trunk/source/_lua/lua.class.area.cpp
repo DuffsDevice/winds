@@ -16,8 +16,8 @@ int _lua_area::add( lua_State* L ){ _lua_rect* rc = Lunar<_lua_rect>::check( L ,
 int _lua_area::reduce( lua_State* L ){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( rc ) _area::reduce( (const _rect&)*rc ); return 0; }
 //! clear
 int _lua_area::clearRects(lua_State* L){ _area::clearRects(); return 0; }
-//! toRelative
-int _lua_area::toRelative(lua_State* L){ _area::toRelative( luaL_checkint( L  , 1 ) , luaL_checkint( L  , 1 ) ); return 0; }
+//! relativate
+int _lua_area::relativate(lua_State* L){ _area::relativate( luaL_checkint( L  , 1 ) , luaL_checkint( L  , 1 ) ); return 0; }
 //! clipToIntersect
 int _lua_area::clipToIntersect(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; _area::clipToIntersect( *rc ); return 0; }
 
@@ -25,7 +25,7 @@ int _lua_area::clipToIntersect(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::
 const char _lua_area::className[] = "_area";
 Lunar<_lua_area>::FunctionType _lua_area::methods[] = {
 	LUA_CLASS_FUNC(_lua_area, add),
-	LUA_CLASS_FUNC(_lua_area, toRelative),
+	LUA_CLASS_FUNC(_lua_area, relativate),
 	LUA_CLASS_FUNC(_lua_area, clearRects),
 	LUA_CLASS_FUNC(_lua_area, clipToIntersect),
 	LUA_CLASS_FUNC_END

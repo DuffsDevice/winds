@@ -4,12 +4,14 @@
 
 #include "_type/type.h"
 #include "_type/type.system.h"
+#include "_type/type.gadgetStyle.h"
 #include "_lua/lua.hpp"
 #include <string.h> // For strlen
 
 extern bool luaL_is( lua_State* L , int narg , string type );
 extern bool luaL_checkboolean( lua_State* L , int narg );
 extern bool luaL_optboolean( lua_State* L , int narg , bool val );
+extern _style luaL_optstyle( lua_State* L , int narg );
 
 template < class T > class Lunar {
   public:
@@ -192,7 +194,9 @@ template < class T > class Lunar {
 			return ((*obj)->*(T::properties[_index].getter)) (L);
 		}
 		
-		return 1;
+		luaL_error( L , "Object has no such attribute" );
+		
+		return 0;
     }
 
 /*

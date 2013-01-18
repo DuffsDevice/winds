@@ -503,7 +503,7 @@ void _system::main()
 				consoleClear();
 				printf("free: %d\n",s-FreeMemSeg);
 				//swiWaitForVBlank();
-				delete ptr;
+				delete[] ptr;
 				ptr = 0;
 			}
 		}*/

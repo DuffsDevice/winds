@@ -151,7 +151,7 @@ _dialog::~_dialog()
 			delete (_button*)this->data[1];
 			delete (_label*)this->data[2];
 			delete (_window*)this->data[3];
-			delete this->data;
+			delete[] this->data;
 			break;
 		case _dialogType::enterText:
 			delete (_button*)this->data[0];
@@ -159,7 +159,7 @@ _dialog::~_dialog()
 			delete (_label*)this->data[2];
 			delete (_textbox*)this->data[3];
 			delete (_window*)this->data[4];
-			delete this->data;
+			delete[] this->data;
 			break;
 		case _dialogType::image:
 			delete (_button*)this->data[0];
@@ -168,7 +168,7 @@ _dialog::~_dialog()
 			delete (_label*)this->data[2];
 			delete (_textbox*)this->data[3];
 			delete (_window*)this->data[4];
-			delete this->data;
+			delete[] this->data;
 			break;
 		default:
 			break;

@@ -20,25 +20,34 @@ local c;
 local r;
 local r2;
 local rg;
+local bar;
 
 function main()
-	-- create Gadgets
-	w = _window( 150 , 80 , 20 , 20 , "Hallo lieber Noel" );
-	b = _button( 50,10,"Hier Clicken!" );
-	rg = _radiogroup();
-	r = _radio( 10 , 10 , rg , 0 );
-	r2 = _radio( 10 , 20 , rg , 1 );
 	
-	bar = _progressbar( 35 , 4 , 20 , false );
+	-- create Gadgets
+	--w = _window( 150 , 80 , 20 , 20 , "A Window!" );
+	--b = _button( 50,10,"Hier Clicken!" );
+	--rg = _radiogroup();
+	--r = _radio( 10 , 10 , rg , 0 );
+	--r2 = _radio( 10 , 20 , rg , 1 );
+	
+	--bar = _progressbar( 35 , 4 , 20 , false );
 
 	-- construct the Tree
-	w.addChild( b );
-	w.addChild( r );
-	w.addChild( r2 );
-	system.addChild( w );
+	--w.addChild( b );
+	--w.addChild( bar );
+	--w.addChild( r );
+	--w.addChild( r2 );
+	--system.addChild( w );
+	--w.applyStyle("minimizeable");
+	
+	--local r = _bitmap( 6 , 6 );
+	--r.reset( system.rgb( 24 , 0 , 12 ) );
+	
+	--w.icon = r;
 
 	-- register Handler-Functions
-	b.registerEventHandler( "onAction" , clickHandler );
+	--b.registerEventHandler( "onAction" , clickHandler );
 	
 	--local dir = _direntry("/fat.h")
 	--dir.create()

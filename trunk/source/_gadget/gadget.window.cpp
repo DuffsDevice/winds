@@ -1,6 +1,7 @@
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
+#include "_type/type.runtimeAttributes.h"
 
 _callbackReturn _windowButton::refreshHandler( _event event )
 {
@@ -10,7 +11,7 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -92,17 +93,28 @@ _callbackReturn _window::resizeHandler( _event event )
 {
 	_window* that = event.getGadget<_window>();
 	
-	if( that->label != nullptr )
-		that->label->setWidth( that->getWidth() - ( that->isDestroyable() ? 10 : 0 ) - ( that->isResizeable() ? 10 : 0 ) - ( that->isMinimizeable() ? 10 : 0 ) - 3 );
+	int lblWidth = that->getWidth();
 	
 	if( that->isDestroyable() )
+	{
 		that->button[0]->setX( that->getWidth() - 10 );
+		lblWidth -= 10;
+	}
 	
 	if( that->isResizeable() )
+	{
 		that->button[1]->setX( that->getWidth() - ( that->isDestroyable() ? 9 : 0 ) - 10 );
+		lblWidth -= 10;
+	}
 	
 	if( that->isMinimizeable() )
+	{
 		that->button[2]->setX( that->getWidth() - ( that->isDestroyable() ? 9 : 0 ) - ( that->isResizeable() ? 9 : 0 ) - 10 );
+		lblWidth -= 10;
+	}
+	
+	that->label->setWidth( lblWidth - ( that->icon->getImage().isValid() ? 10 : 0 ) - 3 );
+	that->label->setX( that->icon->getImage().isValid() ? 10 : 2 );
 	
 	return handled;
 }
@@ -122,6 +134,11 @@ _callbackReturn _window::restyleHandler( _event event )
 	else
 		that->button[1]->hide();
 	
+	if( that->icon->getImage().isValid() )
+		that->icon->show();
+	else
+		that->icon->hide();
+	
 	if( that->isMinimizeable() )
 	{
 		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
@@ -138,6 +155,28 @@ _callbackReturn _window::restyleHandler( _event event )
 	that->handleEvent( onResize );
 	
 	return handled;
+}
+
+void _window::setStrValue( string title )
+{		
+	this->label->setStrValue( title );
+	
+	// Refresh Task Button
+	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+		((_windows*)_system::_gadgetHost_)->refreshTask( this );
+}
+
+
+void _window::setIcon( _bitmap bmp )
+{
+	bmp.resize( 6 , 6 ); // resize to 6x6
+	
+	this->icon->setImage( bmp );
+	this->triggerEvent( onStyleSet );
+	
+	// Refresh Task Button
+	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+		((_windows*)_system::_gadgetHost_)->refreshTask( this );
 }
 
 _callbackReturn _window::refreshHandler( _event event )
@@ -159,7 +198,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -290,7 +329,12 @@ _callbackReturn _window::buttonHandler( _event event )
 	return handled;
 }
 
+// C++0x! Yay!
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _style style ) :
+	_window( width , height , x , y , title , _bitmap() , style )
+{ }
+
+_window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
 	_gadget( _gadgetType::window , width , height , x , y , style )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
@@ -301,8 +345,13 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( RGB( 31 , 31 , 31 ) );
 	
+	// Create Icon
+	bmp.resize( 6 , 6 ); // Crop to 5x5
+	this->icon = new _imagegadget( 2 , 2 , bmp );
+	
 	// Append it to this button
 	this->addEnhancedChild( this->label );
+	this->addEnhancedChild( this->icon );
 	
 	this->button[0] = new _windowButton( this->getWidth() - 10 , 1 , 0 );
 	this->button[1] = new _windowButton( this->getWidth() - 19 , 1 , 1 );

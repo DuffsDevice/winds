@@ -1,7 +1,7 @@
 #include "_lua/lua.gadget.imagegadget.h"
 
 /*##################################
-##           Lua-Window           ##
+##        Lua-Imagegadget         ##
 ##################################*/
 
 _lua_imagegadget::_lua_imagegadget( lua_State* L ) : 

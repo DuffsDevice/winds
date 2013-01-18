@@ -22,7 +22,7 @@ void PROG_Explorer::main( _cmdArgs& args )
 	
 	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
 	
-	this->window->addChild( this->fileview );
+	//this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );
 	this->window->addChild( this->submitbutton );
 	this->gadgetHost->addChild( this->window );

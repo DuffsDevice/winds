@@ -59,11 +59,10 @@ void _scrollArea::updateScrollBars()
 		this->scrollBarX->setLength( this->clipWidth - this->offset.left - this->offset.right );
 		this->scrollBarX->setLength2( this->canvasWidth );
 		
-		if( !this->scrollBarX->parent )
-			this->addEnhancedChild( this->scrollBarX );
+		this->scrollBarX->show();
 	}
-	else if( this->scrollBarX->parent )
-		this->scrollBarX->setParent( nullptr );
+	else
+		this->scrollBarX->hide();
 	
 	if( needY )
 	{
@@ -72,12 +71,10 @@ void _scrollArea::updateScrollBars()
 		this->scrollBarY->setLength( this->clipHeight - this->offset.top - this->offset.bottom );
 		this->scrollBarY->setLength2( this->canvasHeight );
 		
-		
-		if( !this->scrollBarY->parent )
-			this->addEnhancedChild( this->scrollBarY );
+		this->scrollBarY->show();
 	}
-	else if( this->scrollBarY->parent )
-		this->scrollBarY->setParent( nullptr );
+	else
+		this->scrollBarY->hide();
 	
 	_padding p = _padding( this->offset.left , this->offset.top , ( needY ? 8 : 0 ) + this->offset.right , ( needX ? 8 : 0 ) + this->offset.bottom );
 	
@@ -133,7 +130,7 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 		_bitmapPort bP = that->getBitmapPort();
 		
 		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+			bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 		else
 			bP.normalizeClippingRects();
 		
@@ -220,8 +217,8 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
 	, scrollTypeX( scrollTypeX )
 	, scrollTypeY( scrollTypeY )
-	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::horizontal ) )
-	, scrollBarY( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::vertical ) )
+	, scrollBarX( new _scrollBar( 0 , 0 , 10 , 1 , 1 , _dimension::horizontal ) )
+	, scrollBarY( new _scrollBar( 0 , 0 , 10 , 1 , 1 , _dimension::vertical ) )
 	, offset( _padding( 0 , 0 , 0 , 0 ) )
 	, canvasWidth( width )
 	, canvasHeight( height )
@@ -233,6 +230,8 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	
 	this->scrollBarY->setStep( 5 );
 	this->scrollBarY->registerEventHandler( onChange , new _staticCallback( &_scrollArea::scrollHandler ) );
+	this->addEnhancedChild( this->scrollBarX );
+	this->addEnhancedChild( this->scrollBarY );
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( onResize , new _staticCallback( &_scrollArea::resizeHandler ) );

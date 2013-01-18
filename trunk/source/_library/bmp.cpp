@@ -1,8 +1,6 @@
 #include "_library/bmp.h"
 #include "_type/type.h"
 
-#include <stdio.h>
-
 unsigned short* GenericBMPDecoder::decode( unsigned char* data , unsigned int& width , unsigned int& height )
 {
 	BMPHeader0 *Bmpinfo0 = (BMPHeader0 *)(data);
@@ -136,7 +134,7 @@ unsigned short* GenericBMPDecoder::decode( unsigned char* data , unsigned int& w
 				break;
 			}
 			default:
-				delete dest;
+				delete[] dest;
 				width = 0;
 				height = 0;
 				return nullptr;

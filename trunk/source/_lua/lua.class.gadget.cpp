@@ -119,8 +119,8 @@ int _lua_gadget::registerEventHandler( lua_State* L ){
 //! unregisterEventHandler
 int _lua_gadget::unregisterEventHandler( lua_State* L ){ _eventType t = string2eventType[ luaL_checkstring( L , 1 ) ]; this->gadget->unregisterEventHandler( t ); return 0; }
 
-//! generateEvent
-int _lua_gadget::generateEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->generateEvent( *e ); return 0; }
+//! populateEvent
+int _lua_gadget::populateEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->populateEvent( *e ); return 0; }
 
 //! triggerEvent
 int _lua_gadget::triggerEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->triggerEvent( *e ); return 0; }
@@ -158,12 +158,6 @@ int _lua_gadget::moveTo(lua_State* L){ this->gadget->moveTo( luaL_checkint( L , 
 //! moveRelative
 int _lua_gadget::moveRelative(lua_State* L){ this->gadget->moveRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 
-//! focusChild
-int _lua_gadget::focusChild( lua_State* L ){ _lua_gadget* g = this->getLuaGadget( L , 1 ); if( g ) this->gadget->focusChild( g->gadget ); return 0; }
-
-//! blurChild
-int _lua_gadget::blurChild( lua_State* L ){ this->gadget->blurChild(); return 0; }
-
 //! getParent
 int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() ) ); return 1; }
 
@@ -177,10 +171,10 @@ int _lua_gadget::enhanceToParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g
 int _lua_gadget::removeChild( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->removeChild( g->gadget ); return 0; }
 
 //! removeChildren
-int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren( luaL_optboolean( L , 1 , false ) ); return 0; }
+int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren(); return 0; }
 
 //! removeEnhancedChildren
-int _lua_gadget::removeEnhancedChildren( lua_State* L ){ this->gadget->removeEnhancedChildren( luaL_optboolean( L , 1 , false ) ); return 0; }
+int _lua_gadget::removeEnhancedChildren( lua_State* L ){ this->gadget->removeEnhancedChildren(); return 0; }
 
 //! addChild
 int _lua_gadget::addChild( lua_State* L ){ _lua_gadget* g = this->getLuaGadget( L , 1 ); if( g ) this->gadget->addChild( g->gadget ); return 0; }
@@ -234,7 +228,7 @@ int _lua_gadget::setPadding(lua_State* L){ _lua_border* rc = Lunar<_lua_border>:
 int _lua_gadget::getPadding(lua_State* L){ Lunar<_lua_border>::push( L , new _lua_border( this->gadget->getPadding() ) ); return 1; }
 
 //! applyStyle
-int _lua_gadget::applyStyle(lua_State* L){ applyString2style( this->gadget->style , luaL_checkstring( L , 1 ) ); return 0; }
+int _lua_gadget::applyStyle(lua_State* L){ applyString2style( this->gadget->style , luaL_checkstring( L , 1 ) ); this->gadget->triggerEvent( onStyleSet ); return 0; }
 
 //! hide
 int _lua_gadget::hide(lua_State* L){ this->gadget->hide(); return 0; }

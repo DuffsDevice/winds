@@ -51,6 +51,41 @@ class _lua_interface_input{
 
 		//! getTitle
 		int getTitle( lua_State* L ){ lua_pushstring( L , this->input->getTitle().c_str() ); return 1; }
+		
+		//! getColor
+		int getColor( lua_State* L ){ lua_pushnumber( L , this->input->getColor() ); return 1; }
+		
+		//! setColor
+		int setColor( lua_State* L ){ this->input->setColor( luaL_checkint( L , 1 ) ); return 0; }
+		
+		//! setBgColor
+		int setBgColor( lua_State* L ){ this->input->setColor( luaL_checkint( L , 1 ) ); return 0; }
+		
+		//! getBgColor
+		int getBgColor( lua_State* L ){ lua_pushnumber( L , this->input->getBgColor() ); return 1; }
+		
+		//! setFont
+		int setFont( lua_State* L ){
+			/*_font* f = Lunar<_lua_font>::check( L , 1 )->font;
+			if( f )
+				((_label*)this->gadget)->setFont( f );
+			return 0;*/
+			//! TODO: implement
+			return 0;
+		}
+		
+		//! getFont
+		int getFont( lua_State* L ){
+			//Lunar<_lua_font>::push( L , new _lua_font( ((_label*)this->gadget)->getFont() ) , true ); return 1;
+			//!TODO: implement
+			return 0;
+		}
+		
+		//! setFontSize
+		int setFontSize( lua_State* L ){ this->input->setFontSize( luaL_checkint( L , 1 ) ); return 0; }
+		
+		//! getFontSize
+		int getFontSize( lua_State* L ){ lua_pushnumber( L , this->input->getFontSize() ); return 1; }
 };
 
 #endif

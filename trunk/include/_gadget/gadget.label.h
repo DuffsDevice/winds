@@ -87,9 +87,9 @@ class _label : public _gadget {
 		_label( _coord x , _coord y , string text , _style style = _style() );
 		
 		// Methods to set Size
-		void setWidth( _u8 width );
+		void setWidth( _length width );
 		void setDimensions( _rect dim );
-		void setHeight( _u8 height );
+		void setHeight( _length height );
 };
 
 #endif

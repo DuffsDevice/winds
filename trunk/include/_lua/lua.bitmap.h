@@ -12,9 +12,6 @@ extern "C"{
 #include "_lua/lua.class.rect.h"
 #include "type.bitmap.h"
 
-extern bool luaL_is( lua_State* L , int narg , string type );
-
-
 /**
  * Proxy Classes
 **/
@@ -24,12 +21,12 @@ class _lua_bitmap{
 		
 		_bitmap* bm;
 		
-		// Ctor
+		//! Ctor
 		_lua_bitmap( _bitmap* b );
 		
-		// Lua-Ctor
+		//! Lua-Ctor
 		_lua_bitmap( lua_State* L );
-				
+		
 		//! Lua-Dtor
 		int _delete( lua_State* );
 		

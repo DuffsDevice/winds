@@ -2,6 +2,14 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
+void _textbox::setStrValue( string value )
+{
+	this->strValue = value;
+	this->cursor = min( cursor , _length( value.length() + 1 ) );
+	
+	this->bubbleRefresh( true );
+}
+
 void _textbox::getFontPosition( _coord& x , _coord& y , _textbox* box )
 {
 	switch( box->getAlign() )
@@ -35,11 +43,11 @@ _callbackReturn _textbox::refreshHandler( _event event )
 {
 	// Receive Gadget
 	_textbox* that = event.getGadget<_textbox>();
-	
+
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -50,7 +58,16 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	_length myH = that->getHeight();
 	_length myW = that->getWidth();
 	
+	
 	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->bgColor );
+	
+	if( !that->pressed )
+		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
+	else
+		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+	
+	if( !that->font || !that->font->valid() )
+		return use_default;
 	
 	_coord x = 0;
 	_coord y = 0;
@@ -60,13 +77,12 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	// Draw Text...
 	bP.drawString( x , y , that->font , that->getStrValue() , that->color );
 	
-	if( !that->pressed )
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
-	else
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
-	
 	if( that->cursor )
-		bP.drawVerticalLine( that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor-1 ) ) + x - 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
+	{
+		_length strWidthUntilCursor = that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor - 1 ) );
+		
+		bP.drawVerticalLine( strWidthUntilCursor + x - 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
+	}
 	
 	return use_default;
 }
@@ -150,6 +166,9 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	if( event.getType() == dragging )
 		position -= that->getX();
 	
+	if( !that->font || !that->font->valid() )
+		return handled;
+	
 	string 	str = that->getStrValue();
 	_length strLen = str.length();
 	_length pos = 0;
@@ -173,17 +192,17 @@ _callbackReturn _textbox::mouseHandler( _event event )
 }
 
 _textbox::_textbox( _coord x , _coord y , _length width , string text , _style style ) :
-	_label( width , 10 , x , y , text , style )
+	_gadget( _gadgetType::textbox , width , 10 , x , y , style )
+	, color( RGB( 0 , 0 , 0 ) )
+	, bgColor( RGB( 31 , 31 , 31 ) )
+	, font ( _system::getFont() )
+	, fontSize( _system::_runtimeAttributes_->defaultFontSize )
+	, align( _align::left )
+	, vAlign( _valign::middle )
+	, strValue( text )
 	, cursor( 0 )
 	, pressed( false )
 {
-	// Set Label
-	this->setVAlign( _valign::middle );
-	this->setAlign( _align::left );
-	
-	_label::setBgColor( RGB( 31 , 31 , 31 ) );
-	_label::setColor( RGB( 3 , 3 , 3 ) );
-	
 	// Regsiter Handling Functions for events
 	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );

@@ -24,7 +24,7 @@
 	LUA_CLASS_FUNC(g,getScreen), \
 	LUA_CLASS_FUNC(g,registerEventHandler), \
 	LUA_CLASS_FUNC(g,unregisterEventHandler), \
-	LUA_CLASS_FUNC(g,generateEvent), \
+	LUA_CLASS_FUNC(g,populateEvent), \
 	LUA_CLASS_FUNC(g,triggerEvent), \
 	LUA_CLASS_FUNC(g,canReactTo), \
 	LUA_CLASS_FUNC(g,handleEvent), \
@@ -39,8 +39,6 @@
 	LUA_CLASS_FUNC(g,removeEnhancedChildren), \
 	LUA_CLASS_FUNC(g,addChild), \
 	LUA_CLASS_FUNC(g,addEnhancedChild), \
-	LUA_CLASS_FUNC(g,focusChild), \
-	LUA_CLASS_FUNC(g,blurChild), \
 	LUA_CLASS_FUNC(g,getAbsoluteDimensions), \
 	LUA_CLASS_FUNC(g,getSize), \
 	LUA_CLASS_FUNC(g,moveTo), \
@@ -123,8 +121,8 @@ class _lua_gadget{
 		//! unregisterEventHandler
 		int unregisterEventHandler( lua_State* L );
 		
-		//! generateEvent
-		int generateEvent(lua_State* L);
+		//! populateEvent
+		int populateEvent(lua_State* L);
 		
 		//! triggerEvent
 		int triggerEvent(lua_State* L);
@@ -239,12 +237,6 @@ class _lua_gadget{
 		
 		//! setHeight
 		int setHeight(lua_State* L);
-		
-		//! blurChild
-		int blurChild(lua_State* L);
-		
-		//! focusChild
-		int focusChild(lua_State* L);
 		
 		//! getSize
 		int getSize( lua_State* L );

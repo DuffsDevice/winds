@@ -37,7 +37,7 @@ _freetypefont::_freetypefont( string path ) :
 	
 	if( !this->read( this->cache , this->cacheSize ) )	
 	{
-		delete cache;
+		delete[] cache;
 		return;
 	}
 	
