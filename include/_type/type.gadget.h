@@ -211,9 +211,10 @@ class _gadget{
 		}
 		
 		/**
-		 * Method to push an event onto the stack
+		 * Add an event to be executed ASAP.
+		 * This usually has nothing to do with the gadget it is invoked on!
 		**/
-		void generateEvent( _event event );
+		void populateEvent( _event event );
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically)
@@ -342,17 +343,17 @@ class _gadget{
 		/**
 		 * Set Dimensions of the Gadget (including Coords)
 		**/
-		void setDimensions( _rect rc );
+		virtual void setDimensions( _rect rc );
 		
 		/**
 		 * Get the height of the Gadget
 		**/
-		const _length& getHeight() const { return this->dimensions.height; }
+		_length getHeight() const { return this->dimensions.height; }
 		
 		/**
 		 * Get the width of the Gadget
 		**/
-		const _length& getWidth() const { return this->dimensions.width; }
+		_length getWidth() const { return this->dimensions.width; }
 		
 		/**
 		 * Move the Gadget relatively to its current position
@@ -360,19 +361,19 @@ class _gadget{
 		void moveTo( _coord dX , _coord dY );
 		
 		/**
-		 * Relative moving fo the Gadget
+		 * Relative moving for the Gadget
 		**/
 		void moveRelative( _s16 deltaX , _s16 deltaY );
 		
 		/**
 		 * Set Height " " "
 		**/
-		void setHeight( _length val );
+		virtual void setHeight( _length val );
 		
 		/**
 		 * Set Width " " "
 		**/
-		void setWidth( _length val );
+		virtual void setWidth( _length val );
 		
 		/**
 		 * Get the toppest child owned by the parent
@@ -381,7 +382,7 @@ class _gadget{
 		
 		/**
 		 * Get the Type of the Gadget (enum)
-		 * @see type.h:111
+		 * @see type.h:228
 		**/
 		_gadgetType getType(){ return this->type; }
 		

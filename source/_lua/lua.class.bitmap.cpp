@@ -11,10 +11,12 @@ _lua_bitmap::_lua_bitmap( _bitmap* b ) : wasAllocated( false ) { this->bm = b; }
 
 // Lua-Ctor
 _lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
-	if( lua_gettop(L) == 3 )
-		this->bm = new _bitmap( (_pixelArray)luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) );
-	else
+	if( !lua_gettop(L) )
+		this->bm = new _bitmap();
+	else if( lua_gettop(L) == 2 )
 		this->bm = new _bitmap( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) );
+	else
+		this->bm = nullptr;
 }
 
 //! Dtor
@@ -55,6 +57,9 @@ int _lua_bitmap::reset( lua_State* L ){ this->bm->reset( luaL_checkint( L , 1 ) 
 
 //! fill
 int _lua_bitmap::fill( lua_State* L ){ this->bm->fill( luaL_checkint( L , 1 ) ); return 0; }
+
+//! replaceColor
+int _lua_bitmap::replaceColor( lua_State* L ){ this->bm->replaceColor( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 
 //! drawLine
 int _lua_bitmap::drawLine( lua_State* L ){ this->bm->drawLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkint( L , 5 ) ); return 0; }
@@ -198,6 +203,7 @@ Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmap, drawPixel),
 	LUA_CLASS_FUNC(_lua_bitmap, reset),
 	LUA_CLASS_FUNC(_lua_bitmap, fill),
+	LUA_CLASS_FUNC(_lua_bitmap, replaceColor),
 	LUA_CLASS_FUNC(_lua_bitmap, drawLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalLine),

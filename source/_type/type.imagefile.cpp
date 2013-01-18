@@ -67,7 +67,7 @@ _imagefile::_imagefile( string fn ) :
 					this->bmp[s] = RGB( rgb[s] >> 3 , rgb[s] >> 3 , rgb[s] >> 3 );
 			}
 		}
-		delete data;
+		delete[] data;
 		delete this->jpgDecoder;
 	}
 	else if( this->getMimeType() == _mime::image_bmp )
@@ -89,7 +89,7 @@ _imagefile::_imagefile( string fn ) :
 			this->width = width;
 			this->height = height;
 		}
-		delete data;
+		delete[] data;
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "_type/type.gadgetStyle.h"
+#include "stdio.h"
 	
 _style _style::storeHandle( void* data , _styleAttr attr ){
 	_style g = _style( attr );
@@ -23,27 +24,35 @@ _styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | edita
 
 void applyString2style( _style& style , string input )
 {
-	_u32 pos = 0;
+	_u32 end = 0, start;
 	string line;
 	
 	_styleAttr attr = _styleAttr( style.attrs );
 	
 	while( true )
 	{
-		_u32 tmp = pos;
+		start = end;
 		
-		if( tmp == string::npos )
+		if( start == string::npos )
 			break;
 		
-		pos = input.find_first_of( "|" , tmp );
+		// Find Delimiter (end of line)
+		end = input.find_first_of( "|" , start );
 		
-		line = input.substr( tmp , pos - tmp );
-		
-		// Move beyond the line delimiter
-		pos++;
+		if( end != string::npos )
+		{
+			// Get text from Start (start) to End (end)
+			line = input.substr( start , end - start );
+			
+			// Move beyond delimiter
+			end++;
+		}
+		else
+			line = input.substr( start );
 		
 		// Trim the line
 		trim( line );
+		
 		
 		// Resizeable
 		if( line == "resizeable" )

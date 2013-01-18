@@ -62,12 +62,12 @@ class _rect{
 				}
 				
 				//! Relativate all t_rects
-				_area& toRelative( const _coord absX , const _coord absY )
+				_area& relativate( const _coord absX , const _coord absY )
 				{
-					//startTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+					//startTimer( reinterpret_cast<void*>(&_rect::relativate) );
 					for( _rect &rc : t_rects )
-						rc.toRelative( absX , absY );
-					//stopTimer( reinterpret_cast<void*>(&_rect::toRelative) );
+						rc.relativate( absX , absY );
+					//stopTimer( reinterpret_cast<void*>(&_rect::relativate) );
 					return *this;
 				}
 				
@@ -140,7 +140,7 @@ class _rect{
 		
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
-		_rect& toRelative( const _coord absX , const _coord absY )
+		_rect& relativate( const _coord absX , const _coord absY )
 		{
 			this->x -= absX; this->y -= absY; return *this;
 		}

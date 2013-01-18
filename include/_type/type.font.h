@@ -3,7 +3,6 @@
 
 #include "_type/type.h"
 #include "_type/type.rect.h"
-#include "_type/type.bitmap.h"
 
 class _bitmap;
 
@@ -60,5 +59,7 @@ class _font{
 		virtual _u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		
 };
+
+#include "_type/type.bitmap.h"
 
 #endif

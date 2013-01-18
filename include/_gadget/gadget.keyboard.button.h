@@ -25,23 +25,4 @@ class _keyboardButton : public _button {
 		_keyboardButton( _key key , _coord x , _coord y , string text , _style style = _style() );
 };
 
-class _keyboardStartButton : public _button {
-	
-	private:
-	
-		//! Images...
-		static _bitmap	startButton;
-		static _bitmap	startButtonPressed;
-		
-		_startMenu*		startMenu;
-		
-		static _callbackReturn  refreshHandler( _event );
-		
-		static _callbackReturn  mouseHandler( _event );
-	
-	public:
-		
-		_keyboardStartButton( _coord x , _coord y , _style style = _style() );
-};
-
 #endif

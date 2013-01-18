@@ -5,17 +5,18 @@
 #include <nds/arm9/math.h>
 
 void _bitmap::setWidth( _length w )
-{ 
-	if( this->width == w )
+{
+	if( !this->isValid() )
+		return;
+	
+	if( this->width == w || !w )
 		return;
 	
 	_pixelArray newBmp;
 	
 	if( this->wasAllocated )
-	{
 		newBmp = new _pixel[ w * this->height ];
-		memSet( newBmp , 0 , w * this->height );
-	}
+		//memSet( newBmp , 0 , w * this->height );
 	else
 		newBmp = this->bmp;
 		
@@ -32,11 +33,8 @@ void _bitmap::setWidth( _length w )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
 	}
 	
-	if( this->wasAllocated )
-	{
-		delete this->bmp;
-		this->bmp = newBmp;
-	}
+	this->destruct();
+	this->bmp = newBmp;
 	
 	this->width = w;
 	this->resetClippingRect(); 
@@ -44,21 +42,27 @@ void _bitmap::setWidth( _length w )
 
 void _bitmap::setHeight( _length h )
 {
-	_pixelArray newBmp;	
+	if( !this->isValid() )
+		return;
 	
+	if( this->height == h || !h )
+		return;
+	
+	// also make sure the _bitmap has acceptable width
 	if( this->wasAllocated )
 	{
-		newBmp = new _pixel[ h * this->width ];
+		_pixelArray newBmp = new _pixel[ h * this->width ];
+		_pixelArray oldBmp = this->bmp;
 		//memSet( newBmp , 0 , h * this->width );
-	}
-	else
-		newBmp = this->bmp;
-	
-	memCpy( newBmp , this->bmp , min( this->height , h ) * this->width );
-	
-	if( this->wasAllocated )
-	{
-		delete this->bmp;
+		
+		_u32 cnt = min( h , this->height ) * this->width;
+		
+		do
+			*newBmp++ = *oldBmp++;
+		while( --cnt );
+		
+		// Release old Buffer
+		this->destruct();
 		this->bmp = newBmp;
 	}
 	
@@ -68,16 +72,28 @@ void _bitmap::setHeight( _length h )
 
 void _bitmap::resize( _length w , _length h )
 {
-	if( this->width == w && this->height == h )
+	if( !this->isValid() )
 		return;
+	
+	if( !w || !h || ( this->width == w && this->height == h ) )
+		return;
+	else if( this->width == w )
+	{
+		this->setHeight( height );
+		return;
+	}
+	else if( this->height == h )
+	{
+		this->setWidth( width );
+		return;
+	}
+	
 	
 	_pixelArray newBmp;	
 	
 	if( this->wasAllocated )
-	{
 		newBmp = new _pixel[ w * h ];
 		//memSet( newBmp , 0 , w * this->height );
-	}
 	else
 		newBmp = this->bmp;
 	
@@ -94,11 +110,8 @@ void _bitmap::resize( _length w , _length h )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
 	}
 	
-	if( this->wasAllocated )
-	{
-		delete this->bmp;
-		this->bmp = newBmp;
-	}
+	this->destruct();
+	this->bmp = newBmp;
 	
 	this->width = w;
 	this->height = h;
@@ -223,6 +236,34 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 			memSet( to , color , w );
 			to += this->width;
 		}
+}
+
+void _bitmap::replaceColor( _pixel color , _pixel replace )
+{
+	if( !this->height || !this->width )
+		return;
+	
+	_u32 cnt = this->height * this->width;
+	
+	_pixelArray ptr = this->bmp;
+	
+	// Replace all values with passed color
+	if( RGB_GETA( color ) )
+	{
+		do
+		{
+			if( *ptr == color )
+				*ptr = replace;
+		}while( --cnt );
+	}
+	else
+	{
+		do
+		{
+			if( !RGB_GETA( *ptr ) )
+				*ptr = replace;
+		}while( --cnt );
+	}
 }
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
@@ -517,14 +558,14 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
 {
 	// Check for transparent
-	if( !RGB_GETA(color) )
+	if( !font || !font->valid() || !RGB_GETA(color) )
 		return;
 	
 	for( const _char& ch : str )
 	{
 		if( x0 > this->activeClippingRect.getX2() )
 			break;
-		x0 += 1 + this->drawChar( x0 , y0 , font , ch , color , fontSize );
+		x0 += 1 + this->drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 	}
 }
 
@@ -715,7 +756,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 				memCpy( this->bmp + destX + dX + this->width * ( destX + y ) , buffer , width + dX );
 			}
 			
-			delete buffer;
+			delete[] buffer;
 			
 			return;
 		}
@@ -768,11 +809,6 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	// Return false if no box to draw
 	// Return true as box can be drawn
 	return bottom >= top;
-}
-
-_u16 _bitmap::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize ){
-	// Let the font do the hard work!
-	return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
 }
 
 void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length ){

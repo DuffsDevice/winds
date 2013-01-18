@@ -17,6 +17,7 @@
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.event.h"
 #include "_lua/lua.class.radiogroup.h"
+#include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.dialog.h"
 
 #include "_lua/lua.gadget.button.h"
@@ -66,6 +67,18 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
+_style luaL_optstyle( lua_State* L , int narg )
+{
+	if( lua_isstring( L , narg ) )
+	{
+		_style st;
+		applyString2style( st , luaL_checkstring( L , narg ) );
+		return st;
+	}
+	else
+		return _style();
+}
+
 int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _system::_keyboard_ != nullptr ); return 1; }
 int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; lua_pushboolean( L , _system::_keyboard_->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
@@ -109,6 +122,7 @@ int _progLua::lua_requirePackage( lua_State* L )
 	else if( name == "_radiogroup" ) 	Lunar<_lua_radiogroup>::Register( L );
 	else if( name == "_bitmapPort" )	Lunar<_lua_bitmapPort>::Register( L );
 	else if( name == "_event" ) 		Lunar<_lua_event>::Register( L );
+	else if( name == "_imagefile" ) 	Lunar<_lua_imagefile>::Register( L );
 	else if( name == "_gadget" ) 		Lunar<_lua_gadget>::Register( L );
 	
 	//! Register Gadgets

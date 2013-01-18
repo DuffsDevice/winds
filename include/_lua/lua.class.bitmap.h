@@ -54,6 +54,9 @@ class _lua_bitmap{
 		//! fill
 		int fill( lua_State* L );
 		
+		//! replaceColor
+		int replaceColor( lua_State* L );
+		
 		//! drawVerticalLine
 		int drawVerticalLine( lua_State* L );
 		

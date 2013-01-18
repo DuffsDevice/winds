@@ -71,7 +71,7 @@ _callbackReturn _label::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -120,8 +120,8 @@ _callbackReturn _label::refreshHandler( _event event )
 }
 
 // Methods to set Size (Pass something not valid to tell the _label to compute the size)
-void _label::setWidth( _u8 width ){ 
-	if( width <= 0 ){
+void _label::setWidth( _length width ){
+	if( !width ){
 		this->computeW = 2;
 		this->computeSize();
 	} else {
@@ -140,8 +140,8 @@ void _label::setDimensions( _rect dim ){
 		_gadget::setDimensions( dim );
 	}
 }
-void _label::setHeight( _u8 height ){
-	if( height <= 0 ){ 
+void _label::setHeight( _length height ){
+	if( !height ){ 
 		this->computeH = 2;
 		this->computeSize(); 
 	} else {
@@ -157,6 +157,8 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
 	, computeH( 0 )
+	, align( _align::center )
+	, vAlign( _valign::middle )
 	, strValue( text )
 {
 	this->font = _system::getFont();
@@ -177,6 +179,8 @@ _label::_label( _coord x , _coord y , string text , _style style ) :
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )
 	, computeH( 2 )
+	, align( _align::center )
+	, vAlign( _valign::middle )
 	, strValue( text )
 {
 	this->font = _system::getFont();

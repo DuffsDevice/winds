@@ -45,6 +45,9 @@ class _lua_bitmapPort : public _bitmapPort{
 		//! fill
 		int fill( lua_State* L );
 		
+		//! replaceColor
+		int replaceColor( lua_State* L );
+		
 		//! drawVerticalLine
 		int drawVerticalLine( lua_State* L );
 		

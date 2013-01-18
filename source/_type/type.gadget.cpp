@@ -87,7 +87,7 @@ void _gadget::refreshBitmap()
 	this->handleEvent( _event( refresh ).preventBubble( true ) );
 }
 
-void _gadget::generateEvent( _event event ){
+void _gadget::populateEvent( _event event ){
 	_system::generateEvent( event );
 }
 
@@ -523,7 +523,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 	if( event.hasClippingRects() )
 	{
 		damagedRects = event.getDamagedRects();
-		damagedRects.toRelative( that->getAbsoluteX() , that->getAbsoluteY() );
+		damagedRects.relativate( that->getAbsoluteX() , that->getAbsoluteY() );
 		damagedEnhancedRects = damagedRects;
 		damagedRects.clipToIntersect( areaAvailable );
 	}

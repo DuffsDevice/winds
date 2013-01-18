@@ -64,8 +64,8 @@ int _lua_rect::fromCoords(lua_State* L){
 	); 
 	return 1;
 }
-//! toRelative
-int _lua_rect::toRelative(lua_State* L){ _rect::toRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
+//! relativate
+int _lua_rect::relativate(lua_State* L){ _rect::relativate( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 //! AND
 int _lua_rect::clipToIntersect(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; _rect::clipToIntersect( *rc ); return 0; }
 //! +
@@ -87,7 +87,7 @@ Lunar<_lua_rect>::FunctionType _lua_rect::methods[] = {
   LUA_CLASS_FUNC(_lua_rect, isValid),
   LUA_CLASS_FUNC(_lua_rect, contains),
   LUA_CLASS_FUNC(_lua_rect, fromCoords),
-  LUA_CLASS_FUNC(_lua_rect, toRelative),
+  LUA_CLASS_FUNC(_lua_rect, relativate),
   LUA_CLASS_FUNC(_lua_rect, clipToIntersect),
   LUA_CLASS_FUNC(_lua_rect, expandToInclude),
   LUA_CLASS_FUNC(_lua_rect, reduce),

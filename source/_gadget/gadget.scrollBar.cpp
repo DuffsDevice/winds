@@ -45,7 +45,7 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	//! Refresh my cached values
 	refreshHandleWidth();
 	
-	// Add Buttons
+	//! Add Buttons
 	this->addChild( this->dragHandle );
 	this->addChild( this->higherHandle );
 	this->addChild( this->lowerHandle );
@@ -120,9 +120,9 @@ void _scrollBar::refreshHandleWidth()
 	if( this->length >= this->length2 )
 	{
 		if( this->dim == _dimension::horizontal )
-			this->dragHandle->setWidth( int( this->dimensions.width - 15 ) );
+			this->dragHandle->setWidth( max( 1 , int( this->dimensions.width - 15 ) ) );
 		else
-			this->dragHandle->setHeight( int( this->dimensions.height - 15 ) );
+			this->dragHandle->setWidth( max( 1 , int( this->dimensions.height - 15 ) ) );
 		return;
 	}
 		
@@ -188,7 +188,7 @@ _callbackReturn _scrollBar::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	

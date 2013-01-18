@@ -22,7 +22,7 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-//#define FAT_EMULATOR_
+#define FAT_EMULATOR_
 
 
 #ifdef FAT_EMULATOR_
