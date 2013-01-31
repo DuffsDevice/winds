@@ -20,11 +20,11 @@ class _lua_area : public _area {
 		//! reduce
 		int reduce( lua_State* L );
 		
-		//! clearRects
+		//! clear
 		int clearRects(lua_State* L);
 		
-		//! relativate
-		int relativate(lua_State* L);
+		//! toRelative
+		int toRelative(lua_State* L);
 		
 		//! clipToIntersect
 		int clipToIntersect(lua_State* L);

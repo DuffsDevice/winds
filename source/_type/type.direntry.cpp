@@ -22,10 +22,10 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-#define FAT_EMULATOR_
+#define FAT_EMULATOR
 
 
-#ifdef FAT_EMULATOR_
+#ifdef FAT_EMULATOR
 #include "program_bin.h"
 #include "image_bin.h"
 #endif
@@ -125,8 +125,20 @@ _direntry::_direntry( string fn ) :
 		this->mimeType = _mimeType::fromExtension( this->getExtension() );
 	}
 	
+	//! Removed because it makes Working Directories not work
 	//if( this->filename.front() != '/' )
 	//	this->filename.insert( 0 , 1 , '/' );
+}
+
+_direntry& _direntry::operator=( _direntry other ){
+	this->close();
+	this->filename = other.filename;
+	this->name = other.name;
+	this->extension = other.extension;
+	this->stat_buf = other.stat_buf;
+	this->mimeType = other.mimeType;
+	this->mode = _direntryMode::closed;
+	return *this;
 }
 
 bool _direntry::close()
@@ -246,13 +258,13 @@ inline bool _direntry::create()
 		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
 }
 
-#ifdef FAT_EMULATOR_
+#ifdef FAT_EMULATOR
 #include <string.h>
 #endif
 
 bool _direntry::read( void* dest , _u32 size )
 {
-	#ifdef FAT_EMULATOR_
+	#ifdef FAT_EMULATOR
 	if( !size )
 			size = this->getSize();
 	
@@ -371,7 +383,7 @@ bool _direntry::writeString( string str )
 
 string _direntry::readString( _u32 size )
 {
-	#ifdef FAT_EMULATOR_
+	#ifdef FAT_EMULATOR
 	string str = (const char*)program_bin;
 	return str;
 	#else
@@ -418,7 +430,7 @@ _mimeType _direntry::getMimeType(){
 
 _u32 _direntry::getSize()
 {
-	#ifdef FAT_EMULATOR_
+	#ifdef FAT_EMULATOR
 	return program_bin_size;
 	#endif
 	
@@ -483,7 +495,7 @@ bool _direntry::execute()
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
 			_program* prog = nullptr;
-			#ifdef FAT_EMULATOR_
+			#ifdef FAT_EMULATOR
 				string pro = (const char*)program_bin;
 				pro.resize( program_bin_size );
 				prog = new _progLua( pro );

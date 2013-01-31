@@ -10,7 +10,7 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	
 	bP.fill( COLOR_BLACK );
 	

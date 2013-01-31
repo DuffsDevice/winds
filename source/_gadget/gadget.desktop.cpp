@@ -2,9 +2,9 @@
 #include "_type/type.system.h"
 #include "_type/type.bitmapResizer.h"
 #include "_type/type.color.h"
-//#include "_type/type.freetypefont.h"
+#include "_type/type.freetypefont.h"
 
-//_freetypefont* ft = nullptr;
+_freetypefont* ft = nullptr;
 
 _callbackReturn _desktop::refreshHandler( _event event )
 {
@@ -14,7 +14,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -29,8 +29,8 @@ _callbackReturn _desktop::refreshHandler( _event event )
 		bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
 	
 	//bP.copy( 0 , 0 , _system::_runtimeAttributes_->user->userLogo );
-	//if( ft )
-		//bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
+	if( ft )
+		bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	
 	return use_default;
 }
@@ -40,7 +40,7 @@ _desktop::_desktop( _style style ) :
 	_gadget( _gadgetType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , style )
 {
 	this->style.canReceiveFocus = false;
-	//ft = new _freetypefont("/font.ttf");
+	ft = new _freetypefont("/font.ttf");
 	
 	this->registerEventHandler( refresh , new _staticCallback( &_desktop::refreshHandler ) );
 	

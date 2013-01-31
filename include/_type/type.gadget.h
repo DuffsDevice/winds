@@ -29,23 +29,8 @@ class _gadget{
 		
 		
 		// Internal
-		static bool 	removeDeleteCallback( _gadget* g )
-		{
-			if( g->style.focused && g->parent )
-				g->parent->blurChild();
-			
-			g->parent = nullptr;
-			delete g;
-			return true;
-		}
-		static bool 	removeCallback( _gadget* g )
-		{
-			if( g->style.focused && g->parent )
-				g->parent->blurChild();
-			
-			g->parent = nullptr;
-			return true;
-		}
+		static bool 	removeDeleteCallback( _gadget* g );
+		static bool 	removeCallback( _gadget* g );
 		static _gadget* getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* parent );
 		
 		// Let the gadget blink! this is used if anything can't loose focus
@@ -65,7 +50,7 @@ class _gadget{
 		_gadgetList		enhancedChildren;
 		_gadget*		focusedChild;
 		
-		_area			dirtyRects;
+		//_area			dirtyRects; // unused yet
 		
 		// Parent
 		_gadget*		parent;
@@ -74,8 +59,8 @@ class _gadget{
 		_gadget*		dragTemp;
 		
 		// Event-Handlers
-		_map<_eventType,const _callback*> 			eventHandlers;
-		static _map<_eventType,const _callback*> 	defaultEventHandlers;
+		_map<_eventType,_callback*> 		eventHandlers;
+		static _map<_eventType,_callback*> 	defaultEventHandlers;
 		
 		// Standard EventHandler
 		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
@@ -103,7 +88,14 @@ class _gadget{
 		/**
 		 * Set the Padding of the Gadget
 		**/
-		void setPadding( const _padding& p );
+		void setPadding( const _padding& p )
+		{
+			if( this->padding != p )
+			{
+				this->padding = p;
+				this->bubbleRefresh( true );
+			}
+		}
 		
 		/**
 		 * Get the Padding of the Gadget
@@ -140,6 +132,12 @@ class _gadget{
 		/** true if resizeable in y-direction **/
 		bool isResizeableY() const { return this->style.resizeableY; }
 		
+		/** true if the gadget has a special small drag Triger after which it fires an dragStart-Event **/
+		bool hasSmallDragTrig() const { return this->style.smallDragTrig; }
+		
+		/** true if the gadget wants to have repeating clicks instead of just one mouseDown event and then nothing... **/
+		bool isMouseClickRepeat() const { return this->style.mouseClickRepeat; }
+		
 		/**
 		 * Let an Event bubble from child to parent and so on...
 		**/
@@ -154,7 +152,10 @@ class _gadget{
 		/**
 		 * Method to refresh itself
 		**/
-		void refreshBitmap();
+		noinline void refreshBitmap()
+		{
+			this->handleEvent( _event( refresh ).preventBubble( true ) );
+		}
 		
 		/**
 		 * Receive a Bitmap Port
@@ -179,39 +180,27 @@ class _gadget{
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
 		**/
-		_gadgetScreen* getScreen();
+		noinline _gadgetScreen* getScreen()
+		{
+			if( this->type == _gadgetType::screen )
+				return (_gadgetScreen*)this;
+			else if( this->parent != nullptr )
+				return this->parent->getScreen();
+			return nullptr;
+		}
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
 		**/
-		void registerEventHandler( _eventType type , const _callback* handler ){
-			// Insert The Handler no matter if there was already one acting to that eventType
-			this->eventHandlers[type] = handler;
-		}
-		
-		/**
-		 * Register a Default Event Handler to catch 
-		 * some events thrown on this Gadget and not handled by 
-		 * any other EventHandlers
-		**/
-		static void registerDefaultEventHandler( _eventType type , const _callback* handler ){
-			// Insert The Handler no matter if there was already one acting to that eventType
-			_gadget::defaultEventHandlers[type] = handler;
-		}
+		void registerEventHandler( _eventType type , _callback* handler );
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
 		**/
-		void unregisterEventHandler( _eventType type ){
-			// Unbind the Handler
-			const _callback* data = this->eventHandlers[type];
-			if( data )
-				delete data;
-			this->eventHandlers.erase( type );
-		}
+		void unregisterEventHandler( _eventType type );
 		
 		/**
-		 * Add an event to be executed ASAP.
+		 * Method to push an event onto the stack
 		 * This usually has nothing to do with the gadget it is invoked on!
 		**/
 		void populateEvent( _event event );
@@ -239,12 +228,24 @@ class _gadget{
 		/**
 		 * Get the absolute X-position
 		**/
-		_coord getAbsoluteX() const ;
+		noinline _coord getAbsoluteX() const
+		{
+			if( this->parent != nullptr )
+				return this->parent->getAbsoluteX() + this->dimensions.x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
+			
+			return this->dimensions.x;
+		}
 		
 		/**
 		 * Get the absolute Y-position
 		**/
-		_coord getAbsoluteY() const ;
+		noinline _coord getAbsoluteY() const
+		{
+			if( this->parent != nullptr )
+				return this->parent->getAbsoluteY() + this->dimensions.y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
+			
+			return this->dimensions.y;
+		}
 		
 		/**
 		 * Get the Relative X-position
@@ -269,22 +270,53 @@ class _gadget{
 		/**
 		 * Hide the Gadget
 		**/
-		void hide(){ if( !this->style.visible ) return; this->style.visible = false; this->bubbleRefresh(); }
+		void hide()
+		{
+			if( this->style.visible )
+			{
+				this->style.visible = false;
+				this->bubbleRefresh();
+			}
+		}
 		
 		/**
 		 * Unhide the Gadget
 		**/
-		void show(){ if( this->style.visible ) return; this->style.visible = true; this->bubbleRefresh(); }
+		void show()
+		{
+			if( !this->style.visible )
+			{
+				this->style.visible = true;
+				this->bubbleRefresh();
+			}
+		}
 		
 		/**
 		 * Minimize the Gadget
 		**/
-		void minimize();
+		void minimize()
+		{
+			if( !this->style.minimized && this->style.minimizeable )
+			{
+				// Blur
+				this->handleEvent( blur );
+				
+				this->style.minimized = true;
+				this->bubbleRefresh();
+			}
+		}
 		
 		/**
 		 * Restore the Gadget
 		**/
-		void restore(){ if( !this->style.minimized ) return; this->style.minimized = false; this->bubbleRefresh(); }
+		void restore()
+		{
+			if( this->style.minimized )
+			{
+				this->style.minimized = false;
+				this->bubbleRefresh();
+			}
+		}
 		
 		/**
 		 * Maximize the Gadget
@@ -294,7 +326,16 @@ class _gadget{
 		/**
 		 * unMaximize (Restore) the Gadget
 		**/
-		void unMaximize();
+		void unMaximize()
+		{
+			if( this->style.maximized )
+			{
+				this->style.maximized = false;
+				
+				// Set back the old dimensions
+				this->setDimensions( this->normalDimensions );
+			}
+		}
 		
 		/**
 		 * Get the Gadgets Parent
@@ -348,12 +389,12 @@ class _gadget{
 		/**
 		 * Get the height of the Gadget
 		**/
-		_length getHeight() const { return this->dimensions.height; }
+		const _length& getHeight() const { return this->dimensions.height; }
 		
 		/**
 		 * Get the width of the Gadget
 		**/
-		_length getWidth() const { return this->dimensions.width; }
+		const _length& getWidth() const { return this->dimensions.width; }
 		
 		/**
 		 * Move the Gadget relatively to its current position
@@ -361,7 +402,7 @@ class _gadget{
 		void moveTo( _coord dX , _coord dY );
 		
 		/**
-		 * Relative moving for the Gadget
+		 * Relative moving fo the Gadget
 		**/
 		void moveRelative( _s16 deltaX , _s16 deltaY );
 		
@@ -382,7 +423,7 @@ class _gadget{
 		
 		/**
 		 * Get the Type of the Gadget (enum)
-		 * @see type.h:228
+		 * @see type.h:111
 		**/
 		_gadgetType getType(){ return this->type; }
 		

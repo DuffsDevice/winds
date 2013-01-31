@@ -6,17 +6,19 @@
 
 void _bitmap::setWidth( _length w )
 {
-	if( !this->isValid() )
-		return;
+	// limit
+	w = max( w , _length(1) );
 	
-	if( this->width == w || !w )
+	if( this->width == w || !this->isValid() )
 		return;
 	
 	_pixelArray newBmp;
 	
 	if( this->wasAllocated )
+	{
 		newBmp = new _pixel[ w * this->height ];
-		//memSet( newBmp , 0 , w * this->height );
+		memSet( newBmp , 0 , w * this->height );
+	}
 	else
 		newBmp = this->bmp;
 		
@@ -33,39 +35,42 @@ void _bitmap::setWidth( _length w )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
 	}
 	
+	// Finish work, copy buffers and free unused memory
 	this->destruct();
 	this->bmp = newBmp;
 	
+	// adjust Size and reset clipping
 	this->width = w;
-	this->resetClippingRect(); 
+	this->resetClippingRect();
 }
 
 void _bitmap::setHeight( _length h )
 {
-	if( !this->isValid() )
+	// limit
+	h = max( h , _length(1) );
+	
+	if( this->height == h || !this->isValid() )
 		return;
 	
-	if( this->height == h || !h )
-		return;
-	
-	// also make sure the _bitmap has acceptable width
+	// Only copy data if the underlying data is autoAllocated!
 	if( this->wasAllocated )
 	{
 		_pixelArray newBmp = new _pixel[ h * this->width ];
+		_pixelArray tmpNew = newBmp;
 		_pixelArray oldBmp = this->bmp;
-		//memSet( newBmp , 0 , h * this->width );
 		
 		_u32 cnt = min( h , this->height ) * this->width;
 		
 		do
-			*newBmp++ = *oldBmp++;
+			*tmpNew++ = *oldBmp++;
 		while( --cnt );
 		
-		// Release old Buffer
+		// Release old Buffer and set new Buffer
 		this->destruct();
 		this->bmp = newBmp;
 	}
 	
+	// adjust Size and reset clipping
 	this->height = h;
 	this->resetClippingRect();
 }
@@ -75,7 +80,11 @@ void _bitmap::resize( _length w , _length h )
 	if( !this->isValid() )
 		return;
 	
-	if( !w || !h || ( this->width == w && this->height == h ) )
+	// limit
+	h = max( h , _length(1) );
+	w = max( w , _length(1) );
+	
+	if( !w || !h )
 		return;
 	else if( this->width == w )
 	{
@@ -88,15 +97,19 @@ void _bitmap::resize( _length w , _length h )
 		return;
 	}
 	
+	//
+	// Do the actual resizing
+	//
 	
-	_pixelArray newBmp;	
+	// Choose ptr to work on
+	_pixelArray newBmp;
 	
 	if( this->wasAllocated )
 		newBmp = new _pixel[ w * h ];
-		//memSet( newBmp , 0 , w * this->height );
 	else
 		newBmp = this->bmp;
 	
+	// Resize
 	if( w < this->width )
 	{
 		for( _u32 y = 0; y != min( this->height , h ) ; y++ )
@@ -110,9 +123,11 @@ void _bitmap::resize( _length w , _length h )
 				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
 	}
 	
+	// Finish work, copy buffers, free the old (if needed)
 	this->destruct();
 	this->bmp = newBmp;
 	
+	// adjust Size and reset clipping
 	this->width = w;
 	this->height = h;
 	this->resetClippingRect(); 
@@ -211,6 +226,28 @@ void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _
 	}
 	
 }
+void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
+{
+	if( !w || !h )
+		return;
+	
+	if( w == 1 )
+	{
+		if( h == 1 )
+			drawPixel( x , y , color );
+		else
+			drawVerticalLine( x , y , h , color );
+	}
+	else if( h == 1 )
+		drawHorizontalLine( x , y , w , color );
+	else
+	{
+		this->drawVerticalLine( x , y , --h , color );
+		this->drawVerticalLine( x + --w  , y + 1 , h , color );
+		this->drawHorizontalLine( x + 1, y , w , color );
+		this->drawHorizontalLine( x , y + h  , w , color );
+	}
+}
 
 void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
 {	
@@ -266,10 +303,62 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 	}
 }
 
+#define VERTICAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 ) \
+	{\
+		_u16 val = 0;\
+		\
+		_u16 h1 = min( h , (_length)(diff2) );\
+		h -= h1;\
+		do\
+		{\
+			j = w;\
+			do\
+			{\
+				if( ( val += (rand1) ) > 97 )\
+					val -= 97;\
+				pos[j-1] = *(temp + ( val & (diff2) ));\
+			}while( --j );\
+			pos += this->width;\
+			temp++;	\
+		}while( --h1 );\
+		\
+		h1 = min( h , _length( (diff2) + 1 ) );\
+		h -= h1;\
+		\
+		if( !h )\
+			return;\
+		\
+		do\
+		{\
+			j = w;\
+			do\
+			{\
+				if( ( val += (rand1) ) > 97 )\
+					val -= 97;\
+				pos[j-1] = *( temp + ( val & (diff1) ) - (diff2) );\
+			}while( --j );\
+			pos += this->width;\
+			temp++;\
+		}while( --h );\
+		\
+		do\
+		{\
+			j = w;\
+			do\
+			{\
+				if( ( val += (rand1) ) > 97 )\
+					val -= 97;\
+				pos[j-1] = *( temp + ( val & (diff2) ) - (diff2) );\
+			}while( --j );\
+			pos += this->width;\
+			temp++;	\
+		}while( --h1 );\
+	}
+
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
 {
-	
-	if( fromColor == toColor ){
+	if( fromColor == toColor )
+	{
 		this->drawFilledRect( x , y , w , h , fromColor );
 		return;
 	}
@@ -283,7 +372,6 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
-	
 	
 	// Calculate new width/height
 	w = x2 - x + 1;
@@ -319,17 +407,69 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
 			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
-			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise and width 31
+			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise AND width 31
 					| ( ( curG >> 6  ) & ( 31 << 5  ) )
 					| ( ( curB >> 1  ) & ( 31 << 10 ) )
 					| ( ( 1 << 15 ) );
 			// Faster because of less bitshifts
 		
-	// Draw the rectangle
-	for ( _u32 i = 0 ; i != h; i++ )
-		this->blitFill( x , y + i , gradTable[dY+i] , w );
+	// Number of pixels above each other having the same color
+	_u32 difference = div32( 1 << 12 , abs( trigR ) + abs( trigG ) + abs( trigB ) );
+	
+	// Adjust end and reset temp variable
+	temp = gradTable;
+	end--;
+	
+	// Compute part to add at the end of each line
+	_pixelArray pos = this->bmp + y * this->width + x;
+	
+	_u32 j = w;
+	
+	if( difference >= 8 )
+		VERTICAL_GRADIENT_FILLER_RAND( 23 , 15 , 8 )
+	else if( difference >= 4 )
+		VERTICAL_GRADIENT_FILLER_RAND( 11 , 7 , 4 )
+	else if( difference >= 2 )
+		VERTICAL_GRADIENT_FILLER_RAND( 6 , 3 , 2 )
+	else
+	{
+		_u16 val;
+		// Loop Unwinding
+		do
+		{
+			j = w;
+			val = *temp++;
+			
+			do
+			{
+				pos[j-1] = val;
+			}while( --j );
+			
+			pos += this->width;
+		}while( --h );
+	}
 	
 	delete[] gradTable;
+}
+
+#undef VERTICAL_GRADIENT_FILLER_RAND
+
+#define HORIZONTAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 ) \
+{\
+	_u16 val = 0;\
+	do\
+	{\
+		temp = end;\
+		j = w;\
+		do\
+		{\
+			val += (rand1);\
+			if( val > 97 )\
+				val -= 97;\
+			pos[j-1] = * min( max( gradTable , (temp--) + ( val & (diff1) ) - (diff2) ) , end );\
+		}while( --j );\
+		pos += this->width;\
+	}while( --h );\
 }
 
 void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
@@ -396,19 +536,42 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		
 	// Draw Set Bitmap-starting-ptr
 	_pixelArray pos = this->bmp + y * this->width + x;
-	_u16 part = this->width - ( w + x );
 	
-	// Fill the rect
-	while( h-- )
+	// Number of pixels above each other having the same color
+	_u32 difference = div32( 1 << 12 , abs( trigR ) + abs( trigG ) + abs( trigB ) );
+	
+	// Adjust end and reset temp variable
+	//temp = gradTable;
+	end--;
+	
+	_u32 j = w;
+	
+	if( difference >= 8 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 23 , 15 , 7 )
+	else if( difference >= 4 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 11 , 7 , 3 )
+	else if( difference >= 2 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 6 , 3 , 1 )
+	else
 	{
-		temp = start;
-		while( temp != end )
-			*pos++ = *temp++;
-		pos += part;
+		// Loop Unwinding
+		do
+		{
+			j = w;
+			temp = end;
+			do
+			{
+				pos[j-1] = *temp--;
+			}while( --j );
+			
+			pos += this->width;
+		}while( --h );
 	}
 	
 	delete[] gradTable;
 }
+
+#undef HORIZONTAL_GRADIENT_FILLER_RAND
 
 void _bitmap::drawCircle( _coord xc, _coord yc, _length radius, _pixel color )
 {			
@@ -558,14 +721,14 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
 {
 	// Check for transparent
-	if( !font || !font->valid() || !RGB_GETA(color) )
+	if( !RGB_GETA(color) )
 		return;
 	
 	for( const _char& ch : str )
 	{
 		if( x0 > this->activeClippingRect.getX2() )
 			break;
-		x0 += 1 + this->drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
+		x0 += 1 + this->drawChar( x0 , y0 , font , ch , color , fontSize );
 	}
 }
 

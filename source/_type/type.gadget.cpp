@@ -2,7 +2,7 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-_map<_eventType,const _callback*> _gadget::defaultEventHandlers = {
+_map<_eventType,_callback*> _gadget::defaultEventHandlers = {
 	{ focus , new _staticCallback( &_gadget::gadgetFocusHandler ) },
 	{ blur , new _staticCallback( &_gadget::gadgetFocusHandler ) },
 	{ mouseDown , new _staticCallback( &_gadget::gadgetMouseHandler ) },
@@ -24,8 +24,6 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 	if( !doNotAllocateBitmap )
 		this->bitmap = _bitmap( this->getWidth() , this->getHeight() );
 	
-	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_gadget::gadgetMouseHandler ) );
-	
 	this->triggerEvent( onStyleSet );
 }
 
@@ -42,25 +40,22 @@ _gadget::_gadget( int width , int height , int posX , int posY , _style style , 
 { }
 
 _gadget::~_gadget()
-{
-	if( this->parent != nullptr )
-		this->parent->removeChild( this );
-	
+{	
 	// Unbind event Handler
-	for( const _pair<_eventType,const _callback*>& data : this->eventHandlers )
+	for( const _pair<_eventType,_callback*>& data : this->eventHandlers )
 	{
 		if( data.second )
 			delete data.second;
 	}
-}
-
-void _gadget::setPadding( const _padding& p )
-{
-	if( this->padding != p )
-	{
-		this->padding = p;
-		this->bubbleRefresh( true );
-	}
+	
+	// Remove Children
+	this->removeChildren();
+	this->removeEnhancedChildren();
+	
+	if( this->parent != nullptr )
+		this->parent->removeChild( this );
+	
+	_system::removeEventsOf( this );
 }
 
 void _gadget::triggerEvent( _event event )
@@ -80,11 +75,6 @@ void _gadget::bubbleEvent( _event event , bool includeThis )
 		this->handleEvent( event );
 	if( this->parent != nullptr )
 		this->parent->bubbleEvent( event , true );
-}
-
-void _gadget::refreshBitmap()
-{
-	this->handleEvent( _event( refresh ).preventBubble( true ) );
 }
 
 void _gadget::populateEvent( _event event ){
@@ -110,24 +100,56 @@ void _gadget::bubbleRefresh( bool includeThis , _event event )
 	}
 }
 
-_gadgetScreen* _gadget::getScreen()
+bool _gadget::removeDeleteCallback( _gadget* g )
 {
-	if( this->type == _gadgetType::screen )
-		return (_gadgetScreen*)this;
-	else if( this->parent != nullptr )
-		return this->parent->getScreen();
-	return nullptr;
+	// Remove focus
+	if( g->parent && g->hasFocus() )
+	{
+		g->style.focused = false;
+		
+		if( g->parent->focusedChild == g )
+			g->parent->focusedChild = nullptr;
+			
+		// Remove current focus
+		_system::_currentFocus_ = nullptr;
+	}
+	
+	g->parent = nullptr;
+	
+	// Delete
+	delete g;
+	
+	return true;
+}
+
+bool _gadget::removeCallback( _gadget* g )
+{
+	// Remove focus
+	if( g->parent && g->hasFocus() )
+	{
+		g->style.focused = false;
+		
+		if( g->parent->focusedChild == g )
+			g->parent->focusedChild = nullptr;
+			
+		// Remove current focus
+		_system::_currentFocus_ = nullptr;
+	}
+	
+	g->parent = nullptr;
+	
+	return true;
 }
 
 void _gadget::blinkHandler()
 {
-	if( this->style.unused2 > 5 )
+	if( this->style.unused1 > 5 )
 	{
 		_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
-		this->style.unused2 = 0;
+		this->style.unused1 = 0;
 		return;
 	}
-	if( this->style.unused2++ % 2 )
+	if( this->style.unused1++ % 2 )
 		this->show();
 	else
 		this->hide();
@@ -232,6 +254,33 @@ bool _gadget::focusChild( _gadget* child )
 	return true;
 }
 
+void _gadget::registerEventHandler( _eventType type , _callback* handler )
+{
+	// Remove any Current Handler
+	_callback* &data = this->eventHandlers[type]; // reference to pointer
+	
+	if( data )
+	{
+		// Delete Current Event-Handler
+		delete data;
+	}
+	
+	// Insert The Handler
+	data = handler;
+}
+
+void _gadget::unregisterEventHandler( _eventType type ){
+	// Unbind the Handler
+	_map<_eventType,_callback*>::iterator data = this->eventHandlers.find( type );
+	
+	if( data != this->eventHandlers.end() )
+	{
+		delete data->second;
+		
+		this->eventHandlers.erase( data );
+	}
+}
+
 _callbackReturn _gadget::handleEventDefault( _event event )
 {
 	// Use the default EventHandler if available
@@ -258,20 +307,6 @@ _callbackReturn _gadget::handleEvent( _event event )
 	
 	// If the Handler doesn't exist, return the default Handler
 	return this->handleEventDefault( event );
-}
-
-_coord _gadget::getAbsoluteX() const {
-	if( this->parent != nullptr )
-		return this->parent->getAbsoluteX() + this->dimensions.x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
-	
-	return this->dimensions.x;
-}
-
-_coord _gadget::getAbsoluteY() const {
-	if( this->parent != nullptr )
-		return this->parent->getAbsoluteY() + this->dimensions.y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
-	
-	return this->dimensions.y;
 }
 
 void _gadget::setX( _coord val ){
@@ -347,9 +382,9 @@ void _gadget::removeChildren( bool remove )
 		return;
 	
 	if( remove )
-		this->children.remove_if( this->removeCallback );
-	else
 		this->children.remove_if( this->removeDeleteCallback );
+	else
+		this->children.remove_if( this->removeCallback );
 	
 	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
@@ -361,9 +396,9 @@ void _gadget::removeEnhancedChildren( bool remove )
 		return;
 	
 	if( remove )
-		this->enhancedChildren.remove_if( this->removeCallback );
-	else
 		this->enhancedChildren.remove_if( this->removeDeleteCallback );
+	else
+		this->enhancedChildren.remove_if( this->removeCallback );
 	
 	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
@@ -371,7 +406,7 @@ void _gadget::removeEnhancedChildren( bool remove )
 
 void _gadget::removeChild( _gadget* child )
 {
-	if( !child || this->children.empty() )
+	if( !child )
 		return;
 		
 	// Erase it on my bitmap
@@ -523,7 +558,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 	if( event.hasClippingRects() )
 	{
 		damagedRects = event.getDamagedRects();
-		damagedRects.relativate( that->getAbsoluteX() , that->getAbsoluteY() );
+		damagedRects.toRelative( that->getAbsoluteX() , that->getAbsoluteY() );
 		damagedEnhancedRects = damagedRects;
 		damagedRects.clipToIntersect( areaAvailable );
 	}
@@ -635,6 +670,9 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			event	.setPosX( posPadX - mouseContain->getX() )
 					.setPosY( posPadY - mouseContain->getY() );
 		
+		// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
+		_system::_lastClickedGadget_ = mouseContain;
+		
 		// It doesn't make sense to focus a child of some _gadget that can't be focused
 		if( event.getType() == mouseDown )
 			that->focusChild( mouseContain );
@@ -647,6 +685,8 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			return mouseContain->handleEvent( event );
 		return not_handled;
 	}
+	else
+		_system::_lastClickedGadget_ = that;
 	
 	// If no Gadget received the Mousedown, blur the Focussed Child
 	if( event.getType() == mouseDown )
@@ -783,29 +823,6 @@ void _gadget::maximize()
 		// Maximizing
 		this->setDimensions( maxDim );
 	}
-}
-
-void _gadget::unMaximize()
-{
-	if( !this->style.maximized )
-		return;
-	
-	this->style.maximized = false;
-	
-	// Set back the old dimensions
-	this->setDimensions( this->normalDimensions );
-}
-
-void _gadget::minimize()
-{
-	if( this->style.minimized || !this->style.minimizeable )
-		return;
-	
-	// Blur
-	this->handleEvent( blur );
-	
-	this->style.minimized = true;
-	this->bubbleRefresh();
 }
 
 _callbackReturn _gadget::gadgetKeyHandler( _event event )

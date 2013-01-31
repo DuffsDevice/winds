@@ -59,9 +59,6 @@ int _lua_bitmapPort::drawPixel( lua_State* L ){ _bitmapPort::drawPixel( luaL_che
 //! fill
 int _lua_bitmapPort::fill( lua_State* L ){ _bitmapPort::fill( luaL_checkint( L , 1 ) ); return 0; }
 
-//! replaceColor
-int _lua_bitmapPort::replaceColor( lua_State* L ){ _bitmapPort::replaceColor( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
-
 //! drawVerticalLine
 int _lua_bitmapPort::drawVerticalLine( lua_State* L ){ _bitmapPort::drawVerticalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ); return 0; }
 
@@ -190,7 +187,6 @@ Lunar<_lua_bitmapPort>::FunctionType _lua_bitmapPort::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmapPort, getPixel),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawPixel),
 	LUA_CLASS_FUNC(_lua_bitmapPort, fill),
-	LUA_CLASS_FUNC(_lua_bitmapPort, replaceColor),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawVerticalLine),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalLine),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawRect),

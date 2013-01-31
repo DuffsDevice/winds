@@ -25,8 +25,8 @@ _u32 LUT_Transparency[256] =
 };
 
 _freetypefont::_freetypefont( string path ) :
-	_font( "Freetype" )
-	, _direntry( path )
+	_direntry( path )
+	, _font( _direntry::getName() )
 	, cache( nullptr )
 	, cacheSize( this->getSize() )
 {
@@ -38,10 +38,18 @@ _freetypefont::_freetypefont( string path ) :
 	if( !this->read( this->cache , this->cacheSize ) )	
 	{
 		delete[] cache;
+		this->cache = 0;
 		return;
 	}
 	
 	stbtt_InitFont( &this->fontInfo , this->cache , stbtt_GetFontOffsetForIndex( this->cache , 0 ) );
+}
+
+
+_freetypefont::~_freetypefont()
+{
+	delete[] cache;
+	this->cache = 0;
 }
 
 _u16 _freetypefont::getCharacterWidth( const _char codepoint , _u8 fontSize ) const 
@@ -89,17 +97,27 @@ _u32 transparencyJump[256] =  {
 };
 
 _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
-{
+{	
 	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
+	
+	// Get Scale
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
-	stbtt_GetFontVMetrics( &	 this->fontInfo , &ascent , 0 , 0 );
+	
+	stbtt_GetFontVMetrics( &this->fontInfo , &ascent , 0 , 0 );
+	
 	_u8* bitmap = stbtt_GetCodepointBitmap( &this->fontInfo , 0 , scale , letter , &fontWidth , &fontHeight , &xOffset , &yOffset );
+	
 	_u16 output = fontWidth;
-
+	
+	// In case of error
+	if( !bitmap )
+		return output;
+	
 	// No need to draw blank or glyphs missing a bitmap
 	switch (letter) {
 		case 10:  // Line feed
 		case 13:  // Carriage return
+			STBTT_free( bitmap , 0 ); // 2nd arg unused
 			return output;
 		default:
 			break;
@@ -109,11 +127,16 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 	x += xOffset;
 	y += ascent * scale + yOffset;
 
-	// no need to blit to screen
-	if ( y > clip.getY2() ) return output;
-	if ( y + fontHeight < clip.y ) return output;
-	if ( x > clip.getX2() ) return output;
-	if ( x + fontWidth < clip.x ) return output;
+	// Check if necessary to draw
+	if ( 
+		y > clip.getY2()
+		|| y + fontHeight < clip.y
+		|| x > clip.getX2()
+		|| x + fontWidth < clip.x
+	){
+		STBTT_free( bitmap , 0 ); // 2nd arg unused
+		return output;
+	}
 
 	// Calculate values for clipping
 	_u16 startX = max( x , clip.x );
@@ -131,38 +154,49 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 	_u16 clipHeight = (endY - startY) + 1;
 
 	// Ensure region to be drawn does not exceed the size of the character
-	if (clipWidth > fontWidth - offsetStartX) clipWidth = fontWidth - offsetStartX;
-	if (clipHeight > fontHeight - offsetStartY) clipHeight = fontHeight - offsetStartY;
+	if (clipWidth > fontWidth - offsetStartX)
+		clipWidth = fontWidth - offsetStartX;
+	
+	if (clipHeight > fontHeight - offsetStartY)
+		clipHeight = fontHeight - offsetStartY;
 
 	// Abort if there is no copying to be done
-	if ((clipWidth == 0) || (clipHeight == 0)) return output;
+	if ( !clipWidth || !clipHeight )
+	{
+		STBTT_free( bitmap , 0 ); // 2nd arg unused
+		return output;
+	}
 
 	// Copy the pixel data
-	_u8 grayLevel;
-	_pixel rgb;
-	_pixel bitmapColour;
+	_u8		grayLevel;
+	_pixel	rgb;
+	_pixel	bitmapColour;
 	
 	// This is the colour of the font
 	_u16 r = color & 0x7C00;
 	_u16 g = color & 0x03E0;
 	_u16 b = color & 0x001F;
 	
-	for (u16 pY = 0; pY < clipHeight; ++pY) {              
-		for (u16 pX = 0; pX < clipWidth; ++pX) {  
-		
-			grayLevel = *(bitmap+ (offsetStartY+pY) * fontWidth+ offsetStartX+pX);
+	for ( _u16 pY = 0 ; pY < clipHeight ; ++pY )
+	{              
+		for ( _u16 pX = 0 ; pX < clipWidth ; ++pX )
+		{  
+			grayLevel = bitmap[ ( offsetStartY + pY ) * fontWidth + offsetStartX + pX ];
 			
-			if (grayLevel > 0) {
+			if (grayLevel > 0)
+			{
 				
 				// We do nothing for most of a bitmap (blank pixels)
-				if (grayLevel == 255) {
+				if (grayLevel == 255)
+				{
 					// We just need to copy the few opaque pixels 
-					dest->drawPixel(x + offsetStartX + pX, y + offsetStartY + pY, color);
-				} else {
-				
+					dest->drawPixelUnsafe( x + offsetStartX + pX , y + offsetStartY + pY, color);
+				}
+				else
+				{
 					// Antialiasing for the many gray pixels
 					// We get the existing colour 
-					bitmapColour = dest->getPixel(x + offsetStartX + pX, y + offsetStartY + pY);
+					bitmapColour = dest->getPixelUnsafe( x + offsetStartX + pX , y + offsetStartY + pY );
 					
 					// Mix it with the font colour with regards to the
 					// grayLevel (opacity/transparency)making the
@@ -172,10 +206,10 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 					
 					// Needs 1kb to hold the transparencyJump array
 					// (or 512b with one more test)
-					u32 jump = transparencyJump[grayLevel];
+					_u32 jump = transparencyJump[grayLevel];
 					rgb = bitmapColour;
 					
-					s16 increment = r - (bitmapColour & 0x7C00);
+					_s16 increment = r - (bitmapColour & 0x7C00);
 					if (increment >= 0) {
 						rgb += (((increment * grayLevel) >> 8) & 0x7C00);
 						rgb += (jump & BIT(increment)) ? 0x0400 : 0;
@@ -202,21 +236,21 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 						rgb -= (jump & BIT(-increment)) ? 0x0001 : 0;                                
 					}					
 					
-					dest->drawPixel(x + offsetStartX + pX, y + offsetStartY + pY, rgb);
+					dest->drawPixelUnsafe(x + offsetStartX + pX, y + offsetStartY + pY, rgb);
 				}                            
 			}
 		}
 	}
-		
+	
 	return output;
-}
-
-_u16 _freetypefont::getHeight( _u8 fontSize ) const 
-{
-	return fontSize;
 }
 
 _u16 _freetypefont::getAscent( _u8 fontSize ) const 
 {
-	return fontSize;
+	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
+	
+	int ascent;
+	stbtt_GetFontVMetrics( &this->fontInfo , &ascent , 0 , 0 );
+	
+	return scale * ascent + 0.5;
 }

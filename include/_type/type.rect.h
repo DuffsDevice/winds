@@ -25,12 +25,9 @@ class _rect{
 				_area(){}
 					
 				//! Push-back Aliases
-				void add( const _rect& rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
+				void add( _rect rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
+				void add( const _area&& cR ){ move( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
 				void add( const _area& cR ){ copy( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
-				
-				void cloneTo( _area& ar ){
-					ar.t_rects = t_rects;
-				}
 				
 				//! Clear
 				void clearRects(){ t_rects.clear(); }
@@ -43,47 +40,13 @@ class _rect{
 				void dump() const {	for( const _rect &rc : t_rects ) rc.dump(); }
 				
 				//! Cut the supplied Rectangle off
-				_area& reduce( const _rect& dim )
-				{
-					//startTimer( reinterpret_cast<void*>(&_rect::reduce) );
-					// Temp Rects
-					_list<_rect> tR = t_rects;
-					
-					// Clear
-					t_rects.clear();
-					
-					for( _rect& rc : tR )
-						for( const _rect& t : rc.reduce( dim ) )
-							t_rects.push_back( t );
-					
-					//stopTimer( reinterpret_cast<void*>(&_rect::reduce) );
-					
-					return *this;
-				}
+				_area& reduce( const _rect& dim );
 				
 				//! Relativate all t_rects
-				_area& relativate( const _coord absX , const _coord absY )
-				{
-					//startTimer( reinterpret_cast<void*>(&_rect::relativate) );
-					for( _rect &rc : t_rects )
-						rc.relativate( absX , absY );
-					//stopTimer( reinterpret_cast<void*>(&_rect::relativate) );
-					return *this;
-				}
+				_area& toRelative( const _coord absX , const _coord absY );
 				
 				//! Clip all t_rects to the supplied one
-				_area& clipToIntersect( const _rect limits )
-				{
-					// Temp Rects
-					_list<_rect> tR = t_rects;
-					
-					t_rects.clear();
-					
-					for( _rect& rc : tR )
-						add( rc.clipToIntersect( limits ) );
-					
-					return *this;
-				}
+				_area& clipToIntersect( const _rect limits );
 				
 				//! Check for contained t_rects
 				bool empty(){ return t_rects.empty(); }
@@ -140,7 +103,7 @@ class _rect{
 		
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
-		_rect& relativate( const _coord absX , const _coord absY )
+		_rect& toRelative( const _coord absX , const _coord absY )
 		{
 			this->x -= absX; this->y -= absY; return *this;
 		}

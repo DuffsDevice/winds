@@ -87,19 +87,19 @@ _color* _color::setHSL( _u16 hue , _u8 sat , _u8 lum ){
 			}
 		}
 	}*/
-	float v;
-	float r,g,b;
-	float h = float(hue)/360, sl = float(sat)/100, l = float(lum)/100;
+	double v;
+	double r,g,b;
+	double h = double(hue)/360, sl = double(sat)/100, l = double(lum)/100;
 	r = l;   // default to gray
 	g = l;
 	b = l;
 	v = (l <= 0.5) ? (l * (1.0 + sl)) : (l + sl - l * sl);
 	if (v > 0)
 	{
-		float m;
-		float sv;
+		double m;
+		double sv;
 		int sextant;
-		float fract, vsf, mid1, mid2;
+		double fract, vsf, mid1, mid2;
 
 		m = l + l - v;
 		sv = (v - m ) / v;
@@ -160,29 +160,29 @@ _u8 _color::getB(){
 }
 
 _u8 _color::getS(){
-	float delta  = this->maxRGB - this->minRGB;
+	double delta  = this->maxRGB - this->minRGB;
 	if( this->maxRGB != 0 )
 		return this->sat = 31 * delta / this->maxRGB / 31 * 100 ;
 	return this->sat = 0;
 }
 
 _u8 _color::getL(){
-	return this->lum = float( this->maxRGB + this->minRGB ) / 62 * 100 ;
+	return this->lum = double( this->maxRGB + this->minRGB ) / 62 * 100 ;
 }
 
 _u16 _color::getH(){
-	float delta  = this->maxRGB - this->minRGB;
+	double delta  = this->maxRGB - this->minRGB;
 	if( this->sat == 0 )
 		return this->hue = 0;
 		
 	else if( this->red == this->maxRGB)
-		return this->hue = ( 0  + float( this->gre - this->blu ) / delta ) * 60;
+		return this->hue = ( 0  + double( this->gre - this->blu ) / delta ) * 60;
 		
 	else if( this->gre == this->maxRGB)
-		return this->hue = ( 2 + float( this->blu - this->red ) / delta ) * 60;
+		return this->hue = ( 2 + double( this->blu - this->red ) / delta ) * 60;
 		
 	else if( this->blu == this->maxRGB)
-		return this->hue = ( 4 + float( this->red - this->gre ) / delta ) * 60;
+		return this->hue = ( 4 + double( this->red - this->gre ) / delta ) * 60;
 	return NO_COLOR;
 }
 

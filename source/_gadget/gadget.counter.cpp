@@ -59,7 +59,7 @@ _callbackReturn _counter::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -81,8 +81,8 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	// Read the number of decimals we have to fill with letters
 	refreshDecimals();
 	
-	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop );
-	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom );
+	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom , _styleAttr() | _styleAttr::mouseClickRepeat );
 	
 	this->valueLabel = new _label( this->getWidth() - 9 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
 	this->valueLabel->setAlign( _align::center );
@@ -109,6 +109,16 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _style style ) :
 	_counter( x , y , width , circular , value , 99 , 0 , 10 , style )
 { }
+
+_counter::~_counter()
+{
+	if( this->increaseHandle )
+		delete this->increaseHandle;
+	if( this->decreaseHandle )
+		delete this->decreaseHandle;
+	if( this->valueLabel )
+		delete this->valueLabel;
+}
 
 void _counter::setIntValue( int value )
 {

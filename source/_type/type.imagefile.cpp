@@ -28,7 +28,7 @@ _imagefile::_imagefile( string fn ) :
 			// Get size of Data (in bytes)(every pixel consists of u8 red, u8 green, u8 blue, u8 alpha)
 			_u32 size = pngDecoder->wid * pngDecoder->hei * 4;
 			
-			this->bmp = new _pixel[ size >> 2 ];
+			this->bmp = new _pixel[ size >> 2 ]; // >> 2, because of half words and not bytes
 			
 			for( _u32 i = 0, s = 0 ; i < size ; ++s, i+=4 )
 				this->bmp[s] = RGBA( pngDecoder->rgba[i] >> 3 , pngDecoder->rgba[i+1] >> 3 , pngDecoder->rgba[i+2] >> 3 , pngDecoder->rgba[i+3] >> 7 );
@@ -84,7 +84,6 @@ _imagefile::_imagefile( string fn ) :
 		
 		if ( pixeldata != nullptr )
 		{
-			//printf("Success: %d , %d\n",width,height);
 			this->bmp = pixeldata;
 			this->width = width;
 			this->height = height;
@@ -96,5 +95,5 @@ _imagefile::_imagefile( string fn ) :
 _imagefile::~_imagefile()
 {
 	if( this->bmp )
-		delete this->bmp;
+		delete[] this->bmp;
 }

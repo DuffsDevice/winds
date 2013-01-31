@@ -1,5 +1,4 @@
 #include "_type/type.gadgetStyle.h"
-#include "stdio.h"
 	
 _style _style::storeHandle( void* data , _styleAttr attr ){
 	_style g = _style( attr );
@@ -20,39 +19,31 @@ _style _style::storeHost( _program* data , _styleAttr attr ){
 }
 
 // Default
-_styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | editable | notMinimizeable | canTakeFocus | canLooseFocus | canReceiveFocus | defaultDragTrig; }
+_styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | editable | notMinimizeable | canTakeFocus | canLooseFocus | canReceiveFocus | defaultDragTrig | mouseClickDefault; }
 
 void applyString2style( _style& style , string input )
 {
-	_u32 end = 0, start;
+	_u32 pos = 0;
 	string line;
 	
 	_styleAttr attr = _styleAttr( style.attrs );
 	
 	while( true )
 	{
-		start = end;
+		_u32 tmp = pos;
 		
-		if( start == string::npos )
+		if( tmp == string::npos )
 			break;
 		
-		// Find Delimiter (end of line)
-		end = input.find_first_of( "|" , start );
+		pos = input.find_first_of( "|" , tmp );
 		
-		if( end != string::npos )
-		{
-			// Get text from Start (start) to End (end)
-			line = input.substr( start , end - start );
-			
-			// Move beyond delimiter
-			end++;
-		}
-		else
-			line = input.substr( start );
+		line = input.substr( tmp , pos - tmp );
+		
+		// Move beyond the line delimiter
+		pos++;
 		
 		// Trim the line
 		trim( line );
-		
 		
 		// Resizeable
 		if( line == "resizeable" )
@@ -113,6 +104,12 @@ void applyString2style( _style& style , string input )
 			attr |= _styleAttr::defaultDragTrig;
 		else if( line == "smallDragTrig" )
 			attr |= _styleAttr::smallDragTrig;
+		
+		// DragTrig
+		else if( line == "mouseClickDefault" )
+			attr |= _styleAttr::mouseClickDefault;
+		else if( line == "mouseClickRepeat" )
+			attr |= _styleAttr::mouseClickRepeat;
 	}
 	
 	// Copy attributes back into _style class

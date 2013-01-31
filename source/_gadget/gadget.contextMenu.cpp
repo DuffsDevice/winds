@@ -7,7 +7,7 @@ _callbackReturn _contextMenu::blurHandler( _event event )
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
 	// Hide
-	that->hide();
+	that->shelve();
 	
 	// Trigger Dummy-Event
 	that->handleEvent( onClose );
@@ -46,8 +46,6 @@ void _contextMenu::show( _coord x , _coord y )
 		this->xDir = _align::right;
 		this->yDir = _valign::bottom;
 	}
-
-	this->opened = true;
 	
 	// View
 	this->setParent( _system::_gadgetHost_ );
@@ -56,27 +54,25 @@ void _contextMenu::show( _coord x , _coord y )
 	this->handleEvent( focus );
 }
 
-void _contextMenu::hide()
+void _contextMenu::shelve()
 {
-	if( this->opened == false )
+	if( !this->isOpened() )
 		return;
 	
 	// Unbind from the tree
 	this->setParent( nullptr );
-	this->opened = false;
 }
 
 void _contextMenu::toggle( _coord x , _coord y )
 {
-	if( this->opened )
-		this->hide();
+	if( this->isOpened() )
+		this->shelve();
 	else
 		this->show( x , y );
 }
 
 _contextMenu::_contextMenu( _length width , _length height , _style style ) :
 	_gadget( _gadgetType::contextmenu , width , height , 0 , 0 , style )
-	, opened( false )
 {
 	this->registerEventHandler( onBlur , new _staticCallback( &_contextMenu::blurHandler ) );
 }

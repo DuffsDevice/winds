@@ -11,7 +11,7 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -198,7 +198,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -389,4 +389,5 @@ _window::~_window()
 	delete this->button[1];
 	delete this->button[2];
 	delete this->label;
+	delete this->icon;
 }

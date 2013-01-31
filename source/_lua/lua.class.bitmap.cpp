@@ -7,20 +7,26 @@
 ##################################*/
 
 // Ctor
-_lua_bitmap::_lua_bitmap( _bitmap* b ) : wasAllocated( false ) { this->bm = b; }
+_lua_bitmap::_lua_bitmap( _bitmap* b ) : 
+	wasAllocated( false )
+	, bm( b )
+{ }
+
+_lua_bitmap::_lua_bitmap( const _bitmap* b ) :
+	wasAllocated( true )
+	, bm( new _bitmap( *b ) ) // Copy bitmap
+{ }
 
 // Lua-Ctor
 _lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
 	if( !lua_gettop(L) )
 		this->bm = new _bitmap();
-	else if( lua_gettop(L) == 2 )
-		this->bm = new _bitmap( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) );
 	else
-		this->bm = nullptr;
+		this->bm = new _bitmap( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) );
 }
 
 //! Dtor
-_lua_bitmap::~_lua_bitmap(){ if( this->bm != nullptr && this->wasAllocated ){ delete this->bm; this->bm = nullptr; } }
+_lua_bitmap::~_lua_bitmap(){ if( this->bm != nullptr && this->wasAllocated ) delete this->bm; }
 
 //! opertor[pos] and operator(x,y)
 int _lua_bitmap::get( lua_State* L ){ 

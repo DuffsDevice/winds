@@ -65,7 +65,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -146,7 +146,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	switch( that->getAlign() )
 	{
 		case _align::center:
-			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) - 1 ) >> 1 );
+			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) ) >> 1 );
 			break;
 		case _align::left:
 			x = 0;
@@ -183,7 +183,7 @@ _callbackReturn _button::dragHandler( _event event )
 	if( event.getType() == dragStart )
 		return handled;
 	
-	else if( event.getType() == dragStop || !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
+	else if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
 	{
 		// I'm not pressed anymore!
 		that->pressed = false;
@@ -204,12 +204,12 @@ _callbackReturn _button::mouseHandler( _event event )
 	if( event.getType() == mouseDown )
 		that->pressed = true;
 	else if( event.getType() == mouseUp )
-	{
-		if( that->pressed )
-			that->handleEvent( _event( onAction ) );
-		else
-			return handled;
 		that->pressed = false;
+	else
+	{
+		// For Repetition Clicking
+		that->handleEvent( _event( onAction ) );
+		return handled;
 	}
 	
 	// Refresh
@@ -232,12 +232,11 @@ void _button::init( string text )
 	this->align = _align::center;
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , new _staticCallback( &_button::refreshHandler ) );
 	this->registerEventHandler( mouseDown , new _staticCallback( &_button::mouseHandler ) );
 	this->registerEventHandler( mouseUp , new _staticCallback( &_button::mouseHandler ) );
+	this->registerEventHandler( mouseClick , new _staticCallback( &_button::mouseHandler ) );
 	this->registerEventHandler( dragStart , new _staticCallback( &_button::dragHandler ) );
-	this->registerEventHandler( dragStop , new _staticCallback( &_button::dragHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_button::dragHandler ) );
 	
 	// Compute the necesary Width

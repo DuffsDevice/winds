@@ -1,4 +1,5 @@
 #include "_gadget/gadget.windows.startMenu.h"
+#include "_gadget/gadget.imagegadget.h"
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
@@ -12,7 +13,7 @@
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -38,11 +39,8 @@
 	// Footer
 	bP.drawVerticalGradient( 1 , myH - CONST_BOTTOM_BAR_HEIGHT , myW - 2 , 13 , RGB255( 83 , 154 , 233 ) , RGB255( 36 , 119 , 210 ) );
 	
-	// Right Side Background
+	// Right Side
 	bP.drawFilledRect( myW >> 1 , CONST_TOP_BAR_HEIGHT + 2 , ( myW - 1 ) >> 1 , myH - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , RGB255( 230 , 233 , 250 ) );
-	
-	// Left Side Background
-	bP.drawFilledRect( 0 , CONST_TOP_BAR_HEIGHT + 2 , myW >> 1 , myH - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , RGB( 31 , 31 , 31 ) );
 	
 	// Vertical Separator
 	bP.drawVerticalLine( ( myW >> 1 ) + 1 , CONST_TOP_BAR_HEIGHT + 2 , myH - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , RGB255( 205 , 226 , 249 ) );

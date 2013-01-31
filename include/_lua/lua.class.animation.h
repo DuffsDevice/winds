@@ -57,6 +57,9 @@ class _lua_animation : public _animation {
 		//! terminate
 		int terminate(lua_State* L);
 		
+		//! pause
+		int pause(lua_State* L);
+		
 		
 		//! Lunar !//
 		static const char className[];

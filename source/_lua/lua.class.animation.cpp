@@ -44,13 +44,16 @@ int _lua_animation::getDuration(lua_State* L){ lua_pushnumber( L , _animation::g
 int _lua_animation::getEasing(lua_State* L){ lua_pushstring( L , easingFunc2string[ _animation::getEasing() ].c_str() ); return 1; }
 
 //! getRunning
-int _lua_animation::getRunning(lua_State* L){ lua_pushnumber( L , !_animation::finished() ); return 1; }
+int _lua_animation::getRunning(lua_State* L){ lua_pushboolean( L , _animation::isRunning() ); return 1; }
 
 //! start
 int _lua_animation::start(lua_State* L){ _animation::start(); return 0; }
 
 //! terminate
-int _lua_animation::terminate(lua_State* L){ _animation::terminate(); return 0; }
+int _lua_animation::terminate(lua_State* L){ _animation::terminate( luaL_optboolean( L , 1 , false ) ); return 0; }
+
+//! pause
+int _lua_animation::pause(lua_State* L){ _animation::pause(); return 0; }
 
 //! Lua-_rect
 const char _lua_animation::className[] = "_animation";
@@ -59,6 +62,7 @@ Lunar<_lua_animation>::FunctionType _lua_animation::methods[] = {
 	{ "onFinish" , &_lua_animation::setFinish },
 	{ "start" , &_lua_animation::start },
 	{ "terminate" , &_lua_animation::terminate },
+	{ "pause" , &_lua_animation::pause },
 	LUA_CLASS_FUNC_END
 };
 

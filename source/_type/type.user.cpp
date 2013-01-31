@@ -59,8 +59,8 @@ _user::_user( string folderName ) :
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
-					{ "keyRepetitionDelay" , "35" } ,
-					{ "keyRepetitionSpeed" , "3" } ,
+					{ "keyRepetitionDelay" , "30" } ,
+					{ "keyRepetitionSpeed" , "4" } ,
 					{ "minDragDistance" , "9" } ,
 					{ "maxClickCycles" , "30" } ,
 					{ "maxDoubleClickCycles" , "60" } , 
@@ -100,7 +100,7 @@ _user::_user( string folderName ) :
 	this->wallpaper = _imagefile( _registry::readIndex( "_global_" , "wallpaper" ) );
 	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
 	
-	if( !this->wallpaper.isValid() )
+	if( _registry::readIndex( "_global_" , "wallpaper" ) == "default" )
 		this->wallpaper = BMP_WindowsWallpaper();
 	
 	switch( this->wallpaperView ){
@@ -148,9 +148,8 @@ void _user::setPassword( string pw )
 
 void _user::remove()
 {
-	_direntry* d = new _direntry( "%USERS%/" + this->folderName );
-	d->unlink();
-	delete d;
+	_direntry d = _direntry( "%USERS%/" + this->folderName );
+	d.unlink();
 }
 
 void _user::setUsername( string uN )

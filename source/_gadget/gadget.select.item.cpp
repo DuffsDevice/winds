@@ -7,8 +7,11 @@ _callbackReturn _selectItem::mouseHandler( _event event )
 	_selectItem* that = event.getGadget<_selectItem>();
 	_select* parent = (_select*)that->parent;
 	
-	parent->triggerEvent( _event( onAction ) );
-	parent->setSelected( that->intVal );
+	if( !that->active )
+	{
+		parent->setSelected( that->intVal );
+		parent->triggerEvent( _event( onAction ) );
+	}
 	
 	return handled;
 }
@@ -21,7 +24,7 @@ _callbackReturn _selectItem::refreshHandler( _event event ){
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	

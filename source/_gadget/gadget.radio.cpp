@@ -15,7 +15,7 @@ _callbackReturn _radio::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -63,10 +63,9 @@ _callbackReturn _radio::mouseHandler( _event event )
 	else if( that->pressed && event.getType() == mouseUp )
 	{
 		// Ensure it is not check already
-		if( !that->getIntValue() )
-		{
+		if( that->radiogroup && !that->getIntValue() )
 			that->radiogroup->enableRadio( that );
-		}
+		
 		that->triggerEvent( _event( onChange ) );
 		that->pressed = false;
 	}
@@ -100,5 +99,6 @@ _radio::_radio( _coord x , _coord y , _radiogroup* group , _s32 assocValue , _st
 
 _radio::~_radio()
 {
-	this->radiogroup->removeRadio( this );
+	if( this->radiogroup )
+		this->radiogroup->removeRadio( this );
 }

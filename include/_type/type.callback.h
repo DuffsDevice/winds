@@ -5,12 +5,18 @@
 #include "_type/type.h"
 #include "_type/type.event.h"
 
-enum class _callbackType : _u8 {
+enum class _callbackClassType : _u8 {
 	none,
 	static_func,
 	inline_func,
 	class_func,
 	lua_func
+};
+
+enum class _callbackType : _u8 {
+	voidFunc,
+	intFunc,
+	eventFunc
 };
 
 struct _callbackData
@@ -24,7 +30,7 @@ class _callback
 {
 	protected:
 		
-		virtual _callbackType getType() const = 0;
+		virtual _callbackClassType getType() const = 0;
 		
 		virtual _u8 equals( const _callback& param ) const = 0; // 0 = false ; 1 = true ; -1 = semi-true
 		

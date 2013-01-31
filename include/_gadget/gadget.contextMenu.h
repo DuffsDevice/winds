@@ -7,7 +7,8 @@
 
 typedef map<_s32,string> _contextMenuEntryList;
 
-class _contextMenu : public _gadget{
+class _contextMenu : public _gadget
+{
 	
 	private:
 		
@@ -16,17 +17,18 @@ class _contextMenu : public _gadget{
 		_align			xDir; // can either be left or right
 		_valign			yDir; // Can either bo top or bottom
 		
-		bool			opened;
-		
 	public:
 		
+		// Show
 		void show( _coord x , _coord y );
 		
-		void hide();
+		// Hide
+		void shelve();
 		
+		// Toggle between hidden and shown
 		void toggle( _coord x , _coord y );
 		
-		bool isOpened(){ return this->opened; }
+		bool isOpened(){ return this->parent != nullptr; }
 		
 		void setOwner( _gadget* owner );
 		

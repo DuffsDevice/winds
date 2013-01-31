@@ -1,99 +1,51 @@
-system.require("_window")
-system.require("_button")
 system.require("_bitmap")
 system.require("_animation")
-system.require("_checkbox")
-system.require("_select")
-system.require("_gadget")
-system.require("_direntry")
+system.require("_imagegadget")
 system.require("_event")
-system.require("_counter")
-system.require("_progressbar")
-system.require("_radio")
-system.require("_radiogroup")
-system.require("_dialog")
 
-local w;
-local b;
-local b2;
-local c;
-local r;
-local r2;
-local rg;
-local bar;
+local img;
+local anim;
 
 function main()
-	
-	-- create Gadgets
-	--w = _window( 150 , 80 , 20 , 20 , "A Window!" );
-	--b = _button( 50,10,"Hier Clicken!" );
-	--rg = _radiogroup();
-	--r = _radio( 10 , 10 , rg , 0 );
-	--r2 = _radio( 10 , 20 , rg , 1 );
-	
-	--bar = _progressbar( 35 , 4 , 20 , false );
 
-	-- construct the Tree
-	--w.addChild( b );
-	--w.addChild( bar );
-	--w.addChild( r );
-	--w.addChild( r2 );
-	--system.addChild( w );
-	--w.applyStyle("minimizeable");
-	
-	--local r = _bitmap( 6 , 6 );
-	--r.reset( system.rgb( 24 , 0 , 12 ) );
-	
-	--w.icon = r;
+	-- create an _animation starting at 30, terminating at 150
+	-- and lasting 1.3 seconds (1300ms)
+	anim = _animation( 30 , 150 , 2500 );
 
-	-- register Handler-Functions
-	--b.registerEventHandler( "onAction" , clickHandler );
+	-- we want it to use a special easing function
+	anim.easing = "bounce:easeOut";
+
+	-- tell it which function to call every frame
+	anim.onSet( setter );
+
+	-- create a red _bitmap
+	local bmp = _bitmap( 10 , 10 );
+	bmp.reset( system.rgb( 31 , 0 , 0 ) );
+
+	-- create an _imagegadget, that we want to animate
+	img = _imagegadget( 120 , 30 , bmp );
+
+	system.addChild( img );
 	
-	--local dir = _direntry("/fat.h")
-	--dir.create()
-	
-	a = _animation( 0 , 50 , 700 );
-	a.easing = "bounce:easeOut";
-	a.onSet( setter );
+	img.registerEventHandler( "keyClick" , handler );
 
 end
 
--- clickHandler to handle Click Events on Button1
-function clickHandler()
-	a.start();
-	--dialog();
-	b2 = _button( math.random( 40 ) , 45 , " rfdv" )
-	rg.intValue = math.random( 0 , 1 );
-	---b2 = _button( 40 , 10 , "ewf" )
-	b2.registerEventHandler( "onAction" , noel );
-	w.addChild( b2 )
-	return "handled"
-end
-
-function noel()
-	if system.keyboardIsOpened() then
-		system.keyboardClose()
-	else
-		system.keyboardOpen()
+function handler( event )
+	if event.keyCode == 1 then
+		--Key A!
+		if anim.runs then
+			anim.pause()
+		else
+			anim.start()
+		end
+	elseif event.keyCode == 2 then
+		--Key B!
+		anim.terminate();
 	end
 end
 
-local dia;
-
-function diaCB( res )
-	print("Hello From LUA!" .. res );
-end
-
-function dialog()
-	dia = _dialog();
-	bmp = _bitmap( 20 , 20 );
-	bmp.fill( system.rgb( 13,0 , 24 ) );
-	bmp.drawLine( 1 , 1 , 5 , 14 , system.rgb( 31 , 31 , 0 ) );
-	dia.imageDialog( "Evil Monkeys!!!" , "Error" , bmp , "Dismiss!" , "Retry" );
-	dia.execute();
-	dia.onExit( diaCB );
-end
-
-function setter( i )
-	b.y = i;
+function setter( value )
+	-- Set y-Coordinate of our little red square
+	img.y = value;
 end

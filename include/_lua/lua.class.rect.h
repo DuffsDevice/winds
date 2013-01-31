@@ -62,8 +62,8 @@ class _lua_rect : public _rect {
 		//! fromCoords
 		int fromCoords(lua_State* L);
 		
-		//! relativate
-		int relativate(lua_State* L);
+		//! toRelative
+		int toRelative(lua_State* L);
 		
 		//! clipToIntersect
 		int clipToIntersect(lua_State* L);

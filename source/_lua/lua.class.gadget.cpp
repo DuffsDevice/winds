@@ -9,6 +9,8 @@
 #include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.checkbox.h"
+#include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.radio.h"
@@ -24,23 +26,28 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 	
 	_lua_gadget* tmp;
 
-	if( ( tmp = Lunar<_lua_window>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_window >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_button>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_button >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_checkbox>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_checkbox >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_select>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_select >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_textbox>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_textbox >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_counter>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_counter >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_progressbar>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_progressbar >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar<_lua_radio>::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_radio >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	return Lunar<_lua_gadget>::check( L , 2 );
+	if( ( tmp = Lunar< _lua_imagegadget >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar< _lua_scrollArea >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	
+	return Lunar<_lua_gadget>::check( L , narg );
 }
 
 _lua_gadget::_lua_gadget( _gadget* w )
@@ -259,6 +266,12 @@ int _lua_gadget::isMinimizeable(lua_State* L){ lua_pushboolean( L , this->gadget
 
 //! isMaximized
 int _lua_gadget::isMaximized(lua_State* L){ lua_pushboolean( L , this->gadget->isMaximized() ); return 1; }
+
+//! hasSmallDragTrig
+int _lua_gadget::hasSmallDragTrig(lua_State* L){ lua_pushboolean( L , this->gadget->hasSmallDragTrig() ); return 1; }
+
+//! isMouseClickRepeat
+int _lua_gadget::isMouseClickRepeat(lua_State* L){ lua_pushboolean( L , this->gadget->isMouseClickRepeat() ); return 1; }
 
 //! hasFocus
 int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }
