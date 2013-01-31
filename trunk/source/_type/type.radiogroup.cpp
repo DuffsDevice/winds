@@ -1,16 +1,18 @@
 #include "_type/type.radiogroup.h"
 
 void _radiogroup::removeRadio( _radio* radio )
-{	
+{
+	auto end = radios.end();
 	auto iter = radios.begin();
 	
 	// Cache the "end()" ->faster
-	for( auto end = radios.end() ; iter != end ; iter++ )
+	for( ; iter != end ; iter++ )
 		if( iter->second == radio )
 			break;
 	
-	if( iter != this->radios.end() )
+	if( iter != end )
 		this->radios.erase( iter );
+	
 	radio->radiogroup = nullptr;
 }
 
@@ -23,12 +25,12 @@ void _radiogroup::addRadio( _radio* radio , _s32 assocValue )
 		radio->radiogroup->removeRadio( radio );
 	
 	if( assocValue != -1 )
-		// Cache the "end()" ->faster
 		this->radios[assocValue] = radio;
 	else
 	{
 		int i = -1;
-		// Look for ne entry
+		
+		// Look for empty entry
 		while( this->radios.count( ++i ) != 0 );
 		
 		// Push new entry
@@ -40,28 +42,28 @@ void _radiogroup::addRadio( _radio* radio , _s32 assocValue )
 
 void _radiogroup::enableRadio( _radio* radio )
 {
-	auto iter = radios.begin();
+	if( this->activeRadio )
+		this->activeRadio->setIntValue( 0 );
 	
-	// Cache the "end()" ->faster
-	for( auto end = radios.end() ; iter != end ; iter++ )
-		if( iter->second == radio )
-			break;
+	if( !radio )
+		return;
 	
-	if( iter != this->radios.end() )
-		this->setIntValue( iter->first );
+	this->activeRadio = radio;
+	this->activeRadio->setIntValue( 1 );
 }
 
 void _radiogroup::setIntValue( _s32 value )
 {
-	_radio* rd = this->radios[value];
+	_map<_s32,_radio*>::iterator iter = this->radios.find( value );
 	
 	if( this->activeRadio )
 		this->activeRadio->setIntValue( 0 );
 	
-	if( !rd )
+	// Check for validity
+	if( iter == this->radios.end() || !(iter->second) || value )
 		return;
 	
-	this->activeRadio = rd;
+	this->activeRadio = iter->second;
 	this->activeRadio->setIntValue( 1 );
 }
 

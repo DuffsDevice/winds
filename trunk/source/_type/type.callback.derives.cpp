@@ -8,19 +8,37 @@
 //
 
 void _staticCallback::operator()() const {
-	if( this->voidFn )
+	if( this->funcType == _callbackType::voidFunc && this->voidFn )
 		this->voidFn();
 }
 
 int _staticCallback::operator()( int i ) const {
 	if( this->intFn )
-		return this->intFn( i );
+	{
+		if( this->funcType == _callbackType::intFunc)
+			return this->intFn( i );
+		
+		// Allow calling an event Handler which is actually a void function
+		else if( this->funcType == _callbackType::voidFunc )
+			this->voidFn();
+		return 0;
+	}
 	return -1;
 }
 
 _callbackReturn _staticCallback::operator()( _event e ) const {
 	if( this->eventFn )
-		return this->eventFn( e );
+	{
+		if( this->funcType == _callbackType::eventFunc )
+			return this->eventFn( e );
+		
+		// Allow calling an event Handler which is actually a void function
+		else if( this->funcType == _callbackType::voidFunc )
+			this->voidFn();
+		
+		return handled;
+	}
+	
 	return not_handled;
 }
 
@@ -36,13 +54,33 @@ void _classCallback::operator()() const {
 
 int _classCallback::operator()( int i ) const {
 	if( this->intFn && this->instance )
-		return (instance->*intFn)( i );
+	{
+		if( this->funcType == _callbackType::intFunc )
+			return (this->instance->*intFn)( i );
+		
+		// Allow calling an event Handler which is actually a void function
+		else if( this->funcType == _callbackType::voidFunc )
+			(this->instance->*voidFn)();
+		
+		return 0;
+	}
+	
 	return -1;
 }
 
 _callbackReturn _classCallback::operator()( _event e ) const {
 	if( this->eventFn && this->instance )
-		return (instance->*eventFn)( e );
+	{
+		if( this->funcType == _callbackType::eventFunc )
+			return (this->instance->*eventFn)( e );
+		
+		// Allow calling an event Handler which is actually a void function
+		else if( this->funcType == _callbackType::voidFunc )
+			(this->instance->*voidFn)();
+		
+		return handled;
+	}
+	
 	return not_handled;
 }
 
@@ -58,12 +96,28 @@ void _inlineCallback::operator()() const {
 int _inlineCallback::operator()( int i ) const {
 	if( this->intFn )
 		return this->intFn( i );
+		
+	// Allow calling an event Handler which is actually a void function
+	if( this->voidFn )
+	{
+		this->voidFn();
+		return 0;
+	}
+	
 	return -1;
 }
 
 _callbackReturn _inlineCallback::operator()( _event e ) const {
 	if( this->eventFn )
 		return this->eventFn( e );
+		
+	// Allow calling an event Handler which is actually a void function
+	else if( this->voidFn )
+	{
+		this->voidFn();
+		return handled;
+	}
+	
 	return not_handled;
 }
 

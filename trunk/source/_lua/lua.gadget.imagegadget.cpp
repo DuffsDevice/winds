@@ -1,7 +1,7 @@
 #include "_lua/lua.gadget.imagegadget.h"
 
 /*##################################
-##        Lua-Imagegadget         ##
+##           Lua-Window           ##
 ##################################*/
 
 _lua_imagegadget::_lua_imagegadget( lua_State* L ) : 
@@ -14,7 +14,7 @@ int _lua_imagegadget::setImage( lua_State* L ){
 }
 
 int _lua_imagegadget::getImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap*>( &((_imagegadget*)_lua_gadget::gadget)->getImage() ) ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( &((_imagegadget*)_lua_gadget::gadget)->getImage() ) );
 	return 1;
 }
 

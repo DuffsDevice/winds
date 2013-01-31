@@ -41,7 +41,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	if( held )
 	{
 		
-		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
+		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y ).setCurrentKeyCodes( _system::getCurrentKeys() );
 			
 		//! Check if this is the first Cycle the pen is down
 		if( this->touchCycles == 0 )
@@ -80,6 +80,10 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			_u32 dragDistance = xd * xd + yd * yd;
 			_u8 trigger = user->mDD;
 			
+			// For gadgets with a small dragging Trigger e.g. scrollBars
+			if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->hasSmallDragTrig() )
+				trigger /= 3;
+			
 			// Check if Pen has moved the distance already
 			if( dragDistance > trigger * trigger )
 			{
@@ -93,7 +97,12 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				this->lastTouch = this->startTouch;	
 			}
 		}
+		//printf("\x1b[2J");
+		//printf("G: %s : %d",gadgetType2string[ _system::_lastClickedGadget_->getType() ].c_str(), _system::_lastClickedGadget_->isMouseClickRepeat() );
 		
+		// If the current clicked gadget wants to have mouseClicks Repeating
+		if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( user->kRD && this->touchCycles > user->kRD && this->touchCycles % user->kRS == 0 ) )
+			_system::_lastClickedGadget_->handleEvent( event.setType( mouseClick ) );
 		
 		// Increase Cycles
 		this->touchCycles++;
@@ -104,6 +113,9 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		// Set the Event-Parameter
 		_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
 		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y );		
+		
+		// Trigger the Event
+		this->handleEvent( event.setType( mouseUp ) );
 		
 		//! Maybe DragStop-Event?
 		if( this->isDragging )
@@ -136,9 +148,6 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				this->cyclesLastClick = 1;
 			}
 		}
-		
-		// Trigger the Event
-		this->handleEvent( event.setType( mouseUp ) );
 		
 		touchBefore = lastTouch;
 		

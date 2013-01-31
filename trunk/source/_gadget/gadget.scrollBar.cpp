@@ -10,7 +10,9 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	_gadget( _gadgetType::scrollbar , dim == _dimension::horizontal ? gadgetLength : 8 ,  dim == _dimension::vertical ? gadgetLength : 8  , x , y , style ) ,
 	value( 0 ) , length( length ) , length2( length2 ) , step( 1 ) , dim( dim ) , anim( 0 , 1 , 600 )
 {
-	anim.setEasing( _animation::_cubic::easeInOut );
+	this->anim.setEasing( _animation::_cubic::easeInOut );
+	this->anim.setter( new _classCallback( this , &_scrollBar::setValue ) );
+	
 	if( dim == _dimension::horizontal )
 	{
 		this->dragHandle = new _scrollButton( 8 , 8 , 8 , 0 , _scrollButtonType::buttonHandleX );
@@ -37,7 +39,7 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->higherHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
 	this->lowerHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
 	
-	//! Re-refresh the Buttons with the new event-handlers
+	//! Re-refresh the Buttons with their new refresh-handlers
 	this->dragHandle->refreshBitmap();
 	this->higherHandle->refreshBitmap();
 	this->lowerHandle->refreshBitmap();
@@ -45,12 +47,19 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	//! Refresh my cached values
 	refreshHandleWidth();
 	
-	//! Add Buttons
+	// Add Buttons
 	this->addChild( this->dragHandle );
 	this->addChild( this->higherHandle );
 	this->addChild( this->lowerHandle );
 	
 	this->refreshBitmap();
+}
+
+_scrollBar::~_scrollBar()
+{
+	delete this->dragHandle;
+	delete this->higherHandle;
+	delete this->lowerHandle;
 }
 
 int _scrollBar::setValue( int val )
@@ -78,7 +87,6 @@ void _scrollBar::setValue( _u32 val , bool ease )
 		this->anim.terminate();
 		this->anim.setFromValue( this->value );
 		this->anim.setToValue( mid( 0 , (int)val , int( this->length2 - this->length ) ) );
-		this->anim.setter( new _classCallback( this , &_scrollBar::setValue ) );
 		this->anim.start();
 	}
 	else
@@ -120,9 +128,9 @@ void _scrollBar::refreshHandleWidth()
 	if( this->length >= this->length2 )
 	{
 		if( this->dim == _dimension::horizontal )
-			this->dragHandle->setWidth( max( 1 , int( this->dimensions.width - 15 ) ) );
+			this->dragHandle->setWidth( int( this->dimensions.width - 15 ) );
 		else
-			this->dragHandle->setWidth( max( 1 , int( this->dimensions.height - 15 ) ) );
+			this->dragHandle->setHeight( int( this->dimensions.height - 15 ) );
 		return;
 	}
 		
@@ -188,7 +196,7 @@ _callbackReturn _scrollBar::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -226,44 +234,6 @@ void _scrollBar::refreshPosition()
 		this->dragHandle->setX( 8 + ( perc * ( this->dimensions.width - 14 + this->cache ) >> 8 ) );
 	else
 		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 14 + this->cache ) >> 8 ) );
-}
-
-void _scrollBar::setDimension( _dimension dim )
-{
-	if( dim == this->dim )
-		return;
-	
-	this->dim = dim;
-	
-	this->unregisterEventHandler( onResize );
-	
-	if( dim == _dimension::horizontal )
-	{
-		this->setWidth( this->dimensions.height );
-		this->setHeight( 8 );
-		this->dragHandle->setDimensions( _rect( 8 , 0 , 8 , 8 ) );
-		this->dragHandle->setStyle( _style::storeInt( 0 ) );
-		this->higherHandle->moveTo( this->dimensions.width - 8 , 0 );
-		this->higherHandle->setStyle( _style::storeInt( 2 ) );
-		this->lowerHandle->setStyle( _style::storeInt( 1 ) );
-	}
-	else
-	{
-		this->setHeight( this->dimensions.width );
-		this->setWidth( 8 );
-		this->dragHandle->setDimensions( _rect( 0 , 8 , 8 , 8 ) );
-		this->dragHandle->setStyle( _style::storeInt( 3 ) );
-		this->higherHandle->moveTo( 0 , this->dimensions.height - 8 );
-		this->higherHandle->setStyle( _style::storeInt( 4 ) );
-		this->lowerHandle->setStyle( _style::storeInt( 5 ) );
-	}
-	
-	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );
-	
-	refreshHandleWidth();
-	refreshPosition();
-	
-	this->bubbleRefresh( true );
 }
 
 void _scrollBar::setLength( _u32 value )

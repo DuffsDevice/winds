@@ -11,25 +11,30 @@
 
 class unknownClass;
 
-extern void lua_callVoidFn( lua_State* L , int handler );
-extern int lua_callIntFn( lua_State* L , int handler , int i );
-extern _callbackReturn lua_callEventFn( lua_State* L , int handler , _event e );
-extern int lua_checkFunction( lua_State* L , int narg );
-extern void lua_popFunction( lua_State* L , int index );
+extern void 			lua_callVoidFn( lua_State* L , int handler );
+extern int 				lua_callIntFn( lua_State* L , int handler , int i );
+extern _callbackReturn 	lua_callEventFn( lua_State* L , int handler , _event e );
+extern int 				lua_checkFunction( lua_State* L , int narg );
+extern void 			lua_popFunction( lua_State* L , int index );
 
 class _staticCallback : public _callback
 {
 	private:
 		
-		void 			(*voidFn)();
-		int 			(*intFn)( int );
-		_callbackReturn (*eventFn)( _event );
+		union{
+			void 			(*voidFn)();
+			int 			(*intFn)( int );
+			_callbackReturn (*eventFn)( _event );
+		};
+		_callbackType		funcType;
 		
-		_callbackType getType() const { return _callbackType::static_func; }
+		// Internal
+		_callbackClassType getType() const { return _callbackClassType::static_func; }
 		
+		// Internal
 		_u8 equals( const _callback& param ) const
 		{
-			return !( ((_staticCallback&)param).voidFn != this->voidFn || ((_staticCallback&)param).intFn != this->intFn || ((_staticCallback&)param).eventFn != this->eventFn );
+			return ((_staticCallback&)param).voidFn == this->voidFn;
 		}
 		
 	public:
@@ -38,23 +43,11 @@ class _staticCallback : public _callback
 		int operator()( int i ) const ;
 		_callbackReturn operator()( _event e ) const ;
 		
-		_staticCallback( void (*voidFn)() ) :
-			voidFn( voidFn )
-			, intFn( nullptr )
-			, eventFn( nullptr )
-		{}
+		_staticCallback( void (*voidFn)() ) : voidFn( voidFn ) , funcType( _callbackType::voidFunc ) {}
 		
-		_staticCallback( int (*intFn)( int ) ) :
-			voidFn( nullptr )
-			, intFn( intFn )
-			, eventFn( nullptr )
-		{}
+		_staticCallback( int (*intFn)( int ) ) : intFn( intFn ) , funcType( _callbackType::intFunc ) {}
 		
-		_staticCallback( _callbackReturn (*eventFn)( _event ) ) :
-			voidFn( nullptr )
-			, intFn( nullptr )
-			, eventFn( eventFn )
-		{}
+		_staticCallback( _callbackReturn (*eventFn)( _event ) ) : eventFn( eventFn ) , funcType( _callbackType::eventFunc ) {}
 
 };
 
@@ -65,15 +58,20 @@ class _classCallback : public _callback
 		
 		unknownClass* instance;
 		
-		void 			(unknownClass::*voidFn)();
-		int 			(unknownClass::*intFn)( int );
-		_callbackReturn (unknownClass::*eventFn)( _event );
+		union{
+			void 			(unknownClass::*voidFn)();
+			int 			(unknownClass::*intFn)( int );
+			_callbackReturn (unknownClass::*eventFn)( _event );
+		};
+		_callbackType		funcType;
 		
-		_callbackType getType() const { return _callbackType::class_func; }
+		// Internal
+		_callbackClassType getType() const { return _callbackClassType::class_func; }
 		
+		// Internal
 		_u8 equals( const _callback& param ) const 
 		{
-			return !( ((_classCallback&)param).voidFn != this->voidFn || ((_classCallback&)param).intFn != this->intFn || ((_classCallback&)param).eventFn != this->eventFn );
+			return ((_classCallback&)param).voidFn == this->voidFn;
 		}
 		
 	public:
@@ -86,24 +84,21 @@ class _classCallback : public _callback
 		_classCallback( T* ptr , void (T::*voidFn)() ) :
 			instance( reinterpret_cast<unknownClass*>(ptr) )
 			, voidFn( reinterpret_cast<void (unknownClass::*)()>(voidFn) )
-			, intFn( nullptr )
-			, eventFn( nullptr )
+			, funcType( _callbackType::voidFunc )
 		{}
 		
 		template<typename T>
 		_classCallback( T* ptr , int (T::*intFn)( int ) ) :
 			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, voidFn( nullptr )
 			, intFn( reinterpret_cast<int (unknownClass::*)( int )>(intFn) )
-			, eventFn( nullptr )
+			, funcType( _callbackType::intFunc )
 		{}
 		
 		template<typename T>
 		_classCallback( T* ptr , _callbackReturn (T::*eventFn)( _event ) ) :
 			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, voidFn( nullptr )
-			, intFn( nullptr )
 			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(eventFn) )
+			, funcType( _callbackType::eventFunc )
 		{}
 
 };
@@ -116,8 +111,10 @@ class _inlineCallback : public _callback
 		function<int(int)>					intFn;
 		function<_callbackReturn(_event)>	eventFn;
 		
-		_callbackType getType() const { return _callbackType::inline_func; }
+		// Internal
+		_callbackClassType getType() const { return _callbackClassType::inline_func; }
 		
+		// Internal
 		_u8 equals( const _callback& param ) const
 		{
 			return true;
@@ -156,8 +153,10 @@ class _luaCallback : public _callback
 		lua_State* 		state;
 		int 			index;
 		
-		_callbackType getType() const { return _callbackType::lua_func; }
+		// Internal
+		_callbackClassType getType() const { return _callbackClassType::lua_func; }
 		
+		// Internal
 		_u8 equals( const _callback& param ) const ;
 		
 		friend class _progLua;

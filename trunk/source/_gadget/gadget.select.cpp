@@ -11,7 +11,7 @@ _callbackReturn _select::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -36,6 +36,12 @@ _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMen
 	this->refreshList();
 }
 
+_select::~_select()
+{
+	// Remove and delet 'em all
+	this->removeChildren( true );
+}
+
 void _select::setSelected( _s32 val )
 {
 	if( val != this->selected )
@@ -50,7 +56,7 @@ void _select::setSelected( _s32 val )
 	}
 }
 
-void	_select::refreshList()
+void _select::refreshList()
 {
 	this->removeChildren( true );
 	

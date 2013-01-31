@@ -160,16 +160,7 @@ class _direntry{
 		//! Check if the File at 'filename' exists
 		virtual bool isExisting(){ return this->exists; }
 		
-		_direntry& operator=( _direntry other ){
-			this->close();
-			this->filename = other.filename;
-			this->name = other.name;
-			this->extension = other.extension;
-			this->stat_buf = other.stat_buf;
-			this->mimeType = other.mimeType;
-			this->mode = _direntryMode::closed;
-			return *this;
-		}
+		_direntry& operator=( _direntry other );
 		
 		//! Get cwd
 		static string getWorkingDirectory();

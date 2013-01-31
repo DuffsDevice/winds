@@ -11,8 +11,6 @@ class _keyboardButton : public _button {
 		_key key;
 		
 		static _callbackReturn  mouseHandler( _event );
-		
-		void init();
 	
 	public:
 		

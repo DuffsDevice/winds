@@ -2,9 +2,9 @@
 #ifndef _WIN_T_BITMAP_
 #define _WIN_T_BITMAP_
 
-#include "type.h"
-#include "type.font.h"
-#include "type.rect.h"
+#include "_type/type.h"
+#include "_type/type.font.h"
+#include "_type/type.rect.h"
 #include "func.memory.h"
 
 class _font;
@@ -44,8 +44,8 @@ class _bitmap
 		**/
 		_bitmap( _pixelArray base , _length w , _length h ) :
 			bmp( base )
-			, width( w )
-			, height( h )
+			, width( max( 1 , int(w) ) )
+			, height( max( 1 , int(h) ) )
 			, wasAllocated( false )
 		{
 			this->resetClippingRect();
@@ -58,8 +58,8 @@ class _bitmap
 		 * @return void
 		**/
 		_bitmap( _length w , _length h ) :
-			width( w )
-			, height( h )
+			width( max( 1 , int(w) ) )
+			, height( max( 1 , int(h) ) )
 			, wasAllocated( true )
 		{
 			this->bmp = new _pixel[w*h];
@@ -121,7 +121,7 @@ class _bitmap
 		 * Check if a bitmap has valid attributes
 		 * @return bool
 		**/
-		bool isValid() const { return !( !this->bmp || !this->width || !this->height ); }
+		bool isValid() const { return this->bmp != nullptr; }
 		
 		/**
 		 * Copy Bitmap (copy its data onto mine)
@@ -169,6 +169,8 @@ class _bitmap
 		 * @param bmp Pointer to the bitmap data
 		**/
 		void setBitmap( _pixelArray bmp ){
+			this->destruct();
+			this->wasAllocated = false;
 			this->bmp = bmp;
 		}
 		
@@ -255,11 +257,9 @@ class _bitmap
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location
 		**/
-		private:
 		_pixel getPixelUnsafe( _coord x , _coord y ) const {
 			return this->bmp[ y * this->width + x ];
 		}
-		public:
 		
 		/**
 		 * Set the Pixel at a specific location
@@ -289,11 +289,9 @@ class _bitmap
 		 * @param color Color of the Pixel to set
 		 * @return void
 		**/
-		private:
 		void drawPixelUnsafe( _coord x , _coord y , _pixel color ){
 			this->bmp[y * this->width + x] = color;
 		}
-		public:
 		
 		/**
 		 * Erase the whole bmp
@@ -385,13 +383,7 @@ class _bitmap
 		 * @param color Color of the Rect
 		 * @return void
 		**/
-		void drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
-		{
-			this->drawVerticalLine( x , y , --h , color );
-			this->drawVerticalLine( x + --w  , y + 1 , h , color );
-			this->drawHorizontalLine( x + 1, y , w , color );
-			this->drawHorizontalLine( x , y + h  , w , color );
-		}
+		void drawRect( _coord x , _coord y , _length w , _length h , _pixel color );
 		
 		/**
 		 * Draw a filled Rectangle onto the bmp
@@ -554,11 +546,15 @@ class _bitmap
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		**/
-		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = rc; }
-		
 		void setClippingRect( _rect rc ){
-			this->activeClippingRect = _rect::fromCoords( rc.x < 0 ? 0 : rc.x , rc.y < 0 ? 0 : rc.y , min( rc.getX2() , _coord( this->width ) ) , min( rc.getY2() , _coord( this->height ) ) );
+			this->activeClippingRect = _rect::fromCoords( 
+				rc.x < 0 ? 0 : rc.x // x
+				, rc.y < 0 ? 0 : rc.y // y
+				, min( rc.getX2() , _coord( this->width ) ) // x2
+				, min( rc.getY2() , _coord( this->height ) ) // y2
+			);
 		}
+		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = rc; }
 		
 		/**
 		 * Get the active ClippingRect
@@ -573,7 +569,10 @@ class _bitmap
 		 * @return void
 		**/
 		void resetClippingRect(){
-			this->activeClippingRect = _rect( 0 , 0 , this->width , this->height );
+			this->activeClippingRect.x = 0;
+			this->activeClippingRect.y = 0;
+			this->activeClippingRect.width = this->width;
+			this->activeClippingRect.height = this->height;
 		}
 		
 		/**
@@ -584,6 +583,7 @@ class _bitmap
 		 * @param s16 bottom Bottom side of the Rectangle to check
 		 * @return bool Whether it is visible (true) or not (false)
 		**/
+		private:
 		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const ;
 		public:
 };

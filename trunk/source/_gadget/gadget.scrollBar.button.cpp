@@ -53,22 +53,23 @@ void drawArrow( _bitmapPort& bP , _scrollButtonType dir )
 	#pragma GCC diagnostic warning "-Wmaybe-uninitialized"
 }
 
-_callbackReturn _scrollButton::refreshHandler( _event event ) {
-	
+_callbackReturn _scrollButton::refreshHandler( _event event )
+{
 	// Receive Gadget
 	_scrollButton* that = event.getGadget<_scrollButton>();
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	//printf("Hello:%d",that->type);
+	_length myHH = myH >> 1; // Half Height
+	_length myHW = myW >> 1; // Half Width
 	
 	switch( that->type )
 	{
@@ -76,12 +77,14 @@ _callbackReturn _scrollButton::refreshHandler( _event event ) {
 		case _scrollButtonType::buttonLeft :
 		case _scrollButtonType::buttonRight :
 		case _scrollButtonType::buttonBottom :
-		
 			if( that->isPressed() )
 				bP.copy( 0 , 0 , btn_background_pressed  );
 			else
 				bP.copy( 0 , 0 , btn_background_released  );
+			
+			// Draw Blue Arrow on top of button
 			drawArrow( bP , that->type );
+			
 			break;
 		case _scrollButtonType::buttonHandleY :
 			
@@ -103,19 +106,19 @@ _callbackReturn _scrollButton::refreshHandler( _event event ) {
 					bP.normalizeClippingRects();
 					if( myH < 12 )
 					{
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 60975 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 60975 );
+						bP.drawHorizontalLine( 2 , myHH - 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH - 1 , 4 , 60975 );
+						bP.drawHorizontalLine( 2 , myHH     , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH + 1 , 4 , 60975 );
 					}
 					else
 					{
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 60975 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 60975 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 60975 );
+						bP.drawHorizontalLine( 2 , myHH - 3 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH - 2 , 4 , 60975 );
+						bP.drawHorizontalLine( 2 , myHH - 1 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH     , 4 , 60975 );
+						bP.drawHorizontalLine( 2 , myHH + 1 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH + 2 , 4 , 60975 );
 					}
 				}
 			}
@@ -137,19 +140,19 @@ _callbackReturn _scrollButton::refreshHandler( _event event ) {
 					bP.normalizeClippingRects();
 					if( myH < 12 )
 					{
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , 61074 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , 61074 );
+						bP.drawHorizontalLine( 2 , myHH - 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH - 1 , 4 , 61074 );
+						bP.drawHorizontalLine( 2 , myHH     , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH + 1 , 4 , 61074 );
 					}
 					else
 					{
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 3 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 2 , 4 , 61074 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) - 1 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) , 4 , 61074 );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 1 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawHorizontalLine( 2 , ( myH >> 1 ) + 2 , 4 , 61074 );
+						bP.drawHorizontalLine( 2 , myHH - 3 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH - 2 , 4 , 61074 );
+						bP.drawHorizontalLine( 2 , myHH - 1 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH     , 4 , 61074 );
+						bP.drawHorizontalLine( 2 , myHH + 1 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawHorizontalLine( 2 , myHH + 2 , 4 , 61074 );
 					}
 				}
 			}
@@ -174,19 +177,19 @@ _callbackReturn _scrollButton::refreshHandler( _event event ) {
 					bP.normalizeClippingRects();
 					if( myW < 12 )
 					{
-						bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 60975 );
-						bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 60975 );
+						bP.drawVerticalLine( myHW - 2 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawVerticalLine( myHW - 1 , 2 , 4 , 60975 );
+						bP.drawVerticalLine( myHW     , 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawVerticalLine( myHW + 1 , 2 , 4 , 60975 );
 					}
 					else
 					{
-						bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 60975 );
-						bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 60975 );
-						bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 60975 );
+						bP.drawVerticalLine( myHW - 3 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawVerticalLine( myHW - 2 , 2 , 4 , 60975 );
+						bP.drawVerticalLine( myHW - 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawVerticalLine( myHW     , 2 , 4 , 60975 );
+						bP.drawVerticalLine( myHW + 1 , 2 , 4 , RGB( 25 , 25 , 31 ) );
+						bP.drawVerticalLine( myHW + 2 , 2 , 4 , 60975 );
 					}
 				}
 			}
@@ -208,19 +211,19 @@ _callbackReturn _scrollButton::refreshHandler( _event event ) {
 					bP.normalizeClippingRects();
 					if( myW < 12 )
 					{
-						bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , 61074 );
-						bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , 61074 );
+						bP.drawVerticalLine( myHW - 2 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawVerticalLine( myHW - 1 , 2 , 4 , 61074 );
+						bP.drawVerticalLine( myHW     , 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawVerticalLine( myHW + 1 , 2 , 4 , 61074 );
 					}
 					else
 					{
-						bP.drawVerticalLine( ( myW >> 1 ) - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) - 2 , 2 , 4 , 61074 );
-						bP.drawVerticalLine( ( myW >> 1 ) - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) , 2 , 4 , 61074 );
-						bP.drawVerticalLine( ( myW >> 1 ) + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
-						bP.drawVerticalLine( ( myW >> 1 ) + 2 , 2 , 4 , 61074 );
+						bP.drawVerticalLine( myHW - 3 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawVerticalLine( myHW - 2 , 2 , 4 , 61074 );
+						bP.drawVerticalLine( myHW - 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawVerticalLine( myHW     , 2 , 4 , 61074 );
+						bP.drawVerticalLine( myHW + 1 , 2 , 4 , RGB( 29 , 29 , 31 ) );
+						bP.drawVerticalLine( myHW + 2 , 2 , 4 , 61074 );
 					}
 				}
 			}

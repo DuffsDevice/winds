@@ -1,6 +1,3 @@
-#ifndef _FONT_COURIERNEW_
-#define _FONT_COURIERNEW_
-
 #include "_resource/FONT_CourierNew10.h"
 
 const _u16 FONT_CourierNew10_data[355] = {
@@ -124,12 +121,10 @@ FONT_CourierNew10::FONT_CourierNew10( unsigned char fixedWidth )
 	33,
 	126,
 	10, // Height
-	6, // Main-Height
+	7, // Main-Height
 	FONT_CourierNew10_data,
 	FONT_CourierNew10_width,
 	FONT_CourierNew10_offset,
 	fixedWidth,
 	4
 ) {}
-
-#endif

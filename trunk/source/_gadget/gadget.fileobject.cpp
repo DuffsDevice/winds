@@ -1,4 +1,5 @@
 #include "_gadget/gadget.fileObject.h"
+#include "_gadget/gadget.imagegadget.h"
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
 
@@ -69,19 +70,25 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			this->label->setHeight( _system::_runtimeAttributes_->user->fOH );
 			this->label->setVAlign( _valign::middle );
 			
-			const _bitmap& fileIcon = file.getFileImage();
-			
-			// Set Icon
-			this->icon = new _imagegadget( 5 - ( fileIcon.getWidth() >> 1 ) , ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) , fileIcon );
-			
 			// Resize
 			_rect dim = this->getDimensions();
 			dim.width = this->label->getWidth() + 12;
 			this->setDimensions( dim );
 			
-			// Add Child
+			// Add Label
 			this->addChild( this->label );
-			this->addChild( this->icon );
+			
+			// Set Icon
+			const _bitmap& fileIcon = file.getFileImage();
+			
+			_imagegadget* img = new _imagegadget( 
+				5 - ( fileIcon.getWidth() >> 1 ) // X
+				, ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
+				, fileIcon // Bitmap
+			);
+			
+			this->addChild( img );
+			
 			break;
 		}
 		default:
@@ -90,4 +97,9 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	
 	// Refresh...
 	this->refreshBitmap();
+}
+
+_fileobject::~_fileobject()
+{
+	this->removeChildren( true );
 }

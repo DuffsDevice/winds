@@ -62,8 +62,11 @@ class _styleAttr
 		static const _pStyleAttr<( 1 << 7 )> 		canReceiveFocus;
 		static const _nStyleAttr<( 1 << 7 )> 		canNotReceiveFocus;
 		
-		static const _pStyleAttr<( 1 << 8 )> 		defaultDragTrig;
-		static const _nStyleAttr<( 1 << 8 )> 		smallDragTrig;
+		static const _nStyleAttr<( 1 << 8 )> 		defaultDragTrig;
+		static const _pStyleAttr<( 1 << 8 )> 		smallDragTrig;
+		
+		static const _nStyleAttr<( 1 << 9 )> 		mouseClickDefault;
+		static const _pStyleAttr<( 1 << 9 )> 		mouseClickRepeat;
 };
 
 
@@ -91,8 +94,9 @@ struct _style
 			bool	canLooseFocus : 1;	/** Can be blurred */
 			bool	canReceiveFocus : 1;/** Can receive focus */
 			bool	smallDragTrig : 1;
+			bool	mouseClickRepeat : 1;
 			_u8		unused1 : 4;
-			_u8		unused2 : 3;
+			_u8		unused2 : 2;
 		} __attribute__(( packed )) ;
 	};
 	

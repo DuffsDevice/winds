@@ -23,6 +23,7 @@ _callbackReturn _windowsStartButton::mouseHandler( _event event ){
 	
 	this->startMenu->toggle( this->getAbsoluteX() , this->getAbsoluteY() );
 	
+	// Let the button handle the rest of the mouseDown event
 	return _button::mouseHandler( event );
 
 }
@@ -37,7 +38,7 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -60,7 +61,7 @@ _windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
 	st.canTakeFocus = false;
 	st.canReceiveFocus = false;
 	this->setStyle( st );
-	this->registerEventHandler( onAction , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
+	this->registerEventHandler( mouseDown , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_windowsStartButton::refreshHandler ) );
 	this->startMenu->registerEventHandler( onClose , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
 	
@@ -76,6 +77,7 @@ _callbackReturn _windowsTaskButton::mouseHandler( _event event ){
 	// Receive Gadget
 	_windowsTaskButton* that = event.getGadget<_windowsTaskButton>();
 	
+	
 	if( that->reference->isMinimized() )
 	{
 		that->reference->restore();
@@ -86,8 +88,7 @@ _callbackReturn _windowsTaskButton::mouseHandler( _event event ){
 	else
 		that->reference->handleEvent( focus );
 	
-	return _button::mouseHandler( event );
-
+	return handled;
 }
 
 _callbackReturn _windowsTaskButton::refreshHandler( _event event )
@@ -98,14 +99,9 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
-	
-	//if( that->isPressed() || that->startMenu->isOpened() )
-	//	bP.copy( 0 , 0 , that->startButtonPressed );
-	//else
-	//	bP.copy( 0 , 0 , that->startButton );
 	
 	_length myW = bP.getWidth();
 	_length myH = bP.getHeight();

@@ -11,48 +11,83 @@ _animation::_animation( int from , int to , _tempTime dur ) :
 _animation::~_animation()
 {
 	this->terminate();
+	
 	if( setterFunc )
 		delete setterFunc;
+	
 	if( finishFunc )
 		delete finishFunc;
 }
 
-void _animation::start(){
+void _animation::start()
+{
 	this->deltaValue = this->toValue - this->fromValue;
+	
+	// If it was paused instead of terminated
+	// and if it is not currently running: continue our work!
+	if(	this->startTime && !this->runs )
+		this->startTime = _system::getHighResTime() - this->startTime; // startTime determines the already elapsed milliseconds
+	else
+		this->startTime = _system::getHighResTime();
+	
 	this->runs = true;
-	this->startTime = _system::getHighResTime();
+	
 	_system::executeAnimation( this );
 }
 
-void _animation::terminate()
+void _animation::pause()
 {
 	if( this->runs )
 	{
 		_system::terminateAnimation( this );
 		this->runs = false;
 	}
+	// Store elapsed time for using start() again
+	this->startTime = _system::getHighResTime() - this->startTime;
 }
 
-void _animation::step( _tempTime curTime )
+void _animation::terminate( bool animToEnd )
+{
+	if( this->runs )
+	{
+		_system::terminateAnimation( this );
+		this->runs = false;
+	}
+	this->startTime = 0;
+	
+	// Animate 'till end?
+	if( animToEnd )
+	{
+		if( this->setterFunc )
+			(*this->setterFunc)( this->toValue );
+		
+		if( this->finishFunc )
+			(*this->finishFunc)( this->toValue );
+	}
+}
+
+void _animation::step()
 {
 	if( !this->runs )
 		return;
-		
+	
+	_tempTime curTime = _system::getHighResTime();
+	
 	_u32 tElapsed = curTime - this->startTime;
 	
 	if( tElapsed > this->duration )
 	{
 		this->runs = false;
-		if( this->setterFunc != nullptr )
+		this->startTime = 0;
+		if( this->setterFunc )
 			(*this->setterFunc)( this->toValue );
-		if( this->finishFunc != nullptr )
-		{
-			(*this->finishFunc)();
+		if( this->finishFunc )
 			(*this->finishFunc)( this->toValue );
-		}
 		return;
 	}
-	if( this->easeFunc != nullptr )
+	
+	// Has valid easing func?
+	if( this->easeFunc )
 	{
 		int value = this->easeFunc( tElapsed , this->fromValue , this->deltaValue , this->duration ) + 0.5;
 		if( this->setterFunc != nullptr )

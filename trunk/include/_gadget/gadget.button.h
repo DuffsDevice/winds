@@ -3,7 +3,6 @@
 #define _WIN_G_BUTTON_
 
 #include "_type/type.gadget.h"
-#include "_gadget/gadget.label.h"
 
 class _button : public _gadget {
 	

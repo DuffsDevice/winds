@@ -17,7 +17,7 @@ _memoryfont::_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , co
 _u16 _memoryfont::getCharacterWidth( _char character , _u8 fontSize ) const {
 	if( character == ' ' )
 		return this->spaceWidth;
-	return ( isCharSupported( character ) ? this->charWidths[ character - this->firstChar ] : 0 );
+	return (this->charWidths[ character - this->firstChar ]);
 }
 
 _u16 _memoryfont::isMonospace() const {

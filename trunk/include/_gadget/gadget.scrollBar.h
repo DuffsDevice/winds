@@ -39,7 +39,11 @@ class _scrollBar : public _gadget{
 	
 	public:
 		
+		//! Ctor
 		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style style = _style() );
+		
+		//! Dtor
+		~_scrollBar();
 		
 		//! Simply set the value
 		//! @note: this triggers a onScroll-Event!
@@ -49,10 +53,7 @@ class _scrollBar : public _gadget{
 		
 		void setDimension( _dimension dim );
 		
-		void setStep( _u16 value )
-		{
-			this->step = value;
-		}
+		void setStep( _u16 value ){ this->step = value; }
 		
 		void setLength( _u32 value );
 		

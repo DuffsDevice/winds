@@ -51,6 +51,12 @@ class _textbox : public _gadget{
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }
 		
+		//! Set Text Font
+		void setFont( _font* ft );
+		
+		//! Set FontSize
+		void setFontSize( _u8 fontSize ){ if( this->fontSize != fontSize ){ this->fontSize = fontSize; this->bubbleRefresh( true ); } }
+		
 		//! Set Text Color
 		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
 		
@@ -75,11 +81,6 @@ class _textbox : public _gadget{
 		//! Get Vertical Alignment of the Label
 		_valign getVAlign(){ return this->vAlign; }
 		
-		//! Set Text Font
-		void setFont( _font* ft ){ if( this->font != ft ){ this->font = ft; this->bubbleRefresh( true ); } }
-		
-		//! Set FontSize
-		void setFontSize( _u8 fontSize ){ if( this->fontSize != fontSize ){ this->fontSize = fontSize; this->bubbleRefresh( true ); } }
 		
 		//! Construcor excluding dimensions and including font
 		_textbox( _coord x , _coord y , _length width , string value = "" , _style style = _style() );

@@ -188,18 +188,21 @@ void _keyboard::setDestination( _gadget* dest )
 		else
 			ratio = 1;
 		
-		// Set 
+		// Compute reciprocal
 		_factor = 1./ratio;
 		
-		_s8 magnBorderX = 0;
-		_s8 magnBorderY = 0;
+		// Compute size of borders around the focused API-Element
+		_s8 magnBorderX = ( SCREEN_WIDTH * _factor - dim.width ) / 2;
+		_s8 magnBorderY = ( ( SCREEN_HEIGHT - 108 /** Height of Visible Area */ ) * _factor - dim.height ) / 2;
 		
-		// "higher" than me
-		magnBorderX = ( SCREEN_WIDTH / ratio - dim.width ) / 2;
-		magnBorderY = ( (SCREEN_HEIGHT-108) / ratio - dim.height ) / 2;
-			
-		_x = dim.x - magnBorderX;
-		_y = dim.y - magnBorderY;
+		// Compute _x and _y by clipping the area so that no areas beside the screen are shown
+		_x = min( dim.x , _coord( SCREEN_WIDTH - magnBorderX - dim.width ) ) - magnBorderX;
+		_x = max( 0 , _x );
+		
+		// Compute _y
+		_y = min( dim.y , _coord( SCREEN_HEIGHT - magnBorderY - dim.height ) ) - magnBorderY;
+		_y = max( 0 , _y );
+		
 		//! ----------- End -----------
 		
 		if( !this->mode )
@@ -236,20 +239,23 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
 	
+	//! Unused
 	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , Grip );
 	//bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
 	//bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , RGB( 3 , 3 , 3 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
+	
 	bP.copyTransparent( that->handlePosition , 0 , Grip );
 	bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
 	bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
 	
+	// Background
 	bP.drawFilledRect( 0 , 10 , SCREEN_WIDTH , 111 , RGB(19,19,19) );
 	bP.drawHorizontalLine( 0 , 9+1 , SCREEN_WIDTH , RGB( 12 , 12 , 12 ) );
 	bP.drawHorizontalLine( 0 , 9+2 , SCREEN_WIDTH , RGB( 14 , 14 , 14 ) );
@@ -383,12 +389,13 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
+		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] , _styleAttr() | _styleAttr::mouseClickRepeat );
 		switch( i )
 		{
 			case 45:
 			case 40:
 				this->buttons[i]->setAutoSelect( true );
+				this->buttons[i]->style.mouseClickRepeat = false;
 			case 41:
 			case 39:
 			case 30:

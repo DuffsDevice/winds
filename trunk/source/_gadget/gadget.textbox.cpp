@@ -2,6 +2,15 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
+void _textbox::setFont( _font* ft ){
+	if( this->font != ft )
+	{ 
+		this->font = ft;
+		if( this->font && this->font->valid() )
+			this->setHeight( max( 10 , this->font->getHeight() + 2 ) );
+	}
+}
+
 void _textbox::setStrValue( string value )
 {
 	this->strValue = value;
@@ -28,7 +37,14 @@ void _textbox::getFontPosition( _coord& x , _coord& y , _textbox* box )
 	switch( box->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( box->getHeight() + 1 ) >> 1 ) - ( ( box->font->getAscent() + 1 ) >> 1 );
+			y = ( ( box->getHeight() + 1 ) >> 1 )
+				- ( 
+					(
+						(
+							( box->font->getAscent() + box->font->getHeight() ) >> 1 // This is the avg height of the font
+						) + 1 
+					) >> 1
+				);
 			break;
 		case _valign::top:
 			y = 2;
@@ -47,42 +63,42 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
 		bP.normalizeClippingRects();
-	
-	// If there is no font it doesn't make sense to paint
-	if( !that->font || !that->font->valid() )
-		return use_default;
 	
 	_length myH = that->getHeight();
 	_length myW = that->getWidth();
 	
-	
 	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->bgColor );
+	
+	// If there is no font it doesn't make sense to paint
+	if( that->font && that->font->valid() )
+	{
+		_coord x = 0;
+		_coord y = 0;
+		
+		_textbox::getFontPosition( x , y , that );
+		
+		// Draw Text...
+		bP.drawString( x , y , that->font , that->getStrValue() , that->color );
+		
+		if( that->cursor > 0 )
+		{
+			// Get String until cursor
+			string str = that->getStrValue();
+			str.resize( that->cursor - 1 );
+			
+			_length strWidthUntilCursor = that->font->getStringWidth( str );
+			
+			bP.drawVerticalLine( strWidthUntilCursor + x - 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
+		}
+	}
 	
 	if( !that->pressed )
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
 	else
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
-	
-	if( !that->font || !that->font->valid() )
-		return use_default;
-	
-	_coord x = 0;
-	_coord y = 0;
-	
-	_textbox::getFontPosition( x , y , that );
-	
-	// Draw Text...
-	bP.drawString( x , y , that->font , that->getStrValue() , that->color );
-	
-	if( that->cursor )
-	{
-		_length strWidthUntilCursor = that->font->getStringWidth( that->getStrValue().substr( 0 , that->cursor - 1 ) );
-		
-		bP.drawVerticalLine( strWidthUntilCursor + x - 1 , y - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
-	}
 	
 	return use_default;
 }
@@ -112,7 +128,8 @@ _callbackReturn _textbox::keyHandler( _event event )
 			val.length() - that->cursor + 1 > 0 && that->cursor++;
 			break;
 		default:
-			if( DSWindows::isHardwareKey( event.getKeyCode() ) )
+			if( DSWindows::isHardwareKey( event.getKeyCode() ) 
+				|| !isprint( event.getKeyCode() ) ) // Check if printable
 				break;
 			val.insert( that->cursor - 1 , 1 , event.getKeyCode() );
 			that->cursor++;
@@ -203,13 +220,15 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _style s
 	, cursor( 0 )
 	, pressed( false )
 {
+	if( this->font && this->font->valid() )
+		this->setHeight( this->font->getHeight() + 2 );
+	
 	// Regsiter Handling Functions for events
-	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );
 	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::blurHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_textbox::refreshHandler ) );
 	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );
+	this->registerEventHandler( keyClick , new _staticCallback( &_textbox::keyHandler ) );
 	this->registerEventHandler( dragStart , new _staticCallback( &_textbox::mouseHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_textbox::mouseHandler ) );
 	

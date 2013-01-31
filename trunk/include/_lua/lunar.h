@@ -101,6 +101,10 @@ template < class T > class Lunar {
 		lua_pushstring(L, "__tostring");
 		lua_pushcfunction(L, &Lunar < T >::to_string);
 		lua_settable(L, metatable);
+		
+		lua_pushstring(L, "dump");
+		lua_pushcfunction(L, &Lunar < T >::function_dump);
+		lua_settable(L, metatable);
 
 		lua_pushstring(L, "__index");
 		lua_pushcfunction(L, &Lunar < T >::property_getter);
@@ -150,6 +154,9 @@ template < class T > class Lunar {
 */
     static void push(lua_State * L, T* instance )
 	{
+		if( !instance )
+			return;
+		
 		T **a = (T **) lua_newuserdata(L, sizeof(T *)); // Create userdata
 		*a = instance;
 		
@@ -256,6 +263,41 @@ template < class T > class Lunar {
 		T** obj = static_cast <T**>( lua_touserdata( L , lua_upvalueindex(2) ) );
 		
 		return ((*obj)->*(T::methods[i].func)) (L);
+    }
+	
+/*
+  @ function_dump (internal)
+  Arguments:
+    * L - Lua State
+*/
+    static int function_dump(lua_State * L)
+	{
+		{
+			char c0[128];
+			sprintf( c0 , "Function Dump of %s:" , T::className );
+			_system::debug( c0 );
+		}
+		
+		for (int i = 0; T::methods[i].name; i++) {
+			char c[128];
+			sprintf( c , "  - %s" , T::methods[i].name );
+			_system::debug( c );
+		}
+		
+		{
+			char c0[128];
+			sprintf( c0 , "Property Dump of %s:" , T::className );
+			_system::debug( c0 );
+		}
+		
+		for (int i = 0; T::properties[i].name; i++)
+		{
+			char c[128];
+			sprintf( c , "  - %s" , T::properties[i].name );
+			_system::debug( c );
+		}
+		
+		return 0;
     }
 
 /*

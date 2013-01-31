@@ -10,7 +10,7 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_type/type.registry.h"
 #include "_type/type.gadgetScreen.h"
-#include "_type/type.freetypefont.h"
+#include "_type/type.font.h"
 #include "_type/type.system.controller.h"
 #include "_gadget/gadget.keyboard.h"
 
@@ -32,6 +32,7 @@ class _system{
 		static _list<_pair<_program*,_cmdArgs>>	_programs_;
 		static _direntry*						_debugFile_;
 		static _gadget*							_currentFocus_;
+		static _gadget*							_lastClickedGadget_;
 		
 		//! Internal
 		static int 								_bgIdFront_;
@@ -55,7 +56,7 @@ class _system{
 		static void processInput();
 		
 		//! The daily Vertical Blank and its methods:
-		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step( getHighResTime() ); return anim->finished(); } ); }
+		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } ); }
 		static void runTimers();
 		static void runPrograms();
 		
@@ -74,6 +75,7 @@ class _system{
 		friend class _systemController;
 		friend class _freetypefont;
 		friend class _gadget;
+		friend class _gadgetScreen;
 		friend class _program;
 		friend class _animation;
 		friend class _progressbar;

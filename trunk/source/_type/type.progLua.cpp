@@ -189,21 +189,23 @@ _progLua::_progLua( string prog ) :
 	luaL_openlibs( this->state );
 	
 	//! Load System.---	
-	lua_newtable( this->state );
-	for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
-	{
-		lua_pushstring( this->state , lib->name );
-		lua_pushcfunction( this->state , lib->func );
+		lua_newtable( this->state );
+		for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
+		{
+			lua_pushstring( this->state , lib->name );
+			lua_pushcfunction( this->state , lib->func );
+			lua_settable( this->state , -3 );
+		}
+		
+		//! Generate exit function
+		lua_pushstring( this->state , "exit" );
+		lua_pushlightuserdata( this->state , this );
+		lua_pushcclosure( this->state , lua_exit , 1 );
 		lua_settable( this->state , -3 );
-	}
-	
-	//! Generate exit function
-	lua_pushstring( this->state , "exit" );
-	lua_pushlightuserdata( this->state , this );
-	lua_pushcclosure( this->state , lua_exit , 1 );
-	lua_settable( this->state , -3 );
-	
-	lua_setglobal( this->state , "system" );
+		
+		//! Set as global "system"
+		lua_setglobal( this->state , "system" );
+	//!
 	
 	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){

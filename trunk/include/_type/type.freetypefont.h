@@ -7,7 +7,7 @@
 
 #include "_library/truetype.h"
 
-class _freetypefont : public _font , private _direntry
+class _freetypefont : private _direntry , public _font
 {	
 	private:
 		
@@ -25,13 +25,15 @@ class _freetypefont : public _font , private _direntry
 		
 		inline _u16 isMonospace() const ;
 		
-		_u16 getHeight( _u8 fontSize = 8 ) const ;
-		
 		_u16 getAscent( _u8 fontSize = 8 ) const ;
+		
+		_u16 getHeight( _u8 fontSize = 8 ) const { return fontSize; }
 		
 		bool valid() const ;
 		
-		inline bool isCharSupported( const _char codepoint ) const ;
+		bool isCharSupported( const _char codepoint ) const ;
+		
+		~_freetypefont();
 	
 };
 

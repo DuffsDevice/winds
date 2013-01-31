@@ -15,7 +15,7 @@
 //! Resources we need
 #include "_resource/PROG_Explorer.h"
 #include "_resource/BMP_Checkboxes.h"
-#include "_resource/FONT_ArialBlack10.h"
+#include "_resource/FONT_ArialBlack13.h"
 #include "_resource/FONT_CourierNew10.h"
 #include "_resource/FONT_Tahoma7.h"
 
@@ -244,10 +244,13 @@ void _system::processInput()
 			_system::_keyboard_->open();
 	}
 	
+	if( !_system::_currentFocus_ )
+		return;
+	
 	/*!
 	 * Just Handle the Buttons, not the Pen!
 	 **/
-	for( _u8 i = 0 ; i < 16 && _system::_currentFocus_ ; ++i )
+	for( _u8 i = 0 ; i < 16 ; ++i )
 	{
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
@@ -407,7 +410,7 @@ void _system::start()
 	// Fonts
 	// -----------------------------------------------
 	
-		_system::_fonts_["ArialBlack10"] = new FONT_ArialBlack10();
+		_system::_fonts_["ArialBlack13"] = new FONT_ArialBlack13();
 		_system::_fonts_["CourierNew10"] = new FONT_CourierNew10();
 		_system::_fonts_["Tahoma7"] = new FONT_Tahoma7();
 }
@@ -549,6 +552,7 @@ _registry*						_system::_registry_ = nullptr;
 _runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
 _direntry*						_system::_debugFile_ = nullptr;
 _gadget*						_system::_currentFocus_ = nullptr;
+_gadget*						_system::_lastClickedGadget_ = nullptr;
 int								_system::_bgIdFront_;
 int								_system::_bgIdBack_;
 int								_system::_bgIdSub_;

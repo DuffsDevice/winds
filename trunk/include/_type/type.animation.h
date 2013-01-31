@@ -46,8 +46,12 @@ class _animation{
 		//! Start the animation
 		void start();
 		
-		//! Terminate the animation (cannot be restarted from the point of termination)
-		void terminate();
+		//! Terminate the animation (a further call to start() will restart the animation)
+		//! @param animToEnd Whether to animate until the end or only abort animating
+		void terminate( bool animToEnd = false );
+		
+		//! Pause the animation (a further call to start() will unpause the animation)
+		void pause();
 		
 		//! Set fromValue
 		void setDuration( _tempTime val ){
@@ -80,7 +84,7 @@ class _animation{
 		}
 		
 		//! Apply the Value
-		void step( _tempTime curTime );
+		void step();
 		
 		//! setEasing
 		void setEasing( _easingFunction* easeFunc ){
@@ -92,8 +96,8 @@ class _animation{
 			return this->easeFunc;
 		}
 		
-		//! Check if animation is finished
-		bool finished(){ return !this->runs; }
+		//! Check if animation is currently running
+		bool isRunning(){ return this->runs; }
 		
 		class _linear{
 			public:

@@ -18,7 +18,8 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::bootup );
+	changeState( _systemState::setup );
+	static int i = 0;
 	
 	while( true )
 	{
@@ -73,12 +74,34 @@ void _systemController::main()
 		//printf("\x1b[2J");
 		//if( _system::_currentFocus_ )
 		//	printf("cF: %s\n",gadgetType2string[_system::_currentFocus_->getType()].c_str());
-		//printf("CF:%p",_system::_gadgetHost_->focusedChild);
+		//	
+		//printf("FocusedChild:%s\n",gadgetType2string[_system::_gadgetHost_->focusedChild->getType()].c_str());
+		//
 		//for( _gadget* g : _system::_gadgetHost_->children )
 		//	printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
 		//for( _gadget* g : _system::_gadgetHost_->enhancedChildren )
 		//	printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );
-	}	
+		
+		if( ++i > 50 
+			&& false 
+		)
+		{
+			const unsigned int FreeMemSeg=1024;
+			
+			unsigned int s;
+			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
+			{
+				void *ptr = malloc( FreeMemSeg );
+				if( !ptr )
+				{
+					printf("\x1b[2J");
+					printf("free: %d\n",s-FreeMemSeg);
+					break;
+				}
+			}
+			while(true);
+		}
+	}
 }
 
 void _systemController::setupPage()
@@ -98,6 +121,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 {
 	static int state = 0;
 	static _gadget* gadgets[20] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
+	static _radiogroup* radiogroup = nullptr;
 	static string profileName = "Admin";
 	static _u8 profileIcon = 0;
 	static _time systemTime = _time::now();
@@ -192,7 +216,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_bitmapPort bP = that->getBitmapPort();
 			
 			if( e.hasClippingRects() )
-				bP.addClippingRects( e.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+				bP.addClippingRects( e.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 			else
 				bP.normalizeClippingRects();
 			
@@ -250,8 +274,14 @@ _callbackReturn _systemController::setupHandler( _event e )
 		if( gadgets[i] )
 		{
 			delete gadgets[i];
-			gadgets[i] = 0;
+			gadgets[i] = nullptr;
 		}
+	
+	if( radiogroup )
+	{
+		delete radiogroup;
+		radiogroup = nullptr;
+	}
 	
 	// Standard
 	if( state != 0 )
@@ -321,8 +351,8 @@ _callbackReturn _systemController::setupHandler( _event e )
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
@@ -362,15 +392,15 @@ _callbackReturn _systemController::setupHandler( _event e )
 			gadgets[12] = cnt1;
 			gadgets[13] = cnt2;
 			
-			gadgets[15] = (_gadget*)radgrp;
+			radiogroup = radgrp;
 			gadgets[16] = clockImg;
 			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
 			lbl5->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
@@ -397,6 +427,7 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
 			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeInt( 4 ) );
+			_textbox* txtName1 = new _textbox( 200 , 70 , 80 , profileName , _style::storeInt( 4 ) );
 			txtName->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
 			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeInt( 1 ) );
@@ -429,13 +460,14 @@ _callbackReturn _systemController::setupHandler( _event e )
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
 			that->addChild( txtName );
+			that->addChild( txtName1 );
 			that->addChild( image1 );
 			that->addChild( image2 );
 			that->addChild( image3 );
@@ -458,6 +490,11 @@ _dialog dia;
 //	printf("Str-Value: %s\n",dia.getStrResult().c_str());
 //}
 
+bool isPowerOfTwo (int x)
+{
+	return ((x > 0) && ((x & (~x + 1)) == x));
+}
+
 void _systemController::loginPage()
 {
 	// After the Boot up finishes,
@@ -475,14 +512,29 @@ void _systemController::loginPage()
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
-	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
+	//_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
 	
 	//_dialog::errorDialog( dia , "Evil Monkeys!!!" , "Error" , "Dismiss!" , "Retry" );
 	//dia.execute();
 	//dia.onExit( new _staticCallback( & hello ) );
 	
-	//_direntry entry = _direntry("/LUA/Noel.lua");
-	//entry.execute();
+	_direntry entry = _direntry("/LUA/Noel.lua");
+	entry.execute();
+	
+	unsigned int i = 0;
+	while( ++i < 60 )
+	{
+		_radio* slc = new _radio( 60 , 80 , nullptr );
+		//_label* slc2 = new _label( 60 , 100 , "Hallo" );
+		//slc->setFont( _system::getFont( "ArialBlack13" ) );
+		//slc->setIntValue( (_u8)_system::getLanguage() );
+		//slc->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
+		//_system::_gadgetHost_->addChild( slc );
+		//_system::_gadgetHost_->addChild( slc2 );
+		swiWaitForVBlank();
+		delete slc;
+		//delete slc2;
+	}
 }
 
 void _systemController::bootupPage()
@@ -494,33 +546,29 @@ void _systemController::bootupPage()
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _bootupScreen( _system::_bgIdBack_ );
 	
-	static _animation anim = _animation( 0 , 1 , 2000 );
-	anim.finish(
-		new _inlineCallback(
-			static_cast<function<void()>>
-				( [&](){ _systemController::changeState( _systemState::desktop ); } )
+	_system::executeTimer( 
+		new _inlineCallback( 
+			static_cast<function<void()>>( 
+				[&](){
+					_systemController::changeState( _systemState::setup );
+					}
+			)
 		)
+		, 2000
 	);
-	anim.start();
 }
-
-//#include "_gadget/gadget.scrollBar.h"
 
 void _systemController::desktopPage()
 {
-	
 	// Clean up	
 	_system::deleteGadgetHost();
 	_system::deleteKeyboard();
+	
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
 	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
-	_direntry entry = _direntry("/LUA/Noel.lua");
-	entry.execute();
-	//_system::_gadgetHost_->addChild( new _button( 8 , 8 , 8 , 8 , "" ) );
-	//_system::_gadgetHost_->addChild( new _scrollButton( 8 , 8 , 8 , 0 , _scrollButtonType::buttonHandleX ) );
 }
 
 

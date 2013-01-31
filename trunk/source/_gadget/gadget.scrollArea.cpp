@@ -130,7 +130,7 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 		_bitmapPort bP = that->getBitmapPort();
 		
 		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().relativate( that->getAbsoluteX() , that->getAbsoluteY() ) );
+			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 		else
 			bP.normalizeClippingRects();
 		
@@ -217,8 +217,8 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
 	, scrollTypeX( scrollTypeX )
 	, scrollTypeY( scrollTypeY )
-	, scrollBarX( new _scrollBar( 0 , 0 , 10 , 1 , 1 , _dimension::horizontal ) )
-	, scrollBarY( new _scrollBar( 0 , 0 , 10 , 1 , 1 , _dimension::vertical ) )
+	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::horizontal ) )
+	, scrollBarY( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::vertical ) )
 	, offset( _padding( 0 , 0 , 0 , 0 ) )
 	, canvasWidth( width )
 	, canvasHeight( height )

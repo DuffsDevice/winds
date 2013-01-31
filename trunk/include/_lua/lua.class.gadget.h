@@ -16,6 +16,8 @@
 	LUA_CLASS_FUNC(g,isResizeable), \
 	LUA_CLASS_FUNC(g,isResizeableX), \
 	LUA_CLASS_FUNC(g,isResizeableY), \
+	LUA_CLASS_FUNC(g,hasSmallDragTrig), \
+	LUA_CLASS_FUNC(g,isMouseClickRepeat), \
 	LUA_CLASS_FUNC(g,bubbleEvent), \
 	LUA_CLASS_FUNC(g,bubbleRefresh), \
 	LUA_CLASS_FUNC(g,refreshBitmap), \
@@ -225,6 +227,12 @@ class _lua_gadget{
 		
 		//! isMaximized
 		int isMaximized( lua_State* L );
+		
+		//! hasSmallDragTrig
+		int hasSmallDragTrig( lua_State* L );
+		
+		//! isMouseClickRepeat
+		int isMouseClickRepeat( lua_State* L );
 		
 		//! getHeight
 		int getHeight( lua_State* L );
