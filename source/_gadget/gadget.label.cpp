@@ -3,6 +3,9 @@
 
 void _label::setStrValue( string val )
 {
+	if( val == this->strValue )
+		return;
+	
 	// Set Value...
 	this->strValue = val;
 	

@@ -1,9 +1,6 @@
 #include "_gadget/gadget.keyboard.button.h"
 #include "_type/type.system.h"
 
-//! Graphics
-#include "_resource/BMP_StartButton.h"
-
 _callbackReturn _keyboardButton::mouseHandler( _event event )
 {
 	// Receive Gadget
@@ -29,7 +26,7 @@ void _keyboardButton::setKey( _key key ){ this->key = key; }
 
 _keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style )
 	: _button( width , height , x , y , title , style ) , key( key )
-{
+{	
 	this->registerEventHandler( onAction , new _staticCallback( &_keyboardButton::mouseHandler ) );
 }
 

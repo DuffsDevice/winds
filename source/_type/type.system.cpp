@@ -224,9 +224,8 @@ void _system::processInput()
 	touchRead( &t );
 
 	// Temp...
-	static _u16 lastKeys = 0; // 0 = No Keys
-	static _u32 heldCycles[16] = {
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	static _u32 heldCycles[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	_event event = _event().setCurrentKeyCodes( _system::getCurrentKeys() );
 	
 	// Shortcut...
 	const _user* user = _system::_runtimeAttributes_->user;
@@ -255,30 +254,35 @@ void _system::processInput()
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
 		
+		event.setKeyCode( libnds2key[i] );
 		
-		// Increase Cycles
+		// held down
 		if( GETBIT( keys , i ) )
 		{
-			if( heldCycles[i] == 0 || ( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 ) )
+			if( heldCycles[i] == 0 )
+			{
+				_system::_currentFocus_->handleEvent( event.setType( keyDown ) );
+			}
+			else if( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
-				_system::_currentFocus_->handleEvent( _event( keyDown ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys ) );
+				_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
 			}
 			
 			// Increase Cycles
 			heldCycles[i]++;
 		}
-		// Erase Cycles (but only if the Button of the Bit was pressed previously!)
+		// Not held down and was pressed previously
 		else if( heldCycles[i] > 0 )
 		{
 			// Set the Args
-			_event event = _event( keyUp ).setKeyCode( libnds2key[i] ).setCurrentKeyCodes( lastKeys );
+			event.setType( keyUp );
 			
 			// Trigger the Event
 			_system::_currentFocus_->handleEvent( event );
 			
 			
-			// If keyup is fast enough, trigger keyClick (only if the "button" wasn't the mouse
+			// If keyup is fast enough, trigger keyClick
 			if( heldCycles[i] < user->mCC )
 				_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
 			
@@ -456,7 +460,9 @@ void _system::setLanguage( _language lang )
 
 void _system::newHandler()
 {
-	//_system::blueScreen(121,"Not enough Memory!");
+	_system::debug("Out of memory!");
+	while(true)
+		swiWaitForVBlank();
 }
 
 void _system::end()

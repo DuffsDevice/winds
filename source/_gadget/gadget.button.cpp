@@ -7,6 +7,9 @@ bool _button::isAutoSelect(){ return this->autoSelect; }
 
 void _button::setStrValue( string val )
 {
+	if( this->strValue == val )
+		return;
+	
 	// Set Value...
 	this->strValue = val;
 	
@@ -72,7 +75,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	if( that->pressed )
+	if( that->isPressed() )
 	{
 		// Background
 		bP.fill( RGB( 25 , 25 , 25 ) );
@@ -146,7 +149,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	switch( that->getAlign() )
 	{
 		case _align::center:
-			x = ( myW >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) ) >> 1 );
+			x = ( myW + 1 >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 1 ) >> 1 );
 			break;
 		case _align::left:
 			x = 0;
@@ -175,69 +178,24 @@ _callbackReturn _button::refreshHandler( _event event )
 	return use_default;
 }
 
-_callbackReturn _button::dragHandler( _event event )
-{
-	// Receive Gadget
-	_button* that = event.getGadget<_button>();
-	
-	if( event.getType() == dragStart )
-		return handled;
-	
-	else if( !that->getAbsoluteDimensions().contains( event.getPosX() , event.getPosY() ) )
-	{
-		// I'm not pressed anymore!
-		that->pressed = false;
-		
-		// Refresh my parents
-		that->bubbleRefresh( true );
-		return handled;
-	}
-	
-	return not_handled;
-}
-
-_callbackReturn _button::mouseHandler( _event event )
-{
-	// Receive Gadget
-	_button* that = event.getGadget<_button>();
-	
-	if( event.getType() == mouseDown )
-		that->pressed = true;
-	else if( event.getType() == mouseUp )
-		that->pressed = false;
-	else
-	{
-		// For Repetition Clicking
-		that->handleEvent( _event( onAction ) );
-		return handled;
-	}
-	
-	// Refresh
-	that->bubbleRefresh( true );
-	
-	return handled;
-}
-
 void _button::init( string text )
 {
+	this->style.doubleClickable = false;
+	
 	// Font
 	this->strValue = text;
 	this->font = _system::getFont();
 	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
 	this->fontColor = COLOR_BLACK;
 	
-	this->pressed = false;
-	
 	this->vAlign = _valign::middle;
 	this->align = _align::center;
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_button::refreshHandler ) );
-	this->registerEventHandler( mouseDown , new _staticCallback( &_button::mouseHandler ) );
-	this->registerEventHandler( mouseUp , new _staticCallback( &_button::mouseHandler ) );
-	this->registerEventHandler( mouseClick , new _staticCallback( &_button::mouseHandler ) );
-	this->registerEventHandler( dragStart , new _staticCallback( &_button::dragHandler ) );
-	this->registerEventHandler( dragging , new _staticCallback( &_button::dragHandler ) );
+	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
+	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
+	this->registerEventHandler( mouseClick , new _gadget::eventForward<onAction>() );
 	
 	// Compute the necesary Width
 	this->computeSize();
@@ -263,7 +221,6 @@ void _button::setHeight( _length height ){
 _button::_button( _length width , _length height , _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , width , height , x , y , style )
 	, autoSelect( false )
-	, pressed( false )
 	, computeW( 0 )
 	, computeH( 0 )
 {
@@ -274,7 +231,6 @@ _button::_button( _length width , _length height , _coord x , _coord y , string 
 _button::_button( _coord x , _coord y , string text , _style style ) :
 	_gadget( _gadgetType::button , 32 , 9 , x , y , style )
 	, autoSelect( false )
-	, pressed( false )
 	, computeW( 2 )
 	, computeH( 2 )
 {	

@@ -273,6 +273,9 @@ int _lua_gadget::hasSmallDragTrig(lua_State* L){ lua_pushboolean( L , this->gadg
 //! isMouseClickRepeat
 int _lua_gadget::isMouseClickRepeat(lua_State* L){ lua_pushboolean( L , this->gadget->isMouseClickRepeat() ); return 1; }
 
+//! isDoubleClickable
+int _lua_gadget::isDoubleClickable(lua_State* L){ lua_pushboolean( L , this->gadget->isDoubleClickable() ); return 1; }
+
 //! hasFocus
 int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }
 

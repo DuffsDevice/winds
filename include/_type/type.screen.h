@@ -16,8 +16,6 @@ class _screen{
 		//! Background-id returned by bgInit or bgInitSub
 		int bgId;
 		
-		_bitmap* t_bitmap;
-		
 	public:
 	
 		//! Scroll the background ( < 0 will be right/bottom )
@@ -41,7 +39,7 @@ class _screen{
 		_pixelArray	getMemoryPtr() const ;
 		
 		//! get the base Memory
-		_bitmap*	getBitmap() const ;
+		_bitmap	getBitmap() const ;
 		
 		//! Get the id returned by bgInit or bgInitSub
 		int getBgId() const ;

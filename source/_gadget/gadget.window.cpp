@@ -3,103 +3,18 @@
 #include "_type/type.system.h"
 #include "_type/type.runtimeAttributes.h"
 
-_callbackReturn _windowButton::refreshHandler( _event event )
-{
-	// Get Source
-	_windowButton* that = event.getGadget<_windowButton>();
-	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
-	else
-		bP.normalizeClippingRects();
-	
-	_pixel color[] = { 
-		RGB255( 114 , 154 , 250 ) , RGB255( 5 , 88 , 226 ) , RGB255( 75 , 126 , 245 ) , // Blue Values
-		RGB255( 227 , 92 , 59 ) , RGB255( 234 , 131 , 106 ) , RGB255( 250 , 221 , 211 ) , // Red Values
-		RGB255( 186 , 61 , 239 ) // Violet (Blue =/= Red)
-	};
-	
-	bP.fill( NO_COLOR );
-	
-	switch( that->buttonType ){
-		case 0:
-			// Close
-			bP.drawRect( 0 , 0 , 8 , 8 , color[3] );
-			bP.drawRect( 1 , 1 , 6 , 6 , color[4] );
-			bP.drawRect( 2 , 2 , 4 , 4 , color[4] );
-			bP.drawFilledRect( 3 , 3 , 2 , 2 , color[5] );
-			bP.drawPixel( 2 , 2 , color[5] );
-			bP.drawPixel( 2 , 5 , color[5] );
-			bP.drawPixel( 5 , 2 , color[5] );
-			bP.drawPixel( 5 , 5 , color[5] );
-			break;
-		case 1:
-			// Maximize/Restore
-			bP.drawRect( 0 , 0 , 8 , 8 , color[0] ); // White Border
-			
-			if( that->getParent()->isMaximized() )
-			{
-				bP.drawRect( 3 , 2 , 3 , 3 , color[0] ); // Semi-White Line
-				bP.drawRect( 2 , 4 , 2 , 2 , color[0] ); // Semi-White Line
-				bP.drawHorizontalLine( 3 , 2 , 3 , COLOR_WHITE ); // White Topper Line
-				bP.drawHorizontalLine( 2 , 4 , 2 , COLOR_WHITE ); // White Topper Line
-			}
-			else
-			{
-				//bP.drawRect( 1 , 1 , 6 , 6 , color[1] );
-				//bP.drawRect( 3 , 3 , 2 , 2 , color[1] );
-				bP.drawRect( 2 , 2 , 4 , 4 , color[0] ); // Semi-White Line
-				bP.drawHorizontalLine( 2 , 2 , 4 , COLOR_WHITE ); // White Topper Line
-			}
-			break;
-		case 2:
-			// Minimize
-			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
-			//bP.drawFilledRect( 1 , 1 , 6 , 6 , color[1] );
-			bP.drawHorizontalLine( 2 , 5 , 3 , RGB( 31 , 31 , 31 ) );
-			break;
-	}
-	
-	if( that->buttonType ){
-		bP.drawPixel( 0 , 0 , color[2] );
-		bP.drawPixel( 7 , 0 , color[2] );
-		bP.drawPixel( 7 , 7 , color[2] );
-		bP.drawPixel( 0 , 7 , color[2] );
-	}
-	else{
-		bP.drawPixel( 0 , 0 , color[6] );
-		bP.drawPixel( 7 , 0 , color[6] );
-		bP.drawPixel( 7 , 7 , color[6] );
-		bP.drawPixel( 0 , 7 , color[6] );
-	}
-	
-	return use_default;
-}
-_windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
-	_button( 8 , 8 , x , y , "" )
-	, buttonType( buttonType )
-{
-	// Reset Bitmap
-	this->bitmap.reset( NO_COLOR );
-	
-	this->registerEventHandler( refresh , new _staticCallback( &_windowButton::refreshHandler ) );
-	this->refreshBitmap();
-}
 
-////////////////////////////////////////////
 _callbackReturn _window::resizeHandler( _event event )
 {
 	_window* that = event.getGadget<_window>();
 	
 	int lblWidth = that->getWidth();
 	
-	if( that->isDestroyable() )
-	{
+	//if( that->isDestroyable() )
+	//{
 		that->button[0]->setX( that->getWidth() - 10 );
 		lblWidth -= 10;
-	}
+	//}
 	
 	if( that->isResizeable() )
 	{
@@ -119,9 +34,17 @@ _callbackReturn _window::resizeHandler( _event event )
 	return handled;
 }
 
+
+
 _callbackReturn _window::restyleHandler( _event event )
 {
 	_window* that = event.getGadget<_window>();
+	
+	if( event.getType() == onMaximize || event.getType() == onUnMaximize )
+	{
+		that->button[1]->bubbleRefresh( true );
+		return handled;
+	}
 	
 	// Toggle Window->Buttons (Close, Minimize, Restore etc...)
 	if( that->isDestroyable() )
@@ -157,6 +80,8 @@ _callbackReturn _window::restyleHandler( _event event )
 	return handled;
 }
 
+
+
 void _window::setStrValue( string title )
 {		
 	this->label->setStrValue( title );
@@ -165,6 +90,7 @@ void _window::setStrValue( string title )
 	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
 		((_windows*)_system::_gadgetHost_)->refreshTask( this );
 }
+
 
 
 void _window::setIcon( _bitmap bmp )
@@ -178,6 +104,8 @@ void _window::setIcon( _bitmap bmp )
 	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
 		((_windows*)_system::_gadgetHost_)->refreshTask( this );
 }
+
+
 
 _callbackReturn _window::refreshHandler( _event event )
 {
@@ -239,6 +167,8 @@ _callbackReturn _window::refreshHandler( _event event )
 	return use_default;
 }
 
+
+
 _callbackReturn _window::dragHandler( _event event )
 {	
 	// Get Source
@@ -247,23 +177,21 @@ _callbackReturn _window::dragHandler( _event event )
 	if( event.getType() == dragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the subject of Dragment :-)
-		if( event.getPosY() > 9 ){
-			that->dragMe = false;
+		if( event.getPosY() > 11 ){
 			return use_default;
 		}
-		
-		that->dragMe = true;
 		
 		// If y is on the windowbar, drag Me!
 		if( that->isMaximized() )
 			return not_handled; // Don't try to drag a window while its maximized
+		
 		return handled;
 	}
 	else if( event.getType() == dragging )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
-		if( !that->dragMe )
+		if( that->isChildDragged() )
 			return use_default;
 		
 		/**
@@ -284,7 +212,7 @@ _callbackReturn _window::dragHandler( _event event )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
-		if( !that->dragMe )
+		if( that->isChildDragged() )
 			return use_default;
 		
 		// Return
@@ -294,6 +222,8 @@ _callbackReturn _window::dragHandler( _event event )
 	// Default return
 	return not_handled;
 }
+
+
 
 _callbackReturn _window::buttonHandler( _event event )
 {
@@ -329,10 +259,14 @@ _callbackReturn _window::buttonHandler( _event event )
 	return handled;
 }
 
+
+
 // C++0x! Yay!
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _style style ) :
 	_window( width , height , x , y , title , _bitmap() , style )
 { }
+
+
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
 	_gadget( _gadgetType::window , width , height , x , y , style )
@@ -374,6 +308,8 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->registerEventHandler( dragStart , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( dragStop , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( onStyleSet , new _staticCallback( &_window::restyleHandler ) );
+	this->registerEventHandler( onMaximize , new _staticCallback( &_window::restyleHandler ) );
+	this->registerEventHandler( onUnMaximize , new _staticCallback( &_window::restyleHandler ) );
 	this->registerEventHandler( onResize , new _staticCallback( &_window::resizeHandler ) );
 	
 	// Refresh Window-Buttons
@@ -381,13 +317,4 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	
 	// Refresh Me
 	this->refreshBitmap();
-}
-
-_window::~_window()
-{
-	delete this->button[0];
-	delete this->button[1];
-	delete this->button[2];
-	delete this->label;
-	delete this->icon;
 }

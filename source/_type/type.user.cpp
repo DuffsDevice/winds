@@ -66,7 +66,8 @@ _user::_user( string folderName ) :
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
 					{ "fileObjectHeight" , "10" } ,
-					{ "selectObjectHeight" , "9" }
+					{ "selectObjectHeight" , "9" } ,
+					{ "magnifyKeyboardFocus" , "true" }
 				}
 			} };
 		this->flush();
@@ -84,6 +85,7 @@ _user::_user( string folderName ) :
 	this->sFE = this->getIntAttr( "showFileExtension" );	
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	this->dTC = this->getIntAttr( "desktopColor" );	
+	this->mKF = this->getIntAttr( "magnifyKeyboardFocus" );	
 	
 	// Set Currently Working directory
 	string cwd = _direntry::getWorkingDirectory();
@@ -206,6 +208,11 @@ _s32 _user::getIntAttr( string idx )
 		
 		return RGBA( r , g , b , a );
 	}
+	else if( attr == "true" )
+		return 1;
+	else if( attr == "false" )
+		return 0;
+	
 	return string2int( attr.c_str() );
 }
 

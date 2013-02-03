@@ -19,7 +19,7 @@ _style _style::storeHost( _program* data , _styleAttr attr ){
 }
 
 // Default
-_styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | editable | notMinimizeable | canTakeFocus | canLooseFocus | canReceiveFocus | defaultDragTrig | mouseClickDefault; }
+_styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | editable | notMinimizeable | canTakeFocus | canLooseFocus | canReceiveFocus | defaultDragTrig | mouseClickDefault | doubleClickable; }
 
 void applyString2style( _style& style , string input )
 {
@@ -110,6 +110,13 @@ void applyString2style( _style& style , string input )
 			attr |= _styleAttr::mouseClickDefault;
 		else if( line == "mouseClickRepeat" )
 			attr |= _styleAttr::mouseClickRepeat;
+		
+		// doubleClickable
+		else if( line == "doubleClickable" )
+			attr |= _styleAttr::doubleClickable;
+		else if( line == "notDoubleClickable" )
+			attr |= _styleAttr::notDoubleClickable;
+		
 	}
 	
 	// Copy attributes back into _style class

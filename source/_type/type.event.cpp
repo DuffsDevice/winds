@@ -65,6 +65,13 @@ _map<string,_eventType> string2eventType = {
 	{ "onBlur" , onBlur },
 	{ "onFocus" , onFocus },
 	{ "onClose" , onClose },
+	{ "onMouseEnter" , onMouseEnter },
+	{ "onMouseLeave" , onMouseLeave },
+	{ "onMaximize" , onMaximize },
+	{ "onUnMaximize" , onUnMaximize },
+	{ "onMinimize" , onMinimize },
+	{ "onRestore" , onRestore },
+	{ "onScroll" , onScroll },
 	{ "onStyleSet" , onStyleSet }
 };
 
@@ -91,5 +98,12 @@ _map<_eventType,string> eventType2string = {
 	{ onBlur , "onBlur" },
 	{ onFocus , "onFocus" },
 	{ onClose , "onClose" },
+	{ onMouseEnter , "onMouseEnter" },
+	{ onMouseLeave , "onMouseLeave" },
+	{ onMaximize , "onMaximize" },
+	{ onUnMaximize , "onUnMaximize" },
+	{ onMinimize , "onMinimize" },
+	{ onRestore , "onRestore" },
+	{ onScroll , "onScroll" },
 	{ onStyleSet , "onStyleSet" }
 };

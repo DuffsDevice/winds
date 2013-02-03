@@ -9,8 +9,6 @@ class _checkbox : public _gadget {
 	
 	private:
 		
-		bool	pressed;
-		
 		_u8		intValue;
 		
 		static const _bitmap graphic[3];

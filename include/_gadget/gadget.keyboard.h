@@ -12,35 +12,35 @@ class _keyboard : public _gadgetScreen {
 	
 	private:
 	
-		_screen*	topScreen;
+		_screen*		topScreen;
 		_gadgetScreen*	gHScreen; // GadgetHost
-		_u8			bgIdSub;
-		int			magnifX;
-		int			magnifY;
-		float		magnifFactor;
-		_u8			handlePosition;
+		_u8				bgIdSub;
+		int				magnifX;
+		int				magnifY;
+		float			magnifFactor;
+		_u8				handlePosition;
 		
 		//! Internal Array for Keyboard-Layout
-		static _rect buttonDimensions[];
+		static _rect 	buttonDimensions[];
 		
 		//! Images...
 		static _bitmap* bg;
 		
+		_keyboardButton* buttons[46];
+		
 		//! State-Saver
-		bool 	dragMe;
-		bool	shift;
-		bool	mode; // Whether the Keyboard is collapsed(=false) or expanded(=true)
-		_s8		curState;
+		bool			dragMe;
+		bool			shift;
+		bool			caps;
+		bool			mode; // Whether the Keyboard is collapsed(=false) or expanded(=true)
+		_s8				curState;
 		
 		//! Destination Gadget to receive Key-Events
-		_gadget* destination;
+		_gadget*		destination;
 		
 		//! Animation
-		_animation	animKeyb;
-		_animation	animMagnif;
-		
-		//! Label on the top of the button
-		_keyboardButton* buttons[46];
+		_animation		animKeyb;
+		_animation		animMagnif;
 		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
@@ -50,6 +50,8 @@ class _keyboard : public _gadgetScreen {
 		
 		int setState( int val );
 		int setMagnification( int val );
+		
+		void refreshKeys();
 	
 	public:
 	

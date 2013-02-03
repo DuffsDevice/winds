@@ -18,7 +18,7 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::setup );
+	changeState( _systemState::login );
 	static int i = 0;
 	
 	while( true )
@@ -283,44 +283,6 @@ _callbackReturn _systemController::setupHandler( _event e )
 		radiogroup = nullptr;
 	}
 	
-	// Standard
-	if( state != 0 )
-	{
-		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeInt( -1 ) );
-		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
-		prev->setColor( RGB( 30 , 30 , 30 ) );
-		prev->setAlign( _align::left );
-		prev->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
-		btnPrev->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
-		
-		gadgets[1] = btnPrev;
-		gadgets[3] = prev;
-		that->addChild( prev );
-		that->addChild( btnPrev );
-	}
-	else
-	{
-		_label* clickNext = new _label( 180 , 9 , 71 , 6 , _system::getLocalizedString("lbl_to_continue") );
-		clickNext->setColor( RGB( 17 , 17 , 31 ) );
-		clickNext->setAlign( _align::right );
-		
-		gadgets[4] = clickNext;
-		that->addChild( clickNext );
-	}
-	
-	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeInt( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
-	gadgets[0] = btnNext;
-	gadgets[2] = next;
-	next->setColor( RGB( 30 , 30 , 30 ) );
-	next->setAlign( _align::right );
-	
-	// Set Handler
-	next->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
-	btnNext->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
-	that->addChild( btnNext );
-	that->addChild( next );
-	
 	switch( state )
 	{
 		case 0:
@@ -427,7 +389,6 @@ _callbackReturn _systemController::setupHandler( _event e )
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
 			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeInt( 4 ) );
-			_textbox* txtName1 = new _textbox( 200 , 70 , 80 , profileName , _style::storeInt( 4 ) );
 			txtName->registerEventHandler( onChange , new _staticCallback( setupHandler ) );
 			
 			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeInt( 1 ) );
@@ -467,7 +428,6 @@ _callbackReturn _systemController::setupHandler( _event e )
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
 			that->addChild( txtName );
-			that->addChild( txtName1 );
 			that->addChild( image1 );
 			that->addChild( image2 );
 			that->addChild( image3 );
@@ -479,6 +439,47 @@ _callbackReturn _systemController::setupHandler( _event e )
 			break;
 		}
 	}
+	
+	
+	// Standard
+	if( state != 0 )
+	{
+		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeInt( -1 ) );
+		_label* prev = new _label( 50 , 9 , 17 , 176 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
+		prev->setColor( RGB( 30 , 30 , 30 ) );
+		prev->setAlign( _align::left );
+		prev->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
+		btnPrev->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
+		
+		gadgets[1] = btnPrev;
+		gadgets[3] = prev;
+		that->addChild( prev );
+		that->addChild( btnPrev );
+	}
+	else
+	{
+		_label* clickNext = new _label( 180 , 9 , 71 , 6 , _system::getLocalizedString("lbl_to_continue") );
+		clickNext->setColor( RGB( 17 , 17 , 31 ) );
+		clickNext->setAlign( _align::right );
+		
+		gadgets[4] = clickNext;
+		that->addChild( clickNext );
+	}
+	
+	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeInt( 1 ) );
+	_label* next = new _label( 50 , 9 , 188 , 176 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
+	gadgets[0] = btnNext;
+	gadgets[2] = next;
+	next->setColor( RGB( 30 , 30 , 30 ) );
+	next->setAlign( _align::right );
+	
+	// Set Handler
+	next->registerEventHandler( mouseClick , new _staticCallback( setupHandler ) );
+	btnNext->registerEventHandler( onAction , new _staticCallback( setupHandler ) );
+	that->addChild( btnNext );
+	that->addChild( next );
+	
+	
 	return handled;
 }
 
@@ -522,7 +523,7 @@ void _systemController::loginPage()
 	entry.execute();
 	
 	unsigned int i = 0;
-	while( ++i < 60 )
+	while( ++i < 1 )
 	{
 		_radio* slc = new _radio( 60 , 80 , nullptr );
 		//_label* slc2 = new _label( 60 , 100 , "Hallo" );

@@ -9,7 +9,7 @@
 
 enum _fileviewType{
 	detail = 0,
-	liste = 1,
+	list = 1,
 	symbol_small = 2,
 	symbol_big = 3
 };
@@ -24,8 +24,6 @@ class _fileobject : public _gadget {
 		
 		bool 			pressed;
 		
-		_label*			label;
-		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn dragHandler( _event event );
 		static _callbackReturn focusHandler( _event event );
@@ -34,7 +32,7 @@ class _fileobject : public _gadget {
 	public:
 	
 		// Ctor
-		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::liste , _style style = _style() );
+		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::list , _style style = _style() );
 		
 		// Dtor
 		~_fileobject();

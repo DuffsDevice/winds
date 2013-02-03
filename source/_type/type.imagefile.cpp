@@ -6,8 +6,6 @@ _imagefile::_imagefile( string fn ) :
 	, _direntry( fn )
 	, pngDecoder( nullptr )
 {
-	//printf("Image-File:%d,%s,%d!\n",this->isExisting(),mimeType2string[this->getMimeType()].c_str(),this->getSize());
-	
 	// Doesn't make sence to 
 	if( !this->isExisting() )
 		return;

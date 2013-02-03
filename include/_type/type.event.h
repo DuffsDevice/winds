@@ -43,6 +43,13 @@ enum _eventType : _u8
 	onBlur,
 	onFocus,
 	onClose,
+	onMouseEnter,
+	onMouseLeave,
+	onMaximize,
+	onUnMaximize,
+	onMinimize,
+	onRestore,
+	onScroll,
 	onStyleSet
 };
 

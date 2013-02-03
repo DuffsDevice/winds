@@ -1,76 +1,6 @@
-#include "_gadget/gadget.windows.button.h"
+#include "_gadget/gadget.windows.taskbutton.h"
 #include "_type/type.system.h"
 #include "_type/type.color.h"
-
-//! Graphics
-#include "_resource/BMP_StartButton.h"
-
-//
-//  Startbutton
-//
-
-_bitmap _windowsStartButton::startButton = BMP_StartButton();
-_bitmap _windowsStartButton::startButtonPressed = BMP_StartButtonPressed();
-
-_callbackReturn _windowsStartButton::mouseHandler( _event event ){
-	
-	// Refresh the startButton if the _startMenu will be closed
-	if( event.getType() == onClose )
-	{
-		this->bubbleRefresh( true );
-		return handled;
-	}
-	
-	this->startMenu->toggle( this->getAbsoluteX() , this->getAbsoluteY() );
-	
-	// Let the button handle the rest of the mouseDown event
-	return _button::mouseHandler( event );
-
-}
-
-_callbackReturn _windowsStartButton::refreshHandler( _event event )
-{
-	static string sBT = _system::_runtimeAttributes_->user->getStrAttr( "startButtonText" );
-	
-	// Receive Gadget
-	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
-	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
-	else
-		bP.normalizeClippingRects();
-	
-	if( that->isPressed() || that->startMenu->isOpened() )
-		bP.copy( 0 , 0 , that->startButtonPressed );
-	else
-		bP.copy( 0 , 0 , that->startButton );
-	
-	// "Start"-Text
-	bP.drawString( 12 , 1 , _system::getFont() , sBT , _system::_runtimeAttributes_->user->sBTC );
-	
-	return use_default;
-}
-
-_windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
-	_button( 38 , 10 , x , y , "" , style )
-	, startMenu( new _startMenu() )
-{
-	_style st = this->getStyle();
-	st.canTakeFocus = false;
-	st.canReceiveFocus = false;
-	this->setStyle( st );
-	this->registerEventHandler( mouseDown , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_windowsStartButton::refreshHandler ) );
-	this->startMenu->registerEventHandler( onClose , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
-	
-	this->refreshBitmap();
-}
-
-//
-// Taskbar-Window-Button
-//
 
 _callbackReturn _windowsTaskButton::mouseHandler( _event event ){
 	
@@ -90,6 +20,8 @@ _callbackReturn _windowsTaskButton::mouseHandler( _event event ){
 	
 	return handled;
 }
+
+
 
 _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 {
@@ -111,7 +43,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 		bP.fill( _system::_runtimeAttributes_->windowBar[3] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 2 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
+		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
 		
 		// Topper Line Bright
 		bP.drawHorizontalLine( 1 , 0 , myW - 2 , _system::_runtimeAttributes_->windowBar[1] );
@@ -133,7 +65,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 		bP.fill( _system::_runtimeAttributes_->windowBar[1] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 2 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
+		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
 		
 		// Create brighter blue
 		_color c;
@@ -170,6 +102,8 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	
 	return use_default;
 }
+
+
 
 _windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference , _style style ) :
 	_button( 20 , 10 , x , y , "" , style )

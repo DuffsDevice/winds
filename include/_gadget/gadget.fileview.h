@@ -30,7 +30,7 @@ class _fileview : public _scrollArea {
 		
 		// Simple Ctor
 		_fileview( _length width , _length height , _coord x , _coord y , string path , _style style = _style() ) :
-			_fileview( width , height , x , y , path , _fileviewType::liste , _scrollType::meta , _scrollType::meta , style )
+			_fileview( width , height , x , y , path , _fileviewType::list , _scrollType::meta , _scrollType::meta , style )
 		{ }
 		
 		~_fileview();

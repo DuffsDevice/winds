@@ -3,97 +3,117 @@
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
 
-_callbackReturn _fileobject::doubleClickHandler( _event event ){
-	// Receive Gadget
-	_fileobject* that = event.getGadget<_fileobject>();
-	
+_callbackReturn _fileobject::doubleClickHandler( _event event )
+{
 	// Execute!
-	that->file.execute();
+	event.getGadget<_fileobject>()->file.execute();
 	
 	return handled;
 }
 
-_callbackReturn _fileobject::focusHandler( _event event )
-{	
+_callbackReturn _fileobject::refreshHandler( _event event )
+{
 	// Receive Gadget
 	_fileobject* that = event.getGadget<_fileobject>();
 	
-	if( event.getType() == onFocus )
-	{
-		that->label->setBgColor( RGB255( 10 , 36 , 106 ) );
-		that->label->setColor( COLOR_WHITE );
-	}
+	_bitmapPort bP = that->getBitmapPort();
+	
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
 	else
+		bP.normalizeClippingRects();
+	
+	// Darw Background
+	bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_WHITE );
+	
+	_length myH = bP.getHeight();
+	//_length myW = bP.getWidth();
+	
+	switch( that->viewType )
 	{
-		that->label->setBgColor( COLOR_WHITE );
-		that->label->setColor( COLOR_BLACK );
-	}
-	
-	return use_default;
-}
-
-_callbackReturn _fileobject::dragHandler( _event event )
-{	
-	// Receive Gadget
-	//_fileobject* that = event.getGadget<_fileobject>();
-	
-	return not_handled;
-}
-
-_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
-{
-	// Reset Bitamp
-	this->bitmap.reset( NO_COLOR );
-	
-	// Register Handlers
-	this->registerEventHandler( dragging , new _staticCallback( &_fileobject::dragHandler ) );
-	this->registerEventHandler( dragStart , new _staticCallback( &_fileobject::dragHandler ) );
-	this->registerEventHandler( dragStop , new _staticCallback( &_fileobject::dragHandler ) );
-	this->registerEventHandler( onFocus , new _staticCallback( &_fileobject::focusHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_fileobject::focusHandler ) );
-	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_fileobject::doubleClickHandler ) );
-	
-	switch( this->viewType )
-	{
-		case _fileviewType::liste:{
-			// Generate...
-			string ext = file.getExtension();
+		case _fileviewType::list:
+		{
+			string ext = that->file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system::_runtimeAttributes_->user->sFE || file.isDirectory() || !ext.length() )
+			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
 			
-			this->label = new _label( 11 , 0 , file.getName() + ext );
-			this->label->setHeight( _system::_runtimeAttributes_->user->fOH );
-			this->label->setVAlign( _valign::middle );
+			string fullName = that->file.getName() + ext;
 			
-			// Resize
-			_rect dim = this->getDimensions();
-			dim.width = this->label->getWidth() + 12;
-			this->setDimensions( dim );
+			// Receive Font
+			_font* ft = _system::getFont();
 			
-			// Add Label
-			this->addChild( this->label );
+			// Font Size
+			int ftSize = _system::_runtimeAttributes_->defaultFontSize;
+			
+			// Font Color
+			_pixel ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
+			
+			// Draw String Vertically middle and left aligned
+			bP.drawString( 11 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Set Icon
-			const _bitmap& fileIcon = file.getFileImage();
+			const _bitmap& fileIcon = that->file.getFileImage();
 			
-			_imagegadget* img = new _imagegadget( 
+			bP.copyTransparent(
 				5 - ( fileIcon.getWidth() >> 1 ) // X
 				, ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
-			
-			this->addChild( img );
 			
 			break;
 		}
 		default:
 			break;
 	};
+	
+	return handled;
+}
+
+//_callbackReturn _fileobject::dragHandler( _event event )
+//{	
+//	// Receive Gadget
+//	//_fileobject* that = event.getGadget<_fileobject>();
+//	
+//	return not_handled;
+//}
+
+_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
+	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+{	
+	switch( this->viewType )
+	{
+		case _fileviewType::list:{
+			string ext = this->file.getExtension();
+			
+			// Certain Files do not have an .extension
+			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
+				ext = "";
+			else
+				ext = "." + ext;
+			
+			string fullName = this->file.getName() + ext;
+			
+			// Receive Font
+			_font* ft = _system::getFont();
+			
+			this->setWidth( ft->getStringWidth( fullName ) + 11 );
+		}
+		default:
+			break;
+	};
+	
+	// Register Handlers
+	this->registerEventHandler( refresh , new _staticCallback( &_fileobject::refreshHandler ) );
+	//this->registerEventHandler( dragging , new _staticCallback( &_fileobject::dragHandler ) );
+	//this->registerEventHandler( dragStart , new _staticCallback( &_fileobject::dragHandler ) );
+	//this->registerEventHandler( dragStop , new _staticCallback( &_fileobject::dragHandler ) );
+	this->registerEventHandler( onFocus , new _gadget::eventForwardRefresh() );
+	this->registerEventHandler( onBlur , new _gadget::eventForwardRefresh() );
+	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_fileobject::doubleClickHandler ) );
 	
 	// Refresh...
 	this->refreshBitmap();

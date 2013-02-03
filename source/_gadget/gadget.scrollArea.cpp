@@ -7,12 +7,15 @@ map<_string,_scrollType> string2scrollType = {
 	{ "hidden" , _scrollType::hidden },
 	{ "prevent" , _scrollType::prevent }
 };
+
 map<_scrollType,_string> scrollType2string = {
 	{ _scrollType::scroll , "scroll" },
 	{ _scrollType::meta , "meta" },
 	{ _scrollType::hidden , "hidden" },
 	{ _scrollType::prevent , "prevent" }
 };
+
+
 
 void _scrollArea::addChild( _gadget* child )
 {
@@ -30,6 +33,8 @@ void _scrollArea::addChild( _gadget* child )
 		this->computeCanvasHeight = 2;
 }
 
+
+
 void _scrollArea::removeChild( _gadget* child )
 {
 	_gadget::removeChild( child );
@@ -46,6 +51,8 @@ void _scrollArea::removeChild( _gadget* child )
 	if( this->computeCanvasHeight == 1 )
 		this->computeCanvasHeight = 2;
 }
+
+
 
 void _scrollArea::updateScrollBars()
 {
@@ -81,6 +88,8 @@ void _scrollArea::updateScrollBars()
 	// Crop children Area
 	this->setPadding( p );
 }
+
+
 
 void _scrollArea::computeClipSize()
 {
@@ -121,6 +130,8 @@ void _scrollArea::computeClipSize()
 	}
 }
 
+
+
 _callbackReturn _scrollArea::resizeHandler( _event event )
 {
 	_scrollArea* that = event.getGadget<_scrollArea>();
@@ -147,6 +158,8 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 	
 	return handled;
 }
+
+
 
 void _scrollArea::computeCanvasSize(){
 	// Return if there's nothing to do
@@ -179,6 +192,8 @@ void _scrollArea::computeCanvasSize(){
 	}
 }
 
+
+
 _callbackReturn _scrollArea::scrollHandler( _event event ){
 	
 	// Receive Gadget
@@ -188,8 +203,13 @@ _callbackReturn _scrollArea::scrollHandler( _event event ){
 		for( _gadget* child : area->children )
 			child->moveRelative( - event.getDeltaX() , - event.getDeltaY() );
 	
+	// Forward onScroll-Event!
+	area->triggerEvent( event );
+	
 	return handled;
 }
+
+
 
 void _scrollArea::setScrollTypeX( _scrollType typeX ){
 	this->scrollTypeX = typeX;
@@ -197,21 +217,27 @@ void _scrollArea::setScrollTypeX( _scrollType typeX ){
 	this->updateScrollBars();
 }
 
+
+
 void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->scrollTypeY = typeY;
 	this->computeClipSize();
 	this->updateScrollBars();
 }
 
-_callbackReturn handler( _event e )
-{
-	if( e.getGadget()->getStyle().data )
-		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 0 , 0 , true );
-	else
-		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 4342 , 23423 , true );
-	
-	return handled;
-}
+
+
+//_callbackReturn handler( _event e )
+//{
+//	if( e.getGadget()->getStyle().data )
+//		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 0 , 0 , true );
+//	else
+//		((_scrollArea*)e.getGadget<_button>()->parent)->scrollTo( 4342 , 23423 , true );
+//	
+//	return handled;
+//}
+
+
 
 _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
 	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
@@ -225,11 +251,14 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	, computeCanvasWidth( 1 )
 	, computeCanvasHeight( 1 )
 {
+	// Create scrollbars
 	this->scrollBarX->setStep( 5 );
-	this->scrollBarX->registerEventHandler( onChange , new _staticCallback( &_scrollArea::scrollHandler ) );
+	this->scrollBarX->registerEventHandler( onScroll , new _staticCallback( &_scrollArea::scrollHandler ) );
 	
 	this->scrollBarY->setStep( 5 );
-	this->scrollBarY->registerEventHandler( onChange , new _staticCallback( &_scrollArea::scrollHandler ) );
+	this->scrollBarY->registerEventHandler( onScroll , new _staticCallback( &_scrollArea::scrollHandler ) );
+	
+	// Register 'em
 	this->addEnhancedChild( this->scrollBarX );
 	this->addEnhancedChild( this->scrollBarY );
 	
@@ -242,15 +271,10 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 	this->computeClipSize();
 	this->updateScrollBars();
 	
-	//auto b = new _button( 20 , 30 , 400 , 210 , "Hallo" , _style::storeData( 1 ) );
-	//b->registerEventHandler( onAction , &handler );
+	//auto b = new _button( 20 , 30 , 400 , 210 , "Hallo" , _style::storeInt( 1 ) );
+	//b->registerEventHandler( onAction , new _staticCallback( &handler ) );
 	//auto b2 = new _button( 50 , 50 , 1 , 1 , "Hallo" );
-	//b2->registerEventHandler( onAction , &handler );
+	//b2->registerEventHandler( onAction , new _staticCallback( &handler ) );
 	//this->addChild( b );
 	//this->addChild( b2 );
-}
-
-_scrollArea::~_scrollArea(){
-	delete this->scrollBarX;
-	delete this->scrollBarY;
 }
