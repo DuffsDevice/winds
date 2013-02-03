@@ -10,7 +10,6 @@ class _radio : public _gadget {
 	
 	private:
 		
-		bool			pressed;
 		bool			intValue;
 		_radiogroup* 	radiogroup;
 		

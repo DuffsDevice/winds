@@ -9,9 +9,6 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	, directory( path )
 	, viewType( viewtype )
 {
-	// Reset Bitamp
-	this->bitmap.reset( COLOR_WHITE );
-	
 	// Generate _fileobject's
 	this->generateChildren();
 	
@@ -19,22 +16,30 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	this->refreshBitmap();
 }
 
-void _fileview::setPath( const string& path ){
-	this->removeChildren( true );
+
+void _fileview::setPath( const string& path )
+{
 	this->directory = _direntry( path );
 	this->generateChildren();
 }
 
+
 void _fileview::generateChildren()
 {
-	int i = -_system::_runtimeAttributes_->user->fOH;
+	this->removeChildren( true );
+	
+	int fileObjectHeight = _system::_runtimeAttributes_->user->fOH;
+	int i = -fileObjectHeight;
 	
 	this->directory.rewindChildren();
 	
 	// Read Children of directory
 	for( string str; this->directory.readChild( str ) != false ; )
-		this->addChild( new _fileobject( 1 , ( i += _system::_runtimeAttributes_->user->fOH + 1 ) , str , this->viewType ) );
+		this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , str , this->viewType ) );
+	
+	//this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , "Helloooo.txt" , this->viewType ) );
 }
+
 
 _fileview::~_fileview(){
 	this->removeChildren( true );

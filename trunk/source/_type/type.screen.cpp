@@ -4,15 +4,15 @@
 #include "func.memory.h"
 #include <nds/arm9/trig_lut.h>
 
-_pixelArray	_screen::getMemoryPtr() const {	return bgGetGfxPtr( this->bgId ); }
-_bitmap*	_screen::getBitmap() const { return this->t_bitmap; }
-int _screen::getBgId() const {	return this->bgId; }
+_pixelArray	_screen::getMemoryPtr() const { return bgGetGfxPtr( this->bgId ); }
+_bitmap		_screen::getBitmap() const { return _bitmap( bgGetGfxPtr( this->bgId ) , SCREEN_WIDTH , SCREEN_HEIGHT ); }
+int			_screen::getBgId() const { return this->bgId; }
 
-_coord _screen::getScrollX() const { return bgState[ this->bgId ].scrollX >> 8; }
-_coord _screen::getScrollY() const { return bgState[ this->bgId ].scrollY >> 8; }
+_coord		_screen::getScrollX() const { return bgState[ this->bgId ].scrollX >> 8; }
+_coord		_screen::getScrollY() const { return bgState[ this->bgId ].scrollY >> 8; }
 
-float _screen::getScaleX() const { return fixedToFloat( bgState[ this->bgId ].scaleX , 8 ); }
-float _screen::getScaleY() const {	return fixedToFloat( bgState[ this->bgId ].scaleY , 8 ); }
+float		_screen::getScaleX() const { return fixedToFloat( bgState[ this->bgId ].scaleX , 8 ); }
+float		_screen::getScaleY() const { return fixedToFloat( bgState[ this->bgId ].scaleY , 8 ); }
 
 void _screen::scrollX( _coord x )
 {
@@ -47,7 +47,6 @@ void _screen::scale( float rat )
 _screen::_screen( int bgId )
 	: bgId( bgId )
 {
-	this->t_bitmap = new _bitmap( getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
 	this->scaleX( 1 );
 	this->scaleY( 1 );
 	this->scrollX( 0 );

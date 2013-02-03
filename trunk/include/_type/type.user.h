@@ -25,7 +25,18 @@ class _user : public _registry
 		static _bitmap getUserImage( string path );
 		
 		// Fast Int Attributes
-		_u32 	mDD, mCC, mDC, mDA, kRD, kRS, fOH, sOH, sFE, sBTC, dTC;
+		_u16 	mDD; // minDragDistance
+		_u16	mCC; // maxClickCycles
+		_u8		mDC; // maxDoubleClickCycles
+		_u8		mDA; // maxDoubleClickArea
+		_u16	kRD; // keyRepetitionDelay (frames until repetition)
+		_u16	kRS; // keyRepetitionSpeed (frames between each click)
+		_u8		fOH; // fileObjectHeight
+		_u8		sOH; // selectObjectHeight
+		_u8		sFE; // showFileExtension
+		_pixel	sBTC;// startButtonTextColor
+		_pixel	dTC; // desktopColor
+		bool	mKF; // magnifyKeyboardFocus
 		
 		//! Ctor
 		_user( string username );

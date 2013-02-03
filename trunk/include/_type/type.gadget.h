@@ -31,7 +31,7 @@ class _gadget{
 		// Internal
 		static bool 	removeDeleteCallback( _gadget* g );
 		static bool 	removeCallback( _gadget* g );
-		static _gadget* getGadgetOfMouseDown( _coord posX , _coord posY , _gadget* parent );
+		_gadget* getGadgetOfMouseDown( _coord posX , _coord posY );
 		
 		// Let the gadget blink! this is used if anything can't loose focus
 		void blink();
@@ -40,27 +40,28 @@ class _gadget{
 	public:
 	
 		// Attributes
-		_padding		padding;
-		_rect 			dimensions;
-		_rect 			normalDimensions; // When something is maximized its old dimensions are written in here
-		_style			style;
+		_padding				padding;
+		_rect 					dimensions;
+		_rect 					normalDimensions; // When something is maximized its old dimensions are written in here
+		_style					style;
 		
 		// Children
-		_gadgetList		children;
-		_gadgetList		enhancedChildren;
-		_gadget*		focusedChild;
-		
-		//_area			dirtyRects; // unused yet
+		_gadgetList				children;
+		_gadgetList				enhancedChildren;
+		_gadget*				focusedChild;
 		
 		// Parent
-		_gadget*		parent;
+		_gadget*				parent;
 		
 		// Only for the dragHandler
-		_gadget*		dragTemp;
+		_gadget*				dragTemp;
 		
 		// Event-Handlers
-		_map<_eventType,_callback*> 		eventHandlers;
-		static _map<_eventType,_callback*> 	defaultEventHandlers;
+		_map<_eventType
+				,_callback*>	eventHandlers;
+		// Default event-handlers
+		static _map<_eventType
+				,_callback*> 	defaultEventHandlers;
 		
 		// Standard EventHandler
 		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
@@ -71,6 +72,43 @@ class _gadget{
 		
 		// Bitmap of the Gadget
 		_bitmap	 				bitmap;
+		
+		//! Class to forward any event to an refresh-event
+		class eventForwardRefresh : public _staticCallback
+		{
+			private:
+				static _callbackReturn	refreshForwardHandler( _event event ){ event.getGadget()->bubbleRefresh( true ); return handled; }
+			public:
+				// Ctor
+				eventForwardRefresh() :
+					_staticCallback( &eventForwardRefresh::refreshForwardHandler )
+				{}
+		};
+		
+		//! Class to forward any event to an refresh-event thrown on a specific gadget
+		class eventForwardRefreshGadget : public _classCallback
+		{
+			private:
+				_callbackReturn	refreshForwardHandler( _event event ){ ((_gadget*)this)->bubbleRefresh( true ); return handled; }
+			public:
+				// Ctor
+				eventForwardRefreshGadget( _gadget* g ) :
+					_classCallback( g , reinterpret_cast<_callbackReturn (_gadget::*)( _event )>( &eventForwardRefreshGadget::refreshForwardHandler ) )
+				{}
+		};
+		
+		//! Class to forward any event to any other
+		template<_eventType eT>
+		class eventForward : public _staticCallback
+		{
+			private:
+				static _callbackReturn eventForwardHandler( _event event ){ event.getGadget()->handleEvent( event.setType( eT ) ); return handled; }
+			public:
+				// Ctor
+				eventForward() :
+					_staticCallback( &eventForward::eventForwardHandler )
+				{}
+		};
 	
 	public:
 		
@@ -137,6 +175,18 @@ class _gadget{
 		
 		/** true if the gadget wants to have repeating clicks instead of just one mouseDown event and then nothing... **/
 		bool isMouseClickRepeat() const { return this->style.mouseClickRepeat; }
+		
+		/** Check whether this Gadget is currently pressed **/
+		bool isPressed() const { return this->style.pressed; }
+		
+		/** Check whether this Gadget is not dragged but one of its children **/
+		bool isChildDragged() const { return this->dragTemp != nullptr; }
+		
+		/**
+		 * Check whether this Gadget is doubleclickable
+		 * If Not every DoubleClick will be convertetd to a 'mouseClick'-event
+		**/
+		bool isDoubleClickable() const { return this->style.doubleClickable; }
 		
 		/**
 		 * Let an Event bubble from child to parent and so on...
@@ -294,29 +344,12 @@ class _gadget{
 		/**
 		 * Minimize the Gadget
 		**/
-		void minimize()
-		{
-			if( !this->style.minimized && this->style.minimizeable )
-			{
-				// Blur
-				this->handleEvent( blur );
-				
-				this->style.minimized = true;
-				this->bubbleRefresh();
-			}
-		}
+		void minimize();
 		
 		/**
 		 * Restore the Gadget
 		**/
-		void restore()
-		{
-			if( this->style.minimized )
-			{
-				this->style.minimized = false;
-				this->bubbleRefresh();
-			}
-		}
+		void restore();
 		
 		/**
 		 * Maximize the Gadget
@@ -326,16 +359,7 @@ class _gadget{
 		/**
 		 * unMaximize (Restore) the Gadget
 		**/
-		void unMaximize()
-		{
-			if( this->style.maximized )
-			{
-				this->style.maximized = false;
-				
-				// Set back the old dimensions
-				this->setDimensions( this->normalDimensions );
-			}
-		}
+		void unMaximize();
 		
 		/**
 		 * Get the Gadgets Parent

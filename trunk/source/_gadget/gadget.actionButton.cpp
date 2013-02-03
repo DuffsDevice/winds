@@ -25,7 +25,6 @@ _actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _st
 	, type( type )
 {
 	// Register handler
-	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , new _staticCallback( &_actionButton::refreshHandler ) );
 	
 	// Refresh Me

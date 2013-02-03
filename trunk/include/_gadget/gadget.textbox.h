@@ -27,8 +27,6 @@ class _textbox : public _gadget{
 		//! Current cursor position
 		_length	cursor;
 		
-		bool	pressed;
-		
 		static _callbackReturn refreshHandler( _event e );
 		static _callbackReturn focusHandler( _event e );
 		static _callbackReturn blurHandler( _event e );

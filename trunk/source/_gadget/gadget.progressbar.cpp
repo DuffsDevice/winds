@@ -87,7 +87,6 @@ _progressbar::_progressbar( _length width , _length height , _coord x , _coord y
 	_system::executeTimer( new _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
 	
 	// Register my handler as the default Refresh-Handler
-	this->unregisterEventHandler( mouseDoubleClick );
 	this->registerEventHandler( refresh , new _staticCallback( &_progressbar::refreshHandler ) );
 	
 	// refresh!

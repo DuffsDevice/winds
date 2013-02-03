@@ -7,30 +7,37 @@ _bitmap scroll_bg_vert 			= BMP_ScrollBgSnipVertical();
 _bitmap scroll_bg_horiz 		= BMP_ScrollBgSnipHorizontal();
 
 _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style style ) :
-	_gadget( _gadgetType::scrollbar , dim == _dimension::horizontal ? gadgetLength : 8 ,  dim == _dimension::vertical ? gadgetLength : 8  , x , y , style ) ,
-	value( 0 ) , length( length ) , length2( length2 ) , step( 1 ) , dim( dim ) , anim( 0 , 1 , 600 )
+	_gadget( 
+		_gadgetType::scrollbar
+		, dim == _dimension::horizontal ? gadgetLength : 8
+		,  dim == _dimension::vertical ? gadgetLength : 8 
+		, x , y , style )
+	, value( 0 )
+	, length( length )
+	, length2( length2 )
+	, step( 1 )
+	, dim( dim )
+	, anim( 0 , 1 , 600 )
 {
 	this->anim.setEasing( _animation::_cubic::easeInOut );
 	this->anim.setter( new _classCallback( this , &_scrollBar::setValue ) );
 	
 	if( dim == _dimension::horizontal )
 	{
-		this->dragHandle = new _scrollButton( 8 , 8 , 8 , 0 , _scrollButtonType::buttonHandleX );
-		this->higherHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 8 , 0 , _scrollButtonType::buttonRight );
-		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft );
+		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonHandleX , _styleAttr() | _styleAttr::smallDragTrig );
+		this->higherHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 8 , 0 , _scrollButtonType::buttonRight , _styleAttr() | _styleAttr::mouseClickRepeat );
+		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft , _styleAttr() | _styleAttr::mouseClickRepeat );
 	}
 	else
 	{
-		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY );
-		this->higherHandle = new _scrollButton( 8 , 8 , 0 , this->dimensions.height - 8 , _scrollButtonType::buttonBottom );
-		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop );
+		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY , _styleAttr() | _styleAttr::smallDragTrig );
+		this->higherHandle = new _scrollButton( 8 , 8 , 0 , this->dimensions.height - 8 , _scrollButtonType::buttonBottom , _styleAttr() | _styleAttr::mouseClickRepeat );
+		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop , _styleAttr() | _styleAttr::mouseClickRepeat );
 	}
 	
 	//! Register Event-Handlers
 	this->registerEventHandler( refresh , new _staticCallback( &_scrollBar::refreshHandler ) );
 	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );
-	
-	this->dragHandle->style.smallDragTrig = true;
 	
 	//! Action Handlers
 	this->dragHandle->registerEventHandler( dragStart , new _staticCallback( &_scrollBar::dragHandler ) );
@@ -38,11 +45,6 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	
 	this->higherHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
 	this->lowerHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
-	
-	//! Re-refresh the Buttons with their new refresh-handlers
-	this->dragHandle->refreshBitmap();
-	this->higherHandle->refreshBitmap();
-	this->lowerHandle->refreshBitmap();
 	
 	//! Refresh my cached values
 	refreshHandleWidth();
@@ -55,12 +57,16 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	this->refreshBitmap();
 }
 
+
+
 _scrollBar::~_scrollBar()
 {
 	delete this->dragHandle;
 	delete this->higherHandle;
 	delete this->lowerHandle;
 }
+
+
 
 int _scrollBar::setValue( int val )
 {
@@ -73,12 +79,14 @@ int _scrollBar::setValue( int val )
 		this->refreshPosition();
 		
 		if( this->dim == _dimension::horizontal )
-			this->triggerEvent( _event( onChange ).setDeltaX( delta ).setPosX( val ) );
+			this->triggerEvent( _event( onScroll ).setDeltaX( delta ).setPosX( val ) );
 		else
-			this->triggerEvent( _event( onChange ).setDeltaY( delta ).setPosY( val ) );
+			this->triggerEvent( _event( onScroll ).setDeltaY( delta ).setPosY( val ) );
 	}
 	return val;
 }
+
+
 
 void _scrollBar::setValue( _u32 val , bool ease )
 {
@@ -92,6 +100,8 @@ void _scrollBar::setValue( _u32 val , bool ease )
 	else
 		this->setValue( val );
 }
+
+
 
 _callbackReturn _scrollBar::dragHandler( _event event )
 {	
@@ -123,14 +133,16 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	return handled;
 }
 
+
+
 void _scrollBar::refreshHandleWidth()
 {
 	if( this->length >= this->length2 )
 	{
 		if( this->dim == _dimension::horizontal )
-			this->dragHandle->setWidth( int( this->dimensions.width - 15 ) );
+			this->dragHandle->setWidth( max( 0 , int( this->dimensions.width - 15 ) ) );
 		else
-			this->dragHandle->setHeight( int( this->dimensions.height - 15 ) );
+			this->dragHandle->setHeight( max( 0 , int( this->dimensions.height - 15 ) ) );
 		return;
 	}
 		
@@ -153,6 +165,8 @@ void _scrollBar::refreshHandleWidth()
 	else
 		this->dragHandle->setHeight( length );
 }
+
+
 
 _callbackReturn _scrollBar::clickHandler( _event event ) {
 	
@@ -188,6 +202,8 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 	return handled;
 }
 
+
+
 _callbackReturn _scrollBar::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -211,6 +227,8 @@ _callbackReturn _scrollBar::refreshHandler( _event event )
 	return use_default;
 }
 
+
+
 _callbackReturn _scrollBar::resizeHandler( _event event ){
 	
 	_scrollBar* that = event.getGadget<_scrollBar>();
@@ -226,6 +244,8 @@ _callbackReturn _scrollBar::resizeHandler( _event event ){
 	return handled;
 }
 
+
+
 void _scrollBar::refreshPosition()
 {
 	_u32 perc = div32( this->value << 8 , this->length2 );
@@ -236,6 +256,8 @@ void _scrollBar::refreshPosition()
 		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 14 + this->cache ) >> 8 ) );
 }
 
+
+
 void _scrollBar::setLength( _u32 value )
 {
 	if( this->length == value )
@@ -245,6 +267,8 @@ void _scrollBar::setLength( _u32 value )
 	refreshHandleWidth();
 	this->bubbleRefresh( true );
 }
+
+
 
 void _scrollBar::setLength2( _u32 value )
 {

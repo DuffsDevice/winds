@@ -67,6 +67,9 @@ class _styleAttr
 		
 		static const _nStyleAttr<( 1 << 9 )> 		mouseClickDefault;
 		static const _pStyleAttr<( 1 << 9 )> 		mouseClickRepeat;
+		
+		static const _pStyleAttr<( 1 << 10 )> 		doubleClickable;
+		static const _nStyleAttr<( 1 << 10 )> 		notDoubleClickable;
 };
 
 
@@ -95,8 +98,9 @@ struct _style
 			bool	canReceiveFocus : 1;/** Can receive focus */
 			bool	smallDragTrig : 1;
 			bool	mouseClickRepeat : 1;
+			bool	doubleClickable : 1;
 			_u8		unused1 : 4;
-			_u8		unused2 : 2;
+			_u8		unused2 : 1;
 		} __attribute__(( packed )) ;
 	};
 	

@@ -8,7 +8,8 @@
 
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.desktop.h"
-#include "_gadget/gadget.windows.button.h"
+#include "_gadget/gadget.windows.startbutton.h"
+#include "_gadget/gadget.windows.taskbutton.h"
 
 class _windows : public _gadgetScreen
 {

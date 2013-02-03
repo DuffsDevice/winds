@@ -27,7 +27,11 @@ class _gadgetScreen : public _gadget , public _screen
 	
 	protected:
 		
+		// Adjust supplied _touch so that it is relative to the current position of the screen
 		_touch adjustTouch( _touch touch );
+		
+		// Check whether the supplied touch position is inside this screen
+		bool touchInside( _touch touch );
 		
 	public:
 		

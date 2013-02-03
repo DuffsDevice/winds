@@ -9,7 +9,6 @@ class _button : public _gadget {
 	protected:
 		
 		bool autoSelect;
-		bool pressed;
 		
 		//! String to be displayed
 		string 	strValue;
@@ -57,9 +56,6 @@ class _button : public _gadget {
 		
 		//! Whether the button should be outlined by a blue line
 		bool isAutoSelect();
-		
-		//! Whether the button is pressed currently (used in painting functions)
-		bool isPressed(){ return this->pressed ; }
 		
 		//! Set Text Font
 		void setFont( _font* ft );

@@ -13,6 +13,9 @@ void _textbox::setFont( _font* ft ){
 
 void _textbox::setStrValue( string value )
 {
+	if( this->strValue == value )
+		return;
+	
 	this->strValue = value;
 	this->cursor = min( cursor , _length( value.length() + 1 ) );
 	
@@ -95,7 +98,7 @@ _callbackReturn _textbox::refreshHandler( _event event )
 		}
 	}
 	
-	if( !that->pressed )
+	if( !that->isPressed() )
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
 	else
 		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
@@ -149,8 +152,6 @@ _callbackReturn _textbox::focusHandler( _event event )
 	if( _system::_keyboard_ )
 		_system::_keyboard_->setDestination( event.getGadget() );
 	
-	event.getGadget<_textbox>()->pressed = true;
-	
 	return use_default;
 }
 
@@ -163,7 +164,6 @@ _callbackReturn _textbox::blurHandler( _event event )
 	
 	// Remove Cursor!
 	that->cursor = 0;
-	that->pressed = false;
 	
 	// Refresh
 	that->bubbleRefresh( true );
@@ -218,7 +218,6 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _style s
 	, vAlign( _valign::middle )
 	, strValue( text )
 	, cursor( 0 )
-	, pressed( false )
 {
 	if( this->font && this->font->valid() )
 		this->setHeight( this->font->getHeight() + 2 );

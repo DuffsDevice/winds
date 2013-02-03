@@ -95,9 +95,14 @@ class _scrollArea : public _gadget {
 		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );
 		
 		//! Destrucor
-		~_scrollArea();
+		~_scrollArea()
+		{
+			delete scrollBarX;
+			delete scrollBarY;
+		}
 };
 
 extern map<_string,_scrollType> string2scrollType;
 extern map<_scrollType,_string> scrollType2string;
+
 #endif

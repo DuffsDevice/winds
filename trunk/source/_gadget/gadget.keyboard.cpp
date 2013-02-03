@@ -8,6 +8,7 @@
 #include <nds/arm9/video.h>
 
 #include "_resource/BMP_Grip.h"
+//#include "_resource/BMP_Background.h"
 
 _bitmap Grip = BMP_Grip();
 
@@ -99,8 +100,6 @@ int _keyboard::setState( int value )
 		
 		
 		bgUpdate();
-		
-		this->setY( SCREEN_HEIGHT - value );
 	}
 	this->curState = value;
 	return value;
@@ -144,6 +143,13 @@ int _keyboard::setMagnification( int value )
 	
 	// Scale Lower Screen
 	float percent = float(value) / sEnd;
+	
+	// If no magnification requested
+	if( !_system::_runtimeAttributes_->user->mKF )
+	{
+		this->gHScreen->scrollY( percent * min( _y , sEnd ) );
+		return value;
+	}
 	
 	float rat = 1 - percent * ( 1 - _factor );
 	this->gHScreen->scale( rat );
@@ -265,6 +271,27 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	return use_default;
 }
 
+void _keyboard::refreshKeys()
+{
+	bool useShiftMap = this->shift != this->caps;
+	
+	auto textmap = _system::_runtimeAttributes_->keyboardText[ useShiftMap ];
+	auto charmap = _system::_runtimeAttributes_->keyboardChar[ useShiftMap ];
+	
+	for( _u8 i = 0 ; i < 46 ; i++ )
+	{
+		if( i == 30 /* Caps Lock */ )
+			this->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->caps ][ i ] );
+		else if( i == 45 || i == 40 /* Shift */ )
+			this->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->shift ][ i ] );
+		else
+		{
+			this->buttons[i]->setStrValue( textmap[i] );
+			this->buttons[i]->setKey( charmap[i] );
+		}
+	}
+}
+
 _callbackReturn _keyboard::keyHandler( _event event )
 {	
 	// Receive Gadget
@@ -272,19 +299,28 @@ _callbackReturn _keyboard::keyHandler( _event event )
 	
 	if( event.getKeyCode() == DSWindows::KEY_SHIFT )
 	{
-		if( event.getType() != keyClick || that->shift == 2 )
-			return handled;
-		
 		that->shift = !that->shift;
 		
-		for( _u8 i = 0 ; i < 46 ; i++ )
+		that->refreshKeys();
+	}
+	else if( event.getKeyCode() == DSWindows::KEY_CAPS )
+	{
+		that->caps = !that->caps;
+		
+		that->refreshKeys();
+	}
+	else
+	{
+		if( that->destination != nullptr )
+			that->destination->handleEvent( event );
+		
+		// Remove Shift
+		if( that->shift )
 		{
-			that->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ bool( that->shift ) ][i] );
-			that->buttons[i]->setKey( _system::_runtimeAttributes_->keyboardChar[ bool( that->shift ) ][i] );
+			that->shift = false;
+			that->refreshKeys();
 		}
 	}
-	else if( that->destination != nullptr )
-		that->destination->handleEvent( event );
 	
 	return handled;
 }
@@ -305,7 +341,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
 		if( event.getPosY() > 11 )
 		{
-			that->dragMe = false;			
+			that->dragMe = false;
 			// Check children
 			return use_default;
 		}
@@ -354,6 +390,8 @@ _callbackReturn _keyboard::dragHandler( _event event )
 		else
 			that->open();
 		
+		that->dragMe = false;
+		
 		// Return
 		return handled;
 	}
@@ -372,13 +410,14 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, gHScreen( gadgetHost )
 	, handlePosition( position )
 	, shift( false )
+	, caps( false )
 	, mode( false ) // Means "Hidden"
 	, curState( 1 )
 	, destination( nullptr )
 	, animKeyb( 0 , 0 , 800 )
 	, animMagnif( sStart , sEnd , 800 )
 {
-	_screen::getBitmap()->reset( NO_COLOR );
+	_screen::getBitmap().reset( NO_COLOR );
 	
 	//! Reset Keyboard Position
 	this->setState( sStart );
@@ -392,14 +431,14 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] , _styleAttr() | _styleAttr::mouseClickRepeat );
 		switch( i )
 		{
-			case 45:
-			case 40:
+			case 45: // Right Shift
+			case 40: // Left Shift
 				this->buttons[i]->setAutoSelect( true );
 				this->buttons[i]->style.mouseClickRepeat = false;
-			case 41:
-			case 39:
-			case 30:
-			case 29:
+			case 41: // Windows-Button
+			case 39: // Carriage Return
+			case 30: // Caps
+			case 29: // Backspace
 				this->buttons[i]->setFont( systemFont );
 				break;
 			default:
@@ -417,8 +456,6 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	
 	//! Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_keyboard::refreshHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_keyboard::keyHandler ) );
-	this->registerEventHandler( keyUp , new _staticCallback( &_keyboard::keyHandler ) );
 	this->registerEventHandler( keyClick , new _staticCallback( &_keyboard::keyHandler ) );
 	
 	this->registerEventHandler( dragStart , new _staticCallback( &_keyboard::dragHandler ) );
@@ -432,6 +469,5 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 
 _keyboard::~_keyboard()
 {	
-	for( _u8 i = 0 ; i < 46 ; i++ )
-		delete this->buttons[i];
+	this->removeChildren( true );
 }

@@ -20,20 +20,26 @@ _touch _gadgetScreen::adjustTouch( _touch touch )
 	return touch;
 }
 
+bool _gadgetScreen::touchInside( _touch touch )
+{
+	return _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ).contains( touch.x , touch.y ) // Inside my coordinates
+		&& RGB_GETA( _gadget::getBitmap().getPixel( touch.x , touch.y ) ); // Check if this part of the bitmap is non-transparent
+}
+
 bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 {
 	// Shortcut...
 	const _user* user = _system::_runtimeAttributes_->user;
 	
 	// Temp...
-	_event event;
+	_event event = _event().setCurrentKeyCodes( _system::getCurrentKeys() );
 	
 	// Increase clickCycles and prevent overflow
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )
 		this->cyclesLastClick++;
 	
 	_touch  newNewTouch = _gadgetScreen::adjustTouch( newTouch );
-	bool newTouchInside = _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ).contains( newNewTouch.x , newNewTouch.y ) && RGB_GETA( this->getMemoryPtr()[SCREEN_WIDTH*newNewTouch.y+newNewTouch.x] );
+	bool newTouchInside = this->touchInside( newNewTouch );
 	
 	/*!
 	 * Handle the Pen!
@@ -41,7 +47,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	if( held )
 	{
 		
-		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y ).setCurrentKeyCodes( _system::getCurrentKeys() );
+		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
 			
 		//! Check if this is the first Cycle the pen is down
 		if( this->touchCycles == 0 )
@@ -64,15 +70,16 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
 			
 			// Modify Event
-			event.setPosX( newNewTouch.x ).setPosY( newNewTouch.y ).setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
+			event.setDeltaX( newNewTouch.x - newLastTouch.x ).setDeltaY( newNewTouch.y - newLastTouch.y );
 			
+			//! '_gadget' shall pass the 'Drag'-Event
 			this->handleEvent( event.setType( dragging ) );
 			
+			//! Make ready for next frame!
 			this->lastTouch = newTouch;
 		}		
 		//! Check if the Stylus has moved
-		else if( _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ).contains( newStartTouch.x , newStartTouch.y ) && RGB_GETA( this->getMemoryPtr()[SCREEN_WIDTH*newStartTouch.y+newStartTouch.x] ) )
-		{
+		else if( this->touchInside( newStartTouch ) ){
 			// Compute the dragged Distance
 			// -> Pythagoras!
 			_u32 xd = newTouch.x - startTouch.x;
@@ -97,8 +104,6 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				this->lastTouch = this->startTouch;	
 			}
 		}
-		//printf("\x1b[2J");
-		//printf("G: %s : %d",gadgetType2string[ _system::_lastClickedGadget_->getType() ].c_str(), _system::_lastClickedGadget_->isMouseClickRepeat() );
 		
 		// If the current clicked gadget wants to have mouseClicks Repeating
 		if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( user->kRD && this->touchCycles > user->kRD && this->touchCycles % user->kRS == 0 ) )
@@ -112,10 +117,15 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	{
 		// Set the Event-Parameter
 		_touch newLastTouch = _gadgetScreen::adjustTouch( lastTouch );
+		
+		// Set parameters
 		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y );		
 		
-		// Trigger the Event
-		this->handleEvent( event.setType( mouseUp ) );
+		bool lastTouchInside = this->touchInside( newLastTouch );
+		
+		// Trigger mouseUpEvent if the mouseUp was performed inside this screen
+		if( lastTouchInside )
+			this->handleEvent( event.setType( mouseUp ) );
 		
 		//! Maybe DragStop-Event?
 		if( this->isDragging )
@@ -127,7 +137,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			this->isDragging = false;
 		}
 		//! Maybe Click-Event?
-		else if( this->touchCycles < user->mCC )
+		else if( lastTouchInside && this->touchCycles < user->mCC )
 		{
 			_s16	deltaX = touchBefore.x - lastTouch.x;
 			_s16	deltaY = touchBefore.y - lastTouch.y;
@@ -153,7 +163,6 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		
 		// Reset touch Cycles
 		touchCycles = 0;
-		
 	}
 	
 	return newTouchInside || isDragging;
