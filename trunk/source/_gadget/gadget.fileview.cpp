@@ -9,6 +9,9 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	, directory( path )
 	, viewType( viewtype )
 {
+	// Set Real Type!
+	this->setType( _gadgetType::fileview );
+	
 	// Generate _fileobject's
 	this->generateChildren();
 	
@@ -21,6 +24,9 @@ void _fileview::setPath( const string& path )
 {
 	this->directory = _direntry( path );
 	this->generateChildren();
+	
+	// Trigger 'onChange'-Event
+	this->triggerEvent( onChange );
 }
 
 
@@ -35,9 +41,9 @@ void _fileview::generateChildren()
 	
 	// Read Children of directory
 	for( string str; this->directory.readChild( str ) != false ; )
-		this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , str , this->viewType ) );
+		this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + str , this->viewType ) );
 	
-	//this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , "Helloooo.txt" , this->viewType ) );
+	//this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , "Helloooo.lua" , this->viewType ) );
 }
 
 

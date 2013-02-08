@@ -21,10 +21,11 @@ class _user : public _registry
 	
 	public:
 		
+		//! Methods to receive create a users logo
 		static _bitmap getUserLogoFromImage( const _bitmap& image );
 		static _bitmap getUserImage( string path );
 		
-		// Fast Int Attributes
+		//! Fast Int Attributes
 		_u16 	mDD; // minDragDistance
 		_u16	mCC; // maxClickCycles
 		_u8		mDC; // maxDoubleClickCycles
@@ -44,7 +45,11 @@ class _user : public _registry
 		//! Dtor
 		~_user();
 		
-		string getUsername();
+		//! Get the user's username
+		string getUsername(){ return _registry::readIndex( "_global_" , "userName" ); }
+		
+		//! Get the foldername of the user ( it's directory in "%USERS%/" )
+		string getFoldername(){ return this->folderName; }
 		
 		//! Get User-Logo
 		const _bitmap& getLogo() const { return this->userLogo; }
@@ -55,19 +60,26 @@ class _user : public _registry
 		//! For view type of wallpaper
 		_wallpaperViewType getWallpaperViewType() const { return this->wallpaperView; }
 		
+		//! Match a supplied raw string against the password
 		bool checkPassword( string pw );
 		
+		//! Check if the user has a password
 		bool hasPassword();
 		
+		//! Set a users password
 		void setPassword( string pw );
 		
-		void setUsername( string un );
+		//! Set a users username
+		void setUsername( string name ){ _registry::writeIndex( "_global_" , "userName" , name ); }
 		
-		void remove();
+		//! Remove the user (equals unlinking its directory)
+		void remove(){ _registry::unlink(); }
 		
+		//! Get a string value from the registry parsed as number
 		_s32 getIntAttr( string idx );
 		
-		string getStrAttr( string idx );
+		//! Read a string value from the registry
+		string getStrAttr( string idx ){ return _registry::readIndex( "_global_" , idx ); }
 };
 
 #endif

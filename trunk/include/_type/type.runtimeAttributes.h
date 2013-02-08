@@ -21,6 +21,7 @@ class _runtimeAttributes
 		_pixel			defaultForeground;
 		_pixel			defaultBackground;
 		_user*			user;
+		bool			magnifyKeyboardFocus;
 		
 		// Associative Directories: e.g. %WINDIR%
 		vector<pair<string,string>> assocDirectories;

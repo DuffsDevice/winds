@@ -19,7 +19,7 @@ _direntry _shortcut::getDestination(){
 	return this->destination;
 }
 
-const _bitmap& _shortcut::getFileImage()
+_bitmap _shortcut::getFileImage()
 {
 	static _u8 fOH = _system::_runtimeAttributes_->user->fOH;
 	
@@ -34,8 +34,8 @@ const _bitmap& _shortcut::getFileImage()
 	
 	if( fl.getFileName() != "" )
 	{
-		const _bitmap& icon = fl.getFileImage();
-		this->image.copy( 5 - ( icon.getWidth() >> 1 ) , ( fOH >> 1 ) - ( icon.getHeight() >> 1 ) , icon );
+		_bitmap icon = fl.getFileImage();
+		this->image.copy( ( 10 - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	
 	this->image.copy( 5 , 5 , icon_shortcut );

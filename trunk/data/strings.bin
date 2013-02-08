@@ -146,14 +146,22 @@ s = Reinicia tu Nintendo DS!
 f = S'il vous plaît redémarrer votre Nintendo DS!
 
 [lbl_passcode]
-e = Your Passcode:
-g = Passwort:
-i = Password:
-s = Password:
-f = Votre Passcode:
+e = Passcode
+g = Passwort
+i = Password
+s = Password
+f = Passcode
+
+[lbl_welcome]
+e = Welcome
+g = Willkommen
+i = Benvenuto
+s = Bienvenido
+f = Bonjour
 
 ;[]
 ;e = 
 ;g = 
 ;i = 
 ;s = 
+;f = 

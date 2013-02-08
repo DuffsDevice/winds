@@ -14,7 +14,6 @@ class _keyboard : public _gadgetScreen {
 	
 		_screen*		topScreen;
 		_gadgetScreen*	gHScreen; // GadgetHost
-		_u8				bgIdSub;
 		int				magnifX;
 		int				magnifY;
 		float			magnifFactor;
@@ -46,10 +45,10 @@ class _keyboard : public _gadgetScreen {
 		static _callbackReturn mouseHandler( _event event );
 		static _callbackReturn keyHandler( _event event );
 		static _callbackReturn dragHandler( _event event );
-		static _callbackReturn focusHandler( _event event );
 		
 		int setState( int val );
 		int setMagnification( int val );
+		void reset();
 		
 		void refreshKeys();
 	

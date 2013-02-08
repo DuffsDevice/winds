@@ -34,7 +34,6 @@ class _gadget{
 		_gadget* getGadgetOfMouseDown( _coord posX , _coord posY );
 		
 		// Let the gadget blink! this is used if anything can't loose focus
-		void blink();
 		void blinkHandler();
 	
 	public:
@@ -67,7 +66,6 @@ class _gadget{
 		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetDragHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetMouseHandler( _event event ) ITCM_CODE ;
-		static _callbackReturn	gadgetFocusHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetKeyHandler( _event event ) ITCM_CODE ;
 		
 		// Bitmap of the Gadget
@@ -441,6 +439,22 @@ class _gadget{
 		virtual void setWidth( _length val );
 		
 		/**
+		 * Blur the Gadget
+		**/
+		void blur()
+		{
+			this->parent && this->parent->focusedChild == this && this->parent->blurChild();
+		}
+		
+		/**
+		 * Focus the Gadget
+		**/
+		void focus()
+		{
+			this->parent && this->parent->focusChild( this );
+		}
+		
+		/**
 		 * Get the toppest child owned by the parent
 		**/
 		_gadget* getToppestChild(){	return this->children.front(); }
@@ -450,6 +464,11 @@ class _gadget{
 		 * @see type.h:111
 		**/
 		_gadgetType getType(){ return this->type; }
+		
+		/**
+		 * Let the gadget blink!
+		**/
+		void blink();
 		
 	protected:
 		

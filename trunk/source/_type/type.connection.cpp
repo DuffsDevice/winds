@@ -32,10 +32,11 @@ _u32 _wifiSocketClient::string2IP( string str ) {
 		data[j] = atoi(buffer);
 	}
 
-	return this->makeIP(data[0], data[1], data[2], data[3]);
+	return this->makeIP( data[0] , data[1] , data[2] , data[3] );
 }
 
-_wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode )
+_wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode ) :
+	succeeded( false )
 {
 	
 	unsigned long 		ip;
@@ -45,28 +46,31 @@ _wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode )
 	this->sock = socket(AF_INET, SOCK_STREAM, 0);
 
 	if ( IS_INETADDR( host ) )
-		ip = this->string2IP(host);
+		ip = this->string2IP(host); // An IP entered!
 	else
-		ip = *(unsigned long *)gethostbyname( host.c_str() )->h_addr_list[0];
+		ip = *(unsigned long *)gethostbyname( host.c_str() )->h_addr_list[0]; // A Web address entered!
 
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons( port );
+	servaddr.sin_family = AF_INET; // Standard
+	servaddr.sin_port = htons( port ); // Write Port No.
 	servaddr.sin_addr.s_addr = ip;
 
-	if( mode == _tcpType::tcpNormal )
+	int connectResult = connect( this->sock , (sockaddr*)&servaddr , sizeof(servaddr) );
+	
+	if( connectResult == 0 )
 	{
-		if ( connect( this->sock , (sockaddr*) &servaddr , sizeof(servaddr) ) == 0 )
-			this->succeeded = true;
-	}
-	else
-	{
-		if (connect(this->sock, (sockaddr*) &servaddr, sizeof(servaddr) ) == 0 ) {
+		this->succeeded = true;
+		if( mode == _tcpType::tcpUnblocked )
+		{
 			int i = 1;
 			ioctl(this->sock, FIONBIO, &i);
-			this->succeeded = true;
 		}
 	}
-	//printf("->%d\n",this->succeeded);
+	printf("->%d\n",this->succeeded);
+}
+
+_wifiSocketClient::~_wifiSocketClient()
+{
+
 }
 
 void _wifiSocketClient::request( string url ){

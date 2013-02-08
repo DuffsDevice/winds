@@ -45,14 +45,15 @@ _bitmap _user::getUserImage( string path )
 _user::_user( string folderName ) :
 	_registry( "%USERS%/" + folderName + "/user.ini"  )
 	, folderName( folderName )
-{ 
+{
 	if( _registry::creation )
 	{
 		this->ini->getMap() = 
 			{ { "_global_" , 
 				{
 					{ "userName" , this->folderName } ,
-					{ "wallpaper" , "wallpaper.png" } ,
+					{ "userCode" , md5( "" ) } ,
+					{ "wallpaper" , "_default_" } ,
 					{ "wallpaperView" , "0" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
 					{ "userLogo" , "guest.png" } ,
@@ -70,6 +71,8 @@ _user::_user( string folderName ) :
 					{ "magnifyKeyboardFocus" , "true" }
 				}
 			} };
+		
+		// Write to disk!
 		this->flush();
 	}
 	
@@ -81,7 +84,7 @@ _user::_user( string folderName ) :
 	this->kRD = this->getIntAttr( "keyRepetitionDelay" );
 	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
 	this->fOH = this->getIntAttr( "fileObjectHeight" );
-	this->sOH = this->getIntAttr( "selectObjectHeight" );	
+	this->sOH = this->getIntAttr( "selectObjectHeight" );
 	this->sFE = this->getIntAttr( "showFileExtension" );	
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	this->dTC = this->getIntAttr( "desktopColor" );	
@@ -128,11 +131,6 @@ _user::~_user()
 	_registry::writeIndex( "_global_" , "lastTimeLogIn" , str );
 }
 
-string _user::getUsername()
-{
-	return _registry::readIndex( "_global_" , "userName" );
-}
-
 bool _user::checkPassword( string pw )
 {
 	return md5( pw ) == _registry::readIndex( "_global_" , "userCode" );
@@ -140,23 +138,12 @@ bool _user::checkPassword( string pw )
 
 bool _user::hasPassword()
 {
-	return _registry::readIndex( "_global_" , "userCode" ).length() != 0;
+	string value = _registry::readIndex( "_global_" , "userCode" );
+	return !value.empty() && value != "d41d8cd98f00b204e9800998ecf8427e"; // this is the result for md5("")
 }
 
-void _user::setPassword( string pw )
-{
+void _user::setPassword( string pw ){
 	_registry::writeIndex( "_global_" , "userCode" , md5( pw ) );
-}
-
-void _user::remove()
-{
-	_direntry d = _direntry( "%USERS%/" + this->folderName );
-	d.unlink();
-}
-
-void _user::setUsername( string uN )
-{
-	_registry::writeIndex( "_global_" , "userName" , uN );
 }
 
 _s32 _user::getIntAttr( string idx )
@@ -214,9 +201,4 @@ _s32 _user::getIntAttr( string idx )
 		return 0;
 	
 	return string2int( attr.c_str() );
-}
-
-string _user::getStrAttr( string idx )
-{
-	return _registry::readIndex( "_global_" , idx );
 }

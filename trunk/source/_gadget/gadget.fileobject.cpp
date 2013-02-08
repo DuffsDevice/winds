@@ -1,12 +1,21 @@
-#include "_gadget/gadget.fileObject.h"
+#include "_gadget/gadget.fileobject.h"
+#include "_gadget/gadget.fileview.h"
 #include "_gadget/gadget.imagegadget.h"
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
 
 _callbackReturn _fileobject::doubleClickHandler( _event event )
 {
+	_fileobject* that = event.getGadget<_fileobject>();
+	
 	// Execute!
-	event.getGadget<_fileobject>()->file.execute();
+	if( that->file.isDirectory() )
+	{
+		if( that->parent->getType() == _gadgetType::fileview )
+			((_fileview*)that->parent)->setPath( that->file.getFileName() );
+	}
+	else
+		that->file.execute();
 	
 	return handled;
 }

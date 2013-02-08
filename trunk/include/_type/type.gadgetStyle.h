@@ -16,18 +16,20 @@ class _styleAttr
 		
 		_u16 sum;
 		
+		friend class _style;
+		
 	public:
 		
 		// Casts
 		operator _u16(){ return sum; }
 		
 		// This all works completely at compile-time!
-		template<int t> constexpr _styleAttr operator |( const _pStyleAttr<t> attrs ) const { _u16 s = sum; s |= t; return _styleAttr( s ); }
-		template<int t> constexpr _styleAttr operator |( const _nStyleAttr<t> attrs ) const { _u16 s = sum; s &= ( _u32( 1 << 16 ) - 1 ) ^ t; return _styleAttr( s ); }
+		template<int t> constexpr _styleAttr operator |( const _pStyleAttr<t> ) const { _u16 s = sum; s |= t; return _styleAttr( s ); }
+		template<int t> constexpr _styleAttr operator |( const _nStyleAttr<t> ) const { _u16 s = sum; s &= ( _u32( 1 << 16 ) - 1 ) ^ t; return _styleAttr( s ); }
 		
 		// This all works completely at compile-time!
-		template<int t> _styleAttr& operator |=( const _pStyleAttr<t> attrs ){ sum |= t; return *this; }
-		template<int t> _styleAttr& operator |=( const _nStyleAttr<t> attrs ){ sum &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
+		template<int t> _styleAttr& operator |=( const _pStyleAttr<t> ){ sum |= t; return *this; }
+		template<int t> _styleAttr& operator |=( const _nStyleAttr<t> ){ sum &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
 		
 		// Default ctor
 		_styleAttr();
@@ -142,6 +144,12 @@ struct _style
 		, minimized( false )
 		, data( 0 )
 	{ }
+	
+	// Enable _styleAttr-changes also on this struct
+	template<int t> constexpr _style operator |( const _pStyleAttr<t> ) const { _style s = *this; s.attrs |= t; return s; }
+	template<int t> constexpr _style operator |( const _nStyleAttr<t> ) const { _style s = *this; s.attrs &= ( _u32( 1 << 16 ) - 1 ) ^ t; return s; }
+	template<int t> _style& operator |=( const _pStyleAttr<t> ){ attrs |= t; return *this; }
+	template<int t> _style& operator |=( const _nStyleAttr<t> ){ attrs &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
 	
 } __attribute__(( packed )) ;
 

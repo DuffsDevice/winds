@@ -101,13 +101,13 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				this->handleEvent( event.setType( dragStart ) );
 				this->isDragging = true;
 				
-				this->lastTouch = this->startTouch;	
+				this->lastTouch = this->startTouch;
 			}
 		}
 		
 		// If the current clicked gadget wants to have mouseClicks Repeating
 		if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( user->kRD && this->touchCycles > user->kRD && this->touchCycles % user->kRS == 0 ) )
-			_system::_lastClickedGadget_->handleEvent( event.setType( mouseClick ) );
+			_system::_lastClickedGadget_->handleEvent( event.setType( mouseRepeat ) );
 		
 		// Increase Cycles
 		this->touchCycles++;

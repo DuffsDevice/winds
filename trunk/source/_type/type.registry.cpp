@@ -12,14 +12,14 @@ _registry::_registry( string filename ) :
 	{
 		this->create();
 		this->ini = new _ini("");
-		this->writeIndex( "_global_" , "firstTimeUse" , "1" );
+		this->writeIndex( "_global_" , ".firstTimeUse" , "1" );
 		this->creation = true;
 	}
 	else
 	{
 		this->ini = new _ini( this->readString( size ) );
 		this->ini->read();
-		this->deleteIndex( "_global_" , "firstTimeUse" );
+		this->deleteIndex( "_global_" , ".firstTimeUse" );
 	}	
 }
 
@@ -45,26 +45,27 @@ _registry::~_registry()
 string _registry::readIndex( string section , string name )
 {
 	_iniStructure& m = this->ini->getMap();
-	if( !m.count( section ) || !m[section].count(name) )
-		return "";
-	return m[section][name];
-}
-
-void _registry::writeIndex( string section , string name , string value )
-{
-	this->ini->getMap()[section][name] = value;
-}
-
-void _registry::deleteSection( string section )
-{
-	this->ini->getMap().erase( section );
+	
+	auto it1 = m.find( section );	
+	
+	// Check if section available
+	if( it1 != m.end() )
+	{
+		auto it2 = it1->second.find( name );
+		
+		if( it2 != it1->second.end() )
+			return it2->second;
+	}
+	return "";
 }
 
 void _registry::deleteIndex( string section , string name )
 {
-	this->ini->getMap()[section].erase(name);
-}
-
-_iniStructure& _registry::getMap(){
-	return this->ini->getMap();
+	_iniStructure& m = this->ini->getMap();
+	
+	auto it1 = m.find( section );	
+	
+	// Check if section available
+	if( it1 != m.end() )
+		it1->second.erase(name);
 }

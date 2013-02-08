@@ -11,7 +11,6 @@
 #include "_type/type.registry.h"
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.font.h"
-#include "_type/type.system.controller.h"
 #include "_gadget/gadget.keyboard.h"
 
 //! For inlining even functions with libnds
@@ -63,6 +62,7 @@ class _system{
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
+		static void switchUser( _user* );
 		
 		//! Misc...
 		static void displayMemUsage();
@@ -80,6 +80,10 @@ class _system{
 		friend class _animation;
 		friend class _progressbar;
 		friend class _progLua;
+		friend class _scLogin;
+		friend class _scSetup;
+		friend class _scDesktop;
+		friend class _scBootup;
 		
 		//! Add Thinks for execution
 		static void executeAnimation(_animation* anim ){

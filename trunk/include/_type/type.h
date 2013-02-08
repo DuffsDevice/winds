@@ -238,6 +238,7 @@ enum class _gadgetType : _u8
 	progressbar,
 	keyboard,
 	desktop,
+	fileview,
 	fileobject,
 	imagegadget,
 	scrollarea,

@@ -1,9 +1,12 @@
-#ifndef _WIN_T_SYSTEMSCENARIO_
-#define _WIN_T_SYSTEMSCENARIO_
+#ifndef _WIN_T_SYSTEMCONTROLLER_
+#define _WIN_T_SYSTEMCONTROLLER_
+
+#include "_type/type.h"
+#include "_type/type.scenario.h"
 
 class _systemController
 {
-	private:
+	public:
 		
 		enum class _systemState : _u8
 		{
@@ -13,28 +16,24 @@ class _systemController
 			setup,
 			desktop
 		};
+	
+	private:
 		
 		static _systemState state;
 		static bool			dirty;
+		
+		//! The Scenario-Object that is having controll
+		//! over the system right now
+		static _scenario*	scenario;
+	
+	public:
 		
 		//! The current state - getter and setter
 		static void changeState( _systemState state ){ dirty = _systemController::state != state; _systemController::state = state; }
 		static _systemState getState(){ return state; }
 		
-		//! Different Scenarios
-		static void loginPage();
-		static void setupPage();
-		static void bootupPage();
-		static void desktopPage();
-		
-		//! Internal event-handlers
-		static _callbackReturn loginHandler( _event e );
-		static _callbackReturn setupHandler( _event e );
-		static _callbackReturn bootupHandler( _event e );
-		static _callbackReturn desktopHandler( _event e );
-		
-	public:
-	
+		//! Method that will be called after the Hardware initialization is done
+		//! This Routine does nearly everything
 		static void main();
 };
 

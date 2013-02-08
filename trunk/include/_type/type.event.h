@@ -28,14 +28,14 @@ enum _eventType : _u8
 	mouseDoubleClick,
 	mouseDown,
 	mouseUp,
+	mouseRepeat, // Fired if a key is kept held down
 	keyDown,
 	keyUp,
 	keyClick,
+	keyRepeat, // Fired if a key is kept held down
 	dragStart,
 	dragStop,
 	dragging,
-	blur,
-	focus,
 	close,
 	onResize,
 	onAction,

@@ -21,6 +21,7 @@ class _progLua : public _program
 		void collector();
 		
 		// Lua functions
+		static int lua_getLocalizedString( lua_State* L );
 		static int lua_addChild( lua_State* L );
 		static int lua_executeTimer( lua_State* L );
 		static int lua_terminateTimer( lua_State* L );

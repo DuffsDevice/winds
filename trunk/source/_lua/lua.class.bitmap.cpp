@@ -17,6 +17,11 @@ _lua_bitmap::_lua_bitmap( const _bitmap* b ) :
 	, bm( new _bitmap( *b ) ) // Copy bitmap
 { }
 
+_lua_bitmap::_lua_bitmap( _bitmap&& b ) :
+	wasAllocated( true )
+	, bm( new _bitmap( b ) ) // Copy bitmap
+{ }
+
 // Lua-Ctor
 _lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
 	if( !lua_gettop(L) )
