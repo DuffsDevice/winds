@@ -16,26 +16,37 @@ class _program
 	
 	private:
 		
+		//! Type of the program
 		_programType	type;
 		
 	protected:
 		
+		//! The current gadgetHost
 		_gadget*		gadgetHost;
+		
+		//! Virtual main function to be overwritten in subclasses
+		virtual void	main( _cmdArgs& args ) = 0;
 		
 	public:
 		
-		bool 			autoDelete; // whether the program shall be deleted on finish
+		bool 			autoDelete; // Flag: whether the program shall be deleted on finish
 		
+		//! Ctor
 		_program( _programType type ) : type( type ) , autoDelete( false ) {}
 		
+		//! Execute it! Means pushing it to _system's list of programs
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		
+		//! terminate the program
 		void 			terminate();
 		
+		//! Main function to be called from _system
 		void 			main( _gadget* w , _cmdArgs& args  );
 		
-		virtual void	main( _cmdArgs& args ) = 0;
+		//! get The gadgetHost
+		_gadget*		getGadgetHost(){ return this->gadgetHost; }
 		
+		//! Virtual Dtor
 		virtual 		~_program(){};
 		
 };

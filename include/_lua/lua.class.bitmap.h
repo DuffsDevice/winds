@@ -18,6 +18,7 @@ class _lua_bitmap{
 		// Ctor
 		_lua_bitmap( _bitmap* b );
 		_lua_bitmap( const _bitmap* b );
+		_lua_bitmap( _bitmap&& b );
 		
 		// Lua-Ctor
 		_lua_bitmap( lua_State* L );

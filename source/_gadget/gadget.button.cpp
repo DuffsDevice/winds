@@ -149,7 +149,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	switch( that->getAlign() )
 	{
 		case _align::center:
-			x = ( myW + 1 >> 1 ) - ( ( that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 1 ) >> 1 );
+			x = ( myW - that->font->getStringWidth( that->getStrValue() , that->fontSize ) ) >> 1;
 			break;
 		case _align::left:
 			x = 0;
@@ -162,7 +162,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	switch( that->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( myH - 1 ) >> 1 ) - ( ( that->font->getAscent( that->fontSize ) + 1 ) >> 1 );
+			y = ( ( myH - that->font->getAscent( that->fontSize ) - 2 ) >> 1 );
 			break;
 		case _valign::top:
 			y = 0;
@@ -196,6 +196,7 @@ void _button::init( string text )
 	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
 	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
 	this->registerEventHandler( mouseClick , new _gadget::eventForward<onAction>() );
+	this->registerEventHandler( mouseRepeat , new _gadget::eventForward<onAction>() );
 	
 	// Compute the necesary Width
 	this->computeSize();

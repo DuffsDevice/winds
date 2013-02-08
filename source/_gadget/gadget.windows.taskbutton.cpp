@@ -7,16 +7,15 @@ _callbackReturn _windowsTaskButton::mouseHandler( _event event ){
 	// Receive Gadget
 	_windowsTaskButton* that = event.getGadget<_windowsTaskButton>();
 	
-	
-	if( that->reference->isMinimized() )
+	if( that->reference->isMinimized() ) // Restore our window if it was minimized
 	{
 		that->reference->restore();
-		that->reference->handleEvent( focus );
+		that->reference->focus();
 	}
-	else if( that->reference->hasFocus() )
+	else if( that->reference->hasFocus() ) // Minimize if the reference (our window) has focus
 		that->reference->minimize();
 	else
-		that->reference->handleEvent( focus );
+		that->reference->focus(); // If it wasn't minimized and hadn't focus, focus it
 	
 	return handled;
 }
@@ -38,9 +37,12 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	_length myW = bP.getWidth();
 	_length myH = bP.getHeight();
 	
-	if( that->reference->hasFocus() )
+	if( that->reference->hasFocus() || that->isPressed() )
 	{
-		bP.fill( _system::_runtimeAttributes_->windowBar[3] );
+		if( that->isPressed() ) // Darker background if the button is pressed
+			bP.fill( _system::_runtimeAttributes_->windowBar[9] );
+		else
+			bP.fill( _system::_runtimeAttributes_->windowBar[3] );
 		
 		// String
 		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
@@ -62,6 +64,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	}
 	else
 	{
+		// Quite bright backgrund
 		bP.fill( _system::_runtimeAttributes_->windowBar[1] );
 		
 		// String
@@ -106,12 +109,9 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 
 
 _windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference , _style style ) :
-	_button( 20 , 10 , x , y , "" , style )
+	_button( 20 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
 	, reference( reference )
 {
-	_style st = this->getStyle();
-	st.canTakeFocus = false;
-	this->setStyle( st );
 	this->setFontColor( RGB( 27 , 27 , 27 ) );
 	this->setAlign( _align::left );
 	this->registerEventHandler( onAction , new _staticCallback( &_windowsTaskButton::mouseHandler ) );

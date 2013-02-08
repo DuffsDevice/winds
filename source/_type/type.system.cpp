@@ -1,4 +1,5 @@
 #include "_type/type.system.h"
+#include "_type/type.system.controller.h"
 #include "func.memory.h"
 #include <time.h>
 #include <stdio.h>
@@ -13,11 +14,10 @@
 #include "strings_bin.h"
 
 //! Resources we need
-#include "_resource/PROG_Explorer.h"
-#include "_resource/BMP_Checkboxes.h"
 #include "_resource/FONT_ArialBlack13.h"
 #include "_resource/FONT_CourierNew10.h"
 #include "_resource/FONT_Tahoma7.h"
+#include "_resource/PROG_Explorer.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -35,11 +35,16 @@ struct __TransferRegion {
 	bootcode->arm9reboot();
 }*/
 
-void _system::debug( string msg ){
-	time_t rawtime = time(NULL);
-	struct tm* t = localtime( &rawtime );
-	_system::_debugFile_->writeString( asctime( t ) + msg + "\r\n" );
-	printf( "%s" , (asctime( t ) + msg + "\n").c_str() );
+void _system::debug( string msg )
+{
+	// Enhance the message!
+	msg = string( _time::now() ) + ": " + msg + "\r\n";
+	
+	// Debug to file
+	_system::_debugFile_->writeString( msg );
+	
+	// Debug to screen
+	printf( "%s" , msg.c_str() );
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
@@ -98,6 +103,15 @@ void _system::terminateTimer( const _callback& cb ){
 	);
 }
 
+void _system::switchUser( _user* usr )
+{
+	if( _system::_runtimeAttributes_->user )
+		delete _system::_runtimeAttributes_->user;
+	
+	// Setting:
+	_system::_runtimeAttributes_->user = usr;
+}
+
 void _system::runTimers()
 {
 	_tempTime curTime = getHighResTime();
@@ -136,10 +150,26 @@ void _system::deleteGadgetHost()
 {
 	if( _system::_gadgetHost_ )
 	{
-		irqDisable( IRQ_VBLANK );
+		irqDisable( IRQ_VBLANK ); // Enter critical Section
+		
+		// Remove all running programs on this gadgetHost
+		_programs_.remove_if(
+			[=]( pair<_program*,_cmdArgs>& prog )->bool{
+				if( prog.first->getGadgetHost() == _system::_gadgetHost_ ){
+					delete prog.first;
+					return true;
+				}
+				return false;
+			}
+		);
+		
+		// Remove all events on this gadgetHost
 		_system::removeEventsOf( _system::_gadgetHost_ );
+		
+		// Dlete it
 		delete _system::_gadgetHost_;
-		irqEnable( IRQ_VBLANK );
+		
+		irqEnable( IRQ_VBLANK ); // Leave critical Section
 		
 		_system::_gadgetHost_ = nullptr;
 	}
@@ -149,10 +179,13 @@ void _system::deleteKeyboard()
 {
 	if( _system::_keyboard_ )
 	{
-		irqDisable( IRQ_VBLANK );
+		irqDisable( IRQ_VBLANK ); // Enter critical Section
+		
+		// Remove the keyboard!
 		_system::removeEventsOf( _system::_keyboard_ );
 		delete _system::_keyboard_;
-		irqEnable( IRQ_VBLANK );
+		
+		irqEnable( IRQ_VBLANK );  // Leave critical Section
 		
 		_system::_keyboard_ = nullptr;
 	}
@@ -266,7 +299,7 @@ void _system::processInput()
 			else if( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
-				_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
+				_system::_currentFocus_->handleEvent( event.setType( keyRepeat ) );
 			}
 			
 			// Increase Cycles
@@ -386,7 +419,7 @@ void _system::start()
 	//	RTA - Runtime Attributes
 	// -----------------------------------------------
 	
-		_system::_runtimeAttributes_ = new _runtimeAttributes;
+		_system::_runtimeAttributes_ = new _runtimeAttributes();
 		_system::_runtimeAttributes_->user = new _user("Guest");
 	
 	// -----------------------------------------------

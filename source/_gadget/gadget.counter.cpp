@@ -24,7 +24,7 @@ _callbackReturn _counter::changeHandler( _event event )
 	}
 	
 	// For Key-Events
-	if( event.getType() == keyDown )
+	if( event.getType() == keyDown || event.getType() == keyRepeat )
 	{
 		_counter* that = event.getGadget<_counter>();
 		
@@ -95,6 +95,7 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	//! Refresh - Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_counter::refreshHandler ) );
 	this->registerEventHandler( keyDown , new _staticCallback( &_counter::changeHandler ) );
+	this->registerEventHandler( keyRepeat , new _staticCallback( &_counter::changeHandler ) );
 	this->registerEventHandler( onBlur , new _staticCallback( &_counter::changeHandler ) );
 	this->registerEventHandler( onFocus , new _staticCallback( &_counter::changeHandler ) );
 	

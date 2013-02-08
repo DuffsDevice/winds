@@ -84,14 +84,24 @@ int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) r
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
 int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
 int _progLua::lua_keyboardGetDestination( lua_State* L ){ if( !_system::_keyboard_ || !_system::_keyboard_->getDestination() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_keyboard_->getDestination() ) ); return 1; }
-int _progLua::lua_keyboardSetDestination( lua_State* L ){
-	_lua_gadget* g;
-	if( !_system::_keyboard_ || ( g = _lua_gadget::getLuaGadget( L , 1 ) ) )
+int _progLua::lua_keyboardSetDestination( lua_State* L )
+{
+	if( !_system::_keyboard_ )
 		return 0;
-	_system::_keyboard_->setDestination( g->gadget );
+	
+	// Allow passing nothing
+	if( lua_isnil( L , 1 ) || lua_isnumber( L , 1 ) )
+		_system::_keyboard_->setDestination( nullptr );
+	else
+	{
+		_lua_gadget* g = _lua_gadget::getLuaGadget( L , 1 );
+		if( g && g->gadget )
+			_system::_keyboard_->setDestination( g->gadget );
+	}
 	return 0;
 }
 
+int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
 int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( new _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
 int _progLua::lua_terminateTimer( lua_State* L ){ _system::terminateTimer( _luaCallback( L , 1 ) ); return 0; }
@@ -100,11 +110,11 @@ int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->write
 int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
 int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
 int _progLua::lua_RGB( lua_State* L ){ lua_pushnumber( L , RGB( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) ); return 1; }
-int _progLua::lua_RGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) ); return 1; }
+int _progLua::lua_RGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkboolean( L , 4 ) ) ); return 1; }
 int _progLua::lua_RGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( luaL_checkint( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETG( lua_State* L ){ lua_pushnumber( L , RGB_GETG( luaL_checkint( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETB( lua_State* L ){ lua_pushnumber( L , RGB_GETB( luaL_checkint( L , 1 ) ) ); return 1; }
-int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushnumber( L , RGB_GETA( luaL_checkint( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushboolean( L , RGB_GETA( luaL_checkint( L , 1 ) ) ); return 1; }
 int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->autoDelete = true; return 0; }
 int _progLua::lua_requirePackage( lua_State* L )
 {
@@ -157,6 +167,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"getAlpha",				lua_RGB_GETA},
 	{"addChild",				lua_addChild},
 	{"readRegistryIndex",		lua_readRegistryIndex},
+	{"getLocalizedString",		lua_getLocalizedString},
 	{"writeRegistryIndex",		lua_writeRegistryIndex},
 	{"deleteRegistryIndex",		lua_deleteRegistryIndex},
 	{"deleteRegistrySection",	lua_deleteRegistrySection},

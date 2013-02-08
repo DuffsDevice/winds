@@ -76,9 +76,6 @@ void _keyboard::screenVBL()
 	}
 }
 
-int _x = 0 , _y = 0;
-float _factor = 1;
-
 int _keyboard::setState( int value )
 {
 	if( value != this->curState )
@@ -87,7 +84,7 @@ int _keyboard::setState( int value )
 		this->scrollY( ( value - SCREEN_HEIGHT + 9 ) );
 		
 		// Scroll Windows
-		if( _factor == 1 && _x == 0 && _y == 0 )
+		if( this->magnifFactor == 1 && this->magnifX == 0 && this->magnifY == 0 )
 			this->gHScreen->scrollY( value );
 		
 		// Topper Screen
@@ -101,7 +98,9 @@ int _keyboard::setState( int value )
 		
 		bgUpdate();
 	}
+	// Set Current State
 	this->curState = value;
+	
 	return value;
 }
 
@@ -109,13 +108,21 @@ void _keyboard::open()
 {
 	this->animKeyb.setFromValue( this->curState );
 	this->animKeyb.setToValue( sEnd );
-	this->mode = true;
 	this->animKeyb.start();
+	
+	this->animMagnif.setFromValue( this->curState );
+	this->animMagnif.setToValue( sEnd );
+	this->animMagnif.finish( nullptr );
+	this->animMagnif.start();
+	
+	this->mode = true;
 }
 
-void reset()
+void _keyboard::reset()
 {
-	_factor = 1; _x = 0; _y = 0;
+	this->magnifFactor = 1;
+	this->magnifX = 0;
+	this->magnifY = 0;
 }
 
 void _keyboard::close()
@@ -125,12 +132,12 @@ void _keyboard::close()
 	
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr )
-		this->destination->triggerEvent( blur );
+		this->destination->blur();
 	this->destination = nullptr;
 	
 	this->animKeyb.setToValue( sStart );
 	this->animMagnif.setToValue( sStart );
-	this->animMagnif.finish( new _staticCallback( reset ) );
+	this->animMagnif.finish( new _classCallback( this , &_keyboard::reset ) );
 	this->mode = false;
 	this->animMagnif.start();
 	this->animKeyb.start();
@@ -138,24 +145,17 @@ void _keyboard::close()
 
 int _keyboard::setMagnification( int value )
 {
-	if( _factor == 1 && _x == 0 && _y == 0 )
+	if( this->magnifFactor == 1 && this->magnifX == 0 && this->magnifY == 0 )
 		return value;
 	
 	// Scale Lower Screen
 	float percent = float(value) / sEnd;
 	
-	// If no magnification requested
-	if( !_system::_runtimeAttributes_->user->mKF )
-	{
-		this->gHScreen->scrollY( percent * min( _y , sEnd ) );
-		return value;
-	}
-	
-	float rat = 1 - percent * ( 1 - _factor );
+	float rat = 1 - percent * ( 1 - this->magnifFactor );
 	this->gHScreen->scale( rat );
 	
-	this->gHScreen->scrollX( -percent * ( 0 - _x ) );
-	this->gHScreen->scrollY( -percent * ( 0 - _y ) );
+	this->gHScreen->scrollX( -percent * ( 0 - this->magnifX ) );
+	this->gHScreen->scrollY( -percent * ( 0 - this->magnifY ) );
 	
 	bgUpdate();
 	return value;
@@ -165,7 +165,7 @@ void _keyboard::setDestination( _gadget* dest )
 {
 	// Altes Ziel den Fokus wieder nehmen
 	if( this->destination != nullptr && this->destination->getParent() != nullptr )
-		this->destination->triggerEvent( _event( blur ) );
+		this->destination->blur();
 	
 	this->destination = dest;
 	
@@ -179,35 +179,39 @@ void _keyboard::setDestination( _gadget* dest )
 		float itsRatio = float(dim.width)/dim.height;
 		float ratio = 1;
 		
-		// "higher" than me
-		if( itsRatio < myRatio )
-			ratio = (SCREEN_HEIGHT-108)/float(dim.height+16);
-		else
-			ratio = (SCREEN_WIDTH)/float(dim.width+16);
-		
-		if( ratio > 4 )
-			ratio = 4;
-		else if( ratio > 3 )
-			ratio = 3;
-		else if( ratio > 2 )
-			ratio = 2;
-		else
-			ratio = 1;
+		// If magnification requested
+		if( _system::_runtimeAttributes_->user->mKF && _system::_runtimeAttributes_->magnifyKeyboardFocus )
+		{
+			// "higher" than me
+			if( itsRatio < myRatio )
+				ratio = (SCREEN_HEIGHT-108)/float(dim.height+16);
+			else
+				ratio = (SCREEN_WIDTH)/float(dim.width+16);
+			
+			if( ratio > 4 )
+				ratio = 4;
+			else if( ratio > 3 )
+				ratio = 3;
+			else if( ratio > 2 )
+				ratio = 2;
+			else
+				ratio = 1;
+		}
 		
 		// Compute reciprocal
-		_factor = 1./ratio;
+		this->magnifFactor = 1./ratio;
 		
 		// Compute size of borders around the focused API-Element
-		_s8 magnBorderX = ( SCREEN_WIDTH * _factor - dim.width ) / 2;
-		_s8 magnBorderY = ( ( SCREEN_HEIGHT - 108 /** Height of Visible Area */ ) * _factor - dim.height ) / 2;
+		_s8 magnBorderX = ( SCREEN_WIDTH * this->magnifFactor - dim.width ) / 2;
+		_s8 magnBorderY = ( ( SCREEN_HEIGHT - 108 /** Height of Visible Area */ ) * this->magnifFactor - dim.height ) / 2;
 		
-		// Compute _x and _y by clipping the area so that no areas beside the screen are shown
-		_x = min( dim.x , _coord( SCREEN_WIDTH - magnBorderX - dim.width ) ) - magnBorderX;
-		_x = max( 0 , _x );
+		// Compute magnifX and magnifY by clipping the area so that no areas beside the screen are shown
+		this->magnifX = min( dim.x , _coord( SCREEN_WIDTH - magnBorderX - dim.width - 1 ) ) - magnBorderX;
+		this->magnifX = max( 0 , magnifX );
 		
-		// Compute _y
-		_y = min( dim.y , _coord( SCREEN_HEIGHT - magnBorderY - dim.height ) ) - magnBorderY;
-		_y = max( 0 , _y );
+		// Compute magnifY
+		this->magnifY = min( dim.y , _coord( SCREEN_HEIGHT - magnBorderY - dim.height - 1 ) ) - magnBorderY;
+		this->magnifY = max( 0 , magnifY );
 		
 		//! ----------- End -----------
 		
@@ -231,7 +235,7 @@ void _keyboard::setDestination( _gadget* dest )
 		this->animKeyb.start();
 		this->animMagnif.setFromValue( this->curState );
 		this->animMagnif.setToValue( sStart );
-		this->animMagnif.finish( new _staticCallback( &reset ) );
+		this->animMagnif.finish( new _classCallback( this , &_keyboard::reset ) );
 		this->animMagnif.start();
 		this->mode = false;
 	}
@@ -325,10 +329,6 @@ _callbackReturn _keyboard::keyHandler( _event event )
 	return handled;
 }
 
-_callbackReturn _keyboard::focusHandler( _event event ){
-	return handled;
-}
-
 _callbackReturn _keyboard::dragHandler( _event event )
 {
 	// Receive Gadget
@@ -405,9 +405,12 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 {}
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 position , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style )
+	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style | _styleAttr::canNotTakeFocus )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
+	, magnifX( 0 )
+	, magnifY( 0 )
+	, magnifFactor( 1 )
 	, handlePosition( position )
 	, shift( false )
 	, caps( false )
@@ -428,7 +431,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )
 	{
-		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] , _styleAttr() | _styleAttr::mouseClickRepeat );
+		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
 		switch( i )
 		{
 			case 45: // Right Shift
@@ -456,12 +459,14 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	
 	//! Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_keyboard::refreshHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_keyboard::keyHandler ) );
+	this->registerEventHandler( keyUp , new _staticCallback( &_keyboard::keyHandler ) );
 	this->registerEventHandler( keyClick , new _staticCallback( &_keyboard::keyHandler ) );
+	this->registerEventHandler( keyRepeat , new _staticCallback( &_keyboard::keyHandler ) );
 	
 	this->registerEventHandler( dragStart , new _staticCallback( &_keyboard::dragHandler ) );
 	this->registerEventHandler( dragStop , new _staticCallback( &_keyboard::dragHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_keyboard::dragHandler ) );
-	this->registerEventHandler( focus , new _staticCallback( &_keyboard::focusHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

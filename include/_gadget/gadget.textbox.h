@@ -6,7 +6,7 @@
 
 class _textbox : public _gadget{
 	
-	private:
+	public:
 		
 		//! Farbe der Schrift
 		_pixel 	color;
@@ -33,9 +33,10 @@ class _textbox : public _gadget{
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
-		static void getFontPosition( _coord& x , _coord& y , _textbox* box );
-		
 	public:
+		
+		//! Internal, not private due to _userWrapper-class
+		static void getFontPosition( _coord& x , _coord& y , _textbox* box );
 		
 		//! Set the Text to be displayed
 		void setStrValue( string val );
@@ -80,8 +81,11 @@ class _textbox : public _gadget{
 		_valign getVAlign(){ return this->vAlign; }
 		
 		
-		//! Construcor excluding dimensions and including font
+		//! Ctor
 		_textbox( _coord x , _coord y , _length width , string value = "" , _style style = _style() );
+		
+		//! Ctor
+		_textbox( _coord x , _coord y , _length width , _length height , string value = "" , _style style = _style() );
 };
 
 #endif

@@ -41,5 +41,5 @@ _time::operator string()
 	
 	time( &rawtime ); // Read Time
 	
-	return ctime (&rawtime); // Convert to UTC
+	return ctime( &rawtime ); // Convert to UTC
 }

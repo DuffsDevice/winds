@@ -3,8 +3,6 @@
 #include "_type/type.system.h"
 
 _map<_eventType,_callback*> _gadget::defaultEventHandlers = {
-	{ focus , new _staticCallback( &_gadget::gadgetFocusHandler ) },
-	{ blur , new _staticCallback( &_gadget::gadgetFocusHandler ) },
 	{ mouseDown , new _staticCallback( &_gadget::gadgetMouseHandler ) },
 	{ mouseUp , new _staticCallback( &_gadget::gadgetMouseHandler ) },
 	{ mouseClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
@@ -16,15 +14,14 @@ _map<_eventType,_callback*> _gadget::defaultEventHandlers = {
 	{ keyDown , new _staticCallback( &_gadget::gadgetKeyHandler ) },
 	{ keyUp , new _staticCallback( &_gadget::gadgetKeyHandler ) },
 	{ keyClick , new _staticCallback( &_gadget::gadgetKeyHandler ) },
+	{ keyRepeat , new _staticCallback( &_gadget::gadgetKeyHandler ) },
 };
-
 
 
 _gadgetType typeOfGadget( _gadget* g )
 {
 	return g->getType();
 }
-
 
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
@@ -39,7 +36,6 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 _gadget::_gadget( int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
 	: _gadget( _gadgetType::_plain , width , height , posX , posY , style , doNotAllocateBitmap )
 { }
-
 
 
 _gadget::~_gadget()
@@ -62,13 +58,11 @@ _gadget::~_gadget()
 }
 
 
-
 void _gadget::triggerEvent( _event event )
 {
 	event.setDestination( this );
 	_system::generateEvent( event );
 }
-
 
 
 void _gadget::bubbleEvent( _event event , bool includeThis )
@@ -85,11 +79,9 @@ void _gadget::bubbleEvent( _event event , bool includeThis )
 }
 
 
-
 void _gadget::populateEvent( _event event ){
 	_system::generateEvent( event );
 }
-
 
 
 void _gadget::bubbleRefresh( bool includeThis , _event event )
@@ -110,7 +102,6 @@ void _gadget::bubbleRefresh( bool includeThis , _event event )
 			this->parent->bubbleRefresh( true , event );
 	}
 }
-
 
 
 bool _gadget::removeDeleteCallback( _gadget* g )
@@ -136,7 +127,6 @@ bool _gadget::removeDeleteCallback( _gadget* g )
 }
 
 
-
 bool _gadget::removeCallback( _gadget* g )
 {
 	// Remove focus
@@ -157,7 +147,6 @@ bool _gadget::removeCallback( _gadget* g )
 }
 
 
-
 void _gadget::blinkHandler()
 {
 	if( this->style.unused1 > 5 )
@@ -173,13 +162,11 @@ void _gadget::blinkHandler()
 }
 
 
-
 void _gadget::blink()
 {
 	_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
 	_system::executeTimer( new _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
 }
-
 
 
 bool _gadget::blurChild()
@@ -209,7 +196,6 @@ bool _gadget::blurChild()
 	}
 	return true;
 }
-
 
 
 bool _gadget::focusChild( _gadget* child )
@@ -278,7 +264,6 @@ bool _gadget::focusChild( _gadget* child )
 }
 
 
-
 void _gadget::registerEventHandler( _eventType type , _callback* handler )
 {
 	// Remove any Current Handler
@@ -295,7 +280,6 @@ void _gadget::registerEventHandler( _eventType type , _callback* handler )
 }
 
 
-
 void _gadget::unregisterEventHandler( _eventType type ){
 	// Unbind the Handler
 	_map<_eventType,_callback*>::iterator data = this->eventHandlers.find( type );
@@ -307,7 +291,6 @@ void _gadget::unregisterEventHandler( _eventType type ){
 		this->eventHandlers.erase( data );
 	}
 }
-
 
 
 _callbackReturn _gadget::handleEventDefault( _event event )
@@ -322,7 +305,6 @@ _callbackReturn _gadget::handleEventDefault( _event event )
 	// If the Handler for the given event doesn't exist, return 
 	return not_handled;
 }
-
 
 
 _callbackReturn _gadget::handleEvent( _event event )
@@ -341,7 +323,6 @@ _callbackReturn _gadget::handleEvent( _event event )
 }
 
 
-
 void _gadget::setX( _coord val ){
 	if( val == this->dimensions.x )
 		return;
@@ -349,7 +330,6 @@ void _gadget::setX( _coord val ){
 	this->dimensions.x = val;
 	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
-
 
 
 void _gadget::setY( _coord val ){
@@ -361,7 +341,6 @@ void _gadget::setY( _coord val ){
 }
 
 
-
 void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	if( !dX && !dY )
 		return;
@@ -370,7 +349,6 @@ void _gadget::moveRelative( _s16 dX , _s16 dY ){
 	this->dimensions.y += dY;
 	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
-
 
 
 void _gadget::moveTo( _coord x , _coord y )
@@ -384,7 +362,6 @@ void _gadget::moveTo( _coord x , _coord y )
 	//	this->parent->bitmap->move( dim.x , dim.y , this->dimensions.x , this->dimensions.y , this->dimensions.width , this->dimensions.height );
 	this->bubbleRefresh( false , _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) );
 }
-
 
 
 void _gadget::enhanceToParent( _gadget* val )
@@ -403,7 +380,6 @@ void _gadget::enhanceToParent( _gadget* val )
 }
 
 
-
 void _gadget::setParent( _gadget* val )
 {
 	if( this->parent == val )
@@ -418,7 +394,6 @@ void _gadget::setParent( _gadget* val )
 	else
 		this->parent->removeChild( this );
 }
-
 
 
 void _gadget::removeChildren( bool remove )
@@ -436,7 +411,6 @@ void _gadget::removeChildren( bool remove )
 }
 
 
-
 void _gadget::removeEnhancedChildren( bool remove )
 {
 	if( this->enhancedChildren.empty() )
@@ -450,7 +424,6 @@ void _gadget::removeEnhancedChildren( bool remove )
 	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
 }
-
 
 
 void _gadget::removeChild( _gadget* child )
@@ -485,7 +458,6 @@ void _gadget::removeChild( _gadget* child )
 }
 
 
-
 void _gadget::addChild( _gadget* child )
 {	
 	if( !child )
@@ -503,7 +475,6 @@ void _gadget::addChild( _gadget* child )
 	//! Paint it on my bmp
 	child->bubbleRefresh( true );
 }
-
 
 
 void _gadget::addEnhancedChild( _gadget* child )
@@ -525,14 +496,12 @@ void _gadget::addEnhancedChild( _gadget* child )
 }
 
 
-
 _rect _gadget::getAbsoluteDimensions() const { 
 	_rect out = this->dimensions;
 	out.x = this->getAbsoluteX();
 	out.y = this->getAbsoluteY();
 	return out;
 }
-
 
 
 void _gadget::setDimensions( _rect rc )
@@ -563,7 +532,6 @@ void _gadget::setDimensions( _rect rc )
 }
 
 
-
 void _gadget::setHeight( _length val )
 {
 	if( int(val) < 1 )
@@ -581,7 +549,6 @@ void _gadget::setHeight( _length val )
 	// Delete the parts that originally were gadget, but became damaged
 	this->bubbleEvent( _event::refreshEvent( dim.combine( this->getAbsoluteDimensions() ) ) , true );
 }
-
 
 
 void _gadget::setWidth( _length val )
@@ -603,20 +570,18 @@ void _gadget::setWidth( _length val )
 }
 
 
-
 void _gadget::minimize()
 {
 	if( !this->style.minimized && this->style.minimizeable )
 	{
 		// Blur
-		this->handleEvent( blur );
+		this->blur();
 		
 		this->style.minimized = true;
 		this->bubbleRefresh();
 		this->triggerEvent( onMinimize );
 	}
 }
-
 
 
 void _gadget::unMaximize()
@@ -632,7 +597,6 @@ void _gadget::unMaximize()
 }
 
 
-
 void _gadget::restore()
 {
 	if( this->style.minimized )
@@ -642,7 +606,6 @@ void _gadget::restore()
 		this->triggerEvent( onRestore );
 	}
 }
-
 
 
 void _gadget::maximize()
@@ -669,7 +632,6 @@ void _gadget::maximize()
 		this->triggerEvent( onMaximize );
 	}
 }
-
 
 
 _callbackReturn _gadget::gadgetRefreshHandler( _event event )
@@ -751,7 +713,6 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 }
 
 
-
 _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 {
 	const _padding& p = this->getPadding();
@@ -774,7 +735,6 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 	
 	return nullptr;
 }
-
 
 
 _callbackReturn _gadget::gadgetMouseHandler( _event event )
@@ -837,7 +797,6 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 	
 	return not_handled;
 }
-
 
 
 _callbackReturn _gadget::gadgetDragHandler( _event event )
@@ -953,24 +912,6 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 	
 	return not_handled;
 }
-
-
-
-_callbackReturn _gadget::gadgetFocusHandler( _event event )
-{
-	_gadget* that = event.getGadget();
-	
-	if( !that->parent )
-		return not_handled;
-	
-	if( event.getType() == focus )
-		that->parent->focusChild( that );
-	else if( event.getType() == blur && that->hasFocus() )
-		that->parent->blurChild();
-	
-	return handled;
-}
-
 
 
 _callbackReturn _gadget::gadgetKeyHandler( _event event )

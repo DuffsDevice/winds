@@ -10,7 +10,9 @@ _callbackReturn _selectItem::mouseHandler( _event event )
 	if( !that->active )
 	{
 		parent->setSelected( that->intVal );
-		parent->triggerEvent( _event( onAction ) );
+		
+		//! Trigger onChange-Event
+		parent->triggerEvent( _event( onChange ) );
 	}
 	
 	return handled;

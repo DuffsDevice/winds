@@ -95,7 +95,7 @@ class _shortcut : public _direntry {
 		
 		const string getExtension() const;
 		
-		const _bitmap& getFileImage();
+		_bitmap getFileImage();
 };
 
 #endif

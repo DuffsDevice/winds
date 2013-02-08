@@ -121,27 +121,35 @@ _callbackReturn _textbox::keyHandler( _event event )
 			}
 			val = val.erase( that->cursor - 2 , 1 );
 			that->cursor--;
+			// Refresh
+			that->setStrValue( val );
+			that->triggerEvent( _event( onChange ) );
 			break;
 		case DSWindows::KEY_CARRIAGE_RETURN:
 			break;
 		case DSWindows::KEY_LEFT:
-			that->cursor-1 && that->cursor--;
+			that->cursor > 1 && that->cursor--;
+			// Refresh
+			that->bubbleRefresh( true );
 			break;
 		case DSWindows::KEY_RIGHT:
-			val.length() - that->cursor + 1 > 0 && that->cursor++;
+			that->cursor > 0 && val.length() - that->cursor + 1 > 0 && that->cursor++;
+			// Refresh
+			that->bubbleRefresh( true );
 			break;
 		default:
-			if( DSWindows::isHardwareKey( event.getKeyCode() ) 
-				|| !isprint( event.getKeyCode() ) ) // Check if printable
+			if( 
+				DSWindows::isHardwareKey( event.getKeyCode() ) 
+				|| !isprint( event.getKeyCode() ) // Check if printable
+			)
 				break;
 			val.insert( that->cursor - 1 , 1 , event.getKeyCode() );
 			that->cursor++;
+			// Refresh
+			that->setStrValue( val );
+			that->triggerEvent( _event( onChange ) );
 			break;
 	}
-	
-	that->triggerEvent( _event( onChange ) );
-	
-	that->setStrValue( val );
 	
 	return handled;
 }
@@ -151,6 +159,10 @@ _callbackReturn _textbox::focusHandler( _event event )
 	// Open the Keyboard
 	if( _system::_keyboard_ )
 		_system::_keyboard_->setDestination( event.getGadget() );
+	
+	event.getGadget<_textbox>()->cursor = 1;
+	
+	event.getGadget()->bubbleRefresh( true );
 	
 	return use_default;
 }
@@ -201,6 +213,9 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	for( ; x <= position + 2 && pos <= strLen; pos++ )
 		x += that->font->getCharacterWidth( str[pos] ) + 1;
 	
+	if( that->cursor == pos )
+		return handled;
+	
 	that->cursor = pos;
 	
 	that->bubbleRefresh( true );
@@ -208,8 +223,8 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	return handled;
 }
 
-_textbox::_textbox( _coord x , _coord y , _length width , string text , _style style ) :
-	_gadget( _gadgetType::textbox , width , 10 , x , y , style )
+_textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style style ) :
+	_gadget( _gadgetType::textbox , width , height , x , y , style )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, font ( _system::getFont() )
@@ -219,18 +234,24 @@ _textbox::_textbox( _coord x , _coord y , _length width , string text , _style s
 	, strValue( text )
 	, cursor( 0 )
 {
-	if( this->font && this->font->valid() )
-		this->setHeight( this->font->getHeight() + 2 );
-	
 	// Regsiter Handling Functions for events
 	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );
 	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::blurHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_textbox::refreshHandler ) );
 	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
-	this->registerEventHandler( keyClick , new _staticCallback( &_textbox::keyHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );
+	this->registerEventHandler( keyRepeat , new _staticCallback( &_textbox::keyHandler ) );
 	this->registerEventHandler( dragStart , new _staticCallback( &_textbox::mouseHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_textbox::mouseHandler ) );
 	
 	// Refresh Myself
 	this->refreshBitmap();
+}
+
+// C++0x I Love you! Delegating Ctors! Yeehaa...
+_textbox::_textbox( _coord x , _coord y , _length width , string text , _style style ) :
+	_textbox( x , y , width , 10 , text , style )
+{
+	if( this->font && this->font->valid() )
+		this->setHeight( this->font->getHeight() + 2 );
 }

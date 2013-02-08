@@ -51,7 +51,7 @@ void _contextMenu::show( _coord x , _coord y )
 	this->setParent( _system::_gadgetHost_ );
 	
 	// Focus
-	this->handleEvent( focus );
+	this->focus();
 }
 
 void _contextMenu::shelve()

@@ -51,6 +51,7 @@ map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::progressbar , "progressbar" },
 	{ _gadgetType::keyboard , "keyboard" },
 	{ _gadgetType::desktop , "desktop" },
+	{ _gadgetType::fileview , "fileview" },
 	{ _gadgetType::fileobject , "fileobject" },
 	{ _gadgetType::imagegadget , "imagegadget" },
 	{ _gadgetType::scrollarea , "scrollarea" },

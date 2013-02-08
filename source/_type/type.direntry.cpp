@@ -22,24 +22,13 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
-#define FAT_EMULATOR
+//#define FAT_EMULATOR
 
 
 #ifdef FAT_EMULATOR
 #include "program_bin.h"
 #include "image_bin.h"
 #endif
-
-_bitmap icon_exe = BMP_ExeIcon();
-_bitmap icon_lua = BMP_LuaIcon();
-_bitmap icon_msi = BMP_FileIcon();
-_bitmap icon_plain = BMP_FileIcon();
-_bitmap icon_txt = BMP_TxtIcon();
-_bitmap icon_xml = BMP_XmlIcon();
-_bitmap icon_ini = BMP_IniIcon();
-_bitmap icon_nds = BMP_NdsIcon();
-_bitmap icon_gba = BMP_GbaIcon();
-_bitmap icon_folder = BMP_FolderIcon();
 
 int _direntry::fatInited = -1;
 
@@ -82,29 +71,32 @@ string replaceASSOCS( string path )
 	return path;
 }
 
-bool _direntry::initFat(){
+bool _direntry::initFat()
+{
 	//! libFat instantiation
 	if( _direntry::fatInited == -1 )
 		_direntry::fatInited = fatInitDefault();
+	
 	return _direntry::fatInited;
 }
 
 _direntry::_direntry( string fn ) :
-	fHandle( nullptr )
-	, dHandle( nullptr )
+	fHandle( nullptr ) // same as dHandle
 	, filename( replaceASSOCS( fn ) )
 	, mode( _direntryMode::closed )
 {
 	initFat();
 	
 	// set Name (not filename!)
-	this->name = this->filename.substr( this->filename.find_last_of("/") + 1 );
+	_u64 posLast = this->filename.find_last_of("/");
+	if( posLast != string::npos )
+		this->name = this->filename.substr( posLast + 1 );
+	else
+		this->name = this->filename;
 	this->name = this->name.substr( 0 , this->name.find_last_of(".") );
 	
 	// Fill Stat-Struct
 	this->exists = !stat( this->filename.c_str() , &this->stat_buf );
-	
-	//printf("direntry: %d, %s\n",this->getSize(),this->filename.c_str());
 	
 	//! Set Mime-Type
 	if( this->isDirectory() )
@@ -125,12 +117,13 @@ _direntry::_direntry( string fn ) :
 		this->mimeType = _mimeType::fromExtension( this->getExtension() );
 	}
 	
-	//! Removed because it makes Working Directories not work
+	//! Removed, because it makes Working Directories not work :D
 	//if( this->filename.front() != '/' )
 	//	this->filename.insert( 0 , 1 , '/' );
 }
 
-_direntry& _direntry::operator=( _direntry other ){
+_direntry& _direntry::operator=( _direntry other )
+{
 	this->close();
 	this->filename = other.filename;
 	this->name = other.name;
@@ -138,6 +131,7 @@ _direntry& _direntry::operator=( _direntry other ){
 	this->stat_buf = other.stat_buf;
 	this->mimeType = other.mimeType;
 	this->mode = _direntryMode::closed;
+	
 	return *this;
 }
 
@@ -147,7 +141,7 @@ bool _direntry::close()
 		return false;
 	
 	// Returnm, if everything is closed already
-	if( this->mode == _direntryMode::closed && !this->fHandle && !this->dHandle )
+	if( this->mode == _direntryMode::closed || !this->fHandle ) // same as dHandle
 		return true;
 	
 	// Close Method, depending on whether it's a directory
@@ -164,8 +158,7 @@ bool _direntry::close()
 			return false;
 	}
 	// Reset
-	this->dHandle = nullptr;
-	this->fHandle = nullptr;
+	this->fHandle = nullptr; // same as dHandle = nullptr
 	this->mode = _direntryMode::closed;
 	return true;
 }
@@ -175,7 +168,9 @@ PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
 
 bool _direntry::flush()
 {
-
+	if( this->isDirectory() )
+		return false;
+	
 	// Defines...
 	PARTITION *partition = NULL;
 
@@ -207,7 +202,7 @@ _direntryAttributes _direntry::getAttrs()
 	return FAT_getAttr( this->filename.c_str() );
 }
 
-bool _direntry::open( const char* mode )
+bool _direntry::open( string mode )
 {
 	if( !this->fatInited || !this->exists )
 		return false;
@@ -218,31 +213,34 @@ bool _direntry::open( const char* mode )
 	
 	//! Open the File/Directory
 	if( !this->isDirectory() )
-		this->fHandle = fopen( this->filename.c_str() , mode );
+		this->fHandle = fopen( this->filename.c_str() , mode.c_str() );
 	else
 		this->dHandle = opendir( this->filename.c_str() );
 	
-	if( this->dHandle || this->fHandle )
+	if( this->dHandle ) // dHandle and fHandle are the same
+	{
+		this->mode = mode[0] == 'r' ? _direntryMode::read : _direntryMode::write;
 		return true;
+	}
+	
 	return false;
 }
 
-inline bool _direntry::openread(){
-	return this->open( "rb" ) && _u8( this->mode = _direntryMode::read ); // Open for read, do not create
+bool _direntry::openread(){
+	return this->open( "rb" ); // Open for read, do not create
 }
 
-inline bool _direntry::openwrite( bool erase ){
-	if( !this->exists )
-		return false;
-	return this->open( erase ? "wb+" : "rb+" ) && _u8(this->mode = _direntryMode::write); // Open for read & write, do not create
+bool _direntry::openwrite( bool eraseOld )
+{
+	return !this->exists && this->open( eraseOld ? "wb+" : "rb+" ); // Open for read & write, do not create if already existing
 }
 
-inline bool _direntry::create()
+bool _direntry::create()
 {
 	if( !this->fatInited )
 		return false;
 	
-	if( this->exists || this->filename == "/") // Return if the file does already exist
+	if( this->exists || this->filename == "/" ) // Return if the file does already exist
 		return true;
 	
 	// Build everything "upstairs" (recursively!)
@@ -272,7 +270,7 @@ bool _direntry::read( void* dest , _u32 size )
 	return true;
 	#endif
 	
-	if( this->fatInited || !this->isDirectory() )
+	if( this->fatInited && !this->isDirectory() )
 	{
 		if( !size )
 			size = this->getSize();
@@ -291,6 +289,7 @@ bool _direntry::read( void* dest , _u32 size )
 		
 		return 0 == ferror( this->fHandle ); // Check if there was an error	
 	}
+	
 	return false;
 }
 
@@ -298,15 +297,11 @@ bool _direntry::readChild( string& child )
 {
 	if( this->fatInited && this->isDirectory() )
 	{
-		
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::closed )
-			this->dHandle = opendir( this->filename.c_str() );
-		
+		if( this->mode == _direntryMode::closed && this->open() == false )
+			return false;
 		if( !this->dHandle )
 			return false;
-		else
-			this->mode = _direntryMode::read;
 		
 		struct dirent *dir;
 		
@@ -317,10 +312,13 @@ bool _direntry::readChild( string& child )
 			return this->readChild( child );
 		else if( dir->d_name[0] == '.' && dir->d_name[1] == '.' && dir->d_name[2] == 0 )
 			return this->readChild( child );
-		child = this->filename + dir->d_name;
+		
+		// Write Name to destination
+		child = dir->d_name;
 		
 		return true;
 	}
+	
 	return false;
 }
 
@@ -336,6 +334,7 @@ bool _direntry::rewindChildren()
 			return false;
 			
 		rewinddir( this->dHandle );
+		
 		return true;
 	}
 	return false;
@@ -343,13 +342,14 @@ bool _direntry::rewindChildren()
 
 bool _direntry::write( void* src , _u32 size )
 {	
-	if( !this->fatInited )
+	if( !this->fatInited || this->isDirectory() )
 		return false;
-	_direntryMode modePrev = this->mode;
+	
+	_direntryMode modePrev = this->mode; // Save old state
 	
 	if( this->mode == _direntryMode::closed && !this->openwrite() )
 		return false;
-	else if( this->mode == _direntryMode::read )
+	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
 	
 	fwrite( src , size , 1 , this->fHandle );
@@ -362,23 +362,22 @@ bool _direntry::write( void* src , _u32 size )
 
 bool _direntry::writeString( string str )
 {	
-	if( this->fatInited && !this->isDirectory() )
-	{
-		_direntryMode modePrev = this->mode;
-		
-		if( this->mode == _direntryMode::closed && !this->openwrite() )
-			return false;
-		else if( this->mode == _direntryMode::read )
-			return false;
-		
-		fputs( str.c_str() , this->fHandle );
-		
-		if( modePrev == _direntryMode::closed )
-			this->close();
-		
-		return true;
-	}
-	return false;
+	if( !this->fatInited || this->isDirectory() )
+		return false;
+	
+	_direntryMode modePrev = this->mode; // Save old state
+	
+	if( this->mode == _direntryMode::closed && !this->openwrite() )
+		return false;
+	else if( this->mode == _direntryMode::read || !this->fHandle )
+		return false;
+	
+	fputs( str.c_str() , this->fHandle );
+	
+	if( modePrev == _direntryMode::closed )
+		this->close();
+	
+	return true;
 }
 
 string _direntry::readString( _u32 size )
@@ -398,7 +397,7 @@ string _direntry::readString( _u32 size )
 	
 	if( this->mode == _direntryMode::closed && !this->openread() )
 		return "";
-	if( size <= 0 )
+	if( size <= 0 || !this->fHandle )
 		return "";
 	
 	//! Output
@@ -422,10 +421,6 @@ string _direntry::readString( _u32 size )
 		this->close();
 	
 	return out;
-}
-
-_mimeType _direntry::getMimeType(){
-	return this->mimeType;
 }
 
 _u32 _direntry::getSize()
@@ -460,9 +455,10 @@ _u32 _direntry::getSize()
 		fseek ( this->fHandle , 0 , SEEK_END );
 		size = ftell( this->fHandle );
 		
-		//! Close file
+		//! Close file again
 		this->close();
 	}
+	
 	return size;
 }
 
@@ -479,18 +475,20 @@ string _direntry::getWorkingDirectory()
 
 void _direntry::setWorkingDirectory( string dir )
 {
-	//printf("change dir to %s = %d",replaceASSOCS(dir).c_str(),chdir( replaceASSOCS(dir).c_str()) );
 	unistd::chdir( replaceASSOCS(dir).c_str() );
 }
 
 bool _direntry::execute()
 {
-	//!TODO: remove Comment
-	//if( !this->fatInited )
-	//	return false;
+	#ifndef FAT_EMULATOR
+	if( !this->fatInited )
+		return false;
+	#endif
 	
-	_mimeType mime = _mimeType::fromExtension( this->getExtension() );
-	switch( mime )
+	if( this->isDirectory() )
+		return false;
+	
+	switch( this->mimeType )
 	{
 		case _mime::application_octet_stream:
 		case _mime::application_x_lua_bytecode:{
@@ -514,42 +512,57 @@ bool _direntry::execute()
 	return true;
 }
 
-const _bitmap& _direntry::getFileImage()
+_bitmap _direntry::getFileImage()
 {
-	switch( this->getMimeType() ){
+	switch( this->getMimeType() )
+	{
 		case _mime::directory:
-			return icon_folder;
+			return BMP_FolderIcon();
+			
 		case _mime::application_octet_stream:
-			return icon_exe;
+			return BMP_ExeIcon();
+			
 		case _mime::application_x_lua_bytecode:
-			return icon_lua;
+			return BMP_LuaIcon();
+			
 		case _mime::application_microsoft_installer:
-			return icon_msi;
+			return BMP_FileIcon();
+			
 		case _mime::text_plain:
-			return icon_txt;
+			return BMP_TxtIcon();
+			
 		case _mime::text_xml:
-			return icon_xml;
+			return BMP_XmlIcon();
+			
 		case _mime::text_x_ini:
-			return icon_ini;
+			return BMP_IniIcon();
+			
 		case _mime::application_x_nintendo_ds_rom:
-			return icon_nds;
+			return BMP_NdsIcon();
+			
 		case _mime::application_x_nintendo_gba_rom:
-			return icon_gba;
+			return BMP_GbaIcon();
+			
 		default:
 			break;
 	}
-	return icon_plain;
+	return BMP_FileIcon();
 }
 
 bool _direntry::unlink()
 {
-	if( this->mode != _direntryMode::closed )
-		this->close();
+	if( !this->exists )
+		return false;
+	
+	if( this->mode != _direntryMode::closed && !this->close() )
+		return false; // Cannot close the file!
+	
 	if( std::remove( this->filename.c_str() ) == 0 )
 	{
 		this->exists = false;
 		return true;
 	}
+	
 	return false;
 }
 
@@ -567,7 +580,11 @@ bool _direntry::rename( string newName )
 		this->extension = "";
 		
 		// set Name (not filename!)
-		this->name = this->filename.substr( this->filename.find_last_of("/") + 1 );
+		_u64 posLast = this->filename.find_last_of("/");
+		if( posLast != string::npos )
+			this->name = this->filename.substr( posLast + 1 );
+		else
+			this->name = this->filename;
 		this->name = this->name.substr( 0 , this->name.find_last_of(".") );
 		
 		// Fill Stat-Struct
@@ -577,16 +594,17 @@ bool _direntry::rename( string newName )
 		if( this->isDirectory() )
 		{
 			this->mimeType = _mime::directory;
-			if( *(this->filename.rbegin()+1) != '/' )
+			if( *( this->filename.rbegin() + 1 ) != '/' )
 				this->filename += "/";
 		}
 		else
 		{
 			// Set Extension
-			size_t pos = this->filename.find_last_of(".");
-			size_t npos = this->filename.find_last_of("/");
-			if( pos > npos && pos != this->filename.npos )
-				this->extension = this->filename.substr( pos + 1 );
+			_u64 lastDot = this->filename.find_last_of(".");
+			_u64 lastSlash = this->filename.find_last_of("/");
+			
+			if( ( lastSlash == string::npos || lastDot > lastSlash ) && lastDot != string::npos ) // Valid filename with extension?
+				this->extension = this->filename.substr( lastDot + 1 );
 			
 			this->mimeType = _mimeType::fromExtension( this->getExtension() );
 		}
