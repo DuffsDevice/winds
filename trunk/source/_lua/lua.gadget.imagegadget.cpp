@@ -5,7 +5,7 @@
 ##################################*/
 
 _lua_imagegadget::_lua_imagegadget( lua_State* L ) : 
-	_lua_gadget( new _imagegadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , *Lunar<_lua_bitmap>::check( L , 3 )->bm ) )
+	_lua_gadget( new _imagegadget( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , *Lunar<_lua_bitmap>::check( L , 3 )->bm , luaL_optstyle( L , 4 ) ) )
 { }
 
 int _lua_imagegadget::setImage( lua_State* L ){

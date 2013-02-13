@@ -22,6 +22,11 @@ namespace unistd{
 #include "_resource/BMP_LuaIcon.h"
 #include "_resource/BMP_FolderIcon.h"
 
+#include "_resource/BMP_FontIcon.h"
+#include "_resource/BMP_MusicIcon.h"
+#include "_resource/BMP_JpegIcon.h"
+#include "_resource/BMP_ImageIcon.h"
+
 //#define FAT_EMULATOR
 
 
@@ -34,7 +39,6 @@ int _direntry::fatInited = -1;
 
 /* Return a string containing the path name of the parent
  * directory of PATH.  */
-
 string dirname( string path )
 {
 	/* Go to the end of the string.  */
@@ -57,6 +61,7 @@ string dirname( string path )
 	return path.substr( 0 , s + 2 );
 }
 
+
 string replaceASSOCS( string path )
 {
 	for( auto& assoc : _system::_runtimeAttributes_->assocDirectories )
@@ -71,6 +76,7 @@ string replaceASSOCS( string path )
 	return path;
 }
 
+
 bool _direntry::initFat()
 {
 	//! libFat instantiation
@@ -80,39 +86,56 @@ bool _direntry::initFat()
 	return _direntry::fatInited;
 }
 
+
 _direntry::_direntry( string fn ) :
 	fHandle( nullptr ) // same as dHandle
 	, filename( replaceASSOCS( fn ) )
+	, extension( "" )
+	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
 {
+	// Trim the filename
+	trim( filename );
+	
+	// Make sure fat is inited
 	initFat();
 	
 	// set Name (not filename!)
-	_u64 posLast = this->filename.find_last_of("/");
-	if( posLast != string::npos )
+	bool hasLastDelim = this->filename.back() == '/';
+	if( hasLastDelim ) // Remove the ending '/'
+		this->filename.resize( this->filename.length() - 1 );
+	
+	_u64 posLast;
+	if( ( posLast = this->filename.find_last_of("/") ) != string::npos ) // Cut everything before and including the last occouring slash ('/')
 		this->name = this->filename.substr( posLast + 1 );
 	else
 		this->name = this->filename;
-	this->name = this->name.substr( 0 , this->name.find_last_of(".") );
 	
 	// Fill Stat-Struct
-	this->exists = !stat( this->filename.c_str() , &this->stat_buf );
+	if( hasLastDelim && this->filename.empty() ) // must be the root
+		this->exists = !stat( "/" , &this->stat_buf );
+	else
+		this->exists = !stat( this->filename.c_str() , &this->stat_buf );
 	
-	//! Set Mime-Type
+	if( !this->exists && hasLastDelim ) // Is a filename that, if created, would lead to a directory?
+		stat_buf.st_mode = _IFDIR; // Make it a directory
+	
+	// Set Mime-Type
 	if( this->isDirectory() )
 	{
 		this->mimeType = _mime::directory;
-		if( *( this->filename.rbegin() + 1 ) != '/' )
-			this->filename += "/";
+		this->filename += "/";
 	}
-	else
+	else if( this->name.back() != '.' ) // Must be a file
 	{
 		// Set Extension
-		_u64 lastDot = this->filename.find_last_of(".");
-		_u64 lastSlash = this->filename.find_last_of("/");
+		_u64 lastDot = this->name.find_last_of(".");
 		
-		if( ( lastSlash == string::npos || lastDot > lastSlash ) && lastDot != string::npos ) // Valid filename with extension?
-			this->extension = this->filename.substr( lastDot + 1 );
+		if( lastDot != string::npos )
+		{
+			this->extension = this->name.substr( lastDot + 1 );
+			this->name.resize( lastDot );
+		}
 		
 		this->mimeType = _mimeType::fromExtension( this->getExtension() );
 	}
@@ -121,6 +144,7 @@ _direntry::_direntry( string fn ) :
 	//if( this->filename.front() != '/' )
 	//	this->filename.insert( 0 , 1 , '/' );
 }
+
 
 _direntry& _direntry::operator=( _direntry other )
 {
@@ -131,9 +155,12 @@ _direntry& _direntry::operator=( _direntry other )
 	this->stat_buf = other.stat_buf;
 	this->mimeType = other.mimeType;
 	this->mode = _direntryMode::closed;
+	this->exists = other.exists;
+	this->fHandle = nullptr;
 	
 	return *this;
 }
+
 
 bool _direntry::close()
 {
@@ -163,6 +190,7 @@ bool _direntry::close()
 	return true;
 }
 
+
 // Get the definition of libfat
 PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
 
@@ -188,6 +216,7 @@ bool _direntry::flush()
 	return true;
 }
 
+
 int _direntry::setAttrs( _direntryAttributes attrs )
 {	
 	if( !this->fatInited )
@@ -195,12 +224,14 @@ int _direntry::setAttrs( _direntryAttributes attrs )
 	return FAT_setAttr( this->filename.c_str() , attrs );
 }
 
+
 _direntryAttributes _direntry::getAttrs()
 {	
 	if( !this->fatInited )
 		return 0;
 	return FAT_getAttr( this->filename.c_str() );
 }
+
 
 bool _direntry::open( string mode )
 {
@@ -226,21 +257,24 @@ bool _direntry::open( string mode )
 	return false;
 }
 
+
 bool _direntry::openread(){
 	return this->open( "rb" ); // Open for read, do not create
 }
+
 
 bool _direntry::openwrite( bool eraseOld )
 {
 	return !this->exists && this->open( eraseOld ? "wb+" : "rb+" ); // Open for read & write, do not create if already existing
 }
 
+
 bool _direntry::create()
 {
 	if( !this->fatInited )
 		return false;
 	
-	if( this->exists || this->filename == "/" ) // Return if the file does already exist
+	if( this->exists || this->filename.empty() ) // Return if the file does already exist
 		return true;
 	
 	// Build everything "upstairs" (recursively!)
@@ -250,15 +284,17 @@ bool _direntry::create()
 		return false;
 	
 	// Then create the file/directory
-	if( this->filename.back() == '/' )
-		return mkdir( this->filename.substr( 0 , this->filename.length() - 1 ).c_str() , S_IRWXU | S_IRWXG | S_IRWXO ) == 0 && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
+	if( this->isDirectory() )
+		return mkdir( this->filename.c_str() , S_IRWXU | S_IRWXG | S_IRWXO ) == 0 && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
 	else
 		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
 }
 
+
 #ifdef FAT_EMULATOR
 #include <string.h>
 #endif
+
 
 bool _direntry::read( void* dest , _u32 size )
 {
@@ -293,6 +329,7 @@ bool _direntry::read( void* dest , _u32 size )
 	return false;
 }
 
+
 bool _direntry::readChild( string& child )
 {
 	if( this->fatInited && this->isDirectory() )
@@ -322,6 +359,7 @@ bool _direntry::readChild( string& child )
 	return false;
 }
 
+
 bool _direntry::rewindChildren()
 {
 	if( this->fatInited && this->isDirectory() )
@@ -339,6 +377,7 @@ bool _direntry::rewindChildren()
 	}
 	return false;
 }
+
 
 bool _direntry::write( void* src , _u32 size )
 {	
@@ -360,6 +399,7 @@ bool _direntry::write( void* src , _u32 size )
 	return true;
 }
 
+
 bool _direntry::writeString( string str )
 {	
 	if( !this->fatInited || this->isDirectory() )
@@ -379,6 +419,7 @@ bool _direntry::writeString( string str )
 	
 	return true;
 }
+
 
 string _direntry::readString( _u32 size )
 {
@@ -422,6 +463,7 @@ string _direntry::readString( _u32 size )
 	
 	return out;
 }
+
 
 _u32 _direntry::getSize()
 {
@@ -473,10 +515,12 @@ string _direntry::getWorkingDirectory()
 	return val;
 }
 
+
 void _direntry::setWorkingDirectory( string dir )
 {
 	unistd::chdir( replaceASSOCS(dir).c_str() );
 }
+
 
 bool _direntry::execute()
 {
@@ -512,6 +556,7 @@ bool _direntry::execute()
 	return true;
 }
 
+
 _bitmap _direntry::getFileImage()
 {
 	switch( this->getMimeType() )
@@ -542,6 +587,26 @@ _bitmap _direntry::getFileImage()
 			
 		case _mime::application_x_nintendo_gba_rom:
 			return BMP_GbaIcon();
+		
+		case _mime::font_opentype:
+		case _mime::font_truetype:
+			return BMP_FontIcon();
+		
+		case _mime::audio_mpeg:
+		case _mime::audio_wav:
+		case _mime::audio_x_aiff:
+		case _mime::audio_mid:
+		case _mime::audio_x_mpegurl:
+		case _mime::audio_x_mod:
+			return BMP_MusicIcon();
+		
+		case _mime::image_jpeg:
+			return BMP_JpegIcon();
+			
+		case _mime::image_png:
+		case _mime::image_gif:
+		case _mime::image_bmp:
+			return BMP_ImageIcon();
 			
 		default:
 			break;
@@ -576,42 +641,7 @@ bool _direntry::rename( string newName )
 	
 	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 )
 	{
-		this->filename = newName;
-		this->extension = "";
-		
-		// set Name (not filename!)
-		_u64 posLast = this->filename.find_last_of("/");
-		if( posLast != string::npos )
-			this->name = this->filename.substr( posLast + 1 );
-		else
-			this->name = this->filename;
-		this->name = this->name.substr( 0 , this->name.find_last_of(".") );
-		
-		// Fill Stat-Struct
-		this->exists = !stat( this->filename.c_str() , &this->stat_buf );
-		
-		//! Set Mime-Type
-		if( this->isDirectory() )
-		{
-			this->mimeType = _mime::directory;
-			if( *( this->filename.rbegin() + 1 ) != '/' )
-				this->filename += "/";
-		}
-		else
-		{
-			// Set Extension
-			_u64 lastDot = this->filename.find_last_of(".");
-			_u64 lastSlash = this->filename.find_last_of("/");
-			
-			if( ( lastSlash == string::npos || lastDot > lastSlash ) && lastDot != string::npos ) // Valid filename with extension?
-				this->extension = this->filename.substr( lastDot + 1 );
-			
-			this->mimeType = _mimeType::fromExtension( this->getExtension() );
-		}
-		
-		if( this->filename.front() != '/' )
-			this->filename.insert( 0 , 1 , '/' );
-		
+		*this = _direntry( newName.c_str() );
 		return true;
 	}
 	return false;

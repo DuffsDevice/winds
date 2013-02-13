@@ -5,10 +5,34 @@
 ##################################*/
 
 _lua_select::_lua_select( lua_State* L ) : 
-	_lua_gadget( new _select( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) )
+	_lua_gadget( new _select( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , { /* Empty List */ } , luaL_optstyle( L , lua_istable( L , 5 ) ? 6 : 5 ) ) )
 	, _lua_interface_input( nullptr )
-{ 
+{
 	_lua_interface_input::input = (_select*)_lua_gadget::gadget;
+	
+	// Pass Table
+	if( lua_istable( L , 5 ) )
+	{
+		// Receive list and clear it
+		_contextMenuEntryList& list = _lua_interface_input::input->getList();
+		list.clear();
+		
+		int i = 0;
+		while( true )
+		{
+			lua_rawgeti( L , 1 , ++i );
+			
+			if( lua_isnil( L , -1 ) )
+				break;
+				
+			list[ i - 1 ] = luaL_checkstring( L , -1 );
+			
+			// Pop Value
+			lua_pop( L , 1 );
+		}
+		
+		_lua_interface_input::input->refreshList();
+	}
 }
 
 //! addIndex

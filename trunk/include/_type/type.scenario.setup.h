@@ -25,7 +25,7 @@ class _scSetup : public _scenario
 		_callbackReturn imagegadgetProfileIconHandler( _event e );
 		
 		//! Function to remove all gadgets
-		void destruct();
+		void destruct( bool removeLanguagSelect = true );
 	
 	public:
 		

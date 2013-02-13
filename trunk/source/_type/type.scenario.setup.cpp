@@ -42,10 +42,10 @@ _scSetup::~_scSetup()
 }
 
 
-void _scSetup::destruct()
+void _scSetup::destruct( bool removeLanguagSelect )
 {
 	for( int i = 0; i < 20 ; i++ )
-		if( this->gadgets[i] )
+		if( this->gadgets[i] && ( this->gadgets[i]->getType() != _gadgetType::selectbox || removeLanguagSelect || this->state != 0 ) )
 		{
 			delete this->gadgets[i];
 			this->gadgets[i] = nullptr;
@@ -222,13 +222,13 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	_gadget* that = e.getGadget();
 	
 	//! Remove all old gadgets and data
-	this->destruct();
+	this->destruct( false );
 	
 	// Standard
 	if( state != 0 )
 	{
 		_gadget* btnPrev = new _actionButton( _actionButtonType::prev , 4 , 176 , _style::storeInt( -1 ) );
-		_label* prev = new _label( 50 , 9 , 17 , 177 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
+		_label* prev = new _label( 50 , 9 , 17 , 176 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
 		prev->setColor( RGB( 30 , 30 , 30 ) );
 		prev->setAlign( _align::left );
 		prev->registerEventHandler( mouseClick , new _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
@@ -251,7 +251,7 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	}
 	
 	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeInt( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 177 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
+	_label* next = new _label( 50 , 9 , 188 , 176 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
 	this->gadgets[0] = btnNext;
 	this->gadgets[2] = next;
 	next->setColor( RGB( 30 , 30 , 30 ) );
@@ -269,15 +269,18 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	{
 		case 0:
 		{
-			_label* lbl = new _label( 79 , 52 , _system::getLocalizedString("lbl_choose_language") );
-			_select* slc = new _select( 90 , 5 , 78 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
-			slc->setIntValue( (_u8)_system::getLanguage() );
-			slc->registerEventHandler( onChange , new _classCallback( this , &_scSetup::languageSelectHandler ) );
-			this->gadgets[5] = slc;
+			_label* lbl = new _label( 88 , 52 , _system::getLocalizedString("lbl_choose_language") );
+			if( !this->gadgets[5] ) // If not created already
+			{
+				_select* slc = new _select( 90 , 5 , 87 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
+				slc->setIntValue( (_u8)_system::getLanguage() );
+				slc->registerEventHandler( onChange , new _classCallback( this , &_scSetup::languageSelectHandler ) );
+				this->gadgets[5] = slc;
+				that->addChild( slc );
+			}
+			that->addChild( lbl );
 			this->gadgets[6] = lbl;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
-			that->addChild( slc );
-			that->addChild( lbl );
 			break;
 		}
 		case 1:

@@ -6,35 +6,15 @@
 
 _lua_progressbar::_lua_progressbar( lua_State* L )
 {
-	switch( lua_gettop( L ) )
+	if( !lua_isnumber( L , 4 ) )
 	{
-		case 3:	
-			//	_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() );
-			this->setGadget( new _progressbar( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) );
-			break;
-		case 4:
-			if( !lua_isboolean( L , 4 ) )
-			{
-				_length l1 = luaL_checkint( L , 1 );
-				_length l2 = luaL_checkint( L , 2 );
-				_coord c1 = luaL_checkint( L , 3 );
-				_coord c2 = luaL_checkint( L , 4 );
-				//	_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() );
-				this->setGadget( new _progressbar( l1 , l2 , c1 , c2 ) );
-			}
-			else
-				//	_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );
-				this->setGadget( new _progressbar( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkboolean( L , 4 ) ) );
-			break;
-		case 5:
-			//	_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );
-			this->setGadget( new _progressbar( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkboolean( L , 5 ) ) );
-			break;
-		default:
-			luaL_checkint( L , 1 ); // Print reasonable error-message
-			luaL_checkint( L , 2 );
-			luaL_checkint( L , 3 );
-			break;
+		//	_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() );
+		this->setGadget( new _progressbar( (_length)luaL_checkint( L , 1 ) , (_coord)luaL_checkint( L , 2 ) , (_coord)luaL_checkint( L , 3 ) , luaL_optboolean( L , 4 , true ) , luaL_optstyle( L , 5 ) ) );
+	}
+	else
+	{
+		//	_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );
+		this->setGadget( new _progressbar( (_length)luaL_checkint( L , 1 ) , (_length)luaL_checkint( L , 2 ) , (_coord)luaL_checkint( L , 3 ) , (_coord)luaL_checkint( L , 4 ) , luaL_optboolean( L , 5 , true ) , luaL_optstyle( L , 6 ) ) );
 	}
 	
 	_lua_interface_input::input = (_progressbar*)_lua_gadget::gadget;

@@ -19,7 +19,22 @@ _style _style::storeHost( _program* data , _styleAttr attr ){
 }
 
 // Default
-_styleAttr::_styleAttr(){ sum = _styleAttr(0) | resizeable | destroyable | editable | notMinimizeable | canTakeFocus | canLooseFocus | canReceiveFocus | defaultDragTrig | mouseClickDefault | doubleClickable; }
+_styleAttr::_styleAttr()
+{
+	sum = _styleAttr(0)
+		| resizeable
+		| destroyable
+		| editable
+		| notMinimizeable
+		| canTakeFocus
+		| canLooseFocus
+		| canReceiveFocus
+		| defaultDragTrig
+		| mouseClickDefault
+		| doubleClickable
+		| noKeyboardRequest
+	;
+}
 
 void applyString2style( _style& style , string input )
 {
@@ -116,6 +131,12 @@ void applyString2style( _style& style , string input )
 			attr |= _styleAttr::doubleClickable;
 		else if( line == "notDoubleClickable" )
 			attr |= _styleAttr::notDoubleClickable;
+		
+		// keyboardRequest
+		else if( line == "keyboardRequest" )
+			attr |= _styleAttr::keyboardRequest;
+		else if( line == "noKeyboardRequest" )
+			attr |= _styleAttr::noKeyboardRequest;
 		
 	}
 	

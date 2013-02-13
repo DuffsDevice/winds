@@ -6,7 +6,7 @@
 
 void _systemController::main()
 {
-	changeState( _systemState::setup );
+	changeState( _systemState::desktop );
 	static int i = 0;
 	
 	while( true )

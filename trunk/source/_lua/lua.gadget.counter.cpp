@@ -12,11 +12,11 @@ _lua_counter::_lua_counter( lua_State* L )
 		case 4:
 		case 5:
 			//	_counter( _coord x , _coord y , _length width , bool circular = false , _s32 value = 0 , _style style = _style() );
-			this->setGadget( new _counter( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_optboolean( L , 4 , false ) , luaL_optint( L , 5 , 0 ) ) );
+			this->setGadget( new _counter( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_optboolean( L , 4 , false ) , luaL_optint( L , 5 , 0 ) , luaL_optstyle( L , 6 ) ) );
 			break;
 		case 6:
 			//	_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _style style = _style() );
-			this->setGadget( new _counter( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkboolean( L , 4 ) , luaL_checkint( L , 5 ) , luaL_checkint( L , 6 ) , luaL_optint( L , 7 , 0 ) , luaL_optint( L , 8 , 0 ) ) );
+			this->setGadget( new _counter( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkboolean( L , 4 ) , luaL_checkint( L , 5 ) , luaL_checkint( L , 6 ) , luaL_optint( L , 7 , 0 ) , luaL_optint( L , 8 , 0 ) , luaL_optstyle( L , 9 ) ) );
 			break;
 		default:
 			luaL_checkint( L , 1 ); // Throw Reasonable error

@@ -12,7 +12,12 @@ _callbackReturn _fileobject::doubleClickHandler( _event event )
 	if( that->file.isDirectory() )
 	{
 		if( that->parent->getType() == _gadgetType::fileview )
+		{
+			// Trigger 'onChange'-Event
+			that->parent->triggerEvent( onChange );
+			
 			((_fileview*)that->parent)->setPath( that->file.getFileName() );
+		}
 	}
 	else
 		that->file.execute();
@@ -92,7 +97,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 
 _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
 	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
-{	
+{
 	switch( this->viewType )
 	{
 		case _fileviewType::list:{

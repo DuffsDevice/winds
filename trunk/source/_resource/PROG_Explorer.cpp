@@ -12,7 +12,7 @@ PROG_Explorer::PROG_Explorer() :
 
 void PROG_Explorer::main( _cmdArgs& args )
 {
-	if( args["path"].length() )
+	if( !args["path"].empty() )
 		this->path = args["path"];
 	
 	this->window = new _window( 120 , 70 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable ) );
@@ -20,6 +20,7 @@ void PROG_Explorer::main( _cmdArgs& args )
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
 	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );
 	
+	this->fileview->registerEventHandler( onChange , new _staticCallback( PROG_Explorer::handler ) );
 	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
 	
 	this->window->addChild( this->fileview );
@@ -51,16 +52,11 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		string val = prog->addressbar->getStrValue();
 		prog->path = val;
 		prog->fileview->setPath( val );
-		/*if( created )
-			delete b2;
-		b2 = new _label( 23 , 20 , "Hasllo" );
-		b2->registerEventHandler( "mouseClick" , PROG_Explorer::handler );
-		//printf("->>%p,%p",prog,prog->window);
-		prog->window->addChild( b2 );
-		created = true;*/
 	}
-	//if( that->getType() == _gadgetType::label )
-		//((_label*)that)->setStrValue( "hello" );
+	else if( that->getType() == _gadgetType::fileview )
+	{
+		prog->addressbar->setStrValue( ((_fileview*)that)->getPath() );
+	}
 	
 	return handled;
 }

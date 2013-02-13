@@ -84,26 +84,33 @@ class _system{
 		friend class _scSetup;
 		friend class _scDesktop;
 		friend class _scBootup;
+		friend class _keyboard;
 		
 		//! Add Thinks for execution
-		static void executeAnimation(_animation* anim ){
+		static void executeAnimation( _animation* anim ){
 			_animations_.remove( anim );
 			_animations_.push_back( anim );
 		}
-		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() )
-		{
+		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ){
 			_programs_.push_back( make_pair( prog , args ) );
 			prog->main( _gadgetHost_ , args );
 		}
-		static void generateEvent( _event event ){ _eventBuffer_[_curEventBuffer_].push_back( event ); }
+		static void generateEvent( _event event ) { _eventBuffer_[_curEventBuffer_].push_back( event ); }
 		
 		//! Things for termination
-		static void terminateProgram( _program* prog ){ 
+		static void terminateProgram( _program* prog ) { 
 			// Erase the Program-Instance in the list of running instances
-			_programs_.remove_if( [&]( pair<_program*,_cmdArgs> s )->bool{ return s.first == prog; } );
-			delete prog;
+			_programs_.remove_if( 
+				[&]( pair<_program*,_cmdArgs> s )->bool
+				{
+					if( s.first == prog ) {
+						delete prog; return true;
+					}
+					return false;
+				}
+			);			
 		}
-		static void terminateAnimation( _animation* anim ){ _animations_.remove( anim ); }
+		static void terminateAnimation( _animation* anim ) { _animations_.remove( anim ); }
 		static void terminateTimer( const _callback& cb );
 		
 	public:

@@ -68,7 +68,7 @@ _user::_user( string folderName ) :
 					{ "maxDoubleClickArea" , "6" } ,
 					{ "fileObjectHeight" , "10" } ,
 					{ "selectObjectHeight" , "9" } ,
-					{ "magnifyKeyboardFocus" , "true" }
+					{ "magnifyKeyboardFocus" , "1" }
 				}
 			} };
 		

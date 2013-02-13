@@ -95,7 +95,7 @@ int _lua_direntry::getExtension( lua_State* L ){
 	return 1;
 }
 
-int _lua_direntry::getMimeTypeString( lua_State* L ){
+int _lua_direntry::getMimeType( lua_State* L ){
 	lua_pushstring( L , string(_direntry::getMimeType()).c_str() );
 	return 1;
 }
@@ -131,7 +131,7 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 	LUA_CLASS_FUNC(_lua_direntry,getFileName),
 	LUA_CLASS_FUNC(_lua_direntry,getName),
 	LUA_CLASS_FUNC(_lua_direntry,getExtension),
-	LUA_CLASS_FUNC(_lua_direntry,getMimeTypeString),
+	LUA_CLASS_FUNC(_lua_direntry,getMimeType),
 	LUA_CLASS_FUNC(_lua_direntry,getSize),
 	LUA_CLASS_FUNC(_lua_direntry,execute),
 	LUA_CLASS_FUNC(_lua_direntry,getFileImage),

@@ -9,7 +9,8 @@
 _pixel SUpalette[] = { 
 	RGB( 0 , 6 , 19 ) , RGB( 0 , 6 , 15 ) , RGB( 21 , 24 , 31 ) , // --- Topper Bar ( Main color , dark Main , bright Accent )
 	RGBHEX( 0x5A7EDC ) , // Bright Background
-	RGBHEX( 0x3733ac ) , RGBHEX( 0x0f319f ) , RGBHEX( 0xd9946b ) // Bottom Bar ( Main - left side , right side , orange accent )
+	RGBHEX( 0x3733ac ) , RGBHEX( 0x0f319f ) , RGBHEX( 0xd9946b ) , // Bottom Bar ( Main - left side , right side , orange accent )
+	RGBHEX( 0x7193EB )
 };
 
 _u8 accntPos = 110;
@@ -26,6 +27,7 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 		bP.normalizeClippingRects();
 	
 	bP.fill( SUpalette[3] );
+	bP.drawHorizontalGradient( 0 , 0 , 50 , SCREEN_HEIGHT , SUpalette[7] , SUpalette[3] );
 	
 	// ---------------- The Topper Dark Bar
 	bP.drawFilledRect( 0 , 0 , SCREEN_WIDTH , 17 , SUpalette[0] );

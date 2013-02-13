@@ -5,7 +5,7 @@
 ##################################*/
 
 _lua_checkbox::_lua_checkbox( lua_State* L ) :
-	_lua_interface_input( new _checkbox( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) )  )
+	_lua_interface_input( new _checkbox( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optstyle( L , 3 ) )  )
 { 
 	this->setGadget( (_checkbox*)_lua_interface_input::input );
 }
