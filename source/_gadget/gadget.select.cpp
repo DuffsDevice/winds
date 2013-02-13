@@ -22,6 +22,47 @@ _callbackReturn _select::refreshHandler( _event event )
 	return use_default;
 }
 
+_callbackReturn _select::keyHandler( _event event )
+{
+	// Receive Gadget
+	_select* that = event.getGadget<_select>();
+	
+	_contextMenuEntryList::iterator itSelected = that->entries.find( that->selected );
+	
+	if( itSelected == that->entries.end() ) // If nothing selected
+	{
+		if( event.getKeyCode() == DSWindows::KEY_DOWN )
+			itSelected = that->entries.begin();
+		else if( event.getKeyCode() == DSWindows::KEY_UP )
+			itSelected = (that->entries.rbegin()++).base();
+	}
+	else
+	{
+		if( event.getKeyCode() == DSWindows::KEY_DOWN )
+		{
+			itSelected++;
+			if( itSelected == that->entries.end() ) // Bound
+				itSelected = that->entries.begin();
+		}
+		else if( event.getKeyCode() == DSWindows::KEY_UP )
+		{
+			_contextMenuEntryList::reverse_iterator itRevSelected = _contextMenuEntryList::reverse_iterator( itSelected );
+			if( itRevSelected == that->entries.rend() ) // Bound
+				itRevSelected = that->entries.rbegin();
+			else
+				itRevSelected++;
+			itSelected = itRevSelected.base();
+		}
+	}
+	
+	// Set Value
+	that->setSelected( itSelected->first );
+	
+	that->triggerEvent( onChange );
+	
+	return use_default;
+}
+
 _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style style ) :
 	_scrollArea( width , height * _system::_runtimeAttributes_->user->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , style )
 	, entries( lst )
@@ -31,6 +72,8 @@ _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMen
 	this->setType( _gadgetType::selectbox );
 	
 	this->registerEventHandler( refresh , new _staticCallback( &_select::refreshHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_select::keyHandler ) );
+	this->registerEventHandler( keyRepeat , new _staticCallback( &_select::keyHandler ) );
 	
 	// Refresh Me
 	this->refreshList();

@@ -16,7 +16,6 @@ map<_scrollType,_string> scrollType2string = {
 };
 
 
-
 void _scrollArea::addChild( _gadget* child )
 {
 	child->setParent( nullptr );
@@ -32,7 +31,6 @@ void _scrollArea::addChild( _gadget* child )
 	if( this->computeCanvasHeight == 1 )
 		this->computeCanvasHeight = 2;
 }
-
 
 
 void _scrollArea::removeChild( _gadget* child )
@@ -52,6 +50,43 @@ void _scrollArea::removeChild( _gadget* child )
 		this->computeCanvasHeight = 2;
 }
 
+
+void _scrollArea::removeChildren( bool remove )
+{
+	_gadget::removeChildren( remove );
+	
+	// Re-compute Scrollbar and innerSize
+	if( this->computeCanvasWidth == 1 || this->computeCanvasHeight == 1 )
+		this->triggerEvent( _event( _internal_ ) );
+	
+	if( this->computeCanvasWidth == 1 )
+		this->computeCanvasWidth = 2;
+	if( this->computeCanvasHeight == 1 )
+		this->computeCanvasHeight = 2;
+}
+
+
+void _scrollArea::removeEnhancedChildren( bool remove )
+{
+	// Remove scrollbars so that they don't get deleted
+	this->removeChild( this->scrollBarX );
+	this->removeChild( this->scrollBarY );
+	
+	_gadget::removeEnhancedChildren( remove );
+	
+	// Re-compute Scrollbar and innerSize
+	if( this->computeCanvasWidth == 1 || this->computeCanvasHeight == 1 )
+		this->triggerEvent( _event( _internal_ ) );
+	
+	if( this->computeCanvasWidth == 1 )
+		this->computeCanvasWidth = 2;
+	if( this->computeCanvasHeight == 1 )
+		this->computeCanvasHeight = 2;
+	
+	// Add them back again!
+	this->addEnhancedChild( this->scrollBarX );
+	this->addEnhancedChild( this->scrollBarY );
+}
 
 
 void _scrollArea::updateScrollBars()
@@ -88,7 +123,6 @@ void _scrollArea::updateScrollBars()
 	// Crop children Area
 	this->setPadding( p );
 }
-
 
 
 void _scrollArea::computeClipSize()
@@ -131,7 +165,6 @@ void _scrollArea::computeClipSize()
 }
 
 
-
 _callbackReturn _scrollArea::resizeHandler( _event event )
 {
 	_scrollArea* that = event.getGadget<_scrollArea>();
@@ -158,7 +191,6 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 	
 	return handled;
 }
-
 
 
 void _scrollArea::computeCanvasSize(){
@@ -193,7 +225,6 @@ void _scrollArea::computeCanvasSize(){
 }
 
 
-
 _callbackReturn _scrollArea::scrollHandler( _event event ){
 	
 	// Receive Gadget
@@ -210,7 +241,6 @@ _callbackReturn _scrollArea::scrollHandler( _event event ){
 }
 
 
-
 void _scrollArea::setScrollTypeX( _scrollType typeX ){
 	this->scrollTypeX = typeX;
 	this->computeClipSize();
@@ -218,13 +248,11 @@ void _scrollArea::setScrollTypeX( _scrollType typeX ){
 }
 
 
-
 void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->scrollTypeY = typeY;
 	this->computeClipSize();
 	this->updateScrollBars();
 }
-
 
 
 //_callbackReturn handler( _event e )
@@ -236,7 +264,6 @@ void _scrollArea::setScrollTypeY( _scrollType typeY ){
 //	
 //	return handled;
 //}
-
 
 
 _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :

@@ -139,7 +139,7 @@ class _gadget{
 		const _padding& getPadding() const { return this->padding; }
 	
 		/** Method to check whether the Gadget has Focus **/
-		bool hasFocus(){ return this->style.focused; }
+		bool hasFocus(){ return this->style.focused || this->type == _gadgetType::screen; }
 		
 		/** Check whether this Gadget can also be on the reserved area of the parent **/
 		bool isEnhanced() const { return this->style.enhanced; }
@@ -179,6 +179,9 @@ class _gadget{
 		
 		/** Check whether this Gadget is not dragged but one of its children **/
 		bool isChildDragged() const { return this->dragTemp != nullptr; }
+		
+		/** Check whether this Gadget requests the keyboard to open on focus **/
+		bool requestsKeyboard() const { return this->style.keyboardRequest; }
 		
 		/**
 		 * Check whether this Gadget is doubleclickable
@@ -374,8 +377,8 @@ class _gadget{
 		 * Remove a specific children
 		**/
 		virtual void removeChild( _gadget* child );
-		void removeChildren( bool remove = false );
-		void removeEnhancedChildren( bool remove = false );
+		virtual void removeChildren( bool remove = false );
+		virtual void removeEnhancedChildren( bool remove = false );
 		
 		/**
 		 * Add a child-gadget to this one
@@ -441,17 +444,21 @@ class _gadget{
 		/**
 		 * Blur the Gadget
 		**/
-		void blur()
+		bool blur()
 		{
-			this->parent && this->parent->focusedChild == this && this->parent->blurChild();
+			if( this->parent && this->parent->focusedChild == this )
+				return this->parent->blurChild();
+			return this->type == _gadgetType::screen; // You can do everything with a screen!
 		}
 		
 		/**
 		 * Focus the Gadget
 		**/
-		void focus()
+		bool focus()
 		{
-			this->parent && this->parent->focusChild( this );
+			if( this->parent )
+				return this->parent->focusChild( this );
+			return this->type == _gadgetType::screen; // You can do everything with a screen!
 		}
 		
 		/**

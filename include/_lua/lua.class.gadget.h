@@ -19,6 +19,7 @@
 	LUA_CLASS_FUNC(g,hasSmallDragTrig), \
 	LUA_CLASS_FUNC(g,isMouseClickRepeat), \
 	LUA_CLASS_FUNC(g,isDoubleClickable), \
+	LUA_CLASS_FUNC(g,requestsKeyboard), \
 	LUA_CLASS_FUNC(g,bubbleEvent), \
 	LUA_CLASS_FUNC(g,bubbleRefresh), \
 	LUA_CLASS_FUNC(g,refreshBitmap), \
@@ -36,6 +37,8 @@
 	LUA_CLASS_FUNC(g,getAbsoluteY), \
 	LUA_CLASS_FUNC(g,hide), \
 	LUA_CLASS_FUNC(g,show), \
+	LUA_CLASS_FUNC(g,focus), \
+	LUA_CLASS_FUNC(g,blur), \
 	LUA_CLASS_FUNC(g,enhanceToParent), \
 	LUA_CLASS_FUNC(g,removeChild), \
 	LUA_CLASS_FUNC(g,removeChildren), \
@@ -238,6 +241,9 @@ class _lua_gadget{
 		//! isDoubleClickable
 		int isDoubleClickable( lua_State* L );
 		
+		//! requestsKeyboard
+		int requestsKeyboard( lua_State* L );
+		
 		//! getHeight
 		int getHeight( lua_State* L );
 		
@@ -258,6 +264,12 @@ class _lua_gadget{
 		
 		//! show
 		int show( lua_State* L );
+		
+		//! focus
+		int focus( lua_State* L );
+		
+		//! blur
+		int blur( lua_State* L );
 		
 		//! getType
 		int getType( lua_State* L );

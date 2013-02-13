@@ -4,10 +4,22 @@
 ##         Lua-ScrollArea         ##
 ##################################*/
 
-_lua_scrollArea::_lua_scrollArea( lua_State* L )
-{ 
-	this->setGadget( new _scrollArea( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , string2scrollType[ luaL_checkstring( L , 5 ) ] , string2scrollType[ luaL_checkstring( L , 6 ) ] ) );
-}
+const char metaString[5] = "meta";
+
+_lua_scrollArea::_lua_scrollArea( lua_State* L ) :
+	_lua_gadget(
+		// _scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );
+		new _scrollArea(
+			luaL_checkint( L , 1 ) // width
+			, luaL_checkint( L , 2 ) // height
+			, luaL_checkint( L , 3 ) // x
+			, luaL_checkint( L , 4 ) // y
+			, string2scrollType[ luaL_optstring( L , 5 , metaString ) ] // scrollType
+			, string2scrollType[ luaL_optstring( L , 6 , metaString ) ] // scrollType
+			, luaL_optstyle( L , 7 )
+		)
+	)
+{ }
 
 //! setScrollTypeX
 int _lua_scrollArea::setScrollTypeX( lua_State* L ){ ((_scrollArea*)_lua_gadget::gadget)->setScrollTypeX( string2scrollType[ luaL_checkstring( L , 1 ) ] ); return 0; };

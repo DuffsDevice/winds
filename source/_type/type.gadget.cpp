@@ -149,13 +149,13 @@ bool _gadget::removeCallback( _gadget* g )
 
 void _gadget::blinkHandler()
 {
-	if( this->style.unused1 > 5 )
+	if( this->style.unused > 5 )
 	{
 		_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
-		this->style.unused1 = 0;
+		this->style.unused = 0;
 		return;
 	}
-	if( this->style.unused1++ % 2 )
+	if( this->style.unused++ % 2 )
 		this->show();
 	else
 		this->hide();
@@ -225,6 +225,10 @@ bool _gadget::focusChild( _gadget* child )
 	
 	// Return false, if the gadget cannot receive focus
 	if( !child->style.canReceiveFocus )
+		return false;
+	
+	// Check if i can get focus, if not my child can't get focus either
+	if( !this->focus() )
 		return false;
 	
 	// Set _currentFocus_
@@ -323,7 +327,8 @@ _callbackReturn _gadget::handleEvent( _event event )
 }
 
 
-void _gadget::setX( _coord val ){
+void _gadget::setX( _coord val )
+{
 	if( val == this->dimensions.x )
 		return;
 	_rect dim = this->getAbsoluteDimensions();
@@ -332,7 +337,8 @@ void _gadget::setX( _coord val ){
 }
 
 
-void _gadget::setY( _coord val ){
+void _gadget::setY( _coord val )
+{
 	if( val == this->dimensions.y )
 		return;
 	_rect dim = this->getAbsoluteDimensions();
@@ -341,7 +347,8 @@ void _gadget::setY( _coord val ){
 }
 
 
-void _gadget::moveRelative( _s16 dX , _s16 dY ){
+void _gadget::moveRelative( _s16 dX , _s16 dY )
+{
 	if( !dX && !dY )
 		return;
 	_rect dim = this->getAbsoluteDimensions();

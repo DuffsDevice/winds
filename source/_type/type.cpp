@@ -46,6 +46,7 @@ map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::checkbox , "checkbox" },
 	{ _gadgetType::radiobox , "radiobox" },
 	{ _gadgetType::textbox , "textbox" },
+	{ _gadgetType::textarea , "textarea" },
 	{ _gadgetType::selectbox , "selectbox" },
 	{ _gadgetType::selectitem , "selectitem" },
 	{ _gadgetType::progressbar , "progressbar" },

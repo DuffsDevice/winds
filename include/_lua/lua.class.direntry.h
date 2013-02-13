@@ -61,8 +61,8 @@ class _lua_direntry : public _direntry {
 		//! getExtension
 		int getExtension( lua_State* L );
 		
-		//! getMimeTypeString
-		int getMimeTypeString( lua_State* L );
+		//! getMimeType
+		int getMimeType( lua_State* L );
 		
 		//! getSize
 		int getSize( lua_State* L );

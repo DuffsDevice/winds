@@ -243,6 +243,12 @@ int _lua_gadget::hide(lua_State* L){ this->gadget->hide(); return 0; }
 //! show
 int _lua_gadget::show(lua_State* L){ this->gadget->show(); return 0; }
 
+//! focus
+int _lua_gadget::focus(lua_State* L){ this->gadget->focus(); return 0; }
+
+//! blur
+int _lua_gadget::blur(lua_State* L){ this->gadget->blur(); return 0; }
+
 //! isEnhanced
 int _lua_gadget::isEnhanced(lua_State* L){ lua_pushboolean( L , this->gadget->isEnhanced() ); return 1; }
 
@@ -275,6 +281,9 @@ int _lua_gadget::isMouseClickRepeat(lua_State* L){ lua_pushboolean( L , this->ga
 
 //! isDoubleClickable
 int _lua_gadget::isDoubleClickable(lua_State* L){ lua_pushboolean( L , this->gadget->isDoubleClickable() ); return 1; }
+
+//! requestsKeyboard
+int _lua_gadget::requestsKeyboard(lua_State* L){ lua_pushboolean( L , this->gadget->requestsKeyboard() ); return 1; }
 
 //! hasFocus
 int _lua_gadget::hasFocus(lua_State* L){ lua_pushboolean( L , this->gadget->hasFocus() ); return 1; }

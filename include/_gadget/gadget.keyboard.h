@@ -12,11 +12,19 @@ class _keyboard : public _gadgetScreen {
 	
 	private:
 	
-		_screen*		topScreen;
-		_gadgetScreen*	gHScreen; // GadgetHost
-		int				magnifX;
-		int				magnifY;
-		float			magnifFactor;
+		_screen*		topScreen; // Sub-Scrern
+		_gadgetScreen*	gHScreen; // GadgetHost-Screen
+		
+		//! Things'n'Stuff
+		int				fromX;
+		int				fromY;
+		float			fromFactor;
+		_s8				fromKeyboardExpansion;
+		int				toX;
+		int				toY;
+		float			toFactor;
+		_s8				toKeyboardExpansion;
+		_s8				curState; // Variable to get the current state of the keyboard
 		_u8				handlePosition;
 		
 		//! Internal Array for Keyboard-Layout
@@ -32,30 +40,28 @@ class _keyboard : public _gadgetScreen {
 		bool			shift;
 		bool			caps;
 		bool			mode; // Whether the Keyboard is collapsed(=false) or expanded(=true)
-		_s8				curState;
 		
 		//! Destination Gadget to receive Key-Events
-		_gadget*		destination;
+		static _gadget*	lastCurrentFocus; // Temp-variable to tell if the '_system::_currentFocus_' variable has changed
 		
 		//! Animation
-		_animation		animKeyb;
-		_animation		animMagnif;
+		_animation		anim;
 		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
 		static _callbackReturn keyHandler( _event event );
 		static _callbackReturn dragHandler( _event event );
 		
-		int setState( int val );
-		int setMagnification( int val );
-		void reset();
+		//! Setter for the animation and for the dragHandler
+		int		setState( int val );
 		
-		void refreshKeys();
+		//! Prepares 'anim' before a new animation starts
+		void	prepareAnimation();
+		
+		//! Update the keyboard-buttons
+		void	refreshKeys();
 	
 	public:
-	
-		//! Set Receiver of Key-Events
-		void setDestination( _gadget* dest );
 		
 		//! Open!
 		void open();
@@ -66,18 +72,13 @@ class _keyboard : public _gadgetScreen {
 		//! Check if opened
 		bool isOpened(){ return this->mode; }
 		
-		//! Get Receiver of Key-Events
-		_gadget* getDestination(){ return this->destination; }
-		
 		//! VBL of the Keyboard
 		void screenVBL();
 		
-		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _style style = _style() );
+		//! Ctor
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition = ( SCREEN_WIDTH - 40 ) , _style style = _style() );
 		
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition , _style style = _style() );
-		
-		//! Destrucor
+		//! Dtor
 		~_keyboard();
 };
 

@@ -72,6 +72,9 @@ class _styleAttr
 		
 		static const _pStyleAttr<( 1 << 10 )> 		doubleClickable;
 		static const _nStyleAttr<( 1 << 10 )> 		notDoubleClickable;
+		
+		static const _pStyleAttr<( 1 << 11 )> 		keyboardRequest;
+		static const _nStyleAttr<( 1 << 11 )> 		noKeyboardRequest;
 };
 
 
@@ -101,8 +104,8 @@ struct _style
 			bool	smallDragTrig : 1;
 			bool	mouseClickRepeat : 1;
 			bool	doubleClickable : 1;
-			_u8		unused1 : 4;
-			_u8		unused2 : 1;
+			bool	keyboardRequest : 1;
+			_u8		unused : 4; // Used by _gadget::blinkHandler
 		} __attribute__(( packed )) ;
 	};
 	
@@ -115,6 +118,7 @@ struct _style
 	bool visible : 1;
 	bool minimized : 1;
 	bool maximized : 1;
+	//bool unused : 1; // Really not used yet
 	public:
 	
 	union

@@ -83,24 +83,8 @@ int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _sy
 int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; lua_pushboolean( L , _system::_keyboard_->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
 int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
-int _progLua::lua_keyboardGetDestination( lua_State* L ){ if( !_system::_keyboard_ || !_system::_keyboard_->getDestination() ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_keyboard_->getDestination() ) ); return 1; }
-int _progLua::lua_keyboardSetDestination( lua_State* L )
-{
-	if( !_system::_keyboard_ )
-		return 0;
-	
-	// Allow passing nothing
-	if( lua_isnil( L , 1 ) || lua_isnumber( L , 1 ) )
-		_system::_keyboard_->setDestination( nullptr );
-	else
-	{
-		_lua_gadget* g = _lua_gadget::getLuaGadget( L , 1 );
-		if( g && g->gadget )
-			_system::_keyboard_->setDestination( g->gadget );
-	}
-	return 0;
-}
 
+int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
 int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( new _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
@@ -166,6 +150,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"getBlue",					lua_RGB_GETB},
 	{"getAlpha",				lua_RGB_GETA},
 	{"addChild",				lua_addChild},
+	{"getCurrentFocus",			lua_getCurrentFocus},
 	{"readRegistryIndex",		lua_readRegistryIndex},
 	{"getLocalizedString",		lua_getLocalizedString},
 	{"writeRegistryIndex",		lua_writeRegistryIndex},
@@ -178,8 +163,6 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"keyboardIsOpened",		lua_keyboardIsOpened},
 	{"keyboardOpen",			lua_keyboardOpen},
 	{"keyboardClose",			lua_keyboardClose},
-	{"keyboardGetDestination",	lua_keyboardGetDestination},
-	{"keyboardSetDestination",	lua_keyboardSetDestination},
 	{ NULL , NULL }
 };
 
@@ -188,13 +171,12 @@ luaL_Reg _progLua::windowsLibrary[] = {
 **/
 _progLua::_progLua( string prog ) : 
 	_program( _programType::progLua )
-	, code( prog )
 {
 	// Create State
 	this->state = luaL_newstate();
 	
 	// Load our lua-piece
-	luaL_loadstring( this->state , this->code.c_str() );
+	luaL_loadstring( this->state , prog.c_str() );
 	
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );

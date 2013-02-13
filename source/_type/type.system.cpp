@@ -195,8 +195,8 @@ void _system::vblHandler()
 {
 	if( _system::_gadgetHost_ )
 		_system::processInput();
-	//if( _system::_keyboard_ )
-	//	_system::_keyboard_->screenVBL();
+	if( _system::_keyboard_ )
+		_system::_keyboard_->screenVBL();
 	_system::processEvents();
 	_system::runAnimations();
 	_system::runTimers();
@@ -276,7 +276,7 @@ void _system::processInput()
 			_system::_keyboard_->open();
 	}
 	
-	if( !_system::_currentFocus_ )
+	if( !_system::_currentFocus_ && !_system::_gadgetHost_ )
 		return;
 	
 	/*!
@@ -289,17 +289,25 @@ void _system::processInput()
 		
 		event.setKeyCode( libnds2key[i] );
 		
+		//printf("CF: %s\n", gadgetType2string[_system::_currentFocus_->getType() ].c_str() );
+		
 		// held down
 		if( GETBIT( keys , i ) )
 		{
 			if( heldCycles[i] == 0 )
 			{
-				_system::_currentFocus_->handleEvent( event.setType( keyDown ) );
+				if( _system::_currentFocus_ )
+					_system::_currentFocus_->handleEvent( event.setType( keyDown ) );
+				else
+					_system::_gadgetHost_->handleEvent( event.setType( keyDown ) );
 			}
 			else if( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
-				_system::_currentFocus_->handleEvent( event.setType( keyRepeat ) );
+				if( _system::_currentFocus_ )
+					_system::_currentFocus_->handleEvent( event.setType( keyRepeat ) );
+				else
+					_system::_gadgetHost_->handleEvent( event.setType( keyRepeat ) );
 			}
 			
 			// Increase Cycles
@@ -312,12 +320,20 @@ void _system::processInput()
 			event.setType( keyUp );
 			
 			// Trigger the Event
-			_system::_currentFocus_->handleEvent( event );
+			if( _system::_currentFocus_ )
+				_system::_currentFocus_->handleEvent( event );
+			else
+				_system::_gadgetHost_->handleEvent( event );
 			
 			
 			// If keyup is fast enough, trigger keyClick
 			if( heldCycles[i] < user->mCC )
-				_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
+			{
+				if( _system::_currentFocus_ )
+					_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
+				else
+					_system::_gadgetHost_->handleEvent( event.setType( keyClick ) );
+			}
 			
 			// Reset Cycles
 			heldCycles[i] = 0;

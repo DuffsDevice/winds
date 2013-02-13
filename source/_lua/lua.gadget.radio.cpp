@@ -6,7 +6,7 @@
 ##################################*/
 
 _lua_radio::_lua_radio( lua_State* L ) : 
-	_lua_gadget( new _radio( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , Lunar<_lua_radiogroup>::check( L , 3 ) , luaL_optint( L , 4 , -1 ) ) )
+	_lua_gadget( new _radio( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , Lunar<_lua_radiogroup>::check( L , 3 ) , luaL_optint( L , 4 , -1 ) , luaL_optstyle( L , 5 ) ) )
 	, _lua_interface_input( (_radio*)_lua_gadget::gadget )
 { }
 

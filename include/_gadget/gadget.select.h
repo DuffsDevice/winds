@@ -21,6 +21,7 @@ class _select : public _scrollArea {
 		void setSelected( _s32 val );
 		
 		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn keyHandler( _event event );
 		
 	public:
 	

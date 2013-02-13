@@ -15,7 +15,7 @@ _scDesktop::_scDesktop()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
-	_system::getBuiltInProgram( "explorer.exe" )->execute({{"path","/LUA"}});
+	_system::getBuiltInProgram( "explorer.exe" )->execute( { { "path" , "/LUA" } } );
 }
 
 _scDesktop::~_scDesktop()

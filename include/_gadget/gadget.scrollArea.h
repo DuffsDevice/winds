@@ -87,6 +87,8 @@ class _scrollArea : public _gadget {
 		// Replace children-functions
 		void addChild( _gadget* child );
 		void removeChild( _gadget* child );
+		void removeChildren( bool remove = false );
+		void removeEnhancedChildren( bool remove = false );
 		
 		void setPaddingOffset( _padding p ){ this->offset = p; }
 		_padding getPaddingOffset(){ return this->offset; }

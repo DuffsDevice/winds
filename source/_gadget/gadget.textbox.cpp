@@ -156,10 +156,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 
 _callbackReturn _textbox::focusHandler( _event event )
 {
-	// Open the Keyboard
-	if( _system::_keyboard_ )
-		_system::_keyboard_->setDestination( event.getGadget() );
-	
+	// Set Cursor
 	event.getGadget<_textbox>()->cursor = 1;
 	
 	event.getGadget()->bubbleRefresh( true );
@@ -170,9 +167,6 @@ _callbackReturn _textbox::focusHandler( _event event )
 _callbackReturn _textbox::blurHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
-	
-	if( _system::_keyboard_ )
-		_system::_keyboard_->setDestination( nullptr );
 	
 	// Remove Cursor!
 	that->cursor = 0;
@@ -224,7 +218,7 @@ _callbackReturn _textbox::mouseHandler( _event event )
 }
 
 _textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style style ) :
-	_gadget( _gadgetType::textbox , width , height , x , y , style )
+	_gadget( _gadgetType::textbox , width , height , x , y , style | _styleAttr::keyboardRequest )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, font ( _system::getFont() )

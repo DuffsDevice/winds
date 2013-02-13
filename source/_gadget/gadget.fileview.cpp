@@ -24,9 +24,6 @@ void _fileview::setPath( const string& path )
 {
 	this->directory = _direntry( path );
 	this->generateChildren();
-	
-	// Trigger 'onChange'-Event
-	this->triggerEvent( onChange );
 }
 
 
@@ -43,7 +40,7 @@ void _fileview::generateChildren()
 	for( string str; this->directory.readChild( str ) != false ; )
 		this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + str , this->viewType ) );
 	
-	//this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , "Helloooo.lua" , this->viewType ) );
+	//this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , "/H.ttf" , this->viewType ) );
 }
 
 

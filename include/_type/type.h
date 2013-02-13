@@ -232,6 +232,7 @@ enum class _gadgetType : _u8
 	checkbox,
 	radiobox,
 	textbox,
+	textarea,
 	counter,
 	selectbox,
 	selectitem,
