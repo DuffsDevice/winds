@@ -5,7 +5,7 @@
  * 
  * @author Jakob Riedle
  * @version 1.0
-**/
+ */
 template<typename T>
 class _list
 {
@@ -154,7 +154,7 @@ class _list
 				 * @brief Increase the Iterator by one
 				 *
 				 * @return bool whether there was a Node following this one (=true) or if the current position is the last in the List (=false)
-				**/
+				 */
 				virtual iterator&  operator++(){ // prefix ++iter
 					this->my && ( this->my = this->my->getNext() );
 					return *this;
@@ -168,7 +168,7 @@ class _list
 				 * @brief Decrease the Iterator by one
 				 *
 				 * @return bool whether there was a Node preceding this one (=true) or if the current position is the first in the List (=false)
-				**/
+				 */
 				virtual iterator& operator--(){ // prefix --iter
 					this->my && ( this->my = this->my->getPrev() );
 					return *this;
@@ -184,7 +184,7 @@ class _list
 				 * @note if %this iterator points to the first element in the list, the resulting number is 0
 				 * @note and if this iterator points to an invalid node or to null, this function returns -1
 				 * @return int
-				**/
+				 */
 				operator int()
 				{
 					int i = -1;
@@ -202,7 +202,7 @@ class _list
 				 * @brief Increase the Iterator %nth times
 				 *
 				 * @return iterator&
-				**/
+				 */
 				iterator operator+( int nth ){
 					_node* nd = this->my;
 					for( ; nth-- && nd ; nd = nd->getNext() );
@@ -217,7 +217,7 @@ class _list
 				 * @brief Decrease the Iterator %nth times
 				 *
 				 * @return iterator&
-				**/
+				 */
 				iterator operator-( int nth ){
 					_node* nd = this->my;
 					for( ; nth-- && nd ; nd = nd->getPrev() );
@@ -233,7 +233,7 @@ class _list
 				 * If the supplied iterator points to an element after %this element, the resulting number is negative
 				 * 
 				 * @param iterator it the iterator to compare to
-				**/
+				 */
 				int operator-( iterator&& it ){
 					return int(*this) - int(it);
 				}
@@ -243,7 +243,7 @@ class _list
 				
 				/**
 				 * @brief Compare two iterators
-				**/
+				 */
 				bool operator==( const iterator& it ) const { return my == it.my; }
 				bool operator!=( const iterator& it ) const { return my != it.my; }
 				bool operator>( const iterator& it ) const { return int(*this) > int(it); }
@@ -255,7 +255,7 @@ class _list
 				 * @brief Returns the elements value (might be nullptr)
 				 *
 				 * @return <template-parameter T>
-				**/
+				 */
 				T& getValue(){
 					return my->getValue();
 				}
@@ -264,7 +264,7 @@ class _list
 				 * @brief Returns the elements value (might be nullptr)
 				 *
 				 * @return <template-parameter T>
-				**/
+				 */
 				T& operator*(){
 					return my->getValue();
 				}
@@ -273,7 +273,7 @@ class _list
 				 * @brief Returns the elements value (might be nullptr)
 				 *
 				 * @return <template-parameter T>
-				**/
+				 */
 				T* operator->(){
 					return &my->getValue();
 				}
@@ -283,7 +283,7 @@ class _list
 				 *
 				 * @param <template-parameter T> value
 				 * @return void
-				**/
+				 */
 				void setValue( T value ){
 					if( my )
 						my->setValue( value );
@@ -293,7 +293,7 @@ class _list
 				 * @brief Check whether there is a Node following this one
 				 *
 				 * @return bool true if there is one or fals if not
-				**/
+				 */
 				bool hasNext() const {
 					return my->getNext();
 				}
@@ -302,7 +302,7 @@ class _list
 				 * @brief Check whether there is a Node preceding this one
 				 *
 				 * @return bool true if there is one or fals if not
-				**/
+				 */
 				bool hasPrev() const {
 					return my->getPrev();
 				}
@@ -349,7 +349,7 @@ class _list
 				
 				/**
 				 * @brief From iterator to reverse_iterator
-				**/
+				 */
 				reverse_iterator& operator=( const iterator& it ){ this->my = it.my; }
 				reverse_iterator( const iterator& it ) : iterator( it ) { }
 		};
@@ -402,7 +402,7 @@ class _list
 		 *
 		 * @param <template-parameter T> val the new Element to be pushed onto the List
 		 * @return void
-		**/
+		 */
 		void push_back( T val )
 		{			
 			_node* newNode = new _node( val );
@@ -423,7 +423,7 @@ class _list
 		 *
 		 * @param <template-parameter T> val the new Element to be pushed onto the List
 		 * @return void
-		**/
+		 */
 		void push_front( T val )
 		{
 			_node* newNode = new _node( val );
@@ -443,7 +443,7 @@ class _list
 		 * @brief Returns an Iterator to the first Node
 		 *
 		 * @return iterator
-		**/
+		 */
 		iterator begin() const {
 			return iterator(this->top);
 		}// begin
@@ -452,7 +452,7 @@ class _list
 		 * @brief Returns an Iterator to the last Node
 		 *
 		 * @return iterator
-		**/
+		 */
 		iterator end() const {
 			return iterator(nullptr);
 		}// end
@@ -461,7 +461,7 @@ class _list
 		 * @brief Returns a Reverse-Iterator to the first Node
 		 * 
 		 * @return iterator
-		**/
+		 */
 		reverse_iterator rbegin() const {
 			return reverse_iterator(this->bottom);
 		}// begin
@@ -470,7 +470,7 @@ class _list
 		 * @brief Returns a Reverse-Iterator to the last Node
 		 *
 		 * @return iterator
-		**/
+		 */
 		reverse_iterator rend() const {
 			return reverse_iterator(nullptr);
 		}// end
@@ -479,7 +479,7 @@ class _list
 		 * @brief Returns the first elements value or nullptr if the List is empty
 		 *
 		 * @return <template-parameter T>
-		**/
+		 */
 		T front() const {
 			if( !this->count )
 			{
@@ -493,7 +493,7 @@ class _list
 		 * @brief Return the last elements value or nullptr if the List is empty
 		 *
 		 * @return <template-parameter T>
-		**/
+		 */
 		T back() const {
 			if( !this->count )
 			{
@@ -509,7 +509,7 @@ class _list
 		 * 
 		 * @param int index the Index at which the value should be returned
 		 * @return <template-parameter T>
-		**/
+		 */
 		T get( int index ) const 
 		{
 			if( index < 0 || index >= this->count )
@@ -535,7 +535,7 @@ class _list
 		 * 
 		 * @param int index the Index at which the iterator should point
 		 * @return iterator
-		**/
+		 */
 		iterator at( int index ) const 
 		{
 			if( index < 0 || index >= this->count )
@@ -548,7 +548,7 @@ class _list
 		 * @brief Returns the number of elements in the List
 		 *
 		 * @return int Number fo elements in the List
-		**/
+		 */
 		int size() const {
 			return this->count;
 		}// front
@@ -557,7 +557,7 @@ class _list
 		 * @brief Returns true if the List is empty
 		 *
 		 * @return bool result
-		**/
+		 */
 		bool empty() const {
 			return !this->count;
 		}// front
@@ -566,7 +566,7 @@ class _list
 		 * @brief Calls every Elements "toString()" Method and prints them onto the screen
 		 *
 		 * @return void
-		**/
+		 */
 		//void print()
 		//{
 		//	// Range-Based!!!!!
@@ -579,7 +579,7 @@ class _list
 		 * @brief Calls every Elements "toString()" Method and prints them onto the screen
 		 *
 		 * @return void
-		**/
+		 */
 		//void print2()
 		//{
 		//	for( auto i = this->rbegin() ; i != this->rend() ; ++i )
@@ -592,7 +592,7 @@ class _list
 		 *
 		 * @note (Won't do anything if the List is empty)
 		 * @return void
-		**/
+		 */
 		void pop_front()
 		{
 			if( !this->count )
@@ -625,7 +625,7 @@ class _list
 		 *
 		 * @note (Won't do anything if the List is empty)
 		 * @return void
-		**/
+		 */
 		void pop_back()
 		{
 			if( !this->count )
@@ -853,7 +853,7 @@ class _list
 		{
 			for( iterator i = this->begin() ; i ; )
 			{
-				if( func( i.getValue() ) )
+				if( func( *i ) )
 					return i;
 				else // used to keep the iterator valid
 					i++;
@@ -872,7 +872,7 @@ class _list
 		{
 			for( iterator i = this->begin() ; i ; )
 			{
-				if( value == i.getValue() )
+				if( value == *i )
 					return i;
 				else // used to keep the iterator valid
 					i++;
@@ -888,16 +888,10 @@ class _list
 		 * @return iterator
 		 */
 		template<typename evaluator>
-		iterator for_each( evaluator func )
+		void for_each( evaluator func )
 		{
-			for( iterator i = this->begin() ; i ; )
-			{
-				if( func( i ) )
-					return i;
-				else // used to keep the iterator valid
-					i++;
-			}
-			return iterator(nullptr);
+			for( T& val : *this )
+				func( *i );
 		}
 		
 		/**
@@ -944,7 +938,7 @@ class _list
 		 * @brief Clear the List
 		 *
 		 * @return void
-		**/
+		 */
 		void clear()
 		{
 			for( _node* cur = this->top ; cur ; )
@@ -961,7 +955,9 @@ class _list
 		
 		/**
 		 * @brief Check the List for Errors (returns false, if the were errors)
-		**/
+		 * 
+		 * @return bool
+		 */
 		bool check() const 
 		{
 			_node* prev = nullptr;
@@ -977,7 +973,4 @@ class _list
         
 };// class _list
 
-
-//template<class T>
-//inline bidirectional_iterator_tag std::iterator_traits<_list<T>::iterator>iterator_category( const typename _list<T>::iterator& );
 #endif

@@ -9,7 +9,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_scrollArea : public _lua_gadget{	
 	
 	public:

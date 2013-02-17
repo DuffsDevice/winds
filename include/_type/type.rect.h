@@ -68,7 +68,7 @@ class _rect{
 		 * @param y Y-Position
 		 * @param width Width of the Rect
 		 * @param height Height of the Rect
-		**/
+		 */
 		_rect( _coord x , _coord y , _length width , _length height ) : width( width ) , height( height ) , x( x ) , y( y ) {}
 		
 		//! All about Setters and Getters...
@@ -79,7 +79,7 @@ class _rect{
 		
 		/**
 		 * Default Constructor
-		**/
+		 */
 		_rect() : width( 0 ) , height( 0 ) , x( -1 ) , y( -1 ) {}
 		
 		void dump() const ;

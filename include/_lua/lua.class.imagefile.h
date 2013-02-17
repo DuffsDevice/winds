@@ -8,7 +8,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_imagefile : public _imagefile {
 	
 	public:

@@ -8,6 +8,7 @@
 #include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.actionButton.h"
+#include "_gadget/gadget.textarea.h"
 
 #include <string.h>
 #include <math.h>
@@ -278,8 +279,11 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 				this->gadgets[5] = slc;
 				that->addChild( slc );
 			}
+			//_textarea* txt = new _textarea( 50 , 50 , 10 , 130 , "Hallo\nergergerg hiiiiiiiii\nwtfiiiii\ngegr4ergerg" );
+			//that->addChild( txt );
 			that->addChild( lbl );
 			this->gadgets[6] = lbl;
+			//this->gadgets[7] = txt;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
 			break;
 		}

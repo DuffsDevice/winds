@@ -8,7 +8,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_animation : public _animation {	
 		
 	public:

@@ -279,9 +279,9 @@ void _system::processInput()
 	if( !_system::_currentFocus_ && !_system::_gadgetHost_ )
 		return;
 	
-	/*!
+	/**
 	 * Just Handle the Buttons, not the Pen!
-	 **/
+	 */
 	for( _u8 i = 0 ; i < 16 ; ++i )
 	{
 		//! Again: We do not handle Pen (as well as the lid)

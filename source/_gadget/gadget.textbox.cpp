@@ -181,13 +181,13 @@ _callbackReturn _textbox::mouseHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
-	if( event.getType() == dragStart )
-		return handled;
-	
 	_coord position = event.getPosX();
 	
 	if( event.getType() == dragging )
+	{
+		// X-Coordinate of stylus relative to this _textbox
 		position -= that->getX();
+	}
 	
 	if( !that->font || !that->font->valid() )
 		return handled;
@@ -218,7 +218,7 @@ _callbackReturn _textbox::mouseHandler( _event event )
 }
 
 _textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style style ) :
-	_gadget( _gadgetType::textbox , width , height , x , y , style | _styleAttr::keyboardRequest )
+	_gadget( _gadgetType::textbox , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, font ( _system::getFont() )
@@ -235,7 +235,6 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
 	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );
 	this->registerEventHandler( keyRepeat , new _staticCallback( &_textbox::keyHandler ) );
-	this->registerEventHandler( dragStart , new _staticCallback( &_textbox::mouseHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_textbox::mouseHandler ) );
 	
 	// Refresh Myself

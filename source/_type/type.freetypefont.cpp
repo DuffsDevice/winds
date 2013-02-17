@@ -74,7 +74,7 @@ bool _freetypefont::isCharSupported( const _char codepoint ) const {
 	/*getSbit( codepoint );
 	if ( ( this->sbit->buffer == 0) || ( this->sbit->width == 0 ) || ( this->sbit->height == 0 ) )
 		return false;*/
-	return true; 
+	return true;
 };
 
 _u32 transparencyJump[256] =  {

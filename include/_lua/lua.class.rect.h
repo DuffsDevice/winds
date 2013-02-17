@@ -7,7 +7,8 @@
 
 /**
  * Proxy Classes
-**/
+ 
+ */
 class _lua_rect : public _rect {
 		
 	public:

@@ -27,7 +27,7 @@ class _bitmap
 		 * Manual Data-Erase
 		 * ( only deletes the Data if it was allocated by the bitmap itself)
 		 * @return void
-		**/
+		 */
 		void destruct(){ 
 			if( this->wasAllocated )
 				delete[] this->bmp;
@@ -41,7 +41,7 @@ class _bitmap
 		 * @param w Width of the bmp
 		 * @param h Height of the bmp
 		 * @return void
-		**/
+		 */
 		_bitmap( _pixelArray base , _length w , _length h ) :
 			bmp( base )
 			, width( max( 1 , int(w) ) )
@@ -56,7 +56,7 @@ class _bitmap
 		 * @param w Width of the bmp
 		 * @param h Height of the bmp
 		 * @return void
-		**/
+		 */
 		_bitmap( _length w , _length h ) :
 			width( max( 1 , int(w) ) )
 			, height( max( 1 , int(h) ) )
@@ -70,7 +70,7 @@ class _bitmap
 		 * Copy-Constructor
 		 * @param bm Source Bitmap
 		 * @return void
-		**/
+		 */
 		_bitmap( const _bitmap &bm ) :
 			bmp( bm.wasAllocated ? new _pixel[bm.width*bm.height] : bm.bmp )
 			, width( bm.width )
@@ -85,7 +85,7 @@ class _bitmap
 		 * Move-Constructor
 		 * @param bm Source Bitmap
 		 * @return void
-		**/
+		 */
 		_bitmap( _bitmap &&bm )
 			: bmp( bm.bmp )
 			, width( bm.width )
@@ -101,7 +101,7 @@ class _bitmap
 		/**
 		 * Default constructor
 		 * @return void
-		**/
+		 */
 		_bitmap() :
 			bmp( nullptr )
 			, width( 0 )
@@ -112,7 +112,7 @@ class _bitmap
 		/**
 		 * Destructor
 		 * @return void
-		**/
+		 */
 		~_bitmap(){
 			this->destruct();
 		}
@@ -120,27 +120,27 @@ class _bitmap
 		/**
 		 * Check if a bitmap has valid attributes
 		 * @return bool
-		**/
+		 */
 		bool isValid() const { return this->bmp != nullptr; }
 		
 		/**
 		 * Copy Bitmap (copy its data onto mine)
 		 * @param bmp Source Bitmap
 		 * @return _bitmap
-		**/
+		 */
 		_bitmap& operator=( const _bitmap& bmp );
 		
 		/**
 		 * Move Bitmap
 		 * @param bmp Source Bitmap
 		 * @return _bitmap
-		**/
+		 */
 		_bitmap& operator=( _bitmap&& bmp );
 		
 		/**
 		 * Get the Bitmap Base
 		 * @return _pixelArray Pointer to the bitmap data
-		**/
+		 */
 		_pixelArray getBitmap() const {
 			return this->bmp;
 		}
@@ -149,7 +149,7 @@ class _bitmap
 		 * Get the Bitmap Base starting at a specific Position
 		 * @param y Row to get
 		 * @return _pixelArray Pointer to the bitmap data
-		**/
+		 */
 		_pixelArray getBitmap( _length y ) const {
 			return &this->bmp[ y * this->width ];
 		}
@@ -159,7 +159,7 @@ class _bitmap
 		 * @param x Col to get
 		 * @param y Row to get
 		 * @return _pixelArray Pointer to the bitmap data
-		**/
+		 */
 		_pixelArray getBitmap( _length x , _length y ) const {
 			return &this->bmp[ y * this->width + x ];
 		}
@@ -167,7 +167,7 @@ class _bitmap
 		/**
 		 * Set the Bitmap Base
 		 * @param bmp Pointer to the bitmap data
-		**/
+		 */
 		void setBitmap( _pixelArray bmp ){
 			this->destruct();
 			this->wasAllocated = false;
@@ -177,7 +177,7 @@ class _bitmap
 		/**
 		 * Operator for [i] to get a specific position of the bmp
 		 *
-		**/
+		 */
 		_pixel& operator[]( const _u32 pos ) const {
 			return this->bmp[ min( _u32(this->width * this->height - 1 ) , pos ) ];
 		}
@@ -185,7 +185,7 @@ class _bitmap
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
 		 *
-		**/
+		 */
 		_pixel& operator()( _coord x , _coord y ) const {
 			
 			x = min( x , _coord( this->width - 1 ) );
@@ -199,7 +199,7 @@ class _bitmap
 		/**
 		 * Get the Bitmap's Width
 		 * @return u16 Width of the _bitmap
-		**/
+		 */
 		_length getWidth() const {
 			return this->width;
 		}
@@ -207,7 +207,7 @@ class _bitmap
 		/**
 		 * Get the Bitmap's Height
 		 * @return u16 Height of the _bitmap
-		**/
+		 */
 		_length getHeight() const {
 			return this->height;
 		}
@@ -215,20 +215,20 @@ class _bitmap
 		/**
 		 * Set the Bitmap's Width
 		 * @param w Width of the _bitmap
-		**/
+		 */
 		void setWidth( _length w );
 		
 		/**
 		 * Set the Bitmap's Height
 		 * @param h Height of the _bitmap
-		**/
+		 */
 		void setHeight( _length h );
 		
 		/**
 		 * Resize the Bitmap
 		 * @param w Width of the _bitmap
 		 * @param h Height of the _bitmap
-		**/
+		 */
 		void resize( _length w , _length h );
 		
 		/**
@@ -236,7 +236,7 @@ class _bitmap
 		 * @param x X-Position to check
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
-		**/
+		 */
 		_pixel getPixel( _coord x , _coord y ) const 
 		{			
 			// Prevent Overflows
@@ -256,7 +256,7 @@ class _bitmap
 		 * @param x X-Position to check
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location
-		**/
+		 */
 		_pixel getPixelUnsafe( _coord x , _coord y ) const {
 			return this->bmp[ y * this->width + x ];
 		}
@@ -267,7 +267,7 @@ class _bitmap
 		 * @param y Y-Position
 		 * @param color Color of the Pixel to set
 		 * @return void
-		**/
+		 */
 		void drawPixel( _coord x , _coord y , _pixel color );
 		
 		/**
@@ -277,7 +277,7 @@ class _bitmap
 		 * @param length Length of the Memory-Block to be filled
 		 * @param color Color to fill
 		 * @return void
-		**/
+		 */
 		private:
 		void blitFill( _coord x , _coord y , _pixel color , _length length );
 		public:
@@ -288,7 +288,7 @@ class _bitmap
 		 * @param y Y-Position
 		 * @param color Color of the Pixel to set
 		 * @return void
-		**/
+		 */
 		void drawPixelUnsafe( _coord x , _coord y , _pixel color ){
 			this->bmp[y * this->width + x] = color;
 		}
@@ -297,7 +297,7 @@ class _bitmap
 		 * Erase the whole bmp
 		 * @param color Optionally: The Color to erase
 		 * @return void
-		**/
+		 */
 		void reset( _pixel color = BIT(15) ){
 			this->blitFill( 0 , 0 , color , this->width * this->height );
 		}
@@ -306,7 +306,7 @@ class _bitmap
 		 * Fill the whole bmp
 		 * @param color The Color to fill with
 		 * @return void
-		**/
+		 */
 		void fill( _pixel color ){
 			this->drawFilledRect( 0 , 0 , this->width , this->height , color );
 		}
@@ -316,7 +316,7 @@ class _bitmap
 		 * @param color The Color to replace
 		 * @param replace The Color to replace with
 		 * @return void
-		**/
+		 */
 		void replaceColor( _pixel color , _pixel replace );
 		
 		/**
@@ -326,7 +326,7 @@ class _bitmap
 		 * @param length Length of the Line (height)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawVerticalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -336,7 +336,7 @@ class _bitmap
 		 * @param length Length of the Line (height)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -346,7 +346,7 @@ class _bitmap
 		 * @param length Length of the Line (width)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -356,7 +356,7 @@ class _bitmap
 		 * @param length Length of the Line (width)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -367,7 +367,7 @@ class _bitmap
 		 * @param y2 End-Y-Position
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
 		private:
 		void drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
@@ -382,7 +382,7 @@ class _bitmap
 		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
 		 * @param color Color of the Rect
 		 * @return void
-		**/
+		 */
 		void drawRect( _coord x , _coord y , _length w , _length h , _pixel color );
 		
 		/**
@@ -393,7 +393,7 @@ class _bitmap
 		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
 		 * @param color Color of the Rect
 		 * @return void
-		**/
+		 */
 		void drawFilledRect( _coord x , _coord y , _length width , _length height , _pixel color );
 		
 		/**
@@ -405,7 +405,7 @@ class _bitmap
 		 * @param fromColor Start Color (top)
 		 * @param toColor End Color (bottom)
 		 * @return void
-		**/
+		 */
 		void drawVerticalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
 		
 		/**
@@ -417,7 +417,7 @@ class _bitmap
 		 * @param fromColor Start Color (top)
 		 * @param toColor End Color (bottom)
 		 * @return void
-		**/
+		 */
 		void drawHorizontalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
 		
 		/**
@@ -427,7 +427,7 @@ class _bitmap
 		 * @param radius Radius of the Circle
 		 * @param color Color of the Circle
 		 * @return void
-		**/
+		 */
 		void drawCircle( _coord xc, _coord yc, _length radius, _pixel color);
 		
 		/**
@@ -437,7 +437,7 @@ class _bitmap
 		 * @param radius Radius of the Circle
 		 * @param color Color of the Circle
 		 * @return void
-		**/
+		 */
 		void drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color);
 		
 		/**
@@ -449,7 +449,7 @@ class _bitmap
 		 * @param color Color of the Ellipse
 		 * @return void
 		 * @see 99392 ticks on dimensions 256*192
-		**/
+		 */
 		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color);
 		
 		/**
@@ -460,7 +460,7 @@ class _bitmap
 		 * @param b Semi-Minor Axis (in pixels)(=>Kleine Bahnhalbachse)
 		 * @param color Color of the Ellipse
 		 * @return void
-		**/
+		 */
 		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color);
 		
 		/**
@@ -471,7 +471,7 @@ class _bitmap
 		 * @param ch Character to draw (ASCII)
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
-		**/
+		 */
 		_u16 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
 			// Check if font is valid
@@ -494,7 +494,7 @@ class _bitmap
 		 * @param str The String to draw
 		 * @param color Color of the String
 		 * @return void
-		**/
+		 */
 		void drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize = 0 );
 		
 		/**
@@ -505,7 +505,7 @@ class _bitmap
 		 * @param bitmapX 	X-Origin of copying on the _bitmap (optional)
 		 * @param bitmapY 	Y-Origin of copying on the _bitmap (optional)
 		 * @return void
-		**/
+		 */
 		void copy( _coord x , _coord y , const _bitmap& data );
 		
 		/**
@@ -514,7 +514,7 @@ class _bitmap
 		 * @param y Y-Position Top
 		 * @param data Other _bitmap
 		 * @return void
-		**/
+		 */
 		void copyTransparent( _coord x , _coord y , const _bitmap& data );
 		
 		/**
@@ -523,7 +523,7 @@ class _bitmap
 		 * @param y Y-Position Top
 		 * @param width Width to stretch it to
 		 * @return void
-		**/
+		 */
 		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 		
 		/**
@@ -532,20 +532,20 @@ class _bitmap
 		 * @param y Y-Position Top
 		 * @param height Height to stretch it to
 		 * @return void
-		**/
+		 */
 		void copyVerticalStretch( _coord x , _coord y , _length height , const _bitmap& data );
 		
 		/**
 		 * Move a part of the bitmap to another location
 		 * 
-		**/
+		 */
 		void move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height );
 		
 		/**
 		 * Set the active ClippingRect
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
-		**/
+		 */
 		void setClippingRect( _rect rc ){
 			this->activeClippingRect = _rect::fromCoords( 
 				rc.x < 0 ? 0 : rc.x // x
@@ -559,7 +559,7 @@ class _bitmap
 		/**
 		 * Get the active ClippingRect
 		 * @return _rect
-		**/
+		 */
 		_rect getClippingRect(){
 			return this->activeClippingRect;
 		}
@@ -567,7 +567,7 @@ class _bitmap
 		/**
 		 * Make the _bitmap not checking Coordinates
 		 * @return void
-		**/
+		 */
 		void resetClippingRect(){
 			this->activeClippingRect.x = 0;
 			this->activeClippingRect.y = 0;
@@ -582,7 +582,7 @@ class _bitmap
 		 * @param s16 right Right side of the Rectangle to check
 		 * @param s16 bottom Bottom side of the Rectangle to check
 		 * @return bool Whether it is visible (true) or not (false)
-		**/
+		 */
 		private:
 		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const ;
 		public:

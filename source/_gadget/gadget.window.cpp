@@ -196,7 +196,7 @@ _callbackReturn _window::dragHandler( _event event )
 		
 		/**
 		 * Handling of my 'dragment' !
-		**/
+		 */
 		
 		// Has the Gadget to move?
 		if( event.getDeltaX() == 0 && event.getDeltaY() == 0 )
@@ -269,7 +269,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style )
+	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::draggable )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	

@@ -9,7 +9,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_textbox : public _lua_gadget , public _lua_interface_input<_textbox> {
 	
 	public:

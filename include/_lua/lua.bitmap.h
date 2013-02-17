@@ -14,7 +14,7 @@ extern "C"{
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_bitmap{
 	
 	public:

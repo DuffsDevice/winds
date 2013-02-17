@@ -7,7 +7,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_border : public _border {
 	
 	public:
