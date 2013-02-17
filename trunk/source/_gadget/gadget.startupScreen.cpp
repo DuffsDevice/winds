@@ -53,19 +53,16 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 
 _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::startUp , style )
-	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
-	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo ) )
+	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , _styleAttr() | _styleAttr::canNotReceiveFocus ) )
+	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo , _styleAttr() | _styleAttr::canNotReceiveFocus ) )
 {	
-	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( refresh , new _staticCallback( &_startupScreen::refreshHandler ) );
 	refresher->refreshBitmap();
 	this->addChild( refresher );
-	
-	winLogoGadget->style.canReceiveFocus = false;
 	this->addChild( winLogoGadget );
 	
 	//this->addChild( new _counter( 10 , 10 , 30 , true , 0 , 59 , 0 ) );
-	//this->addChild( new _fileview( 100 , 70 , 1,1,"/NDS",_style()) );
+	//this->addChild( new _scrollArea( 100 , 70 , 1 , 1 ,"/NDS",_style()) );
 	//this->addChild( new _button( 0 ,0 , "Hello") );
 	
 	//! Refresh me

@@ -7,7 +7,7 @@
 
 /**
  * Specifies how the event was handled
-**/
+ */
 enum _callbackReturn : _u8
 {
 	not_handled, // If returned on dragStart -> dragging will be prevented
@@ -18,7 +18,7 @@ enum _callbackReturn : _u8
 
 /**
  * Specifies the Type of an Event
-**/
+ */
 enum _eventType : _u8
 {
 	_none_,
@@ -68,20 +68,22 @@ class _gadget;
 
 class _event
 {
+	friend class _gadget;
+	
 	private:
 		
-		friend class _gadget;
+		//! Type of event
+		_eventType	type;
 		
-		_eventType type;
-		
-		_gadget* that;
+		//! Temporary
+		_gadget*	that;
 		
 		//! Set the Gadget that received the event (Only Used in gadget::handleEvent)
 		void setGadget( _gadget* that ){ this->that = that; }
 		
 		/**
 		 * Parameters
-		**/
+		 */
 		void* 	dest;			//! Gadget to receive the Event
 		_coord 	posX;			//! X-Position of the Mouse when the Event was triggered
 		_coord 	posY;			//! Y-Position of the Mouse when the Event was triggered
@@ -116,15 +118,13 @@ class _event
 		//! Get the (current) Gadget the Handler was called on
 		template<typename T>
 		T* getGadget(){ 
-			#pragma GCC diagnostic ignored "-Wunused-value"
-			T::_gadget::defaultEventHandlers; // Just Test if the supplied param is a subclass of _gadget!!!!!
-			#pragma GCC diagnostic warning "-Wunused-value"
+			typedef typename T::_gadget test; // Just Test if the supplied param is a subclass of _gadget!!!!!
 			return static_cast<T*>( this->that );
 		}
 		
 		/**
 		 * Parameters
-		**/		
+		 */		
 		void resetParams( void* dest = nullptr );//!............................<= Reset All Arguments
 		
 		//! Setters...

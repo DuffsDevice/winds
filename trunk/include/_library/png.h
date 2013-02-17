@@ -127,6 +127,7 @@ public:
 	static unsigned int verboseMode;
 
 	YsGenericPngDecoder();
+	virtual ~YsGenericPngDecoder(){}
 	void Initialize(void);
 	int CheckSignature(FILE *fp);
 	int ReadChunk(unsigned &length,unsigned char *&buf,unsigned &chunkType,unsigned &crc,FILE *fp);

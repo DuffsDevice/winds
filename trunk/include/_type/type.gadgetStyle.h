@@ -75,51 +75,40 @@ class _styleAttr
 		
 		static const _pStyleAttr<( 1 << 11 )> 		keyboardRequest;
 		static const _nStyleAttr<( 1 << 11 )> 		noKeyboardRequest;
+		
+		static const _pStyleAttr<( 1 << 12 )> 		draggable;
+		static const _nStyleAttr<( 1 << 12 )> 		notDraggable;
 };
 
-
-class _gadget;
+//! Predefine class
 class _program;
 
 /**
  * Specifies the appearence of a gadget
-**/
+ */
 struct _style
 {
-	friend class _gadget;
-	
 	union
 	{
 		_u16 attrs;
 		struct
 		{
-			bool	resizeableX : 1;	/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction **/
+			bool	resizeableX : 1;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
 			bool	resizeableY : 1;
-			bool	destroyable : 1;	/** Is destroyable? **/
-			bool	editable : 1;		/** Is editable? **/
-			bool	minimizeable : 1;	/** A Link is added to the taskbar */
-			bool	canTakeFocus : 1;	/** Can blur the focused gadget */
-			bool	canLooseFocus : 1;	/** Can be blurred */
-			bool	canReceiveFocus : 1;/** Can receive focus */
-			bool	smallDragTrig : 1;
-			bool	mouseClickRepeat : 1;
-			bool	doubleClickable : 1;
-			bool	keyboardRequest : 1;
-			_u8		unused : 4; // Used by _gadget::blinkHandler
+			bool	destroyable : 1;		/** Is destroyable?  */
+			bool	editable : 1;			/** Is editable?  */
+			bool	minimizeable : 1;		/** A Link is added to the taskbar */
+			bool	canTakeFocus : 1;		/** Can blur the focused gadget */
+			bool	canLooseFocus : 1;		/** Can be blurred */
+			bool	canReceiveFocus : 1;	/** Can receive focus */
+			bool	smallDragTrig : 1; 		/** Wants a small distance after which the gadget will receive a 'dragStart-Event' */
+			bool	mouseClickRepeat : 1;	/** Indexes, whether or not keeping the stylus touched down should be interpreted as many clicks */
+			bool	doubleClickable : 1; 	/** Tells, whether the gadget wants to handle doubleclicks */
+			bool	keyboardRequest : 1; 	/** If this is 'true', the keyboard will pop up and will throw key-events onto this gadget */
+			bool	draggable : 1; 			/** Is this gadget draggable? */
+			_u8		unused : 3; 			/** Used by _gadget::blinkHandler */
 		} __attribute__(( packed )) ;
 	};
-	
-	private:
-	// Only for _gadget class
-	bool pressed : 1;
-	bool dragged : 1;
-	bool focused : 1;
-	bool enhanced : 1;
-	bool visible : 1;
-	bool minimized : 1;
-	bool maximized : 1;
-	//bool unused : 1; // Really not used yet
-	public:
 	
 	union
 	{
@@ -140,12 +129,6 @@ struct _style
 	//! Ctor with attributes
 	_style( _styleAttr sA = _styleAttr() ) :
 		attrs( sA )
-		, pressed( false )
-		, dragged( false )
-		, focused( false )
-		, enhanced( false )
-		, visible( true )
-		, minimized( false )
 		, data( 0 )
 	{ }
 	
@@ -155,7 +138,7 @@ struct _style
 	template<int t> _style& operator |=( const _pStyleAttr<t> ){ attrs |= t; return *this; }
 	template<int t> _style& operator |=( const _nStyleAttr<t> ){ attrs &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
 	
-} __attribute__(( packed )) ;
+};
 
 extern void applyString2style( _style& attr , string input );
 

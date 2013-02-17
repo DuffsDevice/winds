@@ -33,6 +33,7 @@ _styleAttr::_styleAttr()
 		| mouseClickDefault
 		| doubleClickable
 		| noKeyboardRequest
+		| notDraggable
 	;
 }
 
@@ -137,6 +138,12 @@ void applyString2style( _style& style , string input )
 			attr |= _styleAttr::keyboardRequest;
 		else if( line == "noKeyboardRequest" )
 			attr |= _styleAttr::noKeyboardRequest;
+		
+		// keyboardRequest
+		else if( line == "draggable" )
+			attr |= _styleAttr::draggable;
+		else if( line == "notDraggable" )
+			attr |= _styleAttr::notDraggable;
 		
 	}
 	

@@ -9,7 +9,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_progressbar : public _lua_gadget , public _lua_interface_input<_progressbar> {
 	
 	public:

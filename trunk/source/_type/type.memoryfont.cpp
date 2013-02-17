@@ -15,9 +15,13 @@ _memoryfont::_memoryfont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , co
 { }
 
 _u16 _memoryfont::getCharacterWidth( _char character , _u8 fontSize ) const {
+	if( character == '\n' )
+		return 0;
+	if( this->monospace )
+		return this->monospace;
 	if( character == ' ' )
 		return this->spaceWidth;
-	return (this->charWidths[ character - this->firstChar ]);
+	return this->charWidths[ character - this->firstChar ];
 }
 
 _u16 _memoryfont::isMonospace() const {
@@ -25,7 +29,7 @@ _u16 _memoryfont::isMonospace() const {
 }
 
 bool _memoryfont::isCharSupported( _char ch ) const {
-	return ch <= this->lastChar && ch >= this->firstChar;
+	return ch == ' ' || ch == '\n' || ( ch <= this->lastChar && ch >= this->firstChar );
 }
 
 bool _memoryfont::valid() const {
@@ -79,7 +83,10 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	//if( this->monospace != 0 )
 	//	return this->monospace;
 	
-	if( ch == ' ' )
+	if( ch == '\n' ) //Line Break
+		return 0;
+	
+	if( ch == ' ' ) // Whitespace
 		return this->spaceWidth;
 	
 	int clipX1 = clip.x;
@@ -89,7 +96,7 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	
 	const _u16* pixelData = this->charData + this->charOffsets[ ch - this->firstChar ];
 	
-	_int pixelsPerRow = this->getCharacterWidth( ch );
+	_int pixelsPerRow = this->charWidths[ ch - this->firstChar ];
 	
 	// Abort if there is nothing to render
 	if ((clipY2 < y0) ||
@@ -157,6 +164,9 @@ _u16 _memoryfont::drawCharacter( _bitmap* dest , _coord x0 , _coord y0 , _char c
 	//stopTimer( reinterpret_cast<void*>(&_memoryfont::drawCharacter) );
 	//printf("Timing for %c: %d\n",ch,cpuGetTiming() - s );
 	//while(true);
+	
+	if( this->monospace )
+		return this->monospace;
 	
 	return pixelsPerRow;
 }

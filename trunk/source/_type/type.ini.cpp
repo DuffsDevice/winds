@@ -35,7 +35,7 @@ _s16 _ini::read()
 		
 		/**
 		 * Choose right Action
-		**/
+		 */
         if( !line.size() || line[0] == ';' || line[0] == '#' )
 		{
             /* Per Python ConfigParser, allow '#' and ';' comments at start of line */

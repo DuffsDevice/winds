@@ -6,7 +6,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 template<typename T>
 class _lua_interface_input{
 	

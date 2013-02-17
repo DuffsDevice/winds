@@ -139,7 +139,7 @@ namespace DSWindows
 	const char KEY_UP = 7;
 
 	const char KEY_BACKSPACE = 8;
-	const char KEY_CARRIAGE_RETURN = 13;
+	const char KEY_CARRIAGE_RETURN = 10;
 
 	const char KEY_DOWN	= 14;
 	const char KEY_R = 15;
@@ -221,36 +221,6 @@ extern map<_valign,string> valign2string;
 extern map<string,_align> string2align;
 extern map<string,_valign> string2valign;
 
-
-/**
- * Specifies the Type of an API-Element
-**/
-enum class _gadgetType : _u8
-{
-	button,
-	label,
-	checkbox,
-	radiobox,
-	textbox,
-	textarea,
-	counter,
-	selectbox,
-	selectitem,
-	progressbar,
-	keyboard,
-	desktop,
-	fileview,
-	fileobject,
-	imagegadget,
-	scrollarea,
-	scrollbutton,
-	scrollbar,
-	window,
-	screen,
-	contextmenu,
-	_plain // No type set (is probably not used)
-};
-
 enum class _language : _u8
 {
 	japanese = 0,
@@ -263,8 +233,6 @@ enum class _language : _u8
 };
 
 void trim( string& );
-
-extern map<_gadgetType,string> gadgetType2string;
 
 #endif
 

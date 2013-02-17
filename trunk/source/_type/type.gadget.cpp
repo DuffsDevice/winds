@@ -4,6 +4,7 @@
 
 _map<_eventType,_callback*> _gadget::defaultEventHandlers = {
 	{ mouseDown , new _staticCallback( &_gadget::gadgetMouseHandler ) },
+	{ mouseRepeat , new _staticCallback( &_gadget::gadgetMouseHandler ) },
 	{ mouseUp , new _staticCallback( &_gadget::gadgetMouseHandler ) },
 	{ mouseClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
 	{ mouseDoubleClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
@@ -18,14 +19,8 @@ _map<_eventType,_callback*> _gadget::defaultEventHandlers = {
 };
 
 
-_gadgetType typeOfGadget( _gadget* g )
-{
-	return g->getType();
-}
-
-
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
-	: type( type ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , focusedChild( nullptr ) , parent( nullptr )  , dragTemp ( nullptr )
+	: dragTemp ( nullptr ) , type( type ) , state( 0 ) , padding( _padding( 0 ) ) , dimensions( _rect( posX , posY , max( 1 , width ) , max( 1 , height ) ) ) , style( style ) , focusedChild( nullptr ) , parent( nullptr )
 {
 	if( !doNotAllocateBitmap )
 		this->bitmap = _bitmap( this->getWidth() , this->getHeight() );
@@ -109,7 +104,7 @@ bool _gadget::removeDeleteCallback( _gadget* g )
 	// Remove focus
 	if( g->parent && g->hasFocus() )
 	{
-		g->style.focused = false;
+		g->focused = false;
 		
 		if( g->parent->focusedChild == g )
 			g->parent->focusedChild = nullptr;
@@ -132,7 +127,7 @@ bool _gadget::removeCallback( _gadget* g )
 	// Remove focus
 	if( g->parent && g->hasFocus() )
 	{
-		g->style.focused = false;
+		g->focused = false;
 		
 		if( g->parent->focusedChild == g )
 			g->parent->focusedChild = nullptr;
@@ -182,7 +177,7 @@ bool _gadget::blurChild()
 		if( !this->focusedChild->blurChild() )
 			return false;
 		
-		this->focusedChild->style.focused = false;
+		this->focusedChild->focused = false;
 		
 		_gadget* t = focusedChild;
 		
@@ -212,7 +207,7 @@ bool _gadget::focusChild( _gadget* child )
 	if( child->hasFocus() )
 		return true;
 	
-	// Blur the Previously style.focused gadget (try to)
+	// Blur the Previously focused gadget (try to)
 	// Return false, if the child cannot take the focus from the currently still focused gadget
 	if( focusedChild )
 	{
@@ -235,7 +230,7 @@ bool _gadget::focusChild( _gadget* child )
 	_system::_currentFocus_ = child;
 	
 	// 'focus' the child
-	child->style.focused = true;
+	child->focused = true;
 	focusedChild = child;
 	
 	// Trigger the 'onfocus'-event
@@ -444,7 +439,7 @@ void _gadget::removeChild( _gadget* child )
 	// Remove focus
 	if( child->hasFocus() )
 	{
-		child->style.focused = false;
+		child->focused = false;
 		
 		if( this->focusedChild == child )
 			this->focusedChild = nullptr;
@@ -474,9 +469,9 @@ void _gadget::addChild( _gadget* child )
 	this->children.push_front( child );
 	
 	// Adjust style-object (kind of reset)
-	child->style.focused = false;
-	child->style.enhanced = false;
-	child->style.visible = true;
+	child->focused = false;
+	child->enhanced = false;
+	child->visible = true;
 	child->parent = this;
 	
 	//! Paint it on my bmp
@@ -493,9 +488,9 @@ void _gadget::addEnhancedChild( _gadget* child )
 	this->enhancedChildren.push_front( child );
 	
 	// Adjust style-object (kind of reset)
-	child->style.focused = false;
-	child->style.enhanced = true;
-	child->style.visible = true;
+	child->focused = false;
+	child->enhanced = true;
+	child->visible = true;
 	child->parent = this;
 	
 	//! Paint it on my bmp
@@ -579,12 +574,12 @@ void _gadget::setWidth( _length val )
 
 void _gadget::minimize()
 {
-	if( !this->style.minimized && this->style.minimizeable )
+	if( !this->minimized && this->style.minimizeable )
 	{
 		// Blur
 		this->blur();
 		
-		this->style.minimized = true;
+		this->minimized = true;
 		this->bubbleRefresh();
 		this->triggerEvent( onMinimize );
 	}
@@ -593,9 +588,9 @@ void _gadget::minimize()
 
 void _gadget::unMaximize()
 {
-	if( this->style.maximized )
+	if( this->maximized )
 	{
-		this->style.maximized = false;
+		this->maximized = false;
 		
 		// Set back the old dimensions
 		this->setDimensions( this->normalDimensions );
@@ -606,9 +601,9 @@ void _gadget::unMaximize()
 
 void _gadget::restore()
 {
-	if( this->style.minimized )
+	if( this->minimized )
 	{
-		this->style.minimized = false;
+		this->minimized = false;
 		this->bubbleRefresh();
 		this->triggerEvent( onRestore );
 	}
@@ -617,7 +612,7 @@ void _gadget::restore()
 
 void _gadget::maximize()
 {
-	if( this->style.maximized || !this->isResizeable() )
+	if( this->maximized || !this->isResizeable() )
 		return;
 	
 	_gadgetScreen* screen = this->getScreen();
@@ -631,7 +626,7 @@ void _gadget::maximize()
 	
 	if( maxDim.isValid() )
 	{
-		this->style.maximized = true;
+		this->maximized = true;
 		this->normalDimensions = this->dimensions;
 		
 		// Maximizing
@@ -669,7 +664,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 		damagedEnhancedRects.add( _rect( 0 , 0 , that->dimensions.width , that->dimensions.height ) );
 	}
 	
-	const _padding& padding = that->getPadding();
+	_padding padding = that->getPadding();
 	
 	for( _gadget* gadget : that->children )
 	{
@@ -722,7 +717,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 
 _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 {
-	const _padding& p = this->getPadding();
+	_padding p = this->getPadding();
 	_coord posPadX = posX - p.left;
 	_coord posPadY = posY - p.top;
 	
@@ -748,15 +743,10 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
-	const _padding& p = that->getPadding();
-	
-	_coord posX = event.getPosX();
-	_coord posY = event.getPosY();
-	_coord posPadX = posX - p.left;
-	_coord posPadY = posY - p.top;
+	_padding p = that->getPadding();
 	
 	// Temp...
-	_gadget* mouseContain = that->getGadgetOfMouseDown( posX , posY );
+	_gadget* mouseContain = that->getGadgetOfMouseDown( event.getPosX() , event.getPosY() );
 	
 	if( mouseContain )
 	{
@@ -765,34 +755,43 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 		
 		// Absolute Position to Relative Position
 		if( mouseContain->isEnhanced() )
-			event	.setPosX( posX - mouseContain->getX() )
-					.setPosY( posY - mouseContain->getY() );
+		{
+			event.posX -= mouseContain->getX();
+			event.posY -= mouseContain->getY();
+		}
 		else
-			event	.setPosX( posPadX - mouseContain->getX() )
-					.setPosY( posPadY - mouseContain->getY() );
-		
-		// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
-		_system::_lastClickedGadget_ = mouseContain;
+		{
+			event.posX -= p.left + mouseContain->getX();
+			event.posY -= p.top + mouseContain->getY();
+		}
 		
 		// It doesn't make sense to focus a child of some _gadget that can't be focused
 		if( event.getType() == mouseDown )
 		{
+			// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
+			_system::_lastClickedGadget_ = mouseContain;
+			
+			// Try to focus the child
 			that->focusChild( mouseContain );
-			mouseContain->style.pressed = true;
-			mouseContain->triggerEvent( onMouseEnter );
-		}
-		else if( event.getType() == mouseDoubleClick && !mouseContain->isDoubleClickable() )
-			event.setType( mouseClick );
-		else if( event.getType() == mouseUp && mouseContain->style.pressed )
-		{
-			mouseContain->style.pressed = false; // adjust style
-			mouseContain->triggerEvent( onMouseLeave );
 		}
 		
 		// Trigger the Event if the gadget is now focused or if it never will have any focus,
 		// because then it wouldn't make any sence to forward the event!
-		if( mouseContain->hasFocus() || !mouseContain->style.canTakeFocus || !mouseContain->style.canReceiveFocus )
+		if( mouseContain->hasClickRights() )
+		{	
+			if( event.getType() == mouseDown )
+			{
+				mouseContain->pressed = true;
+				mouseContain->triggerEvent( onMouseEnter );
+			}
+			else if( event.getType() == mouseUp && mouseContain->pressed )
+			{
+				mouseContain->pressed = false; // adjust state
+				mouseContain->triggerEvent( onMouseLeave );
+			}
 			return mouseContain->handleEvent( event );
+		}
+		
 		return not_handled;
 	}
 	else
@@ -810,13 +809,12 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
+	_gadget*& dragTemp = that->dragTemp;
 	
 	// Temp...
-	const _padding& p = that->getPadding();
+	_padding p = that->getPadding();
 	_coord posX = event.getPosX();
 	_coord posY = event.getPosY();
-	_coord posPadX = posX - p.left;
-	_coord posPadY = posY - p.top;
 	
 	// Start Dragging
 	if( event.getType() == dragStart )
@@ -824,109 +822,135 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 		// Temp...
 		_gadget* mouseContain = that->getGadgetOfMouseDown( posX , posY );
 		
-		if( mouseContain )
-		{
-			// Rewrite Destination
-			event.setDestination( mouseContain );
-			
-			// Absolute Position to Relative Position
-			if( mouseContain->isEnhanced() )
-				event	.setPosX( posX - mouseContain->getX() )
-						.setPosY( posY - mouseContain->getY() );
-			else
-				event	.setPosX( posPadX - mouseContain->getX() )
-						.setPosY( posPadY - mouseContain->getY() );
-			
-			// Trigger the Event if the gadget is now focused or if it never will have any focus,
-			// because then it wouldn't make any sence to forward the event!
-			if( !mouseContain->hasFocus() && mouseContain->style.canTakeFocus && mouseContain->style.canReceiveFocus )
-				return not_handled;
-			
-			// Trigger the Event
-			_callbackReturn ret = mouseContain->handleEvent( event );
-			
-			if( ret != not_handled )
-				mouseContain->style.dragged = true;
-			
-			// Set Gadget, which receives all other drag Events until dragStop is called
-			that->dragTemp = mouseContain;
-			
-			return ret;
-		}
-	}
-	// Stop Dragging
-	else if( that->dragTemp && event.getType() == dragStop )
-	{
+		if( !mouseContain )
+			return not_handled;
+		
+		//! Trigger the Event if the gadget is now focused or if it never will have any focus,
+		//! because otherwise it wouldn't make any sence to forward the event!
+		if( !mouseContain->hasClickRights() )
+			return not_handled;
+		
+		// Rewrite Destination
+		event.setDestination( mouseContain );
+		
 		// Absolute Position to Relative Position
-		if( that->dragTemp->isEnhanced() )
-			event	.setPosX( posX - that->getX() )
-					.setPosY( posY - that->getY() );
-		else
-			event	.setPosX( posX - ( that->getX() + p.left ) )
-					.setPosY( posY - ( that->getY() + p.top) );
-		
-		_callbackReturn ret = not_handled;
-		
-		if( that->dragTemp->style.dragged )
+		if( mouseContain->isEnhanced() )
 		{
-			// Rewrite Destination andTrigger the Event
-			ret = that->dragTemp->handleEvent( event.setDestination( that->dragTemp ) );
+			event.posX -= mouseContain->getX();
+			event.posY -= mouseContain->getY();
+		}
+		else
+		{
+			event.posX -= p.left + mouseContain->getX();
+			event.posY -= p.top + mouseContain->getY();
+		}
+		
+		// Trigger the Event
+		if( mouseContain->isDraggable() )
+		{
+			mouseContain->dragged = true;
+			mouseContain->handleEvent( event );
+		}
+		else
+			mouseContain->handleEventDefault( event );
+		
+		// Set Gadget, which receives all other drag Events until dragStop is called
+		dragTemp = mouseContain;
+		
+		return handled;		
+		
+	}
+	if( !dragTemp )
+		return not_handled;// 'dragging'- or 'dragStop'-events without an object doesn't make sence
+	
+	// Make touch positions relative to parent
+	if( dragTemp->isEnhanced() )
+	{
+		event.posX -= that->getX();
+		event.posY -= that->getY();
+	}
+	else
+	{
+		event.posX -= p.left + that->getX();
+		event.posY -= p.top + that->getY();
+	}
+	
+	// 'dragStop'
+	if( event.getType() == dragStop )
+	{
+		// Rewrite Destination
+		event.setDestination( dragTemp );
+		
+		if( dragTemp->dragged )
+		{
+			// Rewrite Destination and trigger the Event
+			dragTemp->handleEvent( event );
 			
 			// Update _style
-			that->dragTemp->style.dragged = false;
+			dragTemp->dragged = false;
 		}
+		else
+			dragTemp->handleEventDefault( event );
 		
-		if( that->dragTemp->style.pressed )
+		if( dragTemp->pressed )
 		{
-			that->dragTemp->style.pressed = false;
-			that->dragTemp->triggerEvent( onMouseLeave );
+			dragTemp->pressed = false;
+			dragTemp->triggerEvent( onMouseLeave );
 		}
 		
 		// No Gadget will receive Events anymore
-		that->dragTemp = nullptr;
-		
-		return ret;
-	}
-	else if( that->dragTemp && event.getType() == dragging )
-	{
-		// Absolute Position to Relative Position
-		if( that->dragTemp->isEnhanced() )
-			event	.setPosX( posX - that->getX() )
-					.setPosY( posY - that->getY() );
-		else
-			event	.setPosX( posX - ( that->getX() + p.left ) )
-					.setPosY( posY - ( that->getY() + p.top ) );
-		
-		if( // Check if we have to adjust style attribute
-			that->dragTemp->style.pressed
-			&& !that->dragTemp->dimensions.contains( event.getPosX() , event.getPosY() )
-		){
-			that->dragTemp->style.pressed = false;
-			that->dragTemp->triggerEvent( onMouseLeave );
-		}
-		
-		if( that->dragTemp->style.dragged )
-		{
-			// Absolute Position to Relative Position
-			event.setDestination( that->dragTemp );
-			
-			// Rewrite Destination andTrigger the Event
-			return that->dragTemp->handleEvent( event );
-		}
+		dragTemp = nullptr;
 		
 		return handled;
 	}
 	
-	return not_handled;
+	//!
+	//! Control will only get here on 'dragging'-events
+	//!
+	if( // Check if we have to fire an 'onMouseLeave'-event
+		!dragTemp->isDraggable() // Do not fire if 'dragTemp' is draggable, because it would look strange on some gadgets (e.g. scrollbutton)
+		&& dragTemp->pressed
+		&& !dragTemp->dimensions.contains( event.getPosX() , event.getPosY() )
+	){
+		dragTemp->pressed = false;
+		dragTemp->triggerEvent( onMouseLeave );
+	}
+	
+	// Rewrite Destination
+	event.setDestination( dragTemp );
+	
+	if( dragTemp->dragged )
+	{			
+		// Rewrite Destination andTrigger the Event
+		dragTemp->handleEvent( event );
+	}
+	else
+		dragTemp->handleEventDefault( event );
+	
+	return handled;
 }
 
-
-_callbackReturn _gadget::gadgetKeyHandler( _event event )
-{
-	_gadget* that = event.getGadget();
-	
-	if( that->parent )
-		that->parent->handleEvent( event );
-	
-	return not_handled;
-}
+// Convert a gadgetType to a string
+map<_gadgetType,string> gadgetType2string = {
+	{ _gadgetType::button , "button" },
+	{ _gadgetType::label , "label" },
+	{ _gadgetType::checkbox , "checkbox" },
+	{ _gadgetType::radiobox , "radiobox" },
+	{ _gadgetType::textbox , "textbox" },
+	{ _gadgetType::textarea , "textarea" },
+	{ _gadgetType::selectbox , "selectbox" },
+	{ _gadgetType::selectitem , "selectitem" },
+	{ _gadgetType::progressbar , "progressbar" },
+	{ _gadgetType::keyboard , "keyboard" },
+	{ _gadgetType::desktop , "desktop" },
+	{ _gadgetType::fileview , "fileview" },
+	{ _gadgetType::fileobject , "fileobject" },
+	{ _gadgetType::imagegadget , "imagegadget" },
+	{ _gadgetType::scrollarea , "scrollarea" },
+	{ _gadgetType::scrollbutton , "scrollbutton" },
+	{ _gadgetType::scrollbar , "scrollbar" },
+	{ _gadgetType::window , "window" },
+	{ _gadgetType::screen , "screen" },
+	{ _gadgetType::contextmenu , "contextmenu" },
+	{ _gadgetType::_plain , "_plain" }
+};

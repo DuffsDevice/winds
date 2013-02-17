@@ -13,10 +13,7 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	this->setType( _gadgetType::fileview );
 	
 	// Generate _fileobject's
-	this->generateChildren();
-	
-	// Refresh...
-	this->refreshBitmap();
+	//this->generateChildren();
 }
 
 

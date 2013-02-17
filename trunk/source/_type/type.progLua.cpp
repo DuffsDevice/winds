@@ -5,7 +5,7 @@
 #include "_lua/lunar.h"
 /**
  * Proxy Classes
-**/
+ */
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
 #include "_lua/lua.class.border.h"
@@ -168,7 +168,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
 
 /**
  * Programm Stuff
-**/
+ */
 _progLua::_progLua( string prog ) : 
 	_program( _programType::progLua )
 {

@@ -21,20 +21,20 @@ class _bitmapPort{
 		/**
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
-		**/
+		 */
 		_bitmapPort( _bitmap& bm ) : base( &bm ) {}
 		
 		/**
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		 * @param clippings clippingRects to work in
-		**/
+		 */
 		_bitmapPort( _bitmap& bm , _area clippings ) : clippingRects( clippings ) , base( &bm ) {}
 		
 		/**
 		 * Add a Clipping Rect to the list
 		 * @param cR the Clipping-Rect to add
-		**/
+		 */
 		void addClippingRects( _rect cR ){	
 			clippingRects.add( cR );
 		}
@@ -42,14 +42,14 @@ class _bitmapPort{
 		/**
 		 * Add a couple of Clipping Rects to the list
 		 * @param cR the Clipping-Rect to add
-		**/
+		 */
 		void addClippingRects( _area cR ){
 			clippingRects.add( cR );
 		}
 		
 		/**
 		 * Add a Clipping-Rect, that is full size
-		**/
+		 */
 		void normalizeClippingRects(){
 			clippingRects.clearRects();
 			clippingRects.add( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
@@ -57,21 +57,21 @@ class _bitmapPort{
 		
 		/**
 		 * Delete all Clipping Rects from the list
-		**/
+		 */
 		void deleteClippingRects(){
 			clippingRects.clearRects();
 		}
 		
 		/**
 		 * Operator for [i] to get a specific position of the bmp
-		**/
+		 */
 		_pixel& operator[]( const _u32 pos ){
 			return (*this->base)[pos];
 		}
 		
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
-		**/
+		 */
 		_pixel& operator()( const _coord x , const _coord y ){
 			return (*this->base)( x , y );
 		}
@@ -79,7 +79,7 @@ class _bitmapPort{
 		/**
 		 * Get the Bitmap's Width
 		 * @return u16 Width of the _bitmap
-		**/
+		 */
 		_length getWidth() const {
 			return this->base->getWidth();
 		}
@@ -87,7 +87,7 @@ class _bitmapPort{
 		/**
 		 * Get the Bitmap's Height
 		 * @return u16 Height of the _bitmap
-		**/
+		 */
 		_length getHeight() const {
 			return this->base->getHeight();
 		}
@@ -97,7 +97,7 @@ class _bitmapPort{
 		 * @param x X-Position to check
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
-		**/
+		 */
 		_pixel getPixel( const _coord x , const _coord y ) const {
 			return this->base->getPixel( x , y );
 		}
@@ -108,14 +108,14 @@ class _bitmapPort{
 		 * @param y Y-Position
 		 * @param color Color of the Pixel to set
 		 * @return void
-		**/
+		 */
 		void drawPixel( _coord x , _coord y , _pixel color );
 		
 		/**
 		 * Fill the whole bmp
 		 * @param color The Color to fill with
 		 * @return void
-		**/
+		 */
 		void fill( _pixel color );
 		
 		/**
@@ -123,7 +123,7 @@ class _bitmapPort{
 		 * @param color The Color to replace
 		 * @param replace The Color to replace with
 		 * @return void
-		**/
+		 */
 		void replaceColor( _pixel color , _pixel replace );
 		
 		/**
@@ -133,7 +133,7 @@ class _bitmapPort{
 		 * @param length Length of the Line (height)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawVerticalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -143,7 +143,7 @@ class _bitmapPort{
 		 * @param length Length of the Line (width)
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
@@ -154,7 +154,7 @@ class _bitmapPort{
 		 * @param y2 End-Y-Position
 		 * @param color Color of the Line
 		 * @return void
-		**/
+		 */
 		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
 		
 		/**
@@ -165,7 +165,7 @@ class _bitmapPort{
 		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
 		 * @param color Color of the Rect
 		 * @return void
-		**/
+		 */
 		void drawRect( _coord x , _coord y , _length width , _length height , _pixel color );
 		
 		/**
@@ -176,7 +176,7 @@ class _bitmapPort{
 		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
 		 * @param color Color of the Rect
 		 * @return void
-		**/
+		 */
 		void drawFilledRect( _coord x , _coord y , _length width , _length height , _pixel color );
 		
 		/**
@@ -188,7 +188,7 @@ class _bitmapPort{
 		 * @param fromColor Start Color (top)
 		 * @param toColor End Color (bottom)
 		 * @return void
-		**/
+		 */
 		void drawVerticalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
 		
 		/**
@@ -200,7 +200,7 @@ class _bitmapPort{
 		 * @param fromColor Start Color (top)
 		 * @param toColor End Color (bottom)
 		 * @return void
-		**/
+		 */
 		void drawHorizontalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
 		
 		/**
@@ -210,7 +210,7 @@ class _bitmapPort{
 		 * @param radius Radius of the Circle
 		 * @param color Color of the Circle
 		 * @return void
-		**/
+		 */
 		void drawCircle( _coord xc, _coord yc, _length radius, _pixel color );
 		
 		/**
@@ -220,7 +220,7 @@ class _bitmapPort{
 		 * @param radius Radius of the Circle
 		 * @param color Color of the Circle
 		 * @return void
-		**/
+		 */
 		void drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color );
 		
 		/**
@@ -232,7 +232,7 @@ class _bitmapPort{
 		 * @param color Color of the Ellipse
 		 * @return void
 		 * @see 99392 ticks on dimensions 256*192
-		**/
+		 */
 		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
 		
 		/**
@@ -243,7 +243,7 @@ class _bitmapPort{
 		 * @param b Semi-Minor Axis (in pixels)(=>Kleine Bahnhalbachse)
 		 * @param color Color of the Ellipse
 		 * @return void
-		**/
+		 */
 		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
 		
 		/**
@@ -254,7 +254,7 @@ class _bitmapPort{
 		 * @param ch Character to draw (ASCII)
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
-		**/
+		 */
 		_length drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 );
 		
 		/**
@@ -265,7 +265,7 @@ class _bitmapPort{
 		 * @param str The String to draw
 		 * @param color Color of the String
 		 * @return void
-		**/
+		 */
 		void drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize = 0 );
 		
 		/**
@@ -274,7 +274,7 @@ class _bitmapPort{
 		 * @param y 		Y-Position Top
 		 * @param data 		Other _bitmap
 		 * @return void
-		**/
+		 */
 		void copy( _coord x , _coord y , const _bitmap& data );
 		
 		/**
@@ -283,7 +283,7 @@ class _bitmapPort{
 		 * @param y Y-Position Top
 		 * @param data Other _bitmap
 		 * @return void
-		**/
+		 */
 		void copyTransparent( _coord x , _coord y , const _bitmap& data );
 		
 		/**
@@ -293,7 +293,7 @@ class _bitmapPort{
 		 * @param width Width to stretch it to
 		 * @param data Other _bitmap to copy
 		 * @return void
-		**/
+		 */
 		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 		
 		/**
@@ -303,7 +303,7 @@ class _bitmapPort{
 		 * @param width Width to stretch it to
 		 * @param data Other _bitmap to copy
 		 * @return void
-		**/
+		 */
 		void copyVerticalStretch( _coord x , _coord y , _length width , const _bitmap& data );
 };
 

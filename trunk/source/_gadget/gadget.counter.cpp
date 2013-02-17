@@ -39,7 +39,7 @@ _callbackReturn _counter::changeHandler( _event event )
 	}
 	
 	_scrollButton* that = event.getGadget<_scrollButton>();
-	_counter* cntr = ((_counter*)that->parent);
+	_counter* cntr = ((_counter*)that->getParent());
 	
 	if( that == cntr->increaseHandle )
 		cntr->increase();
@@ -81,8 +81,8 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	// Read the number of decimals we have to fill with letters
 	refreshDecimals();
 	
-	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop );
+	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom );
 	
 	this->valueLabel = new _label( this->getWidth() - 10 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
 	this->valueLabel->setAlign( _align::center );

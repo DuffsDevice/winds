@@ -387,7 +387,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 		
 		/**
 		 * Handling of my 'dragment' !
-		**/
+		 */
 		_s16 tempTouch = SCREEN_HEIGHT - event.getEffectivePosY() + deltaY - 10;
 		
 		_s16 val = sEnd;
@@ -462,7 +462,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 			case 45: // Right Shift
 			case 40: // Left Shift
 				this->buttons[i]->setAutoSelect( true );
-				this->buttons[i]->style.mouseClickRepeat = false;
+				this->buttons[i]->setStyle( this->buttons[i]->getStyle() | _styleAttr::mouseClickDefault );
 			case 41: // Windows-Button
 			case 39: // Carriage Return
 			case 30: // Caps

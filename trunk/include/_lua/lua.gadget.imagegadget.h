@@ -9,7 +9,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_imagegadget : public _lua_gadget {
 	
 	public:

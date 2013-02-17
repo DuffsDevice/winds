@@ -7,7 +7,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_direntry : public _direntry {
 	
 	public:

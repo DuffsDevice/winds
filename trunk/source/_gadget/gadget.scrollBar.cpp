@@ -24,15 +24,15 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	
 	if( dim == _dimension::horizontal )
 	{
-		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonHandleX , _styleAttr() | _styleAttr::smallDragTrig );
-		this->higherHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 8 , 0 , _scrollButtonType::buttonRight , _styleAttr() | _styleAttr::mouseClickRepeat );
-		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft , _styleAttr() | _styleAttr::mouseClickRepeat );
+		this->dragHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonHandleX );
+		this->higherHandle	= new _scrollButton( 8 , 8 , this->dimensions.width - 8 , 0 , _scrollButtonType::buttonRight );
+		this->lowerHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft );
 	}
 	else
 	{
-		this->dragHandle = new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY , _styleAttr() | _styleAttr::smallDragTrig );
-		this->higherHandle = new _scrollButton( 8 , 8 , 0 , this->dimensions.height - 8 , _scrollButtonType::buttonBottom , _styleAttr() | _styleAttr::mouseClickRepeat );
-		this->lowerHandle = new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop , _styleAttr() | _styleAttr::mouseClickRepeat );
+		this->dragHandle	= new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY  );
+		this->higherHandle	= new _scrollButton( 8 , 8 , 0 , this->dimensions.height - 8 , _scrollButtonType::buttonBottom );
+		this->lowerHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop );
 	}
 	
 	//! Register Event-Handlers
@@ -118,7 +118,7 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
 	
-	_scrollBar* bar = ((_scrollBar*)that->parent);
+	_scrollBar* bar = ((_scrollBar*)that->getParent());
 	
 	// Has the Gadget to move?
 	if( !event.getDeltaX() && !event.getDeltaY() )
@@ -173,7 +173,7 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 	// Receive Gadget
 	_scrollButton* that = event.getGadget<_scrollButton>();
 	
-	_scrollBar* bar = ((_scrollBar*)that->parent);
+	_scrollBar* bar = ((_scrollBar*)that->getParent());
 	
 	switch( that->getButtonType() )
 	{

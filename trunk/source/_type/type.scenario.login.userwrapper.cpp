@@ -44,7 +44,7 @@ _callbackReturn _userWrapper::textboxRefreshHandler( _event event )
 			
 			_length strWidthUntilCursor = that->font->getStringWidth( str2 );
 			
-			bP.drawVerticalLine( strWidthUntilCursor + 2 - 1 , 1 /**/ - 1 , that->font->getAscent() + 2 , COLOR_RED );
+			bP.drawVerticalLine( strWidthUntilCursor + 2 - 1 , 1 /* */ - 1 , that->font->getAscent() + 2 , COLOR_RED );
 		}
 	}
 	

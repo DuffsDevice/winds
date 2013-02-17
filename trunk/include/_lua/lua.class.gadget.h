@@ -65,7 +65,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_gadget{
 	
 	private:

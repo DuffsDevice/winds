@@ -7,7 +7,7 @@
 
 /**
  * Proxy Classes
-**/
+ */
 class _lua_bitmapPort : public _bitmapPort{
 	
 	public:
