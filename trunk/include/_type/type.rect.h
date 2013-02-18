@@ -43,7 +43,11 @@ class _rect{
 				_area& reduce( const _rect& dim );
 				
 				//! Relativate all t_rects
-				_area& toRelative( const _coord absX , const _coord absY );
+				_area toRelative( const _coord absX , const _coord absY ){
+					for( _rect &rc : t_rects )
+						rc.toRelative( absX , absY );
+					return *this;
+				}
 				
 				//! Clip all t_rects to the supplied one
 				_area& clipToIntersect( const _rect limits );
@@ -82,7 +86,9 @@ class _rect{
 		 */
 		_rect() : width( 0 ) , height( 0 ) , x( -1 ) , y( -1 ) {}
 		
-		void dump() const ;
+		void dump() const {
+			printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
+		}
 		
 		//! Check for reasonable dimensions
 		bool isValid() const { return !( width < 1 || height < 1 ); }

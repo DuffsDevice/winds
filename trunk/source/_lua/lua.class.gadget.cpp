@@ -252,8 +252,11 @@ int _lua_gadget::blur(lua_State* L){ this->gadget->blur(); return 0; }
 //! isEnhanced
 int _lua_gadget::isEnhanced(lua_State* L){ lua_pushboolean( L , this->gadget->isEnhanced() ); return 1; }
 
-//! isVisible
-int _lua_gadget::isVisible(lua_State* L){ lua_pushboolean( L , this->gadget->isVisible() ); return 1; }
+//! isInvisible
+int _lua_gadget::isInvisible(lua_State* L){ lua_pushboolean( L , this->gadget->isInvisible() ); return 1; }
+
+//! isHidden
+int _lua_gadget::isHidden(lua_State* L){ lua_pushboolean( L , this->gadget->isHidden() ); return 1; }
 
 //! isMinimized
 int _lua_gadget::isMinimized(lua_State* L){ lua_pushboolean( L , this->gadget->isMinimized() ); return 1; }

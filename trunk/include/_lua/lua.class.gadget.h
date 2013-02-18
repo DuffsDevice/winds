@@ -9,7 +9,8 @@
 	LUA_CLASS_FUNC(g,applyStyle), \
 	LUA_CLASS_FUNC(g,hasFocus), \
 	LUA_CLASS_FUNC(g,isEnhanced), \
-	LUA_CLASS_FUNC(g,isVisible), \
+	LUA_CLASS_FUNC(g,isInvisible), \
+	LUA_CLASS_FUNC(g,isHidden), \
 	LUA_CLASS_FUNC(g,isMinimized), \
 	LUA_CLASS_FUNC(g,isMaximized), \
 	LUA_CLASS_FUNC(g,isMinimizeable), \
@@ -211,8 +212,11 @@ class _lua_gadget{
 		//! isEnhanced
 		int isEnhanced( lua_State* L );
 		
-		//! isVisible
-		int isVisible( lua_State* L );
+		//! isHidden
+		int isHidden( lua_State* L );
+		
+		//! isInvisible
+		int isInvisible( lua_State* L );
 		
 		//! isMinimized
 		int isMinimized( lua_State* L );

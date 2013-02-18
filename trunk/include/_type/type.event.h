@@ -94,23 +94,35 @@ class _event
 		_key 	keyCode;		//! KeyCode of the Button that triggered the Event
 		_key 	currentKeyCodes;//! Keycode-State of that Moment the Event was triggered
 		_u32	heldTime; 		//! Time the Button was Pressed (only for: keyUp, keyClick, mouseUp, mouseClick )
+		bool	bubble;	 		//! If 'true', all events needed to inform the parents are already thrown, no need to throw the again
 		_area	damagedRects;	//! If (isBubbleRefresh) is true then this Attribute will specify the Area, that is invalid/damaged and has to be repainted
-		bool	bubble;	 		//! If 'true', all events needed for informing the parents are already thrown, no need to throw the again
 	
 	public:
 		
 		//! Default Constructor
-		_event( _eventType type = _none_ );
+		_event() : 
+			dest( nullptr )
+		{ } // Dont waste much time on initializing
+		_event( _eventType type ) :
+			type( type )
+		{
+			this->type = type;
+			resetParams();
+		}
 		
 		//! Specific Events:
-		static _event refreshEvent( _area damagedRects = _area() );
-		static _event dialogClose( _s32 intVal , string strVal );
+		static _event refreshEvent( _area damagedRects ){
+			return _event().setType( refresh ).setDamagedRects( damagedRects ).preventBubble( true );
+		}
+		static _event refreshEvent(){
+			return _event().setType( refresh ).preventBubble( true );
+		}
 		
 		//! Manually set Event Type
 		_event& setType( _eventType type ){ this->type = type; return *this; }
 		
 		//! Get the Type of the Event
-		_eventType getType(){	return this->type; }
+		_eventType getType(){ return this->type; }
 
 		//! Get the Current handling Gadget
 		_gadget* getGadget(){ return this->that; }
@@ -153,7 +165,8 @@ class _event
 		
 		_u32 getHeldTime(){ return this->heldTime; }//!.........................<= Get Held Time of the key that triggered the Event
 		_key getCurrentKeyCodes(){ return this->currentKeyCodes; }//!...........<= Get KeyCode State of that Moment the Event was triggered
-		_area getDamagedRects(){ return this->damagedRects; }//!................<= get Rects to be repainted
+		_area getDamagedRectsConst(){ return this->damagedRects; }//!...........<= get Rects to be repainted
+		_area& getDamagedRects(){ return this->damagedRects; }//!...............<= get Rects to be repainted
 		bool isBubblePrevented(){ return this->bubble; }//!.....................<= Check if this event was auto-generated to refresh every gadget until the DOM-Tree HEAD
 		bool hasClippingRects(){ return !this->damagedRects.empty(); } //!......<= Check if the Event crops the area to be painted on
 };

@@ -55,44 +55,29 @@ class _gadget
 {
 	friend class _lua_gadget;
 	
-	private:
-	
-		//! Internal
-		static bool		removeDeleteCallback( _gadget* g );
-		static bool		removeCallback( _gadget* g );
-		_gadget*		getGadgetOfMouseDown( _coord posX , _coord posY ); // Used to receive the gadget that a mouse position is in
-		bool			hasClickRights() const {
-			return this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus;
-		} // Determine whether a gadget can currently be clicked either because it has focus or because it cannot receive focus anytime
-		
-		//! Let the gadget blink! This is used if anything can't loose focus
-		void			blinkHandler(); 
-		
-		//! _gadget::dragHandler uses this 
-		_gadget*		dragTemp;
-		
-		//! Type of the Gadget
-		_gadgetType 	type;
-		
-		union // State
-		{
-			_u8 state; // used to reset everything quickly
-			struct{
-				bool pressed : 1;
-				bool dragged : 1;
-				bool focused : 1;
-				bool enhanced : 1;
-				bool visible : 1;
-				bool minimized : 1;
-				bool maximized : 1;
-			} __attribute__(( packed ));
-		};
-		
 	protected:
 	
 		// Attributes
-		_padding				padding;
-		_rect 					dimensions;
+		union{
+			_padding			padding;
+			struct
+			{
+				_length 		padLeft;
+				_length 		padTop;
+			};
+		};
+		union
+		{
+			_rect				dimensions;
+			struct{
+				//! Size
+				_length 		width;
+				_length 		height;
+				//! Position
+				_coord 			x;
+				_coord 			y;
+			};
+		};
 		_rect 					normalDimensions; // When something is maximized its old dimensions are written in here
 		_style					style;
 		
@@ -113,7 +98,7 @@ class _gadget
 		/**
 		 * Standard/Default EventHandler that will handle
 		 * specific events if the 'normal' eventHandlers don't
-		**/
+		 */
 		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetDragHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetMouseHandler( _event event ) ITCM_CODE ;
@@ -166,18 +151,18 @@ class _gadget
 		
 		/**
 		 * Constructor
-		**/
+		 */
 		_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
 		_gadget( int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
 		
 		/**
 		 * Destructor
-		**/
+		 */
 		virtual ~_gadget();
 		
 		/**
 		 * Set the Padding of the Gadget
-		**/
+		 */
 		void setPadding( const _padding& p )
 		{
 			if( this->padding != p )
@@ -189,259 +174,269 @@ class _gadget
 		
 		/**
 		 * Get the Padding of the Gadget
-		**/
+		 */
 		_padding getPadding() const { return this->padding; }
 		
 		
-		/** Method to check whether the Gadget has Focus **/
+		/** Method to check whether the Gadget has Focus */
 		bool hasFocus() const { return this->focused || this->type == _gadgetType::screen; }
 		
-		/** Check whether this Gadget is currently pressed **/
+		/** Check whether this Gadget is currently pressed */
 		bool isPressed() const { return this->pressed; }
 		
-		/** Check whether this Gadget is not dragged but one of its children **/
+		/** Check whether this Gadget is not dragged but one of its children */
 		bool isChildDragged() const { return this->dragTemp != nullptr; }
 		
-		/** Check whether this Gadget can also be on the reserved area of the parent **/
+		/** Check whether this Gadget can also be on the reserved area of the parent */
 		bool isEnhanced() const { return this->enhanced; }
 		
-		/** Check whether this Gadget can also be on the reserved area of the parent **/
-		bool isVisible() const { return this->visible; }
+		/** Check whether this Gadget was hidden by a previous call to hide() */
+		bool isHidden() const { return this->hidden; }
 		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		/** Check whether this Gadget is invisible, either because it is minimized or it is made 'hidden' */
+		bool isInvisible() const { return this->state & 0x3; }
+		
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
 		bool isMinimized() const { return this->minimized; }
 		
-		/** Check whether this Gadget is maximized ( probably only available with _window's ) **/
+		/** Check whether this Gadget is maximized ( probably only available with _window's ) */
 		bool isMaximized() const { return this->maximized; }
 		
 		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
 		bool isMinimizeable() const { return this->style.minimizeable; }
 		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) **/
+		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
 		bool isDestroyable() const { return this->style.destroyable; }
 		
-		/** true if resizeable in x- or y-direction **/
+		/** true if resizeable in x- or y-direction */
 		bool isResizeable() const { return this->style.resizeableX || this->style.resizeableY; }
 		
-		/** true if resizeable in x-direction **/
+		/** true if resizeable in x-direction */
 		bool isResizeableX() const { return this->style.resizeableX; }
 		
-		/** true if resizeable in y-direction **/
+		/** true if resizeable in y-direction */
 		bool isResizeableY() const { return this->style.resizeableY; }
 		
-		/** true if the gadget has a special small drag Triger after which it fires an dragStart-Event **/
+		/** true if the gadget has a special small drag Triger after which it fires an dragStart-Event */
 		bool hasSmallDragTrig() const { return this->style.smallDragTrig; }
 		
-		/** true if the gadget wants to have repeating clicks instead of just one mouseDown event and then nothing... **/
+		/** true if the gadget wants to have repeating clicks instead of just one mouseDown event and then nothing... */
 		bool isMouseClickRepeat() const { return this->style.mouseClickRepeat; }
 		
-		/** Check whether this Gadget requests the keyboard to open on focus **/
+		/** Check whether this Gadget requests the keyboard to open on focus */
 		bool requestsKeyboard() const { return this->style.keyboardRequest; }
 		
-		/** Check whether or not this gadget can handle drag-scenarios **/
+		/** Check whether or not this gadget can handle drag-scenarios */
 		bool isDraggable() const { return this->style.draggable; }
 		
 		/**
 		 * Check whether this Gadget is doubleclickable
 		 * If Not every DoubleClick will be convertetd to a 'mouseClick'-event
-		**/
+		 */
 		bool isDoubleClickable() const { return this->style.doubleClickable; }
 		
 		/**
 		 * Let an Event bubble from child to parent and so on...
-		**/
+		 */
 		void bubbleEvent( _event e , bool includeThis = false ) ;
 		
 		/**
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
-		**/
+		 */
 		void bubbleRefresh( bool includeThis = false , _event e = _event() );
 		
 		/**
 		 * Method to refresh itself
-		**/
+		 */
 		noinline void refreshBitmap()
 		{
-			this->handleEvent( _event( refresh ).preventBubble( true ) );
+			this->handleEvent( _event::refreshEvent() );
 		}
 		
 		/**
 		 * Receive a Bitmap Port
-		**/
+		 */
 		_bitmapPort getBitmapPort(){ return this->bitmap; }
 		
 		/**
 		 * Get The Bitmap of the Gadget
-		**/
+		 */
 		_bitmap& getBitmap(){ return this->bitmap; }
 		
 		/**
 		 * Get the style of that Gadget
-		**/
+		 */
 		const _style& getStyle() const { return this->style; }
 		
 		/**
 		 * Set the style of that Gadget
-		**/
+		 */
 		void setStyle( _style style ){ this->style = style; this->triggerEvent( _event( onStyleSet ) ); }
 		
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
-		**/
+		 */
 		noinline _gadgetScreen* getScreen() const 
 		{
+			if( this->parent != nullptr )
+				return this->parent->getScreen();
 			if( this->type == _gadgetType::screen )
 				return (_gadgetScreen*)this;
-			else if( this->parent != nullptr )
-				return this->parent->getScreen();
 			return nullptr;
 		}
 		
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
-		**/
+		 */
 		void registerEventHandler( _eventType type , _callback* handler );
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
-		**/
+		 */
 		void unregisterEventHandler( _eventType type );
 		
 		/**
 		 * Method to push an event onto the stack
 		 * This usually has nothing to do with the gadget it is invoked on!
-		**/
+		 */
 		void populateEvent( _event event );
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically)
-		**/
+		 */
 		void triggerEvent( _event event );
 		
 		/**
 		 * Check if this Gadget has an EventHandler registered reacting on the specified type
-		**/
+		 */
 		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ); }
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
-		**/
-		_callbackReturn handleEvent( _event event );
+		 */
+		_callbackReturn handleEvent( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
+		_callbackReturn handleEvent( const _event& event ){ return this->handleEvent( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEvent( e );'
 		
 		/**
-		 * Make The Gadget act onto a specific GadgetEvent by using the Default event-handler if available
-		**/
-		_callbackReturn handleEventDefault( _event event );
+		 * Make The Gadget act onto a specific GadgetEvent by only using the Default event-handler if available
+		 */
+		_callbackReturn handleEventDefault( _event&& event ); 
+		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); }
 		
 		/**
 		 * Get the absolute X-position
-		**/
+		 */
 		noinline _coord getAbsoluteX() const
 		{
 			if( this->parent != nullptr )
-				return this->parent->getAbsoluteX() + this->dimensions.x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
+				return this->parent->getAbsoluteX() + this->x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
 			
-			return this->dimensions.x;
+			return this->x;
 		}
 		
 		/**
 		 * Get the absolute Y-position
-		**/
+		 */
 		noinline _coord getAbsoluteY() const
 		{
 			if( this->parent != nullptr )
-				return this->parent->getAbsoluteY() + this->dimensions.y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
+				return this->parent->getAbsoluteY() + this->y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
 			
-			return this->dimensions.y;
+			return this->y;
 		}
 		
 		/**
+		 * Get both y and y coordinate
+		 */
+		_2s32 getAbsolutePosition() const ;
+		
+		/**
 		 * Get the Relative X-position
-		**/
-		const _coord& getX() const { return this->dimensions.x; }
+		 */
+		const _coord& getX() const { return this->x; }
 		
 		/**
 		 * Get the Relative Y-position
-		**/
-		const _coord& getY() const { return this->dimensions.y; }
+		 */
+		const _coord& getY() const { return this->y; }
 		
 		/**
 		 * Set the Relative X-Position
-		**/
+		 */
 		void setX( _coord val );
 		
 		/**
 		 * Set the Relative Y-Position
-		**/
+		 */
 		void setY( _coord val );
 		
 		/**
 		 * Hide the Gadget
-		**/
+		 */
 		void hide()
 		{
-			if( this->visible )
+			if( !this->hidden )
 			{
-				this->visible = false;
+				this->hidden = true;
 				this->bubbleRefresh();
 			}
 		}
 		
 		/**
 		 * Unhide the Gadget
-		**/
+		 */
 		void show()
 		{
-			if( !this->visible )
+			if( this->hidden )
 			{
-				this->visible = true;
+				this->hidden = false;
 				this->bubbleRefresh();
 			}
 		}
 		
 		/**
 		 * Minimize the Gadget
-		**/
+		 */
 		void minimize();
 		
 		/**
 		 * Restore the Gadget
-		**/
+		 */
 		void restore();
 		
 		/**
 		 * Maximize the Gadget
-		**/
+		 */
 		void maximize();
 		
 		/**
 		 * unMaximize (Restore) the Gadget
-		**/
+		 */
 		void unMaximize();
 		
 		/**
 		 * Get the Gadgets Parent
-		**/
+		 */
 		_gadget* getParent() const { return this->parent; }
 		
 		/**
 		 * Set the Gadgets Parent
-		**/
+		 */
 		void setParent( _gadget* val );
 		void enhanceToParent( _gadget* val );
 		
 		/**
 		 * Remove a specific children
-		**/
+		 */
 		virtual void removeChild( _gadget* child );
 		virtual void removeChildren( bool remove = false );
 		virtual void removeEnhancedChildren( bool remove = false );
 		
 		/**
 		 * Add a child-gadget to this one
-		**/
+		 */
 		virtual void addChild( _gadget* child );
 		virtual void addEnhancedChild( _gadget* child );
 		
@@ -452,57 +447,61 @@ class _gadget
 		
 		/**
 		 * Get Dimensions of the Gadget (including Coords)
-		**/
-		const _rect& getDimensions() const { return this->dimensions; }
+		 */
+		_rect getDimensions() const { return this->dimensions; }
 		
 		/**
 		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
-		**/
-		_rect getAbsoluteDimensions() const ;
+		 */
+		_rect getAbsoluteDimensions() const 
+		{
+			_2s32 val = this->getAbsolutePosition();
+			return _rect( val.first , val.second , this->width , this->height );
+		}
 		
 		/**
 		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}
-		**/
-		_rect getSize() const { return _rect( 0 , 0 , this->dimensions.width , this->dimensions.height ); }
+		 */
+		_rect getSize() const { return _rect( 0 , 0 , this->width , this->height ); }
 		
 		/**
 		 * Set Dimensions of the Gadget (including Coords)
-		**/
+		 */
 		virtual void setDimensions( _rect rc );
 		
 		/**
 		 * Get the height of the Gadget
-		**/
-		const _length& getHeight() const { return this->dimensions.height; }
+		 */
+		const _length& getHeight() const { return this->height; }
 		
 		/**
 		 * Get the width of the Gadget
-		**/
-		const _length& getWidth() const { return this->dimensions.width; }
+		 */
+		const _length& getWidth() const { return this->width; }
 		
 		/**
 		 * Move the Gadget relatively to its current position
-		**/
+		 */
 		void moveTo( _coord dX , _coord dY );
 		
 		/**
 		 * Relative moving fo the Gadget
-		**/
+		 */
 		void moveRelative( _s16 deltaX , _s16 deltaY );
 		
 		/**
 		 * Set Height " " "
-		**/
+		 */
 		virtual void setHeight( _length val );
 		
 		/**
 		 * Set Width " " "
-		**/
+		 */
 		virtual void setWidth( _length val );
 		
 		/**
 		 * Blur the Gadget
-		**/
+		 */
 		bool blur()
 		{
 			if( this->parent && this->parent->focusedChild == this )
@@ -512,7 +511,7 @@ class _gadget
 		
 		/**
 		 * Focus the Gadget
-		**/
+		 */
 		bool focus()
 		{
 			if( this->parent )
@@ -522,26 +521,59 @@ class _gadget
 		
 		/**
 		 * Get the toppest child owned by the parent
-		**/
+		 */
 		_gadget* getToppestChild() const {	return this->children.front(); }
 		
 		/**
 		 * Get the Type of the Gadget (enum)
 		 * @see type.h:111
-		**/
+		 */
 		_gadgetType getType() const { return this->type; }
 		
 		/**
 		 * Let the gadget blink! This is used if anything can't loose focus
-		**/
+		 */
 		void blink();
 		
 	protected:
 		
 		/**
 		 * There's no public setType, because you shouldn't change the type of a Gadget
-		**/
+		 */
 		void setType( _gadgetType type ){ this->type = type; }
+	
+	private: // More attributes!
+		
+		//! Internal
+		static bool		removeDeleteCallback( _gadget* g );
+		static bool		removeCallback( _gadget* g );
+		_gadget*		getGadgetOfMouseDown( _coord posX , _coord posY ); // Used to receive the gadget that a mouse position is in
+		bool			hasClickRights() const {
+			return this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus;
+		} // Determine whether a gadget can currently be clicked either because it has focus or because it cannot receive focus anytime
+		
+		//! Let the gadget blink! This is used if anything can't loose focus
+		void			blinkHandler(); 
+		
+		//! _gadget::dragHandler uses this 
+		_gadget*		dragTemp;
+		
+		//! Type of the Gadget
+		_gadgetType 	type;
+		
+		union // State
+		{
+			_u8 state; // used to reset everything quickly
+			struct{
+				bool hidden : 1;
+				bool minimized : 1;
+				bool pressed : 1;
+				bool enhanced : 1;
+				bool dragged : 1;
+				bool focused : 1;
+				bool maximized : 1;
+			} __attribute__(( packed ));
+		};
 };
 
 inline _gadgetType typeOfGadget( const _gadget* g ){ return g->getType(); }
