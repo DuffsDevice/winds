@@ -7,7 +7,13 @@
 
 class _textarea : public _gadget{
 	
-	public:
+	private:
+		
+		enum
+		{
+			borderX = 3, // X-Position of the most left character
+			borderY = 1, // Start of text in y-direction
+		};
 		
 		//! Farbe der Schrift
 		_pixel 	color;
@@ -23,12 +29,22 @@ class _textarea : public _gadget{
 		_align	align;
 		
 		static _callbackReturn refreshHandler( _event e );
-		static _callbackReturn focusHandler( _event e );
-		static _callbackReturn blurHandler( _event e );
+		static _callbackReturn generalHandler( _event e );
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
 	public:
+		
+		static inline _coord getFontPosition( _align align , string str , _font* font , _u16 width )
+		{
+			switch( align )
+			{
+				case _align::right:		return width - font->getStringWidth( str ) - _textarea::borderX + 1;
+				case _align::center:	return ( width - font->getStringWidth( str ) + 1 ) >> 1;
+				default:
+				case _align::left:		return _textarea::borderX;
+			}
+		}
 		
 		//! Set the Text to be displayed
 		void setStrValue( string val ){ this->text.setText( val ); if( this->text.needsRefresh() ) this->bubbleRefresh( true ); }
@@ -61,7 +77,7 @@ class _textarea : public _gadget{
 		_pixel getBgColor(){ return this->bgColor; }
 		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->bubbleRefresh( true ); }
+		void setAlign( _align align ){ if( this->align == align ) return; this->align = align; this->bubbleRefresh( true ); }
 		
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }

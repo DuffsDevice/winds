@@ -1,18 +1,19 @@
 #include "_type/type.rect.h"
 
-bool _rect::intersectsWith( const _area& other ) const {
+bool _rect::intersectsWith( const _area& other ) const 
+{
+	_coord this_x2 = this->getX2();
+	_coord this_y2 = this->getY2();
+	
 	for( const _rect& r : other.t_rects )
 	{
-		if( this->x > r.getX2() || this->getX2() < r.x || this->y > r.getY2() || this->getY2() < r.y )
+		if( this->x > r.getX2() || this_x2 < r.x || this->y > r.getY2() || this_y2 < r.y )
 			continue;
 		else
 			return true;
-	}	
+	}
+	
 	return false;
-}
-
-void _rect::dump() const {
-	printf("_rect:%d,%d,%d,%d\n",this->x,this->y,this->width,this->height);
 }
 
 _area _rect::reduce( const _rect& r2 ) const 
@@ -24,7 +25,7 @@ _area _rect::reduce( const _rect& r2 ) const
 	_coord r2_x2 = r2.getX2();
 	_coord r2_y2 = r2.getY2();
 	
-	if( !this->intersectsWith( r2 ) )
+	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
 	{
 		out.add( *this );
 		return out;
@@ -49,17 +50,17 @@ _area _rect::combine( const _rect& r2 ) const
 {
 	_area out;
 	
-	if( !this->intersectsWith( r2 ) )
+	_coord this_x2 = this->getX2();
+	_coord this_y2 = this->getY2();
+	_coord r2_x2 = r2.getX2();
+	_coord r2_y2 = r2.getY2();
+	
+	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
 	{
 		out.add( r2 );
 		out.add( *this );
 		return out;
 	}
-	
-	_coord this_x2 = this->getX2();
-	_coord this_y2 = this->getY2();
-	_coord r2_x2 = r2.getX2();
-	_coord r2_y2 = r2.getY2();
 	
 	// Left Top Right Bottom
 	bool overlapping[4] = { r2.x < this->x , r2.y < this->y , r2_x2 > this_x2 , r2_y2 > this_y2 };

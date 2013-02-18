@@ -40,6 +40,35 @@ typedef float 				_float;
 typedef _u64 				_tempTime;
 typedef basic_string<char> 	_string;
 
+
+/**
+ * Pack two integers into one
+ * The union will hopefully make it be treated
+ * like one single number (faster)
+ */
+union						_2s32
+{
+	_s64	val;
+	struct{ _s32 first; _s32 second; };
+	
+	//Ctors
+	_2s32() {}
+	_2s32( _s64 v ) : val( v ) {}
+	_2s32( _s32 f , _s32 s ) : first( f ) , second( s ) {}
+};
+
+union 						_2u32
+{
+	_u64	val;
+	struct{ _u32 first; _u32 second; };
+	
+	// Ctors
+	_2u32() {}
+	_2u32( _u64 v ) : val( v ) {}
+	_2u32( _u32 f , _u32 s ) : first( f ) , second( s ) {}
+};
+
+
 typedef _map<string,string>	_cmdArgs;
 
 extern _length SCREEN_WIDTH;

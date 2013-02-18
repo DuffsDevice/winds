@@ -20,11 +20,10 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 }
 
 _bootupScreen::_bootupScreen( _u8 bgId , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::bootUp , style )
+	_gadgetScreen( bgId , _gadgetScreenType::bootUp , style | _styleAttr::canNotReceiveFocus )
 	, refresher( new _gadget( SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
 	, bar( new _progressbar( 51 , 102 , 125 , false ) )
 {	
-	refresher->style.canReceiveFocus = false;
 	refresher->registerEventHandler( refresh , new _staticCallback( &_bootupScreen::refreshHandler ) );
 	refresher->refreshBitmap();
 	this->addChild( refresher );

@@ -1,19 +1,6 @@
 #include "_type/type.event.h"
 
-_event::_event( _eventType type ){
-	this->type = type;
-	resetParams();
-}
-
-_event _event::refreshEvent( _area damagedRects ){
-	return _event( refresh ).setDamagedRects( damagedRects ).preventBubble( true );
-}
-
-_event _event::dialogClose( _s32 intValue , string strValue ){
-	return _event( onClose );
-}
-
-void _event::resetParams( void* dest ){//!<= Reset All Arguments
+void _event::resetParams( void* dest ){ //!<= Reset All Arguments
 	this->dest = dest;
 	this->posX = 0;
 	this->posY = 0;

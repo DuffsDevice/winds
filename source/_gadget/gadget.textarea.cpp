@@ -2,13 +2,6 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
-enum
-{
-	startX = 3, // X-Position of the most left character
-	
-	startY = 1, // Start of text in y-direction
-};
-
 _callbackReturn _textarea::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -31,8 +24,7 @@ _callbackReturn _textarea::refreshHandler( _event event )
 	// If there is no font it doesn't make sense to paint
 	if( lineCount )
 	{
-		_coord x = ::startX;
-		_coord y = ::startX;
+		_coord y = _textarea::borderY;
 		
 		_font* ft = that->text.getFont();
 		
@@ -46,6 +38,9 @@ _callbackReturn _textarea::refreshHandler( _event event )
 		for( _u32 i = 0 ; i <= lineCount ; i++ )
 		{
 			string val = that->text.getLineContent(i);
+			
+			// X-Position
+			_coord x = _textarea::getFontPosition( that->align , val , ft , myW );
 			
 			// Draw Text...
 			bP.drawString( x , y , ft , val , that->color );
@@ -117,19 +112,22 @@ _callbackReturn _textarea::keyHandler( _event event )
 				if( line2Number == lineOfCursor || !ft || !ft->valid() ) // We are at the limits of the textarea
 					break; // abort
 				
-				// Get X-Position of the cursor
+				//! Get X-Position of the cursor
 				string line = that->text.getLineContent( lineOfCursor );
 				
-				// Cut the string at the cursor
-				line.resize( that->cursor - that->text.getLineStart( lineOfCursor ) - 1 );
+				//! Get starting X-Coordinate!
+				_coord xPos = _textarea::getFontPosition( that->align , line , ft , that->getWidth() );
 				
-				_length xPos = ft->getStringWidth( line ); // Get its width
+				//! Cut the string at the cursor and add the size of the line to the current x-start to get the cursor position!
+				line.resize( that->cursor - that->text.getLineStart( lineOfCursor ) - 1 );
+				xPos += ft->getStringWidth( line ); // Add
 				
 				
 				//! Line 2
 				string line2 = that->text.getLineContent( line2Number );
 				
-				_length x = 0; // Current temporary x-advance
+				//! Compute Staring x_coordinate
+				_coord x = _textarea::getFontPosition( that->align , line2 , ft , that->getWidth() ); // Current temporary x-advance
 				_u32 idx = 1; // Current iterator index
 				
 				for( _u8 charWidth ; idx < line2.length() ; idx++ )
@@ -160,24 +158,26 @@ _callbackReturn _textarea::keyHandler( _event event )
 	return handled;
 }
 
-_callbackReturn _textarea::focusHandler( _event event )
+_callbackReturn _textarea::generalHandler( _event event )
 {
-	event.getGadget<_textarea>()->cursor = 1;
+	_gadget* that = event.getGadget();
 	
-	event.getGadget()->bubbleRefresh( true );
-	
-	return use_default;
-}
-
-_callbackReturn _textarea::blurHandler( _event event )
-{
-	_textarea* that = event.getGadget<_textarea>();
-	
-	// Remove Cursor!
-	that->cursor = 0;
-	
-	// Refresh
-	that->bubbleRefresh( true );
+	switch( event.getType() )
+	{
+		case onFocus:
+			event.getGadget<_textarea>()->cursor = 1;
+			that->bubbleRefresh( true ); // refresh
+			break;
+		case onBlur:
+			event.getGadget<_textarea>()->cursor = 0; // Remove Cursor
+			that->bubbleRefresh( true ); // refresh
+			break;
+		case onResize:
+			event.getGadget<_textarea>()->text.setWidth( that->getWidth() - _textarea::borderX * 2 );
+			break;
+		default:
+			break;
+	}
 	
 	return use_default;
 }
@@ -204,13 +204,13 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	_u8 ftHeight = ft->getHeight();
 	
 	//! Compute Line Number
-	_u32 lineNumber = max( 0 , ( posY - ::startY ) / ( ftHeight + 1 ) );
+	_u32 lineNumber = max( 0 , ( posY - _textarea::borderY ) / ( ftHeight + 1 ) );
 	lineNumber = min( lineNumber , that->text.getLineCount() - 1 );
 	
 	// Get X-Position of the cursor
 	string line = that->text.getLineContent( lineNumber );
 	
-	_length x = ::startX; // Current temporary x-advance
+	_coord x = _textarea::getFontPosition( that->align , line , ft , that->getWidth() ); // Current temporary x-advance
 	_u32 idx = 0; // Current iterator index
 	
 	for( _u8 charWidth ; idx < line.length() ; idx++ )
@@ -232,13 +232,14 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	_gadget( _gadgetType::textarea , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
-	, text( _system::getFont() , _system::_runtimeAttributes_->defaultFontSize , width - ::startX - 1 , value )
+	, text( _system::getFont() , _system::_runtimeAttributes_->defaultFontSize , width - _textarea::borderX * 2 , value )
 	, cursor( 0 )
 	, align( _align::left )
 {
 	// Regsiter Handling Functions for events
-	this->registerEventHandler( onFocus , new _staticCallback( &_textarea::focusHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_textarea::blurHandler ) );
+	this->registerEventHandler( onFocus , new _staticCallback( &_textarea::generalHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_textarea::generalHandler ) );
+	this->registerEventHandler( onResize , new _staticCallback( &_textarea::generalHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_textarea::refreshHandler ) );
 	this->registerEventHandler( mouseDown , new _staticCallback( &_textarea::mouseHandler ) );
 	this->registerEventHandler( keyDown , new _staticCallback( &_textarea::keyHandler ) );
