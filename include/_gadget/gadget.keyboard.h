@@ -72,6 +72,22 @@ class _keyboard : public _gadgetScreen {
 		//! Check if opened
 		bool isOpened(){ return this->mode; }
 		
+		//! Check if either shift or capslock is enabled
+		bool isShift(){ return this->shift; }
+		bool isCaps(){ return this->caps; }
+		
+		//! Set Capslock on ('true') or off ('false')
+		void setCaps( bool caps = true ){
+			this->caps = caps;
+			refreshKeys();
+		}
+		
+		//! Set Shift on ('true') or off ('false')
+		void setShift( bool shift = true ){
+			this->shift = shift;
+			refreshKeys();
+		}
+		
 		//! VBL of the Keyboard
 		void screenVBL();
 		

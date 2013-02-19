@@ -250,7 +250,7 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
 	else
 		bP.normalizeClippingRects();
 	

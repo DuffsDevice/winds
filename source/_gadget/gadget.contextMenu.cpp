@@ -9,9 +9,6 @@ _callbackReturn _contextMenu::blurHandler( _event event )
 	// Hide
 	that->shelve();
 	
-	// Trigger Dummy-Event
-	that->handleEvent( onClose );
-	
 	return use_default;
 }
 
@@ -52,6 +49,9 @@ void _contextMenu::show( _coord x , _coord y )
 	
 	// Focus
 	this->focus();
+	
+	// Trigger Dummy-Event
+	this->handleEvent( onOpen );
 }
 
 void _contextMenu::shelve()
@@ -61,6 +61,9 @@ void _contextMenu::shelve()
 	
 	// Unbind from the tree
 	this->setParent( nullptr );
+	
+	// Trigger Dummy-Event
+	this->handleEvent( onClose );
 }
 
 void _contextMenu::toggle( _coord x , _coord y )
