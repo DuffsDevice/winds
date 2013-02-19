@@ -24,7 +24,7 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort();
 	
 	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsoluteX() , that->getAbsoluteY() ) );
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
 	else
 		bP.normalizeClippingRects();
 	
@@ -46,6 +46,7 @@ _windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
 {
 	this->registerEventHandler( mouseClick , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_windowsStartButton::refreshHandler ) );
+	this->startMenu->registerEventHandler( onOpen , new _gadget::eventForwardRefreshGadget( this ) );
 	this->startMenu->registerEventHandler( onClose , new _gadget::eventForwardRefreshGadget( this ) );
 	
 	this->refreshBitmap();

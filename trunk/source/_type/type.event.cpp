@@ -1,6 +1,6 @@
 #include "_type/type.event.h"
 
-void _event::resetParams( void* dest ){ //!<= Reset All Arguments
+void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 	this->dest = dest;
 	this->posX = 0;
 	this->posY = 0;
@@ -51,6 +51,7 @@ _map<string,_eventType> string2eventType = {
 	{ "onChange" , onChange },
 	{ "onBlur" , onBlur },
 	{ "onFocus" , onFocus },
+	{ "onOpen" , onOpen },
 	{ "onClose" , onClose },
 	{ "onMouseEnter" , onMouseEnter },
 	{ "onMouseLeave" , onMouseLeave },
@@ -84,6 +85,7 @@ _map<_eventType,string> eventType2string = {
 	{ onChange , "onChange" },
 	{ onBlur , "onBlur" },
 	{ onFocus , "onFocus" },
+	{ onOpen , "onOpen" },
 	{ onClose , "onClose" },
 	{ onMouseEnter , "onMouseEnter" },
 	{ onMouseLeave , "onMouseLeave" },

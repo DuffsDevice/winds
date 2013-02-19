@@ -42,6 +42,7 @@ enum _eventType : _u8
 	onChange,
 	onBlur,
 	onFocus,
+	onOpen,
 	onClose,
 	onMouseEnter,
 	onMouseLeave,
@@ -79,12 +80,12 @@ class _event
 		_gadget*	that;
 		
 		//! Set the Gadget that received the event (Only Used in gadget::handleEvent)
-		void setGadget( _gadget* that ){ this->that = that; }
+		void setGadget( _gadget* d ){ this->dest = d; }
 		
 		/**
 		 * Parameters
 		 */
-		void* 	dest;			//! Gadget to receive the Event
+		_gadget*dest;			//! Gadget to receive the Event
 		_coord 	posX;			//! X-Position of the Mouse when the Event was triggered
 		_coord 	posY;			//! Y-Position of the Mouse when the Event was triggered
 		_coord 	effectiveX;		//! X-Position of the Stylus on the Screen when the Event was triggered
@@ -125,22 +126,22 @@ class _event
 		_eventType getType(){ return this->type; }
 
 		//! Get the Current handling Gadget
-		_gadget* getGadget(){ return this->that; }
+		_gadget* getGadget(){ return this->dest; }
 		
 		//! Get the (current) Gadget the Handler was called on
 		template<typename T>
 		T* getGadget(){ 
 			typedef typename T::_gadget test; // Just Test if the supplied param is a subclass of _gadget!!!!!
-			return static_cast<T*>( this->that );
+			return static_cast<T*>( this->dest );
 		}
 		
 		/**
 		 * Parameters
 		 */		
-		void resetParams( void* dest = nullptr );//!............................<= Reset All Arguments
+		void resetParams( _gadget* dest = nullptr );//!............................<= Reset All Arguments
 		
 		//! Setters...
-		_event& setDestination( void* newVal ){ this->dest = newVal; return *this; }//!..........<= Set the Destination
+		_event& setDestination( _gadget* newVal ){ this->dest = newVal; return *this; }//!..........<= Set the Destination
 		_event& setPosX( _coord val ){ this->posX = val; return *this; }//!......................<= Set Triggering Point X
 		_event& setPosY( _coord val ){ this->posY = val; return *this; }//!......................<= Set Triggering Point Y
 		_event& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!.......<= Set Triggering Point X which results in the position on the screen that the user effectively touched
@@ -154,7 +155,7 @@ class _event
 		_event& setDamagedRects( _area rects ){ this->damagedRects = rects; return *this; }//!...<= Set Rects to be repainted
 		
 		//! Getters
-		void* getDestination(){ return this->dest; }//!.........................<= Get Destination Gadget
+		_gadget* getDestination(){ return this->dest; }//!.........................<= Get Destination Gadget
 		_coord getPosX(){ return this->posX; }//!...............................<= Get Triggering Point X
 		_coord getPosY(){ return this->posY; }//!...............................<= Get Triggering Point Y
 		_coord getEffectivePosX(){ return this->effectiveX; }//!................<= Get effective Triggering Point X

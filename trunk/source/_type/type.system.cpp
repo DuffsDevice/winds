@@ -1,5 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_gadget/gadget.windows.h"
 #include "func.memory.h"
 #include <time.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
-struct __TransferRegion {
+struct __TransferRegion{
 	vs16 touchX,   touchY;		// TSC X, Y
 	vs16 touchXpx, touchYpx;	// TSC X, Y pixel values
 	vs16 touchZ1,  touchZ2;		// TSC x-panel measurements
@@ -216,7 +217,7 @@ void _system::processEvents()
 	
 	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
 	{
-		gadget = (_gadget*)event.getDestination();
+		gadget = event.getDestination();
 		
 		//int t = cpuGetTiming();
 		
@@ -274,6 +275,35 @@ void _system::processInput()
 			_system::_keyboard_->close();
 		else
 			_system::_keyboard_->open();
+	}
+	if( keysDown() & KEY_L )
+	{
+		if( _system::_keyboard_->isOpened() )
+		{
+			if( _system::_keyboard_->isShift() )
+				_system::_keyboard_->setShift( false );
+			else
+				_system::_keyboard_->setShift( true );
+		}
+	}
+	if( keysDown() & KEY_R )
+	{
+		if( _system::_keyboard_->isOpened() )
+		{
+			if( _system::_keyboard_->isCaps() )
+				_system::_keyboard_->setCaps( false );
+			else
+				_system::_keyboard_->setCaps( true );
+		}
+	}
+	if( keysDown() & KEY_START && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+	{
+		_windows* win = (_windows*)_system::_gadgetHost_;
+		
+		if( win->isStartMenuOpened() )
+			win->closeStartMenu();
+		else
+			win->openStartMenu();
 	}
 	
 	if( !_system::_currentFocus_ && !_system::_gadgetHost_ )

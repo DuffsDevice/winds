@@ -6,6 +6,8 @@
 
 class _windowsStartButton : public _button {
 	
+	friend class _windows;
+	
 	private:
 		
 		_startMenu*		startMenu;
@@ -15,6 +17,16 @@ class _windowsStartButton : public _button {
 	
 	public:
 		
+		//! Check if the startMenu is opened
+		bool isMenuOpened(){ return this->startMenu->isOpened(); }
+		
+		//! Open the startMenu
+		void openStartMenu(){ this->startMenu->show( this->getAbsoluteX() , this->getAbsoluteY() ); }
+		
+		//! Open the startMenu
+		void closeStartMenu(){ this->startMenu->shelve(); }
+		
+		//! Ctor
 		_windowsStartButton( _coord x , _coord y , _style style = _style() );
 };
 

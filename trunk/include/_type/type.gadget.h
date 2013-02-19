@@ -480,12 +480,15 @@ class _gadget
 		const _length& getWidth() const { return this->width; }
 		
 		/**
-		 * Move the Gadget relatively to its current position
+		 * Set the gadgets position withing the parents dimensions
 		 */
-		void moveTo( _coord dX , _coord dY );
+		void moveTo( _coord x , _coord y )
+		{
+			this->moveRelative( x - this->x , y - this->y );
+		}
 		
 		/**
-		 * Relative moving fo the Gadget
+		 * Move the Gadget relatively to its current position
 		 */
 		void moveRelative( _s16 deltaX , _s16 deltaY );
 		

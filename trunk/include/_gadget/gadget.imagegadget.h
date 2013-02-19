@@ -15,7 +15,13 @@ class _imagegadget : public _gadget {
 		
 	public:
 		
-		void setImage( const _bitmap& img );
+		noinline void setImage( const _bitmap& img )
+		{
+			this->img = img;
+			this->setHeight( img.getHeight() );
+			this->setWidth( img.getWidth() );
+			this->bubbleRefresh( true );
+		}
 		
 		const _bitmap& getImage(){ return this->img; }
 		

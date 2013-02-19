@@ -20,8 +20,9 @@ class _rect{
 				
 			public:
 				
-				//! Ctor
+				//! Ctors
 				_area( initializer_list<_rect> rects ) : t_rects( rects ) {}
+				_area( _rect rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( rc ); }
 				_area(){}
 					
 				//! Push-back Aliases
@@ -43,11 +44,12 @@ class _rect{
 				_area& reduce( const _rect& dim );
 				
 				//! Relativate all t_rects
-				_area toRelative( const _coord absX , const _coord absY ){
+				_area& toRelative( const _coord absX , const _coord absY ){
 					for( _rect &rc : t_rects )
 						rc.toRelative( absX , absY );
 					return *this;
 				}
+				_area& toRelative( const _2s32 position ){ this->toRelative( position.first , position.second ); return *this; }
 				
 				//! Clip all t_rects to the supplied one
 				_area& clipToIntersect( const _rect limits );
@@ -109,16 +111,10 @@ class _rect{
 		
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
+		_rect& toRelative( const _2s32 position ){ this->toRelative( position.first , position.second ); return *this; }
 		_rect& toRelative( const _coord absX , const _coord absY )
 		{
 			this->x -= absX; this->y -= absY; return *this;
-		}
-		
-		//! Make the Rect Relative to a specific position
-		//! absX and absY specify to what the resulting rectangle will be relative
-		_rect relativeVersion( const _coord absX , const _coord absY ) const
-		{
-			return _rect( this->x - absX, this->y - absY , this->width , this->height );
 		}
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one

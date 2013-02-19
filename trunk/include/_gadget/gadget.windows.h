@@ -45,6 +45,15 @@ class _windows : public _gadgetScreen
 		//! Maximized Dimensions for (mainly) _windows, that are maximized
 		_rect getMaximizedDimensions(){ return _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 ); }
 		
+		//! Check if the startMenu is opened
+		bool isStartMenuOpened(){ return this->startButton->isMenuOpened(); }
+		
+		//! Open the startMenu
+		void openStartMenu(){ this->startButton->openStartMenu(); }
+		
+		//! Open the startMenu
+		void closeStartMenu(){ this->startButton->closeStartMenu(); }
+		
 		//! Constructor with style
 		_windows( _u8 bgId , _style style = _style() );
 		

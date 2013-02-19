@@ -785,28 +785,54 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 	
 	if( h <= 0 || w <= 0 )
 		return;
-		
-	_int j = w;
 	
+	// Compute Difference between the bitmap-Width and the actual copy-Width
 	int dataDiff = data.getWidth() - w;
 	int myDiff = this->width - w;
 	
-	while(true)
-	{
-		unsigned short val = *copyData++;
-		if( val >> 15 ) // Check if this pixel of the data is non-transparent
-			*myData = val;
-		myData++;
-		
-		if( !--j )
-		{
-			copyData += dataDiff;
-			myData += myDiff;
-			j = w;
-			if( !--h )
-				break;
+	#define COPY \
+		{ \
+		_pixel val = *copyData++; \
+		if( val >> 15 ) \
+			*myData = val; \
+		myData++; \
 		}
+	
+	// Add 15 to the width since we are dividing by 16
+	w+= 15;
+	
+	int n = w / 16;
+	int rem = w % 16;
+	
+	//! Duff, B*tch!
+	while( h-- )
+	{
+		int tN = n;
+		switch( rem ) {
+			case 15: do{COPY;
+			case 14:	COPY;
+			case 13:	COPY;
+			case 12:	COPY;
+			case 11:	COPY;
+			case 10:	COPY;
+			case 9:		COPY;
+			case 8:		COPY;
+			case 7:		COPY;
+			case 6:		COPY;
+			case 5:		COPY;
+			case 4:		COPY;
+			case 3:		COPY;
+			case 2:		COPY;
+			case 1:		COPY;
+			case 0:		COPY;
+				} while(--tN > 0);
+		}
+		// Advance both pointers so that they are at the next line
+		copyData += dataDiff;
+		myData += myDiff;
 	}
+	
+	#undef COPY
 }
 
 void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )

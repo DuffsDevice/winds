@@ -8,7 +8,9 @@
 
 class _bitmapPort{
 	
-	public:
+	friend class _gadget;
+	
+	private:
 		
 		//! A list of Clipping-Rects
 		_area clippingRects;
@@ -35,7 +37,7 @@ class _bitmapPort{
 		 * Add a Clipping Rect to the list
 		 * @param cR the Clipping-Rect to add
 		 */
-		void addClippingRects( _rect cR ){	
+		void addClippingRect( _rect cR ){	
 			clippingRects.add( cR );
 		}
 		
