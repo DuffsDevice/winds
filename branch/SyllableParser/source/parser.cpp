@@ -1,6 +1,7 @@
 #include "parser.h"
+#include <stdio.h>
 
-const char* findFirstOf( const char* text , const char* match )
+const char* syllableParser::findFirstOf( const char* text , const char* match )
 {
 	if( !*text )
 		return nullptr;
@@ -18,7 +19,7 @@ const char* findFirstOf( const char* text , const char* match )
 	return nullptr;
 }
 
-std::list<int> parser::parseTextInternal( const char* txt )
+std::list<int> syllableParser::parseTextInternal( const char* txt , const char* end )
 {
 	const char* startPos;
 	const char* endPos;
@@ -31,7 +32,7 @@ std::list<int> parser::parseTextInternal( const char* txt )
 	{
 		const char* nextEnd = findFirstOf( curPos , " ,\n(){}[]-#*+?!/&$" );
 		
-		if( nextEnd ) // Fond something
+		if( nextEnd && nextEnd <= end ) // Fond something
 		{
 			startPos = curPos;
 			endPos = nextEnd;
@@ -40,75 +41,21 @@ std::list<int> parser::parseTextInternal( const char* txt )
 		else
 		{
 			startPos = curPos;
-			endPos = startPos + strlen( startPos );
+			endPos = end;
 		}
 		
 		if( startPos < endPos )
-		{			
-			std::list<int>&& lst = parseWordInternal( startPos , endPos );
+		{
+			std::list<int> lst = parseWordInternal( startPos , endPos );
 			for( int i : lst )
 				ret.push_back( startPos - txt + i );
 		}
 		
 		curPos = nextEnd;
 		
-	}while( *curPos );
+	}while( *curPos && curPos <= end );
 	
 	return ret;
-}
-
-unsigned char parser::isDiphtong( const char* txt )
-{
-	const char* curExpr = diphthongs;
-	
-	do
-	{
-		unsigned int i = strlen( curExpr );
-		
-		if( strncmp( curExpr , txt , i ) == 0 )
-			return i;
-		
-		curExpr += i + 1;
-		
-	}while( *curExpr );
-	
-	return 0;
-}
-
-unsigned char parser::isCombinStart( const char* txt )
-{
-	const char* curExpr = combinStart;
-	
-	do
-	{
-		unsigned int i = strlen( curExpr );
-		
-		if( strncmp( curExpr , txt , i ) == 0 )
-			return i;
-		
-		curExpr += i + 1;
-		
-	}while( *curExpr );
-	
-	return 0;
-}
-
-unsigned char parser::isCombinVocalBefore( const char* txt )
-{
-	const char* curExpr = combinVocalBefore;
-	
-	do
-	{
-		unsigned int i = strlen( curExpr );
-		
-		if( strncmp( curExpr , txt , i ) == 0 )
-			return i;
-		
-		curExpr += i + 1;
-		
-	}while( *curExpr );
-	
-	return 0;
 }
 
 enum parserState
@@ -119,7 +66,7 @@ enum parserState
 	, Pend
 };
 
-std::list<int> parser::parseWordInternal( const char* startPos , const char* endPos )
+std::list<int> syllableParser::parseWordInternal( const char* startPos , const char* endPos )
 {
 	parserState state = Pstart;
 	
@@ -226,13 +173,14 @@ std::list<int> parser::parseWordInternal( const char* startPos , const char* end
 				else
 				{
 					state = Pstart;
-					printf("Error: %d\n",curPos - startPos);
+					//printf("Error: %d\n",curPos - startPos);
 					size = 1;
 				}
 				curPos += size;
 				break;
 			}
 			default:
+			case Pend:
 				return positions;
 		}
 	}
