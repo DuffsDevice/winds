@@ -15,10 +15,10 @@ _lua_button::_lua_button( lua_State* L )
 }
 
 //! setAutoSelect
-int _lua_button::setAutoSelect( lua_State* L ){	((_button*)_lua_gadget::gadget)->setAutoSelect( luaL_checkboolean( L , 1 ) ); return 0; };
+int _lua_button::setAutoSelect( lua_State* L ){	_lua_interface_input::input->setAutoSelect( luaL_checkboolean( L , 1 ) ); return 0; };
 
 //! isAutoSelect
-int _lua_button::isAutoSelect( lua_State* L ){ lua_pushboolean( L , ((_button*)_lua_gadget::gadget)->isAutoSelect() ); return 1; }
+int _lua_button::isAutoSelect( lua_State* L ){ lua_pushboolean( L , _lua_interface_input::input->isAutoSelect() ); return 1; }
 
 //! Lua-button
 const char _lua_button::className[] = "_button";

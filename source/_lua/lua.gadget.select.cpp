@@ -37,33 +37,29 @@ _lua_select::_lua_select( lua_State* L ) :
 
 //! addIndex
 int _lua_select::addIndex( lua_State* L ){
-	_select* s = ((_select*)_lua_gadget::gadget);
-	s->getList()[ luaL_checkint( L , 1 ) ] = luaL_checkstring( L , 2 );
-	s->refreshList();
+	_lua_interface_input::input->getList()[ luaL_checkint( L , 1 ) ] = luaL_checkstring( L , 2 );
+	_lua_interface_input::input->refreshList();
 	return 0;
 }
 
 //! removeIndex
 int _lua_select::removeIndex( lua_State* L ){
-	_select* s = ((_select*)_lua_gadget::gadget);
-	s->getList().erase( luaL_checkint( L , 1 ) );
-	s->refreshList();
+	_lua_interface_input::input->getList().erase( luaL_checkint( L , 1 ) );
+	_lua_interface_input::input->refreshList();
 	return 0;
 }
 
 //! clearList
 int _lua_select::clearList( lua_State* L ){
-	_select* s = ((_select*)_lua_gadget::gadget);
-	s->getList().clear();
-	s->refreshList();
+	_lua_interface_input::input->getList().clear();
+	_lua_interface_input::input->refreshList();
 	return 0;
 }
 
 //! getList
-int _lua_select::getList( lua_State* L ){
-	_select* s = ((_select*)_lua_gadget::gadget);
-	
-	_contextMenuEntryList& list = s->getList();
+int _lua_select::getList( lua_State* L )
+{
+	_contextMenuEntryList& list = _lua_interface_input::input->getList();
 	
 	lua_createtable( L , list.size() , 0 );
 	
@@ -86,11 +82,10 @@ int _lua_select::getList( lua_State* L ){
 }
 
 //! setList
-int _lua_select::setList( lua_State* L ){
-	_select* s = ((_select*)_lua_gadget::gadget);
-	
+int _lua_select::setList( lua_State* L )
+{
 	// Receive list and clear it
-	_contextMenuEntryList& list = s->getList();
+	_contextMenuEntryList& list = _lua_interface_input::input->getList();
 	list.clear();
 	
 	int i = 0;
@@ -107,14 +102,14 @@ int _lua_select::setList( lua_State* L ){
 		lua_pop( L , 1 );
 	}
 	
-	s->refreshList();
+	_lua_interface_input::input->refreshList();
 	
 	return 1;
 }
 
 //! getEntryFromNumber
 int _lua_select::getEntryFromNumber( lua_State* L ){
-	lua_pushstring( L , ((_select*)_lua_gadget::gadget)->getList()[luaL_checkint(L,1)].c_str() );
+	lua_pushstring( L , _lua_interface_input::input->getList()[luaL_checkint(L,1)].c_str() );
 	return 1;
 }
 

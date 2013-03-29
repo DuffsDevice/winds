@@ -62,7 +62,7 @@ _startupScreen::_startupScreen( _u8 bgId , _style style ) :
 	this->addChild( winLogoGadget );
 	
 	//this->addChild( new _counter( 10 , 10 , 30 , true , 0 , 59 , 0 ) );
-	//this->addChild( new _scrollArea( 100 , 70 , 1 , 1 ,"/NDS",_style()) );
+	//this->addChild( new _scrollArea( 100 , 70 , 1 , 1 ) );
 	//this->addChild( new _button( 0 ,0 , "Hello") );
 	
 	//! Refresh me

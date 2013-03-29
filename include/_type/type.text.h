@@ -14,7 +14,7 @@ class _text
 		string			text;
 		
 		//! Font to be used for output
-		_font*			font;
+		const _font*	font;
 		_u8				fontSize;
 		
 		//! Array containing start indexes of each wrapped line
@@ -41,7 +41,7 @@ class _text
 		 * @param text A string that this text object should wrap around.
 		 * @param width The pixel width at which the text should wrap.
 		 */
-		_text( _font* font , _u8 fontSize , _length width , string text ) :
+		_text( const _font* font , _u8 fontSize , _length width , string text ) :
 			text( text )
 			, font( font )
 			, fontSize( fontSize )
@@ -54,7 +54,7 @@ class _text
 		 * Set Font to use
 		 * @param font a pointer to the font that should be used
 		 */
-		void setFont( _font* font , _u8 fontSize = 0 )
+		void setFont( const _font* font , _u8 fontSize = 0 )
 		{
 			if( this->font == font && ( this->fontSize == fontSize || !fontSize ) )
 				return;
@@ -78,7 +78,7 @@ class _text
 		/**
 		 * Get the used font
 		 */
-		_font* getFont(){ return this->font; }
+		const _font* getFont(){ return this->font; }
 		
 		
 		/**
@@ -169,7 +169,7 @@ class _text
 		{
 			if( index == this->text.length() )
 				return this->linePositions.size()-2;
-			return count_if( this->linePositions.begin() , this->linePositions.end() , [=]( _u32 val ){ return val <= index; } ) - 1;
+			return count_if( this->linePositions.begin() , this->linePositions.end() , [=]( _u32 val ){ return ( val & (~(1<<31)) ) <= index; } ) - 1;
 		}
 		
 		/**
@@ -179,7 +179,7 @@ class _text
 		{
 			if( lineNo == this->getLineCount() )
 				return this->text.length() + 1;
-			return this->linePositions[lineNo];
+			return this->linePositions[lineNo] & (~(1<<31));
 		}
 		
 		/**
@@ -190,12 +190,15 @@ class _text
 		**/
 		string getLineContent( _u32 lineNo )
 		{
-			int start = this->linePositions[lineNo];
+			int start = this->linePositions[lineNo] & (~(1<<31));
 			int end = this->linePositions[lineNo+1];
-			return this->text.substr(
+			string s = this->text.substr(
 				start // startIndex
-				, end - start // length
+				, ( end & (~(1<<31)) ) - start // length
 			);
+			if( end & (1<<31) )
+				s += "-";
+			return s;
 		}
 };
 

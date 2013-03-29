@@ -49,8 +49,8 @@ class _styleAttr
 		static const _pStyleAttr<( 1 << 2 )> 		destroyable;
 		static const _nStyleAttr<( 1 << 2 )> 		notDestroyable;
 		
-		static const _pStyleAttr<( 1 << 3 )> 		editable;
-		static const _nStyleAttr<( 1 << 3 )> 		notEditable;
+		static const _pStyleAttr<( 1 << 3 )> 		clickable;
+		static const _nStyleAttr<( 1 << 3 )> 		notClickable;
 		
 		static const _pStyleAttr<( 1 << 4 )> 		minimizeable;
 		static const _nStyleAttr<( 1 << 4 )> 		notMinimizeable;
@@ -78,6 +78,9 @@ class _styleAttr
 		
 		static const _pStyleAttr<( 1 << 12 )> 		draggable;
 		static const _nStyleAttr<( 1 << 12 )> 		notDraggable;
+		
+		static const _pStyleAttr<( 1 << 13 )> 		focusBringsFront;
+		static const _nStyleAttr<( 1 << 13 )> 		focusNoAction;
 };
 
 //! Predefine class
@@ -96,7 +99,7 @@ struct _style
 			bool	resizeableX : 1;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
 			bool	resizeableY : 1;
 			bool	destroyable : 1;		/** Is destroyable?  */
-			bool	editable : 1;			/** Is editable?  */
+			bool	clickable : 1;			/** Is clickable?  */
 			bool	minimizeable : 1;		/** A Link is added to the taskbar */
 			bool	canTakeFocus : 1;		/** Can blur the focused gadget */
 			bool	canLooseFocus : 1;		/** Can be blurred */
@@ -106,7 +109,7 @@ struct _style
 			bool	doubleClickable : 1; 	/** Tells, whether the gadget wants to handle doubleclicks */
 			bool	keyboardRequest : 1; 	/** If this is 'true', the keyboard will pop up and will throw key-events onto this gadget */
 			bool	draggable : 1; 			/** Is this gadget draggable? */
-			_u8		unused : 3; 			/** Used by _gadget::blinkHandler */
+			bool	focusBringsFront : 1;	/** Whether a focus leads to bringing the gadget to the front of adjacent children **/
 		} __attribute__(( packed )) ;
 	};
 	

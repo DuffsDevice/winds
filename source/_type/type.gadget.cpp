@@ -2,20 +2,21 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-_map<_eventType,_callback*> _gadget::defaultEventHandlers = {
-	{ mouseDown , new _staticCallback( &_gadget::gadgetMouseHandler ) },
-	{ mouseRepeat , new _staticCallback( &_gadget::gadgetMouseHandler ) },
-	{ mouseUp , new _staticCallback( &_gadget::gadgetMouseHandler ) },
-	{ mouseClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
-	{ mouseDoubleClick , new _staticCallback( &_gadget::gadgetMouseHandler ) },
-	{ refresh , new _staticCallback( &_gadget::gadgetRefreshHandler ) },
-	{ dragStart , new _staticCallback( &_gadget::gadgetDragHandler ) },
-	{ dragStop , new _staticCallback( &_gadget::gadgetDragHandler ) },
-	{ dragging , new _staticCallback( &_gadget::gadgetDragHandler ) },
-	{ keyDown , new _staticCallback( &_gadget::gadgetKeyHandler ) },
-	{ keyUp , new _staticCallback( &_gadget::gadgetKeyHandler ) },
-	{ keyClick , new _staticCallback( &_gadget::gadgetKeyHandler ) },
-	{ keyRepeat , new _staticCallback( &_gadget::gadgetKeyHandler ) },
+_array<_callback*,13>
+	_gadget::defaultEventHandlers = {
+	/* refresh */ new _staticCallback( &_gadget::gadgetRefreshHandler ) ,
+	/* mouseClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDoubleClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDown */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseUp */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseRepeat */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* keyDown */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyUp */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyClick */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyRepeat */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* dragStart */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragStop */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragging */ new _staticCallback( &_gadget::gadgetDragHandler )
 };
 
 
@@ -153,13 +154,13 @@ bool _gadget::removeCallback( _gadget* g )
 
 void _gadget::blinkHandler()
 {
-	if( this->style.unused > 5 )
+	if( this->counter > 5 )
 	{
 		_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
-		this->style.unused = 0;
+		this->counter = 0;
 		return;
 	}
-	if( this->style.unused++ % 2 )
+	if( this->counter++ % 2 )
 		this->show();
 	else
 		this->hide();
@@ -170,6 +171,21 @@ void _gadget::blink()
 {
 	_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
 	_system::executeTimer( new _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
+}
+
+
+bool _gadget::hasClickRights() const {
+	if( this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus )
+		return true;
+	
+	_gadget* cur = this->parent;
+	while( cur )
+	{
+		if( !cur->style.canReceiveFocus ||  !this->style.canTakeFocus )
+			return true;
+		cur = cur->parent;
+	}
+	return false;
 }
 
 
@@ -188,12 +204,11 @@ bool _gadget::blurChild()
 		
 		this->focusedChild->focused = false;
 		
-		_gadget* t = focusedChild;
-		
-		this->focusedChild = nullptr;
-		
 		// trigger onBlur - event
-		t->handleEvent( onBlur );
+		this->focusedChild->triggerEvent( onBlur );
+		
+		// Rest focusedChild
+		this->focusedChild = nullptr;
 		
 		// Remove current focus
 		_system::_currentFocus_ = nullptr;
@@ -232,7 +247,7 @@ bool _gadget::focusChild( _gadget* child )
 	if( !child->style.canReceiveFocus )
 		return false;
 	
-	// Check if i can get focus, if not my child can't get focus either
+	// Check if i can get focus, if not, my child can't too
 	if( !this->focus() )
 		return false;
 	
@@ -244,30 +259,34 @@ bool _gadget::focusChild( _gadget* child )
 	focusedChild = child;
 	
 	// Trigger the 'onfocus'-event
-	child->handleEvent( onFocus );
+	child->triggerEvent( onFocus );
 	
-	// Move to front of children
-	if( child->isEnhanced() )
+	// Move the child to the front of all children that it will be seen
+	if( child->style.focusBringsFront )
 	{
-		// no moving neccesary?
-		if( child == this->enhancedChildren.front() )
-			return true;
+		// Move to front of children
+		if( child->isEnhanced() )
+		{
+			// no moving neccesary?
+			if( child == this->enhancedChildren.front() )
+				return true;
+			
+			this->enhancedChildren.remove( child );
+			this->enhancedChildren.push_front( child );
+		}
+		else
+		{
+			// no moving neccesary?
+			if( child == this->children.front() )
+				return true;
+			
+			this->children.remove( child );
+			this->children.push_front( child );
+		}
 		
-		this->enhancedChildren.remove( child );
-		this->enhancedChildren.push_front( child );
+		// Refresh the Gadget so that it appears at the front
+		child->bubbleRefresh();
 	}
-	else
-	{
-		// no moving neccesary?
-		if( child == this->children.front() )
-			return true;
-		
-		this->children.remove( child );
-		this->children.push_front( child );
-	}
-	
-	// Refresh the Gadget so that it appears at the front
-	child->bubbleRefresh();
 	
 	return true;
 }
@@ -279,10 +298,7 @@ void _gadget::registerEventHandler( _eventType type , _callback* handler )
 	_callback* &data = this->eventHandlers[type]; // reference to pointer
 	
 	if( data )
-	{
-		// Delete Current Event-Handler
-		delete data;
-	}
+		delete data; // Delete Current Event-Handler
 	
 	// Insert The Handler
 	data = handler;
@@ -304,11 +320,13 @@ void _gadget::unregisterEventHandler( _eventType type ){
 
 _callbackReturn _gadget::handleEventDefault( _event&& event )
 {
+	_s32 posInArray = _s32( event.getType() ) - 2;
+	
 	// Use the default EventHandler if available
-	if( _gadget::defaultEventHandlers.count( event.getType() ) )
+	if( posInArray >= 0 && _u32(posInArray) < defaultEventHandlers.size() )
 	{
 		event.setGadget( this );
-		return (*defaultEventHandlers[ event.getType() ])( event );
+		return (*defaultEventHandlers[ posInArray ])( event );
 	}
 	
 	// If the Handler for the given event doesn't exist, return 
@@ -329,6 +347,17 @@ _callbackReturn _gadget::handleEvent( _event&& event )
 	
 	// If the Handler doesn't exist, return the default Handler
 	return this->handleEventDefault( event );
+}
+
+_callbackReturn _gadget::handleEventUser( _event&& event )
+{
+	// Check for Normal Event Handlers
+	if( this->eventHandlers.count( event.getType() ) )
+	{
+		event.setGadget( this );
+		return (*eventHandlers[ event.getType() ])( event );
+	}
+	return not_handled;
 }
 
 
@@ -420,9 +449,9 @@ void _gadget::removeChildren( bool remove )
 		return;
 	
 	if( remove )
-		this->children.remove_if( this->removeDeleteCallback );
+		this->children.remove_if( _gadget::removeDeleteCallback );
 	else
-		this->children.remove_if( this->removeCallback );
+		this->children.remove_if( _gadget::removeCallback );
 	
 	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
@@ -435,9 +464,9 @@ void _gadget::removeEnhancedChildren( bool remove )
 		return;
 	
 	if( remove )
-		this->enhancedChildren.remove_if( this->removeDeleteCallback );
+		this->enhancedChildren.remove_if( _gadget::removeDeleteCallback );
 	else
-		this->enhancedChildren.remove_if( this->removeCallback );
+		this->enhancedChildren.remove_if( _gadget::removeCallback );
 	
 	//! Signalize there are no children left!
 	this->bubbleRefresh( true );
@@ -464,15 +493,16 @@ void _gadget::removeChild( _gadget* child )
 		_system::_currentFocus_ = nullptr;
 	}
 	
+	// Erase the Connection on both sides
 	if( child->isEnhanced() )
 		this->enhancedChildren.remove( child );
 	else
 		this->children.remove( child );
 	
-	this->bubbleRefresh( true , _event::refreshEvent( { absDim } ) );
-	
-	// Erase the Connection on both sides
 	child->parent = nullptr;
+	
+	// Make it appear deleted
+	this->bubbleRefresh( true , _event::refreshEvent( { absDim } ) );
 }
 
 
@@ -489,6 +519,7 @@ void _gadget::addChild( _gadget* child )
 	child->enhanced = false;
 	child->hidden = false;
 	child->parent = this;
+	child->dragged = false;
 	
 	//! Paint it on my bmp
 	child->bubbleRefresh( true );
@@ -508,6 +539,7 @@ void _gadget::addEnhancedChild( _gadget* child )
 	child->enhanced = true;
 	child->hidden = false;
 	child->parent = this;
+	child->dragged = false;
 	
 	//! Paint it on my bmp
 	child->bubbleRefresh( true );
@@ -669,8 +701,8 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 	_gadget* that = event.getGadget();
 	
 	// Break up, if there are no children to paint!
-	if( !that->children.size() && that->enhancedChildren.size() )
-		goto refreshEnd;	
+	if( that->children.empty() && that->enhancedChildren.empty() )
+		goto refreshEnd;
 	
 	{ //! New Section
 		
@@ -682,7 +714,6 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
 		else
 			bP.addClippingRects( _rect( 0 , 0 , that->width , that->height ) );
-		
 		
 		//! Draw All enhanced Children
 		for( _gadget* gadget : that->enhancedChildren )
@@ -779,19 +810,17 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 		event.setDestination( mouseContain );
 		
 		// Absolute Position to Relative Position
-		if( mouseContain->isEnhanced() )
+		event.posX -= mouseContain->getX();
+		event.posY -= mouseContain->getY();
+		
+		if( !mouseContain->isEnhanced() )
 		{
-			event.posX -= mouseContain->getX();
-			event.posY -= mouseContain->getY();
-		}
-		else
-		{
-			event.posX -= that->padLeft + mouseContain->getX();
-			event.posY -= that->padTop + mouseContain->getY();
+			event.posX -= that->padLeft;
+			event.posY -= that->padTop;
 		}
 		
-		// It doesn't make sense to focus a child of some _gadget that can't be focused
-		if( event.getType() == mouseDown )
+		//! Do not try to focus the child of a gadget that can't even be clicked!
+		if( event.getType() == mouseDown && mouseContain->isClickable() )
 		{
 			// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
 			_system::_lastClickedGadget_ = mouseContain;
@@ -799,11 +828,21 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			// Try to focus the child
 			that->focusChild( mouseContain );
 		}
+		/** 
+		 * @note The previous 'if'-block had to go first to allow a gadget to be focused.
+		 *       This wouldn't be possible if it was written inside the 'if'-block underneath,
+		 *       because 'hasClickRigths' checks if the gadget is focused
+		 */
 		
 		// Trigger the Event if the gadget is now focused or if it never will have any focus,
-		// because then it wouldn't make any sence to forward the event!
 		if( mouseContain->hasClickRights() )
-		{	
+		{
+			// If a child is clicked, abort
+			_callbackReturn ret = mouseContain->handleEventDefault( event );
+			
+			if( ret != not_handled )
+				return ret;
+			
 			if( event.getType() == mouseDown )
 			{
 				mouseContain->pressed = true;
@@ -814,7 +853,11 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				mouseContain->pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
 			}
-			return mouseContain->handleEvent( event );
+			
+			// Call the user-registered event-handler
+			mouseContain->handleEventUser( event );
+			
+			return handled;
 		}
 		
 		return not_handled;
@@ -857,54 +900,56 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 		// Rewrite Destination
 		event.setDestination( mouseContain );
 		
-		// Absolute Position to Relative Position
-		if( mouseContain->isEnhanced() )
-		{
-			event.posX -= mouseContain->getX();
-			event.posY -= mouseContain->getY();
-		}
-		else
-		{
-			event.posX -= that->padLeft + mouseContain->getX();
-			event.posY -= that->padTop + mouseContain->getY();
-		}
+		// Make the touch position relative to the Child
+		event.posX -= mouseContain->getX();
+		event.posY -= mouseContain->getY();
 		
-		// Trigger the Event
-		if( mouseContain->isDraggable() )
+		// if the child is not enhanced
+		if( !mouseContain->isEnhanced() )
 		{
-			mouseContain->dragged = true;
-			mouseContain->handleEvent( event );
+			event.posX -= that->padLeft;
+			event.posY -= that->padTop;
 		}
-		else
-			mouseContain->handleEventDefault( event );
 		
 		// Set Gadget, which receives all other drag Events until dragStop is called
 		dragTemp = mouseContain;
 		
-		return handled;		
+		_callbackReturn ret = mouseContain->handleEventDefault( event );
 		
+		// Mark the gadget as 'dragged' (but only if no child wants to be dragged -> check that first)
+		if(
+			ret == not_handled
+			&& mouseContain->isDraggable()
+			&& mouseContain->isClickable()
+			&& mouseContain->handleEventUser( event ) != prevent_default
+		)
+			mouseContain->dragged = true;
+		else
+			return not_handled;
+		
+		return handled;
 	}
+	
 	if( !dragTemp )
-		return not_handled;// 'dragging'- or 'dragStop'-events without an object doesn't make sence
+		return prevent_default; // 'dragging'- or 'dragStop'-events without an object doesn't make sence
 	
 	// Make touch positions relative to parent
-	if( dragTemp->isEnhanced() )
+	event.posX -= that->getX();
+	event.posY -= that->getY();
+	
+	// if the child is not enhanced
+	if( !dragTemp->isEnhanced() )
 	{
-		event.posX -= that->getX();
-		event.posY -= that->getY();
+		event.posX -= that->padLeft;
+		event.posY -= that->padTop;
 	}
-	else
-	{
-		event.posX -= that->padLeft + that->getX();
-		event.posY -= that->padTop + that->getY();
-	}
+	
+	// Rewrite Destination
+	event.setDestination( dragTemp );
 	
 	// 'dragStop'
 	if( event.getType() == dragStop )
 	{
-		// Rewrite Destination
-		event.setDestination( dragTemp );
-		
 		if( dragTemp->dragged )
 		{
 			// Rewrite Destination and trigger the Event
@@ -914,7 +959,7 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 			dragTemp->dragged = false;
 		}
 		else
-			dragTemp->handleEventDefault( event );
+			dragTemp->handleEventDefault( event ); // Forward the dragStop-event to the children
 		
 		if( dragTemp->pressed )
 		{
@@ -940,16 +985,17 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 		dragTemp->triggerEvent( onMouseLeave );
 	}
 	
-	// Rewrite Destination
-	event.setDestination( dragTemp );
-	
 	if( dragTemp->dragged )
-	{			
+	{
 		// Rewrite Destination andTrigger the Event
-		dragTemp->handleEvent( event );
+		if( dragTemp->handleEvent( event ) == prevent_default )
+		{
+			dragTemp->dragged = false; // If the dragged gadget no longer wants to be dragged
+			return prevent_default; // Force the upper gadget also to stop dragging
+		}
 	}
 	else
-		dragTemp->handleEventDefault( event );
+		return dragTemp->handleEventDefault( event );
 	
 	return handled;
 }

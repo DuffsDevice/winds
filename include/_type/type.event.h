@@ -8,12 +8,12 @@
 /**
  * Specifies how the event was handled
  */
-enum _callbackReturn : _u8
+enum _callbackReturn : _s8
 {
-	not_handled, // If returned on dragStart -> dragging will be prevented
-	handled,
-	use_default,
-	use_normal,
+	not_handled = 0, // If returned on dragStart -> dragging will be prevented
+	handled = 1,
+	use_default = 2,
+	prevent_default = -1,
 };
 
 /**
@@ -28,7 +28,7 @@ enum _eventType : _u8
 	mouseDoubleClick,
 	mouseDown,
 	mouseUp,
-	mouseRepeat, // Fired if a key is kept held down
+	mouseRepeat, // Fired if the stylus is kept held down
 	keyDown,
 	keyUp,
 	keyClick,
@@ -36,7 +36,6 @@ enum _eventType : _u8
 	dragStart,
 	dragStop,
 	dragging,
-	close,
 	onResize,
 	onAction,
 	onChange,
@@ -58,8 +57,8 @@ enum _eventType : _u8
 //typedef string _eventType;
 
 // Predefines
-extern _map<_callbackReturn,string> eventReturnType2string;
-extern _map<string,_callbackReturn> string2eventReturnType;
+extern _map<_callbackReturn,string> callbackReturn2string;
+extern _map<string,_callbackReturn> string2callbackReturn;
 
 
 extern _map<_eventType,string> eventType2string;

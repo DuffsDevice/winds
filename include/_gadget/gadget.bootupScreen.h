@@ -17,7 +17,7 @@ class _bootupScreen : public _gadgetScreen
 		
 	public:
 	
-		_bootupScreen( _u8 bgId , _style style = _style() );
+		_bootupScreen( _u8 bgId , _style style = _style() | _styleAttr::canNotReceiveFocus  );
 		
 		~_bootupScreen();
 	

@@ -15,16 +15,16 @@ void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 	this->damagedRects.clearRects();
 }
 
-_map<string,_callbackReturn> string2eventReturnType = {
+_map<string,_callbackReturn> string2callbackReturn = {
 	{ "handled" , handled },
-	{ "use_normal" , use_normal },
+	{ "prevent_default" , prevent_default },
 	{ "use_default" , use_default },
 	{ "not_handled" , not_handled },
 };
 
-_map<_callbackReturn,string> eventReturnType2string = {
+_map<_callbackReturn,string> callbackReturn2string = {
 	{ handled , "handled" },
-	{ use_normal , "use_normal" },
+	{ prevent_default , "prevent_default" },
 	{ use_default , "use_default" },
 	{ not_handled , "not_handled" },
 };
@@ -45,7 +45,6 @@ _map<string,_eventType> string2eventType = {
 	{ "dragStart" , dragStart },
 	{ "dragStop" , dragStop },
 	{ "dragging" , dragging },
-	{ "close" , close },
 	{ "onResize" , onResize },
 	{ "onAction" , onAction },
 	{ "onChange" , onChange },
@@ -79,7 +78,6 @@ _map<_eventType,string> eventType2string = {
 	{ dragStart , "dragStart" },
 	{ dragStop , "dragStop" },
 	{ dragging , "dragging" },
-	{ close , "close" },
 	{ onResize , "onResize" },
 	{ onAction , "onAction" },
 	{ onChange , "onChange" },

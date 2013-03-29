@@ -11,17 +11,17 @@ class _button : public _gadget {
 		bool autoSelect;
 		
 		//! String to be displayed
-		string 	strValue;
-		_font* 	font;
-		_pixel	fontColor;
-		_u8		fontSize;
+		string 			strValue;
+		const _font*	font;
+		_pixel			fontColor;
+		_u8				fontSize;
 		
 		//! Alignment
-		_align	align;
-		_valign vAlign;
+		_align			align;
+		_valign 		vAlign;
 		
-		_u8 	computeW;
-		_u8 	computeH;
+		_u8 			computeW;
+		_u8 			computeH;
 		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
@@ -58,10 +58,10 @@ class _button : public _gadget {
 		bool isAutoSelect();
 		
 		//! Set Text Font
-		void setFont( _font* ft );
+		void setFont( const _font* ft );
 		
 		//! Get Text Font
-		_font* getFont(){ return this->font; }
+		const _font* getFont(){ return this->font; }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }

@@ -98,14 +98,18 @@ _windows::_windows( _u8 bgId , _style style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::windows , style )
 {
 	//! Set Padding
-	this->setPadding( _padding( 0 , 0 , 0 , 9 ) );
+	this->setPadding( _padding( 0 , 0 , 0 , 10 ) );
 	
 	//! Add startButton
 	this->startButton = new _windowsStartButton( 0 , SCREEN_HEIGHT - 10 );
 	
+	//! Add TaskInfo
+	this->taskInfo = new _windowsTaskInfo( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
+	
 	//! Allocate new _desktop and bind the _startButton
 	this->addChild( this->desktop = new _desktop() );
 	this->addEnhancedChild( this->startButton );
+	this->addEnhancedChild( this->taskInfo );
 	
 	//! Register Event-Handlers
 	this->registerEventHandler( refresh , new _staticCallback( &_windows::refreshHandler ) );

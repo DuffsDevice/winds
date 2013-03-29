@@ -15,11 +15,12 @@ void PROG_Explorer::main( _cmdArgs& args )
 	if( !args["path"].empty() )
 		this->path = args["path"];
 	
-	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable ) );
+	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable | _styleAttr::doubleClickable ) );
 	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path , _style::storeHost( this ) );
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
 	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );
 	
+	this->window->registerEventHandler( onResize , new _staticCallback( PROG_Explorer::handler ) );
 	this->fileview->registerEventHandler( onChange , new _staticCallback( PROG_Explorer::handler ) );
 	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
 	
@@ -56,6 +57,15 @@ _callbackReturn PROG_Explorer::handler( _event event )
 	else if( that->getType() == _gadgetType::fileview )
 	{
 		prog->addressbar->setStrValue( ((_fileview*)that)->getPath() );
+	}
+	else if( that->getType() == _gadgetType::window )
+	{
+		prog->fileview->setWidth( that->getWidth() - 2 );
+		prog->fileview->setHeight( that->getHeight() - 23 );
+		prog->addressbar->setWidth( that->getWidth() - 14 );
+		prog->submitbutton->setX( that->getWidth() - 12 );
+		
+		return ((_window*)that)->resizeHandler( event );
 	}
 	
 	return handled;

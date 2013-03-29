@@ -1,16 +1,6 @@
 #include "_type/type.text.h"
 #include "_type/type.system.h"
-
-bool charisof( char c , char* txt )
-{
-	while( *txt )
-	{
-		if( *txt++ == c )
-			return true;
-	}
-	
-	return false;
-}
+#include "_library/syllable.h"
 
 void _text::wrap()
 {
@@ -25,27 +15,20 @@ void _text::wrap()
 	_u32	lastBreakIndex = 0;
 	
 	// Characters after which to break
-	static char breakChars[] = " ,.-:;?!+=/" "\\";
+	static char breakChars[] = " ,.-:;?!+=/" "\\\n";
 	
 	// Push start
 	this->linePositions.push_back( 0 );
 	
-	for( const char ch : this->text )
+	const char* iteratorText = this->text.c_str();
+	const char* iteratorTextEnd = iteratorText + strlen( iteratorText );
+	
+	for( const char* ch = iteratorText ; ch < iteratorTextEnd ; ch++ )
 	{
 		idx++;
 		
-		// advance the current lineWidth by the width of the char to display
-		if( this->font->isCharSupported( ch ) )
-		{
-			_u16 w = this->font->getCharacterWidth( ch ) + 1;
-			lineWidth += w;
-			lastWordWidth += w;
-		}
-		
-		//printf("%c -> %d , %d\n",ch,lineWidth,lastWordWidth);
-		
 		// Check if ch is a character where we possibbly could break
-		if( ch == '\n' )
+		if( *ch == '\n' )
 		{
 			this->linePositions.push_back( idx );
 			
@@ -54,26 +37,44 @@ void _text::wrap()
 			lastWordWidth = 0;
 			lastBreakIndex = idx;
 		}
-		else if( charisof( ch , breakChars ) )
+		else if( charisof( *ch , breakChars ) )
 		{
 			lastBreakIndex = idx;
 			lastWordWidth = 0;
-			//printf("BreakIndex %d!\n",lastBreakIndex);
+		}
+		else if( this->font->isCharSupported( *ch ) )
+		// advance the current lineWidth by the width of the char to display
+		{
+			_u16 w = this->font->getCharacterWidth( *ch ) + 1;
+			lineWidth += w;
+			lastWordWidth += w;
 		}
 		
 		if( lineWidth >= this->width )
 		{
-			if( lastBreakIndex != this->linePositions.back() )
-			{
-				//printf("Overflow %d!\n",lastBreakIndex);
-				this->linePositions.push_back( lastBreakIndex );
-			}
+			const char* text = iteratorText + lastBreakIndex;
+			const char* end = text + idx - lastBreakIndex + 1;
+			list<int> lst = syllableParser::parseText( text , end );
 			
-			// Reset current line width since we added a line break
-			lineWidth = lastWordWidth;
+			if( lst.size() )
+			{
+				this->linePositions.push_back( ( 1 << 31 ) | ( lastBreakIndex + lst.back() + 1 ) );
+				
+				// Reset current line width since we added a line break
+				string str = text + lst.back();
+				str.resize( end - text - lst.back() );
+				lineWidth = this->font->getStringWidth( str );
+				
+				lastWordWidth = 0;
+			}
+			else 
+			{
+				if( lastBreakIndex != this->linePositions.back() )
+					this->linePositions.push_back( lastBreakIndex );
+				
+				lineWidth = lastWordWidth;
+			}
 		}
-		
-		//_system::submit();
 	}
 	
 	this->linePositions.push_back( idx ); // Push end

@@ -1,6 +1,29 @@
 #include "_gadget/gadget.textarea.h"
-#include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
+
+_2s32 _textarea::getFontPosition( string str , bool noScroll )
+{
+	_coord x = 0;
+	_coord y = _textarea::borderY;
+	
+	switch( this->getAlign() )
+	{
+		case _align::center:
+			x = ( this->getWidth() - ( this->scrollBar->isHidden() ? 0 : 9 ) - this->text.getFont()->getStringWidth( str ) + 1 ) >> 1;
+			break;
+		case _align::left:
+			x = _textarea::borderX;
+			break;
+		case _align::right:
+			x = this->getWidth() - ( this->scrollBar->isHidden() ? 0 : 9 ) - this->text.getFont()->getStringWidth( str ) - _textarea::borderX;
+			break;
+	}
+	
+	if( !noScroll )
+		y -= this->scrollBar->getValue();
+	
+	return _2s32( x , y );
+}
 
 _callbackReturn _textarea::refreshHandler( _event event )
 {
@@ -24,9 +47,9 @@ _callbackReturn _textarea::refreshHandler( _event event )
 	// If there is no font it doesn't make sense to paint
 	if( lineCount )
 	{
-		_coord y = _textarea::borderY;
+		_coord y = that->getFontPosition( "" ).second;
 		
-		_font* ft = that->text.getFont();
+		const _font* ft = that->text.getFont();
 		
 		_u8 fontHeight = ft->getHeight();
 		
@@ -40,7 +63,7 @@ _callbackReturn _textarea::refreshHandler( _event event )
 			string val = that->text.getLineContent(i);
 			
 			// X-Position
-			_coord x = _textarea::getFontPosition( that->align , val , ft , myW );
+			_coord x = that->getFontPosition( val ).first;
 			
 			// Draw Text...
 			bP.drawString( x , y , ft , val , that->color );
@@ -67,6 +90,23 @@ _callbackReturn _textarea::refreshHandler( _event event )
 	return use_default;
 }
 
+void _textarea::setInternalCursor( _u32 cursor )
+{
+	_u32 newCursor = min( cursor , this->text.getText().length() + 1 );
+	newCursor = max( newCursor , _u32(1) );
+	
+	if( newCursor != this->cursor )
+	{
+		this->cursor = newCursor;
+		
+		_s64 requiredHeight = this->text.getLineContainingCharIndex( this->cursor - 1 ) * ( this->text.getFont()->getHeight() + 1 );
+		
+		this->scrollBar->setValue( max( min( requiredHeight , (_s64)this->scrollBar->getValue() ) , requiredHeight + this->text.getFont()->getHeight() - this->getHeight() + _textarea::borderY * 2 + 1 ) );
+		
+		this->bubbleRefresh( true );
+	}
+}
+
 _callbackReturn _textarea::keyHandler( _event event )
 {
 	_textarea* that = event.getGadget<_textarea>();
@@ -80,19 +120,16 @@ _callbackReturn _textarea::keyHandler( _event event )
 			}
 			// Refresh
 			that->text.remove( that->cursor - 2 );
-			that->cursor--;
+			
 			that->triggerEvent( _event( onChange ) );
-			that->bubbleRefresh( true );
+			that->handleEvent( _event( onResize ) );
+			that->setInternalCursor( that->cursor - 1 );
 			break;
 		case DSWindows::KEY_LEFT:
-			that->cursor > 1 && that->cursor--;
-			// Refresh
-			that->bubbleRefresh( true );
+			that->setInternalCursor( that->cursor - 1 );
 			break;
 		case DSWindows::KEY_RIGHT:
-			that->cursor > 0 && that->text.getText().length() - that->cursor + 1 > 0 && that->cursor++;
-			// Refresh
-			that->bubbleRefresh( true );
+			that->setInternalCursor( that->cursor + 1 );
 			break;
 		case DSWindows::KEY_DOWN:
 		case DSWindows::KEY_UP:
@@ -107,7 +144,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 					line2Number = min( that->text.getLineCount() - 1 , lineOfCursor + 1 );
 				
 				//! Temporary font-object
-				_font* ft = that->text.getFont();
+				const _font* ft = that->text.getFont();
 				
 				if( line2Number == lineOfCursor || !ft || !ft->valid() ) // We are at the limits of the textarea
 					break; // abort
@@ -116,7 +153,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 				string line = that->text.getLineContent( lineOfCursor );
 				
 				//! Get starting X-Coordinate!
-				_coord xPos = _textarea::getFontPosition( that->align , line , ft , that->getWidth() );
+				_coord xPos = that->getFontPosition( line ).first;
 				
 				//! Cut the string at the cursor and add the size of the line to the current x-start to get the cursor position!
 				line.resize( that->cursor - that->text.getLineStart( lineOfCursor ) - 1 );
@@ -127,7 +164,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 				string line2 = that->text.getLineContent( line2Number );
 				
 				//! Compute Staring x_coordinate
-				_coord x = _textarea::getFontPosition( that->align , line2 , ft , that->getWidth() ); // Current temporary x-advance
+				_coord x = that->getFontPosition( line2 ).first; // Current temporary x-advance
 				_u32 idx = 1; // Current iterator index
 				
 				for( _u8 charWidth ; idx < line2.length() ; idx++ )
@@ -138,9 +175,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 					x += charWidth + 1;
 				}
 				
-				that->cursor = that->text.getLineStart( line2Number ) + idx;
-				
-				that->bubbleRefresh( true );
+				that->setInternalCursor( that->text.getLineStart( line2Number ) + idx );
 			}
 		default:
 			if( DSWindows::isHardwareKey( event.getKeyCode() ) 
@@ -149,9 +184,10 @@ _callbackReturn _textarea::keyHandler( _event event )
 				break;
 			// Refresh
 			that->text.insert( that->cursor - 1 , event.getKeyCode() );
-			that->cursor++;
+			
 			that->triggerEvent( _event( onChange ) );
-			that->bubbleRefresh( true );
+			that->handleEvent( _event( onResize ) );
+			that->setInternalCursor( that->cursor + 1 );
 			break;
 	}
 	
@@ -160,7 +196,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 
 _callbackReturn _textarea::generalHandler( _event event )
 {
-	_gadget* that = event.getGadget();
+	_textarea* that = event.getGadget<_textarea>();
 	
 	switch( event.getType() )
 	{
@@ -173,8 +209,19 @@ _callbackReturn _textarea::generalHandler( _event event )
 			that->bubbleRefresh( true ); // refresh
 			break;
 		case onResize:
-			event.getGadget<_textarea>()->text.setWidth( that->getWidth() - _textarea::borderX * 2 );
+		{
+			_length neededHeight = ( _textarea::borderY * 2 ) + that->text.getLineCount() * ( that->text.getFont()->getHeight() + 1 );
+			if( neededHeight <= that->getHeight() )
+				that->scrollBar->hide();
+			else
+				that->scrollBar->show();
+			event.getGadget<_textarea>()->text.setWidth( that->getWidth() - _textarea::borderX * 2 - ( that->scrollBar->isHidden() ? 0 : 9 ) );
+			that->scrollBar->setX( that->getWidth() - 9 /* x-coord */ );
+			that->scrollBar->setHeight( that->getHeight() - 2 /* height of the scrollbar */	);
+			that->scrollBar->setLength( that->getHeight() /* Visible Part of the canvas */ );
+			that->scrollBar->setLength2( neededHeight /* Height of the inner canvas */ );
 			break;
+		}
 		default:
 			break;
 	}
@@ -196,7 +243,7 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	}
 	
 	//! Temporary font-object
-	_font* ft = that->text.getFont();
+	const _font* ft = that->text.getFont();
 	
 	if( !ft || !ft->valid() ) // No valid font?
 		return handled; // abort
@@ -204,13 +251,13 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	_u8 ftHeight = ft->getHeight();
 	
 	//! Compute Line Number
-	_u32 lineNumber = max( 0 , ( posY - _textarea::borderY ) / ( ftHeight + 1 ) );
+	_u32 lineNumber = max( 0 , ( posY - that->getFontPosition("").second ) / ( ftHeight + 1 ) );
 	lineNumber = min( lineNumber , that->text.getLineCount() - 1 );
 	
 	// Get X-Position of the cursor
 	string line = that->text.getLineContent( lineNumber );
 	
-	_coord x = _textarea::getFontPosition( that->align , line , ft , that->getWidth() ); // Current temporary x-advance
+	_coord x = that->getFontPosition( line ).first; // Current temporary x-advance
 	_u32 idx = 0; // Current iterator index
 	
 	for( _u8 charWidth ; idx < line.length() ; idx++ )
@@ -221,9 +268,7 @@ _callbackReturn _textarea::mouseHandler( _event event )
 		x += charWidth + 1;
 	}
 	
-	that->cursor = min( that->text.getLineStart( lineNumber + 1 ) , that->text.getLineStart( lineNumber ) + idx + 1 );
-	
-	that->bubbleRefresh( true );
+	that->setInternalCursor( min( that->text.getLineStart( lineNumber + 1 ) , that->text.getLineStart( lineNumber ) + idx + 1 ) );
 	
 	return handled;
 }
@@ -234,7 +279,7 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, text( _system::getFont() , _system::_runtimeAttributes_->defaultFontSize , width - _textarea::borderX * 2 , value )
 	, cursor( 0 )
-	, align( _align::left )
+	, align( _align::center )
 {
 	// Regsiter Handling Functions for events
 	this->registerEventHandler( onFocus , new _staticCallback( &_textarea::generalHandler ) );
@@ -246,6 +291,31 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	this->registerEventHandler( keyRepeat , new _staticCallback( &_textarea::keyHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_textarea::mouseHandler ) );
 	
+	this->scrollBar =
+		new _scrollBar(
+			width - 9 , /* x-coord */
+			1 , /* y-coordinate */
+			height - 2 , /* height of the scrollbar */
+			height - 2 , /* Visible Part of the canvas */
+			this->text.getLineCount() * ( this->text.getFont()->getHeight() + 1 ) , /* Height of the inner canvas */
+			_dimension::vertical
+			, 0 /* value */
+			, _styleAttr() | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus
+		)
+	;
+	
+	this->addChild( this->scrollBar );
+	this->scrollBar->registerEventHandler( onScroll , new _gadget::eventForwardRefreshGadget(this) );
+	this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
+	
+	//! Set the right parameters for the Scrollbar
+	this->handleEvent( onResize );
+	
 	// Refresh Myself
 	this->refreshBitmap();
+}
+
+_textarea::~_textarea()
+{
+	delete this->scrollBar;
 }

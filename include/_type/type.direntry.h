@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <list>
 #include <sys/dir.h>
-using namespace std;
 
 #include "fat.h"
 #include "_type/type.h"
+#include "_type/type.shortstring.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.mime.h"
 
@@ -59,22 +59,23 @@ class _direntry{
 		};
 		
 		//! Stat buffer to fill with stat(...)
-		struct stat stat_buf;
+		struct stat			stat_buf;
 		
 		//! Flag indicating if the file exists
-		bool		exists;
+		bool				exists;
 		
-		static int	fatInited;
+		//! Falg indicating if the FAT32-System is ready to be used
+		static int			fatInited;
 		
 		//! My Filename
-		string		filename;
-		string		name;
-		string		extension;
+		string				filename;
+		string				name;
+		sstring				extension;
 		
-		_mimeType 	mimeType;
+		_mimeType 			mimeType;
 		
 		//! The Mode the file was opened by
-		_direntryMode mode;
+		_direntryMode		mode;
 		
 		//! Get PARTITION and DIR_ENTRY
 		bool getEntry( PARTITION* &partition , DIR_ENTRY* &dirEntry );
@@ -177,8 +178,8 @@ class _direntry{
 		virtual _u32 getSize();
 		
 		
-		//! Execute That File
-		virtual bool execute();
+		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
+		virtual bool execute( _cmdArgs args = _cmdArgs() );
 		
 		
 		//! Get File-Image
@@ -207,6 +208,19 @@ class _direntry{
 		
 		//! To rename the file
 		virtual bool rename( string newName );
+		
+		
+		//! Replace associated filename-patterns
+		static string replaceASSOCS( string&& path ){
+			replaceASSOCS( path );
+			return path;
+		}
+		static string replaceASSOCS( const string& path ){
+			string path2 = path;
+			replaceASSOCS( path2 );
+			return path2;
+		}
+		static void replaceASSOCS( string& path );
 };
 
 extern _direntry _diskRoot_;

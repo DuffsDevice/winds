@@ -3,8 +3,10 @@
 #include "_type/type.system.h"
 #include "_type/type.callback.derives.h"
 
+
 _pixel paletteBlue[4] = { RGB255( 94 , 119 , 238 ) , RGB255( 125 , 145 , 210 ) , RGB255( 94 , 119 , 238 ) , RGB255( 44 , 62 , 160 ) };
 _pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) , RGB255( 46 , 211 , 49 ) , RGB255( 121 , 227 , 123 ) };
+
 
 _callbackReturn _progressbar::refreshHandler( _event event ){
 	
@@ -71,6 +73,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 	return handled;
 }
 
+
 void _progressbar::step()
 {
 	if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
@@ -78,13 +81,29 @@ void _progressbar::step()
 	bubbleRefresh( true );
 }
 
-_progressbar::_progressbar( _length width , _length height , _coord x , _coord y  , bool type , _style style ) :
+
+void _progressbar::setBarType( bool type )
+{
+	if( type != this->type )
+	{
+		this->type = type;
+		if( type )
+		{
+			_system::terminateTimer( _classCallback( this , &_progressbar::step ) );
+			this->bubbleRefresh( true );
+		}
+		else
+			_system::executeTimer( new _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
+	}
+}
+
+_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style style ) :
 	_gadget( _gadgetType::progressbar , width , 8 , x , y , style )
-	, type( type )
+	, type( !type )
 	, value( 70 )
 	, blue( false )
-{
-	_system::executeTimer( new _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
+{	
+	this->setBarType( type );
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_progressbar::refreshHandler ) );
@@ -93,9 +112,6 @@ _progressbar::_progressbar( _length width , _length height , _coord x , _coord y
 	this->refreshBitmap();
 }
 
-_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style style ) : 
-	_progressbar( width , 8 , x , y , type , style )
-{ }
 
 _progressbar::~_progressbar(){
 	_system::terminateTimer( _classCallback( this , &_progressbar::step ) );

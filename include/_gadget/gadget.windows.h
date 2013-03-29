@@ -10,6 +10,7 @@
 #include "_gadget/gadget.desktop.h"
 #include "_gadget/gadget.windows.startbutton.h"
 #include "_gadget/gadget.windows.taskbutton.h"
+#include "_gadget/gadget.windows.taskinfo.h"
 
 class _windows : public _gadgetScreen
 {
@@ -17,6 +18,7 @@ class _windows : public _gadgetScreen
 		
 		//! Start-Button
 		_windowsStartButton*		startButton;
+		_windowsTaskInfo*			taskInfo;
 		
 		_list<_windowsTaskButton*>	tasks;
 		

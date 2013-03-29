@@ -58,6 +58,9 @@ class _font{
 		//! draw a Character!
 		virtual _u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		
+		
+		//! Receive a font, created from file
+		static const _font* fromFile( string path );
 };
 
 #include "_type/type.bitmap.h"

@@ -26,10 +26,12 @@ class _keyboardButton : public _button {
 		void setKey( _key key );
 		
 		//! Ctor
-		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style = _style() );
+		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y 
+			, string title , _style style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus );
 		
 		//! Default Ctor
-		_keyboardButton( _key key , _coord x , _coord y , string text , _style style = _style() );
+		_keyboardButton( _key key , _coord x , _coord y , string text
+			, _style style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus );
 };
 
 #endif

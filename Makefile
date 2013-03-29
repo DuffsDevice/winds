@@ -39,7 +39,7 @@ CFLAGS	:=	-g -Wall -O2\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -Wno-sign-compare
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=c++11 -O3 -Wall -Wextra -Wno-unused-parameter -save-temps
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -fshort-enums -Wno-parentheses -std=c++11 -O3 -Wall -Wextra -Wno-unused-parameter -save-temps
 ## C++0x:   -std=gnu++0x;
 
 ASFLAGS	:=	-g $(ARCH)
@@ -48,7 +48,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:= -lfat -lNanoJpeg -lLua -lnds9 -ldswifi9
+LIBS	:= -lfat -lNanoJpeg -lLua -lnds9 -lmm9 -ldswifi9 -lSyllableParser
  
  
 #---------------------------------------------------------------------------------

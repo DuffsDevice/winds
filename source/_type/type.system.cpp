@@ -1,5 +1,7 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_type/type.binfile.h"
+#include "_type/type.sound.h"
 #include "_gadget/gadget.windows.h"
 #include "func.memory.h"
 #include <time.h>
@@ -11,14 +13,6 @@
 #include <nds/interrupts.h>
 #include <dswifi9.h>
 #include <fat.h>
-
-#include "strings_bin.h"
-
-//! Resources we need
-#include "_resource/FONT_ArialBlack13.h"
-#include "_resource/FONT_CourierNew10.h"
-#include "_resource/FONT_Tahoma7.h"
-#include "_resource/PROG_Explorer.h"
 
 #define transfer (*(__TransferRegion volatile *)(0x02FFF000))
 
@@ -201,6 +195,7 @@ void _system::vblHandler()
 	_system::processEvents();
 	_system::runAnimations();
 	_system::runTimers();
+	//_systemController::controllerVBL(); // is called in _systemController::main
 }
 
 //static int z = 0;
@@ -219,12 +214,12 @@ void _system::processEvents()
 	{
 		gadget = event.getDestination();
 		
-		//int t = cpuGetTiming();
+		int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( event );
-		//printf("%d\n",cpuGetTiming()-t);
+		printf("%d\n",cpuGetTiming()-t);
 	}
 
 	// Erase all Events
@@ -443,8 +438,11 @@ void _system::start()
 	// System-Attributes
 	// ------------------------------------------------------------------------
 		
-		//! random Random() generator
+		//! init rand() generator
 		srand( time(NULL) );
+		
+		//! enable Sound
+		_sound::enable();
 		
 		//! Set Memory-Alloc-Error-Handler
 		set_new_handler( &_system::newHandler );
@@ -478,9 +476,7 @@ void _system::start()
 		_system::_registry_ = new _registry("%WINDIR%/windows.reg");
 		
 		// Localization of Strings
-		string str = (const char*)strings_bin;
-		str.resize( strings_bin_size );
-		_system::_localizationTable_ = new _ini( str );
+		_system::_localizationTable_ = new _ini( _binfile( "%SYSTEM%/localizedstrings.ini" ) );
 		_system::_localizationTable_->read();
 	
 	// -----------------------------------------------
@@ -493,9 +489,9 @@ void _system::start()
 	// Fonts
 	// -----------------------------------------------
 	
-		_system::_fonts_["ArialBlack13"] = new FONT_ArialBlack13();
-		_system::_fonts_["CourierNew10"] = new FONT_CourierNew10();
-		_system::_fonts_["Tahoma7"] = new FONT_Tahoma7();
+		_system::_fonts_["ArialBlack13"]	= _font::fromFile( "%SYSTEM%/arialblack13.ttf");
+		_system::_fonts_["CourierNew10"]	= _font::fromFile( "%SYSTEM%/couriernew10.ttf");
+		_system::_fonts_["Tahoma7"]			= _font::fromFile( "%SYSTEM%/tahoma7.ttf");
 }
 
 _language _system::getLanguage()
@@ -598,11 +594,11 @@ void _system::main()
 	}
 }
 
-_program* _system::getBuiltInProgram( string qualifiedName ){
-	if( qualifiedName == "explorer.exe" ){
-		return new PROG_Explorer();
-	}
-	return nullptr;
+bool _system::executeCommand( string cmd ){
+	//if( qualifiedName == "explorer.exe" ){
+	//	return new PROG_Explorer();
+	//}
+	//return nullptr;
 }
 
 void _system::shutDown(){
@@ -626,7 +622,7 @@ bool 							_system::_sleeping_ = false;
 _list<_animation*>				_system::_animations_;
 _list<_pair<const _callback*,
 		_callbackData>>			_system::_timers_;
-_map<string,_font*>				_system::_fonts_;
+_map<string,const _font*>				_system::_fonts_;
 _ini*							_system::_localizationTable_;
 string							_system::_curLanguageShortcut_;
 _list<_pair<_program*,_cmdArgs>>_system::_programs_;

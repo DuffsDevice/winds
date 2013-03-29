@@ -6,29 +6,26 @@
 
 class _label : public _gadget {
 	
-	protected:
-	
-		friend class _button;
-		friend class _checkbox;
+	private:
 		
 		//! Farbe der Schrift
-		_pixel 	color;
-		_pixel 	bgColor;
+		_pixel			color;
+		_pixel			bgColor;
 		
-		_u8 	computeW;
-		_u8 	computeH;
+		_u8 			computeW;
+		_u8 			computeH;
 		
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
-		_font* 	font;
-		_u8		fontSize;
+		const _font* 	font;
+		_u8				fontSize;
 		
 		//! Alignment
-		_align	align;
-		_valign vAlign;
+		_align			align;
+		_valign 		vAlign;
 		
 		//! String to be displayed
-		string 	strValue;
+		string 			strValue;
 		
 		//! Method to cumpute Space-Requirements
 		void computeSize();
@@ -57,7 +54,7 @@ class _label : public _gadget {
 		_pixel getBgColor(){ return this->bgColor; }
 		
 		//! Get Text Font
-		_font* getFont(){ return this->font; }
+		const _font* getFont(){ return this->font; }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }
@@ -75,16 +72,16 @@ class _label : public _gadget {
 		_valign getVAlign(){ return this->vAlign; }
 		
 		//! Set Text Font
-		void setFont( _font* ft );
+		void setFont( const _font* ft );
 		
 		//! Set FontSize
 		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
-		_label( _length width , _length height , _coord x , _coord y , string value , _style style = _style() );
+		_label( _length width , _length height , _coord x , _coord y , string value , _style style = _style() | _styleAttr::notClickable );
 		
 		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string text , _style style = _style() );
+		_label( _coord x , _coord y , string text , _style style = _style() | _styleAttr::notClickable );
 		
 		// Methods to set Size
 		void setWidth( _u8 width );

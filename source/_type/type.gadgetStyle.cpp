@@ -24,7 +24,7 @@ _styleAttr::_styleAttr()
 	sum = _styleAttr(0)
 		| resizeable
 		| destroyable
-		| editable
+		| clickable
 		| notMinimizeable
 		| canTakeFocus
 		| canLooseFocus
@@ -34,6 +34,7 @@ _styleAttr::_styleAttr()
 		| doubleClickable
 		| noKeyboardRequest
 		| notDraggable
+		| focusBringsFront
 	;
 }
 
@@ -85,11 +86,11 @@ void applyString2style( _style& style , string input )
 		else if( line == "notDestroyable" )
 			attr |= _styleAttr::notDestroyable;
 		
-		// Editable
-		else if( line == "editable" )
-			attr |= _styleAttr::editable;
-		else if( line == "notEditable" )
-			attr |= _styleAttr::notEditable;
+		// Clickable
+		else if( line == "clickable" )
+			attr |= _styleAttr::clickable;
+		else if( line == "notClickable" )
+			attr |= _styleAttr::notClickable;
 		
 		// Minimizeable
 		else if( line == "minimizeable" )

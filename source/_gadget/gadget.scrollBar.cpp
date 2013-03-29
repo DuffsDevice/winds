@@ -50,13 +50,12 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	refreshHandleWidth();
 	
 	// Add Buttons
-	this->addChild( this->dragHandle );
-	this->addChild( this->higherHandle );
-	this->addChild( this->lowerHandle );
+	this->addEnhancedChild( this->dragHandle );
+	this->addEnhancedChild( this->higherHandle );
+	this->addEnhancedChild( this->lowerHandle );
 	
 	this->refreshBitmap();
 }
-
 
 
 _scrollBar::~_scrollBar()
@@ -65,7 +64,6 @@ _scrollBar::~_scrollBar()
 	delete this->higherHandle;
 	delete this->lowerHandle;
 }
-
 
 
 int _scrollBar::setValue( int val )
@@ -87,7 +85,6 @@ int _scrollBar::setValue( int val )
 }
 
 
-
 void _scrollBar::setValue( _u32 val , bool ease )
 {
 	if( ease )
@@ -100,7 +97,6 @@ void _scrollBar::setValue( _u32 val , bool ease )
 	else
 		this->setValue( val );
 }
-
 
 
 _callbackReturn _scrollBar::dragHandler( _event event )
@@ -134,18 +130,16 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 }
 
 
-
 void _scrollBar::refreshHandleWidth()
 {
 	if( this->length >= this->length2 )
 	{
-		if( this->dim == _dimension::horizontal )
-			this->dragHandle->setWidth( max( 0 , int( this->dimensions.width - 15 ) ) );
-		else
-			this->dragHandle->setHeight( max( 0 , int( this->dimensions.height - 15 ) ) );
+		this->dragHandle->hide();
 		return;
 	}
-		
+	
+	this->dragHandle->show();
+	
 	int length = div32( this->length << 8 , this->length2 );
 	
 	if( this->dim == _dimension::horizontal )
@@ -165,7 +159,6 @@ void _scrollBar::refreshHandleWidth()
 	else
 		this->dragHandle->setHeight( length );
 }
-
 
 
 _callbackReturn _scrollBar::clickHandler( _event event ) {
@@ -203,7 +196,6 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 }
 
 
-
 _callbackReturn _scrollBar::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -228,7 +220,6 @@ _callbackReturn _scrollBar::refreshHandler( _event event )
 }
 
 
-
 _callbackReturn _scrollBar::resizeHandler( _event event ){
 	
 	_scrollBar* that = event.getGadget<_scrollBar>();
@@ -245,17 +236,15 @@ _callbackReturn _scrollBar::resizeHandler( _event event ){
 }
 
 
-
 void _scrollBar::refreshPosition()
 {
 	_u32 perc = div32( this->value << 8 , this->length2 );
 	
 	if( this->dim == _dimension::horizontal )
-		this->dragHandle->setX( 8 + ( perc * ( this->dimensions.width - 14 + this->cache ) >> 8 ) );
+		this->dragHandle->setX( 8 + ( ( perc * ( this->dimensions.width - 15 + this->cache ) + 16 ) >> 8 ) );
 	else
-		this->dragHandle->setY( 8 + ( perc * ( this->dimensions.height - 14 + this->cache ) >> 8 ) );
+		this->dragHandle->setY( 8 + ( ( perc * ( this->dimensions.height - 15 + this->cache ) + 16 ) >> 8 ) );
 }
-
 
 
 void _scrollBar::setLength( _u32 value )
@@ -265,9 +254,8 @@ void _scrollBar::setLength( _u32 value )
 	
 	this->length = value;
 	refreshHandleWidth();
-	this->bubbleRefresh( true );
+	this->setValue( max( _u32(0) , min( this->value , this->length - this->length2 ) ) );
 }
-
 
 
 void _scrollBar::setLength2( _u32 value )
@@ -277,4 +265,5 @@ void _scrollBar::setLength2( _u32 value )
 	
 	this->length2 = value;
 	refreshHandleWidth();
+	this->setValue( max( _u32(0) , min( this->value , this->length2 - this->length ) ) );
 }

@@ -27,13 +27,13 @@ namespace unistd{
 #include "_resource/BMP_JpegIcon.h"
 #include "_resource/BMP_ImageIcon.h"
 
-//#define FAT_EMULATOR
+#define FAT_EMULATOR
 
 
-#ifdef FAT_EMULATOR
-#include "program_bin.h"
-#include "image_bin.h"
-#endif
+//#ifdef FAT_EMULATOR
+//#include "program_bin.h"
+//#include "image_bin.h"
+//#endif
 
 int _direntry::fatInited = -1;
 
@@ -62,18 +62,14 @@ string dirname( string path )
 }
 
 
-string replaceASSOCS( string path )
+void _direntry::replaceASSOCS( string& path )
 {
 	for( auto& assoc : _system::_runtimeAttributes_->assocDirectories )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )
-		{
-		   path.erase( pos, assoc.first.size() );
-		   path.insert( pos, assoc.second );
-		}
+		   path.replace( pos, assoc.first.size() , assoc.second );
 	}
-	return path;
 }
 
 
@@ -87,10 +83,10 @@ bool _direntry::initFat()
 }
 
 
-_direntry::_direntry( string fn ) :
+_direntry::_direntry( const string fn ) :
 	fHandle( nullptr ) // same as dHandle
 	, filename( replaceASSOCS( fn ) )
-	, extension( "" )
+	, extension( nullptr )
 	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
 {
@@ -196,7 +192,7 @@ PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
 
 bool _direntry::flush()
 {
-	if( this->isDirectory() )
+	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return false;
 	
 	// Defines...
@@ -291,20 +287,20 @@ bool _direntry::create()
 }
 
 
-#ifdef FAT_EMULATOR
-#include <string.h>
-#endif
+//#ifdef FAT_EMULATOR
+//#include <string.h>
+//#endif
 
 
 bool _direntry::read( void* dest , _u32 size )
 {
-	#ifdef FAT_EMULATOR
-	if( !size )
-			size = this->getSize();
-	
-	memcpy( dest , program_bin , size );
-	return true;
-	#endif
+	//#ifdef FAT_EMULATOR
+	//if( !size )
+	//		size = this->getSize();
+	//
+	//memcpy( dest , program_bin , size );
+	//return true;
+	//#endif
 	
 	if( this->fatInited && !this->isDirectory() )
 	{
@@ -332,7 +328,7 @@ bool _direntry::read( void* dest , _u32 size )
 
 bool _direntry::readChild( string& child )
 {
-	if( this->fatInited && this->isDirectory() )
+	if( this->fatInited && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
 		if( this->mode == _direntryMode::closed && this->open() == false )
@@ -362,7 +358,7 @@ bool _direntry::readChild( string& child )
 
 bool _direntry::rewindChildren()
 {
-	if( this->fatInited && this->isDirectory() )
+	if( this->fatInited && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
 		if( this->mode == _direntryMode::closed )
@@ -380,8 +376,8 @@ bool _direntry::rewindChildren()
 
 
 bool _direntry::write( void* src , _u32 size )
-{	
-	if( !this->fatInited || this->isDirectory() )
+{
+	if( !this->fatInited || this->isDirectory())
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -401,8 +397,8 @@ bool _direntry::write( void* src , _u32 size )
 
 
 bool _direntry::writeString( string str )
-{	
-	if( !this->fatInited || this->isDirectory() )
+{
+	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -423,13 +419,13 @@ bool _direntry::writeString( string str )
 
 string _direntry::readString( _u32 size )
 {
-	#ifdef FAT_EMULATOR
-	string str = (const char*)program_bin;
-	return str;
-	#else
-	if( !this->fatInited || this->isDirectory() )
-		return "";
-	#endif
+	//#ifdef FAT_EMULATOR
+	//string str = (const char*)program_bin;
+	//return str;
+	//#else
+	//if( !this->fatInited || this->isDirectory() )
+	//	return "";
+	//#endif
 	
 	if( !size )
 		size = this->getSize();
@@ -467,9 +463,9 @@ string _direntry::readString( _u32 size )
 
 _u32 _direntry::getSize()
 {
-	#ifdef FAT_EMULATOR
-	return program_bin_size;
-	#endif
+	//#ifdef FAT_EMULATOR
+	//return program_bin_size;
+	//#endif
 	
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return 0;
@@ -516,13 +512,13 @@ string _direntry::getWorkingDirectory()
 }
 
 
-void _direntry::setWorkingDirectory( string dir )
+void _direntry::setWorkingDirectory( const string dir )
 {
-	unistd::chdir( replaceASSOCS(dir).c_str() );
+	unistd::chdir( _direntry::replaceASSOCS( dir ).c_str() );
 }
 
 
-bool _direntry::execute()
+bool _direntry::execute( _cmdArgs args )
 {
 	#ifndef FAT_EMULATOR
 	if( !this->fatInited )
@@ -535,21 +531,13 @@ bool _direntry::execute()
 	switch( this->mimeType )
 	{
 		case _mime::application_octet_stream:
-		case _mime::application_x_lua_bytecode:{
-			_program* prog = nullptr;
-			#ifdef FAT_EMULATOR
-				string pro = (const char*)program_bin;
-				pro.resize( program_bin_size );
-				prog = new _progLua( pro );
-			#else
-				prog = new _progLua( this->readString() );
-			#endif
-			prog->execute();
+		case _mime::application_x_lua_bytecode:
+		{
+			_program* prog = _program::fromFile( this->getFileName() );
+			if( prog )
+				prog->execute( args );
 			break;
 		}
-		case _mime::directory:
-			_system::getBuiltInProgram( "explorer.exe" )->execute({{"path",this->filename}});
-			break;
 		default:
 			return false;
 	}
@@ -637,7 +625,7 @@ bool _direntry::rename( string newName )
 		this->close();
 	
 	// Replace associative directory names
-	newName = replaceASSOCS( newName );
+	replaceASSOCS( newName );
 	
 	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 )
 	{

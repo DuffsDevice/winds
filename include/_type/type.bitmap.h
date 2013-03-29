@@ -472,7 +472,7 @@ class _bitmap
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
 		 */
-		_u16 drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
+		_u16 drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
 			// Check if font is valid
 			if( !font || !font->valid() ) 
@@ -480,7 +480,7 @@ class _bitmap
 			
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 		}
-		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
+		_u16 drawCharUnsafe( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
 			// Let the font do the hard work!
 			return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
@@ -495,7 +495,7 @@ class _bitmap
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize = 0 );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap

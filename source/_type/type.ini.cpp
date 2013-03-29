@@ -106,11 +106,3 @@ void _ini::write()
 		this->output += "\r\n";
 	}
 }
-
-_iniStructure& _ini::getMap(){
-	return this->array;
-}
-
-string& _ini::getString(){
-	return this->output;
-}

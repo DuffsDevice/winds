@@ -4,28 +4,34 @@
 
 #include "_type/type.gadget.h"
 
-class _textbox : public _gadget{
-	
-	public:
+class _textbox : public _gadget
+{
+	private:
+		
+		enum{
+			borderX = 3,
+			borderY = 2
+		};
 		
 		//! Farbe der Schrift
-		_pixel 	color;
-		_pixel 	bgColor;
+		_pixel 			color;
+		_pixel 			bgColor;
 		
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
-		_font* 	font;
-		_u8		fontSize;
+		const _font* 	font;
+		_u8				fontSize;
 		
 		//! Alignment
-		_align	align;
-		_valign vAlign;
+		_align			align;
+		_valign 		vAlign;
 		
 		//! String to be displayed
-		string 	strValue;
+		string 			strValue;
 		
 		//! Current cursor position
-		_length	cursor;
+		_u32			cursor;
+		_u32			scroll;
 		
 		static _callbackReturn refreshHandler( _event e );
 		static _callbackReturn focusHandler( _event e );
@@ -33,10 +39,13 @@ class _textbox : public _gadget{
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
-	public:
+		//! Set the Internal Cursor
+		void setInternalCursor( _u32 cursor );
 		
 		//! Internal, not private due to _userWrapper-class
-		static void getFontPosition( _coord& x , _coord& y , _textbox* box );
+		_2s32 getFontPosition( bool noScrollApplied = false );
+		
+	public:
 		
 		//! Set the Text to be displayed
 		void setStrValue( string val );
@@ -45,13 +54,13 @@ class _textbox : public _gadget{
 		string getStrValue(){ return this->strValue; }
 		
 		//! Get Text Font
-		_font* getFont(){ return this->font; }
+		const _font* getFont(){ return this->font; }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }
 		
 		//! Set Text Font
-		void setFont( _font* ft );
+		void setFont( const _font* ft );
 		
 		//! Set FontSize
 		void setFontSize( _u8 fontSize ){ if( this->fontSize != fontSize ){ this->fontSize = fontSize; this->bubbleRefresh( true ); } }
@@ -80,6 +89,11 @@ class _textbox : public _gadget{
 		//! Get Vertical Alignment of the Label
 		_valign getVAlign(){ return this->vAlign; }
 		
+		//! Set The cursor
+		void setCursor( _s64 cursor = -1 ){	this->setInternalCursor( max( _s64(0) , cursor + 1 ) ); }
+		
+		//! Get the current cursor (-1 equals no cursor)
+		_s64 getCursor(){ return _s64(this->cursor) - 1; }
 		
 		//! Ctor
 		_textbox( _coord x , _coord y , _length width , string value = "" , _style style = _style() );

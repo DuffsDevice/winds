@@ -13,6 +13,7 @@ _runtimeAttributes::_runtimeAttributes() :
 {
 	this->assocDirectories = {
 		{ "%WINDIR%" , "/windows" }
+		, { "%SYSTEM%" , "/windows/system" }
 		, { "%APPDATA%" , "/windows/appdata" }
 		, { "%USERS%" , "/windows/users" }
 	};

@@ -41,7 +41,7 @@ class _mimeType{
 	
 	private:
 	
-		_mime type;
+		_mime type : 5;
 		
 	public:
 	
@@ -64,5 +64,5 @@ class _mimeType{
 		operator _mime(){
 			return this->type;
 		}
-};
+} __attribute__(( packed ));
 #endif
