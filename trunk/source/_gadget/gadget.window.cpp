@@ -10,11 +10,11 @@ _callbackReturn _window::resizeHandler( _event event )
 	
 	int lblWidth = that->getWidth();
 	
-	//if( that->isDestroyable() )
-	//{
+	if( that->isDestroyable() )
+	{
 		that->button[0]->setX( that->getWidth() - 10 );
 		lblWidth -= 10;
-	//}
+	}
 	
 	if( that->isResizeable() )
 	{
@@ -177,23 +177,17 @@ _callbackReturn _window::dragHandler( _event event )
 	if( event.getType() == dragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the subject of Dragment :-)
-		if( event.getPosY() > 11 ){
-			return use_default;
-		}
+		if( event.getPosY() > 11 )
+			return prevent_default;
 		
 		// If y is on the windowbar, drag Me!
 		if( that->isMaximized() )
-			return not_handled; // Don't try to drag a window while its maximized
+			return prevent_default; // Don't try to drag a window while its maximized
 		
 		return handled;
 	}
 	else if( event.getType() == dragging )
 	{
-		// Check if there is a gadget who receives drag-events,
-		// If not, it has to be me who's dragged
-		if( that->isChildDragged() )
-			return use_default;
-		
 		/**
 		 * Handling of my 'dragment' !
 		 */
@@ -208,16 +202,17 @@ _callbackReturn _window::dragHandler( _event event )
 		// Return
 		return handled;
 	}
-	else if( event.getType() == dragStop )
+	else // mouseDoubleClick
 	{
-		// Check if there is a gadget who receives drag-events,
-		// If not, it has to be me who's dragged
-		if( that->isChildDragged() )
-			return use_default;
+		if( event.getPosY() > 11 || !that->isResizeable() )
+			return not_handled;
 		
-		// Return
-		return handled;
+		if( that->isMaximized() )
+			that->unMaximize();
+		else
+			that->maximize();
 	}
+	
 	
 	// Default return
 	return not_handled;
@@ -269,7 +264,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::draggable )
+	_gadget( _gadgetType::window , width , height , x , y , style )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	
@@ -306,11 +301,11 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->registerEventHandler( onFocus , new _staticCallback( &_window::refreshHandler ) );
 	this->registerEventHandler( dragging , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( dragStart , new _staticCallback( &_window::dragHandler ) );
-	this->registerEventHandler( dragStop , new _staticCallback( &_window::dragHandler ) );
 	this->registerEventHandler( onStyleSet , new _staticCallback( &_window::restyleHandler ) );
 	this->registerEventHandler( onMaximize , new _staticCallback( &_window::restyleHandler ) );
 	this->registerEventHandler( onUnMaximize , new _staticCallback( &_window::restyleHandler ) );
 	this->registerEventHandler( onResize , new _staticCallback( &_window::resizeHandler ) );
+	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_window::dragHandler ) );
 	
 	// Refresh Window-Buttons
 	this->triggerEvent( onStyleSet );

@@ -27,7 +27,7 @@ class _system{
 		static _list<_animation*>				_animations_;
 		static _list<_pair<const _callback*,
 						_callbackData>>			_timers_;
-		static _map<string,_font*>				_fonts_;
+		static _map<string,const _font*>		_fonts_;
 		static _list<_pair<_program*,_cmdArgs>>	_programs_;
 		static _direntry*						_debugFile_;
 		static _gadget*							_currentFocus_;
@@ -133,22 +133,23 @@ class _system{
 		//! Destructor
 		static void end();
 		
-		//! Get a Built in Program
-		static _program* getBuiltInProgram( string qualifiedName );
+		//! Execute the supplied command
+		static bool executeCommand( string cmd );
 		
 		//! Get Current Time (milliseconds since system startup)
 		static _tempTime getHighResTime();
 		
 		//! Get a Font by Name
-		static _font* getFont( string font )
+		static const _font* getFont( string font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
 				return _fonts_[ _runtimeAttributes_->defaultFont ];
 			
 			return _fonts_[font];
 		}
-		static _font* getFont(){ return _fonts_[ _runtimeAttributes_->defaultFont ]; }
+		static const _font* getFont(){ return _fonts_[ _runtimeAttributes_->defaultFont ]; }
 		
+		//! Get current Cpu-usage
 		static _u8 getCpuUsage(){ return _cpuUsageTemp_; }
 		
 		//! Obtain current Keys

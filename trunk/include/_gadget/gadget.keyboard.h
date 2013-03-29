@@ -92,7 +92,7 @@ class _keyboard : public _gadgetScreen {
 		void screenVBL();
 		
 		//! Ctor
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition = ( SCREEN_WIDTH - 40 ) , _style style = _style() );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition = ( SCREEN_WIDTH - 40 ) , _style style = _style() | _styleAttr::canNotTakeFocus );
 		
 		//! Dtor
 		~_keyboard();

@@ -92,8 +92,11 @@ class _gadget
 		_gadget*				parent;
 		
 		//! Event-Handlers
-		_eventHandlerMap		eventHandlers; 
-		static _eventHandlerMap	defaultEventHandlers; // Default event-handlers
+		_eventHandlerMap		eventHandlers;
+		
+		//! Default Event-Handlers
+		static _array<
+			_callback*,13>		defaultEventHandlers; // Default event-handlers (an array because of speed)
 		
 		/**
 		 * Standard/Default EventHandler that will handle
@@ -101,7 +104,7 @@ class _gadget
 		 */
 		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
 		static _callbackReturn	gadgetDragHandler( _event event ) ITCM_CODE ;
-		static _callbackReturn	gadgetMouseHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetMouseHandler( _event event );
 		static _callbackReturn	gadgetKeyHandler( _event event ){
 			event.getGadget()->parent && event.getGadget()->parent->handleEvent( event );
 			return not_handled;
@@ -209,6 +212,9 @@ class _gadget
 		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
 		bool isDestroyable() const { return this->style.destroyable; }
 		
+		/** Check whether this Gadget can be clicked (if true, which is default, it receives mouse-events) */
+		bool isClickable() const { return this->style.clickable; }
+		
 		/** true if resizeable in x- or y-direction */
 		bool isResizeable() const { return this->style.resizeableX || this->style.resizeableY; }
 		
@@ -273,7 +279,7 @@ class _gadget
 		/**
 		 * Set the style of that Gadget
 		 */
-		void setStyle( _style style ){ this->style = style; this->triggerEvent( _event( onStyleSet ) ); }
+		void setStyle( _style style ){ this->style = style; this->triggerEvent( onStyleSet ); }
 		
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
@@ -318,6 +324,12 @@ class _gadget
 		 */
 		_callbackReturn handleEvent( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
 		_callbackReturn handleEvent( const _event& event ){ return this->handleEvent( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEvent( e );'
+		
+		/**
+		 * Make The Gadget act onto a specific GadgetEvent by only using user-registered event-handler if available
+		 */
+		_callbackReturn handleEventUser( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
+		_callbackReturn handleEventUser( const _event& event ){ return this->handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEvent( e );'
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by only using the Default event-handler if available
@@ -545,26 +557,34 @@ class _gadget
 		 */
 		void setType( _gadgetType type ){ this->type = type; }
 	
+	
 	private: // More attributes!
 		
-		//! Internal
+		//! Internal callbacks for removeChildren( true/false )
 		static bool		removeDeleteCallback( _gadget* g );
 		static bool		removeCallback( _gadget* g );
-		_gadget*		getGadgetOfMouseDown( _coord posX , _coord posY ); // Used to receive the gadget that a mouse position is in
-		bool			hasClickRights() const {
-			return this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus;
-		} // Determine whether a gadget can currently be clicked either because it has focus or because it cannot receive focus anytime
+		
+		//! // Used to receive the gadget that a mouse position is in
+		_gadget*		getGadgetOfMouseDown( _coord posX , _coord posY );
+		
+		//! Determine whether a gadget can currently be clicked either because it has focus or because it cannot receive focus at all
+		bool			hasClickRights() const ;
 		
 		//! Let the gadget blink! This is used if anything can't loose focus
 		void			blinkHandler(); 
 		
-		//! _gadget::dragHandler uses this 
-		_gadget*		dragTemp;
+		//! _gadget::dragHandler and
+		//! _gadget::blinkHandler use this
+		union{
+			_gadget*	dragTemp;
+			int			counter;
+		};
 		
 		//! Type of the Gadget
 		_gadgetType 	type;
 		
-		union // State
+		//! State
+		union 
 		{
 			_u8 state; // used to reset everything quickly
 			struct{

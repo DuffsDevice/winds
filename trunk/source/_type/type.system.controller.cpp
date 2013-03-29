@@ -4,55 +4,64 @@
 // NDS Interrupts
 #include <nds/interrupts.h>
 
+void _systemController::controllerVBL()
+{
+	if( !dirty )
+		return;
+	
+	irqDisable( IRQ_VBLANK ); // Enter critical Section
+	
+	// Fade down Screen
+	_system::fadeMainScreen( false );
+	
+	// Set start
+	start:
+	
+	if( _systemController::scenario != nullptr )
+	{
+		delete _systemController::scenario;
+		_systemController::scenario = nullptr;
+	}
+	
+	_systemController::dirty = false;
+	
+	// Create new state
+	switch( _systemController::state )
+	{
+		case _systemState::bootup:
+			_systemController::scenario = new _scBootup();
+			break;
+		case _systemState::login:
+			_systemController::scenario = new _scLogin();
+			break;
+		case _systemState::setup:
+			_systemController::scenario = new _scSetup();
+			break;
+		case _systemState::desktop:
+			_systemController::scenario = new _scDesktop();
+			break;
+		default:
+			break;
+	}
+	
+	if( _systemController::dirty )
+		goto start;
+	
+	// Fade up Screen
+	if( _systemController::state != _systemState::empty )
+		_system::fadeMainScreen( true );
+	
+	irqEnable( IRQ_VBLANK ); // Leave critical Section
+}
+
 void _systemController::main()
 {
-	changeState( _systemState::setup );
+	changeState( _systemState::desktop );
 	static int i = 0;
 	
 	while( true )
 	{
-		if( dirty )
-		{
-			// Fade down Screen
-			_system::fadeMainScreen( false );
-			
-			// Set start
-			start:
-			
-			if( _systemController::scenario != nullptr )
-			{
-				delete _systemController::scenario;
-				_systemController::scenario = nullptr;
-			}
-			
-			_systemController::dirty = false;
-			
-			// Create new state
-			switch( _systemController::state )
-			{
-				case _systemState::bootup:
-					_systemController::scenario = new _scBootup();
-					break;
-				case _systemState::login:
-					_systemController::scenario = new _scLogin();
-					break;
-				case _systemState::setup:
-					_systemController::scenario = new _scSetup();
-					break;
-				case _systemState::desktop:
-					_systemController::scenario = new _scDesktop();
-					break;
-				default:
-					break;
-			}
-			
-			if( _systemController::dirty )
-				goto start;
-			
-			// Fade up Screen
-			if( _systemController::state != _systemState::empty )
-				_system::fadeMainScreen( true );
-		}
+		_systemController::controllerVBL();
 		
 		// Run Programs
 		_system::runPrograms();

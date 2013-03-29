@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 #include <map>
+#include <array>
 using namespace std;
 
 //! Overload new and delete
@@ -22,6 +23,8 @@ template<typename T,typename T2>
 	using _map = std::map<T,T2>;
 template<typename T,typename T2>
 	using _pair = std::pair<T,T2>;
+template<typename T,unsigned int T2>
+	using _array = std::array<T,T2>;
 typedef uint8_t 			_u8;
 typedef int8_t 				_s8;
 typedef uint16_t 			_u16;

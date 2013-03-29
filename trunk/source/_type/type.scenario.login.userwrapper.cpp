@@ -26,25 +26,25 @@ _callbackReturn _userWrapper::textboxRefreshHandler( _event event )
 	bP.drawPixel( 0 , 0 , NO_COLOR );
 	
 	// If there is no font it doesn't make sense to paint
-	if( that->font && that->font->valid() )
+	if( that->getFont() && that->getFont()->valid() )
 	{
 		string str = string( that->getStrValue().length() , '°' );
 		
 		// Draw Shadow Text...
 		if( !str.length() )
-			bP.drawString( 2 , 1 , that->font , _system::getLocalizedString("lbl_passcode") , RGB( 18 , 18 , 18 ) );
+			bP.drawString( 2 , 1 , that->getFont() , _system::getLocalizedString("lbl_passcode") , RGB( 18 , 18 , 18 ) );
 		else
-			bP.drawString( 2 , 1 , that->font , str , that->color );
+			bP.drawString( 2 , 1 , that->getFont() , str , that->getColor() );
 		
-		if( that->cursor > 0 )
+		if( that->getCursor() >= 0 )
 		{
 			// Get String until cursor
 			string str2 = str;
-			str2.resize( that->cursor - 1 );
+			str2.resize( that->getCursor() );
 			
-			_length strWidthUntilCursor = that->font->getStringWidth( str2 );
+			_length strWidthUntilCursor = that->getFont()->getStringWidth( str2 );
 			
-			bP.drawVerticalLine( strWidthUntilCursor + 2 - 1 , 1 /* */ - 1 , that->font->getAscent() + 2 , COLOR_RED );
+			bP.drawVerticalLine( strWidthUntilCursor + 2 - 1 , 1 /* */ - 1 , that->getFont()->getAscent() + 2 , COLOR_RED );
 		}
 	}
 	

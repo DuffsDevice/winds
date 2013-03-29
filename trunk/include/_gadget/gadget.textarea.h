@@ -3,6 +3,7 @@
 #define _WIN_G_TEXTAREA_
 
 #include "_type/type.gadget.h"
+#include "_gadget/gadget.scrollBar.h"
 #include "_type/type.text.h"
 
 class _textarea : public _gadget{
@@ -16,53 +17,58 @@ class _textarea : public _gadget{
 		};
 		
 		//! Farbe der Schrift
-		_pixel 	color;
-		_pixel 	bgColor;
+		_pixel 		color;
+		_pixel 		bgColor;
 		
 		//! _text-object
-		_text 	text;
+		_text 		text;
 		
 		//! Current cursor position
-		_length	cursor;
+		_length		cursor;
+		_scrollBar*	scrollBar;
 		
 		//! Text-align
-		_align	align;
+		_align		align;
 		
 		static _callbackReturn refreshHandler( _event e );
 		static _callbackReturn generalHandler( _event e );
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
-	public:
-		
-		static inline _coord getFontPosition( _align align , string str , _font* font , _u16 width )
+		inline void checkRefresh()
 		{
-			switch( align )
+			if( this->text.needsRefresh() )
 			{
-				case _align::right:		return width - font->getStringWidth( str ) - _textarea::borderX + 1;
-				case _align::center:	return ( width - font->getStringWidth( str ) + 1 ) >> 1;
-				default:
-				case _align::left:		return _textarea::borderX;
+				this->handleEvent( onResize );//! Set the right parameters for the Scrollbar
+				this->bubbleRefresh( true );
 			}
 		}
 		
+		//! Set the Internal Cursor
+		void setInternalCursor( _u32 cursor );
+		
+	public:
+		
+		//! Get the font Position, where the text will be painted at
+		_2s32 getFontPosition( string str , bool noScrollApplied = false );
+		
 		//! Set the Text to be displayed
-		void setStrValue( string val ){ this->text.setText( val ); if( this->text.needsRefresh() ) this->bubbleRefresh( true ); }
+		void setStrValue( string val ){ this->text.setText( val ); this->checkRefresh(); }
 		
 		//! Get the Text of the label
 		string getStrValue(){ return this->text.getText(); }
 		
 		//! Get Text Font
-		_font* getFont(){ return this->text.getFont(); }
+		const _font* getFont(){ return this->text.getFont(); }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( _font* ft ){ this->text.setFont( ft ); if( this->text.needsRefresh() ) this->bubbleRefresh( true ); }
+		void setFont( _font* ft ){ this->text.setFont( ft ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
 		
 		//! Set FontSize
-		void setFontSize( _u8 fontSize ){ this->text.setFontSize( fontSize ); if( this->text.needsRefresh() ) this->bubbleRefresh( true ); }
+		void setFontSize( _u8 fontSize ){ this->text.setFontSize( fontSize ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
 		
 		//! Set Text Color
 		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
@@ -82,9 +88,18 @@ class _textarea : public _gadget{
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }
 		
+		//! Set The cursor
+		void setCursor( _s64 cursor = -1 ){	this->setInternalCursor( max( _s64(0) , cursor + 1 ) ); }
+		
+		//! Get the current cursor (-1 equals no cursor)
+		_s64 getCursor(){ return _s64(this->cursor) - 1; }
+		
 		
 		//! Ctor
 		_textarea( _length width , _length height , _coord x , _coord y , string value = "" , _style style = _style() );
+		
+		//! Dtor
+		~_textarea();
 };
 
 #endif

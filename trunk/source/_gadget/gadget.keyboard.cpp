@@ -430,7 +430,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 }
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 position , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style | _styleAttr::canNotTakeFocus )
+	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
 	, fromX( 0 )
@@ -450,8 +450,8 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 {
 	_screen::getBitmap().reset( NO_COLOR );
 	
-	_font* fnt 			= _system::getFont( "CourierNew10" );
-	_font* systemFont 	= _system::getFont( "Tahoma7" );
+	const _font* fnt 		= _system::getFont( "CourierNew10" );
+	const _font* systemFont = _system::getFont( "Tahoma7" );
 	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )

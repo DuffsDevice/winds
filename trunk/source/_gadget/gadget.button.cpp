@@ -20,7 +20,7 @@ void _button::setStrValue( string val )
 	this->bubbleRefresh( true );
 }
 
-void _button::setFont( _font* ft )
+void _button::setFont( const _font* ft )
 {
 	if( this->font == ft )
 		return;

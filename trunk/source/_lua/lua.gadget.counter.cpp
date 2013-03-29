@@ -29,16 +29,16 @@ _lua_counter::_lua_counter( lua_State* L )
 }
 
 //! setUpperBound
-int _lua_counter::setUpperBound( lua_State* L ){ ((_counter*)_lua_gadget::gadget)->setUpperBound( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_counter::setUpperBound( lua_State* L ){ _lua_interface_input::input->setUpperBound( luaL_checkint( L , 1 ) ); return 0; }
 
 //! setLowerBound
-int _lua_counter::setLowerBound( lua_State* L ){ ((_counter*)_lua_gadget::gadget)->setLowerBound( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_counter::setLowerBound( lua_State* L ){ _lua_interface_input::input->setLowerBound( luaL_checkint( L , 1 ) ); return 0; }
 
 //! getLowerBound
-int _lua_counter::getLowerBound( lua_State* L ){ lua_pushnumber( L , ((_counter*)_lua_gadget::gadget)->getUpperBound() ); return 1; }
+int _lua_counter::getLowerBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getUpperBound() ); return 1; }
 
 //! getUpperBound
-int _lua_counter::getUpperBound( lua_State* L ){ lua_pushnumber( L , ((_counter*)_lua_gadget::gadget)->getLowerBound() ); return 1; }
+int _lua_counter::getUpperBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getLowerBound() ); return 1; }
 
 //! Lua-button
 const char _lua_counter::className[] = "_counter";

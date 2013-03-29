@@ -161,8 +161,12 @@
    #endif
 
    #ifndef STBTT_assert
-   #include <assert.h>
-   #define STBTT_assert(x)    assert(x)
+   //#include <assert.h>
+   #include <_type/type.system.h>
+   #define STBTT_assert(cond)    { \
+		if( !(cond) ) \
+			_system::debug( string( "Assertion Failed at:" ) + __FILE__ + ":" + int2string(__LINE__) + ": inside" + __FUNCTION__ + #cond ); \
+	}
    #endif
 
    #ifndef STBTT_strlen

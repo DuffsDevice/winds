@@ -49,6 +49,9 @@ class _program
 		//! Virtual Dtor
 		virtual 		~_program(){};
 		
+		
+		static _program* fromFile( string filename );
+		
 };
 
 #endif

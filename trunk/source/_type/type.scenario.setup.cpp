@@ -23,7 +23,9 @@ _scSetup::_scSetup() :
 	, systemTime( _time::now() )
 {	
 	// Reset all gadgets to nullptr
-	memset( this->gadgets , 0 , 20 );
+	for( int i = 0; i < 20 ; this->gadgets[i++] = nullptr );
+	
+	this->radiogroup = nullptr;
 	
 	// Clean up
 	_system::deleteGadgetHost();
@@ -279,12 +281,11 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 				this->gadgets[5] = slc;
 				that->addChild( slc );
 			}
-			//_textarea* txt = new _textarea( 50 , 50 , 10 , 130 , "Hallo\nergergerg hiiiiiiiii\nwtfiiiii\ngegr4ergerg" );
-			//that->addChild( txt );
+			_textarea* txt = new _textarea( 90 , 50 , 10 , 130 , "Hallo\nergergerghalloweltsgarten\nwtfiiiii\ngegr4ergerg" );
+			that->addChild( txt );
 			that->addChild( lbl );
 			this->gadgets[6] = lbl;
-			//this->gadgets[7] = txt;
-			//txt->setWidth( 200 );
+			this->gadgets[7] = txt;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
 			break;
 		}
@@ -303,8 +304,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
@@ -351,8 +352,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
 			lbl5->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
@@ -412,8 +413,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack10" ) );
-			lbl2->setFont( _system::getFont( "ArialBlack10" ) );
+			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
 			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );

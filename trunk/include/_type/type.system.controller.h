@@ -35,6 +35,9 @@ class _systemController
 		//! Method that will be called after the Hardware initialization is done
 		//! This Routine does nearly everything
 		static void main();
+		
+		//! Method to be invoked on VBlank
+		static void controllerVBL();
 };
 
 #endif

@@ -16,7 +16,7 @@ void _label::setStrValue( string val )
 	this->bubbleRefresh( true );
 }
 
-void _label::setFont( _font* ft )
+void _label::setFont( const _font* ft )
 {
 	if( this->font == ft )
 		return;

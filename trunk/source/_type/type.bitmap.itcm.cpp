@@ -718,7 +718,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize )
 {
 	// Check for transparent
 	if( !RGB_GETA(color) )

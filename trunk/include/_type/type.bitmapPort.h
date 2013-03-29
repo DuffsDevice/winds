@@ -257,7 +257,7 @@ class _bitmapPort{
 		 * @param color Color of the Character
 		 * @return int The Width of the Character it has drawn
 		 */
-		_length drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize = 0 );
+		_length drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 );
 		
 		/**
 		 * Draw a String to a specific Position
@@ -268,7 +268,7 @@ class _bitmapPort{
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize = 0 );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap

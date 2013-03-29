@@ -184,7 +184,7 @@ _callbackReturn lua_callEventFn( lua_State* L , int handler , _event e )
 	}
 	
 	//! Return the Value returned by the Handler
-	return string2eventReturnType[ luaL_optstring( L , -1 , "not_handled" ) ];
+	return string2callbackReturn[ luaL_optstring( L , -1 , "not_handled" ) ];
 }
 
 //! This Function will be called from _gadget

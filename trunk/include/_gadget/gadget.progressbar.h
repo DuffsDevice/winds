@@ -35,14 +35,7 @@ class _progressbar : public _gadget {
 		}
 		
 		//! Whether the bar shows "progress" (=false) or shows the actual state (=true)
-		void setBarType( bool type )
-		{
-			if( type != this->type )
-			{
-				this->type = type;
-				this->bubbleRefresh( true );
-			}
-		}
+		void setBarType( bool type );
 		
 		//! Get Scrollbar-Type
 		bool getBarType(){ return this->type; }
@@ -61,10 +54,7 @@ class _progressbar : public _gadget {
 		bool getColorScheme(){ return this->blue; }
 		
 		//! Constructor
-		_progressbar( _length width , _length height , _coord x , _coord y  , bool type = true , _style style = _style() );
-		
-		//! Constructor
-		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() );
+		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() | _styleAttr::notClickable );
 		
 		//! Destructor
 		~_progressbar();

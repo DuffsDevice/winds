@@ -37,16 +37,15 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	// Darw Background
-	bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_WHITE );
-	
 	_length myH = bP.getHeight();
-	//_length myW = bP.getWidth();
+	_length myW = bP.getWidth();
 	
 	switch( that->viewType )
 	{
-		case _fileviewType::list:
-		{
+		case _fileviewType::symbol_big:
+		{	
+			bP.fill( COLOR_TRANSPARENT );
+			
 			string ext = that->file.getExtension();
 			
 			// Certain Files do not have an .extension
@@ -58,7 +57,52 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			string fullName = that->file.getName() + ext;
 			
 			// Receive Font
-			_font* ft = _system::getFont();
+			const _font* ft = _system::getFont();
+			
+			// Font Size
+			int ftSize = _system::_runtimeAttributes_->defaultFontSize;
+			
+			// Draw String Vertically middle and left aligned
+			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , COLOR_WHITE , ftSize );
+			
+			// Set Icon
+			const _bitmap& fileIcon = that->file.getFileImage();
+			
+			bP.copyTransparent(
+				( 25 - fileIcon.getWidth() ) >> 1 // X
+				, ( myH - ft->getHeight() - fileIcon.getHeight() ) >> 1 // Y
+				, fileIcon // Bitmap
+			);
+			
+			// Draw Outer Dotted Line Background
+			if( that->hasFocus() )
+			{
+				that->bitmap.drawVerticalDottedLine( 0 , 0 , myH , RGB255( 10 , 36 , 106 ) );
+				that->bitmap.drawVerticalDottedLine( myW - 1 , 0 , myH , RGB255( 10 , 36 , 106 ) );
+				that->bitmap.drawHorizontalDottedLine( 0 , 0 , myW , RGB255( 10 , 36 , 106 ) );
+				that->bitmap.drawHorizontalDottedLine( 0 , myH - 1 , myW , RGB255( 10 , 36 , 106 ) );
+			}
+			
+			break;
+		}
+		case _fileviewType::list:
+		default:
+		{
+			// Darw Background
+			bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_TRANSPARENT );
+			
+			string ext = that->file.getExtension();
+			
+			// Certain Files do not have an .extension
+			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
+				ext = "";
+			else
+				ext = "." + ext;
+			
+			string fullName = that->file.getName() + ext;
+			
+			// Receive Font
+			const _font* ft = _system::getFont();
 			
 			// Font Size
 			int ftSize = _system::_runtimeAttributes_->defaultFontSize;
@@ -80,8 +124,6 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			break;
 		}
-		default:
-			break;
 	};
 	
 	return handled;
@@ -100,7 +142,12 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 {
 	switch( this->viewType )
 	{
-		case _fileviewType::list:{
+		case _fileviewType::symbol_big:
+			this->setDimensions( _rect( x , y , 26 , 26 ) );
+			break;
+		case _fileviewType::list:
+		default:
+		{
 			string ext = this->file.getExtension();
 			
 			// Certain Files do not have an .extension
@@ -112,12 +159,12 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			string fullName = this->file.getName() + ext;
 			
 			// Receive Font
-			_font* ft = _system::getFont();
+			const _font* ft = _system::getFont();
 			
 			this->setWidth( ft->getStringWidth( fullName ) + 11 );
-		}
-		default:
+			
 			break;
+		}
 	};
 	
 	// Register Handlers

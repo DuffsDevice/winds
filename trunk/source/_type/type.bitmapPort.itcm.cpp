@@ -156,7 +156,7 @@ void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b,
 	}
 }
 
-void _bitmapPort::drawString( _coord x0 , _coord y0 , _font* font , string str , _pixel color , _u8 fontSize )
+void _bitmapPort::drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -168,7 +168,7 @@ void _bitmapPort::drawString( _coord x0 , _coord y0 , _font* font , string str ,
 	}
 }
 
-_length _bitmapPort::drawChar( _coord x0 , _coord y0 , _font* font , _char ch , _pixel color , _u8 fontSize )
+_length _bitmapPort::drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{

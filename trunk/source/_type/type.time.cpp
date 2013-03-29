@@ -25,21 +25,36 @@ _time::_time( _u32 rawTime )
 _time::operator _u32()
 {
 	struct tm timeinfo;
-	timeinfo.tm_year = year - 1900;
-	timeinfo.tm_mon = month - 1;
-	timeinfo.tm_mday = day;
-	timeinfo.tm_hour  = hour;
-	timeinfo.tm_min   = minute;
-	timeinfo.tm_sec   = second;
+	timeinfo.tm_year	= year - 1900;
+	timeinfo.tm_mon		= month - 1;
+	timeinfo.tm_mday	= day;
+	timeinfo.tm_hour	= hour;
+	timeinfo.tm_min		= minute;
+	timeinfo.tm_sec		= second;
 	
 	return mktime( &timeinfo ); 
 }
 
 _time::operator string()
 {
-	time_t rawtime;
-	
-	time( &rawtime ); // Read Time
+	time_t rawtime = (_u32)*this;
 	
 	return ctime( &rawtime ); // Convert to UTC
+}
+
+string _time::toString( string format )
+{
+	char str[127];
+	
+	struct tm timeinfo;
+	timeinfo.tm_year	= year - 1900;
+	timeinfo.tm_mon		= month - 1;
+	timeinfo.tm_mday	= day;
+	timeinfo.tm_hour	= hour;
+	timeinfo.tm_min		= minute;
+	timeinfo.tm_sec		= second;
+	
+	strftime( str , 127 , format.c_str() , &timeinfo );
+	
+	return string(str);
 }
