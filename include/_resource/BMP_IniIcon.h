@@ -17,9 +17,9 @@ static const _pixel BMP_IniIcon_bmp[110] = {
 53908, 53908, 53908, 53908, 53908, 53908, 53908, 53908, 53908, 53908, 53908
 };
 
-class BMP_IniIcon : public _bitmap {
+class BMP_IniIcon : public _constbitmap {
 	public:
-		BMP_IniIcon() : _bitmap(const_cast<_pixelArray>(BMP_IniIcon_bmp), 11, 10) { }
+		BMP_IniIcon() : _constbitmap(const_cast<_pixelArray>(BMP_IniIcon_bmp), 11, 10) { }
 };
 
 #endif

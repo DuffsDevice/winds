@@ -62,50 +62,35 @@ _gadget::~_gadget()
 }
 
 
-void _gadget::triggerEvent( _event event )
+void _gadget::triggerEvent( _event&& event )
 {
 	_system::generateEvent( event.setDestination( this ) );
 }
 
 
-void _gadget::bubbleEvent( _event event , bool includeThis )
+void _gadget::populateEvent( _event&& event )
 {
-	if( event.getType() == refresh )
-	{
-		this->bubbleRefresh( includeThis , event );
-		return;
-	}
-	if( includeThis )
-		this->handleEvent( event );
-	if( this->parent != nullptr )
-		this->parent->bubbleEvent( event , true );
-}
-
-
-void _gadget::populateEvent( _event event ){
 	_system::generateEvent( event );
 }
 
 
-void _gadget::bubbleRefresh( bool includeThis , _event event )
+void _gadget::bubbleRefresh( bool includeThis , _event&& event )
 {
-	// Event not generated yet
-	if( !event.hasClippingRects() )
-		event = _event::refreshEvent( { this->getAbsoluteDimensions() } );
-	
 	// Bubble!
-	if( this->parent != nullptr )
+	if( this->parent )
 	{
 		if( includeThis )
-			this->handleEvent( event );
+			this->handleEventDefault( event );
 		
 		_rect dim = this->parent->getAbsoluteDimensions();
 		
-		if( dim.intersectsWith( event.getDamagedRects() ) )
+		event.getDamagedRects().clipToIntersect( dim );
+		
+		if( event.hasClippingRects() )
 			this->parent->bubbleRefresh( true , (_event&&)event ); // Forces std::move
 	}
 	else if( includeThis )
-		this->handleEvent( (_event&&)event ); // Forces std::move
+		this->handleEventDefault( (_event&&)event );
 }
 
 
@@ -181,7 +166,7 @@ bool _gadget::hasClickRights() const {
 	_gadget* cur = this->parent;
 	while( cur )
 	{
-		if( !cur->style.canReceiveFocus ||  !this->style.canTakeFocus )
+		if( !cur->style.canReceiveFocus || !this->style.canTakeFocus )
 			return true;
 		cur = cur->parent;
 	}
@@ -292,20 +277,8 @@ bool _gadget::focusChild( _gadget* child )
 }
 
 
-void _gadget::registerEventHandler( _eventType type , _callback* handler )
+void _gadget::unregisterEventHandler( _eventType type )
 {
-	// Remove any Current Handler
-	_callback* &data = this->eventHandlers[type]; // reference to pointer
-	
-	if( data )
-		delete data; // Delete Current Event-Handler
-	
-	// Insert The Handler
-	data = handler;
-}
-
-
-void _gadget::unregisterEventHandler( _eventType type ){
 	// Unbind the Handler
 	_map<_eventType,_callback*>::iterator data = this->eventHandlers.find( type );
 	
@@ -326,7 +299,7 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 	if( posInArray >= 0 && _u32(posInArray) < defaultEventHandlers.size() )
 	{
 		event.setGadget( this );
-		return (*defaultEventHandlers[ posInArray ])( event );
+		return (*defaultEventHandlers[ posInArray ])( (_event&&)event );
 	}
 	
 	// If the Handler for the given event doesn't exist, return 
@@ -336,26 +309,30 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 
 _callbackReturn _gadget::handleEvent( _event&& event )
 {
+	_eventHandlerMap::const_iterator it = this->eventHandlers.find( event.getType() );
+	
 	// Check for Normal Event Handlers
-	if( this->eventHandlers.count( event.getType() ) )
+	if( it != this->eventHandlers.end() )
 	{
 		event.setGadget( this );
-		_callbackReturn ret = (*eventHandlers[ event.getType() ])( event );
+		_callbackReturn ret = (*it->second)( event );
 		if( ret != use_default )
 			return ret;
 	}
 	
 	// If the Handler doesn't exist, return the default Handler
-	return this->handleEventDefault( event );
+	return this->handleEventDefault( (_event&&)event );
 }
 
 _callbackReturn _gadget::handleEventUser( _event&& event )
 {
+	_eventHandlerMap::const_iterator it = this->eventHandlers.find( event.getType() );
+	
 	// Check for Normal Event Handlers
-	if( this->eventHandlers.count( event.getType() ) )
+	if( it != this->eventHandlers.end() )
 	{
 		event.setGadget( this );
-		return (*eventHandlers[ event.getType() ])( event );
+		return (*it->second)( (_event&&)event );
 	}
 	return not_handled;
 }
@@ -696,7 +673,7 @@ void _gadget::maximize()
 }
 
 
-_callbackReturn _gadget::gadgetRefreshHandler( _event event )
+_callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -730,9 +707,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			bP.clippingRects.reduce( dim );
 		}
 		
-		
-		// Crop to area having the parents padding applied
-		bP.clippingRects.clipToIntersect( that->getSize().applyPadding( that->getPadding() ) );
+		_rect clip = that->getSize().applyPadding( that->getPadding() );
 		
 		
 		// Store padding in termporaries
@@ -746,7 +721,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			if( gadget->isInvisible() )
 				continue;
 			
-			_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
+			_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop ).clipToIntersect( clip );
 			
 			// Copy...
 			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
@@ -755,14 +730,16 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			bP.clippingRects.reduce( dim );
 		}
 		
+		event.setDamagedRects( bP.clippingRects.toRelative( _2s32( -that->getAbsoluteX() , -that->getAbsoluteY() ) ) );
+		
 	} //! New Section end
 	
 	/* Label */
 	refreshEnd:
 	
-	// If this Refresh-Event wasn't auto-generated, refresh my parents
-	if( !event.isBubblePrevented() )
-		that->bubbleRefresh();
+	// Refresh 'my content'
+	if( event.hasClippingRects() )
+		that->handleEventUser( event );
 	
 	return handled;
 }
@@ -797,7 +774,7 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 }
 
 
-_callbackReturn _gadget::gadgetMouseHandler( _event event )
+_callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -855,7 +832,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			}
 			
 			// Call the user-registered event-handler
-			mouseContain->handleEventUser( event );
+			mouseContain->handleEventUser( (_event&&)event );
 			
 			return handled;
 		}
@@ -873,7 +850,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 }
 
 
-_callbackReturn _gadget::gadgetDragHandler( _event event )
+_callbackReturn _gadget::gadgetDragHandler( _event&& event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
@@ -917,15 +894,17 @@ _callbackReturn _gadget::gadgetDragHandler( _event event )
 		_callbackReturn ret = mouseContain->handleEventDefault( event );
 		
 		// Mark the gadget as 'dragged' (but only if no child wants to be dragged -> check that first)
-		if(
-			ret == not_handled
-			&& mouseContain->isDraggable()
-			&& mouseContain->isClickable()
-			&& mouseContain->handleEventUser( event ) != prevent_default
-		)
-			mouseContain->dragged = true;
-		else
-			return not_handled;
+		if( ret == not_handled )
+		{
+			if(
+				mouseContain->isDraggable()
+				&& mouseContain->isClickable()
+				&& mouseContain->handleEventUser( event ) != prevent_default
+			)
+				mouseContain->dragged = true;
+			else
+				return not_handled;
+		}
 		
 		return handled;
 	}

@@ -4475,9 +4475,9 @@ static const _pixel BMP_WindowsWallpaper_bmp[49152] = {
 32996, 34020, 32964, 33988
 };
 
-class BMP_WindowsWallpaper : public _bitmap {
+class BMP_WindowsWallpaper : public _constbitmap {
 	public:
-		BMP_WindowsWallpaper() : _bitmap( const_cast<_pixelArray>(BMP_WindowsWallpaper_bmp) , 256 , 192 ){ }
+		BMP_WindowsWallpaper() : _constbitmap( const_cast<_pixelArray>(BMP_WindowsWallpaper_bmp) , 256 , 192 ){ }
 };
 
 #endif

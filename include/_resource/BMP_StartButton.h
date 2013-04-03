@@ -45,9 +45,9 @@ static const _pixel BMP_StartButton_bmp[380] = {
 40422, 40422, 38309, 37284, 56740, 59716
 };
 
-class BMP_StartButton : public _bitmap {
+class BMP_StartButton : public _constbitmap {
 	public:
-		BMP_StartButton() : _bitmap(const_cast<_pixelArray>(BMP_StartButton_bmp), 38, 10) { }
+		BMP_StartButton() : _constbitmap(const_cast<_pixelArray>(BMP_StartButton_bmp), 38, 10) { }
 };
 
 //
@@ -92,8 +92,8 @@ static const _pixel BMP_StartButtonPressed_bmp[380] = {
 37316, 36291, 34178, 40323, 60805, 59716
 };
 
-class BMP_StartButtonPressed : public _bitmap {
+class BMP_StartButtonPressed : public _constbitmap {
 	public:
-		BMP_StartButtonPressed() : _bitmap(const_cast<_pixelArray>(BMP_StartButtonPressed_bmp), 38, 10) { }
+		BMP_StartButtonPressed() : _constbitmap(const_cast<_pixelArray>(BMP_StartButtonPressed_bmp), 38, 10) { }
 };
 #endif

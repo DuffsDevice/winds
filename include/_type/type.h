@@ -10,6 +10,9 @@
 #include <array>
 using namespace std;
 
+//! Code-sections
+#include <nds/memory.h>
+
 //! Overload new and delete
 void* operator new(size_t size);
 void operator delete(void *p);
@@ -46,8 +49,8 @@ typedef basic_string<char> 	_string;
 
 /**
  * Pack two integers into one
- * The union will hopefully make it be treated
- * like one single number (faster)
+ * The union will hopefully be treated
+ * as one single _u64/_s64 (faster)
  */
 union						_2s32
 {
@@ -58,7 +61,20 @@ union						_2s32
 	_2s32() {}
 	_2s32( _s64 v ) : val( v ) {}
 	_2s32( _s32 f , _s32 s ) : first( f ) , second( s ) {}
+	
+	operator bool(){ return this->val != 0; }
+	_2s32 operator+( _s32 val ){ return _2s32( first + val , second + val ); }
+	_2s32 operator-( _s32 val ){ return _2s32( first - val , second - val ); }
+	_2s32 operator*( _s32 val ){ return _2s32( first * val , second * val ); }
+	_2s32 operator/( _s32 val ){ return _2s32( first / val , second / val ); }
+	_2s32& operator+=( _s32 val ){ first += val; second += val; return *this; }
+	_2s32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
+	_2s32& operator*=( _s32 val ){ first *= val; second *= val; return *this; }
+	_2s32& operator/=( _s32 val ){ first /= val; second /= val; return *this; }
 };
+
+static __attribute__(( unused )) _2s32 operator-( const _2s32& val ){ return _2s32( -val.first , -val.second ); }
+static __attribute__(( unused )) bool operator!( const _2s32& val ){ return !val.val; }
 
 union 						_2u32
 {
@@ -69,13 +85,38 @@ union 						_2u32
 	_2u32() {}
 	_2u32( _u64 v ) : val( v ) {}
 	_2u32( _u32 f , _u32 s ) : first( f ) , second( s ) {}
+	
+	operator bool(){ return this->val != 0; }
+	_2u32 operator+( _s32 val ){ return _2u32( first + val , second + val ); }
+	_2u32 operator-( _s32 val ){ return _2u32( first - val , second - val ); }
+	_2u32 operator*( _u32 val ){ return _2u32( first * val , second * val ); }
+	_2u32 operator/( _u32 val ){ return _2u32( first / val , second / val ); }
+	_2u32& operator+=( _s32 val ){ first += val; second += val; return *this; }
+	_2u32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
+	_2u32& operator*=( _u32 val ){ first *= val; second *= val; return *this; }
+	_2u32& operator/=( _u32 val ){ first /= val; second /= val; return *this; }
 };
-
 
 typedef _map<string,string>	_cmdArgs;
 
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
+
+//! Some constraints
+template<class T, class B> struct subclass_of {
+	static void constraints(T* p) { B* pb = p; }
+	subclass_of() { void(*)(T*) = constraints; }
+};
+
+template<class T1, class T2> struct copyable {
+	static void constraints(T1 a, T2 b) { T2 c = a; b = a; }
+	copyable() { void(*)(T1,T2) = constraints; }
+};
+
+template<class T1, class T2 = T1> struct comparable {
+	static void constraints(T1 a, T2 b) { a==b; a!=b; a<b; }
+	comparable() { void(*)(T1,T2) = constraints; }
+};
 
 #define u16 _u16
 #include <nds/touch.h>

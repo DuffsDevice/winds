@@ -17,9 +17,9 @@ static const _pixel BMP_LuaIcon_bmp[100] = {
 65535
 };
 
-class BMP_LuaIcon : public _bitmap {
+class BMP_LuaIcon : public _constbitmap {
 	public:
-		BMP_LuaIcon() : _bitmap(const_cast<_pixelArray>(BMP_LuaIcon_bmp), 10 , 10 ) { }
+		BMP_LuaIcon() : _constbitmap(const_cast<_pixelArray>(BMP_LuaIcon_bmp), 10 , 10 ) { }
 };
 
 #endif

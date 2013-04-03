@@ -13,7 +13,7 @@ class unknownClass;
 
 extern void 			lua_callVoidFn( lua_State* L , int handler );
 extern int 				lua_callIntFn( lua_State* L , int handler , int i );
-extern _callbackReturn 	lua_callEventFn( lua_State* L , int handler , _event e );
+extern _callbackReturn 	lua_callEventFn( lua_State* L , int handler , _event&& e );
 extern int 				lua_checkFunction( lua_State* L , int narg );
 extern void 			lua_popFunction( lua_State* L , int index );
 
@@ -25,6 +25,7 @@ class _staticCallback : public _callback
 			void 			(*voidFn)();
 			int 			(*intFn)( int );
 			_callbackReturn (*eventFn)( _event );
+			_callbackReturn (*fastEventFn)( _event&& );
 		};
 		_callbackType		funcType;
 		
@@ -41,14 +42,39 @@ class _staticCallback : public _callback
 		
 		void operator()() const ;
 		int operator()( int i ) const ;
-		_callbackReturn operator()( _event e ) const ;
+		noinline _callbackReturn operator()( _event&& e ) const
+		{
+			if( this->eventFn )
+			{				
+				switch( this->funcType )
+				{
+					case _callbackType::eventFunc:
+						return this->eventFn( (_event&&)e );
+						break;
+					case _callbackType::fastEventFunc:
+						return this->fastEventFn( (_event&&)e );
+						break;
+					// Allow calling an event Handler which is actually an int function
+					case _callbackType::intFunc:
+						return (_callbackReturn) this->intFn( e.getHeldTime() );
+						break;
+					// Allow calling an event Handler which is actually a void function
+					default:
+						this->voidFn();
+						return handled;
+				}
+			}
+			
+			return not_handled;
+		}
 		
 		_staticCallback( void (*voidFn)() ) : voidFn( voidFn ) , funcType( _callbackType::voidFunc ) {}
 		
 		_staticCallback( int (*intFn)( int ) ) : intFn( intFn ) , funcType( _callbackType::intFunc ) {}
 		
 		_staticCallback( _callbackReturn (*eventFn)( _event ) ) : eventFn( eventFn ) , funcType( _callbackType::eventFunc ) {}
-
+		
+		_staticCallback( _callbackReturn (*fastEventFn)( _event&& ) ) : fastEventFn( fastEventFn ) , funcType( _callbackType::fastEventFunc ) {}
 };
 
 
@@ -62,6 +88,7 @@ class _classCallback : public _callback
 			void 			(unknownClass::*voidFn)();
 			int 			(unknownClass::*intFn)( int );
 			_callbackReturn (unknownClass::*eventFn)( _event );
+			_callbackReturn (unknownClass::*fastEventFn)( _event&& );
 		};
 		_callbackType		funcType;
 		
@@ -78,7 +105,32 @@ class _classCallback : public _callback
 		
 		void operator()() const ;
 		int operator()( int i ) const ;
-		_callbackReturn operator()( _event e ) const ;
+		noinline _callbackReturn operator()( _event&& e ) const
+		{
+			if( this->eventFn && this->instance )
+			{
+				switch( this->funcType )
+				{
+					case _callbackType::eventFunc:
+						return (this->instance->*eventFn)( (_event&&)e );
+						break;
+					case _callbackType::fastEventFunc:
+						return (this->instance->*fastEventFn)( (_event&&)e );
+						break;
+					// Allow calling an event Handler which is actually an int function
+					case _callbackType::intFunc:
+						return (_callbackReturn) (this->instance->*intFn)( e.getHeldTime() );
+						break;
+					// Allow calling an event Handler which is actually a void function
+					default:
+						(this->instance->*voidFn)();
+						return handled;
+						break;
+				}
+			}
+			
+			return not_handled;
+		}
 		
 		template<typename T>
 		_classCallback( T* ptr , void (T::*voidFn)() ) :
@@ -100,7 +152,13 @@ class _classCallback : public _callback
 			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(eventFn) )
 			, funcType( _callbackType::eventFunc )
 		{}
-
+		
+		template<typename T>
+		_classCallback( T* ptr , _callbackReturn (T::*fastEventFn)( _event&& ) ) :
+			instance( reinterpret_cast<unknownClass*>(ptr) )
+			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(fastEventFn) )
+			, funcType( _callbackType::fastEventFunc )
+		{}
 };
 
 class _inlineCallback : public _callback
@@ -124,7 +182,7 @@ class _inlineCallback : public _callback
 		
 		void operator()() const ;
 		int operator()( int i ) const ;
-		_callbackReturn operator()( _event e ) const ;
+		_callbackReturn operator()( _event&& e ) const ;
 		
 		_inlineCallback( function<void()> voidFn ) :
 			voidFn( voidFn )
@@ -165,7 +223,7 @@ class _luaCallback : public _callback
 		
 		void operator()() const ;
 		int operator()( int i ) const ;
-		_callbackReturn operator()( _event e ) const ;
+		_callbackReturn operator()( _event&& e ) const ;
 		
 		_luaCallback( lua_State* state , int narg ) : 
 			state( state )

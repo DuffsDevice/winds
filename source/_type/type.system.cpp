@@ -198,7 +198,39 @@ void _system::vblHandler()
 	//_systemController::controllerVBL(); // is called in _systemController::main
 }
 
-//static int z = 0;
+/*void optimizeEvents()
+{
+	//! Optimize refresh-Events
+	map<_gadget*,_event*);
+	deque<_event> tempEvents = this->events;
+	
+	sort( tempEvents.begin() , tempEvents.end() , [](_event e1 , _event e2)->bool{ return ( e1.getDestination() < e2.getDestination() ); } );
+	
+	_gadget* dest = 0;
+	_gadget* tempDest = 0;
+	_area refresh,damaged;
+	refresh.clear();
+	damaged.clear();
+	
+	this->events.clear();
+	
+	for( auto it = tempEvents.begin() ; it != tempEvents.end() ; it++ )
+	{
+		tempDest = (_gadget*) it->getDestination();
+		
+		damaged.push_back( it->getRefreshRects() );
+		damaged.push_back( it->getDamagedRects() );
+		
+		if( dest != 0 && dest != tempDest ){
+			it->setDamagedRects( damaged );
+			it->setRefreshRects( refresh );
+			this->events.push_back( *it );
+		}
+		dest = tempDest;
+	}
+	
+	this->events = tempEvents;
+}*/
 
 void _system::processEvents()
 {
@@ -207,24 +239,24 @@ void _system::processEvents()
 	// -> This was a big Problem - Hours of finding that out!
 	eventsSwapBuffer();
 	
-	// Temp...
-	_gadget* gadget;
-	
-	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
-	{
-		gadget = event.getDestination();
-		
-		int t = cpuGetTiming();
-		
-		// Make the Gadget ( if one is specified ) react on the event
-		if( gadget != nullptr )
-			gadget->handleEvent( event );
-		printf("%d\n",cpuGetTiming()-t);
-	}
+	_system::_eventBuffer_[!_system::_curEventBuffer_].remove_if(
+		[]( _event& event )->bool
+		{
+			
+			// Temp...
+			_gadget* gadget = event.getDestination();
+			
+			int t = cpuGetTiming();
+			
+			// Make the Gadget ( if one is specified ) react on the event
+			if( gadget != nullptr )
+				gadget->handleEvent( (_event&&)event );
+			
+			printf("%d\n",cpuGetTiming()-t);
+			return true;
+		}
+	);
 
-	// Erase all Events
-	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
-	
 	//if( !_system::_eventBuffer_[_system::_curEventBuffer_].size() )
 	//{
 	//	j++;
@@ -254,7 +286,7 @@ void _system::processInput()
 
 	// Temp...
 	static _u32 heldCycles[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	_event event = _event().setCurrentKeyCodes( _system::getCurrentKeys() );
+	_event event = _event().setCurrentKeys( _system::getCurrentKeys() );
 	
 	// Shortcut...
 	const _user* user = _system::_runtimeAttributes_->user;

@@ -16,9 +16,9 @@ static const _pixel BMP_Grip_bmp[320] = {
 48590, 35906, 33825, 32768, 32768, 32768, 32768, 32768, 32768, 32768, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 33792, 32768, 32768, 32768, 32768, 32768, 33825, 35906, 48590, 
 };
 
-class BMP_Grip : public _bitmap {
+class BMP_Grip : public _constbitmap {
 	public:
-		BMP_Grip() : _bitmap(const_cast<_pixelArray>(BMP_Grip_bmp), 32, 9) { }
+		BMP_Grip() : _constbitmap(const_cast<_pixelArray>(BMP_Grip_bmp), 32, 9) { }
 };
 
 #endif

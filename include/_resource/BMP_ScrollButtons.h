@@ -15,9 +15,9 @@ static const _pixel BMP_ScrollButton_bmp[64] = {
 	0    , 61073, 60015, 60015, 60047, 60048, 60048, 0
 };
 
-class BMP_ScrollButton : public _bitmap {
+class BMP_ScrollButton : public _constbitmap {
 	public:
-		BMP_ScrollButton() : _bitmap(const_cast<_pixelArray>(BMP_ScrollButton_bmp), 8, 8) { }
+		BMP_ScrollButton() : _constbitmap(const_cast<_pixelArray>(BMP_ScrollButton_bmp), 8, 8) { }
 };
 
 //
@@ -35,9 +35,9 @@ static const _pixel BMP_ScrollButtonPressed_bmp[64] = {
 	0    , 63254, 64278, 64278, 64278, 64278, 64278, 0    
 };
 
-class BMP_ScrollButtonPressed : public _bitmap {
+class BMP_ScrollButtonPressed : public _constbitmap {
 	public:
-		BMP_ScrollButtonPressed() : _bitmap(const_cast<_pixelArray>(BMP_ScrollButtonPressed_bmp), 8, 8) { }
+		BMP_ScrollButtonPressed() : _constbitmap(const_cast<_pixelArray>(BMP_ScrollButtonPressed_bmp), 8, 8) { }
 };
 
 //
@@ -48,14 +48,14 @@ static const _pixel BMP_ScrollBg_bmp[8] = {
 	62364, 63454, 63454, 64478, 64511, 64511, 65535, 63454
 };
 
-class BMP_ScrollBgSnipVertical : public _bitmap {
+class BMP_ScrollBgSnipVertical : public _constbitmap {
 	public:
-		BMP_ScrollBgSnipVertical() : _bitmap(const_cast<_pixelArray>(BMP_ScrollBg_bmp), 1, 8) { }
+		BMP_ScrollBgSnipVertical() : _constbitmap(const_cast<_pixelArray>(BMP_ScrollBg_bmp), 1, 8) { }
 };
 
-class BMP_ScrollBgSnipHorizontal : public _bitmap {
+class BMP_ScrollBgSnipHorizontal : public _constbitmap {
 	public:
-		BMP_ScrollBgSnipHorizontal() : _bitmap(const_cast<_pixelArray>(BMP_ScrollBg_bmp), 8, 1) { }
+		BMP_ScrollBgSnipHorizontal() : _constbitmap(const_cast<_pixelArray>(BMP_ScrollBg_bmp), 8, 1) { }
 };
 
 

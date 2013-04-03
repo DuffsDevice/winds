@@ -41,12 +41,10 @@ class _lua_event : public _event {
 		int setKeyCode(lua_State* L);//! Set Key-Code
 		int getHeldTime(lua_State* L);//! Get Held Time of the key that triggered the Event
 		int setHeldTime(lua_State* L);//! Set Held Time of the key that triggered the Event
-		int getCurrentKeyCodes(lua_State* L);//! Get KeyCode State of that Moment the Event was triggered
-		int setCurrentKeyCodes(lua_State* L);//! Set KeyCode State of that Moment the Event was triggered
+		int getCurrentKeys(lua_State* L);//! Get KeyCode State of that Moment the Event was triggered
+		int setCurrentKeys(lua_State* L);//! Set KeyCode State of that Moment the Event was triggered
 		int setDamagedRects(lua_State* L);//! Set Damaged Rects(The Rects that have to be repainted by the parent)
 		int getDamagedRects(lua_State* L);//! Get Damaged Rects(The Rects that have to be repainted by the parent)
-		int isBubblePrevented(lua_State* L);//! Check if event is a bubble-Refresh-One
-		int preventBubble(lua_State* L);//! Check if event is a bubble-Refresh-One
 		int hasClippingRects(lua_State* L);//! Check if event has Clipping Rects
 		
 		

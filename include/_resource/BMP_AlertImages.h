@@ -27,9 +27,9 @@ static const _pixel BMP_AlertImageInfo_bmp[256] = {
 0    , 0    , 0    , 0    , 0    , 61073, 58890, 58790, 58823, 59947, 62129, 0    , 0    , 0    , 0    , 0    
 };
 
-class BMP_AlertImageInfo : public _bitmap {
+class BMP_AlertImageInfo : public _constbitmap {
 	public:
-		BMP_AlertImageInfo() : _bitmap(const_cast<_pixelArray>(BMP_AlertImageInfo_bmp), 16, 16) { }
+		BMP_AlertImageInfo() : _constbitmap(const_cast<_pixelArray>(BMP_AlertImageInfo_bmp), 16, 16) { }
 };
 
 //
@@ -53,9 +53,9 @@ static const _pixel BMP_AlertImageWarning_bmp[224] = {
 52851, 48623, 48623, 48623, 48623, 48623, 48623, 48623, 49647, 49648, 49648, 49648, 49648, 49648, 48623, 52851, 
 };
 
-class BMP_AlertImageWarning : public _bitmap {
+class BMP_AlertImageWarning : public _constbitmap {
 	public:
-		BMP_AlertImageWarning() : _bitmap(const_cast<_pixelArray>(BMP_AlertImageWarning_bmp), 16, 14) { }
+		BMP_AlertImageWarning() : _constbitmap(const_cast<_pixelArray>(BMP_AlertImageWarning_bmp), 16, 14) { }
 };
 
 //
@@ -81,9 +81,9 @@ static const _pixel BMP_AlertImageError_bmp[256] = {
 0    , 0    , 0    , 0    , 0    , 59193, 56022, 56022, 56022, 56022, 60250, 0    , 0    , 0    , 0    , 0    
 };
 
-class BMP_AlertImageError : public _bitmap {
+class BMP_AlertImageError : public _constbitmap {
 	public:
-		BMP_AlertImageError() : _bitmap(const_cast<_pixelArray>(BMP_AlertImageError_bmp), 16, 16) { }
+		BMP_AlertImageError() : _constbitmap(const_cast<_pixelArray>(BMP_AlertImageError_bmp), 16, 16) { }
 };
 
 #endif

@@ -7,7 +7,7 @@
  * @version 1.0
  */
 template<typename T>
-class _list
+class flist
 {
 	
 	private:
@@ -359,36 +359,31 @@ class _list
 		_node* top;
 		_node* bottom;
 		
-		int count;
+		unsigned int count;
 	
 	public:
 	
 		/**
-		 * @brief Constructor for objects of class _list
+		 * @brief Constructor for objects of class flist
 		 */
-		_list()
+		flist() : count( 0 ) , top( nullptr ) , bottom( nullptr )
 		{
-			this->count = 0;
-			this->top = nullptr;
-			this->bottom = nullptr;
-		}// _list
+			
+		}// flist
 		
-		_list( std::initializer_list<T>& list )
+		flist( std::initializer_list<T>& list ) : count( 0 ) , top( nullptr ) , bottom( nullptr )
 		{
-			this->count = 0;
-			this->top = nullptr;
-			this->bottom = nullptr;
 			for( auto& val : list )
 				this->push_back( val );
-		}// _list
+		}// flist
 		
 		/**
 		 * @brief Copy all values from %list into %this list
-		 * @param _list list the list to Copy
-		 * @return _list&
+		 * @param flist list the list to Copy
+		 * @return flist&
 		 */
 		template<class K>
-		_list& operator=( _list<K>& list )
+		flist& operator=( flist<K>& list )
 		{
 			this->clear();
 			
@@ -881,8 +876,7 @@ class _list
 		}
 		
 		/**
-		 * @brief Finds the first element where the evalutor-func returns true and 
-		 * returns an iterator to this element, or an invalid iterator if the evaluator never returned true
+		 * @brief Evokes an operation on every single element in the list
 		 * 
 		 * @param <evaluator-function> func the function to be evaluated
 		 * @return iterator
@@ -891,7 +885,7 @@ class _list
 		void for_each( evaluator func )
 		{
 			for( T& val : *this )
-				func( *i );
+				func( *val );
 		}
 		
 		/**
@@ -971,6 +965,6 @@ class _list
 			return true;
 		}
         
-};// class _list
+};// class flist
 
 #endif

@@ -12,34 +12,24 @@ void _staticCallback::operator()() const {
 		this->voidFn();
 }
 
-int _staticCallback::operator()( int i ) const {
+int _staticCallback::operator()( int i ) const
+{
 	if( this->intFn )
 	{
-		if( this->funcType == _callbackType::intFunc)
-			return this->intFn( i );
-		
-		// Allow calling an event Handler which is actually a void function
-		else if( this->funcType == _callbackType::voidFunc )
-			this->voidFn();
-		return 0;
+		switch( this->funcType )
+		{
+			case _callbackType::intFunc:
+				return this->intFn( i );
+				break;
+			// Allow calling an event Handler which is actually a void function
+			case _callbackType::voidFunc:
+				this->voidFn();
+				return 1;
+			default:
+				break;
+		}
 	}
-	return -1;
-}
-
-_callbackReturn _staticCallback::operator()( _event e ) const {
-	if( this->eventFn )
-	{
-		if( this->funcType == _callbackType::eventFunc )
-			return this->eventFn( e );
-		
-		// Allow calling an event Handler which is actually a void function
-		else if( this->funcType == _callbackType::voidFunc )
-			this->voidFn();
-		
-		return handled;
-	}
-	
-	return not_handled;
+	return 0;
 }
 
 
@@ -55,34 +45,23 @@ void _classCallback::operator()() const {
 int _classCallback::operator()( int i ) const {
 	if( this->intFn && this->instance )
 	{
-		if( this->funcType == _callbackType::intFunc )
-			return (this->instance->*intFn)( i );
-		
-		// Allow calling an event Handler which is actually a void function
-		else if( this->funcType == _callbackType::voidFunc )
-			(this->instance->*voidFn)();
-		
-		return 0;
+		switch( this->funcType )
+		{
+			case _callbackType::intFunc:
+				return (this->instance->*intFn)( i );
+				break;
+			// Allow calling an event Handler which is actually a void function
+			case _callbackType::voidFunc:
+				(this->instance->*voidFn)();
+				return 1;
+				break;
+			default:
+				break;
+		}
 	}
-	
-	return -1;
+	return 0;
 }
 
-_callbackReturn _classCallback::operator()( _event e ) const {
-	if( this->eventFn && this->instance )
-	{
-		if( this->funcType == _callbackType::eventFunc )
-			return (this->instance->*eventFn)( e );
-		
-		// Allow calling an event Handler which is actually a void function
-		else if( this->funcType == _callbackType::voidFunc )
-			(this->instance->*voidFn)();
-		
-		return handled;
-	}
-	
-	return not_handled;
-}
 
 //
 // INLINE
@@ -107,7 +86,7 @@ int _inlineCallback::operator()( int i ) const {
 	return -1;
 }
 
-_callbackReturn _inlineCallback::operator()( _event e ) const {
+_callbackReturn _inlineCallback::operator()( _event&& e ) const {
 	if( this->eventFn )
 		return this->eventFn( e );
 		
@@ -133,8 +112,8 @@ int _luaCallback::operator()( int i ) const {
 	return lua_callIntFn( state , index , i );
 }
 
-_callbackReturn _luaCallback::operator()( _event e ) const {
-	return lua_callEventFn( state , index , e );
+_callbackReturn _luaCallback::operator()( _event&& e ) const {
+	return lua_callEventFn( state , index , (_event&&)e );
 }
 
 _u8 _luaCallback::equals( const _callback& param ) const 
@@ -167,7 +146,7 @@ _luaCallback::~_luaCallback()
 
 
 //! This Function will be called from _gadget
-_callbackReturn lua_callEventFn( lua_State* L , int handler , _event e )
+_callbackReturn lua_callEventFn( lua_State* L , int handler , _event&& e )
 {
 	//! No state registered?
 	if( !L || handler == LUA_NOREF )

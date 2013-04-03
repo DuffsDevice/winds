@@ -17,9 +17,9 @@ static const _pixel BMP_FontIcon_bmp[80] = {
 49680, 49680, 49680, 49680, 49680, 49680, 49680, 49680
 };
 
-class BMP_FontIcon : public _bitmap {
+class BMP_FontIcon : public _constbitmap {
 	public:
-		BMP_FontIcon() : _bitmap(const_cast<_pixelArray>(BMP_FontIcon_bmp), 8 , 10 ) { }
+		BMP_FontIcon() : _constbitmap(const_cast<_pixelArray>(BMP_FontIcon_bmp), 8 , 10 ) { }
 };
 
 #endif

@@ -70,22 +70,16 @@ int _lua_event::getHeldTime(lua_State* L){ lua_pushnumber( L , _event::getHeldTi
 int _lua_event::setHeldTime(lua_State* L){ _event::setHeldTime( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Get KeyCode State of that Moment the Event was triggered
-int _lua_event::getCurrentKeyCodes(lua_State* L){ lua_pushnumber( L , _event::getCurrentKeyCodes() ); return 1; }
+int _lua_event::getCurrentKeys(lua_State* L){ lua_pushnumber( L , _event::getCurrentKeys() ); return 1; }
 
 //! Set KeyCode State of that Moment the Event was triggered
-int _lua_event::setCurrentKeyCodes(lua_State* L){ _event::setCurrentKeyCodes( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_event::setCurrentKeys(lua_State* L){ _event::setCurrentKeys( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Set Damaged Rects(The Rects that have to be repainted by the parent)
 int _lua_event::setDamagedRects(lua_State* L){ _lua_area* a = Lunar<_lua_area>::check( L , 1 ); if( a ) _event::setDamagedRects( *a ); return 0; }
 
 //! Get Damaged Rects(The Rects that have to be repainted by the parent)
 int _lua_event::getDamagedRects(lua_State* L){  Lunar<_lua_area>::push( L , new _lua_area( _event::getDamagedRects() ) ); return 1; }
-
-//! Check if event is a bubble-Refresh-One
-int _lua_event::isBubblePrevented(lua_State* L){ lua_pushboolean( L , _event::isBubblePrevented() ); return 1; }
-
-//! Check if event is a bubble-Refresh-One
-int _lua_event::preventBubble(lua_State* L){ _event::preventBubble( luaL_checkint( L , 1 ) ); return 0; }
 
 //! Check if event has Clipping Rects
 int _lua_event::hasClippingRects(lua_State* L){ lua_pushboolean( L , _event::hasClippingRects() ); return 1; }
@@ -95,8 +89,6 @@ const char _lua_event::className[] = "_event";
 Lunar<_lua_event>::FunctionType _lua_event::methods[] = {
 	LUA_CLASS_FUNC(_lua_event, getGadget),
 	LUA_CLASS_FUNC(_lua_event, resetParams),
-	LUA_CLASS_FUNC(_lua_event, isBubblePrevented),
-	LUA_CLASS_FUNC(_lua_event, preventBubble),
 	LUA_CLASS_FUNC_END
 };
 
@@ -109,7 +101,7 @@ Lunar<_lua_event>::PropertyType _lua_event::properties[] = {
 	{ "deltaY" , &_lua_event::getDeltaY , &_lua_event::setDeltaY },
 	{ "keyCode" , &_lua_event::getKeyCode , &_lua_event::setKeyCode },
 	{ "heldTime" , &_lua_event::getHeldTime , &_lua_event::setHeldTime },
-	{ "currentKeyCodes" , &_lua_event::getCurrentKeyCodes , &_lua_event::setCurrentKeyCodes },
+	{ "currentKeys" , &_lua_event::getCurrentKeys , &_lua_event::setCurrentKeys },
 	{ "damagedRects" , &_lua_event::getDamagedRects , &_lua_event::setDamagedRects },
 	LUA_CLASS_ATTR_END
 };

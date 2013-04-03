@@ -15,9 +15,9 @@ static const _pixel BMP_RadioChecked_bmp[25] = {
 65535, 65535, 65535, 65535, 65535, 
 };
 
-class BMP_RadioChecked : public _bitmap {
+class BMP_RadioChecked : public _constbitmap {
 	public:
-		BMP_RadioChecked() : _bitmap( const_cast<_pixelArray>(BMP_RadioChecked_bmp), 5, 5 ) { }
+		BMP_RadioChecked() : _constbitmap( const_cast<_pixelArray>(BMP_RadioChecked_bmp), 5, 5 ) { }
 };
 
 //
@@ -31,9 +31,9 @@ static const _pixel BMP_RadioUnchecked_bmp[25] = {
 65535, 65535, 58232, 65535, 65535, 
 };
 
-class BMP_RadioUnchecked : public _bitmap {
+class BMP_RadioUnchecked : public _constbitmap {
 	public:
-		BMP_RadioUnchecked() : _bitmap( const_cast<_pixelArray>(BMP_RadioUnchecked_bmp), 5, 5 ) { }
+		BMP_RadioUnchecked() : _constbitmap( const_cast<_pixelArray>(BMP_RadioUnchecked_bmp), 5, 5 ) { }
 };
 
 //
@@ -51,9 +51,9 @@ static const _pixel BMP_RadioBorderPressed_bmp[81] = {
 0    , 0    , 54863, 51657, 52713, 52681, 53839, 0    , 0    
 };
 
-class BMP_RadioBorderPressed : public _bitmap {
+class BMP_RadioBorderPressed : public _constbitmap {
 	public:
-		BMP_RadioBorderPressed() : _bitmap( const_cast<_pixelArray>(BMP_RadioBorderPressed_bmp), 9, 9 ) { }
+		BMP_RadioBorderPressed() : _constbitmap( const_cast<_pixelArray>(BMP_RadioBorderPressed_bmp), 9, 9 ) { }
 };
 
 //
@@ -71,9 +71,9 @@ static const _pixel BMP_RadioBorder_bmp[81] = {
 0    , 0    , 57010, 54827, 54859, 54827, 57010, 0    , 0    
 };
 
-class BMP_RadioBorder : public _bitmap {
+class BMP_RadioBorder : public _constbitmap {
 	public:
-		BMP_RadioBorder() : _bitmap( const_cast<_pixelArray>(BMP_RadioBorder_bmp), 9, 9 ) { }
+		BMP_RadioBorder() : _constbitmap( const_cast<_pixelArray>(BMP_RadioBorder_bmp), 9, 9 ) { }
 };
 
 #endif

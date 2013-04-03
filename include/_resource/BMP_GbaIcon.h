@@ -14,9 +14,9 @@ static const _pixel BMP_GbaIcon_bmp[70] = {
 51794, 51794, 51794, 0    
 };
 
-class BMP_GbaIcon : public _bitmap {
+class BMP_GbaIcon : public _constbitmap {
 	public:
-		BMP_GbaIcon() : _bitmap(const_cast<_pixelArray>(BMP_GbaIcon_bmp), 7, 10) { }
+		BMP_GbaIcon() : _constbitmap(const_cast<_pixelArray>(BMP_GbaIcon_bmp), 7, 10) { }
 };
 
 #endif

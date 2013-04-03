@@ -16,9 +16,9 @@ static const _pixel BMP_NdsIcon_bmp[54] = {
 59193, 48623, 48623, 48623, 48623, 59193
 };
 
-class BMP_NdsIcon : public _bitmap {
+class BMP_NdsIcon : public _constbitmap {
 	public:
-		BMP_NdsIcon() : _bitmap(const_cast<_pixelArray>(BMP_NdsIcon_bmp), 6 , 9 ) { }
+		BMP_NdsIcon() : _constbitmap(const_cast<_pixelArray>(BMP_NdsIcon_bmp), 6 , 9 ) { }
 };
 
 #endif

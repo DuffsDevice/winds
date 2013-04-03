@@ -8,18 +8,18 @@ static const _pixel BMP_WindowHeader_bmp[10] = {
 60870, 61926, 59748, 59716, 60772, 60772, 60772, 60804, 60772, 54531
 };
 
-class BMP_WindowHeader : public _bitmap {
+class BMP_WindowHeader : public _constbitmap {
 	public:
-		BMP_WindowHeader() : _bitmap(const_cast<_pixelArray>(BMP_WindowHeader_bmp), 1, 10) { }
+		BMP_WindowHeader() : _constbitmap(const_cast<_pixelArray>(BMP_WindowHeader_bmp), 1, 10) { }
 };
 
 static const _pixel BMP_WindowHeaderBlurred_bmp[10] = {
 57900, 57933, 56811, 56811, 56811, 56811, 56843, 57867, 56811, 52617
 };
 
-class BMP_WindowHeaderBlurred : public _bitmap {
+class BMP_WindowHeaderBlurred : public _constbitmap {
 	public:
-		BMP_WindowHeaderBlurred() : _bitmap(const_cast<_pixelArray>(BMP_WindowHeaderBlurred_bmp), 1, 10) { }
+		BMP_WindowHeaderBlurred() : _constbitmap(const_cast<_pixelArray>(BMP_WindowHeaderBlurred_bmp), 1, 10) { }
 };
 
 #endif

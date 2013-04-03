@@ -19,9 +19,9 @@ static const _pixel BMP_TaskInfoLeftPart_bmp[90] = {
 59874, 59874
 };
 
-class BMP_TaskInfoLeftPart : public _bitmap {
+class BMP_TaskInfoLeftPart : public _constbitmap {
 	public:
-		BMP_TaskInfoLeftPart() : _bitmap(const_cast<_pixelArray>(BMP_TaskInfoLeftPart_bmp), 9, 10) { }
+		BMP_TaskInfoLeftPart() : _constbitmap(const_cast<_pixelArray>(BMP_TaskInfoLeftPart_bmp), 9, 10) { }
 };
 
 //
@@ -32,9 +32,9 @@ static const _pixel BMP_TaskInfoMiddlePart_bmp[10] = {
 62018, 63107, 61986, 61986, 61986, 61986, 63010, 63073, 63106, 59842
 };
 
-class BMP_TaskInfoMiddlePart : public _bitmap {
+class BMP_TaskInfoMiddlePart : public _constbitmap {
 	public:
-		BMP_TaskInfoMiddlePart() : _bitmap(const_cast<_pixelArray>(BMP_TaskInfoMiddlePart_bmp), 1, 10) { }
+		BMP_TaskInfoMiddlePart() : _constbitmap(const_cast<_pixelArray>(BMP_TaskInfoMiddlePart_bmp), 1, 10) { }
 };
 
 //
@@ -50,9 +50,9 @@ static const _pixel BMP_TaskInfoRightPart_bmp[60] = {
 59842, 59842, 59842, 59842, 59842
 };
 
-class BMP_TaskInfoRightPart : public _bitmap {
+class BMP_TaskInfoRightPart : public _constbitmap {
 	public:
-		BMP_TaskInfoRightPart() : _bitmap(const_cast<_pixelArray>(BMP_TaskInfoRightPart_bmp), 6, 10) { }
+		BMP_TaskInfoRightPart() : _constbitmap(const_cast<_pixelArray>(BMP_TaskInfoRightPart_bmp), 6, 10) { }
 };
 
 #endif

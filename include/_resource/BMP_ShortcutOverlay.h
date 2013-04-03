@@ -12,9 +12,9 @@ static const _pixel BMP_ShortcutOverlay_bmp[25] = {
 32768, 65535, 65535, 32768, 65535
 };
 
-class BMP_ShortcutOverlay : public _bitmap {
+class BMP_ShortcutOverlay : public _constbitmap {
 	public:
-		BMP_ShortcutOverlay() : _bitmap(const_cast<_pixelArray>(BMP_ShortcutOverlay_bmp), 5, 5) { }
+		BMP_ShortcutOverlay() : _constbitmap(const_cast<_pixelArray>(BMP_ShortcutOverlay_bmp), 5, 5) { }
 };
 
 #endif
