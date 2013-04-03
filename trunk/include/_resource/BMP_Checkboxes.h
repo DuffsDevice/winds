@@ -17,9 +17,9 @@ static const _pixel BMP_CheckboxChecked_bmp[49] = {
 65535, 65535, 65535, 65535, 65535, 65535, 65535, 
 };
 
-class BMP_CheckboxChecked : public _bitmap {
+class BMP_CheckboxChecked : public _constbitmap {
 	public:
-		BMP_CheckboxChecked() : _bitmap( const_cast<_pixelArray>(BMP_CheckboxChecked_bmp), 7, 7 ) { }
+		BMP_CheckboxChecked() : _constbitmap( const_cast<_pixelArray>(BMP_CheckboxChecked_bmp), 7, 7 ) { }
 };
 
 
@@ -37,9 +37,9 @@ static const _pixel BMP_CheckboxSemi_bmp[49] = {
 
 };
 
-class BMP_CheckboxSemi : public _bitmap {
+class BMP_CheckboxSemi : public _constbitmap {
 	public:
-		BMP_CheckboxSemi() : _bitmap( const_cast<_pixelArray>(BMP_CheckboxSemi_bmp), 7, 7 ) { }
+		BMP_CheckboxSemi() : _constbitmap( const_cast<_pixelArray>(BMP_CheckboxSemi_bmp), 7, 7 ) { }
 };
 
 
@@ -56,9 +56,9 @@ static const _pixel BMP_CheckboxUnchecked_bmp[49] = {
 65535, 65535, 65535, 65535, 65535, 65535, 65535,
 };
 
-class BMP_CheckboxUnchecked : public _bitmap {
+class BMP_CheckboxUnchecked : public _constbitmap {
 	public:
-		BMP_CheckboxUnchecked() : _bitmap( const_cast<_pixelArray>(BMP_CheckboxUnchecked_bmp), 7, 7 ) { }
+		BMP_CheckboxUnchecked() : _constbitmap( const_cast<_pixelArray>(BMP_CheckboxUnchecked_bmp), 7, 7 ) { }
 };
 
 

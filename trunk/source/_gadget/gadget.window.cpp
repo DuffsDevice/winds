@@ -264,7 +264,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style )
+	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::doubleClickable )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	

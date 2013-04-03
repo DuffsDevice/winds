@@ -15,9 +15,9 @@ static const _pixel BMP_FolderIcon_bmp[80] = {
 0	 , 41563, 41595, 41563, 41563, 40539, 40539, 40539, 41563, 0
 };
 
-class BMP_FolderIcon : public _bitmap {
+class BMP_FolderIcon : public _constbitmap {
 	public:
-		BMP_FolderIcon() : _bitmap(const_cast<_pixelArray>(BMP_FolderIcon_bmp), 10, 8) { }
+		BMP_FolderIcon() : _constbitmap(const_cast<_pixelArray>(BMP_FolderIcon_bmp), 10, 8) { }
 };
 
 #endif

@@ -4475,9 +4475,9 @@ static const _pixel BMP_Background_bmp[49152] = {
 57079, 58136, 59193, 59193
 };
 
-class BMP_Background : public _bitmap {
+class BMP_Background : public _constbitmap {
 	public:
-		BMP_Background() : _bitmap( const_cast<_pixelArray>(BMP_Background_bmp) , 256 , 192 ){ }
+		BMP_Background() : _constbitmap( const_cast<_pixelArray>(BMP_Background_bmp) , 256 , 192 ){ }
 };
 
 #endif

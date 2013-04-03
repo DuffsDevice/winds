@@ -16,7 +16,8 @@ enum class _callbackClassType : _u8 {
 enum class _callbackType : _u8 {
 	voidFunc,
 	intFunc,
-	eventFunc
+	eventFunc,
+	fastEventFunc
 };
 
 struct _callbackData
@@ -38,7 +39,8 @@ class _callback
 		
 		virtual void operator()() const = 0;
 		virtual int operator()( int ) const = 0;
-		virtual _callbackReturn operator()( _event ) const = 0;
+		virtual _callbackReturn operator()( _event&& ) const = 0;
+		_callbackReturn operator()( const _event& ev ) const { return this->operator()( _event( ev ) ); }
 		
 		_u8 operator==( const _callback& param ) const 
 		{

@@ -16,9 +16,9 @@ static const _pixel BMP_WindowButtonMinimize_bmp[64] = {
 0	 , 63977, 63977, 63977, 63977, 63977, 63977, 0	  
 };
 
-class BMP_WindowButtonMinimize : public _bitmap {
+class BMP_WindowButtonMinimize : public _constbitmap {
 	public:
-		BMP_WindowButtonMinimize() : _bitmap(const_cast<_pixelArray>(BMP_WindowButtonMinimize_bmp), 8, 8) { }
+		BMP_WindowButtonMinimize() : _constbitmap(const_cast<_pixelArray>(BMP_WindowButtonMinimize_bmp), 8, 8) { }
 };
 
 static const _pixel BMP_WindowButtonMaximize_bmp[64] = {
@@ -32,9 +32,9 @@ static const _pixel BMP_WindowButtonMaximize_bmp[64] = {
 0	 , 63977, 63977, 63977, 63977, 63977, 63977, 0	  
 };
 
-class BMP_WindowButtonMaximize : public _bitmap {
+class BMP_WindowButtonMaximize : public _constbitmap {
 	public:
-		BMP_WindowButtonMaximize() : _bitmap(const_cast<_pixelArray>(BMP_WindowButtonMaximize_bmp), 8, 8) { }
+		BMP_WindowButtonMaximize() : _constbitmap(const_cast<_pixelArray>(BMP_WindowButtonMaximize_bmp), 8, 8) { }
 };
 
 static const _pixel BMP_WindowButtonClose_bmp[64] = {
@@ -48,9 +48,9 @@ static const _pixel BMP_WindowButtonClose_bmp[64] = {
 0	 , 35029, 35029, 35029, 33974, 32950, 32917, 0		
 };
 
-class BMP_WindowButtonClose : public _bitmap {
+class BMP_WindowButtonClose : public _constbitmap {
 	public:
-		BMP_WindowButtonClose() : _bitmap(const_cast<_pixelArray>(BMP_WindowButtonClose_bmp), 8, 8) { }
+		BMP_WindowButtonClose() : _constbitmap(const_cast<_pixelArray>(BMP_WindowButtonClose_bmp), 8, 8) { }
 };
 
 #endif

@@ -8,9 +8,6 @@
 #include "_type/type.event.h"
 #include "_type/type.callback.h"
 
-// STD-Standards
-#include <nds/memory.h>
-
 //! Predefines
 class _gadget;
 class _gadgetScreen;
@@ -102,10 +99,10 @@ class _gadget
 		 * Standard/Default EventHandler that will handle
 		 * specific events if the 'normal' eventHandlers don't
 		 */
-		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
-		static _callbackReturn	gadgetDragHandler( _event event ) ITCM_CODE ;
-		static _callbackReturn	gadgetMouseHandler( _event event );
-		static _callbackReturn	gadgetKeyHandler( _event event ){
+		static _callbackReturn	gadgetRefreshHandler( _event&& event ) ITCM_CODE ;
+		static _callbackReturn	gadgetDragHandler( _event&& event );
+		static _callbackReturn	gadgetMouseHandler( _event&& event );
+		static _callbackReturn	gadgetKeyHandler( _event&& event ){
 			event.getGadget()->parent && event.getGadget()->parent->handleEvent( event );
 			return not_handled;
 		}
@@ -117,7 +114,7 @@ class _gadget
 		class eventForwardRefresh : public _staticCallback
 		{
 			private:
-				static _callbackReturn refreshForwardHandler( _event event ){ event.getGadget()->bubbleRefresh( true ); return handled; }
+				static _callbackReturn refreshForwardHandler( _event&& event ){ event.getGadget()->bubbleRefresh( true ); return handled; }
 			public:
 				// Ctor
 				eventForwardRefresh() :
@@ -129,11 +126,11 @@ class _gadget
 		class eventForwardRefreshGadget : public _classCallback
 		{
 			private:
-				_callbackReturn	refreshForwardHandler( _event event ){ ((_gadget*)this)->bubbleRefresh( true ); return handled; }
+				void refreshForwardHandler(){ ((_gadget*)this)->bubbleRefresh( true ); }
 			public:
 				// Ctor
 				eventForwardRefreshGadget( _gadget* g ) :
-					_classCallback( g , reinterpret_cast<_callbackReturn (_gadget::*)( _event )>( &eventForwardRefreshGadget::refreshForwardHandler ) )
+					_classCallback( g , reinterpret_cast<void (_gadget::*)()>( &eventForwardRefreshGadget::refreshForwardHandler ) )
 				{}
 		};
 		
@@ -142,7 +139,7 @@ class _gadget
 		class eventForward : public _staticCallback
 		{
 			private:
-				static _callbackReturn eventForwardHandler( _event event ){ event.getGadget()->handleEvent( event.setType( eT ) ); return handled; }
+				static _callbackReturn eventForwardHandler( _event event ){ event.getGadget()->handleEvent( (_event&&)event.setType( eT ) ); return handled; }
 			public:
 				// Ctor
 				eventForward() :
@@ -243,15 +240,16 @@ class _gadget
 		bool isDoubleClickable() const { return this->style.doubleClickable; }
 		
 		/**
-		 * Let an Event bubble from child to parent and so on...
-		 */
-		void bubbleEvent( _event e , bool includeThis = false ) ;
-		
-		/**
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		 */
-		void bubbleRefresh( bool includeThis = false , _event e = _event() );
+		void bubbleRefresh( bool includeThis , _event&& e );
+		void bubbleRefresh( bool includeThis , const _event& e ){ this->bubbleRefresh( includeThis , _event( e ) ); }
+		noinline void bubbleRefresh( bool includeThis = false ){
+			this->bubbleRefresh( includeThis , _event::refreshEvent(
+				{ this->getAbsoluteDimensions() } 
+			) );
+		}
 		
 		/**
 		 * Method to refresh itself
@@ -296,7 +294,17 @@ class _gadget
 		/**
 		 * Register a Event Handler to catch some events thrown on this Gadget
 		 */
-		void registerEventHandler( _eventType type , _callback* handler );
+		noinline void registerEventHandler( _eventType type , _callback* handler )
+		{
+			// Remove any Current Handler
+			_callback* &data = this->eventHandlers[type]; // reference to pointer
+			
+			if( data )
+				delete data; // Delete Current Event-Handler
+			
+			// Insert The Handler
+			data = handler;
+		}
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
@@ -304,15 +312,17 @@ class _gadget
 		void unregisterEventHandler( _eventType type );
 		
 		/**
-		 * Method to push an event onto the stack
+		 * Method to push an event to _system::_events_
 		 * This usually has nothing to do with the gadget it is invoked on!
 		 */
-		void populateEvent( _event event );
+		static void populateEvent( _event&& event );
+		static void populateEvent( const _event& event ){ _gadget::populateEvent( _event( event ) ); }
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically)
 		 */
-		void triggerEvent( _event event );
+		void triggerEvent( _event&& event );
+		void triggerEvent( const _event& event ){ this->triggerEvent( _event( event ) ); }
 		
 		/**
 		 * Check if this Gadget has an EventHandler registered reacting on the specified type
@@ -329,13 +339,13 @@ class _gadget
 		 * Make The Gadget act onto a specific GadgetEvent by only using user-registered event-handler if available
 		 */
 		_callbackReturn handleEventUser( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEventUser( const _event& event ){ return this->handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEvent( e );'
+		_callbackReturn handleEventUser( const _event& event ){ return this->handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventUser( e );'
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent by only using the Default event-handler if available
 		 */
 		_callbackReturn handleEventDefault( _event&& event ); 
-		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); }
+		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'
 		
 		/**
 		 * Get the absolute X-position

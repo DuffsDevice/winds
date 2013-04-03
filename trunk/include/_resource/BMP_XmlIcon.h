@@ -15,9 +15,9 @@ static const _pixel BMP_XmlIcon_bmp[80] = {
 49680, 49680, 49680
 };
 
-class BMP_XmlIcon : public _bitmap {
+class BMP_XmlIcon : public _constbitmap {
 	public:
-		BMP_XmlIcon() : _bitmap(const_cast<_pixelArray>(BMP_XmlIcon_bmp), 8, 10) { }
+		BMP_XmlIcon() : _constbitmap(const_cast<_pixelArray>(BMP_XmlIcon_bmp), 8, 10) { }
 };
 
 #endif

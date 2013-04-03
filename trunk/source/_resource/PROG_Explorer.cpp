@@ -15,7 +15,7 @@ void PROG_Explorer::main( _cmdArgs& args )
 	if( !args["path"].empty() )
 		this->path = args["path"];
 	
-	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable | _styleAttr::doubleClickable ) );
+	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable ) );
 	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path , _style::storeHost( this ) );
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
 	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );

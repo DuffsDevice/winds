@@ -237,6 +237,8 @@ _scrollButton::_scrollButton( _length width , _length height , _coord x , _coord
 	_button( width , height , x , y , "" , style )
 	, type( type )
 {
+	_gadget::setType( _gadgetType::scrollbutton );
+	
 	this->registerEventHandler( refresh , new _staticCallback( _scrollButton::refreshHandler ) );
 	
 	if( this->type == _scrollButtonType::buttonHandleX || this->type == _scrollButtonType::buttonHandleY )

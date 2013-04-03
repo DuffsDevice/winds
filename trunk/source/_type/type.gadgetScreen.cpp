@@ -35,7 +35,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 	const _user* user = _system::_runtimeAttributes_->user;
 	
 	// Temp...
-	_event event = _event().setCurrentKeyCodes( _system::getCurrentKeys() );
+	_event event = _event().setCurrentKeys( _system::getCurrentKeys() );
 	
 	// Increase clickCycles and prevent overflow
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )

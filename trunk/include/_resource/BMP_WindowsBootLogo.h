@@ -670,14 +670,14 @@ static const _pixel BMP_WindowsBootLogo_bmp[6580] = {
 32768, 32768
 };
 
-class BMP_WindowsBootLogo : public _bitmap {
+class BMP_WindowsBootLogo : public _constbitmap {
 	public:
-		BMP_WindowsBootLogo() : _bitmap(const_cast<_pixelArray>(BMP_WindowsBootLogo_bmp), 94, 70) { }
+		BMP_WindowsBootLogo() : _constbitmap(const_cast<_pixelArray>(BMP_WindowsBootLogo_bmp), 94, 70) { }
 };
 
-class BMP_WindowsBootLogoSmall : public _bitmap {
+class BMP_WindowsBootLogoSmall : public _constbitmap {
 	public:
-		BMP_WindowsBootLogoSmall() : _bitmap(const_cast<_pixelArray>(BMP_WindowsBootLogoSmall_bmp), 51, 13) { }
+		BMP_WindowsBootLogoSmall() : _constbitmap(const_cast<_pixelArray>(BMP_WindowsBootLogoSmall_bmp), 51, 13) { }
 };
 
 

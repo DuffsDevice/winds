@@ -16,9 +16,9 @@ static const _pixel BMP_ActionBtnNext_bmp[81] = {
 0	 , 34177, 35202, 35202, 34209, 34209, 33184, 33152, 0	
 };
 
-class BMP_ActionBtnNext : public _bitmap {
+class BMP_ActionBtnNext : public _constbitmap {
 	public:
-		BMP_ActionBtnNext() : _bitmap(const_cast<_pixelArray>(BMP_ActionBtnNext_bmp), 9, 9) { }
+		BMP_ActionBtnNext() : _constbitmap(const_cast<_pixelArray>(BMP_ActionBtnNext_bmp), 9, 9) { }
 };
 
 static const _pixel BMP_ActionBtnPrev_bmp[81] = {
@@ -33,9 +33,9 @@ static const _pixel BMP_ActionBtnPrev_bmp[81] = {
 0    , 34177, 35202, 35202, 34209, 34209, 33184, 33152, 0    
 };
 
-class BMP_ActionBtnPrev : public _bitmap {
+class BMP_ActionBtnPrev : public _constbitmap {
 	public:
-		BMP_ActionBtnPrev() : _bitmap(const_cast<_pixelArray>(BMP_ActionBtnPrev_bmp), 9, 9) { }
+		BMP_ActionBtnPrev() : _constbitmap(const_cast<_pixelArray>(BMP_ActionBtnPrev_bmp), 9, 9) { }
 };
 
 #endif

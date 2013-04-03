@@ -95,9 +95,6 @@ _lua_gadget::~_lua_gadget()
 	} 
 }
 
-//! bubbleEvent
-int _lua_gadget::bubbleEvent(lua_State* L){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->bubbleEvent( *e , luaL_optint( L , 2 , 0 ) ); return 0; }
-
 //! bubbleRefresh
 int _lua_gadget::bubbleRefresh(lua_State* L){ this->gadget->bubbleRefresh( luaL_optint( L , 1 , 0 ) ); return 0; }
 

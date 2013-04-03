@@ -21,9 +21,9 @@ static const _pixel BMP_DefaultUserIcon_bmp[144] = {
 64511
 };
 
-class BMP_DefaultUserIcon : public _bitmap {
+class BMP_DefaultUserIcon : public _constbitmap {
 	public:
-		BMP_DefaultUserIcon() : _bitmap(const_cast<_pixelArray>(BMP_DefaultUserIcon_bmp), 12 , 12 ) { }
+		BMP_DefaultUserIcon() : _constbitmap(const_cast<_pixelArray>(BMP_DefaultUserIcon_bmp), 12 , 12 ) { }
 };
 
 #endif

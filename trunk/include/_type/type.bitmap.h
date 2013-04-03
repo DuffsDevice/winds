@@ -15,7 +15,7 @@ class _bitmap
 	protected:
 	
 		_pixelArray	bmp;
-			
+		
 		_length		width;
 		_length		height;
 		
@@ -587,5 +587,7 @@ class _bitmap
 		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const ;
 		public:
 };
+
+typedef const _bitmap _constbitmap;
 
 #endif

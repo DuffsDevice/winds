@@ -1,7 +1,7 @@
 #include "_type/type.event.h"
 
 void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
-	this->dest = dest;
+	this->gadget = dest;
 	this->posX = 0;
 	this->posY = 0;
 	this->effectiveX = 0;
@@ -11,7 +11,6 @@ void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 	this->keyCode = 0;
 	this->currentKeyCodes = 0;
 	this->heldTime = 0;
-	this->bubble = false;
 	this->damagedRects.clearRects();
 }
 

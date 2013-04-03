@@ -21,7 +21,6 @@
 	LUA_CLASS_FUNC(g,isMouseClickRepeat), \
 	LUA_CLASS_FUNC(g,isDoubleClickable), \
 	LUA_CLASS_FUNC(g,requestsKeyboard), \
-	LUA_CLASS_FUNC(g,bubbleEvent), \
 	LUA_CLASS_FUNC(g,bubbleRefresh), \
 	LUA_CLASS_FUNC(g,refreshBitmap), \
 	LUA_CLASS_FUNC(g,getBitmapPort), \
@@ -97,9 +96,6 @@ class _lua_gadget{
 		
 		//! Lua-Dtor
 		int _delete( lua_State* L);
-		
-		//! bubbleEvent
-		int bubbleEvent(lua_State* L);
 		
 		//! bubbleRefresh
 		int bubbleRefresh(lua_State* L);

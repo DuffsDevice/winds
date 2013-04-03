@@ -17,9 +17,9 @@ static const _pixel BMP_MusicIcon_bmp[90] = {
 49680, 49680, 49680, 49680, 49680, 49680, 49680, 49680
 };
 
-class BMP_MusicIcon : public _bitmap {
+class BMP_MusicIcon : public _constbitmap {
 	public:
-		BMP_MusicIcon() : _bitmap(const_cast<_pixelArray>(BMP_MusicIcon_bmp), 8 , 10 ) { }
+		BMP_MusicIcon() : _constbitmap(const_cast<_pixelArray>(BMP_MusicIcon_bmp), 8 , 10 ) { }
 };
 
 #endif
