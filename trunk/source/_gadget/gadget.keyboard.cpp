@@ -451,7 +451,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	_screen::getBitmap().reset( NO_COLOR );
 	
 	const _font* fnt 		= _system::getFont( "CourierNew10" );
-	const _font* systemFont = _system::getFont( "Tahoma7" );
+	const _font* systemFont = _system::getFont( "SystemSymbols8" );
 	
 	//! Create the buttons
 	for( _u8 i = 0 ; i < 46 ; i++ )

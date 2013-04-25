@@ -602,7 +602,7 @@ _bitmap _direntry::getFileImage()
 	return BMP_FileIcon();
 }
 
-bool _direntry::unlink()
+bool _direntry::unlink( bool removeContnts )
 {
 	if( !this->exists )
 		return false;
@@ -610,7 +610,7 @@ bool _direntry::unlink()
 	if( this->mode != _direntryMode::closed && !this->close() )
 		return false; // Cannot close the file!
 	
-	if( std::remove( this->filename.c_str() ) == 0 )
+	if( ( !this->isDirectory() || std::remove( (this->filename + "/*").c_str() ) == 0 ) && std::remove( this->filename.c_str() ) == 0 )
 	{
 		this->exists = false;
 		return true;

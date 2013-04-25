@@ -5,9 +5,9 @@
 //#include "_type/type.list.h"
 #include <malloc.h>
 #include <list>
-#include <string>
 #include <map>
 #include <array>
+#include <string>
 using namespace std;
 
 //! Code-sections
@@ -44,7 +44,7 @@ typedef short unsigned int 	_pixel;
 typedef _pixel* 			_pixelArray;
 typedef float 				_float;
 typedef _u64 				_tempTime;
-typedef basic_string<char> 	_string;
+typedef string				_string;
 
 
 /**

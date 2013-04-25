@@ -25,6 +25,7 @@ enum class _gadgetType : _u8
 	textbox,
 	textarea,
 	counter,
+	calendar,
 	selectbox,
 	selectitem,
 	progressbar,

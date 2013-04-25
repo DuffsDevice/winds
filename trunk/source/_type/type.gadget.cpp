@@ -3,7 +3,7 @@
 #include "_type/type.system.h"
 
 _array<_callback*,13>
-	_gadget::defaultEventHandlers = {
+	_gadget::defaultEventHandlers = { {
 	/* refresh */ new _staticCallback( &_gadget::gadgetRefreshHandler ) ,
 	/* mouseClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
 	/* mouseDoubleClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
@@ -17,7 +17,7 @@ _array<_callback*,13>
 	/* dragStart */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
 	/* dragStop */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
 	/* dragging */ new _staticCallback( &_gadget::gadgetDragHandler )
-};
+} };
 
 
 _gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap ) :
@@ -485,7 +485,7 @@ void _gadget::removeChild( _gadget* child )
 
 void _gadget::addChild( _gadget* child )
 {	
-	if( !child )
+	if( !child || child->parent == this )
 		return;
 	
 	// Add it!
@@ -505,7 +505,7 @@ void _gadget::addChild( _gadget* child )
 
 void _gadget::addEnhancedChild( _gadget* child )
 {
-	if( !child )
+	if( !child || child->parent == this )
 		return;
 	
 	// Add it!
@@ -557,7 +557,7 @@ void _gadget::setDimensions( _rect rc )
 	
 	if( newAbsDim.width != absDim.width || newAbsDim.height != absDim.height )
 	{
-		this->bitmap.resize( rc.width , rc.height );
+		this->bitmap.resize( this->width , this->height );
 		this->handleEvent( onResize );
 		this->bubbleRefresh( true , _event::refreshEvent( absDim.combine( newAbsDim ) ) );
 	}
@@ -677,6 +677,9 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 {
 	_gadget* that = event.getGadget();
 	
+	if( event.hasClippingRects() )
+		that->handleEventUser( event );
+	
 	// Break up, if there are no children to paint!
 	if( that->children.empty() && that->enhancedChildren.empty() )
 		goto refreshEnd;
@@ -707,8 +710,8 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 			bP.clippingRects.reduce( dim );
 		}
 		
-		_rect clip = that->getSize().applyPadding( that->getPadding() );
-		
+		// Crop to area having the parents padding applied
+		bP.clippingRects.clipToIntersect( that->getSize().applyPadding( that->getPadding() ) );
 		
 		// Store padding in termporaries
 		_length padLeft = that->padLeft;
@@ -721,7 +724,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 			if( gadget->isInvisible() )
 				continue;
 			
-			_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop ).clipToIntersect( clip );
+			_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
 			
 			// Copy...
 			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
@@ -730,7 +733,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 			bP.clippingRects.reduce( dim );
 		}
 		
-		event.setDamagedRects( bP.clippingRects.toRelative( _2s32( -that->getAbsoluteX() , -that->getAbsoluteY() ) ) );
+		//event.setDamagedRects( bP.clippingRects.toRelative( _2s32( -that->getAbsoluteX() , -that->getAbsoluteY() ) ) );
 		
 	} //! New Section end
 	
@@ -738,8 +741,8 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 	refreshEnd:
 	
 	// Refresh 'my content'
-	if( event.hasClippingRects() )
-		that->handleEventUser( event );
+	//if( event.hasClippingRects() )
+	//	that->handleEventUser( event );
 	
 	return handled;
 }
@@ -984,6 +987,7 @@ map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::button , "button" },
 	{ _gadgetType::label , "label" },
 	{ _gadgetType::checkbox , "checkbox" },
+	{ _gadgetType::calendar , "calendar" },
 	{ _gadgetType::radiobox , "radiobox" },
 	{ _gadgetType::textbox , "textbox" },
 	{ _gadgetType::textarea , "textarea" },

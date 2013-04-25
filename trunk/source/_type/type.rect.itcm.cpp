@@ -111,3 +111,13 @@ _area _rect::combine( const _rect& r2 ) const
 	
 	return out;
 }
+
+_rect& _rect::clipToIntersect( const _rect& rect )
+{
+	return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
+}
+
+_rect& _rect::expandToInclude( const _rect& rect )
+{
+	return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
+}

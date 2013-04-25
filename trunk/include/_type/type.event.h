@@ -100,7 +100,12 @@ class _event
 		}
 		
 		_event( _eventType type ) :
-			type( type )
+			type( type ) 
+			, posX( 0 ) , posY( 0 )
+			, effectiveX( 0 ) , effectiveY( 0 )
+			, deltaX( 0 ) , deltaY( 0 )
+			, keyCode( 0 ) , currentKeyCodes( 0 )
+			, heldTime( 0 )
 		{ }
 		
 		//! Specific Events:

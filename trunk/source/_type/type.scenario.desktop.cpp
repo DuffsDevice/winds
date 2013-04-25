@@ -5,6 +5,7 @@
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.progressbar.h"
 #include "_gadget/gadget.keyboard.h"
+#include "_gadget/gadget.calendar.h"
 
 _scDesktop::_scDesktop()
 {
@@ -18,7 +19,7 @@ _scDesktop::_scDesktop()
 	
 	_direntry( "%SYSTEM%/explorer.exe" ).execute( { { "path" , "/LUA" } } );
 	
-	//_system::_gadgetHost_->addChild( new _progressbar( 50 , 50 , 50 , true ) );
+	_system::_gadgetHost_->addChild( new _calendar( 99 , 80 , 10 , 10 , _time::date( 2015 , 3 , 1 ) ) );
 }
 
 _scDesktop::~_scDesktop()

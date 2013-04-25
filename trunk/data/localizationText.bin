@@ -64,9 +64,9 @@ f = Annuler
 [lbl_dismiss]
 e = Dismiss
 g = Ignorieren
-i = 
-s =
-f =
+i = Ignora
+s = Dejar
+f = Laisser
 
 [lbl_to_continue]
 e = To Continue, click [Next]

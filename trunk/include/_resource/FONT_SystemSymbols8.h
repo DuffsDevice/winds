@@ -1,13 +1,13 @@
-#ifndef _FONT_TAHOMA7_
-#define _FONT_TAHOMA7_
+#ifndef _FONT_SYSTEMSYMBOLS8_
+#define _FONT_SYSTEMSYMBOLS8_
 
 #include "_type/type.h"
 #include "_type/type.memoryfont.h"
 
 /**
- * FONT_Tahoma7 font.
+ * FONT_SystemSymbols8 font.
  */
-class FONT_Tahoma7 : public _memoryfont {
+class FONT_SystemSymbols8 : public _memoryfont {
 	
 	public:
 
@@ -15,7 +15,7 @@ class FONT_Tahoma7 : public _memoryfont {
 		 * Constructor.
 		 * @param fixedWidth Set to 0 for proportional or a width for monospace
 		 */
-		FONT_Tahoma7( _u8 fixedWidth = 0 );
+		FONT_SystemSymbols8( _u8 fixedWidth = 0 );
 };
 
 #endif

@@ -25,7 +25,7 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 	bP.copyHorizontalStretch( 9 , 0 , bP.getWidth() - 15 , BMP_TaskInfoMiddlePart() ); // Middle Part
 	bP.copy( 0 , 0 , BMP_TaskInfoLeftPart() ); // Left Side
 	
-	that->time->setStrValue( _time().toString("%H:%M") );
+	that->time->setStrValue( _time::now().toString("%H:%M") );
 	
 	return use_default;
 }

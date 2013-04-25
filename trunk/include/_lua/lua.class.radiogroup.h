@@ -5,9 +5,10 @@
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.inputInterface.h"
-#include "_type/type.radiogroup.h"
+#include "_type/type.singlevaluegroup.h"
+#include "_gadget/gadget.radio.h"
 
-class _lua_radiogroup : public _radiogroup {
+class _lua_radiogroup : public _singleValueGroup<_radio> {
 	
 	public:
 		
@@ -25,7 +26,7 @@ class _lua_radiogroup : public _radiogroup {
 		
 		//! setIntValue
 		int setIntValue( lua_State* L );
-
+		
 		//! getIntValue
 		int getIntValue( lua_State* L );
 		

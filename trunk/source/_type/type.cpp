@@ -97,12 +97,12 @@ string int2string( _int val , _u8 zeroFill , _u8 numbersystem )
 {
 	char result[32]; // string which will contain the number
 	int i = 31;
-	while( val != 0 )
-	{
+	
+	do{
 		int remainder;
 		swiDivMod( val , numbersystem , &val , &remainder );
 		result[--i] = numbers[remainder];
-	}
+	}while( val );
 	
 	if( zeroFill )
 		while( i > 31 - zeroFill )

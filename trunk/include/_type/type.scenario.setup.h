@@ -4,18 +4,19 @@
 #include "_type/type.scenario.h"
 #include "_type/type.time.h"
 #include "_type/type.gadget.h"
-#include "_type/type.radiogroup.h"
+#include "_type/type.singlevaluegroup.h"
+#include "_gadget/gadget.radio.h"
 
 class _scSetup : public _scenario
 {
 	private:
 		
-		int 			state;
-		_gadget*		gadgets[20];
-		_radiogroup*	radiogroup;
-		string			profileName;
-		_u8				profileIcon;
-		_time			systemTime;
+		int 						state;
+		_gadget*					gadgets[20];
+		_singleValueGroup<_radio>*	radiogroup;
+		string						profileName;
+		_u8							profileIcon;
+		_time						systemTime;
 		
 		_callbackReturn refreshStateHandler( _event e );
 		_callbackReturn languageSelectHandler( _event e );
@@ -23,6 +24,7 @@ class _scSetup : public _scenario
 		_callbackReturn profileNameTextboxHandler( _event e );
 		_callbackReturn stateChangeButtonHandler( _event e );
 		_callbackReturn imagegadgetProfileIconHandler( _event e );
+		void refreshCounterValue();
 		
 		//! Function to remove all gadgets
 		void destruct( bool removeLanguagSelect = true );

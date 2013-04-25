@@ -82,7 +82,7 @@ class _rect{
 		_rect() : width( 0 ) , height( 0 ) , x( -1 ) , y( -1 ) {}
 		
 		//! Check for reasonable dimensions
-		bool isValid() const { return !( width < 1 || height < 1 ); }
+		bool isValid() const { return width > 0 && height > 0 ; }
 		
 		bool contains( const _coord x , const _coord y ) const {
 			return !( x < this->x || y < this->y || x > getX2() || y > getY2() );
@@ -107,19 +107,13 @@ class _rect{
 		}
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one
-		_rect& clipToIntersect( const _rect rect )
-		{
-			return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
-		}
+		_rect& clipToIntersect( const _rect& rect );
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle OR'd with this one
 		_area combine( const _rect& other ) const ;
 		
 		//! Returns a Rectangle containing both this rect and the passed one
-		_rect& expandToInclude( const _rect rect )
-		{
-			return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
-		}
+		_rect& expandToInclude( const _rect& rect );
 		
 		//! Expand the rect by applying a margin
 		_rect& applyMargin( const _margin p )
@@ -151,13 +145,13 @@ class _rect{
 		
 		bool intersectsWith( const _rect& other ) const 
 		{
-			return !( this->x > other.getX2() || this->getX2() < other.x || this->y > other.getY2() || this->getY2() < other.y ); 
+			return this->x < other.getX2() && this->getX2() > other.x && this->y < other.getY2() && this->getY2() > other.y; 
 		}
 		bool intersectsWith( const _area& other ) const;
 		
 		bool operator==( const _rect other )
 		{
-			return other.x != this->x && other.y != this->y && other.width != this->width && other.height != this->height;
+			return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
 		}
 		
 		noinline bool operator!=( const _rect other )

@@ -75,7 +75,7 @@ void _systemController::main()
 		// Wait for VBlank
 		swiWaitForVBlank();
 		
-		if( ++i > 50 
+		if( ++i > 200 
 			&& false 
 		)
 		{

@@ -123,6 +123,14 @@ _user::_user( string folderName ) :
 	_direntry::setWorkingDirectory( cwd );
 }
 
+
+void _user::createAs( string folderName )
+{
+	_iniStructure str = move( this->ini->getMap() );
+	*this = _user( folderName );
+	this->ini->getMap() = move( str );
+}
+
 _user::~_user()
 {
 	char buffer[18];
@@ -201,4 +209,9 @@ _s32 _user::getIntAttr( string idx )
 		return 0;
 	
 	return string2int( attr.c_str() );
+}
+
+void createAs( string folderName )
+{
+	
 }

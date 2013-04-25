@@ -202,8 +202,9 @@ class _direntry{
 		static void setWorkingDirectory( string dir );
 		
 		
-		//! To remove the file
-		virtual bool unlink();
+		//! To remove the file/directory
+		//! Pass 'true' to delete a non-empty directory
+		virtual bool unlink( bool removeContents = false );
 		
 		
 		//! To rename the file

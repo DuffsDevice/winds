@@ -665,10 +665,10 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 
 
 
-	unsigned fCheck,fDict,fLevel;
-	fCheck=(flg&15);
+	unsigned fDict;//,fCheck,fLevel;
+	//fCheck=(flg&15);
 	fDict=(flg&32)>>5;
-	fLevel=(flg&192)>>6;
+	//fLevel=(flg&192)>>6;
 
 	if(YsGenericPngDecoder::verboseMode==YSTRUE)
 	{

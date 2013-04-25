@@ -15,6 +15,7 @@ class _button : public _gadget {
 		const _font*	font;
 		_pixel			fontColor;
 		_u8				fontSize;
+		bool			pressed;
 		
 		//! Alignment
 		_align			align;
@@ -25,7 +26,6 @@ class _button : public _gadget {
 		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
 		
 		void init( string text );
 		

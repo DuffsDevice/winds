@@ -20,13 +20,15 @@ string _font::getName() const {
 
 #include "_resource/FONT_ArialBlack13.h"
 #include "_resource/FONT_CourierNew10.h"
-#include "_resource/FONT_Tahoma7.h"
+#include "_resource/FONT_System7.h"
+#include "_resource/FONT_SystemSymbols8.h"
 
 vector<_memoryfont*> builtInFonts =
 {
 	new FONT_ArialBlack13()
 	, new FONT_CourierNew10()
-	, new FONT_Tahoma7()
+	, new FONT_System7()
+	, new FONT_SystemSymbols8()
 };
 
 //! Receive a font, created from file
@@ -46,8 +48,10 @@ const _font* _font::fromFile( string path )
 		return builtInFonts[0];
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/couriernew10.ttf" ) )
 		return builtInFonts[1];
-	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/tahoma7.ttf" ) )
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/system7.ttf" ) )
 		return builtInFonts[2];
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/systemsymbols8.ttf" ) )
+		return builtInFonts[3];
 	
 	return nullptr;
 }
