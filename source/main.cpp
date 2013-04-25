@@ -1,12 +1,4 @@
 #include "_type/type.system.h"
-#include "_type/type.imagefile.h"
-#include "_type/type.callback.h"
-#include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.select.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.radio.h"
-#include "_gadget/gadget.window.h"
-#include "_gadget/gadget.progressbar.h"
 
 _callbackReturn dragHandler( _event event ){
 	_gadget* that = event.getGadget();

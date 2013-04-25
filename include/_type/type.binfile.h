@@ -1,7 +1,7 @@
 #ifndef _WIN_T_BINARYFILE_
 #define _WIN_T_BINARYFILE_
 
-// THis Class is mainly useless except for the fact that it can read built-in binary-files
+// This Class is mainly useless except for the fact that it can read built-in binary-files
 
 #include "_type/type.h"
 #include "_type/type.direntry.h"

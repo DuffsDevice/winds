@@ -21,9 +21,11 @@ _scSetup::_scSetup() :
 	, profileName( "Admin" )
 	, profileIcon( 0 )
 	, systemTime( _time::now() )
-{	
+{
 	// Reset all gadgets to nullptr
 	for( int i = 0; i < 20 ; this->gadgets[i++] = nullptr );
+	
+	_system::executeTimer( new _classCallback( this , &_scSetup::refreshCounterValue ) , 1000 , true );
 	
 	this->radiogroup = nullptr;
 	
@@ -91,8 +93,13 @@ _callbackReturn _scSetup::languageSelectHandler( _event e )
 _callbackReturn _scSetup::timeCounterHandler( _event e )
 {
 	// Set Time according to Counter-Value
-	systemTime.hour = ((_counter*)this->gadgets[12])->getIntValue();
-	systemTime.minute = ((_counter*)this->gadgets[13])->getIntValue();
+	systemTime.set( _timeAttr::hour , ((_counter*)this->gadgets[12])->getIntValue() , false );
+	systemTime.set( _timeAttr::minute , ((_counter*)this->gadgets[13])->getIntValue() , false );
+	systemTime.set( _timeAttr::second , ((_counter*)this->gadgets[14])->getIntValue() , false );
+	
+	_int seconds = systemTime.get( _timeAttr::second );
+	_int minutes = systemTime.get( _timeAttr::minute );
+	_int hours = systemTime.get( _timeAttr::hour );
 	
 	// Get Image and Bitmap
 	_imagegadget* clkImage = (_imagegadget*)(this->gadgets[16]);
@@ -120,14 +127,21 @@ _callbackReturn _scSetup::timeCounterHandler( _event e )
 		clkBmp.drawPixel( 25 + c2 , 25 + s2 , COLOR_WHITE );
 	}
 	
+	// Second
+	clkBmp.drawLine( 25 , 25
+		, 25 - cos( float( seconds + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
+		, 25 - sin( float( seconds + 15 ) * 6 / 180 * M_PI ) * 23 + 0.5 
+		, RGB255( 255 , 48 , 53 )
+	);
+	
 	// Minute
 	clkBmp.drawLine( 25 , 25
-		, 25 - cos( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
-		, 25 - sin( float( systemTime.minute + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
+		, 25 - cos( float( minutes + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
+		, 25 - sin( float( minutes + 15 ) * 6 / 180 * M_PI ) * 20 + 0.5 
 		, RGB( 21 , 24 , 31 )
 	);
 	
-	float hrAngleInRad = ( float( systemTime.hour + 3 ) * 30 + float( systemTime.minute ) / 2 ) / 180 * M_PI;
+	float hrAngleInRad = ( float( hours + 3 ) * 30 + float( minutes ) / 2 ) / 180 * M_PI;
 	
 	// Hour
 	clkBmp.drawLine( 25 , 25 
@@ -219,6 +233,31 @@ _callbackReturn _scSetup::stateChangeButtonHandler( _event e )
 	return handled;
 }
 
+void _scSetup::refreshCounterValue()
+{
+	if( this->gadgets[12] && this->gadgets[12]->getType() == _gadgetType::counter && this->gadgets[13] && this->gadgets[13]->getType() == _gadgetType::counter )
+	{
+		_counter* cnt1 = (_counter*) this->gadgets[12];
+		_counter* cnt2 = (_counter*) this->gadgets[13];
+		_counter* cnt3 = (_counter*) this->gadgets[14];
+		
+		if( cnt3->getIntValue() == 59 )
+		{
+			if( cnt2->getIntValue() == 59 )
+				cnt1->increase();
+			cnt2->increase();
+		}
+		
+		// Increase Seconds
+		cnt3->increase();
+		
+		// Refresh Clock-Image
+		this->timeCounterHandler( _none_ );
+	}
+	else
+		this->systemTime = _time( _u32(this->systemTime) + 1 );
+}
+
 
 _callbackReturn _scSetup::refreshStateHandler( _event e )
 {
@@ -281,32 +320,40 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 				this->gadgets[5] = slc;
 				that->addChild( slc );
 			}
-			_textarea* txt = new _textarea( 90 , 50 , 10 , 130 , "Hallo\nergergerghalloweltsgarten\nwtfiiiii\ngegr4ergerg" );
-			that->addChild( txt );
+			
+			//_textarea* txt = new _textarea( 90 , 50 , 10 , 130 , "Hallo\nergergerghalloweltsgarten\nwtfiiiii\ngegr4ergerg" );
+			//that->addChild( txt );
+			//this->gadgets[7] = txt;
+			
 			that->addChild( lbl );
 			this->gadgets[6] = lbl;
-			this->gadgets[7] = txt;
 			lbl->setColor( RGB( 30 , 30 , 30 ) );
 			break;
 		}
 		case 1:
 		{
-			// Create Label with shadow
-			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_welcome_to_winds") );
+			//! Create Label with shadow
+			//_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_welcome_to_winds") );
+			//this->gadgets[5] = lbl;
+			//lbl->setColor( RGB( 2 , 5 , 15 ) );
+			//lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_welcome_to_winds") );
-			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_few_step_setup") );
-			_label* lbl4 = new _label( 20 , 70 , _system::getLocalizedString("txt_few_step_setup_2") );
-			this->gadgets[5] = lbl;
-			this->gadgets[6] = lbl2;
-			this->gadgets[7] = lbl3;
-			this->gadgets[8] = lbl4;
-			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
-			lbl3->setColor( RGB( 30 , 30 , 30 ) );
-			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack13" ) );
 			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
-			that->addChild( lbl );
+			this->gadgets[6] = lbl2;
+			
+			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_few_step_setup") );
+			lbl3->setColor( RGB( 30 , 30 , 30 ) );
+			this->gadgets[7] = lbl3;
+			
+			_label* lbl4 = new _label( 20 , 70 , _system::getLocalizedString("txt_few_step_setup_2") );
+			lbl4->setColor( RGB( 30 , 30 , 30 ) );
+			this->gadgets[8] = lbl4;
+			
+			
+			
+			//that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
@@ -314,29 +361,35 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 		}
 		case 2:
 		{
-			// Create Label with shadow
-			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_system_preferences") );
+			//! Create Label with shadow
+			//_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_system_preferences") );
+			//this->gadgets[5] = lbl;
+			//lbl->setColor( RGB( 2 , 5 , 15 ) );
+			//lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			//that->addChild( lbl );
+			
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_system_preferences") );
 			_label* lbl3 = new _label( 32 , 55 , _system::getLocalizedString("txt_system_clock") );
 			_label* lbl4 = new _label( 32 , 140 , _system::getLocalizedString("txt_system_clock_auto_fetch_1") );
 			_label* lbl5 = new _label( 32 , 150 , _system::getLocalizedString("txt_system_clock_auto_fetch_2") );
 			
+			//! Create the Clock image as well as the counters that modify it
 			_bitmap bmp = _bitmap( 51 , 51 );
-			
 			_imagegadget* clockImg = new _imagegadget( 102 , 65 , bmp );
-			_counter* cnt1 = new _counter( 100 , 120 , 25 , true , systemTime.hour , 23 , 0 );
-			_counter* cnt2 = new _counter( 130 , 120 , 25 , true , systemTime.minute , 59 , 0 );
+			_counter* cnt1 = new _counter( 85 , 120 , 25 , true , systemTime.get( _timeAttr::hour ) , 23 , 0 );
+			_counter* cnt2 = new _counter( 115 , 120 , 25 , true , systemTime.get( _timeAttr::minute ) , 59 , 0 );
+			_counter* cnt3 = new _counter( 145 , 120 , 25 , true , systemTime.get( _timeAttr::second ) , 59 , 0 );
 			
 			cnt1->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
 			cnt2->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
+			cnt3->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
 			
-			_radiogroup* radgrp = new _radiogroup();
+			_singleValueGroup<_radio>* radgrp = new _singleValueGroup<_radio>();
 			_radio* rad1 = new _radio( 20 , 54 , radgrp );
 			_radio* rad2 = new _radio( 20 , 139 , radgrp );
-			radgrp->enableRadio( rad1 );
+			radgrp->enableSelector( rad1 );
 			this->radiogroup = radgrp;
 			
-			this->gadgets[5] = lbl;
 			this->gadgets[6] = lbl2;
 			this->gadgets[7] = lbl3;
 			this->gadgets[8] = lbl4;
@@ -345,16 +398,19 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			this->gadgets[11] = rad2;
 			this->gadgets[12] = cnt1;
 			this->gadgets[13] = cnt2;
-			
+			this->gadgets[14] = cnt3;
 			this->gadgets[16] = clockImg;
-			lbl->setColor( RGB( 2 , 5 , 15 ) );
+			
+			// Refresh Counter-Value and Clock-Image
+			_scSetup::refreshCounterValue();
+			
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
 			lbl5->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			
 			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
-			that->addChild( lbl );
+			
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
@@ -363,6 +419,7 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			that->addChild( rad2 );
 			that->addChild( cnt1 );
 			that->addChild( cnt2 );
+			that->addChild( cnt3 );
 			
 			// Refresh Clock-Image
 			cnt1->handleEvent( _event( onChange ) );
@@ -374,8 +431,13 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 		}
 		case 3:
 		{
-			// Create Label with shadow
-			_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_profile") );
+			//! Create Label with shadow
+			//this->gadgets[5] = lbl;
+			//lbl->setColor( RGB( 2 , 5 , 15 ) );
+			//lbl->setFont( _system::getFont( "ArialBlack13" ) );
+			//that->addChild( lbl );
+			//_label* lbl = new _label( 14 , 34 , _system::getLocalizedString("lbl_profile") );
+			
 			_label* lbl2 = new _label( 13 , 33 , _system::getLocalizedString("lbl_profile") );
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
@@ -391,7 +453,6 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			_imagegadget* image6 = new _imagegadget( 122 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/dripl.png" ) ) , _style::storeInt( 6 ) );
 			_imagegadget* image7 = new _imagegadget( 142 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/beachl.png" ) ) , _style::storeInt( 7 ) );
 			_imagegadget* image8 = new _imagegadget( 162 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/astronautl.png" ) ) , _style::storeInt( 8 ) );
-			this->gadgets[5] = lbl;
 			this->gadgets[6] = lbl2;
 			this->gadgets[7] = lbl3;
 			this->gadgets[8] = lbl4;
@@ -409,13 +470,10 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 				this->gadgets[i]->registerEventHandler( refresh , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
 				this->gadgets[i]->registerEventHandler( onFocus , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
 			}
-			lbl->setColor( RGB( 2 , 5 , 15 ) );
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
-			lbl->setFont( _system::getFont( "ArialBlack13" ) );
 			lbl2->setFont( _system::getFont( "ArialBlack13" ) );
-			that->addChild( lbl );
 			that->addChild( lbl2 );
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );

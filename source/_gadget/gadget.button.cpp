@@ -67,15 +67,15 @@ _callbackReturn _button::refreshHandler( _event event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
+	//if( event.hasClippingRects() )
+	//	bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
+	//else
 		bP.normalizeClippingRects();
 	
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	if( that->isPressed() )
+	if( that->pressed )
 	{
 		// Background
 		bP.fill( RGB( 25 , 25 , 25 ) );
@@ -149,7 +149,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	switch( that->getAlign() )
 	{
 		case _align::center:
-			x = ( myW - that->font->getStringWidth( that->getStrValue() , that->fontSize ) ) >> 1;
+			x = ( myW - that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 1 ) >> 1;
 			break;
 		case _align::left:
 			x = 0;
@@ -178,6 +178,17 @@ _callbackReturn _button::refreshHandler( _event event )
 	return use_default;
 }
 
+_callbackReturn _button::mouseHandler( _event event )
+{
+	// Update button status
+	event.getGadget<_button>()->pressed = event.getType() == onMouseEnter ? true : false;
+	
+	// Refresh
+	event.getGadget()->bubbleRefresh( true );
+	
+	return handled;
+}
+
 void _button::init( string text )
 {
 	this->style.doubleClickable = false;
@@ -187,14 +198,15 @@ void _button::init( string text )
 	this->font = _system::getFont();
 	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
 	this->fontColor = COLOR_BLACK;
+	this->pressed = false;
 	
 	this->vAlign = _valign::middle;
 	this->align = _align::center;
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_button::refreshHandler ) );
-	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
-	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
+	this->registerEventHandler( onMouseEnter , new _staticCallback( &_button::mouseHandler ) );
+	this->registerEventHandler( onMouseLeave , new _staticCallback( &_button::mouseHandler ) );
 	this->registerEventHandler( mouseClick , new _gadget::eventForward<onAction>() );
 	this->registerEventHandler( mouseRepeat , new _gadget::eventForward<onAction>() );
 	

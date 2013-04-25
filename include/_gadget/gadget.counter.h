@@ -16,9 +16,6 @@ class _counter : public _gadget{
 		_u8	 decimals;
 		_u8	 numbersystem;
 		
-		void increase(){ this->setIntValue( this->intValue + 1 ); }
-		void decrease(){ this->setIntValue( this->intValue - 1 ); }
-		
 		_scrollButton*	increaseHandle;
 		_scrollButton*	decreaseHandle;
 		_label*			valueLabel;
@@ -33,25 +30,37 @@ class _counter : public _gadget{
 		
 	public:
 		
+		//! Set the _counter's value
 		void	setIntValue( int value );
 		
+		//! Get the _counter's value
 		_s32	getIntValue(){ return this->intValue; }
 		
+		//! Set the Upper Bound of the valid range
 		void setUpperBound( _s32 upperBound )
 		{
 			this->upperBound = upperBound;
 			refreshDecimals();
 		}
 		
+		//! Set the Lower Bound of the valid range
 		void setLowerBound( _s32 lowerBound )
 		{
 			this->lowerBound = lowerBound;
 			refreshDecimals();
 		}
 		
+		//! Get the Lower Bound of the valid range
 		_s32 getLowerBound(){ return this->lowerBound; }
 		
+		//! Get the Upper Bound of the valid range
 		_s32 getUpperBound(){ return this->upperBound; }
+		
+		//! Increase the counter value
+		void increase(){ this->setIntValue( this->intValue + 1 ); }
+		
+		//! Decrease the counter value
+		void decrease(){ this->setIntValue( this->intValue - 1 ); }
 		
 		// Ctors
 		_counter( _coord x , _coord y , _length width , bool circular = false , _s32 value = 0 , _style style = _style() );

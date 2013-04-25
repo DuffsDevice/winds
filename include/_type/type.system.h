@@ -119,7 +119,8 @@ class _system{
 		static _keyboard*				_keyboard_;
 		static _screen*					_topScreen_;
 		static _registry*				_registry_;
-		static _ini*					_localizationTable_;
+		static _ini*					_localizationTextTable_;
+		static _ini*					_localizationMonthTable_;
 		static _runtimeAttributes*		_runtimeAttributes_;
 		
 		static void removeEventsOf( _gadget* g )
@@ -157,6 +158,10 @@ class _system{
 		
 		//! Get string
 		static const string& getLocalizedString( string name );
+		
+		//! Get localized month
+		//! Pass month from 0 - 11
+		static const string& getLocalizedMonth( _u8 month );
 		
 		//! Execute the passed callback after duration d and repeat if requested
 		static void executeTimer( const _callback* cb , _tempTime d , bool isRepeating = false );

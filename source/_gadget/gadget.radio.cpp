@@ -1,5 +1,5 @@
 #include "_gadget/gadget.radio.h"
-#include "_type/type.radiogroup.h"
+#include "_type/type.singlevaluegroup.h"
 
 // Graphics
 #include "_resource/BMP_Radiobuttons.h"
@@ -35,9 +35,9 @@ _callbackReturn _radio::mouseHandler( _event event )
 	_radio* that = event.getGadget<_radio>();
 	
 	// Ensure it is not check already
-	if( that->radiogroup && !that->getIntValue() )
+	if( that->group && !that->getIntValue() )
 	{
-		that->radiogroup->enableRadio( that );
+		that->group->enableSelector( that );
 		that->triggerEvent( _event( onChange ) );
 		that->bubbleRefresh( true );
 	}
@@ -45,13 +45,13 @@ _callbackReturn _radio::mouseHandler( _event event )
 	return handled;
 }
 
-_radio::_radio( _coord x , _coord y , _radiogroup* group , _s32 assocValue , _style style ) :
+_radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 assocValue , _style style ) :
 	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
 	, intValue( 0 )
-	, radiogroup( nullptr ) // Will be set when the _radio will be added to the _radiogroup
+	, group( nullptr ) // Will be set when the _radio will be added to the _radiogroup
 {
 	if( group )
-		group->addRadio( this , assocValue );
+		group->addSelector( this , assocValue );
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_radio::refreshHandler ) );
@@ -65,6 +65,6 @@ _radio::_radio( _coord x , _coord y , _radiogroup* group , _s32 assocValue , _st
 
 _radio::~_radio()
 {
-	if( this->radiogroup )
-		this->radiogroup->removeRadio( this );
+	if( this->group )
+		this->group->removeSelector( this );
 }

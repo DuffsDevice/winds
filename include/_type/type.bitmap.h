@@ -268,7 +268,11 @@ class _bitmap
 		 * @param color Color of the Pixel to set
 		 * @return void
 		 */
-		void drawPixel( _coord x , _coord y , _pixel color );
+		void drawPixel( _coord x , _coord y , _pixel color )
+		{
+			if( activeClippingRect.contains( x , y ) )
+				this->bmp[y * this->width + x] = color;
+		}
 		
 		/**
 		 * Fill a part of the memory with the color supplied
@@ -279,7 +283,9 @@ class _bitmap
 		 * @return void
 		 */
 		private:
-		void blitFill( _coord x , _coord y , _pixel color , _length length );
+		void blitFill( _coord x , _coord y , _pixel color , _length length ){
+			memSet( &this->bmp[ y * this->width + x ] , color , length );
+		}
 		public:
 		
 		/**

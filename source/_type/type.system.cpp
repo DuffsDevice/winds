@@ -246,13 +246,13 @@ void _system::processEvents()
 			// Temp...
 			_gadget* gadget = event.getDestination();
 			
-			int t = cpuGetTiming();
+			//int t = cpuGetTiming();
 			
 			// Make the Gadget ( if one is specified ) react on the event
 			if( gadget != nullptr )
 				gadget->handleEvent( (_event&&)event );
 			
-			printf("%d\n",cpuGetTiming()-t);
+			//printf("%d\n",cpuGetTiming()-t);
 			return true;
 		}
 	);
@@ -508,8 +508,13 @@ void _system::start()
 		_system::_registry_ = new _registry("%WINDIR%/windows.reg");
 		
 		// Localization of Strings
-		_system::_localizationTable_ = new _ini( _binfile( "%SYSTEM%/localizedstrings.ini" ) );
-		_system::_localizationTable_->read();
+		_system::_localizationTextTable_ = new _ini( _binfile( "%SYSTEM%/localizationText.ini" ) );
+		_system::_localizationTextTable_->read();
+		
+		// Localization of Months
+		_system::_localizationMonthTable_ = new _ini( _binfile( "%SYSTEM%/localizationMonth.ini" ) );
+		_system::_localizationMonthTable_->read();
+		
 	
 	// -----------------------------------------------
 	// Gadget-System
@@ -523,7 +528,8 @@ void _system::start()
 	
 		_system::_fonts_["ArialBlack13"]	= _font::fromFile( "%SYSTEM%/arialblack13.ttf");
 		_system::_fonts_["CourierNew10"]	= _font::fromFile( "%SYSTEM%/couriernew10.ttf");
-		_system::_fonts_["Tahoma7"]			= _font::fromFile( "%SYSTEM%/tahoma7.ttf");
+		_system::_fonts_["System7"]			= _font::fromFile( "%SYSTEM%/system7.ttf");
+		_system::_fonts_["SystemSymbols8"]	= _font::fromFile( "%SYSTEM%/systemsymbols8.ttf");
 }
 
 _language _system::getLanguage()
@@ -642,12 +648,26 @@ const string& _system::getLocalizedString( string name )
 	// Use static variable instead of just returning "[]", because of warning!
 	static string def = "[]";
 	
-	auto& tmp = _system::_localizationTable_->getMap();
+	auto& tmp = _system::_localizationTextTable_->getMap();
+	
 	if( !tmp.count( name ) || !tmp[name].count( _system::_curLanguageShortcut_ ) )
 		return def;
-	return _system::_localizationTable_->getMap()[name][_system::_curLanguageShortcut_];
+	return tmp[name][_system::_curLanguageShortcut_];
 }
 
+const string& _system::getLocalizedMonth( _u8 month )
+{
+	// Use static variable instead of just returning "[]", because of warning!
+	static string def = "[]";
+	
+	auto& tmp = _system::_localizationMonthTable_->getMap();
+	
+	string key = int2string( month );
+	
+	if( !tmp.count( key ) || !tmp[key].count( _system::_curLanguageShortcut_ ) )
+		return def;
+	return tmp[key][_system::_curLanguageShortcut_];
+}
 
 //! Static Attributes...
 bool 							_system::_sleeping_ = false;
@@ -655,7 +675,8 @@ _list<_animation*>				_system::_animations_;
 _list<_pair<const _callback*,
 		_callbackData>>			_system::_timers_;
 _map<string,const _font*>				_system::_fonts_;
-_ini*							_system::_localizationTable_;
+_ini*							_system::_localizationTextTable_;
+_ini*							_system::_localizationMonthTable_;
 string							_system::_curLanguageShortcut_;
 _list<_pair<_program*,_cmdArgs>>_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;

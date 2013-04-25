@@ -1,7 +1,8 @@
 #include "_type/type.binfile.h"
 #include <stdio.h>
 
-#include "strings_bin.h"
+#include "localizationText_bin.h"
+#include "localizationMonth_bin.h"
 
 _binfile::operator string()
 {
@@ -14,8 +15,10 @@ _binfile::operator string()
 	// Convert to lowerspace
 	transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
 	
-	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizedstrings.ini") )
-		return string( (const char*)strings_bin );
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationtext.ini") )
+		return string( (const char*)localizationText_bin );
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationmonth.ini") )
+		return string( (const char*)localizationMonth_bin );
 
 	return "";
 }

@@ -80,6 +80,9 @@ class _user : public _registry
 		
 		//! Read a string value from the registry
 		string getStrAttr( string idx ){ return _registry::readIndex( "_global_" , idx ); }
+		
+		//! Saves the data of this user class to a folder
+		void createAs( string folderName );
 };
 
 #endif

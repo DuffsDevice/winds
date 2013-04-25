@@ -1,7 +1,6 @@
 #include "_type/type.bitmap.h"
 #include "func.memory.h"
 
-#include <nds/timers.h>
 #include <nds/arm9/math.h>
 
 void _bitmap::setWidth( _length w )
@@ -9,35 +8,39 @@ void _bitmap::setWidth( _length w )
 	// limit
 	w = max( w , _length(1) );
 	
-	if( this->width == w || !this->isValid() )
+	if( this->width == w )
 		return;
 	
-	_pixelArray newBmp;
-	
-	if( this->wasAllocated )
+	if( this->isValid() )
 	{
-		newBmp = new _pixel[ w * this->height ];
-		memSet( newBmp , 0 , w * this->height );
-	}
-	else
-		newBmp = this->bmp;
+		// Temp...
+		_pixelArray newBmp;
 		
-	if( w < this->width )
-	{
-		for( _u32 y = 0; y != this->height ; y++ )
-			for( _u32 x = 0; x != w ; x++ )
-				newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+		if( this->wasAllocated )
+		{
+			newBmp = new _pixel[ w * this->height ];
+			memSet( newBmp , 0 , w * this->height );
+		}
+		else
+			newBmp = this->bmp;
+			
+		if( w < this->width )
+		{
+			for( _u32 y = 0; y != this->height ; y++ )
+				for( _u32 x = 0; x != w ; x++ )
+					newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+		}
+		else
+		{
+			for( _u32 y = this->height ; y != 0 ; y-- )
+				for( _u32 x = this->width ; x != 0 ; x-- )
+					newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
+		}
+		
+		// Finish work, copy buffers and free unused memory
+		this->destruct();
+		this->bmp = newBmp;
 	}
-	else
-	{
-		for( _u32 y = this->height ; y != 0 ; y-- )
-			for( _u32 x = this->width ; x != 0 ; x-- )
-				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
-	}
-	
-	// Finish work, copy buffers and free unused memory
-	this->destruct();
-	this->bmp = newBmp;
 	
 	// adjust Size and reset clipping
 	this->width = w;
@@ -49,11 +52,11 @@ void _bitmap::setHeight( _length h )
 	// limit
 	h = max( h , _length(1) );
 	
-	if( this->height == h || !this->isValid() )
+	if( this->height == h )
 		return;
 	
 	// Only copy data if the underlying data is autoAllocated!
-	if( this->wasAllocated )
+	if( this->wasAllocated && this->isValid() )
 	{
 		_pixelArray newBmp = new _pixel[ h * this->width ];
 		_pixelArray tmpNew = newBmp;
@@ -76,67 +79,59 @@ void _bitmap::setHeight( _length h )
 }
 
 void _bitmap::resize( _length w , _length h )
-{
-	if( !this->isValid() )
-		return;
-	
+{	
 	// limit
 	h = max( h , _length(1) );
 	w = max( w , _length(1) );
-	
-	if( !w || !h )
-		return;
-	else if( this->width == w )
-	{
-		this->setHeight( height );
-		return;
-	}
-	else if( this->height == h )
-	{
-		this->setWidth( width );
-		return;
-	}
 	
 	//
 	// Do the actual resizing
 	//
 	
-	// Choose ptr to work on
-	_pixelArray newBmp;
-	
-	if( this->wasAllocated )
-		newBmp = new _pixel[ w * h ];
-	else
-		newBmp = this->bmp;
-	
-	// Resize
-	if( w < this->width )
-	{
-		for( _u32 y = 0; y != min( this->height , h ) ; y++ )
-			for( _u32 x = 0; x != w ; x++ )
-				newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+	if( this->isValid() )
+	{		
+		// Choose ptr to work on
+		_pixelArray newBmp;
+		
+		if( this->wasAllocated )
+			newBmp = new _pixel[ w * h ];
+		else
+			newBmp = this->bmp;
+		
+		// Resize
+		if( w < this->width )
+		{
+			for( _u32 y = 0; y != min( this->height , h ) ; y++ )
+				for( _u32 x = 0; x != w ; x++ )
+					newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+		}
+		else if( w > this->width )
+		{
+			for( _u32 y = min( this->height , h ) ; y != 0 ; y-- )
+				for( _u32 x = this->width ; x != 0 ; x-- )
+					newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
+		}
+		else
+		{
+			_pixelArray tmpNew = newBmp;
+			_pixelArray oldBmp = this->bmp;
+			
+			_u32 cnt = min( h , this->height ) * this->width;
+			
+			do
+				*tmpNew++ = *oldBmp++;
+			while( --cnt );
+		}
+		
+		// Finish work, copy buffers, free the old (if needed)
+		this->destruct();
+		this->bmp = newBmp;
 	}
-	else
-	{
-		for( _u32 y = min( this->height , h ) ; y != 0 ; y-- )
-			for( _u32 x = this->width ; x != 0 ; x-- )
-				newBmp[ ( y - 1 ) * w + x - 1 ] = this->bmp[ ( y - 1 ) * this->width + x - 1 ];
-	}
-	
-	// Finish work, copy buffers, free the old (if needed)
-	this->destruct();
-	this->bmp = newBmp;
 	
 	// adjust Size and reset clipping
 	this->width = w;
 	this->height = h;
 	this->resetClippingRect(); 
-}
-
-void _bitmap::drawPixel( _coord x , _coord y , _pixel color )
-{
-	if( activeClippingRect.contains( x , y ) )
-		this->bmp[y * this->width + x] = color;
 }
 
 void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
@@ -998,10 +993,6 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	// Return false if no box to draw
 	// Return true as box can be drawn
 	return bottom >= top;
-}
-
-void _bitmap::blitFill( _coord x , _coord y , _pixel color , _length length ){
-	memSet( &this->bmp[ y * this->width + x ] , color , length );
 }
 
 // Internal routine
