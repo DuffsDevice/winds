@@ -1,4 +1,5 @@
 #include "_gadget/gadget.keyboard.h"
+#include "_gadget/gadget.keyboard.button.h"
 #include "_gadget/gadget.windows.h"
 #include "_type/type.animation.h"
 #include "_type/type.system.h"
@@ -9,8 +10,6 @@
 
 #include "_resource/BMP_Grip.h"
 //#include "_resource/BMP_Background.h"
-
-_bitmap Grip = BMP_Grip();
 
 const int sStart = 0;
 const int sSwap = 34;
@@ -150,7 +149,7 @@ void _keyboard::prepareAnimation()
 	this->anim.setToValue( sEnd );
 }
 
-void _keyboard::close()
+void _keyboard::close( bool useAnim )
 {
 	// Set Animation parameters
 	this->prepareAnimation();
@@ -171,10 +170,18 @@ void _keyboard::close()
 	if( this->toX == this->fromX && this->toY == this->fromY && this->toFactor == this->fromFactor && this->toKeyboardExpansion == this->fromKeyboardExpansion )
 		return;
 	
-	this->anim.start();
+	// Reset Keyboard
+	if( useAnim )
+		this->anim.start();
+	else
+	{
+		anim.terminate();
+		this->curState = sStart;
+		this->setState( sEnd );
+	}
 }
 
-void _keyboard::open()
+void _keyboard::open( bool useAnim )
 {
 	manuallyOpened = true;
 	
@@ -239,7 +246,15 @@ void _keyboard::open()
 	if( this->toX == this->fromX && this->toY == this->fromY && this->toFactor == this->fromFactor && this->toKeyboardExpansion == this->fromKeyboardExpansion )
 		return;
 	
-	this->anim.start();
+	// Reset Keyboard
+	if( useAnim )
+		this->anim.start();
+	else
+	{
+		anim.terminate();
+		this->curState = sStart;
+		this->setState( sEnd );
+	}
 }
 
 _callbackReturn _keyboard::refreshHandler( _event event )
@@ -255,13 +270,13 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 		bP.normalizeClippingRects();
 	
 	//! Unused
-	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , Grip );
+	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , BMP_Grip() );
 	//bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
 	//bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , RGB( 3 , 3 , 3 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
 	
-	bP.copyTransparent( that->handlePosition , 0 , Grip );
+	bP.copyTransparent( that->handlePosition , 0 , BMP_Grip() );
 	bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
 	bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
@@ -283,17 +298,20 @@ void _keyboard::refreshKeys()
 	auto textmap = _system::_runtimeAttributes_->keyboardText[ useShiftMap ];
 	auto charmap = _system::_runtimeAttributes_->keyboardChar[ useShiftMap ];
 	
-	for( _u8 i = 0 ; i < 46 ; i++ )
+	int i = 0;
+	
+	for( _gadget* btn : this->children )
 	{
 		if( i == 30 /* Caps Lock */ )
-			this->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->caps ][ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->caps ][ i ] );
 		else if( i == 45 || i == 40 /* Shift */ )
-			this->buttons[i]->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->shift ][ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->shift ][ i ] );
 		else
 		{
-			this->buttons[i]->setStrValue( textmap[i] );
-			this->buttons[i]->setKey( charmap[i] );
+			((_keyboardButton*)btn)->setStrValue( textmap[i] );
+			((_keyboardButton*)btn)->setKey( charmap[i] );
 		}
+		i++;
 	}
 }
 
@@ -316,6 +334,18 @@ _callbackReturn _keyboard::keyHandler( _event event )
 		{
 			that->caps = !that->caps;
 			that->refreshKeys();
+		}
+	}
+	else if( event.getKeyCode() == DSWindows::KEY_WINDOWS )
+	{
+		if( event.getType() == keyClick && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+		{
+			_windows* win = (_windows*)_system::_gadgetHost_;
+			
+			if( win->isStartMenuOpened() )
+				win->closeStartMenu();
+			else
+				win->openStartMenu();
 		}
 	}
 	else
@@ -454,26 +484,27 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	const _font* systemFont = _system::getFont( "SystemSymbols8" );
 	
 	//! Create the buttons
-	for( _u8 i = 0 ; i < 46 ; i++ )
+	for( _s8 i = 45 ; i >= 0 ; i-- )
 	{
-		this->buttons[i] = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
+		_keyboardButton* btn = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
+		
 		switch( i )
 		{
 			case 45: // Right Shift
 			case 40: // Left Shift
-				this->buttons[i]->setAutoSelect( true );
-				this->buttons[i]->setStyle( this->buttons[i]->getStyle() | _styleAttr::mouseClickDefault );
+				btn->setAutoSelect( true );
+				btn->setStyle( btn->getStyle() | _styleAttr::mouseClickDefault );
 			case 41: // Windows-Button
 			case 39: // Carriage Return
 			case 30: // Caps
 			case 29: // Backspace
-				this->buttons[i]->setFont( systemFont );
+				btn->setFont( systemFont );
 				break;
 			default:
-				this->buttons[i]->setFont( fnt );
+				btn->setFont( fnt );
 				break;
 		}
-		this->addChild( this->buttons[i] );
+		this->addChild( btn );
 	}
 	
 	//! Animations
@@ -500,6 +531,9 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 _keyboard::~_keyboard()
 {	
 	this->removeChildren( true );
+	
+	// Reset Bitmap
+	this->bitmap.reset( NO_COLOR );
 }
 
 _gadget*	_keyboard::lastCurrentFocus = nullptr;

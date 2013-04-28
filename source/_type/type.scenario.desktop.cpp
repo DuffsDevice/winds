@@ -9,9 +9,6 @@
 
 _scDesktop::_scDesktop()
 {
-	// Clean up	
-	_system::deleteGadgetHost();
-	_system::deleteKeyboard();
 	
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );

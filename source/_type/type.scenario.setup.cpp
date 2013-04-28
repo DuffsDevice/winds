@@ -29,10 +29,6 @@ _scSetup::_scSetup() :
 	
 	this->radiogroup = nullptr;
 	
-	// Clean up
-	_system::deleteGadgetHost();
-	_system::deleteKeyboard();
-	
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , 117 );
 	
