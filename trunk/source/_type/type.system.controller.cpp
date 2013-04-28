@@ -25,6 +25,10 @@ void _systemController::controllerVBL()
 	
 	_systemController::dirty = false;
 	
+	// Clean up
+	_system::deleteGadgetHost();
+	_system::deleteKeyboard();
+	
 	// Create new state
 	switch( _systemController::state )
 	{

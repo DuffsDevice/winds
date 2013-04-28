@@ -3,7 +3,6 @@
 
 // Graphics
 #include "_resource/BMP_Radiobuttons.h"
-#include "_resource/BMP_WindowHeader.h"
 
 const _bitmap _radio::graphic[4] = { BMP_RadioChecked() , BMP_RadioUnchecked() , BMP_RadioBorder() , BMP_RadioBorderPressed() };
 

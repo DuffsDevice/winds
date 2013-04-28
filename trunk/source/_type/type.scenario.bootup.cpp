@@ -11,10 +11,6 @@ void callback()
 
 _scBootup::_scBootup()
 {
-	//Clean up	
-	_system::deleteGadgetHost();
-	_system::deleteKeyboard();
-
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _bootupScreen( _system::_bgIdBack_ );
 	

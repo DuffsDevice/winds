@@ -173,7 +173,10 @@ void _system::deleteGadgetHost()
 void _system::deleteKeyboard()
 {
 	if( _system::_keyboard_ )
-	{
+	{		
+		// Close Keyboard
+		_system::_keyboard_->close( false );
+		
 		irqDisable( IRQ_VBLANK ); // Enter critical Section
 		
 		// Remove the keyboard!
@@ -296,33 +299,37 @@ void _system::processInput()
 	if( !_system::_keyboard_ || !_system::_keyboard_->processTouch( keys & KEY_TOUCH , t ) )
 		_system::_gadgetHost_->processTouch( keys & KEY_TOUCH , t );
 	
-	if( keysDown() & KEY_SELECT )
+	if( _system::_keyboard_ )
 	{
-		if( _system::_keyboard_->isOpened() )
-			_system::_keyboard_->close();
-		else
-			_system::_keyboard_->open();
-	}
-	if( keysDown() & KEY_L )
-	{
-		if( _system::_keyboard_->isOpened() )
+		if( keysDown() & KEY_SELECT )
 		{
-			if( _system::_keyboard_->isShift() )
-				_system::_keyboard_->setShift( false );
+			if( _system::_keyboard_->isOpened() )
+				_system::_keyboard_->close();
 			else
-				_system::_keyboard_->setShift( true );
+				_system::_keyboard_->open();
+		}
+		if( keysDown() & KEY_L )
+		{
+			if( _system::_keyboard_->isOpened() )
+			{
+				if( _system::_keyboard_->isShift() )
+					_system::_keyboard_->setShift( false );
+				else
+					_system::_keyboard_->setShift( true );
+			}
+		}
+		if( keysDown() & KEY_R )
+		{
+			if( _system::_keyboard_->isOpened() )
+			{
+				if( _system::_keyboard_->isCaps() )
+					_system::_keyboard_->setCaps( false );
+				else
+					_system::_keyboard_->setCaps( true );
+			}
 		}
 	}
-	if( keysDown() & KEY_R )
-	{
-		if( _system::_keyboard_->isOpened() )
-		{
-			if( _system::_keyboard_->isCaps() )
-				_system::_keyboard_->setCaps( false );
-			else
-				_system::_keyboard_->setCaps( true );
-		}
-	}
+	
 	if( keysDown() & KEY_START && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
 	{
 		_windows* win = (_windows*)_system::_gadgetHost_;
@@ -332,7 +339,7 @@ void _system::processInput()
 		else
 			win->openStartMenu();
 	}
-	
+
 	if( !_system::_currentFocus_ && !_system::_gadgetHost_ )
 		return;
 	

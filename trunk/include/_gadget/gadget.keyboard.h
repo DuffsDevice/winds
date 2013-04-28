@@ -4,9 +4,6 @@
 
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.animation.h"
-#include "_gadget/gadget.keyboard.button.h"
-
-class _keyboardButton;
 
 class _keyboard : public _gadgetScreen {
 	
@@ -32,8 +29,6 @@ class _keyboard : public _gadgetScreen {
 		
 		//! Images...
 		static _bitmap* bg;
-		
-		_keyboardButton* buttons[46];
 		
 		//! State-Saver
 		bool			dragMe;
@@ -64,10 +59,10 @@ class _keyboard : public _gadgetScreen {
 	public:
 		
 		//! Open!
-		void open();
+		void open( bool useAnim = true );
 		
 		//! Close
-		void close();
+		void close( bool useAnim = true );
 		
 		//! Check if opened
 		bool isOpened(){ return this->mode; }
