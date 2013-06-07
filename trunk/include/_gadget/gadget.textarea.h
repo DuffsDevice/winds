@@ -55,7 +55,7 @@ class _textarea : public _gadget{
 		//! Set the Text to be displayed
 		void setStrValue( string val ){ this->text.setText( val ); this->checkRefresh(); }
 		
-		//! Get the Text of the label
+		//! Get the Text of the textbox
 		string getStrValue(){ return this->text.getText(); }
 		
 		//! Get Text Font

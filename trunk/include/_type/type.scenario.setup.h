@@ -12,10 +12,11 @@ class _scSetup : public _scenario
 	private:
 		
 		int 						state;
-		_gadget*					gadgets[20];
+		_array<_gadget*,20>			gadgets;
 		_singleValueGroup<_radio>*	radiogroup;
 		string						profileName;
-		_u8							profileIcon;
+		string						profileIconFileName;
+		_u8							profileIconNumber;
 		_time						systemTime;
 		
 		_callbackReturn refreshStateHandler( _event e );

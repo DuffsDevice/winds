@@ -2,20 +2,58 @@
 #include "_type/type.memoryfont.h"
 #include "_type/type.freetypefont.h"
 #include "_type/type.direntry.h"
+#include "_type/type.textphrases.h"
 
-_font::_font( string newName ) 
-	: name( newName )
-{ }
-
-_u16 _font::getStringWidth( string str , _u8 fontSize ) const {
+_length _font::getStringWidth( const _char* str , _u8 fontSize ) const
+{
+	if( !str || !*str )
+		return 0;
+	
 	_u16 tempX = 0;
-	for( const _char& ch : str )
-		tempX += 1 + this->getCharacterWidth( ch , fontSize );
+	const _font* font = this;
+	
+	do
+	{
+		if( stringExtractor::processChar( str , fontSize , font ) )
+		{
+			_length width = font->getCharacterWidth( *str , fontSize );
+			if( width )
+				tempX += width + 1;
+		}
+		
+	}while( *++str );
+	
 	return tempX;
 }
 
-string _font::getName() const {
-	return this->name;
+_length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fontSize ) const
+{
+	if( !str || !*str )
+		return 0;
+	
+	const _font* font = this;
+	
+	_length tempX = 0;
+	_length numChars = 0;
+	
+	while( true )
+	{
+		if( stringExtractor::processChar( str , fontSize , font ) )
+		{
+			_length cWidth = font->getCharacterWidth( *str , fontSize );
+			if( cWidth )
+				tempX += cWidth + 1;
+			// Check Bounds
+			if( tempX > width )
+				return numChars;
+			numChars++;
+		}
+		
+		if( !*++str )
+			break;
+	}
+	
+	return numChars;
 }
 
 #include "_resource/FONT_ArialBlack13.h"

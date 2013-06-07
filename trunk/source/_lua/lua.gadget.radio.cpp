@@ -19,6 +19,6 @@ Lunar<_lua_radio>::FunctionType _lua_radio::methods[] = {
 
 Lunar<_lua_radio>::PropertyType _lua_radio::properties[] = {
 	GADGET_ATTRS( _lua_radio ),
-	{ "intValue" , &_lua_radio::getIntValue , &_lua_radio::setIntValue },
+	{ "checked" , &_lua_radio::getIntValue , &_lua_radio::setIntValue },
 	LUA_CLASS_ATTR_END
 };

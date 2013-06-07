@@ -64,7 +64,7 @@ string dirname( string path )
 
 void _direntry::replaceASSOCS( string& path )
 {
-	for( auto& assoc : _system::_runtimeAttributes_->assocDirectories )
+	for( const _pair<string,string>& assoc : _system::_rtA_->getAssociativeDirectories() )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )
@@ -441,7 +441,7 @@ string _direntry::readString( _u32 size )
 	string out;
 	
 	// Temp...
-	char* text = new char[size];
+	_char* text = new _char[size];
 	
 	// Read the Contents
 	_u32 actualSize = fread( text , sizeof(_char) , size , this->fHandle );
@@ -503,7 +503,7 @@ _u32 _direntry::getSize()
 
 string _direntry::getWorkingDirectory()
 {
-	char val[PATH_MAX];
+	_char val[PATH_MAX];
 	
 	// Get working directory
 	unistd::getcwd( val , PATH_MAX );

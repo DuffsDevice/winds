@@ -10,13 +10,13 @@
 /**
  * Proxy Classes
  */
-class _lua_scrollArea : public _lua_gadget{	
+class _lua_scrollarea : public _lua_gadget{	
 	
 	public:
 		
-		_lua_scrollArea( lua_State* L );
+		_lua_scrollarea( lua_State* L );
 		
-		_lua_scrollArea( _scrollArea* s ) : _lua_gadget( s )
+		_lua_scrollarea( _scrollArea* s ) : _lua_gadget( s )
 		{ }
 		
 		//! setScrollTypeX
@@ -49,8 +49,8 @@ class _lua_scrollArea : public _lua_gadget{
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_scrollArea>::FunctionType methods[];
-		static Lunar<_lua_scrollArea>::PropertyType properties[];
+		static Lunar<_lua_scrollarea>::FunctionType methods[];
+		static Lunar<_lua_scrollarea>::PropertyType properties[];
 	
 };
 

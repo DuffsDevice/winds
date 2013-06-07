@@ -22,14 +22,19 @@
 
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.checkbox.h"
+#include "_lua/lua.gadget.calendar.h"
 #include "_lua/lua.gadget.counter.h"
+#include "_lua/lua.gadget.colorpicker.h"
 #include "_lua/lua.gadget.imagegadget.h"
 #include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.scrollArea.h"
+#include "_lua/lua.gadget.scrollBar.h"
 #include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.radio.h"
 #include "_lua/lua.gadget.select.h"
+#include "_lua/lua.gadget.stickybutton.h"
 #include "_lua/lua.gadget.textbox.h"
+#include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.window.h"
 
 bool luaL_checkboolean( lua_State* L , int narg )
@@ -67,16 +72,11 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
-_style luaL_optstyle( lua_State* L , int narg )
+_style luaL_optstyle( lua_State* L , int narg , _style style )
 {
 	if( lua_isstring( L , narg ) )
-	{
-		_style st;
-		applyString2style( st , luaL_checkstring( L , narg ) );
-		return st;
-	}
-	else
-		return _style();
+		applyString2style( style , luaL_checkstring( L , narg ) );
+	return style;
 }
 
 int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _system::_keyboard_ != nullptr ); return 1; }
@@ -121,16 +121,21 @@ int _progLua::lua_requirePackage( lua_State* L )
 	
 	//! Register Gadgets
 	else if( name == "_window" ) 		Lunar<_lua_window>::Register( L );
+	else if( name == "_calendar" ) 		Lunar<_lua_calendar>::Register( L );
 	else if( name == "_counter" ) 		Lunar<_lua_counter>::Register( L );
+	else if( name == "_colorpicker" ) 	Lunar<_lua_colorpicker>::Register( L );
 	else if( name == "_imagegadget" )	Lunar<_lua_imagegadget>::Register( L );
 	else if( name == "_button" ) 		Lunar<_lua_button>::Register( L );
 	else if( name == "_select" ) 		Lunar<_lua_select>::Register( L );
 	else if( name == "_checkbox" ) 		Lunar<_lua_checkbox>::Register( L );
 	else if( name == "_label" ) 		Lunar<_lua_label>::Register( L );
 	else if( name == "_radio" ) 		Lunar<_lua_radio>::Register( L );
-	else if( name == "_scrollArea" )	Lunar<_lua_scrollArea>::Register( L );
+	else if( name == "_scrollarea" )	Lunar<_lua_scrollarea>::Register( L );
+	else if( name == "_stickybutton" )	Lunar<_lua_stickybutton>::Register( L );
+	else if( name == "_scrollbar" )		Lunar<_lua_scrollbar>::Register( L );
 	else if( name == "_progressbar" )	Lunar<_lua_progressbar>::Register( L );
 	else if( name == "_textbox" ) 		Lunar<_lua_textbox>::Register( L );
+	else if( name == "_textarea" ) 		Lunar<_lua_textarea>::Register( L );
 	else{
 		// Return false
 		lua_pushboolean( L , false );

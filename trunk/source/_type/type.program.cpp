@@ -36,7 +36,7 @@ _program* _program::fromFile( string filename )
 		return new PROG_Explorer();
 	
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/exampleprogram.exe" ) )
-		return new _progLua( (const char*)program_bin );
+		return new _progLua( (const _char*)program_bin );
 	
 	return nullptr;
 }

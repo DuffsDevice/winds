@@ -304,7 +304,7 @@ class _bitmap
 		 * @param color Optionally: The Color to erase
 		 * @return void
 		 */
-		void reset( _pixel color = BIT(15) ){
+		void reset( _pixel color = NO_COLOR ){
 			this->blitFill( 0 , 0 , color , this->width * this->height );
 		}
 		
@@ -470,13 +470,13 @@ class _bitmap
 		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color);
 		
 		/**
-		 * Draw a single Character to a specific Position and returns the width it used
+		 * Draw a single _character to a specific Position and returns the width it used
 		 * @param x0 X-Position Left
 		 * @param y0 Y-Position Top
 		 * @param font The _font to use
-		 * @param ch Character to draw (ASCII)
-		 * @param color Color of the Character
-		 * @return int The Width of the Character it has drawn
+		 * @param ch _character to draw (ASCII)
+		 * @param color Color of the _character
+		 * @return int The Width of the _character it has drawn
 		 */
 		_u16 drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
@@ -488,8 +488,11 @@ class _bitmap
 		}
 		_u16 drawCharUnsafe( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
+			// Fetch the destination where to draw To
+			_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
+			
 			// Let the font do the hard work!
-			return font->drawCharacter( this , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
+			return font->drawCharacter( dest , this->width , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
 		}
 		
 		/**
@@ -501,7 +504,11 @@ class _bitmap
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _pixel color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize = 0 )
+		{
+			drawString( x0 , y0 , font , str.c_str() , color , fontSize );
+		}
 		
 		/**
 		 * Copy a _bitmap onto the bitmap
@@ -591,6 +598,8 @@ class _bitmap
 		 */
 		private:
 		bool clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const ;
+		bool clipCoordinatesX( _coord &left , _coord &top , _coord& right ) const ;
+		bool clipCoordinatesY( _coord &left , _coord &top , _coord& bottom ) const ;
 		public:
 };
 

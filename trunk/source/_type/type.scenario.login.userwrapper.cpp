@@ -19,34 +19,12 @@ _callbackReturn _userWrapper::textboxRefreshHandler( _event event )
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	bP.fill( COLOR_WHITE );
+	bP.drawRect( 0 , 0 , myW , myH , COLOR_WHITE );
+	
 	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
 	bP.drawPixel( myW - 1 , 0 , NO_COLOR );
 	bP.drawPixel( 0 , myH - 1 , NO_COLOR );
 	bP.drawPixel( 0 , 0 , NO_COLOR );
-	
-	// If there is no font it doesn't make sense to paint
-	if( that->getFont() && that->getFont()->valid() )
-	{
-		string str = string( that->getStrValue().length() , '°' );
-		
-		// Draw Shadow Text...
-		if( !str.length() )
-			bP.drawString( 2 , 1 , that->getFont() , _system::getLocalizedString("lbl_passcode") , RGB( 18 , 18 , 18 ) );
-		else
-			bP.drawString( 2 , 1 , that->getFont() , str , that->getColor() );
-		
-		if( that->getCursor() >= 0 )
-		{
-			// Get String until cursor
-			string str2 = str;
-			str2.resize( that->getCursor() );
-			
-			_length strWidthUntilCursor = that->getFont()->getStringWidth( str2 );
-			
-			bP.drawVerticalLine( strWidthUntilCursor + 2 - 1 , 1 /* */ - 1 , that->getFont()->getAscent() + 2 , COLOR_RED );
-		}
-	}
 	
 	return use_default;
 }
@@ -131,13 +109,15 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 	{
 		if( event.getType() == onFocus )
 		{
-			that->passwordbox = new _textbox( 19 , 13 , 55 , 9 , "" , _style::storeHandle( that ) );
+			that->passwordbox = new _passcodebox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
 			that->passwordsubmit = new _actionButton( _actionButtonType::next , 77 , 13 , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
 			that->passwordsubmit->registerEventHandler( onAction , new _staticCallback( &_userWrapper::submitHandler ) );
-			that->passwordbox->registerEventHandler( refresh , new _staticCallback( &_userWrapper::textboxRefreshHandler ) );
+			that->passwordbox->registerEventHandler( refreshUser , new _staticCallback( &_userWrapper::textboxRefreshHandler ) );
 			that->passwordbox->refreshBitmap();
 			that->addChild( that->passwordbox );
 			that->addChild( that->passwordsubmit );
+			
+			that->passwordbox->focus();
 		}
 		else
 		{

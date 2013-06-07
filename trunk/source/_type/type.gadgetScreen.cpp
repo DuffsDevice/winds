@@ -31,9 +31,6 @@ bool _gadgetScreen::touchInside( _touch touch )
 
 bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 {
-	// Shortcut...
-	const _user* user = _system::_runtimeAttributes_->user;
-	
 	// Temp...
 	_event event = _event().setCurrentKeys( _system::getCurrentKeys() );
 	
@@ -91,7 +88,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			_u32 xd = newTouch.x - startTouch.x;
 			_u32 yd = newTouch.y - startTouch.y;
 			_u32 dragDistance = xd * xd + yd * yd; // Actually its square
-			_u8 trigger = user->mDD;
+			_u8 trigger = _system::getUser()->mDD;
 			
 			// For gadgets with a small dragging Trigger e.g. scrollBars
 			if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->hasSmallDragTrig() )
@@ -110,7 +107,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				this->lastTouch = this->startTouch;
 			}
 			// If not dragging and If the current clicked gadget wants to have mouseClicks Repeating
-			else if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( user->kRD && this->touchCycles > user->kRD && this->touchCycles % user->kRS == 0 ) )
+			else if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( _system::getUser()->kRD && this->touchCycles > _system::getUser()->kRD && this->touchCycles % _system::getUser()->kRS == 0 ) )
 				this->handleEvent( event.setType( mouseRepeat ) );
 		}
 		
@@ -148,7 +145,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			this->isDragging = false;
 		}
 		//! Maybe Click-Event?
-		else if( lastTouchInside && this->touchCycles < user->mCC )
+		else if( lastTouchInside && this->touchCycles < _system::getUser()->mCC )
 		{
 			_s16	deltaX = touchBefore.x - lastTouch.x;
 			_s16	deltaY = touchBefore.y - lastTouch.y;
@@ -156,7 +153,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			
 			
 			// Trigger the mouseClick-Event and mouseDoubleCLick!
-			if( _system::_lastClickedGadget_->isDoubleClickable() && this->cyclesLastClick && this->cyclesLastClick < user->mDC && deltaTouch < user->mDA * user->mDA )
+			if( _system::_lastClickedGadget_->isDoubleClickable() && this->cyclesLastClick && this->cyclesLastClick < _system::getUser()->mDC && deltaTouch < pow( _system::getUser()->mDA , 2 ) )
 			{
 				// Trigger the Event
 				this->handleEvent( event.setType( mouseDoubleClick ) );

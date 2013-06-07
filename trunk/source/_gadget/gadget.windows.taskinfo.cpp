@@ -9,7 +9,7 @@
 
 _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 {
-	static string sBT = _system::_runtimeAttributes_->user->getStrAttr( "startButtonText" );
+	static string sBT = _system::getLocalizedString("lbl_startButtonText");
 	
 	// Receive Gadget
 	_windowsTaskInfo* that = event.getGadget<_windowsTaskInfo>();

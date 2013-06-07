@@ -58,7 +58,9 @@ _map<string,_eventType> string2eventType = {
 	{ "onMinimize" , onMinimize },
 	{ "onRestore" , onRestore },
 	{ "onScroll" , onScroll },
-	{ "onStyleSet" , onStyleSet }
+	{ "onStyleSet" , onStyleSet },
+	{ "onDelete" , onDelete },
+	{ "refreshUser" , refreshUser }
 };
 
 _map<_eventType,string> eventType2string = {
@@ -91,5 +93,7 @@ _map<_eventType,string> eventType2string = {
 	{ onMinimize , "onMinimize" },
 	{ onRestore , "onRestore" },
 	{ onScroll , "onScroll" },
-	{ onStyleSet , "onStyleSet" }
+	{ onStyleSet , "onStyleSet" },
+	{ onDelete , "onDelete" },
+	{ refreshUser , "refreshUser" }
 };

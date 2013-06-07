@@ -6,17 +6,22 @@
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.button.h"
+#include "_lua/lua.gadget.calendar.h"
+#include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.counter.h"
+#include "_lua/lua.gadget.colorpicker.h"
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.imagegadget.h"
 #include "_lua/lua.gadget.scrollArea.h"
+#include "_lua/lua.gadget.scrollBar.h"
+#include "_lua/lua.gadget.stickybutton.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.radio.h"
 #include "_type/type.system.h"
 
-map<_gadget*,int> garbageDeterminer;
+_map<_gadget*,int> garbageDeterminer;
 
 /*##################################
 ##           Lua-Gadget           ##
@@ -30,6 +35,10 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 		return tmp;
 	if( ( tmp = Lunar< _lua_button >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
+	if( ( tmp = Lunar< _lua_stickybutton >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar< _lua_label >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
 	if( ( tmp = Lunar< _lua_checkbox >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	if( ( tmp = Lunar< _lua_select >::lightcheck( L , narg ) ) != nullptr )
@@ -42,9 +51,15 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 		return tmp;
 	if( ( tmp = Lunar< _lua_radio >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
+	if( ( tmp = Lunar< _lua_calendar >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
 	if( ( tmp = Lunar< _lua_imagegadget >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
-	if( ( tmp = Lunar< _lua_scrollArea >::lightcheck( L , narg ) ) != nullptr )
+	if( ( tmp = Lunar< _lua_scrollarea >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar< _lua_scrollbar >::lightcheck( L , narg ) ) != nullptr )
+		return tmp;
+	if( ( tmp = Lunar< _lua_colorpicker >::lightcheck( L , narg ) ) != nullptr )
 		return tmp;
 	
 	return Lunar<_lua_gadget>::check( L , narg );

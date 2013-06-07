@@ -98,15 +98,6 @@ void _system::terminateTimer( const _callback& cb ){
 	);
 }
 
-void _system::switchUser( _user* usr )
-{
-	if( _system::_runtimeAttributes_->user )
-		delete _system::_runtimeAttributes_->user;
-	
-	// Setting:
-	_system::_runtimeAttributes_->user = usr;
-}
-
 void _system::runTimers()
 {
 	_tempTime curTime = getHighResTime();
@@ -238,6 +229,7 @@ void _system::vblHandler()
 void _system::processEvents()
 {
 	//optimizeEvents();
+	
 	// Do not throw any Events until we finished iterating through Events!!!!
 	// -> This was a big Problem - Hours of finding that out!
 	eventsSwapBuffer();
@@ -292,7 +284,7 @@ void _system::processInput()
 	_event event = _event().setCurrentKeys( _system::getCurrentKeys() );
 	
 	// Shortcut...
-	const _user* user = _system::_runtimeAttributes_->user;
+	const _user& user = *_system::getUser();
 	
 	_key keys = keysHeld();
 	
@@ -351,7 +343,7 @@ void _system::processInput()
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
 		
-		event.setKeyCode( libnds2key[i] );
+		event.setKeyCode( DSWindows::libnds2key[i] );
 		
 		//printf("CF: %s\n", gadgetType2string[_system::_currentFocus_->getType() ].c_str() );
 		
@@ -365,7 +357,7 @@ void _system::processInput()
 				else
 					_system::_gadgetHost_->handleEvent( event.setType( keyDown ) );
 			}
-			else if( user->kRD && heldCycles[i] > user->kRD && heldCycles[i] % user->kRS == 0 )
+			else if( user.kRD && heldCycles[i] > user.kRD && heldCycles[i] % user.kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
 				if( _system::_currentFocus_ )
@@ -391,7 +383,7 @@ void _system::processInput()
 			
 			
 			// If keyup is fast enough, trigger keyClick
-			if( heldCycles[i] < user->mCC )
+			if( heldCycles[i] < user.mCC )
 			{
 				if( _system::_currentFocus_ )
 					_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
@@ -502,8 +494,7 @@ void _system::start()
 	//	RTA - Runtime Attributes
 	// -----------------------------------------------
 	
-		_system::_runtimeAttributes_ = new _runtimeAttributes();
-		_system::_runtimeAttributes_->user = new _user("Guest");
+		_system::_rtA_ = new _runtimeAttributes( new _user("Guest") );
 	
 	// -----------------------------------------------
 	//	Open necesary Files
@@ -515,13 +506,10 @@ void _system::start()
 		_system::_registry_ = new _registry("%WINDIR%/windows.reg");
 		
 		// Localization of Strings
-		_system::_localizationTextTable_ = new _ini( _binfile( "%SYSTEM%/localizationText.ini" ) );
-		_system::_localizationTextTable_->read();
+		_system::_localizationTextTable_ = new _registry( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
 		
 		// Localization of Months
-		_system::_localizationMonthTable_ = new _ini( _binfile( "%SYSTEM%/localizationMonth.ini" ) );
-		_system::_localizationMonthTable_->read();
-		
+		_system::_localizationMonthTable_ = new _registry( (string) _binfile( "%SYSTEM%/localizationMonth.ini" ) );
 	
 	// -----------------------------------------------
 	// Gadget-System
@@ -589,10 +577,10 @@ void _system::end()
 {
 	delete _system::_registry_;
 	delete _system::_debugFile_;
-	delete _system::_keyboard_;
-	delete _system::_gadgetHost_;
-	delete _system::_runtimeAttributes_->user;
-	delete _system::_runtimeAttributes_;
+	
+	_system::deleteGadgetHost();
+	_system::deleteKeyboard();
+	
 	systemShutDown();
 }
 
@@ -628,7 +616,7 @@ void _system::main()
 			unsigned int s;
 			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
 			{
-				void *ptr=new char[ s ];
+				void *ptr=new _char[ s ];
 				consoleClear();
 				printf("free: %d\n",s-FreeMemSeg);
 				//swiWaitForVBlank();
@@ -650,47 +638,21 @@ void _system::shutDown(){
 	end();
 }
 
-const string& _system::getLocalizedString( string name )
-{
-	// Use static variable instead of just returning "[]", because of warning!
-	static string def = "[]";
-	
-	auto& tmp = _system::_localizationTextTable_->getMap();
-	
-	if( !tmp.count( name ) || !tmp[name].count( _system::_curLanguageShortcut_ ) )
-		return def;
-	return tmp[name][_system::_curLanguageShortcut_];
-}
-
-const string& _system::getLocalizedMonth( _u8 month )
-{
-	// Use static variable instead of just returning "[]", because of warning!
-	static string def = "[]";
-	
-	auto& tmp = _system::_localizationMonthTable_->getMap();
-	
-	string key = int2string( month );
-	
-	if( !tmp.count( key ) || !tmp[key].count( _system::_curLanguageShortcut_ ) )
-		return def;
-	return tmp[key][_system::_curLanguageShortcut_];
-}
-
 //! Static Attributes...
 bool 							_system::_sleeping_ = false;
 _list<_animation*>				_system::_animations_;
 _list<_pair<const _callback*,
 		_callbackData>>			_system::_timers_;
-_map<string,const _font*>				_system::_fonts_;
-_ini*							_system::_localizationTextTable_;
-_ini*							_system::_localizationMonthTable_;
+_map<string,const _font*>		_system::_fonts_;
+_registry*						_system::_localizationTextTable_;
+_registry*						_system::_localizationMonthTable_;
 string							_system::_curLanguageShortcut_;
 _list<_pair<_program*,_cmdArgs>>_system::_programs_;
 _gadgetScreen*					_system::_gadgetHost_ = nullptr;
 _screen*						_system::_topScreen_ = nullptr;
 _keyboard*						_system::_keyboard_ = nullptr;
 _registry*						_system::_registry_ = nullptr;
-_runtimeAttributes*				_system::_runtimeAttributes_ = nullptr;
+_runtimeAttributes*				_system::_rtA_;
 _direntry*						_system::_debugFile_ = nullptr;
 _gadget*						_system::_currentFocus_ = nullptr;
 _gadget*						_system::_lastClickedGadget_ = nullptr;

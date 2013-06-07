@@ -1,6 +1,7 @@
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
+#include "_type/type.textphrases.h"
 
 void _textbox::setFont( const _font* ft )
 {
@@ -18,22 +19,21 @@ void _textbox::setInternalCursor( _u32 cursor )
 	
 	if( this->align == _align::left ) // Only available
 	{
-		string str = this->getStrValue();
+		// Copy the string and..
+		string str = this->strValue;
+		char* cstr = new char[str.length() + 1];
+		strcpy( cstr , str.c_str() );
 		
 		_coord fontPosition = this->getFontPosition( true ).first;
-		
-		_length fontWidth = this->font->getStringWidth( str ); // Get whole Length of the string
+		_length fontWidth = this->font->getStringWidth( cstr ); // Get whole Length of the string
 		
 		_s32 minValueScroll = max( fontPosition + fontWidth - this->getWidth() + _textbox::borderX - 1 , 0 );
 		
-		// Choose Fastest method
-		if( this->cursor > ( str.length() >> 1 ) )
-			fontWidth -= this->font->getStringWidth( str.substr( this->cursor - 1 ) ); // Subtract the end of the string
-		else
-		{
-			str.resize( max( _u32(1) , this->cursor ) - 1 );
-			fontWidth = this->font->getStringWidth( str );
-		}
+		// Resize string!
+		stringExtractor::strResize( cstr , this->cursor - 1 );
+		fontWidth = this->font->getStringWidth( cstr );
+		
+		delete[] cstr;
 		
 		_s32 minScroll = fontPosition + fontWidth - _textbox::borderX;
 		_s32 maxCursorScroll = fontPosition + fontWidth - this->getWidth() + _textbox::borderX - 1;
@@ -44,7 +44,15 @@ void _textbox::setInternalCursor( _u32 cursor )
 	
 	this->bubbleRefresh( true );
 }
-	
+
+void _textbox::removeStr( _int position , _length numChars )
+{
+	this->strValue.erase( position , numChars );
+}
+void _textbox::insertStr( _int position , string s )
+{
+	this->strValue.insert( position , s );
+}
 
 void _textbox::setStrValue( string value )
 {
@@ -63,13 +71,13 @@ _2s32 _textbox::getFontPosition( bool noScroll )
 	switch( this->getAlign() )
 	{
 		case _align::center:
-			x = ( this->getWidth() >> 1 ) - ( ( this->font->getStringWidth( this->getStrValue() ) - 1 ) >> 1 );
+			x = ( this->getWidth() >> 1 ) - ( ( this->font->getStringWidth( this->strValue ) - 1 ) >> 1 );
 			break;
 		case _align::left:
 			x = _textbox::borderX;
 			break;
 		case _align::right:
-			x = this->getWidth() - this->font->getStringWidth( this->getStrValue() ) - _textbox::borderX;
+			x = this->getWidth() - this->font->getStringWidth( this->strValue ) - _textbox::borderX;
 			break;
 	}
 	
@@ -122,24 +130,38 @@ _callbackReturn _textbox::refreshHandler( _event event )
 		_2s32 pos = that->getFontPosition();
 		
 		// Draw Text...
-		bP.drawString( pos.first , pos.second , that->font , that->getStrValue() , that->color );
+		bP.drawString( pos.first , pos.second , that->font , that->strValue , that->color , that->fontSize );
 		
 		if( that->cursor > 0 )
 		{
 			// Get String until cursor
-			string str = that->getStrValue();
-			str.resize( that->cursor - 1 );
+			string str = that->strValue;
 			
-			_length strWidthUntilCursor = that->font->getStringWidth( str );
+			// Copy the string and..
+			char* cstr = new char[str.length() + 1];
+			strcpy( cstr , str.c_str() );
+			
+			// Shorten it
+			stringExtractor::strResize( cstr , that->cursor - 1 );
+			
+			_length strWidthUntilCursor = that->font->getStringWidth( cstr );
+			
+			// Free the allocated copy
+			delete[] cstr;
 			
 			bP.drawVerticalLine( strWidthUntilCursor + pos.first - 1 , pos.second - 1 , that->font->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
 		}
 	}
 	
-	if( !that->isPressed() )
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
-	else
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+	_callbackReturn ret = that->handleEventUser( refreshUser );
+	
+	if( ret == not_handled )
+	{
+		if( !that->isPressed() )
+			bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
+		else
+			bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+	}
 	
 	return use_default;
 }
@@ -148,7 +170,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
 	
-	string val = that->getStrValue();
+	string val = that->strValue;
 	
 	switch( event.getKeyCode() ){
 		case DSWindows::KEY_BACKSPACE:
@@ -157,12 +179,10 @@ _callbackReturn _textbox::keyHandler( _event event )
 				//_system::errorTone();
 				break;
 			}
-			val = val.erase( that->cursor - 2 , 1 );
-			
-			// Refresh
-			that->strValue = val;
+			that->removeStr( that->cursor - 2 );
 			that->setInternalCursor( that->cursor - 1 );
 			
+			// Trigger Handler
 			that->triggerEvent( _event( onChange ) );
 			break;
 		case DSWindows::KEY_CARRIAGE_RETURN:
@@ -172,21 +192,20 @@ _callbackReturn _textbox::keyHandler( _event event )
 				that->setInternalCursor( that->cursor - 1 );
 			break;
 		case DSWindows::KEY_RIGHT:
-			if( that->cursor > 0 && val.length() - that->cursor + 1 > 0 )
+			if( that->cursor && stringExtractor::strLen( that->strValue.c_str() ) - that->cursor + 1 > 0 )
 				that->setInternalCursor( that->cursor + 1 );
 			break;
 		default:
-			if( 
-				DSWindows::isHardwareKey( event.getKeyCode() ) 
+			if(
+				DSWindows::isHardwareKey( event.getKeyCode() )
 				|| !isprint( event.getKeyCode() ) // Check if printable
 			)
 				break;
-			val.insert( that->cursor - 1 , 1 , event.getKeyCode() );
 			
-			// Refresh
-			that->strValue = val;
+			that->insertStr( that->cursor - 1 , string( 1 , event.getKeyCode() ) );
 			that->setInternalCursor( that->cursor + 1 );
 			
+			// Trigger Handler
 			that->triggerEvent( _event( onChange ) );
 			break;
 	}
@@ -197,15 +216,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 _callbackReturn _textbox::focusHandler( _event event )
 {
 	// Set Cursor
-	event.getGadget<_textbox>()->setInternalCursor( 1 );
-	
-	return use_default;
-}
-
-_callbackReturn _textbox::blurHandler( _event event )
-{
-	// Remove Cursor!
-	event.getGadget<_textbox>()->setInternalCursor( 0 );
+	event.getGadget<_textbox>()->setInternalCursor( event.getType() == onFocus ? stringExtractor::strLen( event.getGadget<_textbox>()->strValue.c_str() ) + 1 : 0 );
 	
 	return use_default;
 }
@@ -225,19 +236,14 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	if( !that->font || !that->font->valid() )
 		return handled;
 	
-	string 	str = that->getStrValue();
-	_length strLen = str.length();
 	_length pos = 0;
 	
 	_2s32 fontPos = that->getFontPosition();
 	
+	pos = that->font->getNumCharsUntilWidth( position - fontPos.first + 1 , that->strValue , that->fontSize );
+	
 	// Ensure you cannot have the iterator before the first letter
-	position = max( _coord(fontPos.first) , position );
-	
-	for( ; fontPos.first <= position + 2 && pos <= strLen; pos++ )
-		fontPos.first += that->font->getCharacterWidth( str[pos] ) + 1;
-	
-	that->setInternalCursor( pos );
+	that->setInternalCursor( max( 1 , pos + 1 ) );
 	
 	return handled;
 }
@@ -247,7 +253,7 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, font ( _system::getFont() )
-	, fontSize( _system::_runtimeAttributes_->defaultFontSize )
+	, fontSize( _system::_rtA_->getDefaultFontSize() )
 	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
@@ -256,7 +262,7 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 {
 	// Regsiter Handling Functions for events
 	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::blurHandler ) );
+	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::focusHandler ) );
 	this->registerEventHandler( refresh , new _staticCallback( &_textbox::refreshHandler ) );
 	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
 	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );

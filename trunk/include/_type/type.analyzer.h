@@ -1,16 +1,36 @@
 #ifndef _WIN_T_ANALYZER_
 #define _WIN_T_ANALYZER_
 
-extern map<void*,_string> address2Name;
-extern map<void*,_u32> address2Time;
-extern map<void*,_u32> address2StartTime;
+extern "C" _u32 cpuGetTiming();
 
-void startTimer( void* address );
-
-void stopTimer( void* address );
-
-void addMethod( void* address , _string name );
-
-void printResults();
+class _codeAnalyzer
+{
+	private:
+		
+		// Pointer to the function
+		const _char* name;
+		_tempTime startTime;
+		
+		static _map<const _char*,_u32> name2Time;
+		static _map<const _char*,_u32> name2CallCount;
+	
+	public:
+		
+		//! Generic constructor!
+		noinline _codeAnalyzer( const _char* name ) :
+			name( name )
+			, startTime( cpuGetTiming() )
+		{
+			name2CallCount[name]++;
+		}
+		
+		//! Destructor (submits execution times!)
+		noinline ~_codeAnalyzer()
+		{
+			name2Time[this->name] += cpuGetTiming() - this->startTime;
+		}
+		
+		static void printResults();
+};
 
 #endif

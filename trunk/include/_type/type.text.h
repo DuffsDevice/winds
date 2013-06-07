@@ -91,7 +91,11 @@ class _text
 		 * Set the text in the string
 		 * @param text Char array to use as the new data for this string.
 		 */
-		void setText( string text );
+		void setText( string text )
+		{
+			this->text = text;
+			this->wrap();
+		}
 		
 		
 		//! Check whether the illustration of the text would have changed
@@ -119,7 +123,7 @@ class _text
 			this->text.insert( index , text );
 			this->wrap();
 		}
-		void insert( _length index , char ch , _length n = 1 )
+		void insert( _length index , _char ch , _length n = 1 )
 		{
 			if( !ch )
 				return;

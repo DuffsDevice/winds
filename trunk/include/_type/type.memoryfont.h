@@ -60,7 +60,7 @@ class _memoryfont : public _font{
 		bool valid() const ;
 		
 		//! draw a Character!
-		_u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const ;
+		_u16 drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const ;
 		
 };
 

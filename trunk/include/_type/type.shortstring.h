@@ -6,13 +6,13 @@
 namespace std
 {
 
-	template<int maxBytes>
+	template<int maxBytes,typename dataType = char>
 	class shortString
 	{
 		private:
 			
 			//! Char Array to hold the buffer
-			char			data[maxBytes];
+			dataType			data[maxBytes];
 		
 		public:
 		
@@ -21,7 +21,7 @@ namespace std
 				this->data[0] = 0;
 			}
 			
-			shortString( const char* str ){
+			shortString( const dataType* str ){
 				*this = str;
 			}
 			
@@ -41,7 +41,7 @@ namespace std
 			shortString& operator=( const string str )
 			{
 				int idx = 0;
-				for( const char c : str )
+				for( const dataType c : str )
 				{
 					if( idx > ( maxBytes - 2 ) )
 						break;
@@ -52,7 +52,7 @@ namespace std
 				return *this;
 			}
 			
-			shortString& operator=( const char* str )
+			shortString& operator=( const dataType* str )
 			{
 				int idx = 0;
 				// Check if the data is valid
@@ -72,7 +72,7 @@ namespace std
 			shortString& operator=( const shortString& sstr )
 			{
 				int idx = 0;
-				const char* str = sstr.data;
+				const dataType* str = sstr.data;
 				
 				// Check if the data is valid
 				if( str )
@@ -91,7 +91,7 @@ namespace std
 			shortString& operator=( shortString&& sstr )
 			{
 				int idx = 0;
-				const char* str = sstr.data;
+				const dataType* str = sstr.data;
 				
 				// Check if the data is valid
 				if( str )
@@ -107,7 +107,7 @@ namespace std
 				return *this;
 			}
 			
-			operator char*()
+			operator dataType*()
 			{
 				return this->data;
 			}
@@ -117,14 +117,15 @@ namespace std
 				return std::string( this->data );
 			}
 			
-			char operator[]( int idx )
+			dataType operator[]( int idx )
 			{
 				return this->data[ std::max( 0 , std::min( maxBytes , idx ) ) ];
 			}
 		
 	};
 	
-	using sstring = shortString<6>;
+	using sstring = shortString<20,_char>;
+	using ssstring = shortString<6,_char>;
 }
 
 #endif

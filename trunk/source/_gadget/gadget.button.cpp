@@ -196,7 +196,7 @@ void _button::init( string text )
 	// Font
 	this->strValue = text;
 	this->font = _system::getFont();
-	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
+	this->fontSize = _system::_rtA_->getDefaultFontSize();
 	this->fontColor = COLOR_BLACK;
 	this->pressed = false;
 	

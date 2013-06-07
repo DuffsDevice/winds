@@ -1,6 +1,8 @@
 #include "_type/type.scenario.login.h"
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_type/type.user.guest.h"
+
 
 //! Gadgets we need
 #include "_gadget/gadget.keyboard.h"
@@ -21,15 +23,15 @@ _callbackReturn _scLogin::userLoginHandler( _event event )
 	// Prevent it from receiving focus again
 	that->setStyle( that->getStyle() | _styleAttr::canNotReceiveFocus );
 	
-	_label* welcome = new _label( 105 , 20 , 13 , 79 , _system::getLocalizedString("lbl_welcome") );
-	_label* welcomeBg = new _label( 105 , 20 , 12 , 78 , _system::getLocalizedString("lbl_welcome") );
+	this->welcome = new _label( 105 , 20 , 13 , 79 , _system::getLocalizedString("lbl_welcome") );
+	this->welcomeBg = new _label( 105 , 20 , 12 , 78 , _system::getLocalizedString("lbl_welcome") );
 	
-	welcome->setFont( _system::getFont( "ArialBlack13" ) );
-	welcomeBg->setFont( _system::getFont( "ArialBlack13" ) );
-	welcome->setColor( RGB( 2 , 5 , 15 ) );
-	welcomeBg->setColor( RGB( 30 , 30 , 30 ) );
-	welcome->setAlign( _align::right );
-	welcomeBg->setAlign( _align::right );
+	this->welcome->setFont( _system::getFont( "ArialBlack13" ) );
+	this->welcomeBg->setFont( _system::getFont( "ArialBlack13" ) );
+	this->welcome->setColor( RGB( 2 , 5 , 15 ) );
+	this->welcomeBg->setColor( RGB( 30 , 30 , 30 ) );
+	this->welcome->setAlign( _align::right );
+	this->welcomeBg->setAlign( _align::right );
 	
 	_system::_gadgetHost_->addChild( welcome );
 	_system::_gadgetHost_->addChild( welcomeBg );
@@ -53,7 +55,8 @@ int _scLogin::loginAnimSetter( int val )
 
 void _scLogin::loginSwitchDesktop()
 {
-	_system::switchUser( new _user( this->userWrapper.front()->user->getFoldername() ) );
+	// Log the User in
+	_system::switchUser( new _user( *this->userWrapper.front()->user ) );
 	
 	_systemController::changeState( _systemController::_systemState::desktop );
 }
@@ -64,16 +67,16 @@ _scLogin::_scLogin() :
 {
 	// After the Boot up finishes,
 	// see if this is a new Setup
-	//if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
-	//{
-	//	_systemController::changeState( _systemState::setup );
-	//	return;
-	//}
+	if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
+	{
+		_systemController::changeState( _systemController::_systemState::setup );
+		return;
+	}
 	
-	_system::_runtimeAttributes_->magnifyKeyboardFocus = false; // Prevent Magnifying of the keyboard focus
+	_system::_rtA_->disableKeyboardMagnif(); // Prevent Magnifying of the keyboard focus
 	
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
-	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
+	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , -1 );
 	
 	//! Make list of all users
 	_direntry userDir = _direntry( "%USERS%" );
@@ -85,22 +88,23 @@ _scLogin::_scLogin() :
 		this->users.push_back( new _user( str ) );
 	
 	//! Copy users and their logos
-	int y = 0;
 	int userHeight = 24;
 	
 	loginAnim.setter( new _classCallback( this , &_scLogin::loginAnimSetter ) );
 	loginAnim.setEasing( _animation::_sinus::easeInOut );
-	loginAnim.setToValue( 79 );
+	loginAnim.setToValue( 78 );
 	
-	//! Relative Position to the screen
-	int relY = ( SCREEN_HEIGHT - this->users.size() * userHeight ) >> 1;
-	relY -= userHeight >> 2;
+	//! Position on the screen
+	_coord userX = 135;
+	_coord userY = ( SCREEN_HEIGHT >> 1 ) - ( userHeight >> 2 );
+	_coord curY = 0;
 	
+	userY -= this->users.size() * userHeight >> 1;
 	
 	//! Create a _userWrapper for each user!
 	for( _user* usr : users )
 	{
-		_userWrapper* img = new _userWrapper( 135 , y + relY , usr , _style::storeHandle( this ) );
+		_userWrapper* img = new _userWrapper( userX , userY + curY , usr , _style::storeHandle( this ) );
 		
 		// Register Eventhandler to listen if one of the userWrapper logs in
 		img->registerEventHandler( onAction , new _classCallback( this , &_scLogin::userLoginHandler ) );
@@ -109,7 +113,7 @@ _scLogin::_scLogin() :
 		_system::_gadgetHost_->addChild( img );
 		this->userWrapper.push_back( img );
 		
-		y += userHeight; // Increase Y-Coordinate
+		curY += userHeight; // Increase Y-Coordinate
 	}
 	
 	//! Separator
@@ -117,8 +121,12 @@ _scLogin::_scLogin() :
 	_bitmap separator = _bitmap( 1 , 148 );
 	separator.drawVerticalGradient( 0 , 0 			   , 1 , sepHeight >> 1 , RGBHEX( 0x5A7EDC ) , RGB( 21 , 24 , 31 ) );
 	separator.drawVerticalGradient( 0 , sepHeight >> 1 , 1 , sepHeight >> 1 , RGB( 21 , 24 , 31 ) , RGBHEX( 0x5A7EDC ) );
-	_system::_gadgetHost_->addChild( new _imagegadget( 126 , 20 , separator ) );
+	
+	this->separator = new _imagegadget( 126 , 20 , separator );
+	
+	_system::_gadgetHost_->addChild( this->separator );
 }
+
 
 
 _scLogin::~_scLogin()
@@ -131,5 +139,10 @@ _scLogin::~_scLogin()
 	for( auto& entry : this->userWrapper )
 		delete entry;
 	
-	_system::_runtimeAttributes_->magnifyKeyboardFocus = true;
+	_system::_rtA_->enableKeyboardMagnif();
+	
+	delete this->welcome;
+	delete this->welcomeBg;
+	delete this->separator;
+	
 }

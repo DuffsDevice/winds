@@ -3,7 +3,9 @@
 
 //! Types
 #include "_type/type.imagefile.h"
+#include "_type/type.imagefile.builtin.h"
 #include "_type/type.bitmapResizer.h"
+#include "_type/type.time.h"
 #include "func.md5.h"
 #include "func.memory.h"
 #include "_type/type.user.h"
@@ -43,17 +45,17 @@ _bitmap _user::getUserImage( string path )
 }
 
 _user::_user( string folderName ) :
-	_registry( "%USERS%/" + folderName + "/user.ini"  )
+	_registry( _direntry( "%USERS%/" + folderName + "/user.ini" ) )
 	, folderName( folderName )
 {
 	if( _registry::creation )
 	{
-		this->ini->getMap() = 
+		this->ini->getMutableMap() = 
 			{ { "_global_" , 
 				{
 					{ "userName" , this->folderName } ,
-					{ "userCode" , md5( "" ) } ,
-					{ "wallpaper" , "_default_" } ,
+					{ "userCode" , "" } ,
+					{ "wallpaper" , "default" } ,
 					{ "wallpaperView" , "0" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
 					{ "userLogo" , "guest.png" } ,
@@ -97,16 +99,15 @@ _user::_user( string folderName ) :
 	_direntry::setWorkingDirectory( "%USERS%/" + this->folderName );
 	
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
-
+	
 	// ... and a Logo
 	this->userLogo = _user::getUserLogoFromImage( bmp );
 	
 	// ... and a very nice Wallpaper!
 	this->wallpaper = _imagefile( _registry::readIndex( "_global_" , "wallpaper" ) );
-	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
-	
-	if( _registry::readIndex( "_global_" , "wallpaper" ) == "default" )
+	if( !this->wallpaper.isValid() )
 		this->wallpaper = BMP_WindowsWallpaper();
+	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
 	
 	switch( this->wallpaperView ){
 		//case WALLPAPER_ORIG:
@@ -128,23 +129,20 @@ void _user::createAs( string folderName )
 {
 	_iniStructure str = move( this->ini->getMap() );
 	*this = _user( folderName );
-	this->ini->getMap() = move( str );
+	this->ini->getMutableMap() = move( str );
 }
 
 _user::~_user()
 {
-	char buffer[18];
-	sprintf( buffer , "%ld" , time(NULL) );
-	string str = buffer;
-	_registry::writeIndex( "_global_" , "lastTimeLogIn" , str );
+	_registry::writeIndex( "_global_" , "lastTimeLogIn" , _time::now() );
 }
 
-bool _user::checkPassword( string pw )
+bool _user::checkPassword( string pw ) const 
 {
 	return md5( pw ) == _registry::readIndex( "_global_" , "userCode" );
 }
 
-bool _user::hasPassword()
+bool _user::hasPassword() const 
 {
 	string value = _registry::readIndex( "_global_" , "userCode" );
 	return !value.empty() && value != "d41d8cd98f00b204e9800998ecf8427e"; // this is the result for md5("")
@@ -152,66 +150,4 @@ bool _user::hasPassword()
 
 void _user::setPassword( string pw ){
 	_registry::writeIndex( "_global_" , "userCode" , md5( pw ) );
-}
-
-_s32 _user::getIntAttr( string idx )
-{
-	string attr = _registry::readIndex( "_global_" , idx );
-	
-	// Allow formats of RGB( 14 , 6 , 9 ) and rgba( 1 , 20 , 25 , 0 )
-	if( attr.substr( 0 , 3 ) == "RGB" || attr.substr( 0 , 3 ) == "rgb" )
-	{
-		_u8 i = 2 , f = 0;
-		bool hasAlpha = false;
-		_u8 r , b , g , a = 1;
-		
-		if( isalpha( attr[3] ) && ( attr[3] == 'A' || attr[3] == 'a' ) )
-		{
-			i = 3;
-			hasAlpha = true;
-		}
-		else if( isalpha( attr[3] ) ) // No RGB
-			return string2int( attr.c_str() );
-		
-		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to first number
-		f = i; // Set Mark
-		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
-			return 0;
-		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
-		r = string2int( attr.substr( f , i-f ).c_str() ); // Save red part
-		
-		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to second number
-		f = i; // Set Mark
-		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
-			return 0;
-		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
-		g = string2int( attr.substr( f , i-f ).c_str() ); // Save green part
-		
-		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to third number
-		f = i; // Set Mark
-		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
-			return 0;
-		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
-		b = string2int( attr.substr( f , i-f ).c_str() ); // Save blue part
-		
-		if( hasAlpha )
-		{
-			for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to fourth number
-			if( attr[i] == '0' )
-				a = 0;
-		}
-		
-		return RGBA( r , g , b , a );
-	}
-	else if( attr == "true" )
-		return 1;
-	else if( attr == "false" )
-		return 0;
-	
-	return string2int( attr.c_str() );
-}
-
-void createAs( string folderName )
-{
-	
 }

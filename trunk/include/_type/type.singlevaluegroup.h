@@ -28,6 +28,12 @@ class _singleValueGroup{
 		//! Tick the supplied _selector, and uncheck the currently ticked
 		void enableSelector( _selector* );
 		
+		//! Tick the next registered _selector, and uncheck the currently ticked
+		void enableNext();
+		
+		//! Tick the previous registered _selector, and uncheck the currently ticked
+		void enablePrev();
+		
 		//! Enable the _selector being registered under the supplied id
 		void setIntValue( _s32 id );
 		

@@ -52,14 +52,14 @@ _freetypefont::~_freetypefont()
 	this->cache = 0;
 }
 
-_u16 _freetypefont::getCharacterWidth( const _char codepoint , _u8 fontSize ) const 
+_length _freetypefont::getCharacterWidth( const _char codepoint , _u8 fontSize ) const 
 { 
 	int advWidth , leftSideBearing;
 	stbtt_GetCodepointHMetrics( &this->fontInfo , codepoint , &advWidth , &leftSideBearing );
 	return stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize ) * advWidth;
 }
 
-_u16 _freetypefont::isMonospace() const 
+_length _freetypefont::isMonospace() const 
 { 
 	return false;
 }
@@ -96,7 +96,7 @@ _u32 transparencyJump[256] =  {
 	0x20, 0x40, 0x80, 0x300, 0xC00, 0x3000, 0x1C000, 0xE0000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xFFFFFFFE
 };
 
-_u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
+_length _freetypefont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
 {	
 	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
 	
@@ -107,7 +107,7 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 	
 	_u8* bitmap = stbtt_GetCodepointBitmap( &this->fontInfo , 0 , scale , letter , &fontWidth , &fontHeight , &xOffset , &yOffset );
 	
-	_u16 output = fontWidth;
+	_length output = fontWidth;
 	
 	// In case of error
 	if( !bitmap )
@@ -190,13 +190,19 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 				if (grayLevel == 255)
 				{
 					// We just need to copy the few opaque pixels 
-					dest->drawPixelUnsafe( x + offsetStartX + pX , y + offsetStartY + pY, color);
+					_int drawY = y + offsetStartY + pY;
+					_int drawX = x + offsetStartX + pX;
+					
+					dest[ drawX + drawY * bitmapWidth ] = color;
 				}
 				else
 				{
+					_int drawY = y + offsetStartY + pY;
+					_int drawX = x + offsetStartX + pX;
+					
 					// Antialiasing for the many gray pixels
 					// We get the existing colour 
-					bitmapColour = dest->getPixelUnsafe( x + offsetStartX + pX , y + offsetStartY + pY );
+					bitmapColour = dest[ drawX + drawY * bitmapWidth ];
 					
 					// Mix it with the font colour with regards to the
 					// grayLevel (opacity/transparency)making the
@@ -236,7 +242,7 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 						rgb -= (jump & BIT(-increment)) ? 0x0001 : 0;                                
 					}					
 					
-					dest->drawPixelUnsafe(x + offsetStartX + pX, y + offsetStartY + pY, rgb);
+					dest[ drawX + drawY * bitmapWidth ] = rgb;
 				}                            
 			}
 		}
@@ -245,7 +251,7 @@ _u16 _freetypefont::drawCharacter( _bitmap* dest , _coord x , _coord y , _char l
 	return output;
 }
 
-_u16 _freetypefont::getAscent( _u8 fontSize ) const 
+_length _freetypefont::getAscent( _u8 fontSize ) const 
 {
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
 	

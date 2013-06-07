@@ -40,6 +40,13 @@ i = Più
 s = Siga
 f = Continuer
 
+[lbl_finish]
+e = Finish
+g = Abschließen
+i = Completare
+s = Finalizar
+f = Continuer
+
 [lbl_prev]
 e = Previous
 g = Zurück
@@ -158,6 +165,20 @@ g = Willkommen
 i = Benvenuto
 s = Bienvenido
 f = Bonjour
+
+[lbl_guest]
+e = Guest
+g = Gast
+i = Guest
+s = Huésped
+f = Guest
+
+[lbl_start_btn]
+e = start
+g = start
+i = start
+s = start
+f = start
 
 ;[]
 ;e = 

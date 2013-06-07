@@ -1,5 +1,6 @@
 #include "_gadget/gadget.calendar.h"
 #include "_type/type.system.h"
+#include "_type/type.font.glyphs.h"
 #include "func.gridcreator.h"
 
 _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style style )
@@ -36,10 +37,10 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
 	this->monthLabel	= new _label( this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 , arrowWidth + 2 , 1 , "" );
-	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , _string( 1 , glyph::arrowRight ) , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , _string( 1 , glyph::arrowLeft ) , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->todayButton	= new _button( 1 , 1 , 1 , 1 , _string( 1 , glyph::reset ) );
-	this->resetButton	= new _button( 1 , 1 , 1 , 1 , _string( 1 , glyph::arrowRotateLeft ) );
+	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowRight ) , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowLeft ) , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::reset ) );
+	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowRotateLeft ) );
 	
 	this->leftArrow->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
 	this->rightArrow->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
@@ -51,6 +52,8 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	this->rightArrow->setFont( symbolFt );
 	this->todayButton->setFont( symbolFt );
 	this->resetButton->setFont( symbolFt );
+	
+	this->monthLabel->setAlign( _align::center );
 	
 	this->addEnhancedChild( this->monthLabel );
 	this->addEnhancedChild( this->leftArrow );
@@ -121,6 +124,7 @@ _callbackReturn _calendar::handler( _event event )
 			
 			_u8 tempM = this->curMonth;
 			_u16 tempY = this->curYear;
+			
 			this->curYear = now.get( _timeAttr::year );
 			this->curMonth = now.get( _timeAttr::month );
 			
@@ -169,10 +173,8 @@ _u8 _calendar::getWeeksInMonth( _time firstDay , _u32 daysInMonth ) const
 void _calendar::populateGUI()
 {
 	//! Strings!
-	//string months[] = { "Jan" , "Feb" , "Mär" , "Apr" , "Mai" , "Jun" , "Jul" , "Aug" , "Sep" , "Okt" , "Nov" , "Dez" };
 	//string weekdays[] = { "Mo" , "Di" , "Mi" , "Do" , "Fr" , "Sa" , "So" };
 	//!
-	
 	
 	//! Extract some information from the date
 	_u16 selectedYear = this->selectedDate.get( _timeAttr::year );
@@ -236,6 +238,7 @@ void _calendar::populateGUI()
 	this->monthLabel->setDimensions( _rect( arrowWidth + 2 , 1 , this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 ) );
 	this->monthLabel->setFont( ft );
 	
+	
 	// Remove Buttons again
 	this->removeChildren();
 	
@@ -263,9 +266,9 @@ void _calendar::populateGUI()
 	
 	//! Enable the selected stickybutton
 	if( this->curMonth == selectedMonth && this->curYear == selectedYear )
-		this->setIntValue( selectedDayOfMonth );
+		_singleValueGroup::setIntValue( selectedDayOfMonth );
 	else
-		this->setIntValue( -1 );
+		_singleValueGroup::setIntValue( -1 );
 	
 	
 	//! Make 'today' appear blue

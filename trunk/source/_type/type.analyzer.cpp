@@ -1,32 +1,21 @@
 #include "_type/type.h"
+#include "_type/type.system.h"
 
 #include <nds/timers.h>
 #include <stdio.h>
 #include <nds/arm9/math.h>
 #include <nds/arm9/console.h>
 
-map<void*,_string> address2Name;
-map<void*,_u32> address2Time;
-map<void*,_u32> address2StartTime;
+_map<const _char*,_u32>		_codeAnalyzer::name2Time;
+_map<const _char*,_u32>		_codeAnalyzer::name2CallCount;
 
-void startTimer( void* address )
-{
-	address2StartTime[address] = cpuGetTiming();
-}
-
-void stopTimer( void* address )
-{
-	address2Time[address] += cpuGetTiming() - address2StartTime[address];
-}
-
-void addMethod( void* address , _string name )
-{
-	address2Name[address] = name;
-}
-
-void printResults(){
-	//consoleClear();
+void _codeAnalyzer::printResults(){
+	consoleClear();
 	//_u32 time = cpuGetTiming();
-	//for( pair<void*,_string> s : address2Name )
+	for( pair<const _char*,_u32> s : name2Time )
+	{
+		printf("%-22s: %d\n %d: %d\n", s.first , s.second / name2CallCount[s.first] , name2CallCount[s.first] , s.second );
+		_system::submit();
 		//printf("%s: %d = %d%%\n",s.second.c_str(),address2Time[s.first],div32( address2Time[s.first] , time/100 ) );
+	}
 }

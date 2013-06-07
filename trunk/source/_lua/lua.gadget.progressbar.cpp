@@ -38,7 +38,7 @@ Lunar<_lua_progressbar>::FunctionType _lua_progressbar::methods[] = {
 
 Lunar<_lua_progressbar>::PropertyType _lua_progressbar::properties[] = {
 	GADGET_ATTRS( _lua_progressbar ),
-	{ "intValue" , &_lua_progressbar::getIntValue , &_lua_progressbar::setIntValue },
+	{ "value" , &_lua_progressbar::getIntValue , &_lua_progressbar::setIntValue },
 	{ "colorScheme" , &_lua_progressbar::getColorScheme , &_lua_progressbar::setColorScheme },
 	{ "barType" , &_lua_progressbar::getBarType , &_lua_progressbar::setBarType },
 	LUA_CLASS_ATTR_END

@@ -6,7 +6,7 @@
 
 class _textbox : public _gadget
 {
-	private:
+	protected:
 		
 		enum{
 			borderX = 3,
@@ -35,7 +35,6 @@ class _textbox : public _gadget
 		
 		static _callbackReturn refreshHandler( _event e );
 		static _callbackReturn focusHandler( _event e );
-		static _callbackReturn blurHandler( _event e );
 		static _callbackReturn mouseHandler( _event e );
 		static _callbackReturn keyHandler( _event e );
 		
@@ -45,13 +44,17 @@ class _textbox : public _gadget
 		//! Internal, not private due to _userWrapper-class
 		_2s32 getFontPosition( bool noScrollApplied = false );
 		
+		//! Made virtual because of e.g. _passcodebox
+		virtual void removeStr( _int position , _length numChars = 1 );
+		virtual void insertStr( _int position , string s );
+		
 	public:
 		
-		//! Set the Text to be displayed
-		void setStrValue( string val );
+		//! Set string-value
+		virtual void setStrValue( string val );
 		
-		//! Get the Text of the label
-		string getStrValue(){ return this->strValue; }
+		//! Get string-value
+		virtual string getStrValue(){ return this->strValue; }
 		
 		//! Get Text Font
 		const _font* getFont(){ return this->font; }

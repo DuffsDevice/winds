@@ -4,7 +4,7 @@
 #include "_type/type.h"
 #include "_type/type.user.h"
 #include "_gadget/gadget.imagegadget.h"
-#include "_gadget/gadget.textbox.h"
+#include "_gadget/gadget.passcodebox.h"
 #include "_gadget/gadget.actionButton.h"
 
 
@@ -13,7 +13,7 @@ class _userWrapper : public _gadget
 {
 	private:
 		
-		_textbox*		passwordbox;
+		_passcodebox*	passwordbox;
 		_actionButton*	passwordsubmit;
 		_user*			user;
 		

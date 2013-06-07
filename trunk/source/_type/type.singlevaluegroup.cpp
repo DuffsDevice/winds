@@ -57,6 +57,49 @@ void _singleValueGroup<_selector>::enableSelector( _selector* radio )
 	this->activeSelector->setIntValue( 1 );
 }
 
+template<class _selector>
+void _singleValueGroup<_selector>::enableNext()
+{
+	if( this->activeSelector )
+		this->activeSelector->setIntValue( 0 );
+	
+	auto iter = registeredSelectors.begin();
+	
+	// Cache the "end()" ->faster
+	for( auto end = registeredSelectors.end() ; iter != end ; iter++ )
+		if( iter->second == this->activeSelector )
+			break;
+	
+	if( iter != registeredSelectors.end() && ++iter != registeredSelectors.end() )
+		this->activeSelector = iter->second;
+	else
+		this->activeSelector = this->registeredSelectors.begin()->second;
+	
+	if( this->activeSelector )
+		this->activeSelector->setIntValue( 1 );
+}
+
+template<class _selector>
+void _singleValueGroup<_selector>::enablePrev()
+{	
+	if( this->activeSelector )
+		this->activeSelector->setIntValue( 0 );
+	
+	auto iter = registeredSelectors.rbegin();
+	
+	// Cache the "end()" ->faster
+	for( auto end = registeredSelectors.rend() ; iter != end ; iter++ )
+		if( iter->second == this->activeSelector )
+			break;
+	
+	if( iter != registeredSelectors.rend() && ++iter != registeredSelectors.rend() )
+		this->activeSelector = iter->second;
+	else
+		this->activeSelector = this->registeredSelectors.rbegin()->second;
+	
+	if( this->activeSelector )
+		this->activeSelector->setIntValue( 1 );
+}
 
 template<class _selector>
 void _singleValueGroup<_selector>::setIntValue( _s32 value )

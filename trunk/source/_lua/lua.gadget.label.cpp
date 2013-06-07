@@ -1,5 +1,4 @@
 #include "_lua/lua.gadget.label.h"
-//#include "_lua/lua.class.font.h"
 
 /*##################################
 ##            Lua-Label           ##
@@ -22,7 +21,7 @@ Lunar<_lua_label>::FunctionType _lua_label::methods[] = {
 Lunar<_lua_label>::PropertyType _lua_label::properties[] = {
 	GADGET_ATTRS( _lua_label ),
 	//! _interface_input (only these two are used)
-	{ "strValue" , &_lua_label::getStrValue , &_lua_label::setStrValue },
+	{ "text" , &_lua_label::getStrValue , &_lua_label::setStrValue },
 	{ "color" , &_lua_label::getColor , &_lua_label::setColor },
 	{ "bgColor" , &_lua_label::getBgColor , &_lua_label::setBgColor },
 	{ "font" , &_lua_label::getFont , &_lua_label::setFont },

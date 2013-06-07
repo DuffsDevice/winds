@@ -18,17 +18,17 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	else
 		bP.normalizeClippingRects();
 	
-	_color c;
-	c.setColor( _system::_runtimeAttributes_->user->dTC )->setL( c.getL() + 22 );
+	_color c = _system::getUser()->dTC;
+	c.setL( c.getL() + 22 );
 	
-	bP.drawVerticalGradient( 0 , 0 , bP.getWidth() , bP.getHeight() , c.getColor() , _system::_runtimeAttributes_->user->dTC );
+	bP.drawVerticalGradient( 0 , 0 , bP.getWidth() , bP.getHeight() , c.getColor() , _system::getUser()->dTC );
 	
-	const _bitmap& wp = _system::_runtimeAttributes_->user->getWallpaper();
+	const _bitmap& wp = _system::getUser()->getWallpaper();
 	
 	if( wp.isValid() )
 		bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
 	
-	//bP.copy( 0 , 0 , _system::_runtimeAttributes_->user->userLogo );
+	//bP.copy( 0 , 0 , _system::getUser()->userLogo );
 	//if( ft )
 	//	bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	
@@ -37,7 +37,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 
 
 _desktop::_desktop( _style style ) :
-	_fileview( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , "%USERS%/" + _system::_runtimeAttributes_->user->getFoldername() + "/desktop/" , _fileviewType::symbol_big , _scrollType::prevent , _scrollType::prevent , style | _styleAttr::focusNoAction )
+	_fileview( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , "%USERS%/" + _system::getUser()->getFoldername() + "/desktop/" , _fileviewType::symbol_big , _scrollType::prevent , _scrollType::prevent , style | _styleAttr::focusNoAction )
 {
 	//ft = new _freetypefont("/font.ttf");
 	

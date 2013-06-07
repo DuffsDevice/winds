@@ -26,6 +26,7 @@ enum class _gadgetType : _u8
 	textarea,
 	counter,
 	calendar,
+	colorpicker,
 	selectbox,
 	selectitem,
 	progressbar,
@@ -94,7 +95,7 @@ class _gadget
 		
 		//! Default Event-Handlers
 		static _array<
-			_callback*,13>		defaultEventHandlers; // Default event-handlers (an array because of speed)
+			_staticCallback,13>	defaultEventHandlers; // Default event-handlers (an array because of speed)
 		
 		/**
 		 * Standard/Default EventHandler that will handle
@@ -373,7 +374,7 @@ class _gadget
 		/**
 		 * Get both y and y coordinate
 		 */
-		_2s32 getAbsolutePosition() const ;
+		_2s32 getAbsolutePosition() const ITCM_CODE;
 		
 		/**
 		 * Get the Relative X-position

@@ -15,15 +15,15 @@ void _text::wrap()
 	_u32	lastBreakIndex = 0;
 	
 	// Characters after which to break
-	static char breakChars[] = " ,.-:;?!+=/" "\\\n";
+	static _char breakChars[] = " ,.-:;?!+=/" "\\\n";
 	
 	// Push start
 	this->linePositions.push_back( 0 );
 	
-	const char* iteratorText = this->text.c_str();
-	const char* iteratorTextEnd = iteratorText + strlen( iteratorText );
+	const _char* iteratorText = this->text.c_str();
+	const _char* iteratorTextEnd = iteratorText + strlen( iteratorText );
 	
-	for( const char* ch = iteratorText ; ch < iteratorTextEnd ; ch++ )
+	for( const _char* ch = iteratorText ; ch < iteratorTextEnd ; ch++ )
 	{
 		idx++;
 		
@@ -43,7 +43,7 @@ void _text::wrap()
 			lastWordWidth = 0;
 		}
 		else if( this->font->isCharSupported( *ch ) )
-		// advance the current lineWidth by the width of the char to display
+		// advance the current lineWidth by the width of the _char to display
 		{
 			_u16 w = this->font->getCharacterWidth( *ch ) + 1;
 			lineWidth += w;
@@ -52,8 +52,8 @@ void _text::wrap()
 		
 		if( lineWidth >= this->width )
 		{
-			const char* text = iteratorText + lastBreakIndex;
-			const char* end = text + idx - lastBreakIndex + 1;
+			const _char* text = iteratorText + lastBreakIndex;
+			const _char* end = text + idx - lastBreakIndex + 1;
 			list<int> lst = syllableParser::parseText( text , end );
 			
 			if( lst.size() )

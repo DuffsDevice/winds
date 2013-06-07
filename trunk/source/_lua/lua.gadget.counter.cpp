@@ -49,7 +49,7 @@ Lunar<_lua_counter>::FunctionType _lua_counter::methods[] = {
 
 Lunar<_lua_counter>::PropertyType _lua_counter::properties[] = {
 	GADGET_ATTRS( _lua_counter ),
-	{ "intValue" , &_lua_counter::getIntValue , &_lua_counter::setIntValue },
+	{ "value" , &_lua_counter::getIntValue , &_lua_counter::setIntValue },
 	{ "upperBound" , &_lua_counter::getUpperBound , &_lua_counter::setUpperBound },
 	{ "lowerBound" , &_lua_counter::getLowerBound , &_lua_counter::setLowerBound },
 	LUA_CLASS_ATTR_END

@@ -277,7 +277,7 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	_gadget( _gadgetType::textarea , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
-	, text( _system::getFont() , _system::_runtimeAttributes_->defaultFontSize , width - _textarea::borderX * 2 , value )
+	, text( _system::getFont() , _system::_rtA_->getDefaultFontSize() , width - _textarea::borderX * 2 , value )
 	, cursor( 0 )
 	, align( _align::center )
 {

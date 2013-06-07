@@ -66,6 +66,33 @@ _scrollBar::~_scrollBar()
 }
 
 
+void _scrollBar::setDimension( _dimension dim )
+{
+	if( this->dim == dim )
+		return;
+	this->dim = dim;
+	
+	if( dim == _dimension::horizontal )
+	{
+		this->dragHandle->setButtonType( _scrollButtonType::buttonHandleX );
+		this->higherHandle->moveTo( this->dimensions.width - 8 , 0 );
+		this->higherHandle->setButtonType( _scrollButtonType::buttonRight );
+		this->lowerHandle->moveTo( 0 , 0 );
+		this->lowerHandle->setButtonType( _scrollButtonType::buttonLeft );
+	}
+	else
+	{
+		this->dragHandle->setButtonType( _scrollButtonType::buttonHandleY );
+		this->higherHandle->moveTo( 0 , this->dimensions.height - 8 );
+		this->higherHandle->setButtonType( _scrollButtonType::buttonBottom );
+		this->lowerHandle->moveTo( 0 , 0 );
+		this->lowerHandle->setButtonType( _scrollButtonType::buttonTop );
+	}
+	
+	this->setValue( this->value );
+}
+
+
 int _scrollBar::setValue( int val )
 {
 	val = mid( 0 , val , this->length2 - this->length );
@@ -267,3 +294,13 @@ void _scrollBar::setLength2( _u32 value )
 	refreshHandleWidth();
 	this->setValue( max( _u32(0) , min( this->value , this->length2 - this->length ) ) );
 }
+
+_map<_dimension,string> dimension2string = {
+	{ _dimension::horizontal , "horizontal" },
+	{ _dimension::vertical , "vertical" }
+};
+
+_map<string,_dimension> string2dimension = {
+	{ "horizontal" , _dimension::horizontal },
+	{ "vertical" , _dimension::vertical }
+};

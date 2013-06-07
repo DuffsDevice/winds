@@ -46,10 +46,10 @@ class _user : public _registry
 		~_user();
 		
 		//! Get the user's username
-		string getUsername(){ return _registry::readIndex( "_global_" , "userName" ); }
+		string getUsername() const { return _registry::readIndex( "_global_" , "userName" ); }
 		
 		//! Get the foldername of the user ( it's directory in "%USERS%/" )
-		string getFoldername(){ return this->folderName; }
+		string getFoldername() const { return this->folderName; }
 		
 		//! Get User-Logo
 		const _bitmap& getLogo() const { return this->userLogo; }
@@ -61,10 +61,10 @@ class _user : public _registry
 		_wallpaperViewType getWallpaperViewType() const { return this->wallpaperView; }
 		
 		//! Match a supplied raw string against the password
-		bool checkPassword( string pw );
+		bool checkPassword( string pw ) const ;
 		
 		//! Check if the user has a password
-		bool hasPassword();
+		bool hasPassword() const ;
 		
 		//! Set a users password
 		void setPassword( string pw );
@@ -76,14 +76,16 @@ class _user : public _registry
 		void remove(){ _registry::unlink(); }
 		
 		//! Get a string value from the registry parsed as number
-		_s32 getIntAttr( string idx );
+		_int getIntAttr( string idx ) const { return _registry::readIndexInt( "_global_" , idx ); }
 		
 		//! Read a string value from the registry
-		string getStrAttr( string idx ){ return _registry::readIndex( "_global_" , idx ); }
+		string getStrAttr( string idx ) const { return _registry::readIndex( "_global_" , idx ); }
 		
 		//! Saves the data of this user class to a folder
 		void createAs( string folderName );
+		
+		//! Set the users icon (string)
+		void setUsericon( string icon , bool builtIn = false ){ _registry::writeIndex( "_global_" , "userLogo" , icon ); }
 };
 
 #endif
-	

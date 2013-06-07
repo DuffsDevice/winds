@@ -2,21 +2,21 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-_array<_callback*,13>
+_array<_staticCallback,13>
 	_gadget::defaultEventHandlers = { {
-	/* refresh */ new _staticCallback( &_gadget::gadgetRefreshHandler ) ,
-	/* mouseClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDoubleClick */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDown */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseUp */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseRepeat */ new _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* keyDown */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyUp */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyClick */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyRepeat */ new _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* dragStart */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragStop */ new _staticCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragging */ new _staticCallback( &_gadget::gadgetDragHandler )
+	/* refresh */ _staticCallback( &_gadget::gadgetRefreshHandler ) ,
+	/* mouseClick */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDoubleClick */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDown */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseUp */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseRepeat */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
+	/* keyDown */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyUp */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyClick */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyRepeat */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
+	/* dragStart */ _staticCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragStop */ _staticCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragging */ _staticCallback( &_gadget::gadgetDragHandler )
 } };
 
 
@@ -43,12 +43,16 @@ _gadget::_gadget( int width , int height , int posX , int posY , _style style , 
 
 
 _gadget::~_gadget()
-{	
+{
 	// Unbind event Handler
 	for( const _pair<_eventType,_callback*>& data : this->eventHandlers )
 	{
 		if( data.second )
+		{
+			if( data.first == onDelete )
+				(*data.second)( _event( onDelete ).setGadget( this ) );
 			delete data.second;
+		}
 	}
 	
 	// Remove Children
@@ -299,7 +303,7 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 	if( posInArray >= 0 && _u32(posInArray) < defaultEventHandlers.size() )
 	{
 		event.setGadget( this );
-		return (*defaultEventHandlers[ posInArray ])( (_event&&)event );
+		return defaultEventHandlers[ posInArray ]( (_event&&)event );
 	}
 	
 	// If the Handler for the given event doesn't exist, return 
@@ -491,12 +495,16 @@ void _gadget::addChild( _gadget* child )
 	// Add it!
 	this->children.push_front( child );
 	
-	// Adjust style-object (kind of reset)
+	// Reset style-object
 	child->focused = false;
 	child->enhanced = false;
 	child->hidden = false;
-	child->parent = this;
 	child->dragged = false;
+	child->minimized = false;
+	child->pressed = false;
+	
+	// Set Parent
+	child->parent = this;
 	
 	//! Paint it on my bmp
 	child->bubbleRefresh( true );
@@ -511,12 +519,16 @@ void _gadget::addEnhancedChild( _gadget* child )
 	// Add it!
 	this->enhancedChildren.push_front( child );
 	
-	// Adjust style-object (kind of reset)
+	// Reset style-object
 	child->focused = false;
 	child->enhanced = true;
 	child->hidden = false;
-	child->parent = this;
 	child->dragged = false;
+	child->minimized = false;
+	child->pressed = false;
+	
+	// Set Parent
+	child->parent = this;
 	
 	//! Paint it on my bmp
 	child->bubbleRefresh( true );

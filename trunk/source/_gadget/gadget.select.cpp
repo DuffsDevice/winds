@@ -64,7 +64,7 @@ _callbackReturn _select::keyHandler( _event event )
 }
 
 _select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style style ) :
-	_scrollArea( width , height * _system::_runtimeAttributes_->user->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , style )
+	_scrollArea( width , height * _system::getUser()->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , style )
 	, entries( lst )
 	, selected( -1 )
 {

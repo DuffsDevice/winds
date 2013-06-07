@@ -161,12 +161,12 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
 	, computeH( 0 )
-	, align( _align::center )
+	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
 {
 	this->font = _system::getFont();
-	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
+	this->fontSize = _system::_rtA_->getDefaultFontSize();
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );
@@ -182,12 +182,12 @@ _label::_label( _coord x , _coord y , string text , _style style ) :
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )
 	, computeH( 2 )
-	, align( _align::center )
+	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
 {
 	this->font = _system::getFont();
-	this->fontSize = _system::_runtimeAttributes_->defaultFontSize;
+	this->fontSize = _system::_rtA_->getDefaultFontSize();
 	
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );

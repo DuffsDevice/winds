@@ -1,14 +1,14 @@
 #include "_library/bmp.h"
 #include "_type/type.h"
 
-unsigned short* GenericBMPDecoder::decode( unsigned char* data , unsigned int& width , unsigned int& height )
+unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned int& width , unsigned int& height )
 {
 	BMPHeader0 *Bmpinfo0 = (BMPHeader0 *)(data);
 	BMP_Headers *Bmpinfo = (BMP_Headers*)(data + 14);
 	
 	//			unsigned char *gfx = temp+54;
 	unsigned int start = Bmpinfo0->ImageStart1 + ((Bmpinfo0->ImageStart2) << 16);
-	unsigned char* gfx = data + start;
+	const unsigned char* gfx = data + start;
 	unsigned short* gfx2 = (unsigned short*)(data + start);
 	
 	//	unsigned short *gfx2 = (unsigned short*)(temp+54); // Pour le mode 16 bit...
@@ -80,7 +80,7 @@ unsigned short* GenericBMPDecoder::decode( unsigned char* data , unsigned int& w
 	else if ( Bits <= 8 )
 	{
 		// look for palette data if present //
-		unsigned char *colormap = data + 14 + Bmpinfo->SizeofHeader;
+		const unsigned char *colormap = data + 14 + Bmpinfo->SizeofHeader;
 		unsigned short palette[256];
 		unsigned int colors;
 		

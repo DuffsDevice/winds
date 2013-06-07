@@ -7,7 +7,7 @@ class _scenario
 	public:
 		
 		// Virtual Dtor
-		virtual ~_scenario(){ };
+		inline virtual ~_scenario(){ };
 		
 };
 
