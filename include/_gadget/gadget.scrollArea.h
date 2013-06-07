@@ -104,7 +104,7 @@ class _scrollArea : public _gadget {
 		}
 };
 
-extern map<_string,_scrollType> string2scrollType;
-extern map<_scrollType,_string> scrollType2string;
+extern map<string,_scrollType> string2scrollType;
+extern map<_scrollType,string> scrollType2string;
 
 #endif

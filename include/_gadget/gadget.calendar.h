@@ -41,10 +41,11 @@ class _calendar : public _gadget , private _singleValueGroup<_stickybutton>
 		//! Select a date
 		void selectDate( _time date ){ this->selectDate( date.get( _timeAttr::year ) , date.get( _timeAttr::month ) , date.get( _timeAttr::day ) ); }
 		void selectDate( _u16 year , _u8 month , _u8 dayOfMonth );
+		void setIntValue( _int unixTime ){ this->selectDate( _time( unixTime ) ); }
 		
 		//! Get the selected date
 		_time getSelectedDate() const { return this->getIntValue(); }
-		_time getIntValue() const { return this->selectedDate; }
+		_int getIntValue() const { return (_int)this->selectedDate; }
 		
 		
 		//! Ctor with _time object

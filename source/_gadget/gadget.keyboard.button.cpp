@@ -35,10 +35,6 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 	return handled;
 }
 
-_key _keyboardButton::getKey(){ return this->key; }
-
-void _keyboardButton::setKey( _key key ){ this->key = key; }
-
 _keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style )
 	: _button( width , height , x , y , title , style )
 	, key( key )

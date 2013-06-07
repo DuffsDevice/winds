@@ -2,6 +2,10 @@
 
 bool _rect::intersectsWith( const _area& other ) const 
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::intersectsWith" );
+	#endif
+	
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
 	
@@ -18,22 +22,30 @@ bool _rect::intersectsWith( const _area& other ) const
 
 _area _rect::reduce( const _rect& r2 ) const 
 {
-	_area out;
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::reduce" );
+	#endif
 	
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
 	_coord r2_x2 = r2.getX2();
 	_coord r2_y2 = r2.getY2();
 	
+	//! Does not intersect withe 'me'
 	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
-	{
-		out.add( *this );
-		return out;
-	}
+		return {*this};
 	
-	// Left Top Right Bottom
-	bool overlapping[4] = { r2.x > this->x , r2.y > this->y , r2_x2 < this_x2 , r2_y2 < this_y2 };
+	// Left - Top - Right - Bottom
+	bool overlapping[4] = {
+		r2.x > this->x /* It starts more right than me */
+		, r2.y > this->y /* It start underneath me */
+		, r2_x2 < this_x2 /* It ends more left than my end */
+		, r2_y2 < this_y2 /* It ends above my end */
+	};
 	
+	_area out;
+	
+	// Check for any overlaps
 	if( overlapping[0] )
 		out.add( _rect::fromCoords( this->x , overlapping[1] ? r2.y : this->y , r2.x - 1 , overlapping[3] ? r2_y2 : this_y2 ) );
 	if( overlapping[1] )
@@ -48,7 +60,9 @@ _area _rect::reduce( const _rect& r2 ) const
 
 _area _rect::combine( const _rect& r2 ) const 
 {
-	_area out;
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::combine" );
+	#endif
 	
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
@@ -56,11 +70,9 @@ _area _rect::combine( const _rect& r2 ) const
 	_coord r2_y2 = r2.getY2();
 	
 	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
-	{
-		out.add( r2 );
-		out.add( *this );
-		return out;
-	}
+		return { r2 , *this };
+	
+	_area out;
 	
 	// Left Top Right Bottom
 	bool overlapping[4] = { r2.x < this->x , r2.y < this->y , r2_x2 > this_x2 , r2_y2 > this_y2 };
@@ -114,10 +126,18 @@ _area _rect::combine( const _rect& r2 ) const
 
 _rect& _rect::clipToIntersect( const _rect& rect )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::clipToIntersect" );
+	#endif
+	
 	return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 }
 
 _rect& _rect::expandToInclude( const _rect& rect )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::expandToInclude" );
+	#endif
+	
 	return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
 }

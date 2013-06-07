@@ -18,6 +18,11 @@ class _lua_textbox : public _lua_gadget , public _lua_interface_input<_textbox> 
 		
 		_lua_textbox( _textbox* t ) : _lua_gadget( t ) , _lua_interface_input( t ) { }
 		
+		//! setCursor
+		int setCursor( lua_State* L );
+		
+		//! getCursor
+		int getCursor( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

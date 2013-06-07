@@ -5,6 +5,8 @@
 #include "_type/type.scenario.login.userwrapper.h"
 #include "_type/type.user.h"
 #include "_type/type.animation.h"
+#include "_gadget/gadget.label.h"
+#include "_gadget/gadget.imagegadget.h"
 
 
 class _scLogin : public _scenario
@@ -22,6 +24,10 @@ class _scLogin : public _scenario
 		_list<_user*>			users; // Collect all users in here
 		_list<_userWrapper*>	userWrapper; // Collect all userWrappers in here
 		_animation				loginAnim;
+		
+		_label*					welcome;
+		_label*					welcomeBg;
+		_imagegadget*			separator;
 		
 		friend class _userWrapper;
 	

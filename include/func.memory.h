@@ -3,17 +3,30 @@
 
 #include "_type/type.h"
 
+//! NDS-Headers
+#include <nds/dma.h>
+#include <nds/arm9/cache.h>
+
 unsigned int getFreeMemory();
 
-/*//! Tonc-lib
-void memset32(void *dst, unsigned int src, unsigned int wdn);
-void memset16(void *dst, unsigned short int val, unsigned int hwn);
+inline void memSet( void* dst , const unsigned short int val , unsigned int hwn )
+{
+	DC_FlushRange( dst , hwn << 1 );
+	dmaFillHalfWords( val , dst , hwn << 1 );
+}
 
-//! Tonc-lib
-void memcpy16(void *dst, const void *src, unsigned int hwn);
-void memcpy32(void *dst, const void *src, unsigned int hwn);*/
+inline void memCpy( void* dst , const void* src , unsigned int hwn )
+{
+	DC_FlushRange( src , hwn << 1 );
+	DC_FlushRange( dst , hwn << 1 );
+	dmaCopyHalfWords( 0 , src , dst , hwn << 1 );
+}
 
-void memSet( void* dst , const unsigned short int val , unsigned int hwn );
-void memCpy( void* dst , const void* src , unsigned int hwn );
+// Additional!
+namespace DSWindows
+{
+	// Gets if the program runs in an emulator
+	bool isEmulator();
+}
 
 #endif

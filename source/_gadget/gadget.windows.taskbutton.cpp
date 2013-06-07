@@ -37,61 +37,63 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	_length myW = bP.getWidth();
 	_length myH = bP.getHeight();
 	
+	// Cache the windows-bitmap that describes how windows look like
+	const _bitmap& design = _system::_rtA_->getWindowsDesignActive();
+	
 	if( that->reference->hasFocus() || that->isPressed() )
-	{
+	{		
 		if( that->isPressed() ) // Darker background if the button is pressed
-			bP.fill( _system::_runtimeAttributes_->windowBar[9] );
+			bP.fill( design[9] );
 		else
-			bP.fill( _system::_runtimeAttributes_->windowBar[3] );
+			bP.fill( design[3] );
 		
 		// String
 		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
 		
 		// Topper Line Bright
-		bP.drawHorizontalLine( 1 , 0 , myW - 2 , _system::_runtimeAttributes_->windowBar[1] );
+		bP.drawHorizontalLine( 1 , 0 , myW - 2 , design[1] );
 		
 		// Top Line Dark
-		bP.drawHorizontalLine( 1 , 1 , myW - 2 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawHorizontalLine( 1 , 1 , myW - 2 , design[9] );
 		
 		// Bottom Dark Line
-		bP.drawHorizontalLine( 0 , myH - 1 , myW - 1 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawHorizontalLine( 0 , myH - 1 , myW - 1 , design[9] );
 		
 		// Left Dark Line
-		bP.drawVerticalLine( 0 , 2 , myH - 3 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawVerticalLine( 0 , 2 , myH - 3 , design[9] );
 		
 		// Right Dark Line
-		bP.drawVerticalLine( myW - 1 , 2 , myH - 3 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawVerticalLine( myW - 1 , 2 , myH - 3 , design[9] );
 	}
 	else
 	{
 		// Quite bright backgrund
-		bP.fill( _system::_runtimeAttributes_->windowBar[1] );
+		bP.fill( design[1] );
 		
 		// String
 		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
 		
 		// Create brighter blue
-		_color c;
-		c.setColor( _system::_runtimeAttributes_->windowBar[1] );
+		_color c = design[1];
 		c.setL( c.getL() + 10 );
 		
 		// Top Line Dark
-		bP.drawHorizontalLine( 1 , 0 , myW - 2 , _system::_runtimeAttributes_->windowBar[8] );
+		bP.drawHorizontalLine( 1 , 0 , myW - 2 , design[8] );
 		
 		// Top+1 Line Bright
 		bP.drawHorizontalLine( 2 , 1 , myW - 3 , c.getColor() );
 		
 		// Bottom Dark Line
-		bP.drawHorizontalLine( 0 , myH - 1 , myW - 1 , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawHorizontalLine( 0 , myH - 1 , myW - 1 , design[9] );
 		
 		// Left Line Dark
-		bP.drawVerticalLine( 0 , 2 , myH - 3 , _system::_runtimeAttributes_->windowBar[8] );
+		bP.drawVerticalLine( 0 , 2 , myH - 3 , design[8] );
 		
 		// Left+1 Line Bright
 		bP.drawVerticalLine( 1 , 2 , myH - 3 , c.getColor() );
 		
 		// Right Dark Line
-		bP.drawVerticalLine( myW - 1 , 1 , myH - 2 , _system::_runtimeAttributes_->windowBar[3] );
+		bP.drawVerticalLine( myW - 1 , 1 , myH - 2 , design[3] );
 	}
 	
 	if( that->reference->hasIcon() )

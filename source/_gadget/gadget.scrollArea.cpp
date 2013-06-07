@@ -1,14 +1,14 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.button.h"
 
-map<_string,_scrollType> string2scrollType = {
+map<string,_scrollType> string2scrollType = {
 	{ "scroll" , _scrollType::scroll },
 	{ "meta" , _scrollType::meta },
 	{ "hidden" , _scrollType::hidden },
 	{ "prevent" , _scrollType::prevent }
 };
 
-map<_scrollType,_string> scrollType2string = {
+map<_scrollType,string> scrollType2string = {
 	{ _scrollType::scroll , "scroll" },
 	{ _scrollType::meta , "meta" },
 	{ _scrollType::hidden , "hidden" },

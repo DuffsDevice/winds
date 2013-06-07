@@ -134,23 +134,28 @@ _callbackReturn _window::refreshHandler( _event event )
 	
 	if( that->hasFocus() )
 	{
+		const _bitmap& design = _system::_rtA_->getWindowsDesignActive();
+		
 		// Window-Bar
-		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , _system::_runtimeAttributes_->windowBar );
+		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
 		
 		// Bottom Border
-		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[0] );
-		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBar[9] );
-		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , _system::_runtimeAttributes_->windowBar[9] );
+		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , design[0] );
+		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , design[9] );
+		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
 	}
 	else
 	{
+		const _bitmap& design = _system::_rtA_->
+		getWindowsDesignBlurred();
+		
 		// Window-Bar
-		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , _system::_runtimeAttributes_->windowBarBlurred );
+		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
 		
 		// Bottom Border
-		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[0] );
-		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , _system::_runtimeAttributes_->windowBarBlurred[9] );
-		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , _system::_runtimeAttributes_->windowBarBlurred[9] );
+		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , design[0] );
+		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , design[9] );
+		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
 	}
 	
 	that->label->refreshBitmap();
@@ -213,7 +218,6 @@ _callbackReturn _window::dragHandler( _event event )
 			that->maximize();
 	}
 	
-	
 	// Default return
 	return not_handled;
 }
@@ -244,7 +248,7 @@ _callbackReturn _window::buttonHandler( _event event )
 			this->maximize();
 	}
 	// Minimize
-	if( event.getGadget<_windowButton>() == this->button[2] )
+	else if( event.getGadget<_windowButton>() == this->button[2] )
 	{
 		this->minimize();
 		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
@@ -264,7 +268,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::doubleClickable )
+	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::doubleClickable | _styleAttr::focusBringsFront )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	

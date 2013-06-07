@@ -10,7 +10,7 @@ enum class _dimension : _u8{
 	vertical = 3
 };
 
-class _scrollBar : public _gadget{
+class _scrollBar : public _gadget {
 	
 	private:
 		
@@ -51,22 +51,23 @@ class _scrollBar : public _gadget{
 		
 		void setValue( _u32 value , bool ease );
 		
+		_u32 getValue(){ return this->value; }
+		
 		void setDimension( _dimension dim );
+		_dimension getDimension(){ return this->dim; }
 		
 		void setStep( _u16 value ){ this->step = value; }
+		_u16 getStep(){ return this->step; }
 		
 		void setLength( _u32 value );
+		_u32 getLength(){ return this->length; }
 		
 		void setLength2( _u32 value );
-		
-		_dimension getDimension(){
-			return this->dim;
-		}
-		
-		_u32 getValue(){
-			return this->value;
-		}
+		_u32 getLength2(){ return this->length2; }
 		
 };
+
+extern _map<string,_dimension> string2dimension;
+extern _map<_dimension,string> dimension2string;
 
 #endif

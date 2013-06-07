@@ -10,18 +10,22 @@ _bitmap icon_shortcut = BMP_ShortcutOverlay();
 _shortcut::_shortcut( string fn) : _direntry( fn ) , destination( nullptr )
 { }
 
-_direntry _shortcut::getDestination(){
+_direntry _shortcut::getDestination()
+{
 	if( this->destination.getFileName() != "" )
 		return this->destination;
-	_ini parser( this->readString() );
+	
+	_ini parser = _ini( this->readString() );
+	
 	if( parser.read() )
-		this->destination = _direntry(parser.getMap()["LocalShortcut"]["URL"]);
+		this->destination = _direntry( parser.getMap().at( "LocalShortcut" ).at( "URL" ) );
+	
 	return this->destination;
 }
 
 _bitmap _shortcut::getFileImage()
 {
-	static _u8 fOH = _system::_runtimeAttributes_->user->fOH;
+	static _u8 fOH = _system::getUser()->fOH;
 	
 	if( this->image.isValid() )
 		return this->image;

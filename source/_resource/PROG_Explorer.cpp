@@ -53,10 +53,16 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		string val = prog->addressbar->getStrValue();
 		prog->path = val;
 		prog->fileview->setPath( val );
+		
+		string path = _direntry( val ).getName();
+		prog->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
 	}
 	else if( that->getType() == _gadgetType::fileview )
 	{
-		prog->addressbar->setStrValue( ((_fileview*)that)->getPath() );
+		prog->addressbar->setStrValue( prog->fileview->getPath() );
+		
+		string path = _direntry( prog->fileview->getPath() ).getName();
+		prog->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
 	}
 	else if( that->getType() == _gadgetType::window )
 	{

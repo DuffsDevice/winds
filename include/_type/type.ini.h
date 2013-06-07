@@ -30,7 +30,12 @@ class _ini
 		void write();
 		
 		//! Get the c++ std::map representation after a previous call to ::read
-		_iniStructure& getMap(){
+		const _iniStructure& getMap(){
+			return this->array;
+		}
+		
+		//! Get a modifyable version of the std::map representation of the .ini file
+		_iniStructure& getMutableMap(){
 			return this->array;
 		}
 		
@@ -39,10 +44,12 @@ class _ini
 			return this->output;
 		}
 		
+		//! Virtual Dtor
 		virtual ~_ini(){}
 		
-		static _ini* fromFile( string path );
 		
+		//! Allocate
+		static _ini* fromFile( string path );
 };
 
 

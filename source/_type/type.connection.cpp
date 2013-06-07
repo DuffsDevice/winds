@@ -38,7 +38,6 @@ _u32 _wifiSocketClient::string2IP( string str ) {
 _wifiSocketClient::_wifiSocketClient( string host , int port , _tcpType mode ) :
 	succeeded( false )
 {
-	
 	unsigned long 		ip;
 	struct sockaddr_in 	servaddr;
 	
@@ -74,6 +73,6 @@ _wifiSocketClient::~_wifiSocketClient()
 }
 
 void _wifiSocketClient::request( string url ){
-	//printf("Sent Request\n");
+	printf("Sent Request\n");
 	send( this->sock, url.c_str() , url.length() , 2 );
 }

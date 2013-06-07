@@ -9,35 +9,44 @@ void operator delete(void *p)		{	free(p);				}
 void* operator new[](size_t size)	{	return malloc(size);	}
 void operator delete[](void *p)		{	free(p);				}
 
-map<_align,string> align2string = {
+_map<_align,string> align2string = {
 	{ _align::left , "left" },
 	{ _align::center , "center" },
 	{ _align::right , "right" }
 };
 
-map<_valign,string> valign2string = {
+_map<_valign,string> valign2string = {
 	{ _valign::top , "top" },
 	{ _valign::middle , "middle" },
 	{ _valign::bottom , "bottom" }
 };
 
-map<string,_align> string2align = {
+_map<string,_align> string2align = {
 	{ "left" , _align::left },
 	{ "center" , _align::center },
 	{ "right" , _align::right }
 };
 
-map<string,_valign> string2valign = {
+_map<string,_valign> string2valign = {
 	{ "top" , _valign::top },
 	{ "middle" , _valign::middle },
 	{ "bottom" , _valign::bottom }
 };
 
-_char libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
+// Casts for _margin and _padding
+_border::operator _padding(){ return static_cast<_padding>(*this); }
+_border::operator _margin(){ return static_cast<_margin>(*this); }
 
-bool DSWindows::isHardwareKey( _char key )
+
+// Implementations
+namespace DSWindows
 {
-	return ( ( key > 0 && key < 8 ) || ( key > 13 && key < 19 ) );
+	_char libnds2key[12] = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 14 , 15 , 16 , 17 , 18 };
+	
+	bool isHardwareKey( _char key )
+	{
+		return ( ( key > 0 && key < 8 ) || ( key > 13 && key < 19 ) );
+	}
 }
 
 void trim( string& str )
@@ -74,7 +83,7 @@ _s32 mid( _s32 a , _s32 b , _s32 c ){
 	}
 }
 
-int string2int( const char *p ){
+int string2int( const _char *p ){
     int x = 0;
     bool neg = false;
     if (*p == '-') {
@@ -91,11 +100,11 @@ int string2int( const char *p ){
     return x;
 }
 
-const char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const _char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 string int2string( _int val , _u8 zeroFill , _u8 numbersystem )
 {
-	char result[32]; // string which will contain the number
+	_char result[32]; // string which will contain the number
 	int i = 31;
 	
 	do{

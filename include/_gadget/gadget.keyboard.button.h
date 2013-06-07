@@ -20,10 +20,10 @@ class _keyboardButton : public _button {
 	public:
 		
 		//! Get the Key it represents (e.g. upper case 'A')
-		_key getKey();
+		_key getKey(){ return this->key; }
 		
 		//! Set The key it represents
-		void setKey( _key key );
+		void setKey( _key key ){ this->key = key; }
 		
 		//! Ctor
 		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y 

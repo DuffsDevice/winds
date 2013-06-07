@@ -63,16 +63,16 @@ class _time
 		_time( _int );
 		
 		//! Convert the _time structure to UNIX time
-		operator _int();
+		operator _int() const ;
 		
 		//! Convert the _time to string
-		operator string();
+		operator string() const ;
 		
 		//! Adds the specified (signed) amount of time to the given _time field, based on the calendar's rules
 		void add( _timeAttr attr , _int diff , bool validate = true ){ this->set( attr , this->get( attr ) + diff , validate ); }
 		
 		//! Returns the given _time field
-		_int get( _timeAttr attr );
+		_int get( _timeAttr attr ) const ;
 		
 		//! Applies the specified amount of time to the given _time field
 		//! @note you cannot set the weekday!
@@ -80,7 +80,7 @@ class _time
 		
 		//! Convert the _time to string using a specific format
 		//! @see http://www.cplusplus.com/reference/ctime/strftime/#parameters
-		string toString( string format );
+		string toString( string format ) const ;
 };
 
 #endif

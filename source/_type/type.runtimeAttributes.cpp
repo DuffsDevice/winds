@@ -1,15 +1,19 @@
 #include "_type/type.runtimeAttributes.h"
+#include "_type/type.font.glyphs.h"
+
+// Bitmaps
 #include "_resource/BMP_WindowHeader.h"
 #include "_resource/BMP_Checkboxes.h"
 #include "_resource/BMP_WindowButtons.h"
-#include "_resource/BMP_WindowsWallpaper.h"
 
-_runtimeAttributes::_runtimeAttributes() :
+_runtimeAttributes::_runtimeAttributes( _user* user ) :
 	defaultFont( "System7" )
 	, defaultFontSize( 8 )
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )
+	, user( user )
 {
+	
 	this->assocDirectories = {
 		{ "%WINDIR%" , "/windows" }
 		, { "%SYSTEM%" , "/windows/system" }

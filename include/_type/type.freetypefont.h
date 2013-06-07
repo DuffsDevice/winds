@@ -19,15 +19,15 @@ class _freetypefont : private _direntry , public _font
 		
 		_freetypefont( string path );
 		
-		_u16 drawCharacter( _bitmap* dest , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 8 ) const ;
+		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 8 ) const ;
 		
-		inline _u16 getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;
+		inline _length getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;
 		
-		inline _u16 isMonospace() const ;
+		inline _length isMonospace() const ;
 		
-		_u16 getAscent( _u8 fontSize = 8 ) const ;
+		_length getAscent( _u8 fontSize = 8 ) const ;
 		
-		_u16 getHeight( _u8 fontSize = 8 ) const { return fontSize; }
+		_length getHeight( _u8 fontSize = 8 ) const { return fontSize; }
 		
 		bool valid() const ;
 		

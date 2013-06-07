@@ -53,8 +53,9 @@ _callbackReturn _windows::refreshHandler( _event event )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
 	else
 		bP.normalizeClippingRects();
-		
-	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _system::_runtimeAttributes_->windowBar );
+	
+	// Taskbar
+	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _system::_rtA_->getWindowsDesignActive() );
 	
 	return use_default;
 }

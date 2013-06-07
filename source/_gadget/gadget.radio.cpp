@@ -33,6 +33,18 @@ _callbackReturn _radio::mouseHandler( _event event )
 	// Receive Gadget
 	_radio* that = event.getGadget<_radio>();
 	
+	if( event.getType() == keyDown || event.getType() == keyRepeat )
+	{
+		if( that->group )
+		{
+			if( event.getKeyCode() == DSWindows::KEY_DOWN || event.getKeyCode() == DSWindows::KEY_RIGHT )
+				that->group->enableNext();
+			else if( event.getKeyCode() == DSWindows::KEY_UP || event.getKeyCode() == DSWindows::KEY_LEFT )
+				that->group->enablePrev();
+		}
+		return handled;
+	}
+	
 	// Ensure it is not check already
 	if( that->group && !that->getIntValue() )
 	{
@@ -55,6 +67,8 @@ _radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 as
 	// Register my handler as the default Refresh-Handler
 	this->registerEventHandler( refresh , new _staticCallback( &_radio::refreshHandler ) );
 	this->registerEventHandler( mouseClick , new _staticCallback( &_radio::mouseHandler ) );
+	this->registerEventHandler( keyDown , new _staticCallback( &_radio::mouseHandler ) );
+	this->registerEventHandler( keyRepeat , new _staticCallback( &_radio::mouseHandler ) );
 	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
 	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
 	

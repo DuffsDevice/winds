@@ -49,7 +49,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			string ext = that->file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
+			if( !_system::getUser()->sFE || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
@@ -60,7 +60,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			const _font* ft = _system::getFont();
 			
 			// Font Size
-			int ftSize = _system::_runtimeAttributes_->defaultFontSize;
+			int ftSize = _system::_rtA_->getDefaultFontSize();
 			
 			// Draw String Vertically middle and left aligned
 			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , COLOR_WHITE , ftSize );
@@ -94,7 +94,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			string ext = that->file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
+			if( !_system::getUser()->sFE || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;
@@ -105,7 +105,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			const _font* ft = _system::getFont();
 			
 			// Font Size
-			int ftSize = _system::_runtimeAttributes_->defaultFontSize;
+			int ftSize = _system::_rtA_->getDefaultFontSize();
 			
 			// Font Color
 			_pixel ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
@@ -118,7 +118,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			bP.copyTransparent(
 				5 - ( fileIcon.getWidth() >> 1 ) // X
-				, ( _system::_runtimeAttributes_->user->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
+				, ( _system::getUser()->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
 			
@@ -138,7 +138,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 //}
 
 _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system::_runtimeAttributes_->user->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	switch( this->viewType )
 	{
@@ -151,7 +151,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			string ext = this->file.getExtension();
 			
 			// Certain Files do not have an .extension
-			if( !_system::_runtimeAttributes_->user->sFE || !ext.length() )
+			if( !_system::getUser()->sFE || !ext.length() )
 				ext = "";
 			else
 				ext = "." + ext;

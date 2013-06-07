@@ -25,7 +25,7 @@ class GenericBMPDecoder{
 	
 	public:
 		
-		static unsigned short* decode( unsigned char* data , unsigned int& width , unsigned int& height );
+		static unsigned short* decode( const unsigned char* data , unsigned int& width , unsigned int& height );
 };
 
 #endif

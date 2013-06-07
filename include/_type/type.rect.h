@@ -84,6 +84,7 @@ class _rect{
 		//! Check for reasonable dimensions
 		bool isValid() const { return width > 0 && height > 0 ; }
 		
+		bool contains( const _2s32 position ) const { return this->contains( position.first , position.second ); }
 		bool contains( const _coord x , const _coord y ) const {
 			return !( x < this->x || y < this->y || x > getX2() || y > getY2() );
 		}
@@ -100,7 +101,7 @@ class _rect{
 		
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
-		_rect& toRelative( const _2s32 position ){ this->toRelative( position.first , position.second ); return *this; }
+		_rect& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
 		_rect& toRelative( const _coord absX , const _coord absY )
 		{
 			this->x -= absX; this->y -= absY; return *this;

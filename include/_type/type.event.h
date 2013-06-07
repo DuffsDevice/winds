@@ -50,7 +50,9 @@ enum _eventType : _u8
 	onMinimize,
 	onRestore,
 	onScroll,
-	onStyleSet
+	onStyleSet,
+	onDelete,
+	refreshUser
 };
 
 
@@ -75,7 +77,7 @@ class _event
 		_eventType	type;
 		
 		//! Set the Gadget that received the event (Only Used in gadget::handleEvent)
-		void setGadget( _gadget* d ) const { this->gadget = d; }
+		const _event& setGadget( _gadget* d ) const { this->gadget = d; return *this; }
 		
 		/**
 		 * Parameters

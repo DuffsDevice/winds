@@ -62,7 +62,7 @@ class _system{
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
-		static void switchUser( _user* );
+		static void switchUser( _user* usr ){ _system::_rtA_->setUser( usr ); }
 		
 		//! Misc...
 		static void displayMemUsage();
@@ -119,9 +119,9 @@ class _system{
 		static _keyboard*				_keyboard_;
 		static _screen*					_topScreen_;
 		static _registry*				_registry_;
-		static _ini*					_localizationTextTable_;
-		static _ini*					_localizationMonthTable_;
-		static _runtimeAttributes*		_runtimeAttributes_;
+		static _registry*				_localizationTextTable_;
+		static _registry*				_localizationMonthTable_;
+		static _runtimeAttributes*		_rtA_; // _runtimeAttributes_
 		
 		static void removeEventsOf( _gadget* g )
 		{
@@ -144,11 +144,11 @@ class _system{
 		static const _font* getFont( string font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
-				return _fonts_[ _runtimeAttributes_->defaultFont ];
+				return _system::getFont();
 			
 			return _fonts_[font];
 		}
-		static const _font* getFont(){ return _fonts_[ _runtimeAttributes_->defaultFont ]; }
+		static const _font* getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
 		
 		//! Get current Cpu-usage
 		static _u8 getCpuUsage(){ return _cpuUsageTemp_; }
@@ -157,11 +157,23 @@ class _system{
 		static _u16 getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
 		
 		//! Get string
-		static const string& getLocalizedString( string name );
+		static string getLocalizedString( string name )
+		{
+			string value = _system::_localizationTextTable_->readIndex( name , _system::_curLanguageShortcut_ );
+			if( value.empty() )
+				return DSWindows::emptyStringSignature;
+			return value;
+		}
 		
 		//! Get localized month
 		//! Pass month from 0 - 11
-		static const string& getLocalizedMonth( _u8 month );
+		static string getLocalizedMonth( _u8 month )
+		{
+			string value = _system::_localizationMonthTable_->readIndex( int2string( month ) , _system::_curLanguageShortcut_ );
+			if( value.empty() )
+				return DSWindows::emptyStringSignature;
+			return value;
+		}
 		
 		//! Execute the passed callback after duration d and repeat if requested
 		static void executeTimer( const _callback* cb , _tempTime d , bool isRepeating = false );
@@ -183,6 +195,9 @@ class _system{
 		
 		//! Debugging
 		static void debug( string msg );
+		
+		//! Get the Currently Logged in _user object
+		static const _user* getUser(){ return _system::_rtA_->getUser(); }
 };
 
 #endif

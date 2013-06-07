@@ -60,7 +60,7 @@ void _systemController::controllerVBL()
 
 void _systemController::main()
 {
-	changeState( _systemState::setup );
+	changeState( _systemState::desktop );
 	static int i = 0;
 	
 	while( true )
@@ -96,6 +96,14 @@ void _systemController::main()
 					break;
 				}
 			}
+			while(true);
+		}
+		
+		if( ++i > 200 
+			&& false 
+		)
+		{
+			_codeAnalyzer::printResults();
 			while(true);
 		}
 	}

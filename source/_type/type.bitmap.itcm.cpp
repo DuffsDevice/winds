@@ -1,10 +1,15 @@
 #include "_type/type.bitmap.h"
+#include "_type/type.textphrases.h"
 #include "func.memory.h"
 
 #include <nds/arm9/math.h>
 
 void _bitmap::setWidth( _length w )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a = _codeAnalyzer( "_bitmap::setWidth" );
+	#endif
+	
 	// limit
 	w = max( w , _length(1) );
 	
@@ -49,6 +54,10 @@ void _bitmap::setWidth( _length w )
 
 void _bitmap::setHeight( _length h )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::setHeight" );
+	#endif
+	
 	// limit
 	h = max( h , _length(1) );
 	
@@ -79,7 +88,11 @@ void _bitmap::setHeight( _length h )
 }
 
 void _bitmap::resize( _length w , _length h )
-{	
+{
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a = _codeAnalyzer( "_bitmap::resize" );
+	#endif
+	
 	// limit
 	h = max( h , _length(1) );
 	w = max( w , _length(1) );
@@ -136,12 +149,15 @@ void _bitmap::resize( _length w , _length h )
 
 void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawVerticalLine" );
+	#endif
+	
 	// Get end point of rect to draw
-	_coord x2 = x;
 	_coord y2 = y + length - 1;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinatesY( x , y , y2 ) ) return;
 		
 	// Calculate new height
 	length = y2 - y + 1;
@@ -162,11 +178,10 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
 {
 	// Get end point of rect to draw
-	_coord x2 = x;
 	_coord y2 = y + length - 1;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinatesY( x , y , y2 ) ) return;
 		
 	// Calculate new height
 	length = ( y2 - y + 1 ) >> 1;
@@ -184,15 +199,18 @@ void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pi
 
 void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawHorizontalLine" );
+	#endif
+	
 	// Get end point of rect to draw
 	_coord x2 = x + length - 1;
-	_coord y2 = y;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinatesX( x , y , x2 ) ) return;
 		
 	// Calculate new width
-	length = x2 - x + 1 ;
+	length = x2 - x + 1;
 	
 	// Draw the line
 	memSet( this->bmp + x + y * this->width , color , length );
@@ -202,10 +220,9 @@ void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _
 {
 	// Get end point of rect to draw
 	_coord x2 = x + length - 1;
-	_coord y2 = y;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinatesX( x , y , x2 ) ) return;
 		
 	// Calculate new width
 	length = ( x2 - x + 1 ) >> 1;
@@ -245,13 +262,17 @@ void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel col
 }
 
 void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
-{	
+{
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawFilledRect" );
+	#endif
+	
 	// Get end point of rect to draw
 	_coord x2 = x + w - 1;
 	_coord y2 = y + h - 1;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 		
 	// Calculate new width/height
 	w = x2 - x + 1;
@@ -262,12 +283,26 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	if( w == this->width )
 		memSet( to , color , w * h ); // optimize Algorithm for drawing on whole bitmap
 	else
-		// Draw the rectangle
-		while( h-- )
-		{
-			memSet( to , color , w );
-			to += this->width;
+	{
+		// Add 15 to the height since we are dividing by 8
+		h+= 7;
+		
+		int n = h / 8;
+		int rem = h % 8;
+		
+		int tN = n;
+		switch( rem ) {
+			case 7: do{ memSet( to , color , w );to += this->width;
+			case 6:		memSet( to , color , w );to += this->width;
+			case 5:		memSet( to , color , w );to += this->width;
+			case 4:		memSet( to , color , w );to += this->width;
+			case 3:		memSet( to , color , w );to += this->width;
+			case 2:		memSet( to , color , w );to += this->width;
+			case 1:		memSet( to , color , w );to += this->width;
+			case 0:		memSet( to , color , w );to += this->width;
+				} while(--tN > 0);
 		}
+	}
 }
 
 void _bitmap::replaceColor( _pixel color , _pixel replace )
@@ -352,6 +387,10 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawVerticalGradient" );
+	#endif
+	
 	if( fromColor == toColor )
 	{
 		this->drawFilledRect( x , y , w , h , fromColor );
@@ -366,7 +405,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	_coord y2 = y + h - 1;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	// Calculate new width/height
 	w = x2 - x + 1;
@@ -469,6 +508,10 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 
 void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawHorizontalGradient" );
+	#endif
+	
 	if( fromColor == toColor ){
 		this->drawFilledRect( x , y , w , h , fromColor );
 		return;
@@ -482,7 +525,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	_coord y2 = y + h - 1;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	// Calculate new width/height
 	w = x2 - x + 1;
@@ -535,8 +578,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	// Number of pixels above each other having the same color
 	_u32 difference = div32( 1 << 12 , abs( trigR ) + abs( trigG ) + abs( trigB ) );
 	
-	// Adjust end and reset temp variable
-	//temp = gradTable;
+	// Adjust end
 	end--;
 	
 	_u32 j = w;
@@ -713,22 +755,45 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _pixel color , _u8 fontSize )
 {
-	// Check for transparent
-	if( !RGB_GETA(color) )
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::drawString" );
+	#endif
+	
+	if( !str || !*str )
 		return;
 	
-	for( const _char& ch : str )
+	// Check if font is valid
+	if( !font || !font->valid() )
+		return;
+	
+	// Fetch the destination where to draw To
+	_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
+	
+	do
 	{
 		if( x0 > this->activeClippingRect.getX2() )
 			break;
-		x0 += 1 + this->drawChar( x0 , y0 , font , ch , color , fontSize );
-	}
+		
+		if( stringExtractor::processChar( str , fontSize , font , color ) )
+		{
+			_length width = font->drawCharacter( dest , this->width , x0 , y0 , *str , color , this->activeClippingRect , fontSize );
+			if( width )
+				width++;
+			x0 += width;
+			dest += width;
+		}
+		
+	}while( *++str );
 }
 
 void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copy" );
+	#endif
+	
 	if( !data.isValid() )
 		return;
 	
@@ -739,7 +804,7 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 	_coord origY = y;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	_length h = y2 - y + 1;
 	_length w = x2 - x + 1;
@@ -761,6 +826,10 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 
 void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyTransparent" );
+	#endif
+	
 	if( !data.isValid() )
 		return;
 	
@@ -770,7 +839,7 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 	_coord origY = y;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data.getBitmap( x - origX , y - origY );
 	_pixelArray myData = this->getBitmap( x , y );
@@ -832,6 +901,10 @@ void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 
 void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyHorizontalStretch" );
+	#endif
+	
 	_coord x2 = x + w - 1;
 	_coord y2 = y + data.getHeight() - 1;
 	_coord origY = y;
@@ -840,7 +913,7 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 		return;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	_pixelArray copyData = data.getBitmap();
 	if( !copyData )
@@ -859,6 +932,10 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 
 void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap& data )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyVerticalStretch" );
+	#endif
+	
 	_coord x2 = x + data.getWidth() - 1;
 	_coord y2 = y + h - 1;
 	_coord origX = x;
@@ -867,7 +944,7 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 		return;
 	
 	// Attempt to clip
-	if ( ! this->clipCoordinates( x ,  y , x2 , y2 ) ) return;
+	if ( ! this->clipCoordinates( x , y , x2 , y2 ) ) return;
 	
 	// Get Data
 	_pixelArray copyData = &data.operator[]( + x - origX );
@@ -893,7 +970,6 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 
 void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height )
 {
-	
 	// Do nothing if no copying involved
 	if ( ( sourceX == destX ) && ( sourceY == destY ) ) return;
 
@@ -972,27 +1048,68 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 
 bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinates" );
+	#endif
 	
 	if( !this->activeClippingRect.isValid() )
 		return false;
 	
-	_coord x = activeClippingRect.x;
+	int x = activeClippingRect.x;
+	int x2 = activeClippingRect.getX2();
 	
 	// Ensure values don't exceed clipping rectangle
-	left 	= max( left , x );
-	right 	= min( right , _coord( x + _coord( activeClippingRect.width ) - 1 ) );
+	left 	= max( (int)left , x );
+	right 	= min( (int)right , x2 );
 	
 	if( right < left )
 		return false;
 	
-	_coord y = activeClippingRect.y;
+	int y = activeClippingRect.y;
+	int y2 = activeClippingRect.getY2();
 	
-	top 	= max( top , y );
-	bottom 	= min( bottom , _coord( y + _coord( activeClippingRect.height ) - 1 ) );
+	top 	= max( (int)top , y );
+	bottom 	= min( (int)bottom , y2 );
 	
 	// Return false if no box to draw
 	// Return true as box can be drawn
 	return bottom >= top;
+}
+
+bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) const 
+{
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinatesX" );
+	#endif
+	
+	if( !this->activeClippingRect.isValid() )
+		return false;
+	
+	int x = activeClippingRect.x;
+	
+	// Ensure values don't exceed clipping rectangle
+	left 	= max( (int)left , x );
+	right 	= min( (int)right , int( x + int( activeClippingRect.width ) - 1 ) );
+	
+	return right >= left && top >= activeClippingRect.y && top <= activeClippingRect.getY2();
+}
+
+bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &bottom ) const 
+{
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinatesX" );
+	#endif
+	
+	if( !this->activeClippingRect.isValid() )
+		return false;
+	
+	int y = activeClippingRect.y;
+	
+	// Ensure values don't exceed clipping rectangle
+	top 	= max( (int)top , y );
+	bottom 	= min( (int)bottom , int( y + int( activeClippingRect.height ) - 1 ) );
+	
+	return bottom >= top && left >= activeClippingRect.x && left <= activeClippingRect.getX2();
 }
 
 // Internal routine
@@ -1216,6 +1333,10 @@ void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel c
 
 _bitmap& _bitmap::operator=( const _bitmap& bmp )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyOperator" );
+	#endif
+	
 	// Copy..
 	if( this == &bmp )
 		return *this;
@@ -1240,6 +1361,10 @@ _bitmap& _bitmap::operator=( const _bitmap& bmp )
 
 _bitmap& _bitmap::operator=( _bitmap&& bmp )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_bitmap::moveOperator" );
+	#endif
+	
 	// Just in case...
 	if( this == &bmp )
 		return *this;
@@ -1249,7 +1374,7 @@ _bitmap& _bitmap::operator=( _bitmap&& bmp )
 	this->height = bmp.height;
 	this->wasAllocated = bmp.wasAllocated;
 	
-	// Copy, if memory is owned by the bitmap or write, if just pointing to memory
+	// Move Memory
 	this->bmp = bmp.bmp;
 	
 	// Reset

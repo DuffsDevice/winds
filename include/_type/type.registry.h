@@ -16,7 +16,8 @@ class _registry : protected _direntry
 	public:
 		
 		//! Ctor
-		_registry( string filename );
+		_registry( _direntry&& file );
+		_registry( string content );
 		
 		//! Flush the content to disk
 		void flush();
@@ -25,19 +26,23 @@ class _registry : protected _direntry
 		virtual ~_registry();
 		
 		//! Read an index from the registry out of the supplied section
-		string readIndex( string section , string name );
+		string readIndex( string section , string name ) const ;
+		_int readIndexInt( string section , string name ) const ;
 		
 		//! Write an index to the registry, a section and a key will be generated, if they're not existent
-		void writeIndex( string section , string name , string value ){ this->ini->getMap()[section][name] = value; }
+		void writeIndex( string section , string name , string value ){ this->ini->getMutableMap()[section][name] = value; }
 		
 		//! Delete a section from the ini structure
-		void deleteSection( string section ){ this->ini->getMap().erase( section ); }
+		void deleteSection( string section ){ this->ini->getMutableMap().erase( section ); }
 		
 		//! Delete an index out of the supplied region
 		void deleteIndex( string section , string name );
 		
 		//! Receive an _iniStructure-object
-		_iniStructure& getMap(){ return this->ini->getMap(); }
+		const _iniStructure& getMap(){ return this->ini->getMap(); }
+		
+		//! Receive a modifyable version of the _iniStructure-object
+		_iniStructure& getMutableMap(){ return this->ini->getMutableMap(); }
 };
 
 #endif

@@ -9,7 +9,8 @@
 #include <nds/arm9/video.h>
 
 #include "_resource/BMP_Grip.h"
-//#include "_resource/BMP_Background.h"
+
+//#define KEYBOARD_TOP_SCREEN
 
 const int sStart = 0;
 const int sSwap = 34;
@@ -69,14 +70,15 @@ bool manuallyOpened = false;
 
 void _keyboard::screenVBL()
 {
-	// Copy Screen
-	//memCpy( this->topScreen->getMemoryPtr() , this->gHScreen->getMemoryPtr() , SCREEN_WIDTH*SCREEN_HEIGHT );
-	//if( _system::_currentFocus_ ){
-	//	_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
-	//	_rect dim = _system::_currentFocus_->getAbsoluteDimensions();
-	//	b.drawRect( dim.x-4 , dim.y-4 , dim.width+8 , dim.height+8 , COLOR_RED );
-	//	b.drawRect( dim.x-5 , dim.y-5 , dim.width+10 , dim.height+10 , COLOR_RED );
-	//}
+	#ifdef KEYBOARD_TOP_SCREEN
+		// Copy Screen
+		memCpy( this->topScreen->getMemoryPtr() , this->gHScreen->getMemoryPtr() , SCREEN_WIDTH*SCREEN_HEIGHT );
+		if( _system::_currentFocus_ ){
+			_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
+			_rect dim = _system::_currentFocus_->getAbsoluteDimensions();
+			b.drawRect( dim.x , dim.y , dim.width , dim.height , COLOR_RED );
+		}
+	#endif
 	
 	if(
 		this->lastCurrentFocus != _system::_currentFocus_ // If the focused gadgets changed
@@ -113,12 +115,13 @@ int _keyboard::setState( int value )
 		// Scroll Keyboard
 		this->scrollY( keyboardScroll - SCREEN_HEIGHT + 9 );
 		
-		// Topper Screen
-		//this->topScreen->scrollY( keyboardScroll * 1.77f - SCREEN_HEIGHT );
-		//
-		//REG_BLDCNT_SUB = ( 1 << 3 ) // 3rd Screen_Layer
-		//| ( 3 << 6 ) ; // Det Blend Mode to fade to black ( 2 << 6 ) would be fading to white
-		//REG_BLDY_SUB = 31 - float(value*value)/(sEnd*sEnd-1)*31;
+		#ifdef KEYBOARD_TOP_SCREEN
+			// Topper Screen
+			this->topScreen->scrollY( keyboardScroll * 1.77f - SCREEN_HEIGHT );
+			REG_BLDCNT_SUB = ( 1 << 3 ) // 3rd Screen_Layer
+			| ( 3 << 6 ) ; // Det Blend Mode to fade to black ( 2 << 6 ) would be fading to white
+			REG_BLDY_SUB = 31 - float( keyboardScroll * 31 ) / sEnd;
+		#endif
 		
 		//! Scale to gadgetHost-Screen
 		float rat = this->fromFactor + percent * ( this->toFactor - this->fromFactor );
@@ -198,7 +201,7 @@ void _keyboard::open( bool useAnim )
 		float ratio = 1;
 		
 		// If magnification requested
-		if( true || ( _system::_runtimeAttributes_->user->mKF && _system::_runtimeAttributes_->magnifyKeyboardFocus ) )
+		if( _system::getUser()->mKF && _system::_rtA_->isKeyboardMagnifEnabled() )
 		{
 			// "higher" than me
 			if( itsRatio < myRatio )
@@ -276,10 +279,15 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
 	
-	bP.copyTransparent( that->handlePosition , 0 , BMP_Grip() );
-	bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
-	bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
-	bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
+	if( that->handlePosition >= 0 )
+	{
+		bP.copyTransparent( that->handlePosition , 0 , BMP_Grip() );
+		bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
+		bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
+		bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
+	}
+	else
+		bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH , RGB(2,2,2) );
 	
 	// Background
 	bP.drawFilledRect( 0 , 10 , SCREEN_WIDTH , 111 , RGB(19,19,19) );
@@ -295,17 +303,17 @@ void _keyboard::refreshKeys()
 {
 	bool useShiftMap = this->shift != this->caps;
 	
-	auto textmap = _system::_runtimeAttributes_->keyboardText[ useShiftMap ];
-	auto charmap = _system::_runtimeAttributes_->keyboardChar[ useShiftMap ];
+	auto textmap = _system::_rtA_->getKeyboardTexts( useShiftMap );
+	auto charmap = _system::_rtA_->getKeyboardChars( useShiftMap );
 	
 	int i = 0;
 	
 	for( _gadget* btn : this->children )
 	{
 		if( i == 30 /* Caps Lock */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->caps ][ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( this->caps )[ i ] );
 		else if( i == 45 || i == 40 /* Shift */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_runtimeAttributes_->keyboardText[ this->shift ][ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( this->shift )[ i ] );
 		else
 		{
 			((_keyboardButton*)btn)->setStrValue( textmap[i] );
@@ -459,7 +467,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 	return not_handled;
 }
 
-_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 position , _style style ) :
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord position , _style style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
@@ -486,7 +494,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Create the buttons
 	for( _s8 i = 45 ; i >= 0 ; i-- )
 	{
-		_keyboardButton* btn = new _keyboardButton( _system::_runtimeAttributes_->keyboardChar[0][i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_runtimeAttributes_->keyboardText[0][i] );
+		_keyboardButton* btn = new _keyboardButton( _system::_rtA_->getKeyboardChars(0)[i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_rtA_->getKeyboardTexts(0)[i] );
 		
 		switch( i )
 		{

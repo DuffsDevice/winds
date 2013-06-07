@@ -129,6 +129,6 @@ Lunar<_lua_select>::FunctionType _lua_select::methods[] = {
 Lunar<_lua_select>::PropertyType _lua_select::properties[] = {
 	GADGET_ATTRS( _lua_select ),
 	{ "strValue" , &_lua_select::getStrValue , nullptr },
-	{ "intValue" , &_lua_select::getIntValue , &_lua_select::setIntValue },
+	{ "value" , &_lua_select::getIntValue , &_lua_select::setIntValue },
 	LUA_CLASS_ATTR_END
 };

@@ -16,9 +16,9 @@ _binfile::operator string()
 	transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
 	
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationtext.ini") )
-		return string( (const char*)localizationText_bin );
+		return string( (const _char*)localizationText_bin );
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationmonth.ini") )
-		return string( (const char*)localizationMonth_bin );
+		return string( (const _char*)localizationMonth_bin );
 
 	return "";
 }

@@ -22,7 +22,7 @@ class _keyboard : public _gadgetScreen {
 		float			toFactor;
 		_s8				toKeyboardExpansion;
 		_s8				curState; // Variable to get the current state of the keyboard
-		_u8				handlePosition;
+		_coord			handlePosition;
 		
 		//! Internal Array for Keyboard-Layout
 		static _rect 	buttonDimensions[];
@@ -87,7 +87,7 @@ class _keyboard : public _gadgetScreen {
 		void screenVBL();
 		
 		//! Ctor
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _u8 handlePosition = ( SCREEN_WIDTH - 40 ) , _style style = _style() | _styleAttr::canNotTakeFocus );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord handlePosition = ( SCREEN_WIDTH - 40 ) , _style style = _style() | _styleAttr::canNotTakeFocus );
 		
 		//! Dtor
 		~_keyboard();

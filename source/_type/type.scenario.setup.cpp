@@ -1,6 +1,7 @@
 #include "_type/type.scenario.setup.h"
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_type/type.imagefile.builtin.h"
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.imagegadget.h"
@@ -19,7 +20,7 @@
 _scSetup::_scSetup() :
 	state( 0 )
 	, profileName( "Admin" )
-	, profileIcon( 0 )
+	, profileIconNumber( 0 )
 	, systemTime( _time::now() )
 {
 	// Reset all gadgets to nullptr
@@ -45,12 +46,14 @@ _scSetup::~_scSetup()
 
 void _scSetup::destruct( bool removeLanguagSelect )
 {
-	for( int i = 0; i < 20 ; i++ )
-		if( this->gadgets[i] && ( this->gadgets[i]->getType() != _gadgetType::selectbox || removeLanguagSelect || this->state != 0 ) )
+	for( _gadget*& g : this->gadgets )
+	{
+		if( g && ( g->getType() != _gadgetType::selectbox || removeLanguagSelect || this->state != 0 ) )
 		{
-			delete this->gadgets[i];
-			this->gadgets[i] = nullptr;
+			delete g;
+			g = nullptr;
 		}
+	}
 	
 	if( this->radiogroup )
 	{
@@ -79,7 +82,7 @@ _callbackReturn _scSetup::languageSelectHandler( _event e )
 	// Write Language
 	_system::setLanguage( (_language)that->getIntValue() );
 	
-	// Refresh all Labels!
+	// Refresh
 	_system::_gadgetHost_->triggerEvent( _internal_ );
 	
 	return handled;
@@ -157,11 +160,12 @@ _callbackReturn _scSetup::imagegadgetProfileIconHandler( _event event )
 	
 	if( event.getType() == onFocus )
 	{
-		profileIcon = that->getStyle().val;
-		event.getGadget()->bubbleRefresh( true );
-		for( int i = 10 ; i < 18 ; i++ )
-			if( i != profileIcon )
-				this->gadgets[i]->bubbleRefresh( true );
+		profileIconNumber = that->getStyle().val;
+		for( _gadget* g : this->gadgets )
+		{
+			if( g && g->getType() == _gadgetType::imagegadget )
+				g->bubbleRefresh( true );
+		}
 		return handled;
 	}
 	
@@ -176,7 +180,7 @@ _callbackReturn _scSetup::imagegadgetProfileIconHandler( _event event )
 		bP.copyTransparent( 0 , 0 , that->getImage() );
 	
 	// Make a user-image appear semi-transparent
-	if( that->getStyle().val != profileIcon )
+	if( that->getStyle().val != profileIconNumber )
 	{
 		for (_u32 i = 0; i != bP.getWidth(); i++ )
 		{
@@ -224,7 +228,17 @@ _callbackReturn _scSetup::stateChangeButtonHandler( _event e )
 		_system::_gadgetHost_->triggerEvent( _event( _internal_ ) );
 	}
 	else
-		_systemController::changeState( _systemController::_systemState::desktop );
+	{
+		if( profileName.empty() )
+			this->gadgets[9]->blink();
+		else
+		{
+			_user* newUser = new _user( profileName );
+			newUser->setUsername( profileName );
+			newUser->setUsericon( imageId2filename[ profileIconNumber ] );
+			_systemController::changeState( _systemController::_systemState::desktop );
+		}
+	}
 	
 	return handled;
 }
@@ -289,7 +303,12 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	}
 	
 	_gadget* btnNext = new _actionButton( _actionButtonType::next , 240 , 176 , _style::storeInt( 1 ) );
-	_label* next = new _label( 50 , 9 , 188 , 176 , _system::getLocalizedString("lbl_next") , _style::storeInt( 1 ) );
+	_label* next = new _label( 50 , 9 , 188 , 176 ,
+		state == 3
+			? _system::getLocalizedString("lbl_finish")
+			: _system::getLocalizedString("lbl_next")
+		, _style::storeInt( 1 )
+	);
 	this->gadgets[0] = btnNext;
 	this->gadgets[2] = next;
 	next->setColor( RGB( 30 , 30 , 30 ) );
@@ -301,16 +320,15 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	that->addChild( btnNext );
 	that->addChild( next );
 	
-	
 	// Add this->gadgets according to the current page
 	switch( state )
 	{
 		case 0:
 		{
-			_label* lbl = new _label( 88 , 52 , _system::getLocalizedString("lbl_choose_language") );
+			_label* lbl = new _label( 86 , 52 , _system::getLocalizedString("lbl_choose_language") );
 			if( !this->gadgets[5] ) // If not created already
 			{
-				_select* slc = new _select( 90 , 5 , 87 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
+				_select* slc = new _select( 94 , 5 , 85 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
 				slc->setIntValue( (_u8)_system::getLanguage() );
 				slc->registerEventHandler( onChange , new _classCallback( this , &_scSetup::languageSelectHandler ) );
 				this->gadgets[5] = slc;
@@ -440,32 +458,10 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeInt( 4 ) );
 			txtName->registerEventHandler( onChange , new _classCallback( this , &_scSetup::profileNameTextboxHandler ) );
 			
-			//! User Logos
-			_imagegadget* image1 = new _imagegadget( 22 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/butterflyl.png" ) ) , _style::storeInt( 1 ) );
-			_imagegadget* image2 = new _imagegadget( 42 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/guitarl.png" ) ) , _style::storeInt( 2 ) );
-			_imagegadget* image3 = new _imagegadget( 62 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/horsesl.png" ) ) , _style::storeInt( 3 ) );
-			_imagegadget* image4 = new _imagegadget( 82 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/red flowerl.png" ) ) , _style::storeInt( 4 ) );
-			_imagegadget* image5 = new _imagegadget( 102 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/balll.png" ) ) , _style::storeInt( 5 ) );
-			_imagegadget* image6 = new _imagegadget( 122 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/dripl.png" ) ) , _style::storeInt( 6 ) );
-			_imagegadget* image7 = new _imagegadget( 142 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/beachl.png" ) ) , _style::storeInt( 7 ) );
-			_imagegadget* image8 = new _imagegadget( 162 , 102 , _user::getUserLogoFromImage( _user::getUserImage( "%APPDATA%/astronautl.png" ) ) , _style::storeInt( 8 ) );
 			this->gadgets[6] = lbl2;
 			this->gadgets[7] = lbl3;
 			this->gadgets[8] = lbl4;
 			this->gadgets[9] = txtName;
-			this->gadgets[10] = image1;
-			this->gadgets[11] = image2;
-			this->gadgets[12] = image3;
-			this->gadgets[13] = image4;
-			this->gadgets[14] = image5;
-			this->gadgets[15] = image6;
-			this->gadgets[16] = image7;
-			this->gadgets[17] = image8;
-			for( int i = 10 ; i < 18 ; i++ )
-			{
-				this->gadgets[i]->registerEventHandler( refresh , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
-				this->gadgets[i]->registerEventHandler( onFocus , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
-			}
 			lbl2->setColor( RGB( 30 , 30 , 30 ) );
 			lbl3->setColor( RGB( 30 , 30 , 30 ) );
 			lbl4->setColor( RGB( 30 , 30 , 30 ) );
@@ -474,14 +470,26 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			that->addChild( lbl3 );
 			that->addChild( lbl4 );
 			that->addChild( txtName );
-			that->addChild( image1 );
-			that->addChild( image2 );
-			that->addChild( image3 );
-			that->addChild( image4 );
-			that->addChild( image5 );
-			that->addChild( image6 );
-			that->addChild( image7 );
-			that->addChild( image8 );
+			
+			//! User Logos
+			_s8 iconNumbers[] = { 5 , 16 , 17 , 22 , 3 , 11 , 4 , 2 , -1 };
+			for( int i = 0 ; iconNumbers[i] >= 0 ; i++ )
+			{
+				_imagegadget* image = new _imagegadget(
+					22 + i * 20
+					, 102
+					, _user::getUserLogoFromImage(
+						_user::getUserImage(
+							imageId2filename[ iconNumbers[i] ]
+						) 
+					)
+					, _style::storeInt( iconNumbers[i] )
+				);
+				image->registerEventHandler( refresh , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
+				image->registerEventHandler( onFocus , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
+				this->gadgets[ 10 + i ] = image;
+				that->addChild( image );
+			}
 			break;
 		}
 	}

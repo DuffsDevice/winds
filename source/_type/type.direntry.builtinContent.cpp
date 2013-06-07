@@ -58,7 +58,7 @@ _program* getBuiltIn::program( string path )
 	if( path == "explorer.exe" )
 		return new PROG_Explorer();
 	if( path == "sampleprogram.exe" )
-		return new _progLua( (const char*)program_bin );
+		return new _progLua( (const _char*)program_bin );
 	
 	return nullptr;
 }
@@ -100,14 +100,14 @@ const _bitmap* getBuiltIn::bitmap( string path )
 	return builtInBitmaps[ path ];
 }
 
-const char* getBuiltIn::binary( string path )
+const _char* getBuiltIn::binary( string path )
 {
 	path = path2identifier( path );
 	if( path.empty() )
 		return nullptr;
 	
 	if( path == "localizedstrings.ini" )
-		return (const char*)strings_bin;
+		return (const _char*)strings_bin;
 	
 	return nullptr;
 }

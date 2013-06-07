@@ -13,13 +13,14 @@ using namespace std;
 //! Code-sections
 #include <nds/memory.h>
 
+#define DEBUG_PROFILING
+
 //! Overload new and delete
 void* operator new(size_t size);
 void operator delete(void *p);
 void* operator new[](size_t size);
 void operator delete[](void *p);
 
-typedef unsigned char _char;
 template<typename T>
 	using _list = std::list<T>;
 template<typename T,typename T2>
@@ -36,6 +37,7 @@ typedef uint32_t 			_u32;
 typedef int32_t 			_s32;
 typedef uint64_t 			_u64;
 typedef int64_t 			_s64;
+typedef char				_char;
 typedef _u16 				_length;
 typedef _s16 				_coord;
 typedef int 				_int;
@@ -44,8 +46,11 @@ typedef short unsigned int 	_pixel;
 typedef _pixel* 			_pixelArray;
 typedef float 				_float;
 typedef _u64 				_tempTime;
-typedef string				_string;
+typedef basic_string<_char>	string;
 
+#define unused __attribute__(( unused ))
+#define noinline __attribute__ ((noinline))
+#define DEPRECATED __attribute__((deprecated))
 
 /**
  * Pack two integers into one
@@ -73,8 +78,8 @@ union						_2s32
 	_2s32& operator/=( _s32 val ){ first /= val; second /= val; return *this; }
 };
 
-static __attribute__(( unused )) _2s32 operator-( const _2s32& val ){ return _2s32( -val.first , -val.second ); }
-static __attribute__(( unused )) bool operator!( const _2s32& val ){ return !val.val; }
+static unused _2s32 operator-( const _2s32& val ){ return _2s32( -val.first , -val.second ); }
+static unused bool operator!( const _2s32& val ){ return !val.val; }
 
 union 						_2u32
 {
@@ -122,10 +127,6 @@ template<class T1, class T2 = T1> struct comparable {
 #include <nds/touch.h>
 #undef u16
 
-#define noinline __attribute__ ((noinline))
-#define DEPRECATED __attribute__((deprecated))
-#define needless __attribute__((unused))
-
 //! Convert red, green, blue to 15bit Triplette
 static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
 	return r | ( g << 5 ) | ( b << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
@@ -148,24 +149,18 @@ static constexpr inline _pixel RGBAHEX( _u32 hex , bool alpha ){
 	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
 }
 
-static constexpr inline _u8 RGB_GETR( _pixel c ){
-	return c & 0x1F;
-}
+static constexpr inline _u8 RGB_GETR( _pixel c ){ return c & 0x1F; }
+static constexpr inline _u8 RGB_GETG( _pixel c ){ return ( c >> 5 ) & 0x1F; }
+static constexpr inline _u8 RGB_GETB( _pixel c ){ return ( c >> 10 ) & 0x1F; }
+static constexpr inline _u8 RGB_GETA( _pixel c ){ return c >> 15; }
 
-static constexpr inline _u8 RGB_GETG( _pixel c ){
-	return ( c >> 5 ) & 0x1F;
-}
-
-static constexpr inline _u8 RGB_GETB( _pixel c ){
-	return ( c >> 10 ) & 0x1F;
-}
-
-static constexpr inline _u8 RGB_GETA( _pixel c ){
-	return ( c >> 15 ) & 1;
-}
+static inline void RGB_SETR( _pixel& c , _u8 red ){ c = ( c & ~0x1F ) | red; }
+static inline void RGB_SETG( _pixel& c , _u8 green ){ c = ( c & ~( 0x1F << 5 ) ) | ( green << 5 ); }
+static inline void RGB_SETB( _pixel& c , _u8 blue ){ c = ( c & ~( 0x1F << 10 ) ) | ( blue << 10 ); }
+static inline void RGB_SETA( _pixel& c , bool alpha ){ c = ( c & ~( 1 << 15 ) ) | ( alpha << 15 ); }
 
 extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
-extern int string2int( const char * str );
+extern int string2int( const _char * str );
 extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 
 #define COLOR_TRANSPARENT (_pixel(0))
@@ -175,61 +170,72 @@ extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 #define COLOR_BLUE 		(RGB(0,0,31))
 #define COLOR_MAGENTA 	(RGB(31,0,31))
 #define COLOR_RED 		(RGB(31,0,0))
+#define COLOR_GRAY 		(RGB(15,15,15))
 #define COLOR_BLACK 	(_pixel(1<<15))
 #define COLOR_WHITE 	(_pixel((1<<16)-1))
-#define NO_COLOR 0
+#define NO_COLOR 		0
+#undef BIT
+#undef GETBIT
 
 
 //! Returns a number with the nth bit set
-#ifndef BIT
-#define BIT(n) ((1) << (n))
-#endif
+static constexpr inline _u32 BIT( _u8 n ){ return (_u32)1 << n; }
 
-//! Get a specific bit out of a number
-#define GETBIT(m,n) (((m) >> (n)) & 1)
+//! Check if a specific bit in a number is set
+static constexpr inline _u8 GETBIT( _u32 value , _u8 bit ){ return ( value >> bit ) & 1; }
 
-#define ROL8(value,shift) ((value) << (shift)) | ((value) >> (8 - (shift)))
-#define ROL16(value,shift) ((value) << (shift)) | ((value) >> (16 - (shift)))
-#define ROL32(value,shift) ((value) << (shift)) | ((value) >> (32 - (shift)))
-#define ROL64(value,shift) ((value) << (shift)) | ((value) >> (64 - (shift)))
+//! Bitwise rotation
+template<typename T>
+static constexpr inline T ROL( T value , _int shift ){ return ( value << shift ) | ( value >> ( sizeof(T) * 8 - shift ) ); }
 
-#define ROR8(value,shift) ((value) >> (shift)) | ((value) << (8 - (shift)))
-#define ROR16(value,shift) ((value) >> (shift)) | ((value) << (16 - (shift)))
-#define ROR32(value,shift) ((value) >> (shift)) | ((value) << (32 - (shift)))
-#define ROR64(value,shift) ((value) >> (shift)) | ((value) << (64 - (shift)))
+template<typename T>
+static constexpr inline T ROR( T value , _int shift ){ return ( value >> shift ) | ( value << ( sizeof(T) * 8 - shift ) ); }
 
-//! Calculate the Median value
+//! Calculate the Median value of three
 _s32 mid( _s32 a , _s32 b , _s32 c );
 
+
+// Useful things
 namespace DSWindows
 {
-	const char KEY_A = 1;
-	const char KEY_B = 2;
-	const char KEY_SELECT = 3;
-	const char KEY_START = 4;
-	const char KEY_RIGHT = 5;
-	const char KEY_LEFT	= 6;
-	const char KEY_UP = 7;
+	// The Numbers used here are 
+	// ASCII-Values that are not being used
+	const _char KEY_A = 1,
+	KEY_B = 2,
+	KEY_SELECT = 3,
+	KEY_START = 4,
+	KEY_RIGHT = 5,
+	KEY_LEFT	= 6,
+	KEY_UP = 7,
 
-	const char KEY_BACKSPACE = 8;
-	const char KEY_CARRIAGE_RETURN = 10;
+	KEY_BACKSPACE = 8,
+	KEY_CARRIAGE_RETURN = 10,
 
-	const char KEY_DOWN	= 14;
-	const char KEY_R = 15;
-	const char KEY_L = 16;
-	const char KEY_X = 17;
-	const char KEY_Y = 18;
+	KEY_DOWN	= 14,
+	KEY_R = 15,
+	KEY_L = 16,
+	KEY_X = 17,
+	KEY_Y = 18,
 
-	const char KEY_CAPS	= 19;
-	const char KEY_SHIFT = 20;
-	const char KEY_WINDOWS = 21;
+	KEY_CAPS	= 19,
+	KEY_SHIFT = 20,
+	KEY_WINDOWS = 21,
+	
+	// Excape characters used in fonts to prepare special actions
+	STR_CHANGEFONT = 22,
+	STR_CHANGEFONTCOLOR = 23,
+	STR_CHANGEFONTSIZE = 24;
 	
 	extern bool isHardwareKey( _char );
+	
+	//! Displayed as replacemanet if language-specific term
+	//! is not available in the currently selected language
+	static const char* const emptyStringSignature = "[]";
+	
+	// Libnds Key to Windows-Key mapping
+	extern _char libnds2key[12];
 };
 
-
-// Libnds Keys to Windows-Keys
-extern _char libnds2key[12];
 
 enum class _align : _u8 {
 	left,
@@ -243,6 +249,9 @@ enum class _valign : _u8 {
 	bottom
 };
 
+class _padding;
+class _margin;
+
 struct _border
 {
 	_length left;
@@ -254,20 +263,31 @@ struct _border
 	_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
 	_border() : left(0) , top(0) , right(0) , bottom(0) {}
 	
-	bool operator==( const _border& other )
-	{
-		return !( other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom );
-	}
-	
-	bool operator!=( const _border& other )
-	{
+	//! Comparisons
+	inline bool operator==( const _border& other ) const { return !( *this != other ); }
+	inline bool operator!=( const _border& other ) const {
 		return other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom;
 	}
+	
+	//! Casts for them
+	operator _padding();
+	operator _margin();
 };
 
-typedef _border _padding;
-typedef _border _margin;
+//! Typedefs for class _padding and _margin
+struct _padding : _border{
+	_padding( _length l , _length t , _length r , _length b ) : _border( l , t , r , b ) {}
+	_padding( _length width ) : _border( width ) {}
+	_padding(){}
+};
+struct _margin : _border{
+	_margin( _length l , _length t , _length r , _length b ) : _border( l , t , r , b ) {}
+	_margin( _length width ) : _border( width ) {}
+	_margin(){}
+};
 
+
+//! Holds useful information about the touch of the stylus
 struct _touch
 {
 	_coord x;
@@ -288,12 +308,15 @@ struct _touch
 	{ }
 };
 
+//! Convert _align and _valign to string
 extern map<_align,string> align2string;
 extern map<_valign,string> valign2string;
 
+//! Convert a given string to either _align or _valign
 extern map<string,_align> string2align;
 extern map<string,_valign> string2valign;
 
+//! Enumerates available _languages for WinDS
 enum class _language : _u8
 {
 	japanese = 0,
@@ -305,8 +328,10 @@ enum class _language : _u8
 	chinese
 };
 
+//! Trim not-printable characters at both ends of a given string
 void trim( string& );
 
-#endif
-
+// Tools for analyzing the efficiency of code
 #include "_type/type.analyzer.h"
+
+#endif

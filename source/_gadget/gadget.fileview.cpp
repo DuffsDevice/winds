@@ -25,7 +25,7 @@ void _fileview::generateChildren()
 {
 	this->removeChildren( true );
 	
-	int fileObjectHeight = _system::_runtimeAttributes_->user->fOH;
+	int fileObjectHeight = _system::getUser()->fOH;
 	int i = -fileObjectHeight;
 	
 	this->directory.rewindChildren();

@@ -24,7 +24,7 @@ _time::_time( _int rawTime )
 	this->dayOfWeek = timeinfo->tm_wday;
 }
 
-_time::operator _int()
+_time::operator _int() const 
 {
 	struct std::tm timeinfo;
 	timeinfo.tm_year	= year - 1900;
@@ -37,16 +37,16 @@ _time::operator _int()
 	return std::mktime( &timeinfo ); 
 }
 
-_time::operator string()
+_time::operator string() const 
 {
 	time_t rawtime = (_int)*this;
 	
 	return std::ctime( &rawtime ); // Convert to UTC
 }
 
-string _time::toString( string format )
+string _time::toString( string format ) const 
 {
-	char str[127];
+	_char str[127];
 	
 	struct std::tm timeinfo;
 	timeinfo.tm_year	= year - 1900;
@@ -61,7 +61,7 @@ string _time::toString( string format )
 	return string(str);
 }
 
-_int _time::get( _timeAttr attr )
+_int _time::get( _timeAttr attr ) const 
 {
 	switch( attr )
 	{

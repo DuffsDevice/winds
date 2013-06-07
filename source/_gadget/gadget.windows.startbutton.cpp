@@ -16,7 +16,7 @@ _callbackReturn _windowsStartButton::mouseHandler( _event event ){
 
 _callbackReturn _windowsStartButton::refreshHandler( _event event )
 {
-	static string sBT = _system::_runtimeAttributes_->user->getStrAttr( "startButtonText" );
+	string sBT = _system::getLocalizedString( "lbl_start_btn" );
 	
 	// Receive Gadget
 	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
@@ -34,7 +34,7 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 		bP.copy( 0 , 0 , BMP_StartButton() );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 1 , _system::getFont() , sBT , _system::_runtimeAttributes_->user->sBTC );
+	bP.drawString( 12 , 1 , _system::getFont() , sBT , _system::getUser()->sBTC );
 	
 	return use_default;
 }

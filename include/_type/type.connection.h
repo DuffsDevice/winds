@@ -5,6 +5,7 @@ typedef enum{
 	tcpUnblocked
 }_tcpType;
 
+
 class _wifiSocketClient{
 	
 	private:
@@ -24,12 +25,11 @@ class _wifiSocketClient{
 	public:
 		
 		//! Ctor
-		_wifiSocketClient( string host , int port , _tcpType mode );
+		_wifiSocketClient( string host , int port , _tcpType mode = _tcpType::tcpNormal );
 		
 		//! Send a request to the server
 		void request( string url );
 		
 		//! Dtor
 		~_wifiSocketClient();
-	
 };
