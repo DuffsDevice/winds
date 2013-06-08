@@ -1,4 +1,5 @@
 system.require("_bitmap")
+system.require("_color")
 system.require("_window")
 system.require("_calendar")
 system.require("_counter")
@@ -66,6 +67,7 @@ function main()
 	wnd2 = _window( 168 , 100 , 5 , 5 , "Special Gadgets" , "notResizeable" )
 	
 	clrpckr = _colorpicker( 60 , 40 , 3 , 3 )
+	clrpckr.registerEventHandler( "onChange" , colorHandler )
 	clndr = _calendar( 99 , 80 , 66 , 3 , 2013 , 6 , 5 )
 	
 	wnd2.addChild( clrpckr )
@@ -75,11 +77,15 @@ function main()
 	system.addChild( wnd2 )
 end
 
-function handler( event )
-	if event.keyCode == 1 then
-		--Key A!
-		if anim.runs then
-			anim.pause()
-		end
+function colorHandler( event )
+	local bmp = _bitmap( 6 , 6 )
+	local col = _color( clrpckr.color )
+	
+	if col.lum < 50 then
+		bmp.reset( system.rgb( 31 , 31 , 31 ) )
+	else
+		bmp.reset( system.rgb( 0 , 0 , 0 ) )
 	end
+	bmp.drawFilledRect( 1 , 1 , 4 , 4 , clrpckr.color )
+	wnd2.icon = bmp
 end

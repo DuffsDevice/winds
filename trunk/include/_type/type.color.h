@@ -32,9 +32,8 @@ class _color{
 		{}
 		
 		//! Constructor taking an initial Color
-		_color( _pixel col )
-		{
-			this->setRGB( RGB_GETR( col ) , RGB_GETG( col ) , RGB_GETB( col ) );
+		_color( _pixel col ){
+			this->setColor( col );
 		}
 		
 		//! Extract the Color (returns a _pixel)
@@ -43,8 +42,8 @@ class _color{
 		}
 		
 		//! Set a RGB-Color to be the edited one
-		_color& setColor( _pixel color ){
-			this->color  = color;
+		_color& setColor( _pixel col ){
+			this->setRGB( RGB_GETR( col ) , RGB_GETG( col ) , RGB_GETB( col ) );
 			return *this;
 		}
 		
