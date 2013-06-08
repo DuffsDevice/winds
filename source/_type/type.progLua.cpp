@@ -19,6 +19,7 @@
 #include "_lua/lua.class.radiogroup.h"
 #include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.dialog.h"
+#include "_lua/lua.class.color.h"
 
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.checkbox.h"
@@ -107,6 +108,7 @@ int _progLua::lua_requirePackage( lua_State* L )
 	//! Register Base Classes
 	if( name == "_rect" ) 				Lunar<_lua_rect>::Register( L );
 	else if( name == "_border" )		Lunar<_lua_border>::Register( L );
+	else if( name == "_color" )			Lunar<_lua_color>::Register( L );
 	else if( name == "_dialog" )		Lunar<_lua_dialog>::Register( L );
 	else if( name == "_animation" )		Lunar<_lua_animation>::Register( L );
 	else if( name == "_font" )			Lunar<_lua_font>::Register( L );
