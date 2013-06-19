@@ -59,7 +59,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = 0;
 				if( this->exitFunc )
 					(*this->exitFunc)( 0 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			
 			// Yes-Button
@@ -69,7 +69,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = 1;
 				if( this->exitFunc )
 					(*this->exitFunc)( 1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			
 			// Window-Close-Button
@@ -79,7 +79,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = -1;
 				if( this->exitFunc )
 					(*this->exitFunc)( -1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			break;
 		case _dialogType::enterText:	
@@ -91,7 +91,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->strResult = ((_textbox*)this->data[3])->getStrValue();
 				if( this->exitFunc )
 					(*this->exitFunc)( 1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			
 			// Window-Close-Button or CANCEL
@@ -101,7 +101,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = -1;
 				if( this->exitFunc )
 					(*this->exitFunc)( -1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			break;
 		case _dialogType::image:
@@ -112,7 +112,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = 1;
 				if( this->exitFunc )
 					(*this->exitFunc)( 1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			
 			// Other-Button
@@ -122,7 +122,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = 0;
 				if( this->exitFunc )
 					(*this->exitFunc)( 0 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			
 			// Window-Close-Button or CANCEL
@@ -132,7 +132,7 @@ _callbackReturn _dialog::internalEventHandler( _event e )
 				this->intResult = -1;
 				if( this->exitFunc )
 					(*this->exitFunc)( -1 );
-				_system::executeTimer( new _classCallback( this , &_dialog::internalCleanup ) , 100 );
+				_system::executeTimer( _classCallback( this , &_dialog::internalCleanup ) , 100 );
 			}
 			break;
 		default:
@@ -206,9 +206,9 @@ void _dialog::yesNoDialog( _dialog& d , string msg , string windowLbl , string y
 	win1->addChild( btn2 );
 	win1->addChild( lbl1 );
 	
-	btn1->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
-	btn2->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
-	win1->registerEventHandler( onClose , new _classCallback( &d , &_dialog::internalEventHandler ) );
+	btn1->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
+	btn2->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
+	win1->setInternalEventHandler( onClose , _classCallback( &d , &_dialog::internalEventHandler ) );
 	
 	d.data[0] = btn1;
 	d.data[1] = btn2;
@@ -250,9 +250,9 @@ void _dialog::enterTextDialog( _dialog& d , string msg , string windowLbl , stri
 	win1->addChild( lbl1 );
 	win1->addChild( txt1 );
 	
-	btn1->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
-	btn2->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
-	win1->registerEventHandler( onClose , new _classCallback( &d , &_dialog::internalEventHandler ) );
+	btn1->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
+	btn2->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
+	win1->setInternalEventHandler( onClose , _classCallback( &d , &_dialog::internalEventHandler ) );
 	
 	d.data[0] = btn1;
 	d.data[1] = btn2;
@@ -309,10 +309,10 @@ void _dialog::imageDialog( _dialog& d , string msg , string windowLbl , const _b
 	if( !otherLbl.empty() )
 		win1->addChild( btn2 );
 	
-	btn1->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
-	win1->registerEventHandler( onClose , new _classCallback( &d , &_dialog::internalEventHandler ) );
+	btn1->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
+	win1->setInternalEventHandler( onClose , _classCallback( &d , &_dialog::internalEventHandler ) );
 	if( !otherLbl.empty() )
-		btn2->registerEventHandler( onAction , new _classCallback( &d , &_dialog::internalEventHandler ) );
+		btn2->setInternalEventHandler( onAction , _classCallback( &d , &_dialog::internalEventHandler ) );
 	
 	d.data[0] = btn1;
 	d.data[1] = btn2;

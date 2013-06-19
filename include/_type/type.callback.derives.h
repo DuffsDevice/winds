@@ -25,7 +25,6 @@ class _staticCallback : public _callback
 			void 			(*voidFn)();
 			int 			(*intFn)( int );
 			_callbackReturn (*eventFn)( _event );
-			_callbackReturn (*fastEventFn)( _event&& );
 		};
 		_callbackType		funcType;
 		
@@ -51,9 +50,6 @@ class _staticCallback : public _callback
 					case _callbackType::eventFunc:
 						return this->eventFn( (_event&&)e );
 						break;
-					case _callbackType::fastEventFunc:
-						return this->fastEventFn( (_event&&)e );
-						break;
 					// Allow calling an event Handler which is actually an int function
 					case _callbackType::intFunc:
 						return (_callbackReturn) this->intFn( e.getHeldTime() );
@@ -73,8 +69,34 @@ class _staticCallback : public _callback
 		_staticCallback( int (*intFn)( int ) ) : intFn( intFn ) , funcType( _callbackType::intFunc ) {}
 		
 		_staticCallback( _callbackReturn (*eventFn)( _event ) ) : eventFn( eventFn ) , funcType( _callbackType::eventFunc ) {}
+};
+
+class _fastEventCallback : public _callback
+{
+	private:
 		
-		_staticCallback( _callbackReturn (*fastEventFn)( _event&& ) ) : fastEventFn( fastEventFn ) , funcType( _callbackType::fastEventFunc ) {}
+		_callbackReturn (*fn)( _event&& );
+		
+		// Internal
+		_callbackClassType getType() const { return _callbackClassType::fast_event_func; }
+		
+		// Internal
+		_u8 equals( const _callback& param ) const
+		{
+			return ((_fastEventCallback&)param).fn == this->fn;
+		}
+		
+	public:
+		
+		noinline _callbackReturn operator()( _event&& e ) const	{
+			if( this->fn )
+				return this->fn( (_event&&)e );
+			return not_handled;
+		}
+		void operator()() const {}
+		int operator()( int ) const { return 0; }
+		
+		_fastEventCallback( _callbackReturn (*fn)( _event&& ) ) : fn( fn ) {}
 };
 
 
@@ -88,7 +110,6 @@ class _classCallback : public _callback
 			void 			(unknownClass::*voidFn)();
 			int 			(unknownClass::*intFn)( int );
 			_callbackReturn (unknownClass::*eventFn)( _event );
-			_callbackReturn (unknownClass::*fastEventFn)( _event&& );
 		};
 		_callbackType		funcType;
 		
@@ -113,9 +134,6 @@ class _classCallback : public _callback
 				{
 					case _callbackType::eventFunc:
 						return (this->instance->*eventFn)( (_event&&)e );
-						break;
-					case _callbackType::fastEventFunc:
-						return (this->instance->*fastEventFn)( (_event&&)e );
 						break;
 					// Allow calling an event Handler which is actually an int function
 					case _callbackType::intFunc:
@@ -151,13 +169,6 @@ class _classCallback : public _callback
 			instance( reinterpret_cast<unknownClass*>(ptr) )
 			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(eventFn) )
 			, funcType( _callbackType::eventFunc )
-		{}
-		
-		template<typename T>
-		_classCallback( T* ptr , _callbackReturn (T::*fastEventFn)( _event&& ) ) :
-			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(fastEventFn) )
-			, funcType( _callbackType::fastEventFunc )
 		{}
 };
 
@@ -221,9 +232,24 @@ class _luaCallback : public _callback
 		
 	public:
 		
-		void operator()() const ;
-		int operator()( int i ) const ;
-		_callbackReturn operator()( _event&& e ) const ;
+		// Move operator needed!
+		_luaCallback( _luaCallback&& cb ) :
+			state( cb.state ),
+			index( cb.index )
+		{
+			// invalidate the passed _luaCallback
+			cb.state = 0;
+		}
+			
+		void operator()() const {
+			lua_callVoidFn( state , index );
+		}
+		int operator()( int i ) const {
+			return lua_callIntFn( state , index , i );
+		}
+		_callbackReturn operator()( _event&& e ) const {
+			return lua_callEventFn( state , index , (_event&&)e );
+		}
 		
 		_luaCallback( lua_State* state , int narg ) : 
 			state( state )
@@ -235,7 +261,9 @@ class _luaCallback : public _callback
 			, index( LUA_NOREF )
 		{}
 		
-		~_luaCallback();
+		~_luaCallback(){
+			lua_popFunction( state , index );
+		}
 
 };
 

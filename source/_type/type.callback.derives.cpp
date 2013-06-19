@@ -104,18 +104,6 @@ _callbackReturn _inlineCallback::operator()( _event&& e ) const {
 // LUA
 //
 
-void _luaCallback::operator()() const {
-	lua_callVoidFn( state , index );
-}
-
-int _luaCallback::operator()( int i ) const {
-	return lua_callIntFn( state , index , i );
-}
-
-_callbackReturn _luaCallback::operator()( _event&& e ) const {
-	return lua_callEventFn( state , index , (_event&&)e );
-}
-
 _u8 _luaCallback::equals( const _callback& param ) const 
 {
 	if( ((_luaCallback&)param).state != this->state )
@@ -136,12 +124,6 @@ _u8 _luaCallback::equals( const _callback& param ) const
 	}
 	lua_pop(this->state, 2); // Remove both values
 	return -1;
-}
-
-_luaCallback::~_luaCallback()
-{
-	if( this->state )
-		lua_popFunction( state , index );
 }
 
 
@@ -209,6 +191,21 @@ int lua_checkFunction( lua_State* L , int narg )
 	{
 		lua_pushvalue( L , narg ); // Copy
 		int ret = luaL_ref( L , LUA_REGISTRYINDEX );
+		
+		// Push the handlerCount variabel on top of the stack
+		lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		
+		int curCount = luaL_optint( L , -1 , 0 );// Get its value
+		
+		curCount++;						// Increase it
+		
+		lua_pop( L , 1 );				// Pop the old value
+		lua_pushnumber( L , curCount );	// Push the new one
+		
+		// write it to the registry again
+		lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		//printf("Register %p has %d\n",L,curCount);
+		
 		return ret;
 	}
 	
@@ -217,6 +214,24 @@ int lua_checkFunction( lua_State* L , int narg )
 
 void lua_popFunction( lua_State* L , int index )
 {
-	if( L )
+	if( L && index != LUA_NOREF && index != LUA_REFNIL )
+	{
+		// Unreference the handler
 		luaL_unref( L , LUA_REGISTRYINDEX , index );
+		
+		// Push the handlerCount variabel on top of the stack
+		lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		
+		int curCount = luaL_optint( L , -1 , 0 );// Get its value
+		
+		if( curCount > 0 )						// Decrease it
+			curCount--;
+		
+		lua_pop( L , 1 );						// Pop the old value
+		lua_pushnumber( L , curCount );			// Push the new one
+		
+		// write it to the registry again
+		lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		//printf("Unreg %p has %d\n",L,curCount);
+	}
 }

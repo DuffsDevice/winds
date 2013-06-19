@@ -122,6 +122,9 @@ class _lua_bitmap{
 		//! resetClippingRect
 		int resetClippingRect( lua_State* L );
 		
+		//! isValid
+		int isValid( lua_State* L );
+		
 		
 		//! Lunar !//
 		static const char className[];

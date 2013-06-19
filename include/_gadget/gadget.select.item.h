@@ -41,6 +41,6 @@ class _selectItem : public _gadget {
 		}
 		
 		//! Default Constructor
-		_selectItem( _s32 nth , _length width , string str , _s32 value , _style style = _style() );
+		_selectItem( _s32 nth , _length width , string str , _s32 value , _style&& style = _style() );
 };
 #endif

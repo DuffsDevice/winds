@@ -34,7 +34,7 @@ class _contextMenu : public _gadget
 		
 		_gadget* getOwner();
 		
-		_contextMenu( _length width , _length height , _style style = _style() );
+		_contextMenu( _length width , _length height , _style&& style = _style() );
 		
 };
 

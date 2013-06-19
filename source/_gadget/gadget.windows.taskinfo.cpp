@@ -31,7 +31,7 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 }
 
 
-_windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style style ) :
+_windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style&& style ) :
 	_gadget( _gadgetType::imagegadget , 25 , 10 , x - 25 , y , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
 	, time( new _label( 24 , 10 , 0 , 0 , "00:00" ) )
 {
@@ -40,10 +40,10 @@ _windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style style ) :
 	this->time->setColor( COLOR_WHITE );
 	
 	// Register Event-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_windowsTaskInfo::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_windowsTaskInfo::refreshHandler ) );
 	
 	// Make the clock update itself
-	_system::executeTimer( new _gadget::eventForwardRefreshGadget( this ) , 10000 , true );
+	_system::executeTimer( _gadget::eventForwardRefreshGadget( this ) , 10000 , true );
 	
 	// Add our time
 	this->addEnhancedChild( this->time );
@@ -52,7 +52,6 @@ _windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style style ) :
 	this->refreshBitmap();
 }
 
-_windowsTaskInfo::~_windowsTaskInfo()
-{
+_windowsTaskInfo::~_windowsTaskInfo(){
 	delete this->time;
 }

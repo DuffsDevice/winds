@@ -10,16 +10,28 @@
  */
 enum _callbackReturn : _s8
 {
-	not_handled = 0, // If returned on dragStart -> dragging will be prevented
+	// Returned if anything could not be handled
+	not_handled = 0,
+	
+	// Standard return value (indicates that the event was handled)
 	handled = 1,
+	
+	// Can be returned in userEventHandlers or internalEventHandlers
+	// to fall back to the default eventHandler
 	use_default = 2,
+	
+	// Can be retured in userEventHandlers to
+	// fall back to the internal eventHandler
+	use_internal = 3,
+	
+	// Used in _gadget; can be returned in dragStart-events to prevent dragging
 	prevent_default = -1,
 };
 
 /**
  * Specifies the Type of an Event
  */
-enum _eventType : _u8
+enum _eventType : _u16
 {
 	_none_,
 	_internal_,
@@ -36,6 +48,7 @@ enum _eventType : _u8
 	dragStart,
 	dragStop,
 	dragging,
+	
 	onResize,
 	onAction,
 	onChange,
@@ -51,11 +64,26 @@ enum _eventType : _u8
 	onRestore,
 	onScroll,
 	onStyleSet,
-	onDelete,
-	refreshUser
+	onDelete
 };
 
+//! Checks if an eventType is a user-Event-type
+unused static inline bool constexpr isUserET( _eventType et ){
+	return _u16(et) >> 8;
+}
 
+//! Converts an internal event-type to an user-eventType
+unused static inline constexpr _eventType eventType2userET( _eventType et ){
+	return isUserET( et ) ? et : _eventType( _u16(et) << 8 );
+}
+
+//! Converts an user-eventType to an internal event-type
+unused static inline constexpr _eventType userET2eventType( _eventType et ){
+	return isUserET( et ) ? _eventType( _u16(et) >> 8 ) : et;
+}
+
+//! Uncomment if a string should indicate
+//! the type of an event instead of an enum
 //typedef string _eventType;
 
 // Predefines
@@ -131,7 +159,7 @@ class _event
 		template<typename T>
 		T* getGadget() const { 
 			// Just Test if the supplied param is a subclass of _gadget!!!!!
-			subclass_of<T,_gadget>();
+			typedef typename T::_gadget def;
 			return static_cast<T*>( this->gadget );
 		}
 		

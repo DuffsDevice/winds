@@ -20,12 +20,12 @@ _callbackReturn _actionButton::refreshHandler( _event event )
 
 _bitmap _actionButton::bitmaps[] = { BMP_ActionBtnNext() , BMP_ActionBtnPrev() };
 
-_actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style style ) :
-	_button( 9 , 9 , x , y , "" , style )
+_actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style ) :
+	_button( 9 , 9 , x , y , "" , (_style&&)style )
 	, type( type )
 {
 	// Register handler
-	this->registerEventHandler( refresh , new _staticCallback( &_actionButton::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_actionButton::refreshHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

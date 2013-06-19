@@ -7,11 +7,11 @@
 #include "_type/type.bitmapPort.h"
 #include "_type/type.event.h"
 #include "_type/type.callback.h"
+#include "_type/type.assocvector.h"
 
 //! Predefines
 class _gadget;
 class _gadgetScreen;
-class _lua_gadget;
 
 /**
  * Specifies the Type of an API-Element (aka _gadget)
@@ -44,11 +44,11 @@ enum class _gadgetType : _u8
 	_plain // No type set (is probably not used)
 };
 
-extern map<_gadgetType,string> gadgetType2string;
+extern _map<_gadgetType,string> gadgetType2string;
 
-//! Typedefs
+//! Typedef
 typedef _list<_gadget*> _gadgetList;
-typedef _map<_eventType,_callback*> _eventHandlerMap;
+typedef _assocVector<_eventType,_callback*> _eventHandlerMap;
 
 class _gadget
 {
@@ -94,8 +94,8 @@ class _gadget
 		_eventHandlerMap		eventHandlers;
 		
 		//! Default Event-Handlers
-		static _array<
-			_staticCallback,13>	defaultEventHandlers; // Default event-handlers (an array because of speed)
+		static _array<_fastEventCallback
+						,13>	defaultEventHandlers; // Default event-handlers (an array because of speed)
 		
 		/**
 		 * Standard/Default EventHandler that will handle
@@ -113,14 +113,14 @@ class _gadget
 		_bitmap	 				bitmap;
 		
 		//! Class to forward any event to an refresh-event
-		class eventForwardRefresh : public _staticCallback
+		class eventForwardRefresh : public _fastEventCallback
 		{
 			private:
 				static _callbackReturn refreshForwardHandler( _event&& event ){ event.getGadget()->bubbleRefresh( true ); return handled; }
 			public:
 				// Ctor
 				eventForwardRefresh() :
-					_staticCallback( &eventForwardRefresh::refreshForwardHandler )
+					_fastEventCallback( &eventForwardRefresh::refreshForwardHandler )
 				{}
 		};
 		
@@ -138,14 +138,14 @@ class _gadget
 		
 		//! Class to forward any event to any other
 		template<_eventType eT>
-		class eventForward : public _staticCallback
+		class eventForward : public _fastEventCallback
 		{
 			private:
-				static _callbackReturn eventForwardHandler( _event event ){ event.getGadget()->handleEvent( (_event&&)event.setType( eT ) ); return handled; }
+				static _callbackReturn eventForwardHandler( _event&& event ){ event.getGadget()->handleEvent( (_event&&)event.setType( eT ) ); return handled; }
 			public:
 				// Ctor
 				eventForward() :
-					_staticCallback( &eventForward::eventForwardHandler )
+					_fastEventCallback( &eventForward::eventForwardHandler )
 				{}
 		};
 	
@@ -154,8 +154,15 @@ class _gadget
 		/**
 		 * Constructor
 		 */
-		_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
-		_gadget( int width , int height , int posX , int posY , _style style = _style() , bool doNotAllocateBitmap = false );
+		_gadget( _gadgetType type , int width , int height , int posX , int posY , true_type doNotAllocateBitmap , _style&& style = _style() );
+		_gadget( _gadgetType type , int width , int height , int posX , int posY , _style&& style = _style() );
+		// Delegating Constructors!!!! C++0x I love you!
+		_gadget( int width , int height , int posX , int posY , true_type doNotAllocateBitmap , _style&& style = _style() )
+			: _gadget( _gadgetType::_plain , width , height , posX , posY , doNotAllocateBitmap , (_style&&)style )
+		{ }
+		_gadget( int width , int height , int posX , int posY , _style&& style = _style() )
+			: _gadget( _gadgetType::_plain , width , height , posX , posY , (_style&&)style )
+		{ }
 		
 		/**
 		 * Destructor
@@ -177,7 +184,7 @@ class _gadget
 		/**
 		 * Get the Padding of the Gadget
 		 */
-		_padding getPadding() const { return this->padding; }
+		const _padding& getPadding() const { return this->padding; }
 		
 		
 		/** Method to check whether the Gadget has Focus */
@@ -256,8 +263,7 @@ class _gadget
 		/**
 		 * Method to refresh itself
 		 */
-		noinline void refreshBitmap()
-		{
+		noinline void refreshBitmap(){
 			this->handleEvent( _event::refreshEvent() );
 		}
 		
@@ -279,7 +285,7 @@ class _gadget
 		/**
 		 * Set the style of that Gadget
 		 */
-		void setStyle( _style style ){ this->style = style; this->triggerEvent( onStyleSet ); }
+		void setStyle( _style&& style ){ this->style = (_style&&)style; this->triggerEvent( onStyleSet ); }
 		
 		/**
 		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
@@ -293,11 +299,15 @@ class _gadget
 			return nullptr;
 		}
 		
+		
 		/**
-		 * Register a Event Handler to catch some events thrown on this Gadget
+		 * Register an internal Event Handler to catch some events thrown on this Gadget
+		 * This method should only be called in system-internal routines
 		 */
-		noinline void registerEventHandler( _eventType type , _callback* handler )
+		template<typename T>
+		noinline void setInternalEventHandler( _eventType type , T&& handler )
 		{
+			typedef typename T::_callback def;
 			// Remove any Current Handler
 			_callback* &data = this->eventHandlers[type]; // reference to pointer
 			
@@ -305,13 +315,57 @@ class _gadget
 				delete data; // Delete Current Event-Handler
 			
 			// Insert The Handler
-			data = handler;
+			data = new T( move(handler) );
+		}
+		
+		/**
+		 * Register an user-specific Event Handler to catch some events thrown on this Gadget
+		 */
+		template<typename T>
+		noinline void setUserEventHandler( _eventType type , T&& handler )
+		{
+			typedef typename T::_callback def;
+			
+			// Remove any Current Handler
+			_callback* &data = this->eventHandlers[ eventType2userET(type) ]; // reference to pointer
+			
+			if( data )
+				delete data; // Delete Current Event-Handler
+			
+			// Insert The Handler
+			data = new T( move(handler) );
 		}
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
+		 * that was registered by default
 		 */
-		void unregisterEventHandler( _eventType type );
+		void removeInternalEventHandler( _eventType type )
+		{
+			// Unbind the Handler
+			_eventHandlerMap::iterator data = this->eventHandlers.find( type );
+			
+			if( data != this->eventHandlers.end() )
+			{
+				delete data->second;
+				this->eventHandlers.erase( data );
+			}
+		}
+		
+		/**
+		 * Unbind an EventHandler from this Gadget
+		 * that was registered by the user
+		 */
+		void removeUserEventHandler( _eventType type ){
+			// Unbind the Handler
+			_eventHandlerMap::iterator data = this->eventHandlers.find( eventType2userET(type) );
+			
+			if( data != this->eventHandlers.end() )
+			{
+				delete data->second;
+				this->eventHandlers.erase( data );
+			}
+		}
 		
 		/**
 		 * Method to push an event to _system::_events_
@@ -334,19 +388,28 @@ class _gadget
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 */
-		_callbackReturn handleEvent( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEvent( const _event& event ){ return this->handleEvent( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEvent( e );'
+		_callbackReturn handleEvent( _event&& event , bool noDefault = false ) ITCM_CODE ; // For rvalues (like handleEvent( onBlur ) )
+		_callbackReturn handleEvent( const _event& event , bool noDefault = false ){ return this->handleEvent( _event( event ) /* Make copy */ , noDefault ); } // for variables like '_event e; g->handleEvent( e );'
 		
 		/**
-		 * Make The Gadget act onto a specific GadgetEvent by only using user-registered event-handler if available
+		 * Make The Gadget act onto a specific GadgetEvent
+		 * by only using user-registered event-handler if available
 		 */
 		_callbackReturn handleEventUser( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
 		_callbackReturn handleEventUser( const _event& event ){ return this->handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventUser( e );'
 		
 		/**
-		 * Make The Gadget act onto a specific GadgetEvent by only using the Default event-handler if available
+		 * Make The Gadget act onto a specific GadgetEvent
+		 * by only using user-registered event-handler if available
 		 */
-		_callbackReturn handleEventDefault( _event&& event ); 
+		_callbackReturn handleEventInternal( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
+		_callbackReturn handleEventInternal( const _event& event ){ return this->handleEventInternal( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventInternal( e );'
+		
+		/**
+		 * Make The Gadget act onto a specific GadgetEvent
+		 * by only using the Default gadget-event-handler if available
+		 */
+		_callbackReturn handleEventDefault( _event&& event ) ITCM_CODE ; 
 		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'
 		
 		/**
@@ -379,12 +442,12 @@ class _gadget
 		/**
 		 * Get the Relative X-position
 		 */
-		const _coord& getX() const { return this->x; }
+		_coord getX() const { return this->x; }
 		
 		/**
 		 * Get the Relative Y-position
 		 */
-		const _coord& getY() const { return this->y; }
+		_coord getY() const { return this->y; }
 		
 		/**
 		 * Set the Relative X-Position
@@ -496,12 +559,12 @@ class _gadget
 		/**
 		 * Get the height of the Gadget
 		 */
-		const _length& getHeight() const { return this->height; }
+		_length getHeight() const { return this->height; }
 		
 		/**
 		 * Get the width of the Gadget
 		 */
-		const _length& getWidth() const { return this->width; }
+		_length getWidth() const { return this->width; }
 		
 		/**
 		 * Set the gadgets position withing the parents dimensions

@@ -9,7 +9,7 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 		case DSWindows::STR_CHANGEFONT:
 		{
 			const _font* ft = stringExtractor::fontChangePhrase( str );
-			if( ft && ft->valid() )
+			if( ft && ft->isValid() )
 				font = ft;
 			for( int i = 5 ; str[1] != 0 && i-- ; str++ );
 			break;
@@ -36,7 +36,7 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 		case DSWindows::STR_CHANGEFONT:
 		{
 			const _font* ft = stringExtractor::fontChangePhrase( str );
-			if( ft && ft->valid() )
+			if( ft && ft->isValid() )
 				font = ft;
 			for( int i = 5 ; str[1] != 0 && i-- ; str++ );
 			break;

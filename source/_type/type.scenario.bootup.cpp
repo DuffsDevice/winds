@@ -14,7 +14,7 @@ _scBootup::_scBootup()
 	// Create BootupScreen
 	_system::_gadgetHost_ = new _bootupScreen( _system::_bgIdBack_ );
 	
-	_system::executeTimer( new _staticCallback( callback ) , 2000 );
+	_system::executeTimer( _staticCallback( callback ) , 2000 );
 }
 
 _scBootup::~_scBootup()

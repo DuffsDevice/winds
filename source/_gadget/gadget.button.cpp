@@ -48,7 +48,7 @@ void _button::setFontSize( _u8 fontSize )
 
 void _button::computeSize()
 {
-	if( !this->font->valid() )
+	if( !this->font->isValid() )
 		return;
 	
 	// Compute Height
@@ -140,7 +140,7 @@ _callbackReturn _button::refreshHandler( _event event )
 	
 	
 	// If there is no font it doesn't make sense to paint
-	if( !that->font || !that->font->valid() )
+	if( !that->font || !that->font->isValid() )
 		return use_default;
 	
 	_coord x = 0;
@@ -204,15 +204,15 @@ void _button::init( string text )
 	this->align = _align::center;
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_button::refreshHandler ) );
-	this->registerEventHandler( onMouseEnter , new _staticCallback( &_button::mouseHandler ) );
-	this->registerEventHandler( onMouseLeave , new _staticCallback( &_button::mouseHandler ) );
-	this->registerEventHandler( mouseClick , new _gadget::eventForward<onAction>() );
-	this->registerEventHandler( mouseRepeat , new _gadget::eventForward<onAction>() );
+	this->setInternalEventHandler( refresh , _staticCallback( &_button::refreshHandler ) );
+	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_button::mouseHandler ) );
+	this->setInternalEventHandler( onMouseLeave , _staticCallback( &_button::mouseHandler ) );
+	this->setInternalEventHandler( mouseClick , _gadget::eventForward<onAction>() );
+	this->setInternalEventHandler( mouseRepeat , _gadget::eventForward<onAction>() );
 	
 	// Compute the necesary Width
 	this->computeSize();
-	
+
 	// Refresh Me
 	this->refreshBitmap();
 }
@@ -231,8 +231,8 @@ void _button::setHeight( _length height ){
 	this->computeH = 0; _gadget::setHeight( height );
 }
 
-_button::_button( _length width , _length height , _coord x , _coord y , string text , _style style ) :
-	_gadget( _gadgetType::button , width , height , x , y , style )
+_button::_button( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
+	_gadget( _gadgetType::button , width , height , x , y , (_style&&)style )
 	, autoSelect( false )
 	, computeW( 0 )
 	, computeH( 0 )
@@ -241,8 +241,8 @@ _button::_button( _length width , _length height , _coord x , _coord y , string 
 	this->init( text );
 }
 
-_button::_button( _coord x , _coord y , string text , _style style ) :
-	_gadget( _gadgetType::button , 32 , 9 , x , y , style )
+_button::_button( _coord x , _coord y , string text , _style&& style ) :
+	_gadget( _gadgetType::button , 32 , 9 , x , y , (_style&&)style )
 	, autoSelect( false )
 	, computeW( 2 )
 	, computeH( 2 )

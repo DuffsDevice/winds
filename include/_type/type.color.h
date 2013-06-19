@@ -127,4 +127,6 @@ class _color{
 		_color& adjustRGB( _s8 red , _s8 gre , _s8 blu );
 };
 
+extern _map<string,_pixel> string2color;
+
 #endif

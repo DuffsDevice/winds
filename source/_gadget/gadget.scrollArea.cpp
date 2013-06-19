@@ -1,14 +1,14 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.button.h"
 
-map<string,_scrollType> string2scrollType = {
+_map<string,_scrollType> string2scrollType = {
 	{ "scroll" , _scrollType::scroll },
 	{ "meta" , _scrollType::meta },
 	{ "hidden" , _scrollType::hidden },
 	{ "prevent" , _scrollType::prevent }
 };
 
-map<_scrollType,string> scrollType2string = {
+_map<_scrollType,string> scrollType2string = {
 	{ _scrollType::scroll , "scroll" },
 	{ _scrollType::meta , "meta" },
 	{ _scrollType::hidden , "hidden" },
@@ -27,8 +27,8 @@ map<_scrollType,string> scrollType2string = {
 //}
 
 
-_scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
-	_gadget( _gadgetType::scrollarea , width , height , x , y , style )
+_scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX , _scrollType scrollTypeY , _style&& style ) :
+	_gadget( _gadgetType::scrollarea , width , height , x , y , (_style&&)style )
 	, scrollTypeX( scrollTypeX )
 	, scrollTypeY( scrollTypeY )
 	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::horizontal ) )
@@ -41,28 +41,28 @@ _scrollArea::_scrollArea( _length width , _length height , _coord x , _coord y ,
 {
 	// Create scrollbars
 	this->scrollBarX->setStep( 5 );
-	this->scrollBarX->registerEventHandler( onScroll , new _staticCallback( &_scrollArea::scrollHandler ) );
+	this->scrollBarX->setInternalEventHandler( onScroll , _staticCallback( &_scrollArea::scrollHandler ) );
 	
 	this->scrollBarY->setStep( 5 );
-	this->scrollBarY->registerEventHandler( onScroll , new _staticCallback( &_scrollArea::scrollHandler ) );
+	this->scrollBarY->setInternalEventHandler( onScroll , _staticCallback( &_scrollArea::scrollHandler ) );
 	
 	// Register 'em
 	this->addEnhancedChild( this->scrollBarX );
 	this->addEnhancedChild( this->scrollBarY );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( onResize , new _staticCallback( &_scrollArea::resizeHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_scrollArea::resizeHandler ) );
-	this->registerEventHandler( _internal_ , new _staticCallback( &_scrollArea::resizeHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_scrollArea::resizeHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_scrollArea::resizeHandler ) );
+	this->setInternalEventHandler( _internal_ , _staticCallback( &_scrollArea::resizeHandler ) );
 	
 	// Refresh Me	
 	this->computeClipSize();
 	this->updateScrollBars();
 	
 	//auto b = new _button( 20 , 30 , 200 , 210 , "Hallo" , _style::storeInt( 1 ) );
-	//b->registerEventHandler( onAction , new _staticCallback( &handler ) );
+	//b->setInternalEventHandler( onAction , new _staticCallback( &handler ) );
 	//auto b2 = new _button( 50 , 50 , 1 , 1 , "Hallo" );
-	//b2->registerEventHandler( onAction , new _staticCallback( &handler ) );
+	//b2->setInternalEventHandler( onAction , new _staticCallback( &handler ) );
 	//this->addChild( b );
 	//this->addChild( b2 );
 }

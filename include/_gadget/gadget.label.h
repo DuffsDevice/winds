@@ -78,10 +78,10 @@ class _label : public _gadget {
 		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
-		_label( _length width , _length height , _coord x , _coord y , string value , _style style = _style() | _styleAttr::notClickable );
+		_label( _length width , _length height , _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable );
 		
 		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string text , _style style = _style() | _styleAttr::notClickable );
+		_label( _coord x , _coord y , string text , _style&& style = _style() | _styleAttr::notClickable );
 		
 		// Methods to set Size
 		void setWidth( _u8 width );

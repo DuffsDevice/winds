@@ -3,6 +3,7 @@
 #define _WIN_LUA_INPUTINTERFACE_
 
 #include "_lua/lunar.h"
+#include "_lua/lua.class.font.h"
 
 /**
  * Proxy Classes
@@ -56,29 +57,26 @@ class _lua_interface_input{
 		int getColor( lua_State* L ){ lua_pushnumber( L , this->input->getColor() ); return 1; }
 		
 		//! setColor
-		int setColor( lua_State* L ){ this->input->setColor( luaL_checkint( L , 1 ) ); return 0; }
+		int setColor( lua_State* L ){ this->input->setColor( luaL_checkcolor( L , 1 ) ); return 0; }
 		
 		//! setBgColor
-		int setBgColor( lua_State* L ){ this->input->setColor( luaL_checkint( L , 1 ) ); return 0; }
+		int setBgColor( lua_State* L ){ this->input->setColor( luaL_checkcolor( L , 1 ) ); return 0; }
 		
 		//! getBgColor
 		int getBgColor( lua_State* L ){ lua_pushnumber( L , this->input->getBgColor() ); return 1; }
 		
 		//! setFont
 		int setFont( lua_State* L ){
-			/*_font* f = Lunar<_lua_font>::check( L , 1 )->font;
-			if( f )
-				((_label*)this->gadget)->setFont( f );
-			return 0;*/
-			//! TODO: implement
+			_lua_font* f = Lunar<_lua_font>::check( L , 1 );
+			if( f && f->font )
+				this->input->setFont( f->font );
 			return 0;
 		}
 		
 		//! getFont
 		int getFont( lua_State* L ){
-			//Lunar<_lua_font>::push( L , new _lua_font( ((_label*)this->gadget)->getFont() ) , true ); return 1;
-			//!TODO: implement
-			return 0;
+			Lunar<_lua_font>::push( L , new _lua_font( this->input->getFont() ) ); return 1;
+			return 1;
 		}
 		
 		//! setFontSize

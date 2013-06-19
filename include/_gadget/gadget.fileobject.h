@@ -32,7 +32,7 @@ class _fileobject : public _gadget {
 	public:
 	
 		// Ctor
-		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::list , _style style = _style() );
+		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::list , _style&& style = _style() );
 		
 		// Dtor
 		~_fileobject();

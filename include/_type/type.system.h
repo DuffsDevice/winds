@@ -95,7 +95,7 @@ class _system{
 			_programs_.push_back( make_pair( prog , args ) );
 			prog->main( _gadgetHost_ , args );
 		}
-		static void generateEvent( _event event ) { _eventBuffer_[_curEventBuffer_].push_back( event ); }
+		static void generateEvent( _event&& event ) { _eventBuffer_[_curEventBuffer_].emplace_back( (_event&&)event ); }
 		
 		//! Things for termination
 		static void terminateProgram( _program* prog ) { 
@@ -176,7 +176,17 @@ class _system{
 		}
 		
 		//! Execute the passed callback after duration d and repeat if requested
-		static void executeTimer( const _callback* cb , _tempTime d , bool isRepeating = false );
+		template<typename T>
+		static void executeTimer( T&& cb , _tempTime duration , bool isRepeating = false )
+		{
+			typedef typename T::_callback def; // Check if subclass of _callback
+			_timers_.push_back(
+				make_pair(
+					new T( move( cb ) ), 
+					_callbackData( { getHighResTime() , duration , isRepeating } )
+				)
+			);
+		}
 		
 		//! Turn Device off
 		static void shutDown();

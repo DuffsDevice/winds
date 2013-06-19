@@ -103,3 +103,16 @@ _color& _color::adjustRGB( _s8 red , _s8 gre , _s8 blu ){
 	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + gre , 31 ) , mid( 0 , this->getB() + blu , 31 ) );
 	return *this;
 }
+
+_map<string,_pixel> string2color = {
+	{ "transparent" , COLOR_TRANSPARENT },
+	{ "yellow" 	, COLOR_YELLOW },
+	{ "green" 	, COLOR_GREEN },
+	{ "cyan" 	, COLOR_CYAN },
+	{ "blue" 	, COLOR_BLUE },
+	{ "magenta" , COLOR_MAGENTA },
+	{ "red" 	, COLOR_RED },
+	{ "gray" 	, COLOR_GRAY },
+	{ "black" 	, COLOR_BLACK },
+	{ "white" 	, COLOR_WHITE }
+};

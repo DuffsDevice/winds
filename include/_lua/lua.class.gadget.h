@@ -26,15 +26,20 @@
 	LUA_CLASS_FUNC(g,getBitmapPort), \
 	LUA_CLASS_FUNC(g,getBitmap), \
 	LUA_CLASS_FUNC(g,getScreen), \
-	LUA_CLASS_FUNC(g,registerEventHandler), \
-	LUA_CLASS_FUNC(g,unregisterEventHandler), \
+	LUA_CLASS_FUNC(g,setUserEventHandler), \
+	LUA_CLASS_FUNC(g,setInternalEventHandler), \
+	LUA_CLASS_FUNC(g,removeUserEventHandler), \
+	LUA_CLASS_FUNC(g,removeInternalEventHandler), \
 	LUA_CLASS_FUNC(g,populateEvent), \
 	LUA_CLASS_FUNC(g,triggerEvent), \
 	LUA_CLASS_FUNC(g,canReactTo), \
 	LUA_CLASS_FUNC(g,handleEvent), \
+	LUA_CLASS_FUNC(g,handleEventUser), \
+	LUA_CLASS_FUNC(g,handleEventInternal), \
 	LUA_CLASS_FUNC(g,handleEventDefault), \
 	LUA_CLASS_FUNC(g,getAbsoluteX), \
 	LUA_CLASS_FUNC(g,getAbsoluteY), \
+	LUA_CLASS_FUNC(g,getAbsolutePosition), \
 	LUA_CLASS_FUNC(g,hide), \
 	LUA_CLASS_FUNC(g,show), \
 	LUA_CLASS_FUNC(g,focus), \
@@ -118,11 +123,17 @@ class _lua_gadget{
 		//! getScreen
 		int getScreen( lua_State* L );
 		
-		//! registerEventHandler
-		int registerEventHandler( lua_State* L );
+		//! setUserEventHandler
+		int setUserEventHandler( lua_State* L );
 		
-		//! unregisterEventHandler
-		int unregisterEventHandler( lua_State* L );
+		//! setInternalEventHandler
+		int setInternalEventHandler( lua_State* L );
+		
+		//! removeUserHandler
+		int removeUserEventHandler( lua_State* L );
+		
+		//! removeInternalHandler
+		int removeInternalEventHandler( lua_State* L );
 		
 		//! populateEvent
 		int populateEvent(lua_State* L);
@@ -136,6 +147,12 @@ class _lua_gadget{
 		//! handleEvent
 		int handleEvent( lua_State* L );
 		
+		//! handleEventUser
+		int handleEventUser( lua_State* L );
+		
+		//! handleEventInternal
+		int handleEventInternal( lua_State* L );
+		
 		//! handleEventDefault
 		int handleEventDefault( lua_State* L );
 		
@@ -144,6 +161,9 @@ class _lua_gadget{
 		
 		//! Get absolute Y
 		int getAbsoluteY(lua_State* L);
+		
+		//! Get absolute Position
+		int getAbsolutePosition(lua_State* L);
 		
 		//! Get X
 		int getX(lua_State* L);

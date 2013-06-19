@@ -36,12 +36,12 @@ _callbackReturn _desktop::refreshHandler( _event event )
 }
 
 
-_desktop::_desktop( _style style ) :
+_desktop::_desktop( _style&& style ) :
 	_fileview( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , 0 , 0 , "%USERS%/" + _system::getUser()->getFoldername() + "/desktop/" , _fileviewType::symbol_big , _scrollType::prevent , _scrollType::prevent , style | _styleAttr::focusNoAction )
 {
 	//ft = new _freetypefont("/font.ttf");
 	
-	this->registerEventHandler( refresh , new _staticCallback( &_desktop::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_desktop::refreshHandler ) );
 	
 	// Refresh
 	this->refreshBitmap();

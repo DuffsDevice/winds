@@ -233,13 +233,13 @@ _callbackReturn _scrollButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_scrollButton::_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style style ) :
-	_button( width , height , x , y , "" , style )
+_scrollButton::_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style&& style ) :
+	_button( width , height , x , y , "" , (_style&&)style )
 	, type( type )
 {
 	_gadget::setType( _gadgetType::scrollbutton );
 	
-	this->registerEventHandler( refresh , new _staticCallback( _scrollButton::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( _scrollButton::refreshHandler ) );
 	
 	if( this->type == _scrollButtonType::buttonHandleX || this->type == _scrollButtonType::buttonHandleY )
 		this->setStyle( this->getStyle() | _styleAttr::draggable | _styleAttr::smallDragTrig );

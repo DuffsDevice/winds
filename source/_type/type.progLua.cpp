@@ -1,6 +1,7 @@
 #include "_type/type.progLua.h"
 #include "_type/type.system.h"
 #include "_type/type.callback.h"
+#include "_type/type.textphrases.h"
 
 #include "_lua/lunar.h"
 /**
@@ -80,6 +81,25 @@ _style luaL_optstyle( lua_State* L , int narg , _style style )
 	return style;
 }
 
+_pixel luaL_optcolor( lua_State* L , int narg , _pixel color )
+{
+	if( lua_isnumber( L , narg ) )
+		return lua_tointeger( L , narg );
+	if( lua_isstring( L , narg ) )
+		return string2color[ lua_tolstring( L , narg , nullptr ) ];
+	return color;
+}
+
+_pixel luaL_checkcolor( lua_State* L , int narg )
+{
+	if( lua_isnumber( L , narg ) )
+		return lua_tointeger( L , narg );
+	if( lua_isstring( L , narg ) )
+		return string2color[ lua_tolstring( L , narg , nullptr ) ];
+	luaL_checkint( L , narg );
+	return 0;
+}
+
 int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _system::_keyboard_ != nullptr ); return 1; }
 int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; lua_pushboolean( L , _system::_keyboard_->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
@@ -88,18 +108,29 @@ int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) retu
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
-int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( new _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
+int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
 int _progLua::lua_terminateTimer( lua_State* L ){ _system::terminateTimer( _luaCallback( L , 1 ) ); return 0; }
 int _progLua::lua_readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system::_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
 int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
 int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
 int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
+int _progLua::lua_getFont( lua_State* L ){ Lunar<_lua_font>::push( L , new _lua_font( _system::getFont( luaL_checkstring( L , 1 ) ) ) ); return 1; }
+int _progLua::lua_sizeChangePhrase( lua_State* L ){ lua_pushstring( L , stringIntegrator::sizeChangePhrase( luaL_checkint( L , 1 ) ).c_str() ); return 1; }
+int _progLua::lua_colorChangePhrase( lua_State* L ){ lua_pushstring( L , stringIntegrator::colorChangePhrase( luaL_checkcolor( L , 1 ) ).c_str() ); return 1; }
+int _progLua::lua_fontChangePhrase( lua_State* L ){
+	_lua_font* ft = Lunar<_lua_font>::check( L , 1 );
+	if( !ft || !ft->font )
+		lua_pushstring( L , "" );
+	else
+		lua_pushstring( L , stringIntegrator::fontChangePhrase( ft->font ).c_str() );
+	return 1;
+}
 int _progLua::lua_RGB( lua_State* L ){ lua_pushnumber( L , RGB( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) ) ); return 1; }
 int _progLua::lua_RGBA( lua_State* L ){ lua_pushnumber( L , RGBA( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkboolean( L , 4 ) ) ); return 1; }
-int _progLua::lua_RGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( luaL_checkint( L , 1 ) ) ); return 1; }
-int _progLua::lua_RGB_GETG( lua_State* L ){ lua_pushnumber( L , RGB_GETG( luaL_checkint( L , 1 ) ) ); return 1; }
-int _progLua::lua_RGB_GETB( lua_State* L ){ lua_pushnumber( L , RGB_GETB( luaL_checkint( L , 1 ) ) ); return 1; }
-int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushboolean( L , RGB_GETA( luaL_checkint( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( luaL_checkcolor( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETG( lua_State* L ){ lua_pushnumber( L , RGB_GETG( luaL_checkcolor( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETB( lua_State* L ){ lua_pushnumber( L , RGB_GETB( luaL_checkcolor( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushboolean( L , RGB_GETA( luaL_checkcolor( L , 1 ) ) ); return 1; }
 int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->autoDelete = true; return 0; }
 int _progLua::lua_requirePackage( lua_State* L )
 {
@@ -163,6 +194,10 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"writeRegistryIndex",		lua_writeRegistryIndex},
 	{"deleteRegistryIndex",		lua_deleteRegistryIndex},
 	{"deleteRegistrySection",	lua_deleteRegistrySection},
+	{"getFont",					lua_getFont},
+	{"sizeChangePhrase",		lua_sizeChangePhrase},
+	{"colorChangePhrase",		lua_colorChangePhrase},
+	{"fontChangePhrase",		lua_fontChangePhrase},
 	{"require",					lua_requirePackage},
 	{"executeTimer",			lua_executeTimer},
 	{"terminateTimer",			lua_terminateTimer},
@@ -184,6 +219,11 @@ _progLua::_progLua( string prog ) :
 	
 	// Load our lua-piece
 	luaL_loadstring( this->state , prog.c_str() );
+	
+	if( lua_isstring( this->state , -1 ) ){
+		_system::debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
+		goto end;
+	}	
 	
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );
@@ -211,11 +251,13 @@ _progLua::_progLua( string prog ) :
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
 		_system::debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
 	}
+	
+	end:;
 }
 
 void _progLua::main( _cmdArgs& args )
 {
-	_system::executeTimer( new _classCallback( this , &_progLua::collector ) , 100 , true );
+	_system::executeTimer( _classCallback( this , &_progLua::collector ) , 100 , true );
 	
 	lua_getglobal( this->state , "main" );
 	
@@ -227,8 +269,7 @@ void _progLua::main( _cmdArgs& args )
 		
 		for( _cmdArgs::iterator it = args.begin() ; it != args.end() ; ++it )
 		{
-			lua_pushstring( this->state , it->first.c_str() ); // Key
-			lua_pushstring( this->state , it->second.c_str() ); // Value
+			lua_pushstring( this->state , it->c_str() ); // Key
 			lua_settable( this->state , top );
 		}
 		
@@ -238,10 +279,23 @@ void _progLua::main( _cmdArgs& args )
 }
 
 void _progLua::collector()
-{	
+{
 	// Collect garbage!
 	// the Lua Garbage collector uses constant 12% cpu, no matter how many programs we have
 	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / int(_system::_programs_.size()) ) );
+	
+	// check if the program can be terminated
+}
+
+bool _progLua::canBeAutoCleaned()
+{
+	// Push the handlerCount variabel on top of the stack
+	lua_getfield( this->state , LUA_REGISTRYINDEX , "__hC__" );
+	
+	int count = luaL_optint( this->state , -1 , 0 );	// Get its value
+	lua_pop( this->state , 1 );							// Pop the value from the stack
+	
+	return !count;
 }
 
 _progLua::~_progLua()
@@ -252,7 +306,7 @@ _progLua::~_progLua()
 	_luaCallback cb = _luaCallback( this->state ); // LUA_NOREF
 	_system::_timers_.remove_if(
 		[&]( _pair<const _callback*,_callbackData> data )->bool{
-			if( ( *data.first == cb ) != 0 ) // Remove all
+			if( ( *data.first == cb ) != 0 ) // Remove all timers
 			{
 				delete data.first;
 				return true;

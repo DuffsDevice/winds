@@ -1,6 +1,6 @@
 #include "_type/type.mime.h"
 
-map<string,_mime> string2mimeType = {
+_map<string,_mime> string2mimeType = {
 	{ "directory" , directory } ,
 	{ "image/jpeg" , image_jpeg } ,
 	{ "image/png" , image_png } ,
@@ -28,7 +28,7 @@ map<string,_mime> string2mimeType = {
 };
 
 // File Extensions#
-map<string,_mime> extension2mimeType = {
+_map<string,_mime> extension2mimeType = {
 	{ "jpg" , image_jpeg } ,
 	{ "jpeg" , image_jpeg } ,
 	{ "png" , image_png } ,
@@ -63,7 +63,7 @@ map<string,_mime> extension2mimeType = {
 	{ "gbc" , application_x_nintendo_gba_rom }
 };
 
-map<_mime,string> mimeType2string = {
+_map<_mime,string> mimeType2string = {
 	{ directory , "directory" } , 
 	{ image_jpeg , "image/jpeg" } , 
 	{ image_png, "image/png" } ,

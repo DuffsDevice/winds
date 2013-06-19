@@ -65,7 +65,7 @@ class _textarea : public _gadget{
 		_u8 getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( _font* ft ){ this->text.setFont( ft ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
+		void setFont( const _font* ft ){ this->text.setFont( ft ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
 		
 		//! Set FontSize
 		void setFontSize( _u8 fontSize ){ this->text.setFontSize( fontSize ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
@@ -96,7 +96,7 @@ class _textarea : public _gadget{
 		
 		
 		//! Ctor
-		_textarea( _length width , _length height , _coord x , _coord y , string value = "" , _style style = _style() );
+		_textarea( _length width , _length height , _coord x , _coord y , string value = "" , _style&& style = _style() );
 		
 		//! Dtor
 		~_textarea();

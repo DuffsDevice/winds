@@ -12,17 +12,17 @@ PROG_Explorer::PROG_Explorer() :
 
 void PROG_Explorer::main( _cmdArgs& args )
 {
-	if( !args["path"].empty() )
-		this->path = args["path"];
+	if( !args[0].empty() )
+		this->path = args[0];
 	
 	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable ) );
 	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path , _style::storeHost( this ) );
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
 	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );
 	
-	this->window->registerEventHandler( onResize , new _staticCallback( PROG_Explorer::handler ) );
-	this->fileview->registerEventHandler( onChange , new _staticCallback( PROG_Explorer::handler ) );
-	this->submitbutton->registerEventHandler( onAction , new _staticCallback( PROG_Explorer::handler ) );
+	this->window->setInternalEventHandler( onResize , _staticCallback( PROG_Explorer::handler ) );
+	this->fileview->setInternalEventHandler( onChange , _staticCallback( PROG_Explorer::handler ) );
+	this->submitbutton->setInternalEventHandler( onAction , _staticCallback( PROG_Explorer::handler ) );
 	
 	this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );

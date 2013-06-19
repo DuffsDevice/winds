@@ -33,8 +33,10 @@ class _animation{
 		
 	public:
 	
+		//! Ctor
 		_animation( _s32 from , _s32 to , _tempTime dur );
 		
+		//! Dtor
 		~_animation();
 		
 		//! Set a lamda-expression to be the setter
@@ -161,7 +163,7 @@ class _animation{
 		};
 };
 
-extern map<string,_easingFunction*> string2easingFunc;
-extern map<_easingFunction*,string> easingFunc2string;
+extern _map<string,_easingFunction*> string2easingFunc;
+extern _map<_easingFunction*,string> easingFunc2string;
 
 #endif

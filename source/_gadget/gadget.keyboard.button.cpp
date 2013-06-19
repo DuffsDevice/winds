@@ -14,13 +14,15 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 	_event ev;
 	
 	if( event.getType() == mouseDown )
-		ev.setType( keyDown );
+		ev = _event( keyDown );
 	else if( event.getType() == mouseUp )
-		ev.setType( keyUp );
+		ev = _event( keyUp );
 	else if( event.getType() == mouseClick )
-		ev.setType( keyClick );
+		ev = _event( keyClick );
 	else if( event.getType() == mouseRepeat )
-		ev.setType( keyRepeat );
+		ev = _event( keyRepeat );
+	else
+		ev = _event( _none_ );
 	
 	//if( event.getType() == mouseClick )
 	//	sound->play();
@@ -35,22 +37,22 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 	return handled;
 }
 
-_keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style style )
-	: _button( width , height , x , y , title , style )
+_keyboardButton::_keyboardButton( _key key , _length width , _length height , _coord x , _coord y , string title , _style&& style )
+	: _button( width , height , x , y , title , (_style&&)style )
 	, key( key )
 {	
-	this->registerEventHandler( mouseDown , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseUp , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseClick , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseRepeat , new _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseDown , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseUp , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseClick , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseRepeat , _staticCallback( &_keyboardButton::mouseHandler ) );
 }
 
-_keyboardButton::_keyboardButton( _key key , _coord x , _coord y , string text , _style style )
-	: _button( x , y , text , style )
+_keyboardButton::_keyboardButton( _key key , _coord x , _coord y , string text , _style&& style )
+	: _button( x , y , text , (_style&&)style )
 	, key( key )
 {
-	this->registerEventHandler( mouseDown , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseUp , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseClick , new _staticCallback( &_keyboardButton::mouseHandler ) );
-	this->registerEventHandler( mouseRepeat , new _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseDown , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseUp , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseClick , _staticCallback( &_keyboardButton::mouseHandler ) );
+	this->setInternalEventHandler( mouseRepeat , _staticCallback( &_keyboardButton::mouseHandler ) );
 }

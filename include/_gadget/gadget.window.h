@@ -48,10 +48,10 @@ class _window : public _gadget {
 		_bitmap* getIcon(){ return &this->icon->getModifyableImage(); }
 		
 		//! Ctor
-		_window( _length width , _length height , _coord x , _coord y , string title , _style style = _style() | _styleAttr::draggable );
+		_window( _length width , _length height , _coord x , _coord y , string title , _style&& style = _style() | _styleAttr::draggable );
 		
 		//! Ctor with icon
-		_window( _length width , _length height , _coord x , _coord y , string title , _bitmap icon , _style style = _style() | _styleAttr::draggable );
+		_window( _length width , _length height , _coord x , _coord y , string title , _bitmap icon , _style&& style = _style() | _styleAttr::draggable );
 		
 		//! Dtor
 		~_window()

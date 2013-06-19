@@ -63,17 +63,17 @@ _callbackReturn _select::keyHandler( _event event )
 	return use_default;
 }
 
-_select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style style ) :
-	_scrollArea( width , height * _system::getUser()->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , style )
+_select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style&& style ) :
+	_scrollArea( width , height * _system::getUser()->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , (_style&&)style )
 	, entries( lst )
 	, selected( -1 )
 {
 	this->setPaddingOffset( _padding( 1 , 1 , 1 , 1 ) );
 	this->setType( _gadgetType::selectbox );
 	
-	this->registerEventHandler( refresh , new _staticCallback( &_select::refreshHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_select::keyHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_select::keyHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_select::refreshHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_select::keyHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_select::keyHandler ) );
 	
 	// Refresh Me
 	this->refreshList();

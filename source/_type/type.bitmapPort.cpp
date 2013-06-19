@@ -24,6 +24,18 @@ void _bitmapPort::fill( _pixel color )
 	}
 }
 
+void _bitmapPort::replaceColor( _pixel color , _pixel replacement )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base->setClippingRect( rc );
+		
+		//! Standard Bitmap Routine
+		this->base->replaceColor( color , replacement );
+		//! Standard Bitmap Routine
+	}
+}
+
 void _bitmapPort::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
 {
 	for( const _rect& rc : clippingRects )
@@ -44,6 +56,30 @@ void _bitmapPort::drawHorizontalLine( _coord x , _coord y , _length length , _pi
 		
 		//! Standard Bitmap Routine
 		this->base->drawHorizontalLine( x , y , length , color );
+		//! Standard Bitmap Routine
+	}
+}
+
+void _bitmapPort::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base->setClippingRect( rc );
+		
+		//! Standard Bitmap Routine
+		this->base->drawVerticalDottedLine( x , y , length , color );
+		//! Standard Bitmap Routine
+	}
+}
+
+void _bitmapPort::drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base->setClippingRect( rc );
+		
+		//! Standard Bitmap Routine
+		this->base->drawHorizontalDottedLine( x , y , length , color );
 		//! Standard Bitmap Routine
 	}
 }

@@ -7,12 +7,10 @@ _area& _area::clipToIntersect( const _rect& limits )
 	#endif
 	
 	// Fastest way!!!
-	t_rects.remove_if(
+	remove_if( t_rects.begin() , t_rects.end() ,
 		[=]( _rect& rc )->bool{
-			if( !rc.intersectsWith( limits ) )
-				return true;
 			rc.clipToIntersect( limits );
-			return false;
+			return rc.isValid();
 		}
 	);
 	
@@ -26,7 +24,7 @@ _area& _area::reduce( const _rect& dim )
 	#endif
 	
 	// Temp Rects
-	_list<_rect> tR = move( t_rects );
+	_vector<_rect> tR = move( t_rects );
 	
 	for( _rect& rc : tR )
 		add( rc.reduce( dim ) );

@@ -11,11 +11,13 @@ void _windows::registerTask( _window* w )
 	this->refreshTasks();
 }
 
+
 void _windows::removeTask( _window* w )
 {
 	this->tasks.remove_if( [&]( _windowsTaskButton* ptr )->bool{ if( ptr->getReference() == w ){ delete ptr; return true; } return false; } );
 	this->refreshTasks();
 }
+
 
 void _windows::refreshTasks()
 {
@@ -30,6 +32,7 @@ void _windows::refreshTasks()
 	}
 }
 
+
 void _windows::refreshTask( _window* w )
 {
 	for( _windowsTaskButton* tb : this->tasks )
@@ -41,6 +44,7 @@ void _windows::refreshTask( _window* w )
 		}
 	}
 }
+
 
 _callbackReturn _windows::refreshHandler( _event event )
 {	
@@ -60,26 +64,27 @@ _callbackReturn _windows::refreshHandler( _event event )
 	return use_default;
 }
 
+
 //! Constructor
-_windows::_windows( _u8 bgId , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::windows , style )
+_windows::_windows( _u8 bgId , _style&& style ) :
+	_gadgetScreen( bgId , _gadgetScreenType::windows , (_style&&)style )
 {
-	//! Set Padding
+	// Set Padding
 	this->setPadding( _padding( 0 , 0 , 0 , 10 ) );
 	
-	//! Add startButton
+	// Add startButton
 	this->startButton = new _windowsStartButton( 0 , SCREEN_HEIGHT - 10 );
 	
-	//! Add TaskInfo
+	// Add TaskInfo
 	this->taskInfo = new _windowsTaskInfo( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
 	
-	//! Allocate new _desktop and bind the _startButton
+	// Allocate new _desktop and bind the _startButton
 	this->addChild( this->desktop = new _desktop() );
 	this->addEnhancedChild( this->startButton );
 	this->addEnhancedChild( this->taskInfo );
 	
-	//! Register Event-Handlers
-	this->registerEventHandler( refresh , new _staticCallback( &_windows::refreshHandler ) );
+	// Register Event-Handlers
+	this->setInternalEventHandler( refresh , _staticCallback( &_windows::refreshHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

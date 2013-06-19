@@ -467,8 +467,8 @@ _callbackReturn _keyboard::dragHandler( _event event )
 	return not_handled;
 }
 
-_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord position , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style )
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord position , _style&& style ) :
+	_gadgetScreen( bgId , _gadgetScreenType::keyboard , (_style&&)style )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
 	, fromX( 0 )
@@ -522,15 +522,15 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	this->setState( 0 ); // Reset Keyboard
 	
 	//! Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_keyboard::refreshHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_keyboard::keyHandler ) );
-	this->registerEventHandler( keyUp , new _staticCallback( &_keyboard::keyHandler ) );
-	this->registerEventHandler( keyClick , new _staticCallback( &_keyboard::keyHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_keyboard::refreshHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( keyUp , _staticCallback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( keyClick , _staticCallback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_keyboard::keyHandler ) );
 	
-	this->registerEventHandler( dragStart , new _staticCallback( &_keyboard::dragHandler ) );
-	this->registerEventHandler( dragStop , new _staticCallback( &_keyboard::dragHandler ) );
-	this->registerEventHandler( dragging , new _staticCallback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( dragStart , _staticCallback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( dragStop , _staticCallback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( dragging , _staticCallback( &_keyboard::dragHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

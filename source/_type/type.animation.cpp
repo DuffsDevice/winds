@@ -179,7 +179,7 @@ _float _animation::_expo::easeOut( _float t , _float b , _float c , _float d ){
 _float _animation::_expo::easeInOut( _float t , _float b , _float c , _float d ){ if (t==0) return b; if (t==d) return b+c; if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b; return c/2 * (-pow(2, -10 * --t) + 2) + b; }
 
 
-map<string,_easingFunction*> string2easingFunc = {
+_map<string,_easingFunction*> string2easingFunc = {
 	{ "linear:ease" , _animation::_linear::ease },
 	
 	{ "quad:easeIn" , _animation::_quad::easeIn },
@@ -214,7 +214,7 @@ map<string,_easingFunction*> string2easingFunc = {
 	{ "expo:easeOut" , _animation::_expo::easeOut },
 	{ "expo:easeInOut" , _animation::_expo::easeInOut }
 };
-map<_easingFunction*,string> easingFunc2string = {
+_map<_easingFunction*,string> easingFunc2string = {
 	{ _animation::_linear::ease , "linear:ease" },
 	
 	{ _animation::_quad::easeIn , "quad:easeIn" },

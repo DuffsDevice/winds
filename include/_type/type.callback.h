@@ -8,6 +8,7 @@
 enum class _callbackClassType : _u8 {
 	none,
 	static_func,
+	fast_event_func,
 	inline_func,
 	class_func,
 	lua_func
@@ -16,8 +17,7 @@ enum class _callbackClassType : _u8 {
 enum class _callbackType : _u8 {
 	voidFunc,
 	intFunc,
-	eventFunc,
-	fastEventFunc
+	eventFunc
 };
 
 struct _callbackData

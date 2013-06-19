@@ -74,8 +74,8 @@ void _contextMenu::toggle( _coord x , _coord y )
 		this->show( x , y );
 }
 
-_contextMenu::_contextMenu( _length width , _length height , _style style ) :
-	_gadget( _gadgetType::contextmenu , width , height , 0 , 0 , style )
+_contextMenu::_contextMenu( _length width , _length height , _style&& style ) :
+	_gadget( _gadgetType::contextmenu , width , height , 0 , 0 , (_style&&)style )
 {
-	this->registerEventHandler( onBlur , new _staticCallback( &_contextMenu::blurHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( &_contextMenu::blurHandler ) );
 }

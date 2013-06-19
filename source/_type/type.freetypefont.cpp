@@ -59,22 +59,16 @@ _length _freetypefont::getCharacterWidth( const _char codepoint , _u8 fontSize )
 	return stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize ) * advWidth;
 }
 
-_length _freetypefont::isMonospace() const 
-{ 
-	return false;
-}
-
-bool _freetypefont::valid() const 
+bool _freetypefont::isCharSupportedInternal( const _char codepoint ) const 
 {
-	//! TODO: Implement
-	return true;
-}
-
-bool _freetypefont::isCharSupported( const _char codepoint ) const { 
-	/*getSbit( codepoint );
-	if ( ( this->sbit->buffer == 0) || ( this->sbit->width == 0 ) || ( this->sbit->height == 0 ) )
-		return false;*/
-	return true;
+	int x1 = x1;// Remove GCC Warning "may be uninitialized in this function"
+	int y1 = y1;
+	int x2 = x2;
+	int y2 = y2;
+	
+	stbtt_GetGlyphBox( &this->fontInfo , codepoint , &x1 , &y1 , &x2 , &y2 );
+	
+	return x1 < x2 && y1 < y2;
 };
 
 _u32 transparencyJump[256] =  {

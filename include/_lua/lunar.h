@@ -10,8 +10,10 @@
 
 extern bool luaL_is( lua_State* L , int narg , string type );
 extern bool luaL_checkboolean( lua_State* L , int narg );
+extern _pixel luaL_checkcolor( lua_State* L , int narg );
 extern bool luaL_optboolean( lua_State* L , int narg , bool val );
 extern _style luaL_optstyle( lua_State* L , int narg , _style style = _style() );
+extern _pixel luaL_optcolor( lua_State* L , int narg , _pixel style = NO_COLOR );
 
 template < class T > class Lunar {
   public:

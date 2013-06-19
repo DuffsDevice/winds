@@ -54,7 +54,7 @@ class _progressbar : public _gadget {
 		bool getColorScheme(){ return this->blue; }
 		
 		//! Constructor
-		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style style = _style() | _styleAttr::notClickable );
+		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style&& style = _style() | _styleAttr::notClickable );
 		
 		//! Destructor
 		~_progressbar();

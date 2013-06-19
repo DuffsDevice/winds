@@ -70,19 +70,26 @@ void _system::fadeMainScreen( bool out , bool anim )
 //! BUS_CLOCK >> 15 - BUS_CLOCK >> 21 - BUS_CLOCK >> 22 = 1000 * rawTime
 //! There you get milliseconds from rawTime!
 
-_tempTime _system::getHighResTime(){
-	_tempTime tmp = cpuGetTiming();
-	return ( tmp >> 15 ) - ( tmp >> 21 ) - ( tmp >> 22 );
-}
-
-void _system::executeTimer( const _callback* cb , _tempTime duration , bool isRepeating )
+_tempTime _system::getHighResTime()
 {
-	_timers_.push_back(
-		make_pair(
-			cb , 
-			_callbackData( { getHighResTime() , duration , isRepeating } )
-		)
-	);
+	// Check Timers
+	_u64 lo = TIMER_DATA(0);
+	_u64 mi = TIMER_DATA(1);
+	_u64 hi = TIMER_DATA(2);
+	
+	_u64 lo2 = TIMER_DATA(0);
+	_u64 mi2 = TIMER_DATA(1);
+	_u64 hi2 = TIMER_DATA(2);
+
+	if ( lo2 < lo )
+	{
+		lo = lo2;
+		hi = hi2;
+		mi = mi2;
+	}
+	
+	_tempTime time = ( lo | mi<<16 | hi << 32);
+	return ( time >> 15 ) - ( time >> 21 ) - ( time >> 22 ); // Equals time/1000
 }
 
 void _system::terminateTimer( const _callback& cb ){
@@ -234,23 +241,21 @@ void _system::processEvents()
 	// -> This was a big Problem - Hours of finding that out!
 	eventsSwapBuffer();
 	
-	_system::_eventBuffer_[!_system::_curEventBuffer_].remove_if(
-		[]( _event& event )->bool
-		{
-			
-			// Temp...
-			_gadget* gadget = event.getDestination();
-			
-			//int t = cpuGetTiming();
-			
-			// Make the Gadget ( if one is specified ) react on the event
-			if( gadget != nullptr )
-				gadget->handleEvent( (_event&&)event );
-			
-			//printf("%d\n",cpuGetTiming()-t);
-			return true;
-		}
-	);
+	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
+	{
+		// Temp...
+		_gadget* gadget = event.getDestination();
+		
+		//int t = cpuGetTiming();
+		
+		// Make the Gadget ( if one is specified ) react on the event
+		if( gadget != nullptr )
+			gadget->handleEvent( (_event&&)event );
+		
+		//printf("%d\n",cpuGetTiming()-t);
+	}
+	
+	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
 
 	//if( !_system::_eventBuffer_[_system::_curEventBuffer_].size() )
 	//{
@@ -445,8 +450,19 @@ void _system::start()
 		//irqSet( IRQ_VCOUNT , _system::_vcount_ );
 		irqEnable( IRQ_VCOUNT | IRQ_VBLANK );
 		
-		//! Start Time
-		cpuStartTiming(1);
+		//! Start Timers
+		TIMER_CR(0) = 0;
+		TIMER_CR(1) = 0;
+		TIMER_CR(2) = 0;
+
+		TIMER_DATA(0) = 0;
+		TIMER_DATA(1) = 0;
+		TIMER_DATA(2) = 0;
+
+		TIMER_CR(2) = TIMER_CASCADE | TIMER_ENABLE;
+		TIMER_CR(1) = TIMER_CASCADE | TIMER_ENABLE;
+		TIMER_CR(0) = TIMER_ENABLE;
+		
 		
 		/*_bitmap bmp = _bitmap( BG_GFX , SCREEN_WIDTH , SCREEN_HEIGHT );
 		
@@ -591,40 +607,9 @@ void _system::submit(){
 		scanKeys();
 }
 
-void _system::main()
-{
-	//_bitmap _screen_ = _bitmap( BG_GFX , 256 , 192 );
-	//_screen_.drawHorizontalLine( 1 , 16 , 8 , COLOR_RED );
-	//_screen_.drawVerticalLine( 16 , 1 , 8 , COLOR_RED );
-	//_screen_.setClippingRect( _rect::fromCoords( 0 , 0 , 14 , 14 ) );
-	//_screen_.fill( COLOR_WHITE );
-	//_screen_.drawLine( 1 , 1 , 8 , 8 , COLOR_RED );
+void _system::main(){
+	//printf("Size: %d\n",sizeof(Loki::AssocVector<_eventType,_callback*>));
 	_systemController::main();
-	
-	while(true)
-	{
-		swiWaitForVBlank();
-		//consoleClear();
-		//if( _currentFocus_ )
-			//printf("cF: %s\n",gadgetType2string[_currentFocus_->getType()].c_str());
-		/*for( _gadget* g : _gadgetHost_->children )
-			printf("- %s, %d\n",gadgetType2string[g->getType()].c_str(),g->hasFocus() );*/
-		/*if( ++i > 120 )
-		{
-			const unsigned int FreeMemSeg=8*1024;
-			
-			unsigned int s;
-			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
-			{
-				void *ptr=new _char[ s ];
-				consoleClear();
-				printf("free: %d\n",s-FreeMemSeg);
-				//swiWaitForVBlank();
-				delete[] ptr;
-				ptr = 0;
-			}
-		}*/
-	}
 }
 
 bool _system::executeCommand( string cmd ){

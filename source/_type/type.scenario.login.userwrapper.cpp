@@ -111,8 +111,8 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 		{
 			that->passwordbox = new _passcodebox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
 			that->passwordsubmit = new _actionButton( _actionButtonType::next , 77 , 13 , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
-			that->passwordsubmit->registerEventHandler( onAction , new _staticCallback( &_userWrapper::submitHandler ) );
-			that->passwordbox->registerEventHandler( refreshUser , new _staticCallback( &_userWrapper::textboxRefreshHandler ) );
+			that->passwordsubmit->setInternalEventHandler( onAction , _staticCallback( &_userWrapper::submitHandler ) );
+			that->passwordbox->setUserEventHandler( refresh , _staticCallback( &_userWrapper::textboxRefreshHandler ) );
 			that->passwordbox->refreshBitmap();
 			that->addChild( that->passwordbox );
 			that->addChild( that->passwordsubmit );
@@ -132,20 +132,20 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 }
 
 
-_userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style style ) :
-	_gadget( _gadgetType::_plain , 90 , 23 , x , y , style )
+_userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style ) :
+	_gadget( _gadgetType::_plain , 90 , 23 , x , y , (_style&&)style )
 	, passwordbox( nullptr )
 	, passwordsubmit( nullptr )
 	, user( user )
 {
 	// Register some handler
-	this->registerEventHandler( refresh , new _staticCallback( _userWrapper::refreshHandler ) );
-	this->registerEventHandler( onFocus , new _staticCallback( _userWrapper::focusHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( _userWrapper::focusHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( _userWrapper::refreshHandler ) );
+	this->setInternalEventHandler( onFocus , _staticCallback( _userWrapper::focusHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( _userWrapper::focusHandler ) );
 	
 	// Click on the image to login a user without password
 	_imagegadget* img = new _imagegadget( 3 , 3 , this->user->getLogo() , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
-	img->registerEventHandler( mouseClick , new _staticCallback( _userWrapper::submitHandler ) );
+	img->setInternalEventHandler( mouseClick , _staticCallback( _userWrapper::submitHandler ) );
 	
 	// Add the logo
 	this->addChild( img );

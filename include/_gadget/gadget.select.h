@@ -40,7 +40,7 @@ class _select : public _scrollArea {
 			this->refreshList();
 		}
 		
-		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { 0 , "" } } /* Empty List */ ) , _style style = _style() );
+		_select( _length w , _u8 h , _coord x , _coord y , _contextMenuEntryList lst = _contextMenuEntryList( { { 0 , "" } } /* Empty List */ ) , _style&& style = _style() );
 		
 		~_select();
 };

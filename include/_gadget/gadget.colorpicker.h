@@ -28,15 +28,15 @@ class _colorpicker : public _gadget
 	public:
 		
 		//! Select a date
-		void selectColor( _pixel color );
-		void setIntValue( _pixel color ){ this->selectColor( color ); }
+		void setColor( _pixel color );
+		void setIntValue( _pixel color ){ this->setColor( color ); }
 		
 		//! Get the selected date
-		_pixel getSelectedColor() const ;
-		_pixel getIntValue() const { return this->getSelectedColor(); }
+		_pixel getColor() const ;
+		_pixel getIntValue() const { return this->getColor(); }
 		
 		//! Ctor
-		_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor = COLOR_BLUE , _style style = _style() );
+		_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
 		
 		//! Dtor
 		~_colorpicker();

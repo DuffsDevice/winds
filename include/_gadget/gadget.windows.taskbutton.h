@@ -19,7 +19,7 @@ class _windowsTaskButton : public _button {
 		//! Get Referenced Window
 		_window* getReference(){ return this->reference; }
 		
-		_windowsTaskButton( _coord x , _coord y , _window* reference , _style style = _style() );
+		_windowsTaskButton( _coord x , _coord y , _window* reference , _style&& style = _style() );
 };
 
 #endif

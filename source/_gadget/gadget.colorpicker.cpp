@@ -8,8 +8,8 @@
 
 #define M_PI 3.14159265359f
 
-_colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor , _style style ) :
-	_gadget( _gadgetType::colorpicker , width , height , x , y , style )
+_colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor , _style&& style ) :
+	_gadget( _gadgetType::colorpicker , width , height , x , y , (_style&&)style )
 	, hueSatImage( width - 14 , height - 2 )
 {
 	// Set Color
@@ -23,21 +23,21 @@ _colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y
 	this->hueSatTable = new _gadget( hueSatImage.getWidth() , hueSatImage.getHeight() , 1 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
 	this->lumTable = new _gadget( 11 , hueSatImage.getHeight() , hueSatImage.getWidth() + 2 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
 	
-	this->registerEventHandler( refresh , new _classCallback( this , &_colorpicker::refreshHandler ) );
-	this->registerEventHandler( onResize , new _classCallback( this , &_colorpicker::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
+	this->setInternalEventHandler( onResize , _classCallback( this , &_colorpicker::refreshHandler ) );
 	
-	this->hueSatTable->registerEventHandler( dragging , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->registerEventHandler( keyDown , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->registerEventHandler( keyRepeat , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->registerEventHandler( mouseDown , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->registerEventHandler( refresh , new _classCallback( this , &_colorpicker::refreshHandler ) );
+	this->hueSatTable->setInternalEventHandler( dragging , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( keyDown , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( keyRepeat , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( mouseDown , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
 	this->hueSatTable->refreshBitmap();
 	
-	this->lumTable->registerEventHandler( dragging , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->registerEventHandler( mouseDown , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->registerEventHandler( keyRepeat , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->registerEventHandler( keyDown , new _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->registerEventHandler( refresh , new _classCallback( this , &_colorpicker::refreshHandler ) );
+	this->lumTable->setInternalEventHandler( dragging , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( mouseDown , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( keyRepeat , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( keyDown , _classCallback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
 	this->lumTable->refreshBitmap();
 	
 	// Add Image
@@ -45,14 +45,14 @@ _colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y
 	this->addChild( this->lumTable );
 }
 
-_pixel _colorpicker::getSelectedColor() const
+_pixel _colorpicker::getColor() const
 {
 	return _color()
 		.setHSL( this->hue , this->sat , this->lum )
 		.getColor();
 }
 
-void _colorpicker::selectColor( _pixel color )
+void _colorpicker::setColor( _pixel color )
 {
 	_color c = color;
 	
@@ -94,6 +94,9 @@ _callbackReturn _colorpicker::refreshHandler( _event event )
 		x /= 361;
 		_int y = this->sat * this->hueSatTable->getHeight() + 50;
 		y /= 101;
+		
+		// Limit
+		y = mid( 0 , y , this->hueSatTable->getHeight() - 1 );
 		
 		bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , glyph::circle , COLOR_BLACK );
 	}

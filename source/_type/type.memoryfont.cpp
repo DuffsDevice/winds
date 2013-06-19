@@ -30,26 +30,6 @@ _length _memoryfont::getCharacterWidth( _char character , _u8 fontSize ) const
 	return this->charWidths[ character - this->firstChar ];
 }
 
-_length _memoryfont::isMonospace() const {
-	return this->monospace;
-}
-
-bool _memoryfont::isCharSupported( _char ch ) const {
-	return ch == ' ' || ch == '\n' || ( ch <= this->lastChar && ch >= this->firstChar );
-}
-
-bool _memoryfont::valid() const {
-	return this->charData != nullptr;
-}
-
-_length _memoryfont::getHeight( _u8 fontSize ) const {
-	return this->height;
-}
-
-_length _memoryfont::getAscent( _u8 fontSize ) const {
-	return this->mainHeight;
-}
-
 _length _memoryfont::drawCharacter( _pixelArray dest , _length destWidth , _coord posX , _coord posY , _char ch , _pixel color , _rect clip , _u8 fontSize ) const 
 {
 	// If it's a Whitespace

@@ -4,8 +4,6 @@
 #include "_type/type.h"
 #include "_type/type.font.h"
 
-using namespace std;
-
 class _memoryfont : public _font{
 
 	private:
@@ -18,6 +16,13 @@ class _memoryfont : public _font{
 		const _u16*	charData;
 		const _u8*	charWidths;
 		const _u16*	charOffsets;
+		
+	protected:
+		
+		//! Check if the supplied character can be displayed by the font
+		bool isCharSupportedInternal( _char ch ) const {
+			return ch <= this->lastChar && ch >= this->firstChar;
+		}
 		
 	public:
 		
@@ -41,23 +46,25 @@ class _memoryfont : public _font{
 		//! Get the CharacterWidth related to a specific character
 		_u16 getCharacterWidth( _char ch , _u8 fontSize = 0 ) const ;
 		
-		//! Get the With of a string
-		_u16 getStringWidth( string str , _u8 fontSize = 0 ) const ;
-		
 		//! Check whether this font is monospace
-		_u16 isMonospace() const ;
-		
-		//! Check if the supplied character can be displayed by the font
-		bool isCharSupported( _char ch ) const ;
+		_u16 isMonospace() const {
+			return this->monospace;
+		}
 		
 		//! Get the Height of the font
-		_u16 getHeight( _u8 fontSize = 0 ) const ;
+		_u16 getHeight( _u8 fontSize = 0 ) const {
+			return this->height;
+		}
 		
 		//! Get the Main-Height of the font
-		_u16 getAscent( _u8 fontSize = 0 ) const ;
+		_u16 getAscent( _u8 fontSize = 0 ) const {
+			return this->mainHeight;
+		}
 		
 		//! Check if this font is valid
-		bool valid() const ;
+		bool isValid() const {
+			return this->charData != nullptr;
+		}
 		
 		//! draw a Character!
 		_u16 drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const ;

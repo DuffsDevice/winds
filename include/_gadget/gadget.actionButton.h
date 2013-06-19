@@ -23,7 +23,7 @@ class _actionButton : public _button {
 	
 	public:
 		
-		_actionButton( _actionButtonType type , _coord x , _coord y , _style style = _style() );
+		_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style = _style() );
 };
 
 #endif

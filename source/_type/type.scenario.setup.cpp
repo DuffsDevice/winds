@@ -1,7 +1,6 @@
 #include "_type/type.scenario.setup.h"
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
-#include "_type/type.imagefile.builtin.h"
 #include "_gadget/gadget.startupScreen.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.imagegadget.h"
@@ -17,6 +16,36 @@
 #define M_PI		3.14159265358979323846
 
 
+const string basepath = "%APPDATA%/usericons/";
+
+_map<_u8,string> imageId2filename = {
+	{ 1 , basepath + "airplane.bmp" },
+	{ 2 , basepath + "astronaut.bmp" },
+	{ 3 , basepath + "ball.bmp" },
+	{ 4 , basepath + "beach" },
+	{ 5 , basepath + "butterfly.bmp" },
+	{ 6 , basepath + "car.bmp" },
+	{ 7 , basepath + "cat.bmp" },
+	{ 8 , basepath + "chess.bmp" },
+	{ 9 , basepath + "dirt_bike.bmp" },
+	{ 10 , basepath + "dog.bmp" },
+	{ 11 , basepath + "drip.bmp" },
+	{ 12 , basepath + "duck.bmp" },
+	{ 13 , basepath + "fish.bmp" },
+	{ 14 , basepath + "frog.bmp" },
+	{ 15 , basepath + "guest.bmp" },
+	{ 16 , basepath + "guitar.bmp" },
+	{ 17 , basepath + "horses.bmp" },
+	{ 18 , basepath + "kick.bmp" },
+	{ 19 , basepath + "lift_off.bmp" },
+	{ 20 , basepath + "palm_tree.bmp" },
+	{ 21 , basepath + "pink_flower.bmp" },
+	{ 22 , basepath + "red_flower.bmp" },
+	{ 23 , basepath + "skater.bmp" },
+	{ 24 , basepath + "snowflake.bmp" },
+};
+
+
 _scSetup::_scSetup() :
 	state( 0 )
 	, profileName( "Admin" )
@@ -26,14 +55,14 @@ _scSetup::_scSetup() :
 	// Reset all gadgets to nullptr
 	for( int i = 0; i < 20 ; this->gadgets[i++] = nullptr );
 	
-	_system::executeTimer( new _classCallback( this , &_scSetup::refreshCounterValue ) , 1000 , true );
+	_system::executeTimer( _classCallback( this , &_scSetup::refreshCounterValue ) , 1000 , true );
 	
 	this->radiogroup = nullptr;
 	
 	_system::_gadgetHost_ = new _startupScreen( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , 117 );
 	
-	_system::_gadgetHost_->registerEventHandler( _internal_ , new _classCallback( this , &_scSetup::refreshStateHandler ) );
+	_system::_gadgetHost_->setInternalEventHandler( _internal_ , _classCallback( this , &_scSetup::refreshStateHandler ) );
 	_system::_gadgetHost_->triggerEvent( _internal_ );
 }
 
@@ -283,8 +312,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 		_label* prev = new _label( 50 , 9 , 17 , 176 , _system::getLocalizedString("lbl_prev") , _style::storeInt( -1 ) );
 		prev->setColor( RGB( 30 , 30 , 30 ) );
 		prev->setAlign( _align::left );
-		prev->registerEventHandler( mouseClick , new _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
-		btnPrev->registerEventHandler( onAction , new _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
+		prev->setInternalEventHandler( mouseClick , _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
+		btnPrev->setInternalEventHandler( onAction , _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
 		
 		this->gadgets[1] = btnPrev;
 		this->gadgets[3] = prev;
@@ -315,8 +344,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 	next->setAlign( _align::right );
 	
 	// Set Handler
-	next->registerEventHandler( mouseClick , new _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
-	btnNext->registerEventHandler( onAction , new _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
+	next->setInternalEventHandler( mouseClick , _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
+	btnNext->setInternalEventHandler( onAction , _classCallback( this , &_scSetup::stateChangeButtonHandler ) );
 	that->addChild( btnNext );
 	that->addChild( next );
 	
@@ -330,7 +359,7 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			{
 				_select* slc = new _select( 94 , 5 , 85 , 60 , { { 1 , "English" } , { 2 , "Français" } , { 3 , "Deutsch" } , { 4 , "Italiano" } , { 5 , "Español" } } );
 				slc->setIntValue( (_u8)_system::getLanguage() );
-				slc->registerEventHandler( onChange , new _classCallback( this , &_scSetup::languageSelectHandler ) );
+				slc->setInternalEventHandler( onChange , _classCallback( this , &_scSetup::languageSelectHandler ) );
 				this->gadgets[5] = slc;
 				that->addChild( slc );
 			}
@@ -394,9 +423,9 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			_counter* cnt2 = new _counter( 115 , 120 , 25 , true , systemTime.get( _timeAttr::minute ) , 59 , 0 );
 			_counter* cnt3 = new _counter( 145 , 120 , 25 , true , systemTime.get( _timeAttr::second ) , 59 , 0 );
 			
-			cnt1->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
-			cnt2->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
-			cnt3->registerEventHandler( onChange , new _classCallback( this , &_scSetup::timeCounterHandler ) );
+			cnt1->setInternalEventHandler( onChange , _classCallback( this , &_scSetup::timeCounterHandler ) );
+			cnt2->setInternalEventHandler( onChange , _classCallback( this , &_scSetup::timeCounterHandler ) );
+			cnt3->setInternalEventHandler( onChange , _classCallback( this , &_scSetup::timeCounterHandler ) );
 			
 			_singleValueGroup<_radio>* radgrp = new _singleValueGroup<_radio>();
 			_radio* rad1 = new _radio( 20 , 54 , radgrp );
@@ -456,7 +485,7 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 			_label* lbl3 = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
 			_label* lbl4 = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
 			_textbox* txtName = new _textbox( 21 , 70 , 80 , profileName , _style::storeInt( 4 ) );
-			txtName->registerEventHandler( onChange , new _classCallback( this , &_scSetup::profileNameTextboxHandler ) );
+			txtName->setInternalEventHandler( onChange , _classCallback( this , &_scSetup::profileNameTextboxHandler ) );
 			
 			this->gadgets[6] = lbl2;
 			this->gadgets[7] = lbl3;
@@ -485,8 +514,8 @@ _callbackReturn _scSetup::refreshStateHandler( _event e )
 					)
 					, _style::storeInt( iconNumbers[i] )
 				);
-				image->registerEventHandler( refresh , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
-				image->registerEventHandler( onFocus , new _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
+				image->setInternalEventHandler( refresh , _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
+				image->setInternalEventHandler( onFocus , _classCallback( this , &_scSetup::imagegadgetProfileIconHandler ) );
 				this->gadgets[ 10 + i ] = image;
 				that->addChild( image );
 			}

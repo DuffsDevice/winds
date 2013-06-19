@@ -49,7 +49,7 @@ void _label::setFontSize( _u8 fontSize )
 
 void _label::computeSize()
 {
-	if( !this->font || !this->font->valid() )
+	if( !this->font || !this->font->isValid() )
 		return;
 	
 	// Compute Height
@@ -82,7 +82,7 @@ _callbackReturn _label::refreshHandler( _event event )
 	bP.fill( that->bgColor );
 	
 	// If there is no font it doesn't make sense to paint
-	if( !that->font || !that->font->valid() )
+	if( !that->font || !that->font->isValid() )
 		return use_default;
 	
 	_length myH = that->getHeight();
@@ -155,42 +155,41 @@ void _label::setHeight( _u8 height ){
 }
 
 
-_label::_label( _length width , _length height , _coord x , _coord y , string text , _style style ) :
-	_gadget( _gadgetType::label , width , height , x , y , style )
+_label::_label( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
+	_gadget( _gadgetType::label , width , height , x , y , (_style&&)style )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
 	, computeH( 0 )
+	, font( _system::getFont() )
+	, fontSize( _system::_rtA_->getDefaultFontSize() )
 	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
 {
-	this->font = _system::getFont();
-	this->fontSize = _system::_rtA_->getDefaultFontSize();
-	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );
-	this->registerEventHandler( onResize , new _staticCallback( &_label::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_label::refreshHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_label::refreshHandler ) );
 	
 	// Refresh
 	this->refreshBitmap();
 }
 
-_label::_label( _coord x , _coord y , string text , _style style ) :
-	_gadget( _gadgetType::label , 1 , 1 , x , y , style )
+_label::_label( _coord x , _coord y , string text , _style&& style ) :
+	_gadget( _gadgetType::label , 1 , 1 , x , y , (_style&&)style )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )
 	, computeH( 2 )
+	, font( _system::getFont() )
+	, fontSize( _system::_rtA_->getDefaultFontSize() )
 	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
 {
-	this->font = _system::getFont();
-	this->fontSize = _system::_rtA_->getDefaultFontSize();
-	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_label::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_label::refreshHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_label::refreshHandler ) );
 	
 	// Refresh
 	this->computeSize();

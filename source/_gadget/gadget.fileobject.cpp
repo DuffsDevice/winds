@@ -137,8 +137,8 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style&& style ) :
+	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , (_style&&)style ) , file( fl ) , viewType( viewtype ) , pressed( false )
 {
 	switch( this->viewType )
 	{
@@ -168,13 +168,13 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	};
 	
 	// Register Handlers
-	this->registerEventHandler( refresh , new _staticCallback( &_fileobject::refreshHandler ) );
-	//this->registerEventHandler( dragging , new _staticCallback( &_fileobject::dragHandler ) );
-	//this->registerEventHandler( dragStart , new _staticCallback( &_fileobject::dragHandler ) );
-	//this->registerEventHandler( dragStop , new _staticCallback( &_fileobject::dragHandler ) );
-	this->registerEventHandler( onFocus , new _gadget::eventForwardRefresh() );
-	this->registerEventHandler( onBlur , new _gadget::eventForwardRefresh() );
-	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_fileobject::doubleClickHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_fileobject::refreshHandler ) );
+	//this->setInternalEventHandler( dragging , _staticCallback( &_fileobject::dragHandler ) );
+	//this->setInternalEventHandler( dragStart , _staticCallback( &_fileobject::dragHandler ) );
+	//this->setInternalEventHandler( dragStop , _staticCallback( &_fileobject::dragHandler ) );
+	this->setInternalEventHandler( onFocus , _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( onBlur , _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( mouseDoubleClick , _staticCallback( &_fileobject::doubleClickHandler ) );
 	
 	// Refresh...
 	this->refreshBitmap();

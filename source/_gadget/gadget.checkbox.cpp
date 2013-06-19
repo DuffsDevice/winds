@@ -51,20 +51,16 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 
 
 
-_checkbox::_checkbox( _coord x , _coord y , _style style ) :
-	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , style )
+_checkbox::_checkbox( _coord x , _coord y , _style&& style ) :
+	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , (_style&&)style )
 	, intValue( 0 )
 {
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_checkbox::refreshHandler ) );
-	this->registerEventHandler( mouseClick , new _staticCallback( &_checkbox::mouseHandler ) );
-	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
-	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( refresh , _staticCallback( &_checkbox::refreshHandler ) );
+	this->setInternalEventHandler( mouseClick , _staticCallback( &_checkbox::mouseHandler ) );
+	this->setInternalEventHandler( onMouseEnter , _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( onMouseLeave , _gadget::eventForwardRefresh() );
 	
 	// Refresh Me
 	this->refreshBitmap();
-}
-
-_checkbox::~_checkbox(){
-	
 }

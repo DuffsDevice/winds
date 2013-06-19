@@ -70,8 +70,8 @@ _callbackReturn _counter::refreshHandler( _event event )
 	return use_default;
 }
 
-_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style style ) :
-	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , style )
+_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style&& style ) :
+	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , (_style&&)style )
 	, circular( circular )
 	, intValue( value )
 	, lowerBound( lowerBound )
@@ -89,15 +89,15 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	this->valueLabel->setVAlign( _valign::middle );
 	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
 	
-	this->increaseHandle->registerEventHandler( onAction , new _staticCallback( &_counter::changeHandler ) );
-	this->decreaseHandle->registerEventHandler( onAction , new _staticCallback( &_counter::changeHandler ) );
+	this->increaseHandle->setInternalEventHandler( onAction , _staticCallback( &_counter::changeHandler ) );
+	this->decreaseHandle->setInternalEventHandler( onAction , _staticCallback( &_counter::changeHandler ) );
 	
 	//! Refresh - Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_counter::refreshHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_counter::changeHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_counter::changeHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_counter::changeHandler ) );
-	this->registerEventHandler( onFocus , new _staticCallback( &_counter::changeHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_counter::refreshHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_counter::changeHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_counter::changeHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( &_counter::changeHandler ) );
+	this->setInternalEventHandler( onFocus , _staticCallback( &_counter::changeHandler ) );
 	
 	this->addEnhancedChild( this->increaseHandle );
 	this->addEnhancedChild( this->decreaseHandle );
@@ -106,10 +106,6 @@ _counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 v
 	// Refresh Me
 	this->refreshBitmap();
 }
-
-_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _style style ) :
-	_counter( x , y , width , circular , value , 99 , 0 , 10 , style )
-{ }
 
 _counter::~_counter()
 {

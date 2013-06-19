@@ -99,10 +99,10 @@ class _textbox : public _gadget
 		_s64 getCursor(){ return _s64(this->cursor) - 1; }
 		
 		//! Ctor
-		_textbox( _coord x , _coord y , _length width , string value = "" , _style style = _style() );
+		_textbox( _coord x , _coord y , _length width , string value = "" , _style&& style = _style() );
 		
 		//! Ctor
-		_textbox( _coord x , _coord y , _length width , _length height , string value = "" , _style style = _style() );
+		_textbox( _coord x , _coord y , _length width , _length height , string value = "" , _style&& style = _style() );
 };
 
 #endif
