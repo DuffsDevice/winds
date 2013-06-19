@@ -3,7 +3,6 @@
 
 //! Types
 #include "_type/type.imagefile.h"
-#include "_type/type.imagefile.builtin.h"
 #include "_type/type.bitmapResizer.h"
 #include "_type/type.time.h"
 #include "func.md5.h"
@@ -95,7 +94,6 @@ _user::_user( string folderName ) :
 	// Set Currently Working directory
 	string cwd = _direntry::getWorkingDirectory();
 	
-	//! todo: fix cwd => not Working!
 	_direntry::setWorkingDirectory( "%USERS%/" + this->folderName );
 	
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );

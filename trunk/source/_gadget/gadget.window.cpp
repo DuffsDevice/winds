@@ -146,8 +146,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	}
 	else
 	{
-		const _bitmap& design = _system::_rtA_->
-		getWindowsDesignBlurred();
+		const _bitmap& design = _system::_rtA_->getWindowsDesignBlurred();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -261,13 +260,13 @@ _callbackReturn _window::buttonHandler( _event event )
 
 
 // C++0x! Yay!
-_window::_window( _length width , _length height , _coord x , _coord y , string title , _style style ) :
-	_window( width , height , x , y , title , _bitmap() , style )
+_window::_window( _length width , _length height , _coord x , _coord y , string title , _style&& style ) :
+	_window( width , height , x , y , title , _bitmap() , (_style&&)style )
 { }
 
 
 
-_window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style style ) :
+_window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style&& style ) :
 	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::doubleClickable | _styleAttr::focusBringsFront )
 {
 	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
@@ -291,25 +290,25 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->button[2] = new _windowButton( this->getWidth() - 28 , 1 , 2 );
 	
 	// Register close-handler
-	this->button[0]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
-	this->button[1]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
-	this->button[2]->registerEventHandler( onAction , new _classCallback( this , &_window::buttonHandler ) );
+	this->button[0]->setInternalEventHandler( onAction , _classCallback( this , &_window::buttonHandler ) );
+	this->button[1]->setInternalEventHandler( onAction , _classCallback( this , &_window::buttonHandler ) );
+	this->button[2]->setInternalEventHandler( onAction , _classCallback( this , &_window::buttonHandler ) );
 	
 	this->button[0]->enhanceToParent( this );
 	this->button[1]->enhanceToParent( this );
 	this->button[2]->enhanceToParent( this );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_window::refreshHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_window::refreshHandler ) );
-	this->registerEventHandler( onFocus , new _staticCallback( &_window::refreshHandler ) );
-	this->registerEventHandler( dragging , new _staticCallback( &_window::dragHandler ) );
-	this->registerEventHandler( dragStart , new _staticCallback( &_window::dragHandler ) );
-	this->registerEventHandler( onStyleSet , new _staticCallback( &_window::restyleHandler ) );
-	this->registerEventHandler( onMaximize , new _staticCallback( &_window::restyleHandler ) );
-	this->registerEventHandler( onUnMaximize , new _staticCallback( &_window::restyleHandler ) );
-	this->registerEventHandler( onResize , new _staticCallback( &_window::resizeHandler ) );
-	this->registerEventHandler( mouseDoubleClick , new _staticCallback( &_window::dragHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_window::refreshHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( &_window::refreshHandler ) );
+	this->setInternalEventHandler( onFocus , _staticCallback( &_window::refreshHandler ) );
+	this->setInternalEventHandler( dragging , _staticCallback( &_window::dragHandler ) );
+	this->setInternalEventHandler( dragStart , _staticCallback( &_window::dragHandler ) );
+	this->setInternalEventHandler( onStyleSet , _staticCallback( &_window::restyleHandler ) );
+	this->setInternalEventHandler( onMaximize , _staticCallback( &_window::restyleHandler ) );
+	this->setInternalEventHandler( onUnMaximize , _staticCallback( &_window::restyleHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_window::resizeHandler ) );
+	this->setInternalEventHandler( mouseDoubleClick , _staticCallback( &_window::dragHandler ) );
 	
 	// Refresh Window-Buttons
 	this->triggerEvent( onStyleSet );

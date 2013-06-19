@@ -46,7 +46,7 @@ class _gadgetScreen : public _gadget , public _screen
 		virtual _rect getMaximizedDimensions(){ return _rect(); }
 		
 		//! C-tor
-		_gadgetScreen( int bgId , _gadgetScreenType sType , _style style = _style() );
+		_gadgetScreen( int bgId , _gadgetScreenType sType , _style&& style = _style() );
 };
 
 #endif

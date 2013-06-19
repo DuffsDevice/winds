@@ -12,7 +12,7 @@ class _desktop : public _fileview{
 	public:
 		
 		//! Constructor
-		_desktop( _style style = _style() );
+		_desktop( _style&& style = _style() );
 };
 
 #endif

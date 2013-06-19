@@ -1,5 +1,5 @@
-#include "_type/type.binfile.h"
 #include <stdio.h>
+#include "_type/type.binfile.h"
 
 #include "localizationText_bin.h"
 #include "localizationMonth_bin.h"
@@ -16,9 +16,17 @@ _binfile::operator string()
 	transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
 	
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationtext.ini") )
-		return string( (const _char*)localizationText_bin );
-	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationmonth.ini") )
-		return string( (const _char*)localizationMonth_bin );
+	{
+		string str = (const _char*)localizationText_bin;
+		str.resize( localizationText_bin_size );
+		return move( str );
+	}
+	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/localizationmonth.ini") )
+	{
+		string str = (const _char*)localizationMonth_bin;
+		str.resize( localizationMonth_bin_size );
+		return move( str );
+	}
 
 	return "";
 }

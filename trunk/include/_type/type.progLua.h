@@ -17,7 +17,7 @@ class _progLua : public _program
 		lua_State* 				state;
 		
 		//! Array filled with the methods that will be registered
-		static luaL_Reg windowsLibrary[];
+		static luaL_Reg			windowsLibrary[];
 		
 		//! VBL-function to collect garbage and reset lua_stack
 		void 		collector();
@@ -32,6 +32,10 @@ class _progLua : public _program
 		static int	lua_writeRegistryIndex( lua_State* L );
 		static int	lua_deleteRegistryIndex( lua_State* L );
 		static int	lua_deleteRegistrySection( lua_State* L );
+		static int	lua_getFont( lua_State* L );
+		static int	lua_fontChangePhrase( lua_State* L );
+		static int	lua_colorChangePhrase( lua_State* L );
+		static int	lua_sizeChangePhrase( lua_State* L );
 		static int	lua_RGB( lua_State* L );
 		static int	lua_RGBA( lua_State* L );
 		static int	lua_RGB_GETR( lua_State* L );
@@ -50,6 +54,12 @@ class _progLua : public _program
 		//! Register DSWindows-Libs
 		static int	lua_requirePackage( lua_State* L );
 		
+		/**	
+		 * Determines, whether the program can be terminated
+		 * due to none handlers that could give the program control again
+		 */
+		bool canBeAutoCleaned();
+		
 	public:
 		
 		//! Ctor
@@ -58,6 +68,7 @@ class _progLua : public _program
 		//! Dtor
 		~_progLua();
 		
+		//! Main function that will be called at the start of execution (one shot)
 		void main( _cmdArgs& args );
 };
 

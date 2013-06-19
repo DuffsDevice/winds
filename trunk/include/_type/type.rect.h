@@ -16,7 +16,7 @@ class _rect{
 			
 			private:
 				
-				_list<_rect> t_rects;
+				_vector<_rect> t_rects;
 				
 			public:
 				
@@ -34,8 +34,8 @@ class _rect{
 				void clearRects(){ t_rects.clear(); }
 				
 				//! Iteration
-				_list<_rect>::iterator begin(){ return t_rects.begin(); }
-				_list<_rect>::iterator end(){ return t_rects.end(); }
+				_vector<_rect>::iterator begin(){ return t_rects.begin(); }
+				_vector<_rect>::iterator end(){ return t_rects.end(); }
 				
 				//! Cut the supplied Rectangle off
 				_area& reduce( const _rect& dim );

@@ -4,7 +4,8 @@
 #include "_type/type.system.h"
 
 #include "_resource/PROG_Explorer.h"
-#include "program_bin.h"
+#include "PROG_exampleprogram_bin.h"
+#include "PROG_pong_bin.h"
 
 void _program::main( _gadget* w , _cmdArgs& args  ){
 	this->gadgetHost = w; this->main( args );
@@ -36,7 +37,18 @@ _program* _program::fromFile( string filename )
 		return new PROG_Explorer();
 	
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/exampleprogram.exe" ) )
-		return new _progLua( (const _char*)program_bin );
+	{
+		string str = (const _char*)PROG_exampleprogram_bin;
+		str.resize( PROG_exampleprogram_bin_size );
+		return new _progLua( move( str ) );
+	}
+	
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/pong.exe" ) )
+	{
+		string str = (const _char*)PROG_pong_bin;
+		str.resize( PROG_pong_bin_size );
+		return new _progLua( move( str ) );
+	}
 	
 	return nullptr;
 }

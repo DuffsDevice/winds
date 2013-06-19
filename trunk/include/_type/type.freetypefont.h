@@ -3,8 +3,7 @@
 
 #include "_type/type.font.h"
 #include "_type/type.direntry.h"
-#include "type.bitmap.h"
-
+#include "_type/type.bitmap.h"
 #include "_library/truetype.h"
 
 class _freetypefont : private _direntry , public _font
@@ -14,25 +13,41 @@ class _freetypefont : private _direntry , public _font
 		_u8*			cache;
 		_u32			cacheSize;
 		stbtt_fontinfo	fontInfo;
+	
+	protected:
+		
+		//! Check if the supplied character can be displayed by the font
+		bool isCharSupportedInternal( const _char codepoint ) const ;
 		
 	public:
 		
+		//! Ctor: Create a _font from a .ttf file
 		_freetypefont( string path );
 		
-		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 8 ) const ;
+		//! draw a Character!
+		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y
+							, _char character , _pixel color , _rect clip , _u8 fontSize = 8 ) const ITCM_CODE ;
 		
-		inline _length getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;
+		//! Get the CharacterWidth related to a specific character
+		_length getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;
 		
-		inline _length isMonospace() const ;
+		//! Check whether this font is monospace
+		_length isMonospace() const { 
+			return false;
+		}
 		
+		//! Get the Main-Height of the font
 		_length getAscent( _u8 fontSize = 8 ) const ;
 		
+		//! Get the Height of the font
 		_length getHeight( _u8 fontSize = 8 ) const { return fontSize; }
 		
-		bool valid() const ;
+		//! Check if this font is valid
+		bool isValid() const {
+			return this->fontInfo.numGlyphs != 0;
+		}
 		
-		bool isCharSupported( const _char codepoint ) const ;
-		
+		//! Dtor
 		~_freetypefont();
 	
 };

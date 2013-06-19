@@ -17,6 +17,9 @@ class _font{
 			this->name = newName;
 		}
 		
+		//! Check if the supplied character can be displayed by the font
+		virtual bool isCharSupportedInternal( _char ch ) const = 0;
+		
 	public:
 		
 		//! Constructor with name
@@ -37,6 +40,7 @@ class _font{
 			return getStringWidth( str.c_str() , fontSize );
 		}
 		
+		//! Gets the number of displayed characters that fit inside a fixed width
 		_length getNumCharsUntilWidth( _length width , const _char* str , _u8 fontSize = 0 ) const ;
 		_length getNumCharsUntilWidth( _length width , string str , _u8 fontSize = 0 ) const 
 		{
@@ -47,7 +51,9 @@ class _font{
 		virtual _length isMonospace() const = 0;
 		
 		//! Check if the supplied character can be displayed by the font
-		virtual bool isCharSupported( _char ch ) const  = 0;
+		inline bool isCharSupported( _char ch ) const {
+			return ch == ' ' || ch == '\n' || this->isCharSupportedInternal( ch );
+		}
 		
 		//! Get the Height of the font
 		virtual _length getHeight( _u8 fontSize = 0 ) const = 0;
@@ -63,18 +69,17 @@ class _font{
 		virtual _length getAscent( _u8 fontSize = 0 ) const = 0;
 		
 		//! Check if this font is valid
-		virtual bool valid() const = 0;
+		virtual bool isValid() const = 0;
 		
 		//! Get the Name of the Font e.g. 'Arial'
-		string getName() const {
+		const string& getName() const {
 			return this->name;
 		}
 		
 		//! draw a character!
 		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		
-		
-		//! Receive a font, created from file
+		//! Returns a font, created from a file
 		static const _font* fromFile( string path );
 
 };

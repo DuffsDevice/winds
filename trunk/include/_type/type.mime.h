@@ -32,9 +32,9 @@ typedef enum{
 	application_x_nintendo_gba_rom
 }_mime;
 
-extern map<string,_mime> string2mimeType;
-extern map<string,_mime> extension2mimeType;
-extern map<_mime,string> mimeType2string;
+extern _map<string,_mime> string2mimeType;
+extern _map<string,_mime> extension2mimeType;
+extern _map<_mime,string> mimeType2string;
 	
 
 class _mimeType{

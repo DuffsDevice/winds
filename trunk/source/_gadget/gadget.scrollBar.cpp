@@ -6,12 +6,12 @@
 _bitmap scroll_bg_vert 			= BMP_ScrollBgSnipVertical();
 _bitmap scroll_bg_horiz 		= BMP_ScrollBgSnipHorizontal();
 
-_scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style style ) :
+_scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style&& style ) :
 	_gadget( 
 		_gadgetType::scrollbar
 		, dim == _dimension::horizontal ? gadgetLength : 8
 		,  dim == _dimension::vertical ? gadgetLength : 8 
-		, x , y , style )
+		, x , y , (_style&&)style )
 	, value( 0 )
 	, length( length )
 	, length2( length2 )
@@ -36,15 +36,15 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	}
 	
 	//! Register Event-Handlers
-	this->registerEventHandler( refresh , new _staticCallback( &_scrollBar::refreshHandler ) );
-	this->registerEventHandler( onResize , new _staticCallback( &_scrollBar::resizeHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_scrollBar::refreshHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_scrollBar::resizeHandler ) );
 	
 	//! Action Handlers
-	this->dragHandle->registerEventHandler( dragStart , new _staticCallback( &_scrollBar::dragHandler ) );
-	this->dragHandle->registerEventHandler( dragging , new _staticCallback( &_scrollBar::dragHandler ) );
+	this->dragHandle->setInternalEventHandler( dragStart , _staticCallback( &_scrollBar::dragHandler ) );
+	this->dragHandle->setInternalEventHandler( dragging , _staticCallback( &_scrollBar::dragHandler ) );
 	
-	this->higherHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
-	this->lowerHandle->registerEventHandler( onAction , new _staticCallback( &_scrollBar::clickHandler ) );
+	this->higherHandle->setInternalEventHandler( onAction , _staticCallback( &_scrollBar::clickHandler ) );
+	this->lowerHandle->setInternalEventHandler( onAction , _staticCallback( &_scrollBar::clickHandler ) );
 	
 	//! Refresh my cached values
 	refreshHandleWidth();

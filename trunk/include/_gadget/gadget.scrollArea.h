@@ -94,7 +94,7 @@ class _scrollArea : public _gadget {
 		_padding getPaddingOffset(){ return this->offset; }
 		
 		//! Default Constructor width optional scrolltypes
-		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style style = _style() );
+		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style&& style = _style() );
 		
 		//! Destrucor
 		~_scrollArea()
@@ -104,7 +104,7 @@ class _scrollArea : public _gadget {
 		}
 };
 
-extern map<string,_scrollType> string2scrollType;
-extern map<_scrollType,string> scrollType2string;
+extern _map<string,_scrollType> string2scrollType;
+extern _map<_scrollType,string> scrollType2string;
 
 #endif

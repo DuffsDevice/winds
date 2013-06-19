@@ -16,7 +16,7 @@ class _startupScreen : public _gadgetScreen
 		
 	public:
 	
-		_startupScreen( _u8 bgId , _style style = _style() );
+		_startupScreen( _u8 bgId , _style&& style = _style() );
 		
 		~_startupScreen();
 	

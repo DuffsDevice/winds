@@ -44,15 +44,15 @@ _callbackReturn _selectItem::refreshHandler( _event event ){
 	return use_default;
 }
 
-_selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _style style ) :
-	_gadget( _gadgetType::selectitem , width , _system::getUser()->sOH , 0 , nth * _system::getUser()->sOH , style )
+_selectItem::_selectItem( _s32 nth , _length width , string str , _s32 value , _style&& style ) :
+	_gadget( _gadgetType::selectitem , width , _system::getUser()->sOH , 0 , nth * _system::getUser()->sOH , (_style&&)style )
 	, strVal( str )
 	, intVal( value )
 	, active( false )
 {
 	// Register Event - Handlers
-	this->registerEventHandler( refresh , new _staticCallback( &_selectItem::refreshHandler ) );
-	this->registerEventHandler( mouseDown , new _staticCallback( &_selectItem::mouseHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_selectItem::refreshHandler ) );
+	this->setInternalEventHandler( mouseDown , _staticCallback( &_selectItem::mouseHandler ) );
 	
 	// Refresh Me
 	this->refreshBitmap();

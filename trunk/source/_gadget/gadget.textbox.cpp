@@ -8,7 +8,7 @@ void _textbox::setFont( const _font* ft )
 	if( this->font != ft )
 	{ 
 		this->font = ft;
-		if( this->font && this->font->valid() )
+		if( this->font && this->font->isValid() )
 			this->setHeight( max( 10 , this->font->getHeight() + 2 ) );
 	}
 }
@@ -125,7 +125,7 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->bgColor );
 	
 	// If there is no font it doesn't make sense to paint
-	if( that->font && that->font->valid() )
+	if( that->font && that->font->isValid() )
 	{
 		_2s32 pos = that->getFontPosition();
 		
@@ -153,7 +153,7 @@ _callbackReturn _textbox::refreshHandler( _event event )
 		}
 	}
 	
-	_callbackReturn ret = that->handleEventUser( refreshUser );
+	_callbackReturn ret = that->handleEventUser( event );
 	
 	if( ret == not_handled )
 	{
@@ -233,7 +233,7 @@ _callbackReturn _textbox::mouseHandler( _event event )
 		position -= that->getX();
 	}
 	
-	if( !that->font || !that->font->valid() )
+	if( !that->font || !that->font->isValid() )
 		return handled;
 	
 	_length pos = 0;
@@ -248,7 +248,7 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	return handled;
 }
 
-_textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style style ) :
+_textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style&& style ) :
 	_gadget( _gadgetType::textbox , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
@@ -261,22 +261,22 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 	, scroll( 0 )
 {
 	// Regsiter Handling Functions for events
-	this->registerEventHandler( onFocus , new _staticCallback( &_textbox::focusHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_textbox::focusHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_textbox::refreshHandler ) );
-	this->registerEventHandler( mouseDown , new _staticCallback( &_textbox::mouseHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_textbox::keyHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_textbox::keyHandler ) );
-	this->registerEventHandler( dragging , new _staticCallback( &_textbox::mouseHandler ) );
+	this->setInternalEventHandler( onFocus , _staticCallback( &_textbox::focusHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( &_textbox::focusHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_textbox::refreshHandler ) );
+	this->setInternalEventHandler( mouseDown , _staticCallback( &_textbox::mouseHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_textbox::keyHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_textbox::keyHandler ) );
+	this->setInternalEventHandler( dragging , _staticCallback( &_textbox::mouseHandler ) );
 	
 	// Refresh Myself
 	this->refreshBitmap();
 }
 
 // C++0x I Love you! Delegating Ctors! Yeehaa...
-_textbox::_textbox( _coord x , _coord y , _length width , string text , _style style ) :
-	_textbox( x , y , width , 10 , text , style )
+_textbox::_textbox( _coord x , _coord y , _length width , string text , _style&& style ) :
+	_textbox( x , y , width , 10 , text , (_style&&)style )
 {
-	if( this->font && this->font->valid() )
+	if( this->font && this->font->isValid() )
 		this->setHeight( this->font->getHeight() + 2 );
 }

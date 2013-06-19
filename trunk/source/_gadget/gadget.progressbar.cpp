@@ -93,12 +93,12 @@ void _progressbar::setBarType( bool type )
 			this->bubbleRefresh( true );
 		}
 		else
-			_system::executeTimer( new _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
+			_system::executeTimer( _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
 	}
 }
 
-_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style style ) :
-	_gadget( _gadgetType::progressbar , width , 8 , x , y , style )
+_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style&& style ) :
+	_gadget( _gadgetType::progressbar , width , 8 , x , y , (_style&&)style )
 	, type( !type )
 	, value( 70 )
 	, blue( false )
@@ -106,7 +106,7 @@ _progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _
 	this->setBarType( type );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_progressbar::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_progressbar::refreshHandler ) );
 	
 	// refresh!
 	this->refreshBitmap();

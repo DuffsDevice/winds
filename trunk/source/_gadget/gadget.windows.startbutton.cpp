@@ -40,14 +40,14 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 }
 
 
-_windowsStartButton::_windowsStartButton( _coord x , _coord y , _style style ) :
+_windowsStartButton::_windowsStartButton( _coord x , _coord y , _style&& style ) :
 	_button( 38 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
 	, startMenu( new _startMenu() )
 {
-	this->registerEventHandler( mouseClick , new _classCallback( this , &_windowsStartButton::mouseHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_windowsStartButton::refreshHandler ) );
-	this->startMenu->registerEventHandler( onOpen , new _gadget::eventForwardRefreshGadget( this ) );
-	this->startMenu->registerEventHandler( onClose , new _gadget::eventForwardRefreshGadget( this ) );
+	this->setInternalEventHandler( mouseClick , _classCallback( this , &_windowsStartButton::mouseHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_windowsStartButton::refreshHandler ) );
+	this->startMenu->setInternalEventHandler( onOpen , _gadget::eventForwardRefreshGadget( this ) );
+	this->startMenu->setInternalEventHandler( onClose , _gadget::eventForwardRefreshGadget( this ) );
 	
 	this->refreshBitmap();
 }

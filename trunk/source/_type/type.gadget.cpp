@@ -1,59 +1,57 @@
 #include "_type/type.gadget.h"
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
+#include "_gadget/gadget.button.h"
 
-_array<_staticCallback,13>
+_array<_fastEventCallback,13>
 	_gadget::defaultEventHandlers = { {
-	/* refresh */ _staticCallback( &_gadget::gadgetRefreshHandler ) ,
-	/* mouseClick */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDoubleClick */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDown */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseUp */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseRepeat */ _staticCallback( &_gadget::gadgetMouseHandler ) ,
-	/* keyDown */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyUp */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyClick */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyRepeat */ _staticCallback( &_gadget::gadgetKeyHandler ) ,
-	/* dragStart */ _staticCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragStop */ _staticCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragging */ _staticCallback( &_gadget::gadgetDragHandler )
+	/* refresh */ _fastEventCallback( &_gadget::gadgetRefreshHandler ) ,
+	/* mouseClick */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDoubleClick */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseDown */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseUp */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
+	/* mouseRepeat */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
+	/* keyDown */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyUp */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyClick */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
+	/* keyRepeat */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
+	/* dragStart */ _fastEventCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragStop */ _fastEventCallback( &_gadget::gadgetDragHandler ) ,
+	/* dragging */ _fastEventCallback( &_gadget::gadgetDragHandler )
 } };
 
 
-_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap ) :
+_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style&& style ) :
 	padding( _padding( 0 ) )
 	, dimensions( _rect( posX , posY , max( 1 , width )
 	, max( 1 , height ) ) )
-	, style( style )
+	, style( (_style&&)style )
 	, focusedChild( nullptr )
 	, parent( nullptr )
+	, bitmap( this->getWidth() , this->getHeight() )
 	, dragTemp ( nullptr )
 	, type( type )
 	, state( 0 )
-{
-	if( !doNotAllocateBitmap )
-		this->bitmap = _bitmap( this->getWidth() , this->getHeight() );
-}
+{}
 
-
-// Delegating Constructors!!!! C++0x I love you!
-_gadget::_gadget( int width , int height , int posX , int posY , _style style , bool doNotAllocateBitmap )
-	: _gadget( _gadgetType::_plain , width , height , posX , posY , style , doNotAllocateBitmap )
-{ }
+_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , true_type , _style&& style ) :
+	padding( _padding( 0 ) )
+	, dimensions( _rect( posX , posY , max( 1 , width )
+	, max( 1 , height ) ) )
+	, style( (_style&&)style )
+	, focusedChild( nullptr )
+	, parent( nullptr )
+	, bitmap()
+	, dragTemp ( nullptr )
+	, type( type )
+	, state( 0 )
+{}
 
 
 _gadget::~_gadget()
 {
-	// Unbind event Handler
-	for( const _pair<_eventType,_callback*>& data : this->eventHandlers )
-	{
-		if( data.second )
-		{
-			if( data.first == onDelete )
-				(*data.second)( _event( onDelete ).setGadget( this ) );
-			delete data.second;
-		}
-	}
+	// Call onDelete Handler
+	this->handleEvent( _event( onDelete ) , true );
 	
 	// Remove Children
 	this->removeChildren();
@@ -66,15 +64,13 @@ _gadget::~_gadget()
 }
 
 
-void _gadget::triggerEvent( _event&& event )
-{
-	_system::generateEvent( event.setDestination( this ) );
+void _gadget::triggerEvent( _event&& event ){
+	_system::generateEvent( (_event&&)event.setDestination( this ) );
 }
 
 
-void _gadget::populateEvent( _event&& event )
-{
-	_system::generateEvent( event );
+void _gadget::populateEvent( _event&& event ){
+	_system::generateEvent( (_event&&)event );
 }
 
 
@@ -159,7 +155,7 @@ void _gadget::blinkHandler()
 void _gadget::blink()
 {
 	_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
-	_system::executeTimer( new _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
+	_system::executeTimer( _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
 }
 
 
@@ -281,20 +277,6 @@ bool _gadget::focusChild( _gadget* child )
 }
 
 
-void _gadget::unregisterEventHandler( _eventType type )
-{
-	// Unbind the Handler
-	_map<_eventType,_callback*>::iterator data = this->eventHandlers.find( type );
-	
-	if( data != this->eventHandlers.end() )
-	{
-		delete data->second;
-		
-		this->eventHandlers.erase( data );
-	}
-}
-
-
 _callbackReturn _gadget::handleEventDefault( _event&& event )
 {
 	_s32 posInArray = _s32( event.getType() ) - 2;
@@ -311,32 +293,103 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 }
 
 
-_callbackReturn _gadget::handleEvent( _event&& event )
+_callbackReturn _gadget::handleEvent( _event&& event , bool noDefault )
 {
-	_eventHandlerMap::const_iterator it = this->eventHandlers.find( event.getType() );
+	const _callback* ret1 = nullptr;
+	const _callback* ret2 = nullptr;
+	
+	_eventType eventType1 = event.getType();
+	_eventType eventType2 = eventType2userET( eventType1 );
+	
+	auto begin = eventHandlers.begin();
+	auto end = eventHandlers.end();
+	while( begin != end )
+	{
+		if( begin->first == eventType1 )
+		{
+			ret2 = begin->second;
+			while( begin != end ){
+				if( begin->first == eventType2 ){
+					ret1 = begin->second;
+					break;
+				}
+				begin++;
+			}
+			break;
+		}
+		else if( begin->first == eventType2 )
+		{
+			ret1 = begin->second;
+			while( begin != end ){
+				if( begin->first == eventType1 ){
+					ret2 = begin->second;
+					break;
+				}
+				begin++;
+			}
+			break;
+		}
+		begin++;
+	}
+	
+	_callbackReturn ret;
 	
 	// Check for Normal Event Handlers
-	if( it != this->eventHandlers.end() )
+	if( ret1 )
 	{
 		event.setGadget( this );
-		_callbackReturn ret = (*it->second)( event );
-		if( ret != use_default )
-			return ret;
+		ret = (*ret1)( event );
+		if( ret == use_default )
+			goto usedefault;
+		if( ret == use_internal )
+			goto useinternal;
+		return ret;
 	}
+	
+	useinternal:
+	
+	// Check for Normal Event Handlers
+	if( ret2 )
+	{
+		event.setGadget( this );
+		_callbackReturn ret = (*ret2)( event );
+		if( ret == use_default )
+			goto usedefault;
+		return ret;
+	}
+	
+	usedefault:
+	
+	if( noDefault )
+		return not_handled;
 	
 	// If the Handler doesn't exist, return the default Handler
 	return this->handleEventDefault( (_event&&)event );
 }
 
+
 _callbackReturn _gadget::handleEventUser( _event&& event )
 {
-	_eventHandlerMap::const_iterator it = this->eventHandlers.find( event.getType() );
+	const _callback* cb = this->eventHandlers[ eventType2userET(event.getType()) ];
 	
 	// Check for Normal Event Handlers
-	if( it != this->eventHandlers.end() )
+	if( cb )
 	{
 		event.setGadget( this );
-		return (*it->second)( (_event&&)event );
+		return (*cb)( (_event&&)event );
+	}
+	return not_handled;
+}
+
+_callbackReturn _gadget::handleEventInternal( _event&& event )
+{
+	const _callback* cb = this->eventHandlers[ event.getType() ];
+	
+	// Check for Normal Event Handlers
+	if( cb )
+	{
+		event.setGadget( this );
+		return (*cb)( (_event&&)event );
 	}
 	return not_handled;
 }
@@ -493,7 +546,7 @@ void _gadget::addChild( _gadget* child )
 		return;
 	
 	// Add it!
-	this->children.push_front( child );
+	this->children.emplace_front( child );
 	
 	// Reset style-object
 	child->focused = false;
@@ -517,7 +570,7 @@ void _gadget::addEnhancedChild( _gadget* child )
 		return;
 	
 	// Add it!
-	this->enhancedChildren.push_front( child );
+	this->enhancedChildren.emplace_front( child );
 	
 	// Reset style-object
 	child->focused = false;
@@ -689,72 +742,61 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 {
 	_gadget* that = event.getGadget();
 	
+	//! If this event is bubbling,
+	//! also call the gadget-specific refreshHandler
 	if( event.hasClippingRects() )
-		that->handleEventUser( event );
+		that->handleEvent( event , true );
 	
-	// Break up, if there are no children to paint!
+	//! Break up, if there are no children to paint!
 	if( that->children.empty() && that->enhancedChildren.empty() )
-		goto refreshEnd;
+		return handled;
 	
-	{ //! New Section
-		
-		// Receive Bitmap-Port
-		_bitmapPort bP = that->getBitmapPort();
-		
-		//! Set the available Area for the gadget
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-		else
-			bP.addClippingRects( _rect( 0 , 0 , that->width , that->height ) );
-		
-		//! Draw All enhanced Children
-		for( _gadget* gadget : that->enhancedChildren )
-		{
-			if( gadget->isInvisible() )
-				continue;
-			
-			_rect dim = gadget->getDimensions();
-			
-			// Copy...
-			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
-			
-			// Reduce Painting Area
-			bP.clippingRects.reduce( dim );
-		}
-		
-		// Crop to area having the parents padding applied
-		bP.clippingRects.clipToIntersect( that->getSize().applyPadding( that->getPadding() ) );
-		
-		// Store padding in termporaries
-		_length padLeft = that->padLeft;
-		_length padTop = that->padTop;
-		
-		
-		//! Draw all other children
-		for( _gadget* gadget : that->children )
-		{
-			if( gadget->isInvisible() )
-				continue;
-			
-			_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
-			
-			// Copy...
-			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
-			
-			// Reduce Painting Area
-			bP.clippingRects.reduce( dim );
-		}
-		
-		//event.setDamagedRects( bP.clippingRects.toRelative( _2s32( -that->getAbsoluteX() , -that->getAbsoluteY() ) ) );
-		
-	} //! New Section end
+	// Receive Bitmap-Port
+	_bitmapPort bP = that->getBitmapPort();
 	
-	/* Label */
-	refreshEnd:
+	//! Set the available Area for the gadget
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
+	else
+		bP.addClippingRects( _rect( 0 , 0 , that->width , that->height ) );
 	
-	// Refresh 'my content'
-	//if( event.hasClippingRects() )
-	//	that->handleEventUser( event );
+	//! Draw All enhanced Children
+	for( _gadget* gadget : that->enhancedChildren )
+	{
+		if( gadget->isInvisible() )
+			continue;
+		
+		_rect dim = gadget->getDimensions();
+		
+		// Copy...
+		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		
+		// Reduce Painting Area
+		bP.clippingRects.reduce( dim );
+	}
+	
+	// Crop to area having the parents padding applied
+	bP.clippingRects.clipToIntersect( that->getSize().applyPadding( that->getPadding() ) );
+	
+	// Store padding in termporaries
+	_length padLeft = that->padLeft;
+	_length padTop = that->padTop;
+	
+	
+	//! Draw all other children
+	for( _gadget* gadget : that->children )
+	{
+		if( gadget->isInvisible() )
+			continue;
+		
+		_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
+		
+		// Copy...
+		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		
+		// Reduce Painting Area
+		bP.clippingRects.reduce( dim );
+	}
 	
 	return handled;
 }
@@ -847,7 +889,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 			}
 			
 			// Call the user-registered event-handler
-			mouseContain->handleEventUser( (_event&&)event );
+			mouseContain->handleEvent( (_event&&)event , true );
 			
 			return handled;
 		}
@@ -914,7 +956,7 @@ _callbackReturn _gadget::gadgetDragHandler( _event&& event )
 			if(
 				mouseContain->isDraggable()
 				&& mouseContain->isClickable()
-				&& mouseContain->handleEventUser( event ) != prevent_default
+				&& mouseContain->handleEvent( (_event&&)event , true ) != prevent_default
 			)
 				mouseContain->dragged = true;
 			else
@@ -947,13 +989,13 @@ _callbackReturn _gadget::gadgetDragHandler( _event&& event )
 		if( dragTemp->dragged )
 		{
 			// Rewrite Destination and trigger the Event
-			dragTemp->handleEvent( event );
+			dragTemp->handleEvent( (_event&&)event );
 			
 			// Update _style
 			dragTemp->dragged = false;
 		}
 		else
-			dragTemp->handleEventDefault( event ); // Forward the dragStop-event to the children
+			dragTemp->handleEventDefault( (_event&&)event ); // Forward the dragStop-event to the children
 		
 		if( dragTemp->pressed )
 		{
@@ -982,20 +1024,20 @@ _callbackReturn _gadget::gadgetDragHandler( _event&& event )
 	if( dragTemp->dragged )
 	{
 		// Rewrite Destination andTrigger the Event
-		if( dragTemp->handleEvent( event ) == prevent_default )
+		if( dragTemp->handleEvent( (_event&&)event ) == prevent_default )
 		{
 			dragTemp->dragged = false; // If the dragged gadget no longer wants to be dragged
 			return prevent_default; // Force the upper gadget also to stop dragging
 		}
 	}
 	else
-		return dragTemp->handleEventDefault( event );
+		return dragTemp->handleEventDefault( (_event&&)event );
 	
 	return handled;
 }
 
 // Convert a gadgetType to a string
-map<_gadgetType,string> gadgetType2string = {
+_map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::button , "button" },
 	{ _gadgetType::label , "label" },
 	{ _gadgetType::checkbox , "checkbox" },

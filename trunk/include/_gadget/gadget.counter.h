@@ -63,8 +63,10 @@ class _counter : public _gadget{
 		void decrease(){ this->setIntValue( this->intValue - 1 ); }
 		
 		// Ctors
-		_counter( _coord x , _coord y , _length width , bool circular = false , _s32 value = 0 , _style style = _style() );
-		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _u8 numbersystem = 10 , _style style = _style() );
+		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _style&& style ) :
+			_counter( x , y , width , circular , value , 99 , 0 , 10 , (_style&&)style )
+		{ }
+		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _u8 numbersystem = 10 , _style&& style = _style() );
 		
 		// Dtor
 		~_counter();

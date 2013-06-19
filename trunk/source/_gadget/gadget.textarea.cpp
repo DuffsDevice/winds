@@ -82,10 +82,15 @@ _callbackReturn _textarea::refreshHandler( _event event )
 		}
 	}
 	
-	if( !that->isPressed() )
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
-	else
-		bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+	_callbackReturn ret = that->handleEventUser( event );
+	
+	if( ret == not_handled )
+	{
+		if( !that->isPressed() )
+			bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
+		else
+			bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+	}
 	
 	return use_default;
 }
@@ -146,7 +151,7 @@ _callbackReturn _textarea::keyHandler( _event event )
 				//! Temporary font-object
 				const _font* ft = that->text.getFont();
 				
-				if( line2Number == lineOfCursor || !ft || !ft->valid() ) // We are at the limits of the textarea
+				if( line2Number == lineOfCursor || !ft || !ft->isValid() ) // We are at the limits of the textarea
 					break; // abort
 				
 				//! Get X-Position of the cursor
@@ -245,7 +250,7 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	//! Temporary font-object
 	const _font* ft = that->text.getFont();
 	
-	if( !ft || !ft->valid() ) // No valid font?
+	if( !ft || !ft->isValid() ) // No valid font?
 		return handled; // abort
 	
 	_u8 ftHeight = ft->getHeight();
@@ -273,7 +278,7 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	return handled;
 }
 
-_textarea::_textarea( _length width , _length height , _coord x , _coord y , string value , _style style ) :
+_textarea::_textarea( _length width , _length height , _coord x , _coord y , string value , _style&& style ) :
 	_gadget( _gadgetType::textarea , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
@@ -282,14 +287,14 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	, align( _align::center )
 {
 	// Regsiter Handling Functions for events
-	this->registerEventHandler( onFocus , new _staticCallback( &_textarea::generalHandler ) );
-	this->registerEventHandler( onBlur , new _staticCallback( &_textarea::generalHandler ) );
-	this->registerEventHandler( onResize , new _staticCallback( &_textarea::generalHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_textarea::refreshHandler ) );
-	this->registerEventHandler( mouseDown , new _staticCallback( &_textarea::mouseHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_textarea::keyHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_textarea::keyHandler ) );
-	this->registerEventHandler( dragging , new _staticCallback( &_textarea::mouseHandler ) );
+	this->setInternalEventHandler( onFocus , _staticCallback( &_textarea::generalHandler ) );
+	this->setInternalEventHandler( onBlur , _staticCallback( &_textarea::generalHandler ) );
+	this->setInternalEventHandler( onResize , _staticCallback( &_textarea::generalHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_textarea::refreshHandler ) );
+	this->setInternalEventHandler( mouseDown , _staticCallback( &_textarea::mouseHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_textarea::keyHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_textarea::keyHandler ) );
+	this->setInternalEventHandler( dragging , _staticCallback( &_textarea::mouseHandler ) );
 	
 	this->scrollBar =
 		new _scrollBar(
@@ -305,7 +310,7 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	;
 	
 	this->addChild( this->scrollBar );
-	this->scrollBar->registerEventHandler( onScroll , new _gadget::eventForwardRefreshGadget(this) );
+	this->scrollBar->setInternalEventHandler( onScroll , _gadget::eventForwardRefreshGadget(this) );
 	this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
 	
 	//! Set the right parameters for the Scrollbar
@@ -315,7 +320,6 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	this->refreshBitmap();
 }
 
-_textarea::~_textarea()
-{
+_textarea::~_textarea(){
 	delete this->scrollBar;
 }

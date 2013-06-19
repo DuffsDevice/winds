@@ -28,10 +28,7 @@ class _checkbox : public _gadget {
 		_int getIntValue(){ return this->intValue; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_checkbox( _coord x , _coord y , _style style = _style() );
-		
-		//! Destrucor
-		~_checkbox();
+		_checkbox( _coord x , _coord y , _style&& style = _style() );
 };
 
 #endif

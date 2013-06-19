@@ -3,8 +3,8 @@
 #include "_type/type.font.glyphs.h"
 #include "func.gridcreator.h"
 
-_calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style style )
-	: _gadget( _gadgetType::button , width , height , x , y , style )
+_calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style&& style )
+	: _gadget( _gadgetType::button , width , height , x , y , (_style&&)style )
 	, _singleValueGroup<_stickybutton>()
 	, curMonth( month )
 	, curYear( year )
@@ -18,15 +18,15 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	this->selectedDate.set( _timeAttr::month , month , false );
 	this->selectedDate.set( _timeAttr::day , dayOfMonth );
 	
-	this->registerEventHandler( refresh , new _classCallback( this , &_calendar::handler ) );
-	this->registerEventHandler( keyClick , new _classCallback( this , &_calendar::handler ) );
+	this->setInternalEventHandler( refresh , _classCallback( this , &_calendar::handler ) );
+	this->setInternalEventHandler( keyClick , _classCallback( this , &_calendar::handler ) );
 	
 	
 	//! Allocate sticky-buttons
 	for( _u32 curSize = 0; curSize < 31 ; curSize++ )
 	{
 		_stickybutton* btn = new _stickybutton( 15 , 15 , -5 , -5 , int2string( curSize + 1 ) , _style::storeInt( curSize + 1 ) );
-		btn->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
+		btn->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
 		// Add to singleValueGroup
 		this->addSelector( btn , curSize + 1 );
 	}
@@ -42,10 +42,10 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::reset ) );
 	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowRotateLeft ) );
 	
-	this->leftArrow->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
-	this->rightArrow->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
-	this->todayButton->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
-	this->resetButton->registerEventHandler( onAction , new _classCallback( this , &_calendar::handler ) );
+	this->leftArrow->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
+	this->rightArrow->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
+	this->todayButton->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
+	this->resetButton->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
 	
 	// Set Symbol-font
 	this->leftArrow->setFont( symbolFt );
@@ -82,7 +82,7 @@ void _calendar::selectDate( _u16 year , _u8 month , _u8 dayOfMonth )
 }
 
 _callbackReturn _calendar::handler( _event event )
-{	
+{
 	if( event.getType() == refresh )
 	{
 		_bitmapPort bP = this->getBitmapPort();

@@ -89,6 +89,7 @@ const char _lua_event::className[] = "_event";
 Lunar<_lua_event>::FunctionType _lua_event::methods[] = {
 	LUA_CLASS_FUNC(_lua_event, getGadget),
 	LUA_CLASS_FUNC(_lua_event, resetParams),
+	LUA_CLASS_FUNC(_lua_event, hasClippingRects),
 	LUA_CLASS_FUNC_END
 };
 

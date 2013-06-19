@@ -12,7 +12,7 @@ _lua_color::_lua_color( _color rc ) : _color( rc )
 _lua_color::_lua_color( lua_State* L )
 {
 	if( lua_gettop( L ) == 1 )
-		_color::setColor( luaL_checkint( L , 1 ) );
+		_color::setColor( luaL_checkcolor( L , 1 ) );
 }
 
 //! getR
@@ -55,7 +55,7 @@ int _lua_color::setS(lua_State* L){ _color::setS( luaL_checkint( L , 1 ) ); retu
 int _lua_color::setL(lua_State* L){ _color::setL( luaL_checkint( L , 1 ) ); return 0; }
 
 //! setColor
-int _lua_color::setColor(lua_State* L){ _color::setColor( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setColor(lua_State* L){ _color::setColor( luaL_checkcolor( L , 1 ) ); return 0; }
 
 //! setRGB
 int _lua_color::setRGB(lua_State* L){ _color::setRGB( luaL_checkint( L , 1 ) , luaL_optint( L , 2 , 100 ) , luaL_optint( L , 3 , 50 ) ); return 0; }

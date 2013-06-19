@@ -1,8 +1,9 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
-_fileview::_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype , _scrollType scrollTypeX , _scrollType scrollTypeY , _style style ) :
-	_scrollArea( width , height , x , y , scrollTypeX , scrollTypeY , style ) 
+_fileview::_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype ,
+			_scrollType scrollTypeX , _scrollType scrollTypeY , _style&& style ) :
+	_scrollArea( width , height , x , y , scrollTypeX , scrollTypeY , (_style&&)style ) 
 	, directory( path )
 	, viewType( viewtype )
 {

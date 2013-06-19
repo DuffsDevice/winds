@@ -18,22 +18,22 @@ _callbackReturn _stickybutton::mouseHandler( _event event )
 	return handled;
 }
 
-_stickybutton::_stickybutton( _length width , _length height , _coord x , _coord y , string text , _style style ) :
-	_button( width , height , x , y , text , style )
+_stickybutton::_stickybutton( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
+	_button( width , height , x , y , text , (_style&&)style )
 	, group( nullptr )
 {
 	// Register some new handlers
-	this->unregisterEventHandler( onMouseLeave );
-	this->registerEventHandler( onMouseEnter , new _staticCallback( &_stickybutton::mouseHandler ) );
-	this->unregisterEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( onMouseLeave );
+	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_stickybutton::mouseHandler ) );
 }
 
-_stickybutton::_stickybutton( _coord x , _coord y , string text , _style style ) :
-	_button( x , y , text , style )
+_stickybutton::_stickybutton( _coord x , _coord y , string text , _style&& style ) :
+	_button( x , y , text , (_style&&)style )
 	, group( nullptr )
 {
 	// Register some new handlers
-	this->unregisterEventHandler( onMouseLeave );
-	this->registerEventHandler( onMouseEnter , new _staticCallback( &_stickybutton::mouseHandler ) );
-	this->unregisterEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( onMouseLeave );
+	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_stickybutton::mouseHandler ) );
 }

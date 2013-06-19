@@ -481,7 +481,7 @@ class _bitmap
 		_u16 drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
 			// Check if font is valid
-			if( !font || !font->valid() ) 
+			if( !font || !font->isValid() ) 
 				return 0;
 			
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );

@@ -75,13 +75,13 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 
 
 
-_windowButton::_windowButton( _coord x , _coord y , _u8 buttonType ) :
-	_button( 8 , 8 , x , y , "" )
+_windowButton::_windowButton( _coord x , _coord y , _u8 buttonType , _style&& style ) :
+	_button( 8 , 8 , x , y , "" , (_style&&)style )
 	, buttonType( buttonType )
 {
 	// Reset Bitmap
 	this->bitmap.reset( NO_COLOR );
 	
-	this->registerEventHandler( refresh , new _staticCallback( &_windowButton::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_windowButton::refreshHandler ) );
 	this->refreshBitmap();
 }

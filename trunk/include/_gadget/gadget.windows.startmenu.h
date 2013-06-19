@@ -12,7 +12,7 @@ class _startMenu : public _contextMenu{
 	
 	public:
 	
-		_startMenu( _style style = _style() );
+		_startMenu( _style&& style = _style() );
 
 };	
 

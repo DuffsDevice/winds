@@ -49,11 +49,11 @@ class _calendar : public _gadget , private _singleValueGroup<_stickybutton>
 		
 		
 		//! Ctor with _time object
-		_calendar( _length width , _length height , _coord x , _coord y , _time origDate , _style style = _style() ) :
-			_calendar( width , height , x , y , origDate.get( _timeAttr::year ) , origDate.get( _timeAttr::month ) , origDate.get( _timeAttr::day ) , style )
+		_calendar( _length width , _length height , _coord x , _coord y , _time origDate , _style&& style = _style() ) :
+			_calendar( width , height , x , y , origDate.get( _timeAttr::year ) , origDate.get( _timeAttr::month ) , origDate.get( _timeAttr::day ) , (_style&&)style )
 		{ }
 		
-		_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style style = _style() );
+		_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style&& style = _style() );
 		
 		//! Dtor
 		~_calendar();

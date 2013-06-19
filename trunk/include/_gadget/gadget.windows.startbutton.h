@@ -27,7 +27,7 @@ class _windowsStartButton : public _button {
 		void closeStartMenu(){ this->startMenu->shelve(); }
 		
 		//! Ctor
-		_windowsStartButton( _coord x , _coord y , _style style = _style() );
+		_windowsStartButton( _coord x , _coord y , _style&& style = _style() );
 };
 
 #endif

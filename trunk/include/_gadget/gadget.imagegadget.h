@@ -27,7 +27,7 @@ class _imagegadget : public _gadget {
 		
 		_bitmap& getModifyableImage(){ return this->img; }
 		
-		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style style = _style() | _styleAttr::notClickable );
+		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style&& style = _style() | _styleAttr::notClickable );
 };
 
 #endif

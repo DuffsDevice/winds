@@ -51,11 +51,11 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 	return use_default;
 }
 
-_startupScreen::_startupScreen( _u8 bgId , _style style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::startUp , style )
+_startupScreen::_startupScreen( _u8 bgId , _style&& style ) :
+	_gadgetScreen( bgId , _gadgetScreenType::startUp , (_style&&)style )
 	, winLogoGadget( new _imagegadget( 4 , 3 , *_startupScreen::winLogo , _styleAttr() | _styleAttr::canNotReceiveFocus ) )
 {	
-	this->registerEventHandler( refresh , new _staticCallback( &_startupScreen::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_startupScreen::refreshHandler ) );
 	this->addChild( winLogoGadget );
 	
 	//! Refresh me

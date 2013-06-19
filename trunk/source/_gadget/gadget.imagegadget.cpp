@@ -18,11 +18,11 @@ _callbackReturn _imagegadget::refreshHandler( _event event )
 	return use_default;
 }
 
-_imagegadget::_imagegadget( _coord x , _coord y , const _bitmap& img , _style style ) :
-	_gadget( _gadgetType::imagegadget , img.getWidth() , img.getHeight() , x , y , style ) , img( img )
+_imagegadget::_imagegadget( _coord x , _coord y , const _bitmap& img , _style&& style ) :
+	_gadget( _gadgetType::imagegadget , img.getWidth() , img.getHeight() , x , y , (_style&&)style ) , img( img )
 {
 	// Register Event-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_imagegadget::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_imagegadget::refreshHandler ) );
 	
 	this->bitmap.reset( NO_COLOR );
 

@@ -56,8 +56,8 @@ _callbackReturn _radio::mouseHandler( _event event )
 	return handled;
 }
 
-_radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 assocValue , _style style ) :
-	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , style )
+_radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 assocValue , _style&& style ) :
+	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , (_style&&)style )
 	, intValue( 0 )
 	, group( nullptr ) // Will be set when the _radio will be added to the _radiogroup
 {
@@ -65,12 +65,12 @@ _radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 as
 		group->addSelector( this , assocValue );
 	
 	// Register my handler as the default Refresh-Handler
-	this->registerEventHandler( refresh , new _staticCallback( &_radio::refreshHandler ) );
-	this->registerEventHandler( mouseClick , new _staticCallback( &_radio::mouseHandler ) );
-	this->registerEventHandler( keyDown , new _staticCallback( &_radio::mouseHandler ) );
-	this->registerEventHandler( keyRepeat , new _staticCallback( &_radio::mouseHandler ) );
-	this->registerEventHandler( onMouseEnter , new _gadget::eventForwardRefresh() );
-	this->registerEventHandler( onMouseLeave , new _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( refresh , _staticCallback( &_radio::refreshHandler ) );
+	this->setInternalEventHandler( mouseClick , _staticCallback( &_radio::mouseHandler ) );
+	this->setInternalEventHandler( keyDown , _staticCallback( &_radio::mouseHandler ) );
+	this->setInternalEventHandler( keyRepeat , _staticCallback( &_radio::mouseHandler ) );
+	this->setInternalEventHandler( onMouseEnter , _gadget::eventForwardRefresh() );
+	this->setInternalEventHandler( onMouseLeave , _gadget::eventForwardRefresh() );
 	
 	// Refresh Me
 	this->refreshBitmap();

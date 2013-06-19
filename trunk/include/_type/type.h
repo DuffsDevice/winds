@@ -2,17 +2,18 @@
 #ifndef _WIN_TYPES_
 #define _WIN_TYPES_
 
-//#include "_type/type.list.h"
 #include <malloc.h>
 #include <list>
-#include <map>
+#include <vector>
 #include <array>
 #include <string>
+#include <map>
 using namespace std;
 
 //! Code-sections
 #include <nds/memory.h>
 
+//! Undefine if you don't want any speed profiling
 #define DEBUG_PROFILING
 
 //! Overload new and delete
@@ -23,6 +24,8 @@ void operator delete[](void *p);
 
 template<typename T>
 	using _list = std::list<T>;
+template<typename T>
+	using _vector = std::vector<T>;
 template<typename T,typename T2>
 	using _map = std::map<T,T2>;
 template<typename T,typename T2>
@@ -47,6 +50,7 @@ typedef _pixel* 			_pixelArray;
 typedef float 				_float;
 typedef _u64 				_tempTime;
 typedef basic_string<_char>	string;
+typedef _vector<string>		_cmdArgs;
 
 #define unused __attribute__(( unused ))
 #define noinline __attribute__ ((noinline))
@@ -102,8 +106,6 @@ union 						_2u32
 	_2u32& operator/=( _u32 val ){ first /= val; second /= val; return *this; }
 };
 
-typedef _map<string,string>	_cmdArgs;
-
 extern _length SCREEN_WIDTH;
 extern _length SCREEN_HEIGHT;
 
@@ -119,7 +121,7 @@ template<class T1, class T2> struct copyable {
 };
 
 template<class T1, class T2 = T1> struct comparable {
-	static void constraints(T1 a, T2 b) { a==b; a!=b; a<b; }
+	static void constraints(T1 a, T2 b) { a==b; a!=b; a<b; a>b; }
 	comparable() { void(*)(T1,T2) = constraints; }
 };
 
@@ -149,20 +151,28 @@ static constexpr inline _pixel RGBAHEX( _u32 hex , bool alpha ){
 	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
 }
 
+//! Gets the specific component value from a color
 static constexpr inline _u8 RGB_GETR( _pixel c ){ return c & 0x1F; }
 static constexpr inline _u8 RGB_GETG( _pixel c ){ return ( c >> 5 ) & 0x1F; }
 static constexpr inline _u8 RGB_GETB( _pixel c ){ return ( c >> 10 ) & 0x1F; }
 static constexpr inline _u8 RGB_GETA( _pixel c ){ return c >> 15; }
 
+//! Sets a specific value
 static inline void RGB_SETR( _pixel& c , _u8 red ){ c = ( c & ~0x1F ) | red; }
 static inline void RGB_SETG( _pixel& c , _u8 green ){ c = ( c & ~( 0x1F << 5 ) ) | ( green << 5 ); }
 static inline void RGB_SETB( _pixel& c , _u8 blue ){ c = ( c & ~( 0x1F << 10 ) ) | ( blue << 10 ); }
 static inline void RGB_SETA( _pixel& c , bool alpha ){ c = ( c & ~( 1 << 15 ) ) | ( alpha << 15 ); }
 
+//! Counts, how many digits a number has
 extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
+
+//! Reads an int from a string
 extern int string2int( const _char * str );
+
+//! Converts an int to string
 extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 
+//! Predefined colors
 #define COLOR_TRANSPARENT (_pixel(0))
 #define COLOR_YELLOW 	(RGB(31,31,0))
 #define COLOR_GREEN 	(RGB(0,31,0))
@@ -174,6 +184,8 @@ extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 #define COLOR_BLACK 	(_pixel(1<<15))
 #define COLOR_WHITE 	(_pixel((1<<16)-1))
 #define NO_COLOR 		0
+
+
 #undef BIT
 #undef GETBIT
 
@@ -232,17 +244,18 @@ namespace DSWindows
 	//! is not available in the currently selected language
 	static const char* const emptyStringSignature = "[]";
 	
-	// Libnds Key to Windows-Key mapping
+	//! Maps a Libnds Key to a DSWindows-Key
 	extern _char libnds2key[12];
 };
 
-
+//! Alignment enumeration
 enum class _align : _u8 {
 	left,
 	center,
 	right
 };
 
+//! Vertical Alignment enumeration
 enum class _valign : _u8 {
 	top,
 	middle,
@@ -309,12 +322,12 @@ struct _touch
 };
 
 //! Convert _align and _valign to string
-extern map<_align,string> align2string;
-extern map<_valign,string> valign2string;
+extern _map<_align,string> align2string;
+extern _map<_valign,string> valign2string;
 
 //! Convert a given string to either _align or _valign
-extern map<string,_align> string2align;
-extern map<string,_valign> string2valign;
+extern _map<string,_align> string2align;
+extern _map<string,_valign> string2valign;
 
 //! Enumerates available _languages for WinDS
 enum class _language : _u8
@@ -331,7 +344,9 @@ enum class _language : _u8
 //! Trim not-printable characters at both ends of a given string
 void trim( string& );
 
-// Tools for analyzing the efficiency of code
-#include "_type/type.analyzer.h"
+//! Tools for analyzing the efficiency of code
+#ifdef DEBUG_PROFILING
+	#include "_type/type.analyzer.h"
+#endif
 
 #endif

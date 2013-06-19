@@ -1,5 +1,4 @@
 #include "_type/type.imagefile.h"
-#include "_type/type.imagefile.builtin.h"
 
 _imagefile::_imagefile( string fn ) :
 	_bitmap( nullptr , 0 , 0 )
@@ -8,43 +7,7 @@ _imagefile::_imagefile( string fn ) :
 {
 	// Check if not-existing
 	if( !this->isExisting() )
-	{
-		// Test if this file is a built-in one instead
-		string fn = this->getFileName();
-		
-		// Convert to lowerspace
-		transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
-		
-		_int size = -1;
-		const _u8* data = nullptr;
-		
-		for( const _pair<_u8,string>& image : imageId2filename )
-		{
-			if( _direntry::replaceASSOCS( image.second ) == fn )
-			{
-				data = imageId2imagedata[ image.first ];
-				size = imageId2imagesize[ image.first ];
-				break;
-			}
-		}
-		
-		if( size > 0 && data != nullptr )
-		{
-			_u32 width;
-			_u32 height;
-			_pixelArray pixeldata = GenericBMPDecoder::decode( data , width , height );
-			
-			if( pixeldata != nullptr )
-			{
-				this->bmp = pixeldata;
-				this->width = width;
-				this->height = height;
-			}
-		}
-		
-		return;
-	}
-	
+		return;	
 	
 	if( this->getMimeType() == _mime::image_png )
 	{

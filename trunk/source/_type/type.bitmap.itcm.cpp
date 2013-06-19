@@ -765,7 +765,7 @@ void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _cha
 		return;
 	
 	// Check if font is valid
-	if( !font || !font->valid() )
+	if( !font || !font->isValid() )
 		return;
 	
 	// Fetch the destination where to draw To

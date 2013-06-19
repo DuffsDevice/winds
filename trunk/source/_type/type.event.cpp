@@ -18,6 +18,7 @@ _map<string,_callbackReturn> string2callbackReturn = {
 	{ "handled" , handled },
 	{ "prevent_default" , prevent_default },
 	{ "use_default" , use_default },
+	{ "use_internal" , use_internal },
 	{ "not_handled" , not_handled },
 };
 
@@ -25,6 +26,7 @@ _map<_callbackReturn,string> callbackReturn2string = {
 	{ handled , "handled" },
 	{ prevent_default , "prevent_default" },
 	{ use_default , "use_default" },
+	{ use_internal , "use_internal" },
 	{ not_handled , "not_handled" },
 };
 
@@ -60,7 +62,6 @@ _map<string,_eventType> string2eventType = {
 	{ "onScroll" , onScroll },
 	{ "onStyleSet" , onStyleSet },
 	{ "onDelete" , onDelete },
-	{ "refreshUser" , refreshUser }
 };
 
 _map<_eventType,string> eventType2string = {
@@ -95,5 +96,4 @@ _map<_eventType,string> eventType2string = {
 	{ onScroll , "onScroll" },
 	{ onStyleSet , "onStyleSet" },
 	{ onDelete , "onDelete" },
-	{ refreshUser , "refreshUser" }
 };

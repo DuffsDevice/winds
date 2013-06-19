@@ -29,7 +29,7 @@ class _scrollButton : public _button{
 		
 		void setButtonType( _scrollButtonType type ){ this->type = type; this->bubbleRefresh( true ); }
 		
-		_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style style = _style() );
+		_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style&& style = _style() );
 		
 };	
 #endif

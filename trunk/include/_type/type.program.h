@@ -29,7 +29,8 @@ class _program
 		
 	public:
 		
-		bool 			autoDelete; // Flag: whether the program shall be deleted on finish
+		//! Flag: whether the program shall be deleted in the next frame
+		bool 			autoDelete;
 		
 		//! Ctor
 		_program( _programType type ) : type( type ) , autoDelete( false ) {}
@@ -37,7 +38,7 @@ class _program
 		//! Execute it! Means pushing it to _system's list of programs
 		void 			execute( _cmdArgs args = _cmdArgs() );
 		
-		//! terminate the program
+		//! Terminate the program
 		void 			terminate();
 		
 		//! Main function to be called from _system

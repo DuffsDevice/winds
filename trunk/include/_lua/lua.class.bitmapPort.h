@@ -27,9 +27,6 @@ class _lua_bitmapPort : public _bitmapPort{
 		//! deleteClippingRects
 		int deleteClippingRects( lua_State* L );
 		
-		//! opertor[pos] and operator(x,y)
-		int get( lua_State* L );
-		
 		//! getWidth
 		int getWidth(lua_State* L );
 		
@@ -48,11 +45,20 @@ class _lua_bitmapPort : public _bitmapPort{
 		//! replaceColor
 		int replaceColor( lua_State* L );
 		
+		//! drawLine
+		int drawLine( lua_State* L );
+		
 		//! drawVerticalLine
 		int drawVerticalLine( lua_State* L );
 		
+		//! drawVerticalDottedLine
+		int drawVerticalDottedLine( lua_State* L );
+		
 		//! drawHorizontalLine
 		int drawHorizontalLine( lua_State* L );
+		
+		//! drawHorizontalDottedLine
+		int drawHorizontalDottedLine( lua_State* L );
 		
 		//! drawRect
 		int drawRect( lua_State* L );

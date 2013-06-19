@@ -1,8 +1,8 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
 
-_gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _style style ) :
-	_gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , style , true )
+_gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _style&& style ) :
+	_gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , true_type() , (_style&&)style )
 	, _screen( bgId )
 	, screenType( sType )
 	, touchCycles( 0 )

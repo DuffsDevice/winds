@@ -110,14 +110,14 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 
 
 
-_windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference , _style style ) :
+_windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference , _style&& style ) :
 	_button( 20 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
 	, reference( reference )
 {
 	this->setFontColor( RGB( 27 , 27 , 27 ) );
 	this->setAlign( _align::left );
-	this->registerEventHandler( onAction , new _staticCallback( &_windowsTaskButton::mouseHandler ) );
-	this->registerEventHandler( refresh , new _staticCallback( &_windowsTaskButton::refreshHandler ) );
+	this->setInternalEventHandler( onAction , _staticCallback( &_windowsTaskButton::mouseHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_windowsTaskButton::refreshHandler ) );
 	
 	this->refreshBitmap();
 }

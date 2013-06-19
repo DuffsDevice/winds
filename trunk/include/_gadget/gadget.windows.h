@@ -57,7 +57,7 @@ class _windows : public _gadgetScreen
 		void closeStartMenu(){ this->startButton->closeStartMenu(); }
 		
 		//! Constructor with style
-		_windows( _u8 bgId , _style style = _style() );
+		_windows( _u8 bgId , _style&& style = _style() );
 		
 };
 

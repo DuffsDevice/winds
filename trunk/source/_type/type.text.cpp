@@ -6,7 +6,7 @@ void _text::wrap()
 {
 	this->linePositions.clear();
 	
-	if( !this->font || !this->font->valid() )
+	if( !this->font || !this->font->isValid() )
 		return;
 	
 	_u32	idx = 0; // Current index in the string

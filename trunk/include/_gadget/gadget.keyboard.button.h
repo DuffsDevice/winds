@@ -27,11 +27,11 @@ class _keyboardButton : public _button {
 		
 		//! Ctor
 		_keyboardButton( _key key , _length width , _length height , _coord x , _coord y 
-			, string title , _style style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus | _styleAttr::focusNoAction );
+			, string title , _style&& style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus | _styleAttr::focusNoAction );
 		
 		//! Default Ctor
 		_keyboardButton( _key key , _coord x , _coord y , string text
-			, _style style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus | _styleAttr::focusNoAction );
+			, _style&& style = _style() | _styleAttr::mouseClickRepeat | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus | _styleAttr::focusNoAction );
 };
 
 #endif

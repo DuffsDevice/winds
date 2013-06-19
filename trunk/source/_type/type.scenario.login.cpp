@@ -39,7 +39,7 @@ _callbackReturn _scLogin::userLoginHandler( _event event )
 	this->loginAnim.setFromValue( that->getY() );
 	this->loginAnim.start();
 	
-	_system::executeTimer( new _classCallback( this , &_scLogin::loginSwitchDesktop ) , 2000 );
+	_system::executeTimer( _classCallback( this , &_scLogin::loginSwitchDesktop ) , 2000 );
 	
 	return handled;
 }
@@ -107,7 +107,7 @@ _scLogin::_scLogin() :
 		_userWrapper* img = new _userWrapper( userX , userY + curY , usr , _style::storeHandle( this ) );
 		
 		// Register Eventhandler to listen if one of the userWrapper logs in
-		img->registerEventHandler( onAction , new _classCallback( this , &_scLogin::userLoginHandler ) );
+		img->setInternalEventHandler( onAction , _classCallback( this , &_scLogin::userLoginHandler ) );
 		
 		// Add it
 		_system::_gadgetHost_->addChild( img );

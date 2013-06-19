@@ -149,6 +149,26 @@ class _bitmapPort{
 		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
 		
 		/**
+		 * Draw a vertical dotted Line onto the bmp
+		 * @param x X-Position
+		 * @param y Y-Position Start (top)
+		 * @param length Length of the Line (height)
+		 * @param color Color of the Line
+		 * @return void
+		 */
+		void drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		
+		/**
+		 * Draw a horizontal dotted Line onto the bmp
+		 * @param x X-Position (left)
+		 * @param y Y-Position Start
+		 * @param length Length of the Line (width)
+		 * @param color Color of the Line
+		 * @return void
+		 */
+		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		
+		/**
 		 * Draw a horizontal Line onto the bmp
 		 * @param x1 Start-X-Position
 		 * @param y1 Start-Y-Position

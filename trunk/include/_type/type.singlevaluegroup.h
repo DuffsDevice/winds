@@ -9,7 +9,7 @@ class _singleValueGroup{
 	
 	protected:
 		
-		typedef map<_s32,_selector*> selectorListType;
+		typedef _map<_s32,_selector*> selectorListType;
 		
 		_selector*	activeSelector;
 		selectorListType registeredSelectors;

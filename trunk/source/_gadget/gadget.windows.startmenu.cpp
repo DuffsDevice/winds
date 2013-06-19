@@ -49,8 +49,8 @@
 
 }
 
-_startMenu::_startMenu( _style style ) :
-	_contextMenu( 110 , 110 , style )
+_startMenu::_startMenu( _style&& style ) :
+	_contextMenu( 110 , 110 , (_style&&)style )
 {
 	// Left Side
 	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent ) );
@@ -69,7 +69,7 @@ _startMenu::_startMenu( _style style ) :
 	this->addChild( usrName );
 	
 	// Registering Event Handlers
-	this->registerEventHandler( refresh , new _staticCallback( &_startMenu::refreshHandler ) );
+	this->setInternalEventHandler( refresh , _staticCallback( &_startMenu::refreshHandler ) );
 	
 	// Refresh...
 	this->refreshBitmap();

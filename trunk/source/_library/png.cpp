@@ -682,11 +682,9 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 		goto ERREND;
 	}
 
-
+	// Remove GCC Compiler Warning "May be uninitialized in this function"
 	YsPngHuffmanTree *codeTree,*codeTreePtr;
 	YsPngHuffmanTree *distTree,*distTreePtr;
-	codeTree=nullptr;
-	distTree=nullptr;
 
 	while(1)
 	{

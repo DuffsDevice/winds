@@ -40,7 +40,7 @@ class _scrollBar : public _gadget {
 	public:
 		
 		//! Ctor
-		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style style = _style() );
+		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style&& style = _style() );
 		
 		//! Dtor
 		~_scrollBar();

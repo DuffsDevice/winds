@@ -27,7 +27,7 @@ class _userWrapper : public _gadget
 	public:
 		
 		//! Ctor
-		_userWrapper( _coord x , _coord y , _user* user , _style style = _style() );
+		_userWrapper( _coord x , _coord y , _user* user , _style&& style = _style() );
 		
 		//! Dtor
 		~_userWrapper();
