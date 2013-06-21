@@ -520,7 +520,7 @@ void _system::start()
 		srand( time(NULL) );
 		
 		//! enable Sound
-		_sound::enable();
+		//_sound::enable();
 		
 		//! Set Memory-Alloc-Error-Handler
 		set_new_handler( &_system::newHandler );
