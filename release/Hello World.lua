@@ -106,7 +106,7 @@ end
 function move()
 	
 	if keyUpPressed then
-		p1 = p1 - 0.3
+		p1 = p1 - 0.5
 	elseif keyDownPressed then
 		p1 = p1 + 0.5
 	end

@@ -47,6 +47,8 @@ class _progLua : public _program
 		static int	lua_keyboardIsOpened( lua_State* L );
 		static int	lua_keyboardOpen( lua_State* L );
 		static int	lua_keyboardClose( lua_State* L );
+		static int	lua_writeDebug( lua_State* L );
+		static int	lua_pushEvent( lua_State* L );
 		
 		//! system.exit() method
 		static int	lua_exit( lua_State* L );
@@ -69,7 +71,7 @@ class _progLua : public _program
 		~_progLua();
 		
 		//! Main function that will be called at the start of execution (one shot)
-		void main( _cmdArgs& args );
+		void main( _cmdArgs&& args );
 };
 
 #endif

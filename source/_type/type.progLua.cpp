@@ -105,6 +105,8 @@ int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) r
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
 int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
 
+int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( luaL_checkstring( L , 1 ) ); return 1; }
+int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_event>::check( L , 1 ); if( event ) _system::generateEvent( _event( *event ) ); return 0; }
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
@@ -205,6 +207,8 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"keyboardIsOpened",		lua_keyboardIsOpened},
 	{"keyboardOpen",			lua_keyboardOpen},
 	{"keyboardClose",			lua_keyboardClose},
+	{"debug",					lua_writeDebug},
+	{"pushEvent",				lua_pushEvent},
 	{ NULL , NULL }
 };
 
@@ -221,14 +225,14 @@ _progLua::_progLua( string prog ) :
 	luaL_loadstring( this->state , prog.c_str() );
 	
 	if( lua_isstring( this->state , -1 ) ){
-		_system::debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
+		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
 		goto end;
 	}	
 	
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );
 	
-	//! Load System.---	
+	//! Load System.---
 		lua_newtable( this->state );
 		for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
 		{
@@ -249,13 +253,13 @@ _progLua::_progLua( string prog ) :
 	
 	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
-		_system::debug( string( "Lua-Parser-Error: " ) + lua_tostring( this->state , -1 ) );
+		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
 	}
 	
 	end:;
 }
 
-void _progLua::main( _cmdArgs& args )
+void _progLua::main( _cmdArgs&& args )
 {
 	_system::executeTimer( _classCallback( this , &_progLua::collector ) , 100 , true );
 	
@@ -263,18 +267,20 @@ void _progLua::main( _cmdArgs& args )
 	
 	if( lua_isfunction( this->state , -1 ) )
 	{
-		// Create Arguments
-		lua_newtable( this->state );
+		// Create Table for arguments
+		lua_createtable( this->state , args.size() , 0 );
 		int top = lua_gettop( this->state );
 		
+		// Push Arguments
+		int i = 0;
 		for( _cmdArgs::iterator it = args.begin() ; it != args.end() ; ++it )
 		{
 			lua_pushstring( this->state , it->c_str() ); // Key
-			lua_settable( this->state , top );
+			lua_rawseti( this->state , top , ++i );
 		}
 		
 		if( lua_pcall( this->state , 1 /* One Argument */ , 0 , 0 ) )
-			_system::debug( string( "Lua-Error in main(): " ) + lua_tostring( this->state , -1 ) );
+			_system::debug( "Lua-Error in main(): %s", lua_tostring( this->state , -1 ) );
 	}
 }
 
@@ -304,15 +310,19 @@ _progLua::~_progLua()
 	
 	// Remove any timers that refer to this state
 	_luaCallback cb = _luaCallback( this->state ); // LUA_NOREF
-	_system::_timers_.remove_if(
-		[&]( _pair<const _callback*,_callbackData> data )->bool{
-			if( ( *data.first == cb ) != 0 ) // Remove all timers
-			{
-				delete data.first;
-				return true;
+	
+	_system::_timers_.erase(
+		remove_if( _system::_timers_.begin() , _system::_timers_.end() ,
+			[&]( _pair<const _callback*,_callbackData>& data )->bool{
+				if( ( *data.first == cb ) != 0 ) // Remove all timers
+				{
+					delete data.first;
+					return true;
+				}
+				return false;
 			}
-			return false;
-		}
+		)
+		, _system::_timers_.end()
 	);
 	
 	lua_close( this->state );

@@ -19,10 +19,10 @@ int _lua_radiogroup::removeRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lun
 int _lua_radiogroup::enableRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( r->gadget ) _singleValueGroup<_radio>::enableSelector( (_radio*)r->gadget ); return 0; }
 
 //! setIntValue
-int _lua_radiogroup::setIntValue(lua_State* L){ _singleValueGroup<_radio>::setIntValue( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_radiogroup::setValue(lua_State* L){ _singleValueGroup<_radio>::setIntValue( luaL_checkint( L , 1 ) ); return 0; }
 
 //! getIntValue
-int _lua_radiogroup::getIntValue(lua_State* L){ lua_pushnumber( L , _singleValueGroup<_radio>::getIntValue() ); return 1; }
+int _lua_radiogroup::getValue(lua_State* L){ lua_pushnumber( L , _singleValueGroup<_radio>::getIntValue() ); return 1; }
 
 //! Lua-_radiogroup
 const char _lua_radiogroup::className[] = "_radiogroup";
@@ -34,6 +34,6 @@ Lunar<_lua_radiogroup>::FunctionType _lua_radiogroup::methods[] = {
 };
 
 Lunar<_lua_radiogroup>::PropertyType _lua_radiogroup::properties[] = {
-	{ "intValue" , &_lua_radiogroup::getIntValue , &_lua_radiogroup::setIntValue },
+	{ "value" , &_lua_radiogroup::getValue , &_lua_radiogroup::setValue },
 	LUA_CLASS_ATTR_END
 };

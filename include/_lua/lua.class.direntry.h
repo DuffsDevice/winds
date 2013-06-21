@@ -70,8 +70,17 @@ class _lua_direntry : public _direntry {
 		//! execute
 		int execute( lua_State* L );
 		
+		//! unlink
+		int unlink( lua_State* L );
+		
+		//! rename
+		int rename( lua_State* L );
+		
 		//! getFileImage
 		int getFileImage( lua_State* L );
+		
+		//! isDirectory
+		int isDirectory( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

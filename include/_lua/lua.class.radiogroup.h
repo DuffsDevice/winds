@@ -24,11 +24,11 @@ class _lua_radiogroup : public _singleValueGroup<_radio> {
 		//! enableRadio
 		int enableRadio(lua_State* L);
 		
-		//! setIntValue
-		int setIntValue( lua_State* L );
+		//! setValue
+		int setValue( lua_State* L );
 		
-		//! getIntValue
-		int getIntValue( lua_State* L );
+		//! getValue
+		int getValue( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

@@ -24,26 +24,26 @@ class _system{
 	private:
 	
 		//! Attributes
-		static _list<_animation*>				_animations_;
-		static _list<_pair<const _callback*,
-						_callbackData>>			_timers_;
-		static _map<string,const _font*>		_fonts_;
-		static _list<_pair<_program*,_cmdArgs>>	_programs_;
-		static _direntry*						_debugFile_;
-		static _gadget*							_currentFocus_;
-		static _gadget*							_lastClickedGadget_;
+		static _vector<_animation*>					_animations_;
+		static _vector<_pair<const _callback*,
+						_callbackData>>				_timers_;
+		static _map<string,const _font*>			_fonts_;
+		static _vector<_pair<_program*,_cmdArgs>>	_programs_;
+		static _direntry*							_debugFile_;
+		static _gadget*								_currentFocus_;
+		static _gadget*								_lastClickedGadget_;
 		
 		//! Internal
-		static int 								_bgIdFront_;
-		static int 								_bgIdBack_;
-		static int 								_bgIdSub_;
-		static int 								_cpuUsageTemp_;
-		static string 							_curLanguageShortcut_;
-		static bool 							_sleeping_;
+		static int 				_bgIdFront_;
+		static int 				_bgIdBack_;
+		static int 				_bgIdSub_;
+		static int 				_cpuUsageTemp_;
+		static string 			_curLanguageShortcut_;
+		static bool 			_sleeping_;
 		
 		//! Events
-		static int								_curEventBuffer_;
-		static _list<_event> 					_eventBuffer_[2];
+		static int				_curEventBuffer_;
+		static _vector<_event> 	_eventBuffer_[2];
 		
 		static void eventsSwapBuffer(){ _curEventBuffer_ = !_curEventBuffer_; }
 		static void processEvents();
@@ -55,14 +55,20 @@ class _system{
 		static void processInput();
 		
 		//! The daily Vertical Blank and its methods:
-		static void runAnimations(){ _animations_.remove_if( [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } ); }
+		static void runAnimations(){
+			// Erase the Program-Instance in the list of running instances
+			_animations_.erase(
+				remove_if( _animations_.begin() , _animations_.end() , [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } )
+				, _animations_.end()
+			);
+		}
 		static void runTimers();
 		static void runPrograms();
 		
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
-		static void switchUser( _user* usr ){ _system::_rtA_->setUser( usr ); }
+		static void switchUser( _user* usr ) __attribute__(( nonnull(1) )) { _system::_rtA_->setUser( usr ); }
 		
 		//! Misc...
 		static void displayMemUsage();
@@ -87,30 +93,40 @@ class _system{
 		friend class _keyboard;
 		
 		//! Add Thinks for execution
-		static void executeAnimation( _animation* anim ){
-			_animations_.remove( anim );
-			_animations_.push_back( anim );
+		static void executeAnimation( _animation* anim ) __attribute__(( nonnull(1) ))
+		{
+			if( find( _animations_.begin() , _animations_.end() , anim ) != _animations_.end() )
+				_animations_.push_back( anim );
 		}
-		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ){
+		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ) __attribute__(( nonnull(1) ))
+		{
 			_programs_.push_back( make_pair( prog , args ) );
 			prog->main( _gadgetHost_ , args );
 		}
 		static void generateEvent( _event&& event ) { _eventBuffer_[_curEventBuffer_].emplace_back( (_event&&)event ); }
+		static void generateEvent( const _event& event ){ _system::generateEvent( _event( event ) ); }
 		
 		//! Things for termination
-		static void terminateProgram( _program* prog ) { 
+		static void terminateProgram( _program* prog ) __attribute__(( nonnull(1) ))
+		{ 
 			// Erase the Program-Instance in the list of running instances
-			_programs_.remove_if( 
-				[&]( pair<_program*,_cmdArgs> s )->bool
-				{
-					if( s.first == prog ) {
-						delete prog; return true;
+			_programs_.erase(
+				remove_if( _programs_.begin() , _programs_.end()
+					, [&]( _pair<_program*,_cmdArgs> s )->bool
+					{
+						if( s.first == prog ) {
+							delete prog; return true;
+						}
+						return false;
 					}
-					return false;
-				}
-			);			
+				)
+				, _programs_.end()
+			);
 		}
-		static void terminateAnimation( _animation* anim ) { _animations_.remove( anim ); }
+		static void terminateAnimation( _animation* anim ) __attribute__(( nonnull(1) ))
+		{
+			_animations_.erase( find( _animations_.begin() , _animations_.end() , anim ) );
+		}
 		static void terminateTimer( const _callback& cb );
 		
 	public:
@@ -123,9 +139,13 @@ class _system{
 		static _registry*				_localizationMonthTable_;
 		static _runtimeAttributes*		_rtA_; // _runtimeAttributes_
 		
-		static void removeEventsOf( _gadget* g )
+		static void removeEventsOf( _gadget* g ) __attribute__(( nonnull(1) ))
 		{
-			_eventBuffer_[_curEventBuffer_].remove_if( [&]( _event event )->bool{ return event.getDestination() == g; } ); // Delete events
+			_vector<_event>& buff = _eventBuffer_[_curEventBuffer_];
+			buff.erase(
+				remove_if( buff.begin() , buff.end() , [&]( const _event& event )->bool{ return event.getDestination() == g; } ) /* Delete events */
+				, buff.end()
+			);
 		}
 		
 		//! Constructor
@@ -135,7 +155,8 @@ class _system{
 		static void end();
 		
 		//! Execute the supplied command
-		static bool executeCommand( string cmd );
+		static bool executeCommand( string&& cmd );
+		static bool executeCommand( const string& cmd ){ return _system::executeCommand( string( cmd ) ); }
 		
 		//! Get Current Time (milliseconds since system startup)
 		static _tempTime getHighResTime();
@@ -204,7 +225,7 @@ class _system{
 		static _language getLanguage();
 		
 		//! Debugging
-		static void debug( string msg );
+		static void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
 		
 		//! Get the Currently Logged in _user object
 		static const _user* getUser(){ return _system::_rtA_->getUser(); }

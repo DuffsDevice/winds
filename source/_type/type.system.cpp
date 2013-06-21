@@ -1,5 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_type/type.stringtokenizer.h"
 #include "_type/type.binfile.h"
 #include "_type/type.sound.h"
 #include "_gadget/gadget.windows.h"
@@ -30,16 +31,34 @@ struct __TransferRegion{
 	bootcode->arm9reboot();
 }*/
 
-void _system::debug( string msg )
+void _system::debug( const char* fmt , ... )
 {
+	if( !fmt )
+		return;
+	
+	static char output[256];
+
+    // Declare a va_list type variable
+    va_list args;
+
+    // Initialise the va_list variable with the ... after fmt
+    va_start(args, fmt);
+
+    // Forward the '...' to sprintf
+    sprintf(output, fmt , args);
+
+    // Clean up the va_list
+    va_end(args);
+	
+	
 	// Enhance the message!
-	msg = string( _time::now() ) + ": " + msg + "\r\n";
+	fmt = ( string( _time::now() ) + ": " + string( output ) + "\r\n" ).c_str();
 	
 	// Debug to file
-	_system::_debugFile_->writeString( msg );
+	_system::_debugFile_->writeString( fmt );
 	
 	// Debug to screen
-	printf( "%s" , msg.c_str() );
+	printf( "%s" , fmt );
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
@@ -93,15 +112,18 @@ _tempTime _system::getHighResTime()
 }
 
 void _system::terminateTimer( const _callback& cb ){
-	_timers_.remove_if(
-		[&]( _pair<const _callback*,_callbackData> data )->bool{
-			if( ( *data.first == cb ) == 1 )
-			{
-				delete data.first;
-				return true;
-			}
-			return false;
-		}
+	_timers_.erase(
+		remove_if( _timers_.begin() , _timers_.end() 
+			, [&]( _pair<const _callback*,_callbackData>& data )->bool{
+				if( ( *data.first == cb ) == 1 )
+				{
+					delete data.first;
+					return true;
+				}
+				return false;
+			} 
+		)
+		, _timers_.end()
 	);
 }
 
@@ -109,33 +131,39 @@ void _system::runTimers()
 {
 	_tempTime curTime = getHighResTime();
 	
-	_timers_.remove_if( 
-		[&]( _pair<const _callback*,_callbackData>& cb )->bool
-		{
-			_callbackData& data = cb.second;
-			while( curTime > data.duration + data.startTime ) // "while" instead of "if" to make sure even high-frequency timers get called the right times
+	_timers_.erase(
+		remove_if( _timers_.begin() , _timers_.end() ,
+			[&]( _pair<const _callback*,_callbackData>& cb )->bool
 			{
-				(*cb.first)();
-				if( data.repeating )
-					data.startTime += data.duration;
-				else
-					return true;
+				_callbackData& data = cb.second;
+				while( curTime > data.duration + data.startTime ) // "while" instead of "if" to make sure even high-frequency timers get called the right times
+				{
+					(*cb.first)();
+					if( data.repeating )
+						data.startTime += data.duration;
+					else
+						return true;
+				}
+				return false;
 			}
-			return false;
-		}
+		)
+		, _timers_.end()
 	);
 }
 
 void _system::runPrograms()
 {
-	_programs_.remove_if(
-		[]( pair<_program*,_cmdArgs>& prog )->bool{
-			if( prog.first->autoDelete ){
-				delete prog.first;
-				return true;
+	_programs_.erase(
+		remove_if( _programs_.begin() , _programs_.end() ,
+			[]( pair<_program*,_cmdArgs>& prog )->bool{
+				if( prog.first->autoDelete ){
+					delete prog.first;
+					return true;
+				}
+				return false;
 			}
-			return false;
-		}
+		)
+		, _programs_.end()
 	);
 }
 
@@ -146,14 +174,17 @@ void _system::deleteGadgetHost()
 		irqDisable( IRQ_VBLANK ); // Enter critical Section
 		
 		// Remove all running programs on this gadgetHost
-		_programs_.remove_if(
-			[=]( pair<_program*,_cmdArgs>& prog )->bool{
-				if( prog.first->getGadgetHost() == _system::_gadgetHost_ ){
-					delete prog.first;
-					return true;
+		_programs_.erase(
+			remove_if( _programs_.begin() , _programs_.end() ,
+				[=]( pair<_program*,_cmdArgs>& prog )->bool{
+					if( prog.first->getGadgetHost() == _system::_gadgetHost_ ){
+						delete prog.first;
+						return true;
+					}
+					return false;
 				}
-				return false;
-			}
+			)
+			, _programs_.end()
 		);
 		
 		// Remove all events on this gadgetHost
@@ -246,13 +277,13 @@ void _system::processEvents()
 		// Temp...
 		_gadget* gadget = event.getDestination();
 		
-		//int t = cpuGetTiming();
+		int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( (_event&&)event );
 		
-		//printf("%d\n",cpuGetTiming()-t);
+		printf("%d\n",cpuGetTiming()-t);
 	}
 	
 	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
@@ -608,15 +639,36 @@ void _system::submit(){
 }
 
 void _system::main(){
-	//printf("Size: %d\n",sizeof(Loki::AssocVector<_eventType,_callback*>));
 	_systemController::main();
 }
 
-bool _system::executeCommand( string cmd ){
-	//if( qualifiedName == "explorer.exe" ){
-	//	return new PROG_Explorer();
-	//}
-	//return nullptr;
+bool _system::executeCommand( string&& cmd )
+{
+	string destination;
+	
+	_stringTokenizer tok = _stringTokenizer( cmd , destination , " \n\r\t" , true );
+	
+	// If its the first token
+	bool isFirst = true;
+	
+	_direntry	executedProgram = _direntry("");
+	_cmdArgs	arguments;
+	
+	while( tok.next() )
+	{
+		// Trim the line
+		trim( destination , "-" , true , false );
+		
+		if( isFirst )
+		{
+			executedProgram = _direntry( destination );
+			isFirst = false;
+		}
+		else
+			arguments.push_back( destination );
+	}
+	
+	return executedProgram.execute( arguments );
 }
 
 void _system::shutDown(){
@@ -624,28 +676,28 @@ void _system::shutDown(){
 }
 
 //! Static Attributes...
-bool 							_system::_sleeping_ = false;
-_list<_animation*>				_system::_animations_;
-_list<_pair<const _callback*,
-		_callbackData>>			_system::_timers_;
-_map<string,const _font*>		_system::_fonts_;
-_registry*						_system::_localizationTextTable_;
-_registry*						_system::_localizationMonthTable_;
-string							_system::_curLanguageShortcut_;
-_list<_pair<_program*,_cmdArgs>>_system::_programs_;
-_gadgetScreen*					_system::_gadgetHost_ = nullptr;
-_screen*						_system::_topScreen_ = nullptr;
-_keyboard*						_system::_keyboard_ = nullptr;
-_registry*						_system::_registry_ = nullptr;
-_runtimeAttributes*				_system::_rtA_;
-_direntry*						_system::_debugFile_ = nullptr;
-_gadget*						_system::_currentFocus_ = nullptr;
-_gadget*						_system::_lastClickedGadget_ = nullptr;
-int								_system::_bgIdFront_;
-int								_system::_bgIdBack_;
-int								_system::_bgIdSub_;
-int								_system::_cpuUsageTemp_;
+bool 								_system::_sleeping_ = false;
+_vector<_animation*>				_system::_animations_;
+_vector<_pair<const _callback*,
+		_callbackData>>				_system::_timers_;
+_map<string,const _font*>			_system::_fonts_;
+_registry*							_system::_localizationTextTable_;
+_registry*							_system::_localizationMonthTable_;
+string								_system::_curLanguageShortcut_;
+_vector<_pair<_program*,_cmdArgs>>	_system::_programs_;
+_gadgetScreen*						_system::_gadgetHost_ = nullptr;
+_screen*							_system::_topScreen_ = nullptr;
+_keyboard*							_system::_keyboard_ = nullptr;
+_registry*							_system::_registry_ = nullptr;
+_runtimeAttributes*					_system::_rtA_;
+_direntry*							_system::_debugFile_ = nullptr;
+_gadget*							_system::_currentFocus_ = nullptr;
+_gadget*							_system::_lastClickedGadget_ = nullptr;
+int									_system::_bgIdFront_;
+int									_system::_bgIdBack_;
+int									_system::_bgIdSub_;
+int									_system::_cpuUsageTemp_;
 
 //! Events
-int								_system::_curEventBuffer_ = 0;
-_list<_event> 					_system::_eventBuffer_[2];
+int									_system::_curEventBuffer_ = 0;
+_vector<_event> 					_system::_eventBuffer_[2];

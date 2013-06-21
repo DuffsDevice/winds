@@ -49,8 +49,8 @@ _scDesktop::_scDesktop()
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , SCREEN_WIDTH - 80 );
 	
 	//_direntry( "%SYSTEM%/explorer.exe" ).execute( { { "path" , "/" } } );
-	_direntry( "%SYSTEM%/exampleprogram.exe" ).execute();
-	_direntry( "%SYSTEM%/pong.exe" ).execute();
+	_system::executeCommand("%SYSTEM%/exampleprogram.exe ");
+	_system::executeCommand("%SYSTEM%/pong.exe");
 	
 	//_system::_gadgetHost_->addChild( new _calendar( 99 , 80 , 10 , 10 , _time::date( 2015 , 3 , 1 ) ) );
 	

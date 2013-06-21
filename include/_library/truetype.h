@@ -165,7 +165,7 @@
    #include <_type/type.system.h>
    #define STBTT_assert(cond)    { \
 		if( !(cond) ) \
-			_system::debug( string( "Assertion Failed at:" ) + __FILE__ + ":" + int2string(__LINE__) + ": inside" + __FUNCTION__ + #cond ); \
+			_system::debug( "Assertion Failed at: %s:%d: inside %s: %s" , __FILE__ , __LINE__ , __FUNCTION__ , #cond ); \
 	}
    #endif
 

@@ -49,14 +49,14 @@ namespace DSWindows
 	}
 }
 
-void trim( string& str )
+void trim( string& str , const char* delims , bool front , bool back )
 {
-	size_t endpos = str.find_last_not_of(" \n\r\t");
+	size_t endpos = back ? str.find_last_not_of(delims) : string::npos;
 	if( string::npos != endpos )
 	{
 		str = str.substr( 0, endpos+1 );
 	}
-	size_t startpos = str.find_first_not_of(" \n\r\t");
+	size_t startpos = front ? str.find_first_not_of(delims) : string::npos;
 	if( string::npos != startpos )
 	{
 		str = str.substr( startpos );

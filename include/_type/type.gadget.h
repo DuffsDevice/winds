@@ -3,7 +3,7 @@
 #define _WIN_T_GADGET_
 
 #include "_type/type.bitmap.h"
-#include "_type/type.gadgetStyle.h"
+#include "_type/type.style.h"
 #include "_type/type.bitmapPort.h"
 #include "_type/type.event.h"
 #include "_type/type.callback.h"
@@ -368,13 +368,6 @@ class _gadget
 		}
 		
 		/**
-		 * Method to push an event to _system::_events_
-		 * This usually has nothing to do with the gadget it is invoked on!
-		 */
-		static void populateEvent( _event&& event );
-		static void populateEvent( const _event& event ){ _gadget::populateEvent( _event( event ) ); }
-		
-		/**
 		 * Trigger an Event (its destination will be set automatically)
 		 */
 		void triggerEvent( _event&& event );
@@ -409,7 +402,7 @@ class _gadget
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using the Default gadget-event-handler if available
 		 */
-		_callbackReturn handleEventDefault( _event&& event ) ITCM_CODE ; 
+		_callbackReturn handleEventDefault( _event&& event ); 
 		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'
 		
 		/**

@@ -47,7 +47,7 @@ void _windows::refreshTask( _window* w )
 
 
 _callbackReturn _windows::refreshHandler( _event event )
-{	
+{
 	// Receive Gadget
 	_windows* that = event.getGadget<_windows>();
 	

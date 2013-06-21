@@ -7,12 +7,13 @@
 #include "PROG_exampleprogram_bin.h"
 #include "PROG_pong_bin.h"
 
-void _program::main( _gadget* w , _cmdArgs& args  ){
-	this->gadgetHost = w; this->main( args );
+void _program::main( _gadget* w , _cmdArgs&& args  ){
+	this->gadgetHost = w;
+	this->main( move( args ) );
 }
 
-void _program::execute( _cmdArgs args ){
-	_system::executeProgram( this , args );
+void _program::execute( _cmdArgs&& args ){
+	_system::executeProgram( this , move( args ) );
 }
 
 void _program::terminate(){
