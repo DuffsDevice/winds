@@ -6,11 +6,11 @@
 //_label* b2 = nullptr;
 
 PROG_Explorer::PROG_Explorer() :
-	_progC( static_cast<void (_progC::*)(_cmdArgs&)>( &PROG_Explorer::main) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) )
+	_progC( static_cast<void (_progC::*)(_cmdArgs&&)>( &PROG_Explorer::main) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) )
 	, path( "/" )
 { }
 
-void PROG_Explorer::main( _cmdArgs& args )
+void PROG_Explorer::main( _cmdArgs&& args )
 {
 	if( !args[0].empty() )
 		this->path = args[0];

@@ -14,12 +14,12 @@ using namespace std;
 #include <nds/memory.h>
 
 //! Undefine if you don't want any speed profiling
-#define DEBUG_PROFILING
+//#define DEBUG_PROFILING
 
 //! Overload new and delete
-void* operator new(size_t size);
+void* operator new(size_t size) __attribute__((malloc));
 void operator delete(void *p);
-void* operator new[](size_t size);
+void* operator new[](size_t size) __attribute__((malloc));
 void operator delete[](void *p);
 
 template<typename T>
@@ -167,7 +167,7 @@ static inline void RGB_SETA( _pixel& c , bool alpha ){ c = ( c & ~( 1 << 15 ) ) 
 extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
 
 //! Reads an int from a string
-extern int string2int( const _char * str );
+extern int string2int( const _char * str ) __attribute__(( nonnull (1) ));
 
 //! Converts an int to string
 extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
@@ -342,7 +342,7 @@ enum class _language : _u8
 };
 
 //! Trim not-printable characters at both ends of a given string
-void trim( string& );
+void trim( string& , const char* delims = " \n\r\t" , bool front = true , bool back = true );
 
 //! Tools for analyzing the efficiency of code
 #ifdef DEBUG_PROFILING

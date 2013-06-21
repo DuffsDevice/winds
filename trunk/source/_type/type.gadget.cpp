@@ -69,11 +69,6 @@ void _gadget::triggerEvent( _event&& event ){
 }
 
 
-void _gadget::populateEvent( _event&& event ){
-	_system::generateEvent( (_event&&)event );
-}
-
-
 void _gadget::bubbleRefresh( bool includeThis , _event&& event )
 {
 	// Bubble!
@@ -293,7 +288,7 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 }
 
 
-_callbackReturn _gadget::handleEvent( _event&& event , bool noDefault )
+__attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool noDefault )
 {
 	const _callback* ret1 = nullptr;
 	const _callback* ret2 = nullptr;

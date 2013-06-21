@@ -98,7 +98,7 @@ void _systemController::main()
 			}
 			while(true);
 		}
-		
+		#ifdef DEBUG_PROFILING
 		if( ++i > 200 
 			&& false 
 		)
@@ -106,6 +106,7 @@ void _systemController::main()
 			_codeAnalyzer::printResults();
 			while(true);
 		}
+		#endif
 	}
 }
 

@@ -154,9 +154,6 @@ int _lua_gadget::removeInternalEventHandler( lua_State* L ){
 	return 0;
 }
 
-//! populateEvent
-int _lua_gadget::populateEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->populateEvent( *e ); return 0; }
-
 //! triggerEvent
 int _lua_gadget::triggerEvent(lua_State* L){  _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( e ) this->gadget->triggerEvent( *e ); return 0; }
 

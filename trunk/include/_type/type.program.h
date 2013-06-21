@@ -13,6 +13,7 @@ enum class _programType
 
 class _program
 {
+	friend class _system;
 	
 	private:
 		
@@ -25,7 +26,11 @@ class _program
 		_gadget*		gadgetHost;
 		
 		//! Virtual main function to be overwritten in subclasses
-		virtual void	main( _cmdArgs& args ) = 0;
+		virtual void	main( _cmdArgs&& args ) = 0;
+		
+		//! Main function to be called from _system
+		void 			main( _gadget* w , _cmdArgs&& args  );
+		void 			main( _gadget* w , const _cmdArgs& args  ){ this->main( w , _cmdArgs( args ) ); }
 		
 	public:
 		
@@ -33,16 +38,17 @@ class _program
 		bool 			autoDelete;
 		
 		//! Ctor
-		_program( _programType type ) : type( type ) , autoDelete( false ) {}
+		_program( _programType type ) :
+			type( type ),
+			autoDelete( false )
+		{}
 		
 		//! Execute it! Means pushing it to _system's list of programs
-		void 			execute( _cmdArgs args = _cmdArgs() );
+		void 			execute( _cmdArgs&& args = _cmdArgs() );
+		void 			execute( const _cmdArgs& args ){ this->execute( _cmdArgs( args ) ); }
 		
 		//! Terminate the program
 		void 			terminate();
-		
-		//! Main function to be called from _system
-		void 			main( _gadget* w , _cmdArgs& args  );
 		
 		//! get The gadgetHost
 		_gadget*		getGadgetHost(){ return this->gadgetHost; }
@@ -52,7 +58,6 @@ class _program
 		
 		
 		static _program* fromFile( string filename );
-		
 };
 
 #endif

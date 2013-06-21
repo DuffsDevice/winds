@@ -824,7 +824,7 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 	}while( --h );
 }
 
-void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
+__attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyTransparent" );
@@ -1046,7 +1046,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 }
 
 
-bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
+__attribute__((hot)) bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinates" );
@@ -1076,7 +1076,7 @@ bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coo
 	return bottom >= top;
 }
 
-bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) const 
+__attribute__((hot)) bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) const 
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinatesX" );
@@ -1094,7 +1094,7 @@ bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) con
 	return right >= left && top >= activeClippingRect.y && top <= activeClippingRect.getY2();
 }
 
-bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &bottom ) const 
+__attribute__((hot)) bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &bottom ) const 
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::clipCoordinatesX" );

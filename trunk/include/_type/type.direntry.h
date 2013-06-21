@@ -94,8 +94,24 @@ class _direntry{
 		
 		
 		//! Ctor...
-		_direntry( string path );
+		_direntry( string&& path );
+		_direntry( const string& path ) :
+			_direntry( string( path ) )
+		{ }
 		
+		//! Move Ctor...
+		_direntry( _direntry&& other ){
+			*this = move( other );
+		}
+		
+		//! Move Ctor...
+		_direntry( const _direntry& other ){
+			*this = other;
+		}
+		
+		//! Copy and move operators
+		_direntry& operator=( const _direntry& other );
+		_direntry& operator=( _direntry&& other );
 		
 		//! Dtor...
 		virtual ~_direntry(){ this->close(); }
@@ -179,7 +195,8 @@ class _direntry{
 		
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
-		virtual bool execute( _cmdArgs args = _cmdArgs() );
+		virtual bool execute( _cmdArgs&& args = _cmdArgs() );
+		virtual bool execute( const _cmdArgs& args ){ return this->execute( _cmdArgs( args ) ); }
 		
 		
 		//! Get File-Image
@@ -187,19 +204,7 @@ class _direntry{
 		
 		
 		//! Check if the File at 'filename' exists
-		virtual bool isExisting(){ return this->exists; }
-		
-		
-		//! Copy _direntry
-		_direntry& operator=( _direntry other );
-		
-		
-		//! Get cwd
-		static string getWorkingDirectory();
-		
-		
-		//! Set cwd
-		static void setWorkingDirectory( string dir );
+		virtual bool isExisting(){ return this->exists; }		
 		
 		
 		//! To remove the file/directory
@@ -213,8 +218,9 @@ class _direntry{
 		
 		//! Replace associated filename-patterns
 		static string replaceASSOCS( string&& path ){
-			replaceASSOCS( path );
-			return path;
+			string path2 = move( path );
+			replaceASSOCS( path2 );
+			return path2;
 		}
 		static string replaceASSOCS( const string& path ){
 			string path2 = path;

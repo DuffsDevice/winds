@@ -1,4 +1,7 @@
 #include "_type/type.h"
+
+#ifdef DEBUG_PROFILING
+
 #include "_type/type.system.h"
 
 #include <nds/timers.h>
@@ -19,3 +22,5 @@ void _codeAnalyzer::printResults(){
 		//printf("%s: %d = %d%%\n",s.second.c_str(),address2Time[s.first],div32( address2Time[s.first] , time/100 ) );
 	}
 }
+
+#endif

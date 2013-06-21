@@ -27,14 +27,6 @@ namespace unistd{
 #include "_resource/BMP_JpegIcon.h"
 #include "_resource/BMP_ImageIcon.h"
 
-#define FAT_EMULATOR
-
-
-//#ifdef FAT_EMULATOR
-//#include "program_bin.h"
-//#include "image_bin.h"
-//#endif
-
 int _direntry::fatInited = -1;
 
 /* Return a string containing the path name of the parent
@@ -83,13 +75,13 @@ bool _direntry::initFat()
 }
 
 
-_direntry::_direntry( const string fn ) :
+_direntry::_direntry( string&& fn ) :
 	fHandle( nullptr ) // same as dHandle
-	, filename( replaceASSOCS( fn ) )
+	, filename( replaceASSOCS( move( fn ) ) )
 	, extension( nullptr )
 	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
-{
+{	
 	// Trim the filename
 	trim( filename );
 	
@@ -107,14 +99,22 @@ _direntry::_direntry( const string fn ) :
 	else
 		this->name = this->filename;
 	
+	// Reset stat
+	stat_buf.st_mode = 0;
+	
 	// Fill Stat-Struct
 	if( hasLastDelim && this->filename.empty() ) // must be the root
 		this->exists = !stat( "/" , &this->stat_buf );
 	else
 		this->exists = !stat( this->filename.c_str() , &this->stat_buf );
 	
-	if( !this->exists && hasLastDelim ) // Is a filename that, if created, would lead to a directory?
-		stat_buf.st_mode = _IFDIR; // Make it a directory
+	if( !this->exists )
+	{
+		if( hasLastDelim ) // Is a filename that, if created, would lead to a directory?
+			stat_buf.st_mode = _IFDIR; // Make it a directory
+		else
+			stat_buf.st_mode = 0;
+	}
 	
 	// Set Mime-Type
 	if( this->isDirectory() )
@@ -141,8 +141,25 @@ _direntry::_direntry( const string fn ) :
 	//	this->filename.insert( 0 , 1 , '/' );
 }
 
+_direntry& _direntry::operator=( _direntry&& other )
+{
+	this->close();
+	this->filename = move( other.filename );
+	this->name = move( other.name );
+	this->extension = move( other.extension );
+	this->stat_buf = move( other.stat_buf );
+	this->mimeType = move( other.mimeType );
+	this->mode = move( other.mode );
+	this->exists = move( other.exists );
+	this->fHandle = move( other.fHandle );
+	other.fHandle = nullptr;
+	other.mode = _direntryMode::closed;
+	
+	return *this;
+}
 
-_direntry& _direntry::operator=( _direntry other )
+
+_direntry& _direntry::operator=( const _direntry& other )
 {
 	this->close();
 	this->filename = other.filename;
@@ -287,21 +304,8 @@ bool _direntry::create()
 }
 
 
-//#ifdef FAT_EMULATOR
-//#include <string.h>
-//#endif
-
-
 bool _direntry::read( void* dest , _u32 size )
-{
-	//#ifdef FAT_EMULATOR
-	//if( !size )
-	//		size = this->getSize();
-	//
-	//memcpy( dest , program_bin , size );
-	//return true;
-	//#endif
-	
+{	
 	if( this->fatInited && !this->isDirectory() )
 	{
 		if( !size )
@@ -418,15 +422,7 @@ bool _direntry::writeString( string str )
 
 
 string _direntry::readString( _u32 size )
-{
-	//#ifdef FAT_EMULATOR
-	//string str = (const char*)program_bin;
-	//return str;
-	//#else
-	//if( !this->fatInited || this->isDirectory() )
-	//	return "";
-	//#endif
-	
+{	
 	if( !size )
 		size = this->getSize();
 	
@@ -462,11 +458,7 @@ string _direntry::readString( _u32 size )
 
 
 _u32 _direntry::getSize()
-{
-	//#ifdef FAT_EMULATOR
-	//return program_bin_size;
-	//#endif
-	
+{	
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return 0;
 	
@@ -501,29 +493,10 @@ _u32 _direntry::getSize()
 }
 
 
-string _direntry::getWorkingDirectory()
+bool _direntry::execute( _cmdArgs&& args )
 {
-	_char val[PATH_MAX];
-	
-	// Get working directory
-	unistd::getcwd( val , PATH_MAX );
-	
-	return val;
-}
-
-
-void _direntry::setWorkingDirectory( const string dir )
-{
-	unistd::chdir( _direntry::replaceASSOCS( dir ).c_str() );
-}
-
-
-bool _direntry::execute( _cmdArgs args )
-{
-	#ifndef FAT_EMULATOR
-	if( !this->fatInited )
-		return false;
-	#endif
+	//if( !this->fatInited )
+	//	return false;
 	
 	if( this->isDirectory() )
 		return false;
@@ -535,7 +508,7 @@ bool _direntry::execute( _cmdArgs args )
 		{
 			_program* prog = _program::fromFile( this->getFileName() );
 			if( prog )
-				prog->execute( args );
+				prog->execute( move( args ) );
 			break;
 		}
 		default:

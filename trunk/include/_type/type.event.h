@@ -125,12 +125,12 @@ class _event
 	public:
 		
 		//! Default Constructor
-		_event()
-		{
-		}
+		_event() :
+			gadget( nullptr )
+		{ }
 		
 		_event( _eventType type ) :
-			type( type ) 
+			type( type ) , gadget( nullptr )
 			, posX( 0 ) , posY( 0 )
 			, effectiveX( 0 ) , effectiveY( 0 )
 			, deltaX( 0 ) , deltaY( 0 )

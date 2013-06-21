@@ -1,6 +1,6 @@
 #include "_type/type.rect.h"
 
-bool _rect::intersectsWith( const _area& other ) const 
+__attribute__((hot)) bool _rect::intersectsWith( const _area& other ) const
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::intersectsWith" );
@@ -20,7 +20,7 @@ bool _rect::intersectsWith( const _area& other ) const
 	return false;
 }
 
-_area _rect::reduce( const _rect& r2 ) const 
+__attribute__((hot)) _area _rect::reduce( const _rect& r2 ) const 
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::reduce" );
@@ -124,7 +124,7 @@ _area _rect::combine( const _rect& r2 ) const
 	return out;
 }
 
-_rect& _rect::clipToIntersect( const _rect& rect )
+__attribute__((hot)) _rect& _rect::clipToIntersect( const _rect& rect )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::clipToIntersect" );
@@ -133,7 +133,7 @@ _rect& _rect::clipToIntersect( const _rect& rect )
 	return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 }
 
-_rect& _rect::expandToInclude( const _rect& rect )
+__attribute__((hot)) _rect& _rect::expandToInclude( const _rect& rect )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::expandToInclude" );

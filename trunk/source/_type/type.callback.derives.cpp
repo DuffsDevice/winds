@@ -141,7 +141,7 @@ _callbackReturn lua_callEventFn( lua_State* L , int handler , _event&& e )
 	Lunar<_lua_event>::push( L , new _lua_event( e ) );
 	
 	if( lua_pcall( L , 1 , 1 , 0 ) ){
-		_system::debug( string( "Callback-Lua-Err: " ) + lua_tostring( L , -1 ) );
+		_system::debug( "Callback-Lua-Err: %s" , lua_tostring( L , -1 ) );
 	}
 	
 	//! Return the Value returned by the Handler
@@ -162,7 +162,7 @@ int lua_callIntFn( lua_State* L , int handler , int i )
 	lua_pushnumber( L , i );
 	
 	if( lua_pcall( L , 1 , 1 , 0 ) ){
-		_system::debug( string( "Callback-Lua-Err: " ) + lua_tostring( L , -1 ) );
+		_system::debug( "Callback-Lua-Err: %s" , lua_tostring( L , -1 ) );
 	}
 	
 	//! Return the Value returned by the Handler
@@ -181,7 +181,7 @@ void lua_callVoidFn( lua_State* L , int handler )
 	
 	//! Call it
 	if( lua_pcall( L , 0 , 0 , 0 ) ){
-		_system::debug( string( "Callback-Lua-Err: " ) + lua_tostring( L , -1 ) );
+		_system::debug( "Callback-Lua-Err: %s" , lua_tostring( L , -1 ) );
 	}
 }
 

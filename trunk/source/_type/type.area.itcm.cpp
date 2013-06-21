@@ -1,23 +1,28 @@
 #include "_type/type.rect.h"
 
-_area& _area::clipToIntersect( const _rect& limits )
+__attribute__((hot)) _area& _area::clipToIntersect( const _rect& limits )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::clipToIntersect" );
 	#endif
 	
 	// Fastest way!!!
-	remove_if( t_rects.begin() , t_rects.end() ,
-		[=]( _rect& rc )->bool{
-			rc.clipToIntersect( limits );
-			return rc.isValid();
-		}
+	t_rects.erase(
+		remove_if(
+			t_rects.begin()
+			, t_rects.end()
+			, [=]( _rect& rc )->bool{
+				rc.clipToIntersect( limits );
+				return !rc.isValid();
+			}
+		)
+		, t_rects.end()
 	);
 	
 	return *this;
 }
 
-_area& _area::reduce( const _rect& dim )
+__attribute__((hot)) _area& _area::reduce( const _rect& dim )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::reduce" );
@@ -27,7 +32,7 @@ _area& _area::reduce( const _rect& dim )
 	_vector<_rect> tR = move( t_rects );
 	
 	for( _rect& rc : tR )
-		add( rc.reduce( dim ) );
+		this->add( rc.reduce( dim ) );
 	
 	return *this;
 }

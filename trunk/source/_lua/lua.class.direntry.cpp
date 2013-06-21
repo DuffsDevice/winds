@@ -55,7 +55,7 @@ int _lua_direntry::readChild( lua_State* L )
 	string child;
 	if( !_direntry::readChild( child ) )
 		return 0;
-	lua_pushstring( L ,  child.c_str() );
+	lua_pushstring( L , child.c_str() );
 	return 1;
 }
 
@@ -87,6 +87,21 @@ int _lua_direntry::getFileName( lua_State* L ){
 
 int _lua_direntry::getName( lua_State* L ){
 	lua_pushstring( L , _direntry::getName().c_str() );
+	return 1;
+}
+
+int _lua_direntry::rename( lua_State* L ){
+	lua_pushboolean( L , _direntry::rename( luaL_checkstring( L , 1 ) ) );
+	return 1;
+}
+
+int _lua_direntry::unlink( lua_State* L ){
+	lua_pushboolean( L , _direntry::unlink( luaL_optboolean( L , 1 , false ) ) );
+	return 1;
+}
+
+int _lua_direntry::isDirectory( lua_State* L ){
+	lua_pushboolean( L , _direntry::isDirectory() );
 	return 1;
 }
 
@@ -132,13 +147,16 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 	LUA_CLASS_FUNC(_lua_direntry,getName),
 	LUA_CLASS_FUNC(_lua_direntry,getExtension),
 	LUA_CLASS_FUNC(_lua_direntry,getMimeType),
-	LUA_CLASS_FUNC(_lua_direntry,getSize),
 	LUA_CLASS_FUNC(_lua_direntry,execute),
+	LUA_CLASS_FUNC(_lua_direntry,rename),
+	LUA_CLASS_FUNC(_lua_direntry,unlink),
 	LUA_CLASS_FUNC(_lua_direntry,getFileImage),
+	LUA_CLASS_FUNC(_lua_direntry,isDirectory),
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
 	{ "attributes" , &_lua_direntry::getAttrs , &_lua_direntry::setAttrs },
+	{ "size" , &_lua_direntry::getSize , nullptr },
 	LUA_CLASS_ATTR_END
 };

@@ -30,7 +30,6 @@
 	LUA_CLASS_FUNC(g,setInternalEventHandler), \
 	LUA_CLASS_FUNC(g,removeUserEventHandler), \
 	LUA_CLASS_FUNC(g,removeInternalEventHandler), \
-	LUA_CLASS_FUNC(g,populateEvent), \
 	LUA_CLASS_FUNC(g,triggerEvent), \
 	LUA_CLASS_FUNC(g,canReactTo), \
 	LUA_CLASS_FUNC(g,handleEvent), \

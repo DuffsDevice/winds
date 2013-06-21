@@ -4,6 +4,7 @@
 //! Types
 #include "_type/type.imagefile.h"
 #include "_type/type.bitmapResizer.h"
+#include "_type/type.cwdchanger.h"
 #include "_type/type.time.h"
 #include "func.md5.h"
 #include "func.memory.h"
@@ -92,10 +93,9 @@ _user::_user( string folderName ) :
 	this->mKF = this->getIntAttr( "magnifyKeyboardFocus" );	
 	
 	// Set Currently Working directory
-	string cwd = _direntry::getWorkingDirectory();
+	_cwdchanger cw ( "%USERS%/" + this->folderName );
 	
-	_direntry::setWorkingDirectory( "%USERS%/" + this->folderName );
-	
+	// A userImage
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
 	
 	// ... and a Logo
@@ -118,8 +118,6 @@ _user::_user( string folderName ) :
 		default:
 			break;
 	}
-	
-	_direntry::setWorkingDirectory( cwd );
 }
 
 
