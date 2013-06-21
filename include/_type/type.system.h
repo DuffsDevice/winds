@@ -95,7 +95,7 @@ class _system{
 		//! Add Thinks for execution
 		static void executeAnimation( _animation* anim ) __attribute__(( nonnull(1) ))
 		{
-			if( find( _animations_.begin() , _animations_.end() , anim ) != _animations_.end() )
+			if( find( _animations_.begin() , _animations_.end() , anim ) == _animations_.end() )
 				_animations_.push_back( anim );
 		}
 		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ) __attribute__(( nonnull(1) ))
