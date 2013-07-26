@@ -38,10 +38,8 @@ void _animation::start()
 void _animation::pause()
 {
 	if( this->runs )
-	{
-		_system::terminateAnimation( this );
 		this->runs = false;
-	}
+	
 	// Store elapsed time for using start() again
 	this->startTime = _system::getHighResTime() - this->startTime;
 }
@@ -49,10 +47,8 @@ void _animation::pause()
 void _animation::terminate( bool animToEnd )
 {
 	if( this->runs )
-	{
-		_system::terminateAnimation( this );
 		this->runs = false;
-	}
+	
 	this->startTime = 0;
 	
 	// Animate 'till end?

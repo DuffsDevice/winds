@@ -19,7 +19,7 @@ class _fileobject : public _gadget {
 	private:
 	
 		// My Data...
-		_direntry		file;
+		_direntry*		file;
 		_fileviewType	viewType;
 		
 		bool 			pressed;
@@ -31,12 +31,14 @@ class _fileobject : public _gadget {
 		
 	public:
 	
-		// Ctor
-		_fileobject( _coord x , _coord y , string dir , _fileviewType viewtype = _fileviewType::list , _style&& style = _style() );
+		//! Ctor
+		_fileobject( _coord x , _coord y , string&& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() );
+		_fileobject( _coord x , _coord y , const string& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() ) :
+			_fileobject( x , y , string( dir ) , viewType , singleClickToExecute , move(style) )
+		{ }
 		
-		// Dtor
+		//! Dtor
 		~_fileobject();
-		
 };
 
 #endif

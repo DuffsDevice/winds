@@ -57,6 +57,9 @@ class _keyboard : public _gadgetScreen {
 		void	refreshKeys();
 	
 	public:
+	
+		//! Method to be invoked every 1/60s
+		void vbl();
 		
 		//! Open!
 		void open( bool useAnim = true );
@@ -82,9 +85,6 @@ class _keyboard : public _gadgetScreen {
 			this->shift = shift;
 			refreshKeys();
 		}
-		
-		//! VBL of the Keyboard
-		void screenVBL();
 		
 		//! Ctor
 		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord handlePosition = ( SCREEN_WIDTH - 40 ) , _style&& style = _style() | _styleAttr::canNotTakeFocus );

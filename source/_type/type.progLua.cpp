@@ -2,6 +2,7 @@
 #include "_type/type.system.h"
 #include "_type/type.callback.h"
 #include "_type/type.textphrases.h"
+#include "_gadget/gadget.keyboard.h"
 
 #include "_lua/lunar.h"
 /**
@@ -109,7 +110,7 @@ int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( luaL_checkstring( 
 int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_event>::check( L , 1 ); if( event ) _system::generateEvent( _event( *event ) ); return 0; }
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->gadget ); return 0; }
+int _progLua::lua_addChild( lua_State* L ){ _lua_gadget* g = _lua_gadget::getLuaGadget(L,1); if( !g ) return 0; _system::_gadgetHost_->addChild( g->getGadget() ); return 0; }
 int _progLua::lua_executeTimer( lua_State* L ){ _system::executeTimer( _luaCallback( L , 1 ) , luaL_checkint( L , 2 ) , luaL_optboolean( L , 3 , false ) ); return 0; }
 int _progLua::lua_terminateTimer( lua_State* L ){ _system::terminateTimer( _luaCallback( L , 1 ) ); return 0; }
 int _progLua::lua_readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system::_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
@@ -133,7 +134,7 @@ int _progLua::lua_RGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( luaL_c
 int _progLua::lua_RGB_GETG( lua_State* L ){ lua_pushnumber( L , RGB_GETG( luaL_checkcolor( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETB( lua_State* L ){ lua_pushnumber( L , RGB_GETB( luaL_checkcolor( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushboolean( L , RGB_GETA( luaL_checkcolor( L , 1 ) ) ); return 1; }
-int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->autoDelete = true; return 0; }
+int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0; }
 int _progLua::lua_requirePackage( lua_State* L )
 {
 	string name = luaL_checkstring( L , 1 );
@@ -215,53 +216,68 @@ luaL_Reg _progLua::windowsLibrary[] = {
 /**
  * Programm Stuff
  */
-_progLua::_progLua( string prog ) : 
-	_program( _programType::progLua )
+_progLua::_progLua( string&& prog ) : 
+	_program( _programType::progLua ) ,
+	content( new string( move(prog) ) )
+{}
+
+//! Loads system.*
+void _progLua::registerSystem()
 {
+	lua_newtable( this->state );
+	for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
+	{
+		lua_pushstring( this->state , lib->name );
+		lua_pushcfunction( this->state , lib->func );
+		lua_settable( this->state , -3 );
+	}
+	
+	//! Generate system.exit function
+	lua_pushstring( this->state , "exit" );
+	lua_pushlightuserdata( this->state , this );
+	lua_pushcclosure( this->state , lua_exit , 1 );
+	lua_settable( this->state , -3 );
+	
+	//! Set as global "system"
+	lua_setglobal( this->state , "system" );
+}
+
+void _progLua::internalMain( _cmdArgs&& args )
+{
+	if( !this->content )
+		return;
+	
 	// Create State
 	this->state = luaL_newstate();
 	
+	
 	// Load our lua-piece
-	luaL_loadstring( this->state , prog.c_str() );
+	luaL_loadstring( this->state , this->content->c_str() );
+	
+	
+	// _progLua.content is just there for passing the 'content' of the program to the mainFunction
+	delete this->content;
+	this->content = nullptr;
+	
 	
 	if( lua_isstring( this->state , -1 ) ){
 		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
-		goto end;
+		return;
 	}	
+	
 	
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );
 	
-	//! Load System.---
-		lua_newtable( this->state );
-		for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
-		{
-			lua_pushstring( this->state , lib->name );
-			lua_pushcfunction( this->state , lib->func );
-			lua_settable( this->state , -3 );
-		}
-		
-		//! Generate exit function
-		lua_pushstring( this->state , "exit" );
-		lua_pushlightuserdata( this->state , this );
-		lua_pushcclosure( this->state , lua_exit , 1 );
-		lua_settable( this->state , -3 );
-		
-		//! Set as global "system"
-		lua_setglobal( this->state , "system" );
-	//!
+	
+	// Load system.*
+	this->registerSystem();
+	
 	
 	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
 		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
 	}
-	
-	end:;
-}
-
-void _progLua::main( _cmdArgs&& args )
-{
-	_system::executeTimer( _classCallback( this , &_progLua::collector ) , 100 , true );
 	
 	lua_getglobal( this->state , "main" );
 	
@@ -284,46 +300,21 @@ void _progLua::main( _cmdArgs&& args )
 	}
 }
 
-void _progLua::collector()
+void _progLua::internalVbl()
 {
 	// Collect garbage!
 	// the Lua Garbage collector uses constant 12% cpu, no matter how many programs we have
 	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / int(_system::_programs_.size()) ) );
-	
-	// check if the program can be terminated
-}
-
-bool _progLua::canBeAutoCleaned()
-{
-	// Push the handlerCount variabel on top of the stack
-	lua_getfield( this->state , LUA_REGISTRYINDEX , "__hC__" );
-	
-	int count = luaL_optint( this->state , -1 , 0 );	// Get its value
-	lua_pop( this->state , 1 );							// Pop the value from the stack
-	
-	return !count;
 }
 
 _progLua::~_progLua()
 {
-	_system::terminateTimer( _classCallback( this , &_progLua::collector ) );
+	if( this->content )
+		delete this->content;
 	
 	// Remove any timers that refer to this state
-	_luaCallback cb = _luaCallback( this->state ); // LUA_NOREF
+	_system::terminateTimer( _luaCallback( this->state ) , true );
 	
-	_system::_timers_.erase(
-		remove_if( _system::_timers_.begin() , _system::_timers_.end() ,
-			[&]( _pair<const _callback*,_callbackData>& data )->bool{
-				if( ( *data.first == cb ) != 0 ) // Remove all timers
-				{
-					delete data.first;
-					return true;
-				}
-				return false;
-			}
-		)
-		, _system::_timers_.end()
-	);
-	
+	// Collect Garbage
 	lua_close( this->state );
 }

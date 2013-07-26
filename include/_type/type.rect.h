@@ -139,25 +139,81 @@ class _rect{
 		//! Cut 'other' off of me
 		_area reduce( const _rect& other ) const ;
 		
-		//! Check if the rect equals another
-		bool equals( const _rect other ) const {
-			return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
-		}
-		
-		bool intersectsWith( const _rect& other ) const 
-		{
+		//! Check whether 'other' itersects this rect
+		bool intersectsWith( const _rect& other ) const {
 			return this->x < other.getX2() && this->getX2() > other.x && this->y < other.getY2() && this->getY2() > other.y; 
 		}
+		//! Check whether any of 'other's rects intersects me
 		bool intersectsWith( const _area& other ) const;
 		
-		bool operator==( const _rect other )
-		{
+		//! Check if the rect equals another
+		bool operator==( const _rect other ){
 			return other.x == this->x && other.y == this->y && other.width == this->width && other.height == this->height;
 		}
 		
-		noinline bool operator!=( const _rect other )
+		//! ..or if it doesn't
+		bool operator!=( const _rect other ){
+			return !(*this == other);
+		}
+		
+		
+		// Only used in type.gadget.h
+		inline _rect& expand( _coord dX , _coord dY ){
+			this->expandX( dX );
+			this->expandY( dY );
+			return *this;
+		}
+		
+		noinline _rect& expandX( _coord dX )
 		{
-			return other.x != this->x || other.y != this->y || other.width != this->width || other.height != this->height;
+			if( dX < 0 ){
+				this->x += dX;
+				this->width -= dX;
+			}else if( dX > 0 )
+				this->width += dX;
+			return *this;
+		}
+		
+		noinline _rect& expandY( _coord dY )
+		{
+			if( dY < 0 ){
+				this->y += dY;
+				this->height -= dY;
+			}else if( dY > 0 )
+				this->height += dY;
+			return *this;
+		}
+		
+		inline _rect& shrink( _coord dX , _coord dY ){
+			this->shrinkX( dX );
+			this->shrinkY( dY );
+			return *this;
+		}
+		
+		noinline _rect& shrinkX( _coord dX )
+		{
+			if( dX > 0 ){
+				dX = min( dX , (_coord)this->width );
+				this->x += dX;
+				this->width -= dX;
+			}else if( dX < 0 ){
+				dX = max( dX , (_coord)-this->width );
+				this->width += dX;
+			}
+			return *this;
+		}
+		
+		noinline _rect& shrinkY( _coord dY )
+		{
+			if( dY > 0 ){
+				dY = min( dY , (_coord)this->height );
+				this->y += dY;
+				this->height -= dY;
+			}else if( dY < 0 ){
+				dY = max( dY , (_coord)-this->height );
+				this->height += dY;
+			}
+			return *this;
 		}
 };
 

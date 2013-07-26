@@ -25,6 +25,7 @@ struct _callbackData
 	_tempTime	startTime;
 	_tempTime	duration;
 	bool 		repeating;
+	bool		preDelete;
 };
 
 class _callback

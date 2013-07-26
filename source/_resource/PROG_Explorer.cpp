@@ -2,27 +2,24 @@
 #include "_gadget/gadget.select.h"
 #include "_gadget/gadget.actionButton.h"
 
-//bool created = false;
-//_label* b2 = nullptr;
-
 PROG_Explorer::PROG_Explorer() :
-	_progC( static_cast<void (_progC::*)(_cmdArgs&&)>( &PROG_Explorer::main) , static_cast<void (_progC::*)()>( &PROG_Explorer::destruct) )
-	, path( "/" )
+	path( "/" )
 { }
 
 void PROG_Explorer::main( _cmdArgs&& args )
 {
-	if( !args[0].empty() )
+	if( !args.empty() && !args[0].empty() )
 		this->path = args[0];
 	
-	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _style::storeHost( this , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable ) );
-	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path , _style::storeHost( this ) );
-	this->addressbar = new _textbox( 1 , 1 , 106 , this->path , _style::storeHost( this ) );
-	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style::storeHost( this ) );
+	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , _styleAttr() | _styleAttr::minimizeable | _styleAttr::draggable );
+	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path );
+	this->addressbar = new _textbox( 1 , 1 , 106 , this->path );
+	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 );
 	
-	this->window->setInternalEventHandler( onResize , _staticCallback( PROG_Explorer::handler ) );
-	this->fileview->setInternalEventHandler( onChange , _staticCallback( PROG_Explorer::handler ) );
-	this->submitbutton->setInternalEventHandler( onAction , _staticCallback( PROG_Explorer::handler ) );
+	this->window->setUserEventHandler( onResize , _classCallback( this , &PROG_Explorer::handler ) );
+	this->fileview->setUserEventHandler( onChange , _classCallback( this , &PROG_Explorer::handler ) );
+	this->submitbutton->setUserEventHandler( onAction , _classCallback( this , &PROG_Explorer::handler ) );
+	this->window->setUserEventHandler( onClose , _classCallback( this , &PROG_Explorer::handler ) );
 	
 	this->window->addChild( this->fileview );
 	this->window->addChild( this->addressbar );
@@ -44,32 +41,33 @@ void PROG_Explorer::destruct()
 
 _callbackReturn PROG_Explorer::handler( _event event )
 {
-	
 	_gadget* that = event.getGadget();
-	PROG_Explorer* prog = (PROG_Explorer*)that->getStyle().host;
+	
+	if( event.getType() == onClose )
+		this->terminate();
 	
 	if( that->getType() == _gadgetType::button )
 	{
-		string val = prog->addressbar->getStrValue();
-		prog->path = val;
-		prog->fileview->setPath( val );
+		string val = this->addressbar->getStrValue();
+		this->path = val;
+		this->fileview->setPath( val );
 		
 		string path = _direntry( val ).getName();
-		prog->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+		this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
 	}
 	else if( that->getType() == _gadgetType::fileview )
 	{
-		prog->addressbar->setStrValue( prog->fileview->getPath() );
+		this->addressbar->setStrValue( this->fileview->getPath() );
 		
-		string path = _direntry( prog->fileview->getPath() ).getName();
-		prog->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+		string path = _direntry( this->fileview->getPath() ).getName();
+		this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
 	}
 	else if( that->getType() == _gadgetType::window )
 	{
-		prog->fileview->setWidth( that->getWidth() - 2 );
-		prog->fileview->setHeight( that->getHeight() - 23 );
-		prog->addressbar->setWidth( that->getWidth() - 14 );
-		prog->submitbutton->setX( that->getWidth() - 12 );
+		this->fileview->setWidth( that->getWidth() - 2 );
+		this->fileview->setHeight( that->getHeight() - 23 );
+		this->addressbar->setWidth( that->getWidth() - 14 );
+		this->submitbutton->setX( that->getWidth() - 12 );
 		
 		return ((_window*)that)->resizeHandler( event );
 	}

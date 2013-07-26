@@ -9,6 +9,7 @@
 #include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.actionButton.h"
 #include "_gadget/gadget.textarea.h"
+#include "_gadget/gadget.keyboard.h"
 
 #include <string.h>
 #include <math.h>

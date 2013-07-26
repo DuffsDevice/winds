@@ -11,7 +11,7 @@ _lua_button::_lua_button( lua_State* L )
 	else
 		this->setGadget( new _button( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_optstring( L , 5 , "" ) , luaL_optstyle( L , 6 ) ) );
 	
-	_lua_interface_input::input = (_button*)_lua_gadget::gadget;
+	_lua_interface_input::input = (_button*)_lua_gadget::getGadget();
 }
 
 //! setAutoSelect

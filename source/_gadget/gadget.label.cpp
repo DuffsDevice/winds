@@ -157,7 +157,7 @@ void _label::setHeight( _u8 height ){
 
 _label::_label( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
 	_gadget( _gadgetType::label , width , height , x , y , (_style&&)style )
-	, color( RGB( 0 , 0 , 0 ) )
+	, color( COLOR_BLACK )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 0 )
 	, computeH( 0 )
@@ -177,7 +177,7 @@ _label::_label( _length width , _length height , _coord x , _coord y , string te
 
 _label::_label( _coord x , _coord y , string text , _style&& style ) :
 	_gadget( _gadgetType::label , 1 , 1 , x , y , (_style&&)style )
-	, color( RGB( 0 , 0 , 0 ) )
+	, color( COLOR_BLACK )
 	, bgColor( COLOR_TRANSPARENT )
 	, computeW( 2 )
 	, computeH( 2 )

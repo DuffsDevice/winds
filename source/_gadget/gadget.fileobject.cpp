@@ -3,24 +3,26 @@
 #include "_gadget/gadget.imagegadget.h"
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
+#include "_type/type.shortcut.h"
 
 _callbackReturn _fileobject::doubleClickHandler( _event event )
 {
 	_fileobject* that = event.getGadget<_fileobject>();
 	
 	// Execute!
-	if( that->file.isDirectory() )
+	if( that->file->isDirectory() )
 	{
 		if( that->parent->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onChange'-Event
 			that->parent->triggerEvent( onChange );
 			
-			((_fileview*)that->parent)->setPath( that->file.getFileName() );
+			((_fileview*)that->parent)->setPath( that->file->getFileName() );
 		}
 	}
 	else
-		that->file.execute();
+		that->file->execute();
+		printf("execute!");
 	
 	return handled;
 }
@@ -46,7 +48,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 		{	
 			bP.fill( COLOR_TRANSPARENT );
 			
-			string ext = that->file.getExtension();
+			string ext = that->file->getExtension();
 			
 			// Certain Files do not have an .extension
 			if( !_system::getUser()->sFE || !ext.length() )
@@ -54,7 +56,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			else
 				ext = "." + ext;
 			
-			string fullName = that->file.getName() + ext;
+			string fullName = that->file->getName() + ext;
 			
 			// Receive Font
 			const _font* ft = _system::getFont();
@@ -66,7 +68,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , COLOR_WHITE , ftSize );
 			
 			// Set Icon
-			const _bitmap& fileIcon = that->file.getFileImage();
+			const _bitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				( 25 - fileIcon.getWidth() ) >> 1 // X
@@ -91,7 +93,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			// Darw Background
 			bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_TRANSPARENT );
 			
-			string ext = that->file.getExtension();
+			string ext = that->file->getExtension();
 			
 			// Certain Files do not have an .extension
 			if( !_system::getUser()->sFE || !ext.length() )
@@ -99,7 +101,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			else
 				ext = "." + ext;
 			
-			string fullName = that->file.getName() + ext;
+			string fullName = that->file->getName() + ext;
 			
 			// Receive Font
 			const _font* ft = _system::getFont();
@@ -114,7 +116,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			bP.drawString( 11 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Set Icon
-			const _bitmap& fileIcon = that->file.getFileImage();
+			const _bitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				5 - ( fileIcon.getWidth() >> 1 ) // X
@@ -137,9 +139,18 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewtype , _style&& style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , (_style&&)style ) , file( fl ) , viewType( viewtype ) , pressed( false )
+_fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType viewtype , bool singleClickToExecute , _style&& style ) :
+	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , (_style&&)style )
+	, file( new _direntry(fl) )
+	, viewType( viewtype )
+	, pressed( false )
 {
+	if( file->getMimeType() == _mime::application_x_ms_shortcut )
+	{
+		delete this->file;
+		this->file = new _shortcut( fl );
+	}
+	
 	switch( this->viewType )
 	{
 		case _fileviewType::symbol_big:
@@ -148,7 +159,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 		case _fileviewType::list:
 		default:
 		{
-			string ext = this->file.getExtension();
+			string ext = this->file->getExtension();
 			
 			// Certain Files do not have an .extension
 			if( !_system::getUser()->sFE || !ext.length() )
@@ -156,7 +167,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 			else
 				ext = "." + ext;
 			
-			string fullName = this->file.getName() + ext;
+			string fullName = this->file->getName() + ext;
 			
 			// Receive Font
 			const _font* ft = _system::getFont();
@@ -174,7 +185,7 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 	//this->setInternalEventHandler( dragStop , _staticCallback( &_fileobject::dragHandler ) );
 	this->setInternalEventHandler( onFocus , _gadget::eventForwardRefresh() );
 	this->setInternalEventHandler( onBlur , _gadget::eventForwardRefresh() );
-	this->setInternalEventHandler( mouseDoubleClick , _staticCallback( &_fileobject::doubleClickHandler ) );
+	this->setInternalEventHandler( singleClickToExecute ? mouseClick : mouseDoubleClick , _staticCallback( &_fileobject::doubleClickHandler ) );
 	
 	// Refresh...
 	this->refreshBitmap();
@@ -183,4 +194,6 @@ _fileobject::_fileobject( _coord x , _coord y , string fl , _fileviewType viewty
 _fileobject::~_fileobject()
 {
 	this->removeChildren( true );
+	if( this->file )
+		delete this->file;
 }

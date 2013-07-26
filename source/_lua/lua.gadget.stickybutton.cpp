@@ -13,7 +13,7 @@ _lua_stickybutton::_lua_stickybutton( lua_State* L )
 		// _stickybutton( _length width , _length height , _coord x , _coord y , string title = "" , _style style = _style() );
 		this->setGadget( new _stickybutton( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_optstring( L , 5 , "" ) , luaL_optstyle( L , 6 ) ) );
 	
-	_lua_interface_input::input = (_stickybutton*)_lua_gadget::gadget;
+	_lua_interface_input::input = (_stickybutton*)_lua_gadget::getGadget();
 }
 
 //! setAutoSelect

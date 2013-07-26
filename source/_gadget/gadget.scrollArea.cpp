@@ -247,11 +247,11 @@ _callbackReturn _scrollArea::resizeHandler( _event event )
 }
 
 
-void _scrollArea::computeCanvasSize(){
+void _scrollArea::computeCanvasSize()
+{
 	// Return if there's nothing to do
 	if( this->computeCanvasWidth == 2 || this->computeCanvasHeight == 2 )
 	{
-	
 		_coord maxX = 0;
 		_coord maxY = 0;
 		
@@ -279,8 +279,8 @@ void _scrollArea::computeCanvasSize(){
 }
 
 
-_callbackReturn _scrollArea::scrollHandler( _event event ){
-	
+_callbackReturn _scrollArea::scrollHandler( _event event )
+{
 	// Receive Gadget
 	_scrollArea* area = (_scrollArea*)(event.getGadget()->getParent());
 	

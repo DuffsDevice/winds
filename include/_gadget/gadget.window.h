@@ -54,14 +54,7 @@ class _window : public _gadget {
 		_window( _length width , _length height , _coord x , _coord y , string title , _bitmap icon , _style&& style = _style() | _styleAttr::draggable );
 		
 		//! Dtor
-		~_window()
-		{
-			delete this->button[0];
-			delete this->button[1];
-			delete this->button[2];
-			delete this->label;
-			delete this->icon;
-		}
+		~_window();
 };
 
 #endif

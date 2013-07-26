@@ -5,6 +5,8 @@
 #include "_type/type.system.h"
 #include "func.memory.h"
 
+// NDS Includes
+#include <nds/interrupts.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/video.h>
 
@@ -68,7 +70,7 @@ _rect _keyboard::buttonDimensions[]{
 bool manuallyOpened = false;
 
 
-void _keyboard::screenVBL()
+void _keyboard::vbl()
 {
 	#ifdef KEYBOARD_TOP_SCREEN
 		// Copy Screen

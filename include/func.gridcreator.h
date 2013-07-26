@@ -4,7 +4,7 @@
 #include "_type/type.h"
 #include <nds/arm9/math.h>
 
-vector<int> computeGrid( int wholeLength , int numFields )
+static unused _vector<int> computeGrid( int wholeLength , int numFields )
 {
 	// Scale to 2048
 	int wholeLengthScaled = wholeLength << 13;

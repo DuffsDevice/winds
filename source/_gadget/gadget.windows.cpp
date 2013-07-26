@@ -1,5 +1,6 @@
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
+#include "func.gridcreator.h"
 
 void _windows::registerTask( _window* w )
 {
@@ -21,11 +22,15 @@ void _windows::removeTask( _window* w )
 
 void _windows::refreshTasks()
 {
-	int x = 40;
-	int availableSpace = SCREEN_WIDTH - 40;
-	int taskWidth = min( 41.f , float( float( availableSpace ) / this->tasks.size() + 0.5f ) );
+	int x = this->startButton->getWidth() + 2;
+	int i = 0;
+	int availableSpace = SCREEN_WIDTH - this->startButton->getWidth() - this->taskInfo->getWidth() - 3;
+	
+	_vector<int> widths = computeGrid( availableSpace , this->tasks.size() );
+	
 	for( _windowsTaskButton* tb : this->tasks )
 	{
+		int taskWidth = min( 41 , widths[i++] );
 		tb->setX( x );
 		tb->setWidth( taskWidth - 1 );
 		x += taskWidth;

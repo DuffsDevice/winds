@@ -21,8 +21,6 @@
 #include "_lua/lua.gadget.radio.h"
 #include "_type/type.system.h"
 
-_map<_gadget*,int> garbageDeterminer;
-
 /*##################################
 ##           Lua-Gadget           ##
 ##################################*/
@@ -65,49 +63,34 @@ _lua_gadget* _lua_gadget::getLuaGadget( lua_State* L , int narg ){
 	return Lunar<_lua_gadget>::check( L , narg );
 }
 
-_lua_gadget::_lua_gadget( _gadget* w )
-{
-	this->gadget = w;
-	if( w )
-		garbageDeterminer[this->gadget]++;
-}
+_lua_gadget::_lua_gadget( _gadget* g , bool wasAllocated ) :
+	gadget( g ),
+	wasAllocated( wasAllocated )
+{}
 
-void _lua_gadget::setGadget( _gadget* w ){
-	// Unregister current gadget
-	if( this->gadget )
-		garbageDeterminer[this->gadget]--;
+void _lua_gadget::setGadget( _gadget* g , bool wasAllocated ){
+	if( this->wasAllocated && this->gadget )
+		delete this->gadget;
 	
 	// Register new gadget
-	this->gadget = w;
-	garbageDeterminer[w]++;
+	this->gadget = g;
+	this->wasAllocated = wasAllocated;
 }
 
 //! Lua-Ctor
-_lua_gadget::_lua_gadget( lua_State* L )
-{
-	this->gadget = new _gadget( _gadgetType::_plain , luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) );
-}
+_lua_gadget::_lua_gadget( lua_State* L ) :
+	gadget( new _gadget( _gadgetType::_plain , luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) ) ),
+	wasAllocated( true )
+{ }
 
 //! Lua-Dtor
 _lua_gadget::~_lua_gadget()
 {
-	if( this->gadget != nullptr )
-	{
-		auto it = garbageDeterminer.find( this->gadget );
-		
-		// Check for non existence->must already be deleted!
-		if( it == garbageDeterminer.end() )
-			return;
-		
-		int& t = (*it).second;
-		t--;
-		//printf("References to %p: %d\n",this->gadget,t);
-		if( t <= 0 )
-		{
-			delete this->gadget;
-			garbageDeterminer.erase(this->gadget);
-		}
-	} 
+	//printf("%sDeleting %s\n",this->wasAllocated?"":"Not ",gadgetType2string[ this->gadget->getType() ].c_str());
+	//_system::submit();
+	
+	if( this->gadget != nullptr && this->wasAllocated )
+		delete this->gadget;
 }
 
 //! bubbleRefresh
@@ -123,10 +106,10 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 int _lua_gadget::getBitmapPort( lua_State* L ){ Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) ); return 1; }
 
 //! getScreen
-int _lua_gadget::getScreen( lua_State* L ){ _gadget* g = this->gadget->getScreen(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g ) ); return 1; }
+int _lua_gadget::getScreen( lua_State* L ){ _gadget* g = this->gadget->getScreen(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g , false ) ); return 1; }
 
 //! getToppestChild
-int _lua_gadget::getToppestChild( lua_State* L ){ _gadget* g = this->gadget->getToppestChild(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g ) ); return 1; }
+int _lua_gadget::getToppestChild( lua_State* L ){ _gadget* g = this->gadget->getToppestChild(); if( !g ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( g , false ) ); return 1; }
 
 //! setUserEventHandler
 int _lua_gadget::setUserEventHandler( lua_State* L ){
@@ -200,7 +183,7 @@ int _lua_gadget::moveTo(lua_State* L){ this->gadget->moveTo( luaL_checkint( L , 
 int _lua_gadget::moveRelative(lua_State* L){ this->gadget->moveRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
 
 //! getParent
-int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() ) ); return 1; }
+int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() , false ) ); return 1; }
 
 //! setParent
 int _lua_gadget::setParent( lua_State* L ){ _lua_gadget* g = NULL; if( ( g = this->getLuaGadget( L , 1 ) ) != NULL ) this->gadget->setParent( g->gadget ); return 0; }

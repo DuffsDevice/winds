@@ -252,19 +252,17 @@ class _gadget
 		 * Print Contents but make the parent also refresh
 		 * the parts that have been changed
 		 */
-		void bubbleRefresh( bool includeThis , _event&& e );
+		void bubbleRefresh( bool includeThis , _event&& e ) ITCM_CODE ;
 		void bubbleRefresh( bool includeThis , const _event& e ){ this->bubbleRefresh( includeThis , _event( e ) ); }
-		noinline void bubbleRefresh( bool includeThis = false ){
-			this->bubbleRefresh( includeThis , _event::refreshEvent(
-				{ this->getAbsoluteDimensions() } 
-			) );
+		void bubbleRefresh( bool includeThis = false ){
+			this->bubbleRefresh( includeThis , _event::refreshEvent( this->getAbsoluteDimensions() ) );
 		}
 		
 		/**
 		 * Method to refresh itself
 		 */
-		noinline void refreshBitmap(){
-			this->handleEvent( _event::refreshEvent() );
+		void refreshBitmap(){
+			this->handleEvent( refresh );
 		}
 		
 		/**
@@ -345,7 +343,7 @@ class _gadget
 			// Unbind the Handler
 			_eventHandlerMap::iterator data = this->eventHandlers.find( type );
 			
-			if( data != this->eventHandlers.end() )
+			if( data != this->eventHandlers.end() && data->second )
 			{
 				delete data->second;
 				this->eventHandlers.erase( data );
@@ -356,11 +354,12 @@ class _gadget
 		 * Unbind an EventHandler from this Gadget
 		 * that was registered by the user
 		 */
-		void removeUserEventHandler( _eventType type ){
+		void removeUserEventHandler( _eventType type )
+		{
 			// Unbind the Handler
 			_eventHandlerMap::iterator data = this->eventHandlers.find( eventType2userET(type) );
 			
-			if( data != this->eventHandlers.end() )
+			if( data != this->eventHandlers.end() && data->second )
 			{
 				delete data->second;
 				this->eventHandlers.erase( data );
