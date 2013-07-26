@@ -129,7 +129,7 @@ _u8 _luaCallback::equals( const _callback& param ) const
 
 //! This Function will be called from _gadget
 _callbackReturn lua_callEventFn( lua_State* L , int handler , _event&& e )
-{
+{	
 	//! No state registered?
 	if( !L || handler == LUA_NOREF )
 		return not_handled;
@@ -150,7 +150,7 @@ _callbackReturn lua_callEventFn( lua_State* L , int handler , _event&& e )
 
 //! This Function will be called from _gadget
 int lua_callIntFn( lua_State* L , int handler , int i )
-{
+{	
 	//! No state registered?
 	if( !L || handler == LUA_NOREF )
 		return -1;
@@ -192,19 +192,19 @@ int lua_checkFunction( lua_State* L , int narg )
 		lua_pushvalue( L , narg ); // Copy
 		int ret = luaL_ref( L , LUA_REGISTRYINDEX );
 		
-		// Push the handlerCount variabel on top of the stack
-		lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
-		
-		int curCount = luaL_optint( L , -1 , 0 );// Get its value
-		
-		curCount++;						// Increase it
-		
-		lua_pop( L , 1 );				// Pop the old value
-		lua_pushnumber( L , curCount );	// Push the new one
-		
-		// write it to the registry again
-		lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
-		//printf("Register %p has %d\n",L,curCount);
+		//// Push the handlerCount variabel on top of the stack
+		//lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		//
+		//int curCount = luaL_optint( L , -1 , 0 );// Get its value
+		//
+		//curCount++;						// Increase it
+		//
+		//lua_pop( L , 1 );				// Pop the old value
+		//lua_pushnumber( L , curCount );	// Push the new one
+		//
+		//// write it to the registry again
+		//lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		////printf("Register %p has %d\n",L,curCount);
 		
 		return ret;
 	}
@@ -219,19 +219,19 @@ void lua_popFunction( lua_State* L , int index )
 		// Unreference the handler
 		luaL_unref( L , LUA_REGISTRYINDEX , index );
 		
-		// Push the handlerCount variabel on top of the stack
-		lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
-		
-		int curCount = luaL_optint( L , -1 , 0 );// Get its value
-		
-		if( curCount > 0 )						// Decrease it
-			curCount--;
-		
-		lua_pop( L , 1 );						// Pop the old value
-		lua_pushnumber( L , curCount );			// Push the new one
-		
-		// write it to the registry again
-		lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
-		//printf("Unreg %p has %d\n",L,curCount);
+		//// Push the handlerCount variabel on top of the stack
+		//lua_getfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		//
+		//int curCount = luaL_optint( L , -1 , 0 );// Get its value
+		//
+		//if( curCount > 0 )						// Decrease it
+		//	curCount--;
+		//
+		//lua_pop( L , 1 );						// Pop the old value
+		//lua_pushnumber( L , curCount );			// Push the new one
+		//
+		//// write it to the registry again
+		//lua_setfield( L , LUA_REGISTRYINDEX , "__hC__" );
+		////printf("Unreg %p has %d\n",L,curCount);
 	}
 }

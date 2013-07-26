@@ -1,5 +1,4 @@
 #include "_gadget/gadget.button.h"
-#include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 
 void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
@@ -67,9 +66,9 @@ _callbackReturn _button::refreshHandler( _event event )
 	
 	_bitmapPort bP = that->getBitmapPort();
 	
-	//if( event.hasClippingRects() )
-	//	bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	//else
+	if( event.hasClippingRects() )
+		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
+	else
 		bP.normalizeClippingRects();
 	
 	_length myH = bP.getHeight();

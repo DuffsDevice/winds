@@ -21,7 +21,7 @@ class PROG_Explorer : public _progC {
 		void		main( _cmdArgs&& args );
 		void		destruct();
 		
-		static _callbackReturn handler( _event event );
+		_callbackReturn handler( _event event );
 		
 	public:
 		

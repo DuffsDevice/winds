@@ -8,7 +8,7 @@ _lua_label::_lua_label( lua_State* L ) :
 	_lua_gadget( 
 		new _label( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkstring( L , 3 ) , luaL_optstyle( L , 4 ) )
 	)
-	, _lua_interface_input( (_label*)_lua_gadget::gadget )
+	, _lua_interface_input( (_label*)_lua_gadget::getGadget() )
 { }
 
 //! Lua-window

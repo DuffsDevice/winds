@@ -3,6 +3,7 @@
 #define _WIN_T_PROGRAM_
 
 #include "_type/type.gadget.h"
+#include "_type/type.h"
 
 enum class _programType
 {
@@ -11,36 +12,42 @@ enum class _programType
 	progFile
 };
 
+struct _programData{
+	bool		autoDelete;
+	_tempTime	runningSince;
+};
+
 class _program
 {
 	friend class _system;
+	friend class _progLua;
+	friend class _progC;
 	
 	private:
 		
 		//! Type of the program
 		_programType	type;
 		
-	protected:
-		
-		//! The current gadgetHost
-		_gadget*		gadgetHost;
-		
 		//! Virtual main function to be overwritten in subclasses
-		virtual void	main( _cmdArgs&& args ) = 0;
+		virtual void	internalMain( _cmdArgs&& args ) = 0;
+		
+		//! Called every 1/60s
+		virtual	void	internalVbl(){}
 		
 		//! Main function to be called from _system
 		void 			main( _gadget* w , _cmdArgs&& args  );
 		void 			main( _gadget* w , const _cmdArgs& args  ){ this->main( w , _cmdArgs( args ) ); }
 		
-	public:
+	protected:
 		
-		//! Flag: whether the program shall be deleted in the next frame
-		bool 			autoDelete;
+		//! The current gadgetHost
+		_gadget*		gadgetHost;
+		
+	public:
 		
 		//! Ctor
 		_program( _programType type ) :
-			type( type ),
-			autoDelete( false )
+			type( type )
 		{}
 		
 		//! Execute it! Means pushing it to _system's list of programs

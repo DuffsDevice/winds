@@ -37,7 +37,7 @@ __attribute__((hot)) _area& _area::reduce( const _rect& dim )
 	return *this;
 }
 
-_area& _area::toRelative( const _coord absX , const _coord absY )
+__attribute__((hot)) _area& _area::toRelative( const _coord absX , const _coord absY )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_rect::toRelative" );

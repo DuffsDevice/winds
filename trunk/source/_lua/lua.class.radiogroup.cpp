@@ -10,13 +10,13 @@ _lua_radiogroup::_lua_radiogroup( lua_State* L ) : _singleValueGroup<_radio>()
 { }
 
 //! addRadio
-int _lua_radiogroup::addRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( !r->gadget ) return 0; _singleValueGroup<_radio>::addSelector( (_radio*)r->gadget , luaL_checkint( L , 2 ) ); return 0; }
+int _lua_radiogroup::addRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( !r->getGadget() ) return 0; _singleValueGroup<_radio>::addSelector( (_radio*)r->getGadget() , luaL_checkint( L , 2 ) ); return 0; }
 
 //! removeRadio
-int _lua_radiogroup::removeRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( r->gadget ) _singleValueGroup<_radio>::removeSelector( (_radio*)r->gadget ); return 0; }
+int _lua_radiogroup::removeRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( r->getGadget() ) _singleValueGroup<_radio>::removeSelector( (_radio*)r->getGadget() ); return 0; }
 
 //! enableRadio
-int _lua_radiogroup::enableRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( r->gadget ) _singleValueGroup<_radio>::enableSelector( (_radio*)r->gadget ); return 0; }
+int _lua_radiogroup::enableRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lunar<_lua_radio>::check( L , 1 ); if( r->getGadget() ) _singleValueGroup<_radio>::enableSelector( (_radio*)r->getGadget() ); return 0; }
 
 //! setIntValue
 int _lua_radiogroup::setValue(lua_State* L){ _singleValueGroup<_radio>::setIntValue( luaL_checkint( L , 1 ) ); return 0; }

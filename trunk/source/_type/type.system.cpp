@@ -45,20 +45,20 @@ void _system::debug( const char* fmt , ... )
     va_start(args, fmt);
 
     // Forward the '...' to sprintf
-    sprintf(output, fmt , args);
+    vsprintf(output, fmt , args);
 
     // Clean up the va_list
     va_end(args);
 	
 	
 	// Enhance the message!
-	fmt = ( string( _time::now() ) + ": " + string( output ) + "\r\n" ).c_str();
+	string result = ( string( _time::now() ) + ": " + string( output ) + "\r\n" );
 	
 	// Debug to file
-	_system::_debugFile_->writeString( fmt );
+	_system::_debugFile_->writeString( result );
 	
 	// Debug to screen
-	printf( "%s" , fmt );
+	printf( "%s" , result.c_str() );
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
@@ -111,59 +111,160 @@ _tempTime _system::getHighResTime()
 	return ( time >> 15 ) - ( time >> 21 ) - ( time >> 22 ); // Equals time/1000
 }
 
-void _system::terminateTimer( const _callback& cb ){
-	_timers_.erase(
-		remove_if( _timers_.begin() , _timers_.end() 
-			, [&]( _pair<const _callback*,_callbackData>& data )->bool{
-				if( ( *data.first == cb ) == 1 )
-				{
-					delete data.first;
-					return true;
-				}
-				return false;
-			} 
-		)
-		, _timers_.end()
-	);
+void _system::terminateTimer( const _callback& cb , bool luaStateRemove )
+{	
+	if( luaStateRemove )
+		for( _pair<const _callback*,_callbackData>& data : _timers_ )
+		{
+			if( ( *data.first == cb ) != 0 )
+				data.second.preDelete = true;
+		}
+	else
+		for( _pair<const _callback*,_callbackData>& data : _timers_ )
+		{
+			if( ( *data.first == cb ) == 1 )
+			{
+				data.second.preDelete = true;
+				return;
+			}
+		}
 }
 
 void _system::runTimers()
 {
 	_tempTime curTime = getHighResTime();
 	
+	//! Move timers from buffer to the global timer-list
+	for( auto tmr : _timersToExecute_ )
+	{
+		// Remove possible duplicates
+		for( _pair<const _callback*,_callbackData>& data : _timers_ )
+		{
+			if( ( *data.first == *tmr.first ) == 1 )
+			{
+				data.second.preDelete = true;
+				break;
+			}
+		}
+		_timers_.push_back( move(tmr) );
+	}
+	_timersToExecute_.clear();
+	
+	//printf("Tmrs: %d\n",_timers_.size());
+	
 	_timers_.erase(
 		remove_if( _timers_.begin() , _timers_.end() ,
 			[&]( _pair<const _callback*,_callbackData>& cb )->bool
 			{
 				_callbackData& data = cb.second;
-				while( curTime > data.duration + data.startTime ) // "while" instead of "if" to make sure even high-frequency timers get called the right times
+				if( data.preDelete )
+					goto deleteLabel;
+				
+				// "while" instead of "if" to make sure even high-frequency timers get called the right number of times
+				while( curTime > data.duration + data.startTime )
 				{
-					(*cb.first)();
+					(*cb.first)(); // Call...
 					if( data.repeating )
 						data.startTime += data.duration;
 					else
-						return true;
+						goto deleteLabel;
 				}
 				return false;
+				
+				// Control that deletes the current timer
+				deleteLabel:
+				
+				delete cb.first;
+				return true;
 			}
 		)
 		, _timers_.end()
 	);
 }
 
+void _system::switchUser( _user* usr )
+{
+	_system::_rtA_->setUser( usr );
+}
+
+void _system::runAnimations()
+{
+	//! Move animations from buffer to the global timer-list
+	move( _animationsToExecute_.begin() , _animationsToExecute_.end() , back_inserter( _animations_ ) );
+	_animationsToExecute_.clear();
+	
+	// Erase the Program-Instance in the list of running instances
+	_animations_.erase(
+		remove_if( _animations_.begin() , _animations_.end() , [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } )
+		, _animations_.end()
+	);
+}
+
+namespace{
+	static int criticaly = 1;
+}
+
+void _system::enterCriticalSection()
+{
+	if( --criticaly <= 0 )
+		irqDisable( IRQ_VBLANK ); // Enter critical Section
+}
+
+void _system::leaveCriticalSection()
+{
+	if( ++criticaly > 0 )
+		irqEnable( IRQ_VBLANK ); // Leave critical Section
+}
+
+void _system::executeAnimation( _animation* anim )
+{
+	// Check if the animation is already existing in the list
+	if( find( _animations_.begin() , _animations_.end() , anim ) == _animations_.end()
+		&& find( _animationsToExecute_.begin() , _animationsToExecute_.end() , anim ) == _animationsToExecute_.end()
+	)
+	_animationsToExecute_.push_back( anim );
+}
+
+void _system::executeProgram( _program* prog , _cmdArgs&& args )
+{
+	prog->main( _gadgetHost_ , move(args) ); // Execute main
+	_programs_.push_back( make_pair( prog, _programData( {false,_system::getHighResTime()} ) ) );
+}
+
+void _system::terminateProgram( _program* prog )
+{
+	if( !prog )
+		return;
+	
+	for( auto& p : _system::_programs_ )
+		if( p.first == prog )
+		{
+			p.second.autoDelete = true;
+			break;
+		}
+}
+
 void _system::runPrograms()
 {
-	_programs_.erase(
-		remove_if( _programs_.begin() , _programs_.end() ,
-			[]( pair<_program*,_cmdArgs>& prog )->bool{
-				if( prog.first->autoDelete ){
-					delete prog.first;
+	_system::_programs_.erase(
+		remove_if( _system::_programs_.begin() , _system::_programs_.end() , 
+			[]( _programList::value_type p )->bool
+			{
+				if( !p.first )
+					return true;
+				else if( p.second.autoDelete ){
+					// Delete the program
+					delete p.first;
 					return true;
 				}
+				
+				// Run it
+				p.first->internalVbl();
+				
 				return false;
 			}
 		)
-		, _programs_.end()
+		, _system::_programs_.end()
 	);
 }
 
@@ -171,30 +272,24 @@ void _system::deleteGadgetHost()
 {
 	if( _system::_gadgetHost_ )
 	{
-		irqDisable( IRQ_VBLANK ); // Enter critical Section
+		_system::enterCriticalSection();
 		
 		// Remove all running programs on this gadgetHost
-		_programs_.erase(
-			remove_if( _programs_.begin() , _programs_.end() ,
-				[=]( pair<_program*,_cmdArgs>& prog )->bool{
-					if( prog.first->getGadgetHost() == _system::_gadgetHost_ ){
-						delete prog.first;
-						return true;
-					}
-					return false;
-				}
-			)
-			, _programs_.end()
-		);
+		for( _programList::value_type& prog : _programs_ )
+		{
+			if( prog.first->getGadgetHost() == _system::_gadgetHost_ )
+				prog.second.autoDelete = true;
+		}
 		
 		// Remove all events on this gadgetHost
 		_system::removeEventsOf( _system::_gadgetHost_ );
 		
-		// Dlete it
+		// Delete it
 		delete _system::_gadgetHost_;
 		
-		irqEnable( IRQ_VBLANK ); // Leave critical Section
+		_system::leaveCriticalSection();
 		
+		// Reset
 		_system::_gadgetHost_ = nullptr;
 	}
 }
@@ -206,84 +301,71 @@ void _system::deleteKeyboard()
 		// Close Keyboard
 		_system::_keyboard_->close( false );
 		
-		irqDisable( IRQ_VBLANK ); // Enter critical Section
+		_system::enterCriticalSection();
 		
 		// Remove the keyboard!
 		_system::removeEventsOf( _system::_keyboard_ );
+		
 		delete _system::_keyboard_;
-		
-		irqEnable( IRQ_VBLANK );  // Leave critical Section
-		
 		_system::_keyboard_ = nullptr;
+		
+		_system::leaveCriticalSection();
 	}
 }
 
 void _system::vblHandler()
 {
-	if( _system::_gadgetHost_ )
+	if( _system::_gadgetHost_ || _system::_keyboard_ )
 		_system::processInput();
 	if( _system::_keyboard_ )
-		_system::_keyboard_->screenVBL();
-	_system::processEvents();
+		_system::_keyboard_->vbl();
+	// Animations have to be executed !during! the vertical Blank
 	_system::runAnimations();
-	_system::runTimers();
-	//_systemController::controllerVBL(); // is called in _systemController::main
 }
 
-/*void optimizeEvents()
+void _system::hblHandler()
 {
-	//! Optimize refresh-Events
-	map<_gadget*,_event*);
-	deque<_event> tempEvents = this->events;
+	_system::runTimers();
+}
+
+void _system::optimizeEvents()
+{
+	// Shortcut
+	_vector<_event>& events = _system::_eventBuffer_[!_system::_curEventBuffer_];
 	
-	sort( tempEvents.begin() , tempEvents.end() , [](_event e1 , _event e2)->bool{ return ( e1.getDestination() < e2.getDestination() ); } );
-	
-	_gadget* dest = 0;
-	_gadget* tempDest = 0;
-	_area refresh,damaged;
-	refresh.clear();
-	damaged.clear();
-	
-	this->events.clear();
-	
-	for( auto it = tempEvents.begin() ; it != tempEvents.end() ; it++ )
-	{
-		tempDest = (_gadget*) it->getDestination();
-		
-		damaged.push_back( it->getRefreshRects() );
-		damaged.push_back( it->getDamagedRects() );
-		
-		if( dest != 0 && dest != tempDest ){
-			it->setDamagedRects( damaged );
-			it->setRefreshRects( refresh );
-			this->events.push_back( *it );
+	sort( events.begin() , events.end() ,
+		[](_event e1 , _event e2)->bool{
+			return e1.getDestination() == e2.getDestination() ? e1.getType() < e2.getType() : e1.getDestination() < e2.getDestination();
 		}
-		dest = tempDest;
-	}
+	);
 	
-	this->events = tempEvents;
-}*/
+	events.erase( 
+		unique( events.begin() , events.end() , []( _event& e1 , _event& e2 )->bool{ return e1.mergeWith( e2 ); } )
+		, events.end()
+	);
+}
 
 void _system::processEvents()
-{
-	//optimizeEvents();
-	
+{	
 	// Do not throw any Events until we finished iterating through Events!!!!
 	// -> This was a big Problem - Hours of finding that out!
 	eventsSwapBuffer();
+	
+	// Optimize out unneccesary events
+	optimizeEvents();
 	
 	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
 	{
 		// Temp...
 		_gadget* gadget = event.getDestination();
 		
-		int t = cpuGetTiming();
+		//int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 			gadget->handleEvent( (_event&&)event );
 		
-		printf("%d\n",cpuGetTiming()-t);
+		//printf("%d\n",cpuGetTiming()-t);
 	}
 	
 	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
@@ -381,25 +463,23 @@ void _system::processInput()
 		
 		event.setKeyCode( DSWindows::libnds2key[i] );
 		
-		//printf("CF: %s\n", gadgetType2string[_system::_currentFocus_->getType() ].c_str() );
-		
 		// held down
 		if( GETBIT( keys , i ) )
 		{
 			if( heldCycles[i] == 0 )
 			{
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->handleEvent( event.setType( keyDown ) );
+					_system::_currentFocus_->triggerEvent( event.setType( keyDown ) );
 				else
-					_system::_gadgetHost_->handleEvent( event.setType( keyDown ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( keyDown ) );
 			}
 			else if( user.kRD && heldCycles[i] > user.kRD && heldCycles[i] % user.kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->handleEvent( event.setType( keyRepeat ) );
+					_system::_currentFocus_->triggerEvent( event.setType( keyRepeat ) );
 				else
-					_system::_gadgetHost_->handleEvent( event.setType( keyRepeat ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( keyRepeat ) );
 			}
 			
 			// Increase Cycles
@@ -413,18 +493,18 @@ void _system::processInput()
 			
 			// Trigger the Event
 			if( _system::_currentFocus_ )
-				_system::_currentFocus_->handleEvent( event );
+				_system::_currentFocus_->triggerEvent( event );
 			else
-				_system::_gadgetHost_->handleEvent( event );
+				_system::_gadgetHost_->triggerEvent( event );
 			
 			
 			// If keyup is fast enough, trigger keyClick
 			if( heldCycles[i] < user.mCC )
 			{
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->handleEvent( event.setType( keyClick ) );
+					_system::_currentFocus_->triggerEvent( event.setType( keyClick ) );
 				else
-					_system::_gadgetHost_->handleEvent( event.setType( keyClick ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( keyClick ) );
 			}
 			
 			// Reset Cycles
@@ -478,8 +558,8 @@ void _system::start()
 		//! Set the VBLANK Interrupt handler
 		SetYtrigger( 0 );
 		irqSet( IRQ_VBLANK , _system::vblHandler );
-		//irqSet( IRQ_VCOUNT , _system::_vcount_ );
-		irqEnable( IRQ_VCOUNT | IRQ_VBLANK );
+		//irqSet( IRQ_HBLANK , _system::hblHandler );
+		irqEnable( IRQ_VBLANK | IRQ_VCOUNT );
 		
 		//! Start Timers
 		TIMER_CR(0) = 0;
@@ -639,7 +719,19 @@ void _system::submit(){
 }
 
 void _system::main(){
+	printf("Size: %d\n",sizeof(_event));
 	_systemController::main();
+}
+
+bool _system::isRunningOnEmulator()
+{
+	// Figure out what we're running on
+	// http://forum.gbadev.org/viewtopic.php?t=6265
+	_u32 result; 
+	asm volatile("swi 0x0D\n" 
+		"mov r0, %0\n" : "=r"(result) : : "r1", "r2", "r3" 
+	);
+	return result != 0xBAAE1880 /* DS Mode */ && result != 0xBAAE187F;
 }
 
 bool _system::executeCommand( string&& cmd )
@@ -676,28 +768,29 @@ void _system::shutDown(){
 }
 
 //! Static Attributes...
-bool 								_system::_sleeping_ = false;
-_vector<_animation*>				_system::_animations_;
-_vector<_pair<const _callback*,
-		_callbackData>>				_system::_timers_;
-_map<string,const _font*>			_system::_fonts_;
-_registry*							_system::_localizationTextTable_;
-_registry*							_system::_localizationMonthTable_;
-string								_system::_curLanguageShortcut_;
-_vector<_pair<_program*,_cmdArgs>>	_system::_programs_;
-_gadgetScreen*						_system::_gadgetHost_ = nullptr;
-_screen*							_system::_topScreen_ = nullptr;
-_keyboard*							_system::_keyboard_ = nullptr;
-_registry*							_system::_registry_ = nullptr;
-_runtimeAttributes*					_system::_rtA_;
-_direntry*							_system::_debugFile_ = nullptr;
-_gadget*							_system::_currentFocus_ = nullptr;
-_gadget*							_system::_lastClickedGadget_ = nullptr;
-int									_system::_bgIdFront_;
-int									_system::_bgIdBack_;
-int									_system::_bgIdSub_;
-int									_system::_cpuUsageTemp_;
+bool 						_system::_sleeping_ = false;
+_animationList				_system::_animations_;
+_animationList				_system::_animationsToExecute_;
+_timerList					_system::_timers_;
+_timerList					_system::_timersToExecute_;
+_map<string,const _font*>	_system::_fonts_;
+_registry*					_system::_localizationTextTable_;
+_registry*					_system::_localizationMonthTable_;
+string						_system::_curLanguageShortcut_;
+_programList				_system::_programs_;
+_gadgetScreen*				_system::_gadgetHost_ = nullptr;
+_screen*					_system::_topScreen_ = nullptr;
+_keyboard*					_system::_keyboard_ = nullptr;
+_registry*					_system::_registry_ = nullptr;
+_runtimeAttributes*			_system::_rtA_;
+_direntry*					_system::_debugFile_ = nullptr;
+_gadget*					_system::_currentFocus_ = nullptr;
+_gadget*					_system::_lastClickedGadget_ = nullptr;
+int							_system::_bgIdFront_;
+int							_system::_bgIdBack_;
+int							_system::_bgIdSub_;
+int							_system::_cpuUsageTemp_;
 
 //! Events
-int									_system::_curEventBuffer_ = 0;
-_vector<_event> 					_system::_eventBuffer_[2];
+int							_system::_curEventBuffer_ = 0;
+_vector<_event> 			_system::_eventBuffer_[2];

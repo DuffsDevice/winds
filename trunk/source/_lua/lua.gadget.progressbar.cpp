@@ -14,7 +14,7 @@ _lua_progressbar::_lua_progressbar( lua_State* L )
 			, luaL_optstyle( L , 5 )
 		)
 	)
-	, _lua_interface_input( (_progressbar*)_lua_gadget::gadget )
+	, _lua_interface_input( (_progressbar*)_lua_gadget::getGadget() )
 { }
 
 //! setColorScheme

@@ -5,22 +5,21 @@
 //! Graphics
 #include "_resource/BMP_ShortcutOverlay.h"
 
-_bitmap icon_shortcut = BMP_ShortcutOverlay();
-
-_shortcut::_shortcut( string fn) : _direntry( fn ) , destination( nullptr )
+_shortcut::_shortcut( string&& fn) :
+	_direntry( move(fn) )
+	, destination( nullptr )
 { }
 
-_direntry _shortcut::getDestination()
+const string& _shortcut::getDestination()
 {
-	if( this->destination.getFileName() != "" )
-		return this->destination;
+	if( this->destination )
+		return *this->destination;
 	
-	_ini parser = _ini( this->readString() );
+	_registry parser = _registry( this->readString() );
 	
-	if( parser.read() )
-		this->destination = _direntry( parser.getMap().at( "LocalShortcut" ).at( "URL" ) );
+	this->destination = new string( parser.readIndex( "LocalShortcut" , "URL" ) );
 	
-	return this->destination;
+	return *this->destination;
 }
 
 _bitmap _shortcut::getFileImage()
@@ -38,15 +37,21 @@ _bitmap _shortcut::getFileImage()
 	
 	if( fl.getFileName() != "" )
 	{
-		_bitmap icon = fl.getFileImage();
+		const _bitmap& icon = fl.getFileImage();
 		this->image.copy( ( 10 - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	
-	this->image.copy( 5 , 5 , icon_shortcut );
+	this->image.copy( 5 , 5 , BMP_ShortcutOverlay() );
 	
-	return  this->image;
+	return this->image;
 }
 
-const string _shortcut::getExtension() const {
-	return "";
+bool _shortcut::execute( _cmdArgs&& args ){
+	return _direntry( this->getDestination() ).execute( move(args) );
+}
+
+_shortcut::~_shortcut()
+{
+	if( this->destination )
+		delete this->destination;
 }

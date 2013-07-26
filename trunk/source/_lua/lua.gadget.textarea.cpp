@@ -8,7 +8,7 @@ _lua_textarea::_lua_textarea( lua_State* L ) :
 	_lua_gadget( 
 		new _textarea( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_optstring( L , 5 , "" ) , luaL_optstyle( L , 6 ) )
 	)
-	, _lua_interface_input( (_textarea*)_lua_gadget::gadget )
+	, _lua_interface_input( (_textarea*)_lua_gadget::getGadget() )
 { }
 
 

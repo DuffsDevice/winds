@@ -25,7 +25,7 @@ _lua_counter::_lua_counter( lua_State* L )
 			break;
 	}
 	
-	_lua_interface_input::input = (_counter*)_lua_gadget::gadget;
+	_lua_interface_input::input = (_counter*)_lua_gadget::getGadget();
 }
 
 //! setUpperBound

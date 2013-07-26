@@ -33,17 +33,16 @@ namespace std
 				*this = str;
 			}
 			
-			shortString( const string str )
-			{
+			shortString( const std::string str ){
 				*this = str;
 			}
 			
-			shortString& operator=( const string str )
+			shortString& operator=( const std::string str )
 			{
 				int idx = 0;
 				for( const dataType c : str )
 				{
-					if( idx > ( maxBytes - 2 ) )
+					if( idx == ( maxBytes - 1 ) )
 						break;
 					this->data[idx++] = c;
 				}
@@ -59,7 +58,7 @@ namespace std
 				if( str )
 					while( *str )
 					{
-						if( idx > ( maxBytes - 2 ) )
+						if( idx == ( maxBytes - 1 ) )
 							break;
 						this->data[idx++] = *str++;
 					}
@@ -78,7 +77,7 @@ namespace std
 				if( str )
 					while( *str )
 					{
-						if( idx > ( maxBytes - 2 ) )
+						if( idx == ( maxBytes - 1 ) )
 							break;
 						this->data[idx++] = *str++;
 					}
@@ -97,7 +96,7 @@ namespace std
 				if( str )
 					while( *str )
 					{
-						if( idx > ( maxBytes - 2 ) )
+						if( idx == ( maxBytes - 1 ) )
 							break;
 						this->data[idx++] = *str++;
 					}
@@ -112,15 +111,17 @@ namespace std
 				return this->data;
 			}
 			
-			operator std::string()
+			operator std::string() const
 			{
 				return std::string( this->data );
 			}
 			
-			dataType operator[]( int idx )
+			dataType operator[]( int idx ) const
 			{
-				return this->data[ std::max( 0 , std::min( maxBytes , idx ) ) ];
+				return this->data[ std::max( 0 , std::min( maxBytes - 1 , idx ) ) ];
 			}
+			
+			const char* c_str() const { return this->data; }
 		
 	};
 	

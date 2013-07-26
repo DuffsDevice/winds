@@ -1,15 +1,17 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_gadget/gadget.keyboard.h"
 
 // NDS Interrupts
 #include <nds/interrupts.h>
+#include <nds/bios.h>
 
-void _systemController::controllerVBL()
+void _systemController::checkDirty()
 {
 	if( !dirty )
 		return;
 	
-	irqDisable( IRQ_VBLANK ); // Enter critical Section
+	_system::enterCriticalSection();
 	
 	// Fade down Screen
 	_system::fadeMainScreen( false );
@@ -55,31 +57,48 @@ void _systemController::controllerVBL()
 	if( _systemController::state != _systemState::empty )
 		_system::fadeMainScreen( true );
 	
-	irqEnable( IRQ_VBLANK ); // Leave critical Section
+	_system::leaveCriticalSection();
 }
 
 void _systemController::main()
 {
 	changeState( _systemState::desktop );
 	static int i = 0;
+	static int s = 0;
 	
 	while( true )
-	{
-		_systemController::controllerVBL();
+	{		
+		//! Change State
+		_systemController::checkDirty();
 		
-		// Run Programs
+		// Let the Processor do its work!
+		_system::runTimers();
+		_system::processEvents();
 		_system::runPrograms();
 		
-		// Refresh System-Usage
-		_system::_cpuUsageTemp_ = ( _system::_cpuUsageTemp_ + _system::_cpuUsageTemp_ + REG_VCOUNT - 192 ) / 3;
+		// Compute System-Usage
+		//_system::_cpuUsageTemp_ = ( _system::_cpuUsageTemp_ + _system::_cpuUsageTemp_ + REG_VCOUNT - 192 ) / 3;
 		
 		// wait until line 0 
-		swiIntrWait( 0, IRQ_VCOUNT );
+		swiIntrWait( 0, IRQ_VBLANK );
+		//swiIntrWait( 0, IRQ_VCOUNT );
+		//swiIntrWait( 0, IRQ_HBLANK );
 		
 		// Wait for VBlank
-		swiWaitForVBlank();
+		//swiWaitForVBlank();
+		//swiWaitForIRQ();
 		
-		if( ++i > 200 
+		i++;
+		if( i == 60 )
+		{
+			s++;
+			i = 0;
+			printf("main: %d\n",s);
+		}
+		
+		//printf("CF: %s\n",_system::_currentFocus_?gadgetType2string[_system::_currentFocus_->getType()].c_str():"nothing");
+		
+		if( i > 200 
 			&& false 
 		)
 		{
@@ -99,7 +118,7 @@ void _systemController::main()
 			while(true);
 		}
 		#ifdef DEBUG_PROFILING
-		if( ++i > 200 
+		if( i > 200 
 			&& false 
 		)
 		{

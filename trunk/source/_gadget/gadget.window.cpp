@@ -83,7 +83,7 @@ _callbackReturn _window::restyleHandler( _event event )
 
 
 void _window::setStrValue( string title )
-{		
+{
 	this->label->setStrValue( title );
 	
 	// Refresh Task Button
@@ -157,8 +157,6 @@ _callbackReturn _window::refreshHandler( _event event )
 		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
 	}
 	
-	that->label->refreshBitmap();
-	
 	// Set my Corners to transparent
 	if( !that->isMaximized() )
 	{
@@ -228,15 +226,15 @@ _callbackReturn _window::buttonHandler( _event event )
 	// Close
 	if( event.getGadget<_windowButton>() == this->button[0] )
 	{
-		// Get Source
-		_callbackReturn cr = this->handleEvent( onClose );
-		
-		// Close the window
-		if( cr == not_handled || cr == use_default )
+		// Check for permission
+		if( this->handleEvent( onClose , true ) != prevent_default )
+		{
+			// Close the window
 			this->setParent( nullptr );
-		
-		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-			((_windows*)_system::_gadgetHost_)->removeTask( this );
+			
+			if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+				((_windows*)_system::_gadgetHost_)->removeTask( this );
+		}
 	}
 	// maximize or restore
 	else if( event.getGadget<_windowButton>() == this->button[1] )
@@ -257,13 +255,22 @@ _callbackReturn _window::buttonHandler( _event event )
 	return handled;
 }
 
-
+// Dtor
+_window::~_window()
+{
+	delete this->button[0];
+	delete this->button[1];
+	delete this->button[2];
+	delete this->icon;
+	
+	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+		((_windows*)_system::_gadgetHost_)->removeTask( this );
+}
 
 // C++0x! Yay!
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _style&& style ) :
 	_window( width , height , x , y , title , _bitmap() , (_style&&)style )
 { }
-
 
 
 _window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , _style&& style ) :
@@ -275,10 +282,10 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->label = new _label( this->getWidth() - 2 , 6 , 2 , 2 , title );
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
-	this->label->setColor( RGB( 31 , 31 , 31 ) );
+	this->label->setColor( COLOR_WHITE );
 	
 	// Create Icon
-	bmp.resize( 6 , 6 ); // Crop to 5x5
+	bmp.resize( 6 , 6 ); // Crop to 6x6
 	this->icon = new _imagegadget( 2 , 2 , bmp );
 	
 	// Append it to this button

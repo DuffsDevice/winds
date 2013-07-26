@@ -15,12 +15,13 @@ class _progLua : public _program
 		
 		//! The lua Interpreter state
 		lua_State* 				state;
+		string*					content;
 		
 		//! Array filled with the methods that will be registered
 		static luaL_Reg			windowsLibrary[];
 		
 		//! VBL-function to collect garbage and reset lua_stack
-		void 		collector();
+		void 		internalVbl();
 		
 		//! Lua functions
 		static int	lua_getLocalizedString( lua_State* L );
@@ -56,22 +57,19 @@ class _progLua : public _program
 		//! Register DSWindows-Libs
 		static int	lua_requirePackage( lua_State* L );
 		
-		/**	
-		 * Determines, whether the program can be terminated
-		 * due to none handlers that could give the program control again
-		 */
-		bool canBeAutoCleaned();
+		//! registers system.* namespace
+		void registerSystem();
 		
 	public:
 		
 		//! Ctor
-		_progLua( string prog );
+		_progLua( string&& prog );
 		
 		//! Dtor
 		~_progLua();
 		
 		//! Main function that will be called at the start of execution (one shot)
-		void main( _cmdArgs&& args );
+		void internalMain( _cmdArgs&& args );
 };
 
 #endif

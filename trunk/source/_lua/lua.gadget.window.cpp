@@ -6,8 +6,8 @@
 ##################################*/
 
 _lua_window::_lua_window( lua_State* L ) : 
-	_lua_gadget( (_window*)nullptr )
-	, _lua_interface_input( nullptr )
+	_lua_gadget()
+	, _lua_interface_input()
 {
 	_lua_bitmap* bmp = Lunar<_lua_bitmap>::lightcheck( L , 6 );
 	
@@ -39,7 +39,7 @@ _lua_window::_lua_window( lua_State* L ) :
 		);
 	}
 	
-	_lua_interface_input::input = (_window*)_lua_gadget::gadget;
+	_lua_interface_input::input = (_window*)_lua_gadget::getGadget();
 }
 
 //! setIcon
@@ -48,21 +48,21 @@ int _lua_window::setIcon( lua_State* L )
 	_lua_bitmap* bmp = Lunar<_lua_bitmap>::check( L , 1 ); 
 	if( !bmp )
 		return 0;
-	((_window*)_lua_gadget::gadget)->setIcon( *(bmp->bm) );
+	_lua_interface_input::input->setIcon( *(bmp->bm) );
 	return 0;
 }
 
 //! hasIcon
 int _lua_window::hasIcon( lua_State* L )
 {
-	lua_pushnumber( L , ((_window*)_lua_gadget::gadget)->hasIcon() );
+	lua_pushnumber( L , _lua_interface_input::input->hasIcon() );
 	return 1;
 }
 
 //! getIcon
 int _lua_window::getIcon( lua_State* L )
 {
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( ((_window*)_lua_gadget::gadget)->getIcon() ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( _lua_interface_input::input->getIcon() ) );
 	return 1;
 }
 

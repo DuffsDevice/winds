@@ -8,7 +8,7 @@ _lua_textbox::_lua_textbox( lua_State* L ) :
 	_lua_gadget( 
 		new _textbox( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_optstring( L , 4 , "" ) , luaL_optstyle( L , 5 ) )
 	)
-	, _lua_interface_input( (_textbox*)_lua_gadget::gadget )
+	, _lua_interface_input( (_textbox*)_lua_gadget::getGadget() )
 { }
 
 

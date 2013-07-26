@@ -4,7 +4,9 @@
 
 #include <malloc.h>
 #include <list>
+#define _GLIBCXX_DEBUG // Because vector::operator[] leads to undefined behaviour when undefined
 #include <vector>
+#undef _GLIBCXX_DEBUG
 #include <array>
 #include <string>
 #include <map>
@@ -30,6 +32,8 @@ template<typename T,typename T2>
 	using _map = std::map<T,T2>;
 template<typename T,typename T2>
 	using _pair = std::pair<T,T2>;
+template<typename...T>
+	using _tuple = std::tuple<T...>;
 template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
 typedef uint8_t 			_u8;

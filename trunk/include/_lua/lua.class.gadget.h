@@ -73,33 +73,33 @@
 class _lua_gadget{
 	
 	private:
-		
-		_lua_gadget* pushLuaGadget( lua_State* L , _lua_gadget* g );
+	
+		_gadget* gadget;
+		bool wasAllocated;
 		
 	public:
-		
+	
 		// Check for _lua_gadget's and derived
 		static _lua_gadget* getLuaGadget( lua_State* L , int narg );
 		
-		_gadget* gadget;
 		
-		// Implicit Ctor
-		void setGadget( _gadget* g );
+		//! C-Ctor
+		_lua_gadget( _gadget* g = nullptr , bool wasAllocated = true );
 		
-		// Lua-Ctor
-		_lua_gadget(){}
-		
-		// Lua-Ctor
-		_lua_gadget( _gadget* g );
-		
-		// Lua-Ctor
+		//! Lua-Ctor
 		_lua_gadget( lua_State* L );
 		
-		//! Lua-Dtor
+		
+		//! Dtor
 		virtual ~_lua_gadget();
 		
-		//! Lua-Dtor
-		int _delete( lua_State* L);
+		
+		//! Set Gadget to contain
+		void setGadget( _gadget* g , bool wasAllocated = true );
+		
+		//! Get contained gadget
+		_gadget* getGadget(){ return this->gadget; }
+		
 		
 		//! bubbleRefresh
 		int bubbleRefresh(lua_State* L);

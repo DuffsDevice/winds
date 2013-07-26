@@ -48,7 +48,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 			bP.fill( design[3] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
+		bP.drawString( that->reference->hasIcon() ? 10 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
 		
 		// Topper Line Bright
 		bP.drawHorizontalLine( 1 , 0 , myW - 2 , design[1] );
@@ -71,7 +71,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 		bP.fill( design[1] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
+		bP.drawString( that->reference->hasIcon() ? 10 : 3 , 1 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
 		
 		// Create brighter blue
 		_color c = design[1];

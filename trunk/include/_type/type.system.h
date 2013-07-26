@@ -2,16 +2,24 @@
 #define _WIN_T_SYSTEM_
 
 #include "_type/type.h"
-#include "_type/type.direntry.h"
 #include "_type/type.callback.h"
 #include "_type/type.animation.h"
 #include "_type/type.program.h"
-#include "_type/type.event.h"
-#include "_type/type.runtimeAttributes.h"
-#include "_type/type.registry.h"
 #include "_type/type.gadgetScreen.h"
+#include "_type/type.event.h"
 #include "_type/type.font.h"
-#include "_gadget/gadget.keyboard.h"
+#include "_type/type.runtimeAttributes.h"
+
+#include <memory>
+
+class _direntry;
+class _registry;
+class _keyboard;
+class _user;
+
+typedef _vector<_pair<const _callback*,_callbackData>>	_timerList;
+typedef _vector<pair<_program*,_programData>>			_programList;
+typedef _vector<_animation*>							_animationList;
 
 //! For inlining even functions with libnds
 extern "C"{
@@ -24,14 +32,16 @@ class _system{
 	private:
 	
 		//! Attributes
-		static _vector<_animation*>					_animations_;
-		static _vector<_pair<const _callback*,
-						_callbackData>>				_timers_;
-		static _map<string,const _font*>			_fonts_;
-		static _vector<_pair<_program*,_cmdArgs>>	_programs_;
-		static _direntry*							_debugFile_;
-		static _gadget*								_currentFocus_;
-		static _gadget*								_lastClickedGadget_;
+		static _map<string,const _font*>	_fonts_;
+		static _programList					_programs_;
+		static _direntry*					_debugFile_;
+		static _gadget*						_currentFocus_;
+		static _gadget*						_lastClickedGadget_;
+		
+		//! Disables/enables the VBlank interrupt
+		//! to not be interrupted during an important process
+		static void enterCriticalSection();
+		static void leaveCriticalSection();
 		
 		//! Internal
 		static int 				_bgIdFront_;
@@ -41,11 +51,20 @@ class _system{
 		static string 			_curLanguageShortcut_;
 		static bool 			_sleeping_;
 		
+		//! Timers
+		static _timerList		_timers_;
+		static _timerList		_timersToExecute_;
+		
+		//! Animations
+		static _animationList	_animations_;
+		static _animationList	_animationsToExecute_;
+		
 		//! Events
 		static int				_curEventBuffer_;
 		static _vector<_event> 	_eventBuffer_[2];
 		
 		static void eventsSwapBuffer(){ _curEventBuffer_ = !_curEventBuffer_; }
+		static void optimizeEvents();
 		static void processEvents();
 		
 		//! Screen-Animations
@@ -55,25 +74,20 @@ class _system{
 		static void processInput();
 		
 		//! The daily Vertical Blank and its methods:
-		static void runAnimations(){
-			// Erase the Program-Instance in the list of running instances
-			_animations_.erase(
-				remove_if( _animations_.begin() , _animations_.end() , [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } )
-				, _animations_.end()
-			);
-		}
-		static void runTimers();
+		static void runAnimations();
 		static void runPrograms();
+		static void runTimers();
 		
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
-		static void switchUser( _user* usr ) __attribute__(( nonnull(1) )) { _system::_rtA_->setUser( usr ); }
+		static void switchUser( _user* usr ) __attribute__(( nonnull(1) ));
 		
 		//! Misc...
 		static void displayMemUsage();
 		
 		//! Internal Handler
+		static void hblHandler();
 		static void vblHandler();
 		static void newHandler();
 		
@@ -93,41 +107,10 @@ class _system{
 		friend class _keyboard;
 		
 		//! Add Thinks for execution
-		static void executeAnimation( _animation* anim ) __attribute__(( nonnull(1) ))
-		{
-			if( find( _animations_.begin() , _animations_.end() , anim ) == _animations_.end() )
-				_animations_.push_back( anim );
-		}
-		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ) __attribute__(( nonnull(1) ))
-		{
-			_programs_.push_back( make_pair( prog , args ) );
-			prog->main( _gadgetHost_ , args );
-		}
+		static void executeAnimation( _animation* anim ) __attribute__(( nonnull(1) ));
+		static void executeProgram( _program* prog , _cmdArgs&& args = _cmdArgs() ) __attribute__(( nonnull(1) ));
 		static void generateEvent( _event&& event ) { _eventBuffer_[_curEventBuffer_].emplace_back( (_event&&)event ); }
 		static void generateEvent( const _event& event ){ _system::generateEvent( _event( event ) ); }
-		
-		//! Things for termination
-		static void terminateProgram( _program* prog ) __attribute__(( nonnull(1) ))
-		{ 
-			// Erase the Program-Instance in the list of running instances
-			_programs_.erase(
-				remove_if( _programs_.begin() , _programs_.end()
-					, [&]( _pair<_program*,_cmdArgs> s )->bool
-					{
-						if( s.first == prog ) {
-							delete prog; return true;
-						}
-						return false;
-					}
-				)
-				, _programs_.end()
-			);
-		}
-		static void terminateAnimation( _animation* anim ) __attribute__(( nonnull(1) ))
-		{
-			_animations_.erase( find( _animations_.begin() , _animations_.end() , anim ) );
-		}
-		static void terminateTimer( const _callback& cb );
 		
 	public:
 	
@@ -201,13 +184,17 @@ class _system{
 		static void executeTimer( T&& cb , _tempTime duration , bool isRepeating = false )
 		{
 			typedef typename T::_callback def; // Check if subclass of _callback
-			_timers_.push_back(
+			_timersToExecute_.push_back(
 				make_pair(
 					new T( move( cb ) ), 
-					_callbackData( { getHighResTime() , duration , isRepeating } )
+					_callbackData( { getHighResTime() , duration , isRepeating , false } )
 				)
 			);
 		}
+		
+		//! Things for termination
+		static void terminateProgram( _program* prog ) __attribute__(( nonnull(1) ));
+		static void terminateTimer( const _callback& cb , bool luaStateRemove = false );
 		
 		//! Turn Device off
 		static void shutDown();
@@ -223,6 +210,9 @@ class _system{
 		
 		//! Get the current Langauge
 		static _language getLanguage();
+		
+		//! Checks if the binary is executed on real hardware or on an emulator
+		static bool isRunningOnEmulator();
 		
 		//! Debugging
 		static void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));

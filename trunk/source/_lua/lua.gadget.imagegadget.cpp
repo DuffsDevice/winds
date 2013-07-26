@@ -9,12 +9,12 @@ _lua_imagegadget::_lua_imagegadget( lua_State* L ) :
 { }
 
 int _lua_imagegadget::setImage( lua_State* L ){
-	((_imagegadget*)_lua_gadget::gadget)->setImage( *Lunar<_lua_bitmap>::check( L , 1 )->bm );
+	((_imagegadget*)_lua_gadget::getGadget())->setImage( *Lunar<_lua_bitmap>::check( L , 1 )->bm );
 	return 0;
 }
 
 int _lua_imagegadget::getImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( &((_imagegadget*)_lua_gadget::gadget)->getImage() ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( &((_imagegadget*)_lua_gadget::getGadget())->getImage() ) );
 	return 1;
 }
 

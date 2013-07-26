@@ -29,7 +29,8 @@ typedef enum{
 	application_x_ms_shortcut,
 	application_x_internet_shortcut,
 	application_x_nintendo_ds_rom,
-	application_x_nintendo_gba_rom
+	application_x_nintendo_gba_rom,
+	application_x_bat
 }_mime;
 
 extern _map<string,_mime> string2mimeType;

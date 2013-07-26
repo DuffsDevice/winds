@@ -49,18 +49,25 @@ _gadget::_gadget( _gadgetType type , int width , int height , int posX , int pos
 
 
 _gadget::~_gadget()
-{
+{	
+	_system::removeEventsOf( this );
+	
 	// Call onDelete Handler
 	this->handleEvent( _event( onDelete ) , true );
+	
+	// Remove itself from parent
+	this->setParent( nullptr );
 	
 	// Remove Children
 	this->removeChildren();
 	this->removeEnhancedChildren();
 	
-	if( this->parent != nullptr )
-		this->parent->removeChild( this );
-	
-	_system::removeEventsOf( this );
+	// Delete callbacks
+	for( _pair<_eventType,_callback*> cb : this->eventHandlers )
+	{
+		if( cb.second )
+			delete cb.second;
+	}
 }
 
 
@@ -77,8 +84,11 @@ void _gadget::bubbleRefresh( bool includeThis , _event&& event )
 		if( includeThis )
 			this->handleEventDefault( event );
 		
-		_rect dim = this->parent->getAbsoluteDimensions();
+		if( !event.hasClippingRects() )
+			event.getDamagedRects().add( this->getAbsoluteDimensions() );
 		
+		// Crop rects to parents area
+		_rect dim = this->parent->getAbsoluteDimensions();
 		event.getDamagedRects().clipToIntersect( dim );
 		
 		if( event.hasClippingRects() )
@@ -100,7 +110,7 @@ bool _gadget::removeDeleteCallback( _gadget* g )
 			g->parent->focusedChild = nullptr;
 			
 		// Remove current focus
-		_system::_currentFocus_ = nullptr;
+		_system::_currentFocus_ = g->parent;
 	}
 	
 	g->parent = nullptr;
@@ -123,7 +133,7 @@ bool _gadget::removeCallback( _gadget* g )
 			g->parent->focusedChild = nullptr;
 			
 		// Remove current focus
-		_system::_currentFocus_ = nullptr;
+		_system::_currentFocus_ = g->parent;
 	}
 	
 	g->parent = nullptr;
@@ -191,7 +201,7 @@ bool _gadget::blurChild()
 		this->focusedChild = nullptr;
 		
 		// Remove current focus
-		_system::_currentFocus_ = nullptr;
+		_system::_currentFocus_ = this;
 	}
 	
 	return true;
@@ -398,7 +408,24 @@ void _gadget::setX( _coord val )
 	{
 		_2s32 pos = this->getAbsolutePosition();
 		this->x = val;
-		this->bubbleRefresh( false , _event::refreshEvent( _rect( pos.first , pos.second , this->width , this->height ).combine( _rect( pos.first + diff , pos.second , this->width , this->height ) ) ) );
+		
+		if( !this->parent )
+			return;
+		
+		if( max( -diff , diff ) < this->height )
+		{
+			_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expandX( diff );
+			
+			if( !this->parent || this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		}
+		else
+		{
+			_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first + diff , pos.second , this->width , this->height ) };
+			
+			if( !this->parent || this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		}
 	}
 }
 
@@ -411,12 +438,24 @@ void _gadget::setY( _coord val )
 	{
 		_2s32 pos = this->getAbsolutePosition();
 		this->y = val;
-		this->bubbleRefresh( false ,
-			_event::refreshEvent( 
-				_rect( pos.first , pos.second , this->width , this->height )
-				.combine( _rect( pos.first , pos.second + diff , this->width , this->height ) )
-			)
-		);
+		
+		if( !this->parent )
+			return;
+		
+		if( max( -diff , diff ) < this->height )
+		{
+			_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expandY( diff );
+			
+			if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		}
+		else
+		{
+			_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first , pos.second + diff , this->width , this->height ) };
+			
+			if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		}
 	}
 }
 
@@ -425,18 +464,28 @@ void _gadget::moveRelative( _s16 dX , _s16 dY )
 {
 	if( !dX && !dY )
 		return;
+	if( !this->parent )
+		return;
 	
 	_2s32 pos = this->getAbsolutePosition();
 	
 	this->x += dX;
-	this->y += dY;
+	this->y += dY; 
 	
-	this->bubbleRefresh( false ,
-			_event::refreshEvent( 
-				_rect( pos.first , pos.second , this->width , this->height )
-				.combine( _rect( pos.first + dX , pos.second + dY , this->width , this->height ) )
-			)
-		);
+	if( max( (_s16)-dX , dX ) < this->width && max( (_s16)-dY , dY ) < this->height )
+	{
+		_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expand( dX , dY );
+		
+		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+	}
+	else
+	{
+		_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first + dX , pos.second + dY , this->width , this->height ) };
+		
+		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+	}
 }
 
 
@@ -519,7 +568,7 @@ void _gadget::removeChild( _gadget* child )
 			this->focusedChild = nullptr;
 			
 		// Remove current focus
-		_system::_currentFocus_ = nullptr;
+		_system::_currentFocus_ = this;
 	}
 	
 	// Erase the Connection on both sides
@@ -619,11 +668,23 @@ void _gadget::setDimensions( _rect rc )
 	{
 		this->bitmap.resize( this->width , this->height );
 		this->handleEvent( onResize );
-		this->bubbleRefresh( true , _event::refreshEvent( absDim.combine( newAbsDim ) ) );
+		
+		if( !this->parent )
+			this->refreshBitmap();
+		else
+			this->bubbleRefresh( true , _event::refreshEvent( absDim.combine( newAbsDim ) ) );
 	}
 	else if( newAbsDim.x != absDim.x || newAbsDim.y != absDim.y )
+	{
+		if( !this->parent )
+			return;
+		
+		_area refreshRects = absDim.combine( newAbsDim );
+		
 		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleRefresh( false , _event::refreshEvent( absDim.combine( newAbsDim ) ) );
+		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
+			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+	}
 }
 
 
@@ -643,8 +704,11 @@ void _gadget::setHeight( _length val )
 	
 	this->handleEvent( onResize );
 	
-	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleRefresh( true , _event::refreshEvent( dim ) );
+	if( !this->parent )
+		this->refreshBitmap();
+	else
+		// Delete the parts that originally were gadget, but became damaged
+		this->bubbleRefresh( true , _event::refreshEvent( dim ) );
 }
 
 
@@ -664,8 +728,11 @@ void _gadget::setWidth( _length val )
 	
 	this->handleEvent( onResize );
 	
-	// Delete the parts that originally were gadget, but became damaged
-	this->bubbleRefresh( true , _event::refreshEvent( dim ) );
+	if( !this->parent )
+		this->refreshBitmap();
+	else
+		// Delete the parts that originally were gadget, but became damaged
+		this->bubbleRefresh( true , _event::refreshEvent( dim ) );
 }
 
 
@@ -753,7 +820,7 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 	if( event.hasClippingRects() )
 		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
 	else
-		bP.addClippingRects( _rect( 0 , 0 , that->width , that->height ) );
+		bP.normalizeClippingRects();
 	
 	//! Draw All enhanced Children
 	for( _gadget* gadget : that->enhancedChildren )
@@ -792,6 +859,9 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 		// Reduce Painting Area
 		bP.clippingRects.reduce( dim );
 	}
+	
+	//if( !event.hasClippingRects() )
+	//	that->bubbleRefresh( false , (_event&&)event );
 	
 	return handled;
 }

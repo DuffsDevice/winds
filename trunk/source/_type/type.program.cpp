@@ -9,7 +9,7 @@
 
 void _program::main( _gadget* w , _cmdArgs&& args  ){
 	this->gadgetHost = w;
-	this->main( move( args ) );
+	this->internalMain( move( args ) );
 }
 
 void _program::execute( _cmdArgs&& args ){

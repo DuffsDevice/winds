@@ -36,8 +36,8 @@ class _systemController
 		//! This Routine does nearly everything
 		static void main();
 		
-		//! Method to be invoked on VBlank
-		static void controllerVBL();
+		//! Method that changes the current state if requested
+		static void checkDirty();
 };
 
 #endif

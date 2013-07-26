@@ -53,7 +53,11 @@ _startMenu::_startMenu( _style&& style ) :
 	_contextMenu( 110 , 110 , (_style&&)style )
 {
 	// Left Side
-	this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent ) );
+	this->addChild(
+		new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 ,
+			1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent , true
+		)
+	);
 	
 	// Right Side
 	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );

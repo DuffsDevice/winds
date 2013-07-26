@@ -53,7 +53,7 @@ class _direntry{
 	protected:
 	
 		//! Handle to File/Directory
-		union{
+		mutable union{
 			FILE* 		fHandle;
 			DIR* 		dHandle;
 		};
@@ -70,7 +70,7 @@ class _direntry{
 		//! My Filename
 		string				filename;
 		string				name;
-		sstring				extension;
+		ssstring			extension;
 		
 		_mimeType 			mimeType;
 		
@@ -118,7 +118,7 @@ class _direntry{
 		
 		
 		//! get mode (used to determine if the file is openend)
-		_direntryMode getMode(){ return this->mode; }
+		_direntryMode getMode() const { return this->mode; }
 		
 		
 		//! Open a file. The Mode for opening is specified with mode
@@ -163,7 +163,7 @@ class _direntry{
 		
 		
 		//! Get UNIX-Attributes of File
-		_direntryAttributes getAttrs();
+		_direntryAttributes getAttrs() const ;
 		
 		
 		//! Write an std::string to the end of the file
@@ -175,19 +175,19 @@ class _direntry{
 		
 		
 		//! Get Filename
-		string getFileName(){ return this->filename; }
+		const string& getFileName() const { return this->filename; }
 		
 		
 		//! get Name of the file (not "C:/Hello.txt", but "Hello")
-		virtual string getName(){ return this->name; }
+		virtual const string& getName() const { return this->name; }
 		
 		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
-		virtual string getExtension(){ return this->extension; }
+		virtual const ssstring& getExtension() const { return this->extension; }
 		
 		
 		//! Get Mime Type
-		virtual _mimeType getMimeType(){ return this->mimeType; }
+		virtual _mimeType getMimeType() const { return this->mimeType; }
 		
 		
 		//! get the size of a file (in bytes)
@@ -196,7 +196,7 @@ class _direntry{
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
 		virtual bool execute( _cmdArgs&& args = _cmdArgs() );
-		virtual bool execute( const _cmdArgs& args ){ return this->execute( _cmdArgs( args ) ); }
+		bool execute( const _cmdArgs& args ){ return this->execute( _cmdArgs( args ) ); }
 		
 		
 		//! Get File-Image
@@ -204,7 +204,7 @@ class _direntry{
 		
 		
 		//! Check if the File at 'filename' exists
-		virtual bool isExisting(){ return this->exists; }		
+		virtual bool isExisting() const { return this->exists; }		
 		
 		
 		//! To remove the file/directory

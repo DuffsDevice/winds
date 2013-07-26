@@ -24,7 +24,8 @@ _map<string,_mime> string2mimeType = {
 	{ "application/x-ms-shortcut" , application_x_ms_shortcut } ,
 	{ "application/x-internet-shortcut" , application_x_internet_shortcut } ,
 	{ "application/x-nintendo-ds-rom" , application_x_nintendo_ds_rom } ,
-	{ "application/x-nintendo-gba-rom" , application_x_nintendo_gba_rom }
+	{ "application/x-nintendo-gba-rom" , application_x_nintendo_gba_rom } ,
+	{ "application/x-bat" , application_x_bat }
 };
 
 // File Extensions#
@@ -60,7 +61,8 @@ _map<string,_mime> extension2mimeType = {
 	{ "url" , application_x_internet_shortcut },
 	{ "nds" , application_x_nintendo_ds_rom } ,
 	{ "gba" , application_x_nintendo_gba_rom } ,
-	{ "gbc" , application_x_nintendo_gba_rom }
+	{ "gbc" , application_x_nintendo_gba_rom } ,
+	{ "bat" , application_x_nintendo_gba_rom }
 };
 
 _map<_mime,string> mimeType2string = {
@@ -86,5 +88,6 @@ _map<_mime,string> mimeType2string = {
 	{ application_x_ms_shortcut , "application/x-ms-shortcut" } ,
 	{ application_x_internet_shortcut , "application/x-internet-shortcut" } ,
 	{ application_x_nintendo_ds_rom , "application/x-nintendo-ds-rom" } ,
-	{ application_x_nintendo_gba_rom , "application/x-nintendo-gba-rom" } 
+	{ application_x_nintendo_gba_rom , "application/x-nintendo-gba-rom" } ,
+	{ application_x_bat , "application/x-bat" } 
 };

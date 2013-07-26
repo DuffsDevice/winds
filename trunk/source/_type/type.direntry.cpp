@@ -120,7 +120,7 @@ _direntry::_direntry( string&& fn ) :
 	if( this->isDirectory() )
 	{
 		this->mimeType = _mime::directory;
-		this->filename += "/";
+		this->filename.push_back('/');
 	}
 	else if( this->name.back() != '.' ) // Must be a file
 	{
@@ -238,7 +238,7 @@ int _direntry::setAttrs( _direntryAttributes attrs )
 }
 
 
-_direntryAttributes _direntry::getAttrs()
+_direntryAttributes _direntry::getAttrs() const
 {	
 	if( !this->fatInited )
 		return 0;
@@ -495,8 +495,8 @@ _u32 _direntry::getSize()
 
 bool _direntry::execute( _cmdArgs&& args )
 {
-	//if( !this->fatInited )
-	//	return false;
+	if( !_system::isRunningOnEmulator() && !this->fatInited )
+		return false;
 	
 	if( this->isDirectory() )
 		return false;
@@ -509,12 +509,14 @@ bool _direntry::execute( _cmdArgs&& args )
 			_program* prog = _program::fromFile( this->getFileName() );
 			if( prog )
 				prog->execute( move( args ) );
-			break;
+			return true;
 		}
+		case _mime::application_x_bat:
+			return _system::executeCommand( this->readString() );
 		default:
-			return false;
+			break;
 	}
-	return true;
+	return false;
 }
 
 
@@ -575,7 +577,7 @@ _bitmap _direntry::getFileImage()
 	return BMP_FileIcon();
 }
 
-bool _direntry::unlink( bool removeContnts )
+bool _direntry::unlink( bool removeContents )
 {
 	if( !this->exists )
 		return false;

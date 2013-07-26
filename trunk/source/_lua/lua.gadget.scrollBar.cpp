@@ -18,7 +18,7 @@ _lua_scrollbar::_lua_scrollbar( lua_State* L ) :
 			, luaL_optstyle( L , 8 )
 		)
 	)
-	, _lua_interface_input( (_scrollBar*)_lua_gadget::gadget )
+	, _lua_interface_input( (_scrollBar*)_lua_gadget::getGadget() )
 { }
 
 //! setValue
