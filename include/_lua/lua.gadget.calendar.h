@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUACALENDAR_
-#define _WIN_LUACALENDAR_
+#ifndef _WIN_L_CALENDAR_
+#define _WIN_L_CALENDAR_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_calendar : public _lua_gadget , public _lua_interface_input<_calendar
 		
 		_lua_calendar( lua_State* L );
 		
-		_lua_calendar( _calendar* c ) : _lua_gadget( c ) , _lua_interface_input( c )
+		_lua_calendar( _calendar* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
 		{ }
 		
 		//! Lunar !//

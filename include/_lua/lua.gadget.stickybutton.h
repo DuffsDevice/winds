@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUASTICKYBUTTON_
-#define _WIN_LUASTICKYBUTTON_
+#ifndef _WIN_L_STICKYBUTTON_
+#define _WIN_L_STICKYBUTTON_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_stickybutton : public _lua_gadget , public _lua_interface_input<_stic
 		
 		_lua_stickybutton( lua_State* L );
 		
-		_lua_stickybutton( _stickybutton* c ) : _lua_gadget( c ) , _lua_interface_input( c )
+		_lua_stickybutton( _stickybutton* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
 		{ }
 		
 		//! setAutoSelect

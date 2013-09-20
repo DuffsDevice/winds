@@ -4,8 +4,6 @@
 #include "_type/type.h"
 #include "_type/type.font.h"
 
-#include <vector>
-
 class _text
 {
 	private:
@@ -18,7 +16,7 @@ class _text
 		_u8				fontSize;
 		
 		//! Array containing start indexes of each wrapped line
-		vector<_u32>	linePositions;
+		_vector<_u32>	linePositions;
 		
 		//! Width in pixels available to the text
 		_length			width;

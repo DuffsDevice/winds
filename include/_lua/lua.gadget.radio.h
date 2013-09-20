@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUARADIO_
-#define _WIN_LUARADIO_
+#ifndef _WIN_L_RADIO_
+#define _WIN_L_RADIO_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_radio : public _lua_gadget , public _lua_interface_input<_radio> {
 		
 		_lua_radio( lua_State* L );
 		
-		_lua_radio( _radio* b ) : _lua_gadget( b ) , _lua_interface_input( b )
+		_lua_radio( _radio* b ) : _lua_gadget( b , false ) , _lua_interface_input( b )
 		{ }
 		
 		//! Lunar !//

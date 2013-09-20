@@ -100,7 +100,7 @@ end
 
 function frame()
 	move()
-	pongBmp.bubbleRefresh( true )
+	pongBmp.redraw()
 end
 
 function move()
@@ -173,16 +173,7 @@ end
 function refresher( event )
 	
 	-- Receive Gadget
-	local port = pongBmp.getBitmapPort();
-	
-	if event.hasClippingRects() then
-		local damagedRects = event.damagedRects
-		damagedRects.toRelative( pongBmp.getAbsolutePosition() )
-		
-		port.addClippingRects( damagedRects )
-	else
-		port.normalizeClippingRects()
-	end
+	local port = pongBmp.getBitmapPort( event )
 	
 	-- reset to black
 	port.fill( "black" )

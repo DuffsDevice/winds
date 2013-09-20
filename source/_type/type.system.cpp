@@ -3,10 +3,9 @@
 #include "_type/type.stringtokenizer.h"
 #include "_type/type.binfile.h"
 #include "_type/type.sound.h"
+#include "_type/type.time.h"
 #include "_gadget/gadget.windows.h"
 #include "func.memory.h"
-#include <time.h>
-#include <stdio.h>
 #include <nds/timers.h>
 #include <nds/arm9/video.h>
 #include <nds/arm9/background.h>
@@ -50,6 +49,26 @@ void _system::debug( const char* fmt , ... )
     // Clean up the va_list
     va_end(args);
 	
+	
+	// Enhance the message!
+	string result = ( string( _time::now() ) + ": " + string( output ) + "\r\n" );
+	
+	// Debug to file
+	_system::_debugFile_->writeString( result );
+	
+	// Debug to screen
+	printf( "%s" , result.c_str() );
+}
+
+void _system::vdebug( const char* fmt , va_list args )
+{
+	if( !fmt )
+		return;
+	
+	static char output[256];
+
+    // Forward the '...' to sprintf
+    vsprintf(output, fmt , args);
 	
 	// Enhance the message!
 	string result = ( string( _time::now() ) + ": " + string( output ) + "\r\n" );
@@ -111,93 +130,9 @@ _tempTime _system::getHighResTime()
 	return ( time >> 15 ) - ( time >> 21 ) - ( time >> 22 ); // Equals time/1000
 }
 
-void _system::terminateTimer( const _callback& cb , bool luaStateRemove )
-{	
-	if( luaStateRemove )
-		for( _pair<const _callback*,_callbackData>& data : _timers_ )
-		{
-			if( ( *data.first == cb ) != 0 )
-				data.second.preDelete = true;
-		}
-	else
-		for( _pair<const _callback*,_callbackData>& data : _timers_ )
-		{
-			if( ( *data.first == cb ) == 1 )
-			{
-				data.second.preDelete = true;
-				return;
-			}
-		}
-}
-
-void _system::runTimers()
-{
-	_tempTime curTime = getHighResTime();
-	
-	//! Move timers from buffer to the global timer-list
-	for( auto tmr : _timersToExecute_ )
-	{
-		// Remove possible duplicates
-		for( _pair<const _callback*,_callbackData>& data : _timers_ )
-		{
-			if( ( *data.first == *tmr.first ) == 1 )
-			{
-				data.second.preDelete = true;
-				break;
-			}
-		}
-		_timers_.push_back( move(tmr) );
-	}
-	_timersToExecute_.clear();
-	
-	//printf("Tmrs: %d\n",_timers_.size());
-	
-	_timers_.erase(
-		remove_if( _timers_.begin() , _timers_.end() ,
-			[&]( _pair<const _callback*,_callbackData>& cb )->bool
-			{
-				_callbackData& data = cb.second;
-				if( data.preDelete )
-					goto deleteLabel;
-				
-				// "while" instead of "if" to make sure even high-frequency timers get called the right number of times
-				while( curTime > data.duration + data.startTime )
-				{
-					(*cb.first)(); // Call...
-					if( data.repeating )
-						data.startTime += data.duration;
-					else
-						goto deleteLabel;
-				}
-				return false;
-				
-				// Control that deletes the current timer
-				deleteLabel:
-				
-				delete cb.first;
-				return true;
-			}
-		)
-		, _timers_.end()
-	);
-}
-
 void _system::switchUser( _user* usr )
 {
 	_system::_rtA_->setUser( usr );
-}
-
-void _system::runAnimations()
-{
-	//! Move animations from buffer to the global timer-list
-	move( _animationsToExecute_.begin() , _animationsToExecute_.end() , back_inserter( _animations_ ) );
-	_animationsToExecute_.clear();
-	
-	// Erase the Program-Instance in the list of running instances
-	_animations_.erase(
-		remove_if( _animations_.begin() , _animations_.end() , [&]( _animation* anim )->bool{ anim->step(); return !anim->isRunning(); } )
-		, _animations_.end()
-	);
 }
 
 namespace{
@@ -216,19 +151,17 @@ void _system::leaveCriticalSection()
 		irqEnable( IRQ_VBLANK ); // Leave critical Section
 }
 
-void _system::executeAnimation( _animation* anim )
-{
-	// Check if the animation is already existing in the list
-	if( find( _animations_.begin() , _animations_.end() , anim ) == _animations_.end()
-		&& find( _animationsToExecute_.begin() , _animationsToExecute_.end() , anim ) == _animationsToExecute_.end()
-	)
-	_animationsToExecute_.push_back( anim );
-}
-
 void _system::executeProgram( _program* prog , _cmdArgs&& args )
 {
 	prog->main( _gadgetHost_ , move(args) ); // Execute main
-	_programs_.push_back( make_pair( prog, _programData( {false,_system::getHighResTime()} ) ) );
+	_programs_.push_back(
+		make_pair(
+			prog
+			, _programData(
+				{ false , _system::getHighResTime() }
+			)
+		)
+	);
 }
 
 void _system::terminateProgram( _program* prog )
@@ -319,28 +252,36 @@ void _system::vblHandler()
 		_system::processInput();
 	if( _system::_keyboard_ )
 		_system::_keyboard_->vbl();
+	
 	// Animations have to be executed !during! the vertical Blank
-	_system::runAnimations();
+	_animation::runAnimations();
 }
 
-void _system::hblHandler()
-{
-	_system::runTimers();
-}
+//void _system::hblHandler()
+//{
+//	_system::runTimers();
+//}
 
 void _system::optimizeEvents()
 {
 	// Shortcut
-	_vector<_event>& events = _system::_eventBuffer_[!_system::_curEventBuffer_];
+	_eventList& events = _system::_eventBuffer_[!_system::_curEventBuffer_];
 	
 	sort( events.begin() , events.end() ,
-		[](_event e1 , _event e2)->bool{
-			return e1.getDestination() == e2.getDestination() ? e1.getType() < e2.getType() : e1.getDestination() < e2.getDestination();
+		[]( _pair<_event,_eventCallType> e1 , _pair<_event,_eventCallType> e2)->bool{
+			if( e1.first.getType() == e2.first.getType() )
+			{
+				if( e1.first != onDraw ) // Only sort events other than 'onDraw'
+					return e1.first.getDestination() < e2.first.getDestination();
+				else
+					return false;
+			}
+			return e1.first.getType() < e2.first.getType();
 		}
 	);
 	
-	events.erase( 
-		unique( events.begin() , events.end() , []( _event& e1 , _event& e2 )->bool{ return e1.mergeWith( e2 ); } )
+	events.erase(
+		unique( events.begin() , events.end() , []( _pair<_event,_eventCallType>& e1 , _pair<_event,_eventCallType>& e2 )->bool{ return e1.second == e2.second && e1.first.mergeWith( e2.first ); } )
 		, events.end()
 	);
 }
@@ -353,39 +294,47 @@ void _system::processEvents()
 	
 	// Optimize out unneccesary events
 	optimizeEvents();
+	//_event first = _system::_eventBuffer_[!_system::_curEventBuffer_].front().first;
+	//printf("Count: %d\n", _system::_eventBuffer_[!_system::_curEventBuffer_].size() );//, eventType2string[ first.getType() ].c_str() , gadgetType2string[ first.getDestination()->getType() ].c_str() );
 	
-	for( _event& event : _system::_eventBuffer_[!_system::_curEventBuffer_] )
+	for( _pair<_event,_eventCallType>& data : _system::_eventBuffer_[!_system::_curEventBuffer_] )
 	{
 		// Temp...
+		_event& event = data.first;
 		_gadget* gadget = event.getDestination();
 		
 		//int t = cpuGetTiming();
 		
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
-			gadget->handleEvent( (_event&&)event );
+		{
+			// Choose the right call-method
+			switch( data.second )
+			{
+				case _eventCallType::normal:
+					gadget->handleEvent( move(event) );
+					break;
+				case _eventCallType::normalNoDef:
+					gadget->handleEvent( move(event) , true );
+					break;
+				case _eventCallType::user:
+					gadget->handleEventUser( move(event) );
+					break;
+				case _eventCallType::internal:
+					gadget->handleEventInternal( move(event) );
+					break;
+				case _eventCallType::def:
+					gadget->handleEventDefault( move(event) );
+					break;
+				default:
+					break;
+			}
+		}
 		
 		//printf("%d\n",cpuGetTiming()-t);
 	}
 	
 	_system::_eventBuffer_[!_system::_curEventBuffer_].clear();
-
-	//if( !_system::_eventBuffer_[_system::_curEventBuffer_].size() )
-	//{
-	//	j++;
-	//	addMethod( reinterpret_cast<void*>(&_memoryfont::drawCharacter),"fontDrawing");
-	//	addMethod( reinterpret_cast<void*>(&_gadget::gadgetRefreshHandler),"refresh");
-	//	addMethod( reinterpret_cast<void*>(&_bitmap::copyTransparent),"copyAlgo");
-	//	addMethod( reinterpret_cast<void*>(&_rect::reduce),"reduceAlgo");
-	//	addMethod( reinterpret_cast<void*>(&_rect::toRelative),"toRelative");
-	//	
-	//	printResults();
-	//	if( j > 60 )
-	//	{
-	//		printf("%d\n",z);
-	//		while(true);
-	//	}
-	//}
 }
 
 
@@ -418,19 +367,18 @@ void _system::processInput()
 			else
 				_system::_keyboard_->open();
 		}
-		if( keysDown() & KEY_L )
+		if( _system::_keyboard_->isOpened() )
 		{
-			if( _system::_keyboard_->isOpened() )
+			keys &= ~KEY_L;
+			keys &= ~KEY_R;
+			if( keysDown() & KEY_L )
 			{
 				if( _system::_keyboard_->isShift() )
 					_system::_keyboard_->setShift( false );
 				else
 					_system::_keyboard_->setShift( true );
 			}
-		}
-		if( keysDown() & KEY_R )
-		{
-			if( _system::_keyboard_->isOpened() )
+			if( keysDown() & KEY_R )
 			{
 				if( _system::_keyboard_->isCaps() )
 					_system::_keyboard_->setCaps( false );
@@ -469,17 +417,17 @@ void _system::processInput()
 			if( heldCycles[i] == 0 )
 			{
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->triggerEvent( event.setType( keyDown ) );
+					_system::_currentFocus_->triggerEvent( event.setType( onKeyDown ) );
 				else
-					_system::_gadgetHost_->triggerEvent( event.setType( keyDown ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( onKeyDown ) );
 			}
 			else if( user.kRD && heldCycles[i] > user.kRD && heldCycles[i] % user.kRS == 0 )
 			{
 				// Set the Args and Trigger the Event
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->triggerEvent( event.setType( keyRepeat ) );
+					_system::_currentFocus_->triggerEvent( event.setType( onKeyRepeat ) );
 				else
-					_system::_gadgetHost_->triggerEvent( event.setType( keyRepeat ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( onKeyRepeat ) );
 			}
 			
 			// Increase Cycles
@@ -489,7 +437,7 @@ void _system::processInput()
 		else if( heldCycles[i] > 0 )
 		{
 			// Set the Args
-			event.setType( keyUp );
+			event.setType( onKeyUp );
 			
 			// Trigger the Event
 			if( _system::_currentFocus_ )
@@ -502,9 +450,9 @@ void _system::processInput()
 			if( heldCycles[i] < user.mCC )
 			{
 				if( _system::_currentFocus_ )
-					_system::_currentFocus_->triggerEvent( event.setType( keyClick ) );
+					_system::_currentFocus_->triggerEvent( event.setType( onKeyClick ) );
 				else
-					_system::_gadgetHost_->triggerEvent( event.setType( keyClick ) );
+					_system::_gadgetHost_->triggerEvent( event.setType( onKeyClick ) );
 			}
 			
 			// Reset Cycles
@@ -603,7 +551,7 @@ void _system::start()
 		//_sound::enable();
 		
 		//! Set Memory-Alloc-Error-Handler
-		set_new_handler( &_system::newHandler );
+		std::set_new_handler( &_system::newHandler );
 		
 		_system::setLanguage( (_language) PersonalData->language );
 	
@@ -656,7 +604,7 @@ void _system::start()
 
 _language _system::getLanguage()
 {
-	static map<string,_language> mp = {
+	static _map<string,_language> mp = {
 		{ "e" , _language::english }
 		,{ "f" , _language::french }
 		,{ "g" , _language::german }
@@ -665,6 +613,14 @@ _language _system::getLanguage()
 	};
 	
 	return mp[_system::_curLanguageShortcut_];
+}
+
+string _system::getDSUserName()
+{
+	string name;
+	for( int i = 0 ; i < PersonalData->nameLen ; i++ )
+		name += PersonalData->name[i];
+	return name;
 }
 
 void _system::setLanguage( _language lang )
@@ -719,7 +675,6 @@ void _system::submit(){
 }
 
 void _system::main(){
-	printf("Size: %d\n",sizeof(_event));
 	_systemController::main();
 }
 
@@ -769,10 +724,6 @@ void _system::shutDown(){
 
 //! Static Attributes...
 bool 						_system::_sleeping_ = false;
-_animationList				_system::_animations_;
-_animationList				_system::_animationsToExecute_;
-_timerList					_system::_timers_;
-_timerList					_system::_timersToExecute_;
 _map<string,const _font*>	_system::_fonts_;
 _registry*					_system::_localizationTextTable_;
 _registry*					_system::_localizationMonthTable_;
@@ -793,4 +744,4 @@ int							_system::_cpuUsageTemp_;
 
 //! Events
 int							_system::_curEventBuffer_ = 0;
-_vector<_event> 			_system::_eventBuffer_[2];
+_eventList					_system::_eventBuffer_[2];

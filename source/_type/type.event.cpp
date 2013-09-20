@@ -14,6 +14,63 @@ void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 	this->damagedRects = nullptr;
 }
 
+bool _event::mergeWith( _event& event )
+{
+	if( this->type != event.type )
+		return false;
+	if( this->gadget != event.gadget || !this->gadget )
+		return false;
+	switch( this->type )
+	{
+		case onDragging:
+		case onScroll:
+			this->deltaX += event.deltaX;
+			this->deltaY += event.deltaY;
+			this->posX = event.posX;
+			this->posY = event.posY;
+			this->effectiveX = event.effectiveX;
+			this->effectiveY = event.effectiveY;
+			this->keyCode = event.keyCode;
+			this->currentKeyCodes |= event.currentKeyCodes;
+			break;
+		case onDraw:
+			return ( !this->damagedRects || this->damagedRects->empty() ) && ( !event.damagedRects || event.damagedRects->empty() );
+		case onEdit:
+		case onUpdate:
+			break;
+		case onResize:
+		case onMove:
+		case onRestyle:
+		case onSet:
+		case onParentResize:
+		case onParentMove:
+		case onParentRestyle:
+		case onParentSet:
+		case onChildResize:
+		case onChildMove:
+		case onChildRestyle:
+		case onChildSet:
+		case onPreResize:
+		case onPreMove:
+		case onPreRestyle:
+		case onPreSet:
+		case onPostResize:
+		case onPostMove:
+		case onPostRestyle:
+		case onPostSet:
+			return this->depParam.gadget == event.depParam.gadget;
+		case onVisibility:
+		case onParentVisibility:
+		case onChildVisibility:
+		case onPreVisibility:
+		case onPostVisibility:
+			return this->depParam.gadget == event.depParam.gadget && this->depParam.flag != event.depParam.flag;
+		default:
+			return false;
+	}
+	return true;
+}
+
 _map<string,_callbackReturn> string2callbackReturn = {
 	{ "handled" , handled },
 	{ "prevent_default" , prevent_default },
@@ -32,23 +89,22 @@ _map<_callbackReturn,string> callbackReturn2string = {
 
 _map<string,_eventType> string2eventType = {
 	{ "_none_" , _none_ },
-	{ "_internal_" , _internal_ },
-	{ "refresh" , refresh },
-	{ "mouseRepeat" , mouseRepeat },
-	{ "mouseClick" , mouseClick },
-	{ "mouseDoubleClick" , mouseDoubleClick },
-	{ "mouseDown" , mouseDown },
-	{ "mouseUp" , mouseUp },
-	{ "keyDown" , keyDown },
-	{ "keyUp" , keyUp },
-	{ "keyClick" , keyClick },
-	{ "keyRepeat" , keyRepeat },
-	{ "dragStart" , dragStart },
-	{ "dragStop" , dragStop },
-	{ "dragging" , dragging },
-	{ "onResize" , onResize },
-	{ "onAction" , onAction },
-	{ "onChange" , onChange },
+	{ "onDraw" , onDraw },
+	{ "onMouseClick" , onMouseClick },
+	{ "onMouseDblClick" , onMouseDblClick },
+	{ "onMouseDown" , onMouseDown },
+	{ "onMouseUp" , onMouseUp },
+	{ "onMouseRepeat" , onMouseRepeat },
+	{ "onKeyDown" , onKeyDown },
+	{ "onKeyUp" , onKeyUp },
+	{ "onKeyClick" , onKeyClick },
+	{ "onKeyRepeat" , onKeyRepeat },
+	{ "onDragStart" , onDragStart },
+	{ "onDragStop" , onDragStop },
+	{ "onDragging" , onDragging },
+	
+	{ "onUpdate" , onUpdate },
+	{ "onEdit" , onEdit },
 	{ "onBlur" , onBlur },
 	{ "onFocus" , onFocus },
 	{ "onOpen" , onOpen },
@@ -60,29 +116,52 @@ _map<string,_eventType> string2eventType = {
 	{ "onMinimize" , onMinimize },
 	{ "onRestore" , onRestore },
 	{ "onScroll" , onScroll },
-	{ "onStyleSet" , onStyleSet },
-	{ "onDelete" , onDelete },
+	
+	{ "onResize" , onResize },
+	{ "onMove" , onMove },
+	{ "onRestyle" , onRestyle },
+	{ "onVisibility" , onVisibility },
+	{ "onSet" , onSet },
+	{ "onParentResize" , onParentResize },
+	{ "onParentMove" , onParentMove },
+	{ "onParentRestyle" , onParentRestyle },
+	{ "onParentVisibility" , onParentVisibility },
+	{ "onParentSet" , onParentSet },
+	{ "onChildResize" , onChildResize },
+	{ "onChildMove" , onChildMove },
+	{ "onChildRestyle" , onChildRestyle },
+	{ "onChildVisibility" , onChildVisibility },
+	{ "onChildSet" , onChildSet },
+	{ "onPreResize" , onPreResize },
+	{ "onPreMove" , onPreMove },
+	{ "onPreRestyle" , onPreRestyle },
+	{ "onPreVisibility" , onPreVisibility },
+	{ "onPreSet" , onPreSet },
+	{ "onPostResize" , onPostResize },
+	{ "onPostMove" , onPostMove },
+	{ "onPostRestyle" , onPostRestyle },
+	{ "onPostVisibility" , onPostVisibility },
+	{ "onPostSet" , onPostSet }
 };
 
 _map<_eventType,string> eventType2string = {
 	{ _none_ , "_none_" },
-	{ _internal_ , "_internal_" },
-	{ refresh , "refresh" },
-	{ mouseRepeat , "mouseRepeat" },
-	{ mouseClick , "mouseClick" },
-	{ mouseDoubleClick , "mouseDoubleClick" },
-	{ mouseDown , "mouseDown" },
-	{ mouseUp , "mouseUp" },
-	{ keyDown , "keyDown" },
-	{ keyUp , "keyUp" },
-	{ keyClick , "keyClick" },
-	{ keyRepeat , "keyRepeat" },
-	{ dragStart , "dragStart" },
-	{ dragStop , "dragStop" },
-	{ dragging , "dragging" },
-	{ onResize , "onResize" },
-	{ onAction , "onAction" },
-	{ onChange , "onChange" },
+	{ onDraw , "onDraw" },
+	{ onMouseRepeat , "onMouseRepeat" },
+	{ onMouseClick , "onMouseClick" },
+	{ onMouseDblClick , "onMouseDblClick" },
+	{ onMouseDown , "onMouseDown" },
+	{ onMouseUp , "onMouseUp" },
+	{ onKeyDown , "onKeyDown" },
+	{ onKeyUp , "onKeyUp" },
+	{ onKeyClick , "onKeyClick" },
+	{ onKeyRepeat , "onKeyRepeat" },
+	{ onDragStart , "onDragStart" },
+	{ onDragStop , "onDragStop" },
+	{ onDragging , "onDragging" },
+
+	{ onUpdate , "onUpdate" },
+	{ onEdit , "onEdit" },
 	{ onBlur , "onBlur" },
 	{ onFocus , "onFocus" },
 	{ onOpen , "onOpen" },
@@ -94,33 +173,30 @@ _map<_eventType,string> eventType2string = {
 	{ onMinimize , "onMinimize" },
 	{ onRestore , "onRestore" },
 	{ onScroll , "onScroll" },
-	{ onStyleSet , "onStyleSet" },
-	{ onDelete , "onDelete" },
+	
+	{ onResize , "onResize" },
+	{ onMove , "onMove" },
+	{ onRestyle , "onRestyle" },
+	{ onVisibility , "onVisibility" },
+	{ onSet , "onSet" },
+	{ onParentResize , "onParentResize" },
+	{ onParentMove , "onParentMove" },
+	{ onParentRestyle , "onParentRestyle" },
+	{ onParentVisibility , "onParentVisibility" },
+	{ onParentSet , "onParentSet" },
+	{ onChildResize , "onChildResize" },
+	{ onChildMove , "onChildMove" },
+	{ onChildRestyle , "onChildRestyle" },
+	{ onChildVisibility , "onChildVisibility" },
+	{ onChildSet , "onChildSet" },
+	{ onPreResize , "onPreResize" },
+	{ onPreMove , "onPreMove" },
+	{ onPreRestyle , "onPreRestyle" },
+	{ onPreVisibility , "onPreVisibility" },
+	{ onPreSet , "onPreSet" },
+	{ onPostResize , "onPostResize" },
+	{ onPostMove , "onPostMove" },
+	{ onPostRestyle , "onPostRestyle" },
+	{ onPostVisibility , "onPostVisibility" },
+	{ onPostSet , "onPostSet" }
 };
-
-bool _event::mergeWith( _event& event )
-{
-	if( this->type != event.type )
-		return false;
-	if( this->gadget != event.gadget || !this->gadget )
-		return false;
-	switch( this->type )
-	{
-		case _eventType::dragging:
-		case _eventType::onScroll:
-			this->deltaX += event.deltaX;
-			this->deltaY += event.deltaY;
-			this->posX = event.posX;
-			this->posY = event.posY;
-			this->effectiveX = event.effectiveX;
-			this->effectiveY = event.effectiveY;
-			this->keyCode = event.keyCode;
-			this->currentKeyCodes |= event.currentKeyCodes;
-			break;
-		case _eventType::refresh:
-			return ( !this->damagedRects || this->damagedRects->empty() ) && ( !event.damagedRects || event.damagedRects->empty() );
-		default:
-			return false;
-	}
-	return true;
-}

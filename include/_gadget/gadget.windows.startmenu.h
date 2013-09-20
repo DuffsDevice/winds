@@ -2,9 +2,9 @@
 #define _WIN_G_STARTMENU_
 
 #include "_type/type.gadget.h"
-#include "_gadget/gadget.contextMenu.h"
+#include "_gadget/gadget.popup.h"
 
-class _startMenu : public _contextMenu{
+class _startMenu : public _popup{
 	
 	private:
 	

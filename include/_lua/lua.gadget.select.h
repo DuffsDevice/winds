@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUASELECT_
-#define _WIN_LUASELECT_
+#ifndef _WIN_L_SELECT_
+#define _WIN_L_SELECT_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -17,7 +17,7 @@ class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
 		
 		_lua_select( lua_State* L );
 		
-		_lua_select( _select* s ) : _lua_gadget( s ) , _lua_interface_input( s ) { }
+		_lua_select( _select* s ) : _lua_gadget( s , false ) , _lua_interface_input( s ) { }
 		
 		//! addIndex
 		int addIndex( lua_State* L );

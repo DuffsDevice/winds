@@ -18,7 +18,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/_resource source/_gadget source/_lua source/_type source/_library source/_library/_freetype source/_asm
+SOURCES		:=	source source/_resource source/_gadget source/_lua source/_type source/_library source/_scenario source/_dialog
 INCLUDES	:=	include
 DATA		:=	data  
 GRAPHICS	:=	gfx
@@ -39,8 +39,9 @@ CFLAGS	:=	-g -Wall -O2\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9 -Wno-sign-compare
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=c++11 -O3 -Wall -Wextra -Wno-unused-parameter -save-temps
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=c++11 -O3 -Wall -Wextra -Wno-unused-parameter -Wno-psabi
 ## C++0x:   -std=gnu++0x;
+## ASM Out:	-save-temps
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

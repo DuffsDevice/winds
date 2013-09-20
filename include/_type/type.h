@@ -10,13 +10,14 @@
 #include <array>
 #include <string>
 #include <map>
-using namespace std;
+#include <tuple>
+#include <functional>
 
 //! Code-sections
 #include <nds/memory.h>
 
 //! Undefine if you don't want any speed profiling
-//#define DEBUG_PROFILING
+#define DEBUG_PROFILING
 
 //! Overload new and delete
 void* operator new(size_t size) __attribute__((malloc));
@@ -36,25 +37,44 @@ template<typename...T>
 	using _tuple = std::tuple<T...>;
 template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
-typedef uint8_t 			_u8;
-typedef int8_t 				_s8;
-typedef uint16_t 			_u16;
-typedef int16_t 			_s16;
-typedef uint32_t 			_u32;
-typedef int32_t 			_s32;
-typedef uint64_t 			_u64;
-typedef int64_t 			_s64;
-typedef char				_char;
-typedef _u16 				_length;
-typedef _s16 				_coord;
-typedef int 				_int;
-typedef _u16 				_key;
-typedef short unsigned int 	_pixel;
-typedef _pixel* 			_pixelArray;
-typedef float 				_float;
-typedef _u64 				_tempTime;
-typedef basic_string<_char>	string;
-typedef _vector<string>		_cmdArgs;
+template<typename T>
+	using _initializerList = std::initializer_list<T>;
+
+using std::make_pair;
+using std::make_tuple;
+using std::move;
+using std::forward;
+using std::function;
+using std::ignore;
+
+typedef uint8_t 					_u8;
+typedef int8_t 						_s8;
+typedef uint16_t 					_u16;
+typedef int16_t 					_s16;
+typedef uint32_t 					_u32;
+typedef int32_t 					_s32;
+typedef uint64_t 					_u64;
+typedef int64_t 					_s64;
+typedef _s16 						_length;
+typedef _s16 						_coord;
+typedef char						_char;
+typedef int 						_int;
+typedef _u16 						_key;
+typedef short unsigned int 			_pixel;
+typedef _pixel* 					_pixelArray;
+typedef float 						_float;
+typedef _u64 						_tempTime;
+typedef std::basic_string<_char>	string;
+typedef _vector<string>				_cmdArgs;
+
+enum class _dimension : _u8{
+	horizontal = 0 ,
+	vertical = 1
+};
+
+//! Convert _dimension to string and back
+extern _map<_dimension,string> dimension2string;
+extern _map<string,_dimension> string2dimension;
 
 #define unused __attribute__(( unused ))
 #define noinline __attribute__ ((noinline))
@@ -84,6 +104,8 @@ union						_2s32
 	_2s32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
 	_2s32& operator*=( _s32 val ){ first *= val; second *= val; return *this; }
 	_2s32& operator/=( _s32 val ){ first /= val; second /= val; return *this; }
+	bool operator==( _2s32 val ){ return val.val == this->val; }
+	bool operator!=( _2s32 val ){ return val.val != this->val; }
 };
 
 static unused _2s32 operator-( const _2s32& val ){ return _2s32( -val.first , -val.second ); }
@@ -108,10 +130,12 @@ union 						_2u32
 	_2u32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
 	_2u32& operator*=( _u32 val ){ first *= val; second *= val; return *this; }
 	_2u32& operator/=( _u32 val ){ first /= val; second /= val; return *this; }
+	bool operator==( _2u32 val ){ return val.val == this->val; }
+	bool operator!=( _2u32 val ){ return val.val != this->val; }
 };
 
-extern _length SCREEN_WIDTH;
-extern _length SCREEN_HEIGHT;
+static const _length SCREEN_WIDTH = 256;
+static const _length SCREEN_HEIGHT = 192;
 
 //! Some constraints
 template<class T, class B> struct subclass_of {
@@ -171,23 +195,24 @@ static inline void RGB_SETA( _pixel& c , bool alpha ){ c = ( c & ~( 1 << 15 ) ) 
 extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
 
 //! Reads an int from a string
-extern int string2int( const _char * str ) __attribute__(( nonnull (1) ));
+extern int string2int( const _char* str ) __attribute__(( nonnull (1) ));
+static unused int string2int( string str ){ return string2int( str.c_str() ); }
 
 //! Converts an int to string
 extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 
 //! Predefined colors
-#define COLOR_TRANSPARENT (_pixel(0))
-#define COLOR_YELLOW 	(RGB(31,31,0))
-#define COLOR_GREEN 	(RGB(0,31,0))
-#define COLOR_CYAN 		(RGB(0,31,31))
-#define COLOR_BLUE 		(RGB(0,0,31))
-#define COLOR_MAGENTA 	(RGB(31,0,31))
-#define COLOR_RED 		(RGB(31,0,0))
-#define COLOR_GRAY 		(RGB(15,15,15))
-#define COLOR_BLACK 	(_pixel(1<<15))
-#define COLOR_WHITE 	(_pixel((1<<16)-1))
-#define NO_COLOR 		0
+#define COLOR_TRANSPARENT	(_pixel(0))
+#define COLOR_YELLOW 		(RGB(31,31,0))
+#define COLOR_GREEN 		(RGB(0,31,0))
+#define COLOR_CYAN 			(RGB(0,31,31))
+#define COLOR_BLUE 			(RGB(0,0,31))
+#define COLOR_MAGENTA 		(RGB(31,0,31))
+#define COLOR_RED 			(RGB(31,0,0))
+#define COLOR_GRAY 			(RGB(15,15,15))
+#define COLOR_BLACK 		(_pixel(1<<15))
+#define COLOR_WHITE 		(_pixel((1<<16)-1))
+#define NO_COLOR 			(_pixel(0))
 
 
 #undef BIT
@@ -206,6 +231,10 @@ static constexpr inline T ROL( T value , _int shift ){ return ( value << shift )
 
 template<typename T>
 static constexpr inline T ROR( T value , _int shift ){ return ( value >> shift ) | ( value << ( sizeof(T) * 8 - shift ) ); }
+
+//! Minimum and Maximum of two
+using std::min;
+using std::max;
 
 //! Calculate the Median value of three
 _s32 mid( _s32 a , _s32 b , _s32 c );
@@ -301,6 +330,37 @@ struct _margin : _border{
 	_margin( _length l , _length t , _length r , _length b ) : _border( l , t , r , b ) {}
 	_margin( _length width ) : _border( width ) {}
 	_margin(){}
+};
+
+template<typename T>
+class _optValue
+{
+	private:
+		T		val;
+		_u8		isGiven;
+	
+	public:
+		
+		_optValue( T&& val ) : val( move( val ) ) , isGiven( true ) { }
+		_optValue( const T& val ) : val( val ) , isGiven( true ) { }
+		_optValue( decltype(std::ignore) = std::ignore ) : val() , isGiven( false ) { }
+		
+		bool isValid() const { return isGiven; }
+		_optValue<T>& operator =( T&& val ){ this->val = move(val); isGiven = true; return *this; }
+		_optValue<T>& operator =( const T& val ){ this->val = val; isGiven = true; return *this; }
+		_optValue<T>& operator =( decltype(std::ignore) ){ this->val = T(); isGiven = false; return *this; }
+		
+		template<typename T2>
+		operator T2&&(){ return (T2&&)val; }
+		
+		template<typename T2>
+		operator const T2&() const { return (T2)val; }
+		
+		template<typename T2>
+		operator _optValue<T2>&&(){ return isGiven ? _optValue<T2>( (T2&&)val ) : _optValue<T2>(); }
+		
+		template<typename T2>
+		operator const _optValue<T2>&() const { return isGiven ? _optValue<T2>( (T2)val ) : _optValue<T2>(); }
 };
 
 

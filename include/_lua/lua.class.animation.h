@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAANIMATION_
-#define _WIN_LUAANIMATION_
+#ifndef _WIN_L_ANIMATION_
+#define _WIN_L_ANIMATION_
 
 #include "_lua/lunar.h"
 #include "_type/type.h"

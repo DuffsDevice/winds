@@ -19,7 +19,7 @@ class _stickybutton : public _button
 	public:
 		
 		//! Set, whether the button is stuck down
-		void setStuckDown( bool stuck ){ if( this->pressed == stuck ) return; this->pressed = stuck; this->bubbleRefresh( true ); }
+		void setStuckDown( bool stuck ){ if( this->pressed == stuck ) return; this->pressed = stuck; this->redraw(); }
 		void setIntValue( bool value ){ setStuckDown( value ); }
 		
 		//! Check whether the button is stuck down

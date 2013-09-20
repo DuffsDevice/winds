@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAAREA_
-#define _WIN_LUAAREA_
+#ifndef _WIN_L_AREA_
+#define _WIN_L_AREA_
 
 #include "_lua/lunar.h"
 #include "_type/type.rect.h"
@@ -28,6 +28,9 @@ class _lua_area : public _area {
 		
 		//! clipToIntersect
 		int clipToIntersect(lua_State* L);
+		
+		//! dump
+		int dump(lua_State* L);
 		
 		//! Lunar !//
 		static const char className[];

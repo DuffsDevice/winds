@@ -2,21 +2,21 @@
 #ifndef _WIN_T_BITMAPPORT_
 #define _WIN_T_BITMAPPORT_
 
+#include "_type/type.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.rect.h"
-#include "_type/type.h"
 
-class _bitmapPort{
-	
-	friend class _gadget;
-	
+class _bitmapPort
+{	
 	private:
+		
+		friend class _gadget;
+		
+		//! Base Bitmap
+		_bitmap& base;
 		
 		//! A list of Clipping-Rects
 		_area clippingRects;
-		
-		//! Base Bitmap
-		_bitmap* base;
 		
 	public:
 		
@@ -24,37 +24,47 @@ class _bitmapPort{
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		 */
-		_bitmapPort( _bitmap& bm ) : base( &bm ) {}
+		_bitmapPort( _bitmap& bm ) :
+			base( bm )
+		{}
 		
 		/**
 		 * Construcor
 		 * @param bm the base _bitmap the work is done on
 		 * @param clippings clippingRects to work in
 		 */
-		_bitmapPort( _bitmap& bm , _area clippings ) : clippingRects( clippings ) , base( &bm ) {}
+		_bitmapPort( _bitmap& bm , _area&& clippings ) :
+			base( bm )
+			, clippingRects( (_area&&)clippings )
+		{
+			this->clippingRects.clipToIntersect( _rect( 0 , 0 , this->getWidth() , this->getHeight() ) );
+		}
+		_bitmapPort( _bitmap& bm , const _area& clippings ) :
+			_bitmapPort( bm , _area(clippings) )
+		{}
 		
 		/**
 		 * Add a Clipping Rect to the list
 		 * @param cR the Clipping-Rect to add
 		 */
-		void addClippingRect( _rect cR ){	
-			clippingRects.add( cR );
+		void addClippingRect( _rect cR ){
+			this->clippingRects.add( cR.clipToIntersect( _rect( 0 , 0 , this->getWidth() , this->getHeight() ) ) );
 		}
 		
 		/**
 		 * Add a couple of Clipping Rects to the list
 		 * @param cR the Clipping-Rect to add
 		 */
-		void addClippingRects( _area cR ){
-			clippingRects.add( cR );
+		void addClippingRects( _area cRs ){
+			this->clippingRects.add( cRs.clipToIntersect( _rect( 0 , 0 , this->getWidth() , this->getHeight() ) ) );
 		}
 		
 		/**
 		 * Add a Clipping-Rect, that is full size
 		 */
 		void normalizeClippingRects(){
-			clippingRects.clearRects();
-			clippingRects.add( _rect( 0 , 0 , this->base->getWidth() , this->base->getHeight() ) );
+			this->deleteClippingRects();
+			this->clippingRects.add( _rect( 0 , 0 , this->base.getWidth() , this->base.getHeight() ) );
 		}
 		
 		/**
@@ -68,14 +78,14 @@ class _bitmapPort{
 		 * Operator for [i] to get a specific position of the bmp
 		 */
 		_pixel& operator[]( const _u32 pos ){
-			return (*this->base)[pos];
+			return this->base[pos];
 		}
 		
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
 		 */
 		_pixel& operator()( const _coord x , const _coord y ){
-			return (*this->base)( x , y );
+			return this->base( x , y );
 		}
 		
 		/**
@@ -83,7 +93,7 @@ class _bitmapPort{
 		 * @return u16 Width of the _bitmap
 		 */
 		_length getWidth() const {
-			return this->base->getWidth();
+			return this->base.getWidth();
 		}
 		
 		/**
@@ -91,7 +101,7 @@ class _bitmapPort{
 		 * @return u16 Height of the _bitmap
 		 */
 		_length getHeight() const {
-			return this->base->getHeight();
+			return this->base.getHeight();
 		}
 		
 		/**
@@ -101,7 +111,7 @@ class _bitmapPort{
 		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
 		 */
 		_pixel getPixel( const _coord x , const _coord y ) const {
-			return this->base->getPixel( x , y );
+			return this->base.getPixel( x , y );
 		}
 		
 		/**

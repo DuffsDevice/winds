@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUATEXTBOX_
-#define _WIN_LUATEXTBOX_
+#ifndef _WIN_L_TEXTBOX_
+#define _WIN_L_TEXTBOX_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_textbox : public _lua_gadget , public _lua_interface_input<_textbox> 
 		
 		_lua_textbox( lua_State* L );
 		
-		_lua_textbox( _textbox* t ) : _lua_gadget( t ) , _lua_interface_input( t ) { }
+		_lua_textbox( _textbox* t ) : _lua_gadget( t , false ) , _lua_interface_input( t ) { }
 		
 		//! setCursor
 		int setCursor( lua_State* L );

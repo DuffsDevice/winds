@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAEVENT_
-#define _WIN_LUAEVENT_
+#ifndef _WIN_L_EVENT_
+#define _WIN_L_EVENT_
 
 #include "_lua/lunar.h"
 #include "_type/type.event.h"

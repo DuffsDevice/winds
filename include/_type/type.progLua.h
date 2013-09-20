@@ -27,8 +27,6 @@ class _progLua : public _program
 		static int	lua_getLocalizedString( lua_State* L );
 		static int	lua_getCurrentFocus( lua_State* L );
 		static int	lua_addChild( lua_State* L );
-		static int	lua_executeTimer( lua_State* L );
-		static int	lua_terminateTimer( lua_State* L );
 		static int	lua_readRegistryIndex( lua_State* L );
 		static int	lua_writeRegistryIndex( lua_State* L );
 		static int	lua_deleteRegistryIndex( lua_State* L );
@@ -38,7 +36,9 @@ class _progLua : public _program
 		static int	lua_colorChangePhrase( lua_State* L );
 		static int	lua_sizeChangePhrase( lua_State* L );
 		static int	lua_RGB( lua_State* L );
+		static int	lua_RGB255( lua_State* L );
 		static int	lua_RGBA( lua_State* L );
+		static int	lua_RGBA255( lua_State* L );
 		static int	lua_RGB_GETR( lua_State* L );
 		static int	lua_RGB_GETG( lua_State* L );
 		static int	lua_RGB_GETB( lua_State* L );
@@ -55,7 +55,7 @@ class _progLua : public _program
 		static int	lua_exit( lua_State* L );
 		
 		//! Register DSWindows-Libs
-		static int	lua_requirePackage( lua_State* L );
+		static int	lua_usingClass( lua_State* L );
 		
 		//! registers system.* namespace
 		void registerSystem();

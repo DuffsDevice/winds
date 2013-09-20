@@ -12,14 +12,11 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 	
 	_progressbar* that = event.getGadget<_progressbar>();
 	
-	_bitmapPort bP = that->getBitmapPort();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
+	
 	_coord myW = bP.getWidth();
 	_coord myH = bP.getHeight();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
 	
 	bP.drawRect( 0 , 0 , myW , myH , RGB( 16 , 16 , 16 ) );
 	
@@ -78,7 +75,9 @@ void _progressbar::step()
 {
 	if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
 		this->state = 0;
-	bubbleRefresh( true );
+	
+	// Refresh
+	this->redraw();
 }
 
 
@@ -89,11 +88,11 @@ void _progressbar::setBarType( bool type )
 		this->type = type;
 		if( type )
 		{
-			_system::terminateTimer( _classCallback( this , &_progressbar::step ) );
-			this->bubbleRefresh( true );
+			this->timer.terminate();
+			this->redraw();
 		}
 		else
-			_system::executeTimer( _classCallback( this , &_progressbar::step ) , 120 , true ); // Progressbar-update-frequency: 120ms
+			this->timer.start();
 	}
 }
 
@@ -102,17 +101,13 @@ _progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _
 	, type( !type )
 	, value( 70 )
 	, blue( false )
+	, timer( make_callback( this , &_progressbar::step ) , 120 , true ) // Progressbar-update-frequency: 120ms
 {	
 	this->setBarType( type );
 	
 	// Register my handler as the default Refresh-Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_progressbar::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_progressbar::refreshHandler ) );
 	
 	// refresh!
-	this->refreshBitmap();
-}
-
-
-_progressbar::~_progressbar(){
-	_system::terminateTimer( _classCallback( this , &_progressbar::step ) );
+	this->redraw();
 }

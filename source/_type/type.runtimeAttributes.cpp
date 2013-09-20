@@ -38,16 +38,16 @@ _runtimeAttributes::_runtimeAttributes( _user* user ) :
 	this->keyboardText[0] = {
 		"1" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "0" ,
 		"q" , "w" , "e" , "r" , "t" , "z" , "u" , "i" , "o" , "p" ,
-		"a" , "s" , "d" , "f" , "g" , "h" , "j" , "k" , "l" , string(1,glyph::backspace) ,
-		string(1,glyph::caps) , "y" , "x" , "c" , "v" , "b" , "n" , "m" , "." , string(1,glyph::carriageReturn) ,
-		string(1,glyph::shift) , string(1,glyph::windows) , "Space" , "," , "-" , string(1,glyph::shift)
+		"a" , "s" , "d" , "f" , "g" , "h" , "j" , "k" , "l" , string(1,_glyph::backspace) ,
+		string(1,_glyph::caps) , "y" , "x" , "c" , "v" , "b" , "n" , "m" , "." , string(1,_glyph::carriageReturn) ,
+		string(1,_glyph::shift) , string(1,_glyph::windows) , "Space" , "," , "-" , string(1,_glyph::shift)
 	};
 	this->keyboardText[1] = {
 		"!" , "\"" , "#" , "?" , "%" , "&" , "/" , "(" , ")" , "=" ,
 		"Q" , "W" , "E" , "R" , "T" , "Z" , "U" , "I" , "O" , "P" ,
-		"A" , "S" , "D" , "F" , "G" , "H" , "J" , "K" , "L" , string( 1 , glyph::backspace) ,
-		string(1,glyph::capsPressed) , "Y" , "X" , "C" , "V" , "B" , "N" , "M" , "+" , string(1,glyph::carriageReturn) ,
-		string(1,glyph::shiftPressed) , string(1,glyph::windows) , "Space" , ";" , "_" , string(1,glyph::shiftPressed)
+		"A" , "S" , "D" , "F" , "G" , "H" , "J" , "K" , "L" , string( 1 , _glyph::backspace) ,
+		string(1,_glyph::capsPressed) , "Y" , "X" , "C" , "V" , "B" , "N" , "M" , "+" , string(1,_glyph::carriageReturn) ,
+		string(1,_glyph::shiftPressed) , string(1,_glyph::windows) , "Space" , ";" , "_" , string(1,_glyph::shiftPressed)
 	};
 }
 

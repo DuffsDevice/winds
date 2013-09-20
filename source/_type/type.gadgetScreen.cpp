@@ -1,16 +1,15 @@
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
+#include <nds/arm9/background.h>
 
 _gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _style&& style ) :
-	_gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , true_type() , (_style&&)style )
-	, _screen( bgId )
+	_screen( bgId )
+	, _gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT ) , (_style&&)style )
 	, screenType( sType )
 	, touchCycles( 0 )
 	, cyclesLastClick( 0 )
 	, isDragging( false )
 {
-	//! Allocate bitmap using the base Memory of the Background-Layer
-	this->bitmap = _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT );
 }
 
 
@@ -54,7 +53,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		{
 			// Trigger the Event
 			if( newTouchInside )
-				this->triggerEvent( event.setType( mouseDown ) );
+				this->triggerEvent( event.setType( onMouseDown ) );
 			
 			// Set the starting Point of the mouseDown here!
 			this->startTouch = newTouch;
@@ -75,7 +74,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			
 			
 			// Trigger the Event
-			this->triggerEvent( event.setType( dragging ) );
+			this->triggerEvent( event.setType( onDragging ) );
 			
 			
 			// Make ready for next frame!
@@ -101,14 +100,14 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 				event.setEffectivePosX( startTouch.x ).setEffectivePosY( startTouch.y ).setPosX( newStartTouch.x ).setPosY( newStartTouch.y );
 				
 				// start dragging
-				this->triggerEvent( event.setType( dragStart ) );
+				this->triggerEvent( event.setType( onDragStart ) );
 				this->isDragging = true;
 				
 				this->lastTouch = this->startTouch;
 			}
 			// If not dragging and If the current clicked gadget wants to have mouseClicks Repeating
 			else if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( _system::getUser()->kRD && this->touchCycles > _system::getUser()->kRD && this->touchCycles % _system::getUser()->kRS == 0 ) )
-				this->triggerEvent( event.setType( mouseRepeat ) );
+				this->triggerEvent( event.setType( onMouseRepeat ) );
 		}
 		
 		// Increase Cycles
@@ -132,14 +131,14 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		
 		//! Trigger mouseUpEvent if the mouseUp was performed inside this screen
 		if( lastTouchInside )
-			this->triggerEvent( event.setType( mouseUp ) );
+			this->triggerEvent( event.setType( onMouseUp ) );
 		
 		
 		//! Maybe DragStop-Event?
 		if( this->isDragging )
 		{
 			//! Trigger Event
-			this->triggerEvent( event.setType( dragStop ) );
+			this->triggerEvent( event.setType( onDragStop ) );
 			
 			// Set touchDragging to false!
 			this->isDragging = false;
@@ -156,14 +155,14 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 			if( _system::_lastClickedGadget_->isDoubleClickable() && this->cyclesLastClick && this->cyclesLastClick < _system::getUser()->mDC && deltaTouch < pow( _system::getUser()->mDA , 2 ) )
 			{
 				// Trigger the Event
-				this->triggerEvent( event.setType( mouseDoubleClick ) );
+				this->triggerEvent( event.setType( onMouseDblClick ) );
 				
 				this->cyclesLastClick = 0;
 			}
 			else
 			{
 				// Trigger the Event
-				this->triggerEvent( event.setType( mouseClick )  );
+				this->triggerEvent( event.setType( onMouseClick )  );
 				
 				this->cyclesLastClick = 1;
 			}

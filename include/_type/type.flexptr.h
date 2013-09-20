@@ -1,3 +1,6 @@
+#ifndef _WIN_T_FLEXPTR_
+#define _WIN_T_FLEXPTR_
+
 namespace std
 {
 	template<class Type>
@@ -15,7 +18,7 @@ namespace std
 		public:
 		
 			// Default Ctor
-			flex_ptr( Type* ptr = nullptr ) : ptr( ptr ) {}
+			flex_ptr( Type*&& ptr = nullptr ) : ptr( ptr ) {}
 			flex_ptr( const Type& other ) : ptr( new Type( other ) ) {}
 			flex_ptr( Type&& other ) : ptr( new Type( move(other) ) ) {}
 			
@@ -80,7 +83,10 @@ namespace std
 			
 			// Const Dereferencing operator
 			const Type& operator*() const {
-				return this->ptr ? *this->ptr : Type();
+				if( this->ptr )
+					return *this->ptr;
+				static Type t = Type();
+				return t;
 			}
 			
 			// Dereferencing operator
@@ -137,3 +143,7 @@ namespace std
 			}
 	};
 }
+
+using std::flex_ptr;
+
+#endif

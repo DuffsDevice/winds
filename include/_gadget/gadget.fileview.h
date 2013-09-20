@@ -20,21 +20,22 @@ class _fileview : public _scrollArea {
 		
 	public:
 	
-		// Method to set the Path
+		//! Method to set the Path
 		void 			setPath( const string& path );
 		
+		//! Method to get the Path
 		string			getPath(){ return this->directory.getFileName(); }
 		
-		// Full Ctor
+		//! Full Ctor
 		_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype , _scrollType scrollTypeX = _scrollType::meta , _scrollType scrollTypeY = _scrollType::meta , bool singleClickToExecute = false , _style&& style = _style() );
 		
-		// Simple Ctor
+		//! Simple Ctor
 		_fileview( _length width , _length height , _coord x , _coord y , string path , bool singleClickToExecute = false , _style&& style = _style() ) :
 			_fileview( width , height , x , y , path , _fileviewType::list , _scrollType::meta , _scrollType::meta , singleClickToExecute , (_style&&)style )
 		{ }
 		
+		//! Dtor
 		~_fileview();
-		
 };
 
 #endif

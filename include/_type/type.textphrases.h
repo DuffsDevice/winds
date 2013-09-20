@@ -16,6 +16,7 @@ namespace stringIntegrator
 			bool i2 : 1;
 			bool i3 : 1;
 			bool i4 : 1;
+			bool notNull : 4;
 		} PACKED;
 	} PACKED ;
 	

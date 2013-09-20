@@ -54,7 +54,7 @@ void _text::wrap()
 		{
 			const _char* text = iteratorText + lastBreakIndex;
 			const _char* end = text + idx - lastBreakIndex + 1;
-			list<int> lst = syllableParser::parseText( text , end );
+			_list<int> lst = syllableParser::parseText( text , end );
 			
 			if( lst.size() )
 			{

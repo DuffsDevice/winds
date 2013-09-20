@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUACOLOR_
-#define _WIN_LUACOLOR_
+#ifndef _WIN_L_COLOR_
+#define _WIN_L_COLOR_
 
 #include "_lua/lunar.h"
 #include "_type/type.h"

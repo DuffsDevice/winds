@@ -20,15 +20,20 @@ class _window : public _gadget {
 		
 		_windowButton*	button[3];
 		
+		_rect*			normalDimensions; // Ptr where original dimensions are stored when maximized
+		bool			minimizeable : 1;
+		bool			minimized : 1;
+		bool			maximized : 1;
+		bool			closeable : 1;
+		
 		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn focusHandler( _event event );
 		static _callbackReturn dragHandler( _event event );
 		_callbackReturn buttonHandler( _event event ); // Handler for _window-Buttons
 		
-		//! Will be called when something like "style.resizeable" is changed
-		static _callbackReturn restyleHandler( _event event );
-		
 		//! Will be called if the window is resized ->label will also be resized
-		static _callbackReturn resizeHandler( _event e );
+		static _callbackReturn updateHandler( _event event ); // Will be called when something like "style.resizeable" is changed
+		static _callbackReturn mouseClickHandler( _event event );
 		
 	public:
 		
@@ -44,17 +49,49 @@ class _window : public _gadget {
 		//! Check if the window has an Icon
 		bool hasIcon() const { return this->icon->getImage().isValid(); }
 		
-		//! Get the windows icon
-		_bitmap* getIcon(){ return &this->icon->getModifyableImage(); }
+		//! Set whether the window can be closed
+		void setCloseable( bool flag ){ this->closeable = flag; this->update(); }
+		
+		//! Check whether the window can be closed
+		bool isCloseable() const { return this->closeable; }
+		
+		//! Maximize the window to full screen size
+		void maximize();
+		
+		//! unMaximize the widnwo to its original size
+		void unMaximize();
+		
+		//! Minimize the window into taskbar
+		void minimize();
+		
+		//! Restore the window from taskbar
+		void restore();
+		
+		//! Check whether the window is currently maximized
+		bool isMaximized() const { return this->maximized; }
+		
+		//! Check whether the window is currently minimized
+		bool isMinimized() const { return this->minimized; }
+		
+		//! Check whether the window is minimizeable
+		bool isMinimizeable() const { return this->minimizeable; }
+		
+		//! Set whether the window is minimizeable
+		void setMinimizeable( bool val ){ this->minimizeable = val; this->update(); }
+		
+		//! Get the window's icon
+		const _bitmap& getIcon() const { return this->icon->getImage(); }
 		
 		//! Ctor
-		_window( _length width , _length height , _coord x , _coord y , string title , _style&& style = _style() | _styleAttr::draggable );
+		_window( _length width , _length height , _coord x , _coord y , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable ) :
+			_window( width , height , x , y , title , _bitmap() , minimizeable , closeable , (_style&&)style ) // C++0x! Yay!
+		{ }
 		
 		//! Ctor with icon
-		_window( _length width , _length height , _coord x , _coord y , string title , _bitmap icon , _style&& style = _style() | _styleAttr::draggable );
+		_window( _length width , _length height , _coord x , _coord y , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable );
 		
 		//! Dtor
 		~_window();
-};
+} PACKED ;
 
 #endif

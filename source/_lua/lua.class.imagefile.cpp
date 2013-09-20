@@ -1,12 +1,14 @@
 #include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##          Lua-Imagefile         ##
 ##################################*/
 
 _lua_imagefile::_lua_imagefile( lua_State* L ) : 
-	_imagefile( luaL_checkstring( L , 1 ) )
+	_imagefile( check<string>( L , 1 ) )
 { }
 
 int _lua_imagefile::getBitmap( lua_State* L ){
@@ -18,7 +20,7 @@ int _lua_imagefile::getBitmap( lua_State* L ){
 }
 
 //! Lua-window
-const char _lua_imagefile::className[] = "_imagefile";
+const char _lua_imagefile::className[] = "ImageFile";
 Lunar<_lua_imagefile>::FunctionType _lua_imagefile::methods[] = {
 	LUA_CLASS_FUNC( _lua_imagefile , getBitmap ),
 	LUA_CLASS_FUNC_END

@@ -1,5 +1,6 @@
 #include "_lua/lua.class.border.h"
-
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##           Lua-Border           ##
@@ -10,19 +11,19 @@ _lua_border::_lua_border( _border rc ) : _border( rc )
 
 //! Constructor
 _lua_border::_lua_border( lua_State* L ) : 
-	_border( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) )
+	_border( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) )
 { }
 //! setLeft
-int _lua_border::setLeft(lua_State* L){ _border::left = luaL_checkint( L , 1 ); return 0; }
+int _lua_border::setLeft(lua_State* L){ _border::left = check<int>( L , 1 ); return 0; }
 
 //! setRight
-int _lua_border::setRight(lua_State* L){ _border::right = luaL_checkint( L , 1 ); return 0; }
+int _lua_border::setRight(lua_State* L){ _border::right = check<int>( L , 1 ); return 0; }
 
 //! setTop
-int _lua_border::setTop(lua_State* L){ _border::top = luaL_checkint( L , 1 ); return 0; }
+int _lua_border::setTop(lua_State* L){ _border::top = check<int>( L , 1 ); return 0; }
 
 //! setBottom
-int _lua_border::setBottom(lua_State* L){ _border::bottom = luaL_checkint( L , 1 ); return 0; }
+int _lua_border::setBottom(lua_State* L){ _border::bottom = check<int>( L , 1 ); return 0; }
 
 //! getLeft
 int _lua_border::getLeft(lua_State* L){ lua_pushnumber( L , _border::left ); return 1; }
@@ -37,7 +38,7 @@ int _lua_border::getRight(lua_State* L){ lua_pushnumber( L , _border::right ); r
 int _lua_border::getBottom(lua_State* L){ lua_pushnumber( L , _border::bottom ); return 1; }
 
 //! Lua-_rect
-const char _lua_border::className[] = "_border";
+const char _lua_border::className[] = "Border";
 Lunar<_lua_border>::FunctionType _lua_border::methods[] = {
 	LUA_CLASS_FUNC_END
 };

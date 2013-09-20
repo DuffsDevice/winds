@@ -1,5 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
+#include "_type/type.timer.h"
 #include "_gadget/gadget.keyboard.h"
 
 // NDS Interrupts
@@ -72,7 +73,7 @@ void _systemController::main()
 		_systemController::checkDirty();
 		
 		// Let the Processor do its work!
-		_system::runTimers();
+		_timer::runTimers();
 		_system::processEvents();
 		_system::runPrograms();
 		
@@ -89,12 +90,14 @@ void _systemController::main()
 		//swiWaitForIRQ();
 		
 		i++;
-		if( i == 60 )
-		{
-			s++;
-			i = 0;
-			printf("main: %d\n",s);
-		}
+		//if( i == 60 )
+		//{
+		//	s++;
+		//	i = 0;
+		//	printf("main: %d\n",s);
+		//}
+		
+		//printf("main");
 		
 		//printf("CF: %s\n",_system::_currentFocus_?gadgetType2string[_system::_currentFocus_->getType()].c_str():"nothing");
 		

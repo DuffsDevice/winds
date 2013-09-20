@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUACOLORPICKER_
-#define _WIN_LUACOLORPICKER_
+#ifndef _WIN_L_COLORPICKER_
+#define _WIN_L_COLORPICKER_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_colorpicker : public _lua_gadget , public _lua_interface_input<_color
 		
 		_lua_colorpicker( lua_State* L );
 		
-		_lua_colorpicker( _colorpicker* c ) : _lua_gadget( c ) , _lua_interface_input( c )
+		_lua_colorpicker( _colorpicker* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
 		{ }
 		
 		//! Lunar !//

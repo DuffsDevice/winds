@@ -13,7 +13,7 @@ enum class _gadgetScreenType : _u8
 	keyboard
 };
 
-class _gadgetScreen : public _gadget , public _screen
+class _gadgetScreen : public _screen , public _gadget
 {
 	private:
 		

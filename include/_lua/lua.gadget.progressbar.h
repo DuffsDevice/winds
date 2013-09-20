@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAPROGRESSBAR_
-#define _WIN_LUAPROGRESSBAR_
+#ifndef _WIN_L_PROGRESSBAR_
+#define _WIN_L_PROGRESSBAR_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_progressbar : public _lua_gadget , public _lua_interface_input<_progr
 		
 		_lua_progressbar( lua_State* L );
 		
-		_lua_progressbar( _progressbar* p ) : _lua_gadget( p ) , _lua_interface_input( p )
+		_lua_progressbar( _progressbar* p ) : _lua_gadget( p , false ) , _lua_interface_input( p )
 		{ }
 		
 		//! setBarType

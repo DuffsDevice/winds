@@ -24,7 +24,7 @@ class _textarea : public _gadget{
 		_text 		text;
 		
 		//! Current cursor position
-		_length		cursor;
+		_u32		cursor;
 		_scrollBar*	scrollBar;
 		
 		//! Text-align
@@ -40,7 +40,7 @@ class _textarea : public _gadget{
 			if( this->text.needsRefresh() )
 			{
 				this->handleEvent( onResize );//! Set the right parameters for the Scrollbar
-				this->bubbleRefresh( true );
+				this->redraw();
 			}
 		}
 		
@@ -71,19 +71,19 @@ class _textarea : public _gadget{
 		void setFontSize( _u8 fontSize ){ this->text.setFontSize( fontSize ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
 		
 		//! Set Text Color
-		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
+		void setColor( _pixel col ){ this->color = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getColor(){ return this->color; }
 		
 		//! Set Text Color
-		void setBgColor( _pixel col ){ this->bgColor = col; this->bubbleRefresh( true ); }
+		void setBgColor( _pixel col ){ this->bgColor = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getBgColor(){ return this->bgColor; }
 		
 		//! Align-setting
-		void setAlign( _align align ){ if( this->align == align ) return; this->align = align; this->bubbleRefresh( true ); }
+		void setAlign( _align align ){ if( this->align == align ) return; this->align = align; this->redraw(); }
 		
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }

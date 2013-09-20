@@ -20,18 +20,25 @@ class _counter : public _gadget{
 		_scrollButton*	decreaseHandle;
 		_label*			valueLabel;
 		
-		static _callbackReturn changeHandler( _event event );
+		_callbackReturn btnClickHandler( _event event );
+		static _callbackReturn keyHandler( _event event );
+		static _callbackReturn focusHandler( _event event );
 		static _callbackReturn refreshHandler( _event event );
 		
-		void refreshDecimals()
-		{
+		void	refreshDecimals(){
 			this->decimals = max( countDecimals( this->upperBound , this->numbersystem ) , countDecimals( this->lowerBound , this->numbersystem ) );
 		}
+		
+		//! Increases the counter value and fires an onEdit-Event
+		void increaseInternal(){ this->increase(); this->triggerEvent( onEdit ); }
+		
+		//! Decreases the counter value and fires an onEdit-Event
+		void decreaseInternal(){ this->decrease(); this->triggerEvent( onEdit ); }
 		
 	public:
 		
 		//! Set the _counter's value
-		void	setIntValue( int value );
+		void	setIntValue( _s32 value );
 		
 		//! Get the _counter's value
 		_s32	getIntValue(){ return this->intValue; }
@@ -40,14 +47,16 @@ class _counter : public _gadget{
 		void setUpperBound( _s32 upperBound )
 		{
 			this->upperBound = upperBound;
-			refreshDecimals();
+			this->refreshDecimals();
+			this->setIntValue( min( this->intValue , this->upperBound ) );
 		}
 		
 		//! Set the Lower Bound of the valid range
 		void setLowerBound( _s32 lowerBound )
 		{
 			this->lowerBound = lowerBound;
-			refreshDecimals();
+			this->refreshDecimals();
+			this->setIntValue( max( this->intValue , this->lowerBound ) );
 		}
 		
 		//! Get the Lower Bound of the valid range
@@ -56,19 +65,19 @@ class _counter : public _gadget{
 		//! Get the Upper Bound of the valid range
 		_s32 getUpperBound(){ return this->upperBound; }
 		
-		//! Increase the counter value
+		//! Increases the counter value
 		void increase(){ this->setIntValue( this->intValue + 1 ); }
 		
-		//! Decrease the counter value
+		//! Decreases the counter value
 		void decrease(){ this->setIntValue( this->intValue - 1 ); }
 		
-		// Ctors
-		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _style&& style ) :
+		//! Ctors
+		_counter( _coord x , _coord y , _length width , bool circular = false , _s32 value = 0 , _style&& style = _style() ) :
 			_counter( x , y , width , circular , value , 99 , 0 , 10 , (_style&&)style )
 		{ }
 		_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound = 0 , _u8 numbersystem = 10 , _style&& style = _style() );
 		
-		// Dtor
+		//! Dtor
 		~_counter();
 		
 };

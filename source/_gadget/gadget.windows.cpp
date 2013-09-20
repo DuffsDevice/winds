@@ -44,7 +44,7 @@ void _windows::refreshTask( _window* w )
 	{
 		if( tb->getReference() == w )
 		{
-			tb->bubbleRefresh( true );
+			tb->redraw();
 			return;
 		}
 	}
@@ -56,12 +56,8 @@ _callbackReturn _windows::refreshHandler( _event event )
 	// Receive Gadget
 	_windows* that = event.getGadget<_windows>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Taskbar
 	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _system::_rtA_->getWindowsDesignActive() );
@@ -89,8 +85,8 @@ _windows::_windows( _u8 bgId , _style&& style ) :
 	this->addEnhancedChild( this->taskInfo );
 	
 	// Register Event-Handlers
-	this->setInternalEventHandler( refresh , _staticCallback( &_windows::refreshHandler ) );
-	
+	this->setInternalEventHandler( onDraw , make_callback( &_windows::refreshHandler ) );
+
 	// Refresh Me
-	this->refreshBitmap();
+	this->redraw();
 }

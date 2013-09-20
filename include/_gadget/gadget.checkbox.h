@@ -22,7 +22,7 @@ class _checkbox : public _gadget {
 	public:
 		
 		//! setIntValue
-		void setIntValue( _s32 val ){ this->intValue = val; this->bubbleRefresh( true ); }
+		void setIntValue( _s32 val ){ if( this->intValue == val ) return; this->intValue = val; this->redraw(); }
 		
 		//! getIntValue
 		_int getIntValue(){ return this->intValue; }

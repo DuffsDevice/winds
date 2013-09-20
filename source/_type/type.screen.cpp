@@ -40,7 +40,7 @@ void _screen::scaleY( float y )
 
 void _screen::scale( float rat )
 {
-	bgState[ this->bgId ].scaleY = bgState[ this->bgId ].scaleX = floatToFixed( rat , 8 );
+	bgState[ this->bgId ].scaleY = bgState[ 3 ].scaleX = floatToFixed( rat , 8 );
 	bgState[ this->bgId ].dirty = true;
 }
 

@@ -3,7 +3,7 @@
 
 #include "_type/type.h"
 
-namespace glyph
+namespace _glyph
 {
 	const _char backspace = 'E',
 	arrowLeft = 'B',

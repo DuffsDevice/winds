@@ -66,25 +66,25 @@ class _textbox : public _gadget
 		void setFont( const _font* ft );
 		
 		//! Set FontSize
-		void setFontSize( _u8 fontSize ){ if( this->fontSize != fontSize ){ this->fontSize = fontSize; this->bubbleRefresh( true ); } }
+		void setFontSize( _u8 fontSize ){ if( this->fontSize == fontSize ) return; this->fontSize = fontSize; this->redraw(); }
 		
 		//! Set Text Color
-		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
+		void setColor( _pixel col ){ if( this->color == col ) return; this->color = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getColor(){ return this->color; }
 		
 		//! Set Text Color
-		void setBgColor( _pixel col ){ this->bgColor = col; this->bubbleRefresh( true ); }
+		void setBgColor( _pixel col ){ this->bgColor = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getBgColor(){ return this->bgColor; }
 		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->bubbleRefresh( true ); }
+		void setAlign( _align align ){ this->align = align; this->redraw(); }
 		
 		//! Vertical-Align-setting
-		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->bubbleRefresh( true ); }
+		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->redraw(); }
 		
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }
@@ -98,7 +98,7 @@ class _textbox : public _gadget
 		//! Get the current cursor (-1 equals no cursor)
 		_s64 getCursor(){ return _s64(this->cursor) - 1; }
 		
-		//! Ctor
+		//! Ctor without height
 		_textbox( _coord x , _coord y , _length width , string value = "" , _style&& style = _style() );
 		
 		//! Ctor

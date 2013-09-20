@@ -7,7 +7,11 @@
 #include "_type/type.bitmapPort.h"
 #include "_type/type.event.h"
 #include "_type/type.callback.h"
+#include "_type/type.callback.derives.h"
 #include "_type/type.assocvector.h"
+#include "_type/type.dependency.h"
+
+#include <type_traits>
 
 //! Predefines
 class _gadget;
@@ -19,12 +23,14 @@ class _gadgetScreen;
 enum class _gadgetType : _u8
 {
 	button,
+	stickybutton,
 	label,
 	checkbox,
 	radiobox,
 	textbox,
 	textarea,
 	counter,
+	slider,
 	calendar,
 	colorpicker,
 	selectbox,
@@ -40,15 +46,33 @@ enum class _gadgetType : _u8
 	scrollbar,
 	window,
 	screen,
+	popup,
 	contextmenu,
-	_plain // No type set (is probably not used)
+	contextmenuentry,
+	resizehandle,
+	none // No type set (is probably not used)
+};
+enum class _eventCallType : _u8{
+	normal,		// handleEvent( ... , false )
+	normalNoDef,// handleEvent( ... , true )
+	user,		// handleEventUser( ... )
+	internal,	// handleEventInternal( ... )
+	def 		// handleEventDefault( ... )
 };
 
 extern _map<_gadgetType,string> gadgetType2string;
+extern _map<string,_gadgetType> string2gadgetType;
+extern _map<string,_eventCallType> string2eventCallType;
+extern _map<_eventCallType,string> eventCallType2string;
 
 //! Typedef
-typedef _list<_gadget*> _gadgetList;
-typedef _assocVector<_eventType,_callback*> _eventHandlerMap;
+typedef _list<_gadget*> 									_gadgetList;
+
+typedef _callbackReturn 									_eventHandler(_event);
+typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
+
+typedef _callbackReturn										_defaultEventHandler(_event&&);
+typedef _array<_staticCallback<_defaultEventHandler>,13>	_defaultEventHandlerMap;
 
 class _gadget
 {
@@ -56,7 +80,7 @@ class _gadget
 	
 	protected:
 	
-		// Attributes
+		//! Padding
 		union{
 			_padding			padding;
 			struct
@@ -65,19 +89,16 @@ class _gadget
 				_length 		padTop;
 			};
 		};
-		union
-		{
-			_rect				dimensions;
-			struct{
-				//! Size
-				_length 		width;
-				_length 		height;
-				//! Position
-				_coord 			x;
-				_coord 			y;
-			};
-		};
-		_rect 					normalDimensions; // When something is maximized its old dimensions are written in here
+		
+		//! Size limits
+		_length					minWidth; // If this is 0, its not given
+		_length					minHeight; // If this is 0, its not given
+		
+		//! Position
+		_coord 					x;
+		_coord 					y;
+		
+		//! Describes the look and feel of the gadget
 		_style					style;
 		
 		//! Children
@@ -94,98 +115,42 @@ class _gadget
 		_eventHandlerMap		eventHandlers;
 		
 		//! Default Event-Handlers
-		static _array<_fastEventCallback
-						,13>	defaultEventHandlers; // Default event-handlers (an array because of speed)
+		static _defaultEventHandlerMap
+								defaultEventHandlers; // Default event-handlers (an array because of speed)
 		
 		/**
 		 * Standard/Default EventHandler that will handle
 		 * specific events if the 'normal' eventHandlers don't
 		 */
 		static _callbackReturn	gadgetRefreshHandler( _event&& event ) ITCM_CODE ;
-		static _callbackReturn	gadgetDragHandler( _event&& event );
+		static _callbackReturn	gadgetDragStartHandler( _event&& event );
+		static _callbackReturn	gadgetDraggingHandler( _event&& event );
+		static _callbackReturn	gadgetDragStopHandler( _event&& event );
 		static _callbackReturn	gadgetMouseHandler( _event&& event );
-		static _callbackReturn	gadgetKeyHandler( _event&& event ){
-			event.getGadget()->parent && event.getGadget()->parent->handleEvent( event );
-			return not_handled;
-		}
+		static _callbackReturn	gadgetKeyHandler( _event&& event );
 		
 		//! Bitmap of the Gadget
 		_bitmap	 				bitmap;
-		
-		//! Class to forward any event to an refresh-event
-		class eventForwardRefresh : public _fastEventCallback
-		{
-			private:
-				static _callbackReturn refreshForwardHandler( _event&& event ){ event.getGadget()->bubbleRefresh( true ); return handled; }
-			public:
-				// Ctor
-				eventForwardRefresh() :
-					_fastEventCallback( &eventForwardRefresh::refreshForwardHandler )
-				{}
-		};
-		
-		//! Class to forward any event to an refresh-event thrown on a specific gadget
-		class eventForwardRefreshGadget : public _classCallback
-		{
-			private:
-				void refreshForwardHandler(){ ((_gadget*)this)->bubbleRefresh( true ); }
-			public:
-				// Ctor
-				eventForwardRefreshGadget( _gadget* g ) :
-					_classCallback( g , reinterpret_cast<void (_gadget::*)()>( &eventForwardRefreshGadget::refreshForwardHandler ) )
-				{}
-		};
-		
-		//! Class to forward any event to any other
-		template<_eventType eT>
-		class eventForward : public _fastEventCallback
-		{
-			private:
-				static _callbackReturn eventForwardHandler( _event&& event ){ event.getGadget()->handleEvent( (_event&&)event.setType( eT ) ); return handled; }
-			public:
-				// Ctor
-				eventForward() :
-					_fastEventCallback( &eventForward::eventForwardHandler )
-				{}
-		};
 	
 	public:
 		
 		/**
 		 * Constructor
 		 */
-		_gadget( _gadgetType type , int width , int height , int posX , int posY , true_type doNotAllocateBitmap , _style&& style = _style() );
-		_gadget( _gadgetType type , int width , int height , int posX , int posY , _style&& style = _style() );
-		// Delegating Constructors!!!! C++0x I love you!
-		_gadget( int width , int height , int posX , int posY , true_type doNotAllocateBitmap , _style&& style = _style() )
-			: _gadget( _gadgetType::_plain , width , height , posX , posY , doNotAllocateBitmap , (_style&&)style )
-		{ }
-		_gadget( int width , int height , int posX , int posY , _style&& style = _style() )
-			: _gadget( _gadgetType::_plain , width , height , posX , posY , (_style&&)style )
-		{ }
+		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _bitmap&& bmp , _style&& style = _style() );
+		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _style&& style = _style() ) :
+			_gadget( type , width , height , move( posX ) , move( posY ) , _bitmap( width , height ) , (_style&&)style )
+		{} // Delegating contructor! C++11 I love you!
 		
 		/**
 		 * Destructor
 		 */
 		virtual ~_gadget();
 		
-		/**
-		 * Set the Padding of the Gadget
-		 */
-		void setPadding( const _padding& p )
-		{
-			if( this->padding != p )
-			{
-				this->padding = p;
-				this->bubbleRefresh( true );
-			}
-		}
 		
-		/**
-		 * Get the Padding of the Gadget
-		 */
-		const _padding& getPadding() const { return this->padding; }
-		
+		////////////////////////
+		//  Attribute getters //
+		////////////////////////
 		
 		/** Method to check whether the Gadget has Focus */
 		bool hasFocus() const { return this->focused || this->type == _gadgetType::screen; }
@@ -194,7 +159,7 @@ class _gadget
 		bool isPressed() const { return this->pressed; }
 		
 		/** Check whether this Gadget is not dragged but one of its children */
-		bool isChildDragged() const { return this->dragTemp != nullptr; }
+		bool isChildDragged() const { return this->draggedChild != nullptr && ( this->draggedChild->dragged || this->draggedChild->isChildDragged() ); }
 		
 		/** Check whether this Gadget can also be on the reserved area of the parent */
 		bool isEnhanced() const { return this->enhanced; }
@@ -202,33 +167,20 @@ class _gadget
 		/** Check whether this Gadget was hidden by a previous call to hide() */
 		bool isHidden() const { return this->hidden; }
 		
-		/** Check whether this Gadget is invisible, either because it is minimized or it is made 'hidden' */
-		bool isInvisible() const { return this->state & 0x3; }
-		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
-		bool isMinimized() const { return this->minimized; }
-		
-		/** Check whether this Gadget is maximized ( probably only available with _window's ) */
-		bool isMaximized() const { return this->maximized; }
-		
-		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
-		bool isMinimizeable() const { return this->style.minimizeable; }
-		
-		/** Check whether this Gadget is minimized ( probably only available with _window's ) */
-		bool isDestroyable() const { return this->style.destroyable; }
+		/** Check whether this Gadget is enabled */
+		bool isEnabled() const { return this->style.enabled; }
 		
 		/** Check whether this Gadget can be clicked (if true, which is default, it receives mouse-events) */
 		bool isClickable() const { return this->style.clickable; }
-		
-		/** true if resizeable in x- or y-direction */
-		bool isResizeable() const { return this->style.resizeableX || this->style.resizeableY; }
 		
 		/** true if resizeable in x-direction */
 		bool isResizeableX() const { return this->style.resizeableX; }
 		
 		/** true if resizeable in y-direction */
 		bool isResizeableY() const { return this->style.resizeableY; }
+		
+		/** true if resizeable in both x and y-direction */
+		bool isResizeable() const { return this->style.resizeableX && this->style.resizeableY; }
 		
 		/** true if the gadget has a special small drag Triger after which it fires an dragStart-Event */
 		bool hasSmallDragTrig() const { return this->style.smallDragTrig; }
@@ -248,21 +200,30 @@ class _gadget
 		 */
 		bool isDoubleClickable() const { return this->style.doubleClickable; }
 		
+		
+		////////////////
+		// Refreshing //
+		////////////////
+		
 		/**
-		 * Print Contents but make the parent also refresh
+		 * Print Contents and make the parent also draw
 		 * the parts that have been changed
 		 */
-		void bubbleRefresh( bool includeThis , _event&& e ) ITCM_CODE ;
-		void bubbleRefresh( bool includeThis , const _event& e ){ this->bubbleRefresh( includeThis , _event( e ) ); }
-		void bubbleRefresh( bool includeThis = false ){
-			this->bubbleRefresh( includeThis , _event::refreshEvent( this->getAbsoluteDimensions() ) );
+		void redraw(){
+			this->redraw( this->getAbsoluteDimensions() );
+		}
+		void redrawParents(){
+			this->redrawParents( this->getAbsoluteDimensions() );
 		}
 		
 		/**
-		 * Method to refresh itself
+		 * Method to update some things (optional)
 		 */
-		void refreshBitmap(){
-			this->handleEvent( refresh );
+		void update(){ //! A-Sync-Version (the gadget will be updated on VBL)
+			this->triggerEvent( _eventType::onUpdate );
+		}
+		_callbackReturn updateNow(){ //! The Gadget will be updated *now* and the return is given back after the gadget was updated
+			return this->handleEvent( _eventType::onUpdate );
 		}
 		
 		/**
@@ -270,33 +231,48 @@ class _gadget
 		 */
 		_bitmapPort getBitmapPort(){ return this->bitmap; }
 		
-		/**
-		 * Get The Bitmap of the Gadget
-		 */
-		_bitmap& getBitmap(){ return this->bitmap; }
+		// BitmapPort with area preset
+		_bitmapPort getBitmapPort( _area&& areaToPaintTo ){ return _bitmapPort( this->bitmap , move(areaToPaintTo) ); }
+		_bitmapPort getBitmapPort( const _area& areaToPaintTo ){ return _bitmapPort( this->bitmap , areaToPaintTo ); }
 		
-		/**
-		 * Get the style of that Gadget
-		 */
-		const _style& getStyle() const { return this->style; }
-		
-		/**
-		 * Set the style of that Gadget
-		 */
-		void setStyle( _style&& style ){ this->style = (_style&&)style; this->triggerEvent( onStyleSet ); }
-		
-		/**
-		 * Returns the Toppest Parent, which is usually the Screen/Windows itself
-		 */
-		noinline _gadgetScreen* getScreen() const 
-		{
-			if( this->parent != nullptr )
-				return this->parent->getScreen();
-			if( this->type == _gadgetType::screen )
-				return (_gadgetScreen*)this;
-			return nullptr;
+		// BitmapPort from 'onDraw'-event
+		_bitmapPort getBitmapPort( const _event& event ){
+			if( event == onDraw && event.hasClippingRects() )
+				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
+			return this->bitmap;
+		}
+		_bitmapPort getBitmapPort( _event& event ){
+			if( event == onDraw && event.hasClippingRects() )
+				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
+			return this->bitmap;
 		}
 		
+		//! Get The Bitmap of the Gadget
+		const _bitmap& getBitmap() const { return this->bitmap; }
+		
+		/**
+		 * Set The Bitmap of the Gadget	
+		 * This automatically resizes the gadget to to fit the bitmap
+		 */
+		void setBitmap( _bitmap&& );
+		void setBitmap( const _bitmap& bmp ){ this->setBitmap( _bitmap(bmp) ); }
+		
+		
+		/////////////////////
+		//  Gadget - Style //
+		/////////////////////
+		
+		//! Get the style of that Gadget
+		const _style& getStyle() const { return this->style; }
+		
+		//! Set the style of that Gadget
+		void setStyle( _style&& style ){ this->style = (_style&&)style; this->notifyDependentGadgets( onRestyle ); }
+		void setStyle( const _style& style ){ this->setStyle( _style(style) ); }
+		
+		
+		////////////////////
+		// Event-Handlers //
+		////////////////////
 		
 		/**
 		 * Register an internal Event Handler to catch some events thrown on this Gadget
@@ -305,77 +281,51 @@ class _gadget
 		template<typename T>
 		noinline void setInternalEventHandler( _eventType type , T&& handler )
 		{
-			typedef typename T::_callback def;
+			typedef typename std::remove_reference<T>::type T2;
+			typedef typename T2::_callback def;
+			
 			// Remove any Current Handler
-			_callback* &data = this->eventHandlers[type]; // reference to pointer
+			_callback<_eventHandler>* &data = this->eventHandlers[type]; // reference to pointer
 			
 			if( data )
 				delete data; // Delete Current Event-Handler
 			
 			// Insert The Handler
-			data = new T( move(handler) );
+			data = new T2( move(handler) );
+			
+			if( isDepType( type ) )
+				this->addDependency( type );
 		}
 		
-		/**
-		 * Register an user-specific Event Handler to catch some events thrown on this Gadget
-		 */
+		//! Register an user-specific Event Handler to catch some events thrown on this Gadget
 		template<typename T>
-		noinline void setUserEventHandler( _eventType type , T&& handler )
-		{
-			typedef typename T::_callback def;
-			
-			// Remove any Current Handler
-			_callback* &data = this->eventHandlers[ eventType2userET(type) ]; // reference to pointer
-			
-			if( data )
-				delete data; // Delete Current Event-Handler
-			
-			// Insert The Handler
-			data = new T( move(handler) );
+		void setUserEventHandler( _eventType type , T&& handler ){
+			this->setInternalEventHandler( eventType2userET(type) , move(handler) );
 		}
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
 		 * that was registered by default
 		 */
-		void removeInternalEventHandler( _eventType type )
-		{
-			// Unbind the Handler
-			_eventHandlerMap::iterator data = this->eventHandlers.find( type );
-			
-			if( data != this->eventHandlers.end() && data->second )
-			{
-				delete data->second;
-				this->eventHandlers.erase( data );
-			}
-		}
+		void removeInternalEventHandler( _eventType type );
 		
 		/**
 		 * Unbind an EventHandler from this Gadget
 		 * that was registered by the user
 		 */
-		void removeUserEventHandler( _eventType type )
-		{
-			// Unbind the Handler
-			_eventHandlerMap::iterator data = this->eventHandlers.find( eventType2userET(type) );
-			
-			if( data != this->eventHandlers.end() && data->second )
-			{
-				delete data->second;
-				this->eventHandlers.erase( data );
-			}
+		void removeUserEventHandler( _eventType type ){
+			removeInternalEventHandler( eventType2userET(type) );
 		}
-		
-		/**
-		 * Trigger an Event (its destination will be set automatically)
-		 */
-		void triggerEvent( _event&& event );
-		void triggerEvent( const _event& event ){ this->triggerEvent( _event( event ) ); }
 		
 		/**
 		 * Check if this Gadget has an EventHandler registered reacting on the specified type
 		 */
-		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ); }
+		bool canReactTo( _eventType type ) const { return this->eventHandlers.count( type ) || this->eventHandlers.count( eventType2userET(type) ); }
+		
+		
+		////////////////////
+		// Event-Handling //
+		////////////////////
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
@@ -402,219 +352,403 @@ class _gadget
 		 * by only using the Default gadget-event-handler if available
 		 */
 		_callbackReturn handleEventDefault( _event&& event ); 
-		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'
+		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'		
+		
 		
 		/**
-		 * Get the absolute X-position
+		 * Trigger an Event (its destination will be set automatically and it will be handled as soon as there is cpu-power available)
 		 */
-		noinline _coord getAbsoluteX() const
-		{
+		// Will be handled using the method passed or as default by calling 'handleEvent'
+		void triggerEvent( _event&& event , _eventCallType callType = _eventCallType::normal );
+		void triggerEvent( const _event& event , _eventCallType callType = _eventCallType::normal ){ this->triggerEvent( _event( event ) , callType ); }
+		
+		
+		// Will be handled by 'handleEvent( ... , false )' or 'handleEvent( ... , true )'
+		void triggerEvent( _event&& event , bool noDefault ){ this->triggerEvent( move(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
+		void triggerEvent( const _event& event , bool noDefault ){ this->triggerEvent( _event(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
+		
+		// Will be handled by a user-registered event-handler
+		void triggerEventUser( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::user ); }
+		void triggerEventUser( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::user ); }
+		
+		// Will be handled by a gadget-registered handler
+		void triggerEventInternal( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::internal ); }
+		void triggerEventInternal( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::internal ); }
+		
+		// Will be handled by a default-registered handler
+		void triggerEventDefault( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::def ); }
+		void triggerEventDefault( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::def ); }
+		
+		
+		//////////////////////////////////////
+		// Full Dimensions-_rect operations //
+		//////////////////////////////////////
+		
+		//! Get Dimensions of the Gadget (including Coords)
+		_rect getDimensions() const { return _rect( this->x , this->y , this->getWidth() , this->getHeight() ); }
+		
+		//! Get Absolute Dimensions of the Gadget
+		_rect getAbsoluteDimensions() const {
+			_2s32 val = this->getAbsolutePosition();
+			return _rect( val.first , val.second , this->getWidth() , this->getHeight() );
+		}
+		
+		/**
+		 * Set Dimensions of the Gadget (including Coords)
+		 */
+		// Internal call, that does not violate the state of auto-computed values
+		void setDimensionsInternal( _rect rc );
+		
+		// Sets a specific size and position
+		void setDimensions( _rect rc ){
+			this->autoValues.sum = false; // Set all four values to false
+			setDimensionsInternal( rc );
+		}
+		
+		// Requests the gadget to both compute position and size
+		void setDimensions(){
+			this->autoValues.sum = ~false; // Set all four values to true
+			notifyDependentGadgets( onResize );
+			notifyDependentGadgets( onMove );
+		}		
+		
+		
+		///////////////////////
+		// Absolute Position //
+		///////////////////////
+		
+		//! Get both y and y absolute coordinate
+		_2s32 getAbsolutePosition() const ITCM_CODE;
+		
+		//! Get the absolute X-position
+		noinline _coord getAbsoluteX() const {
 			if( this->parent != nullptr )
 				return this->parent->getAbsoluteX() + this->x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
 			
 			return this->x;
 		}
 		
-		/**
-		 * Get the absolute Y-position
-		 */
-		noinline _coord getAbsoluteY() const
-		{
+		//! Get the absolute Y-position
+		noinline _coord getAbsoluteY() const {
 			if( this->parent != nullptr )
 				return this->parent->getAbsoluteY() + this->y + ( this->isEnhanced() ? 0 : this->parent->getPadding().top );
 			
 			return this->y;
 		}
 		
-		/**
-		 * Get both y and y coordinate
-		 */
-		_2s32 getAbsolutePosition() const ITCM_CODE;
 		
-		/**
-		 * Get the Relative X-position
-		 */
-		_coord getX() const { return this->x; }
-		
-		/**
-		 * Get the Relative Y-position
-		 */
-		_coord getY() const { return this->y; }
-		
-		/**
-		 * Set the Relative X-Position
-		 */
-		void setX( _coord val );
-		
-		/**
-		 * Set the Relative Y-Position
-		 */
-		void setY( _coord val );
-		
-		/**
-		 * Hide the Gadget
-		 */
-		void hide()
-		{
-			if( !this->hidden )
-			{
-				this->hidden = true;
-				this->bubbleRefresh();
-			}
-		}
-		
-		/**
-		 * Unhide the Gadget
-		 */
-		void show()
-		{
-			if( this->hidden )
-			{
-				this->hidden = false;
-				this->bubbleRefresh();
-			}
-		}
-		
-		/**
-		 * Minimize the Gadget
-		 */
-		void minimize();
-		
-		/**
-		 * Restore the Gadget
-		 */
-		void restore();
-		
-		/**
-		 * Maximize the Gadget
-		 */
-		void maximize();
-		
-		/**
-		 * unMaximize (Restore) the Gadget
-		 */
-		void unMaximize();
-		
-		/**
-		 * Get the Gadgets Parent
-		 */
-		_gadget* getParent() const { return this->parent; }
-		
-		/**
-		 * Set the Gadgets Parent
-		 */
-		void setParent( _gadget* val );
-		void enhanceToParent( _gadget* val );
-		
-		/**
-		 * Remove a specific children
-		 */
-		virtual void removeChild( _gadget* child );
-		virtual void removeChildren( bool remove = false );
-		virtual void removeEnhancedChildren( bool remove = false );
-		
-		/**
-		 * Add a child-gadget to this one
-		 */
-		virtual void addChild( _gadget* child );
-		virtual void addEnhancedChild( _gadget* child );
-		
-		// Tries to focus a child and returns whether it succeded
-		/// @param inform whether to also trigger the 'blur'/'focus' event on the gadget
-		bool focusChild( _gadget* child );
-		bool blurChild();
-		
-		/**
-		 * Get Dimensions of the Gadget (including Coords)
-		 */
-		_rect getDimensions() const { return this->dimensions; }
-		
-		/**
-		 * Get Absolute Dimensions of the Gadget (including Absolute Coords)
-		 */
-		_rect getAbsoluteDimensions() const 
-		{
-			_2s32 val = this->getAbsolutePosition();
-			return _rect( val.first , val.second , this->width , this->height );
-		}
-		
-		/**
-		 * Get The Size of the Gadget as a _rect being at coordinates {0,0}
-		 */
-		_rect getSize() const { return _rect( 0 , 0 , this->width , this->height ); }
-		
-		/**
-		 * Set Dimensions of the Gadget (including Coords)
-		 */
-		virtual void setDimensions( _rect rc );
-		
-		/**
-		 * Get the height of the Gadget
-		 */
-		_length getHeight() const { return this->height; }
-		
-		/**
-		 * Get the width of the Gadget
-		 */
-		_length getWidth() const { return this->width; }
+		/////////////////////////////////
+		// Position relative to parent //
+		/////////////////////////////////
 		
 		/**
 		 * Set the gadgets position withing the parents dimensions
 		 */
-		void moveTo( _coord x , _coord y )
-		{
-			this->moveRelative( x - this->x , y - this->y );
+		// Internal call, that does not violate the state of auto-computed values
+		void moveToInternal( _coord x , _coord y ){
+			this->moveRelativeInternal( x - this->x , y - this->y );
+		}
+		
+		// Sets a specific position
+		void moveTo( _coord x , _coord y ){
+			this->autoValues.posX = false;
+			this->autoValues.posY = false;
+			moveToInternal( x , y );
+		}
+		
+		// Requests the gadget to auto-compute the required values
+		void moveTo(){
+			this->autoValues.posX = true;
+			this->autoValues.posY = true;
+			notifyDependentGadgets( onMove );
 		}
 		
 		/**
 		 * Move the Gadget relatively to its current position
 		 */
-		void moveRelative( _s16 deltaX , _s16 deltaY );
+		// Internal call, that does not violate the state of auto-computed values
+		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
+		
+		// Moves by difference
+		void moveRelative( _s16 deltaX , _s16 deltaY ){
+			this->autoValues.posX = false;
+			this->autoValues.posY = false;
+			moveRelativeInternal( deltaX , deltaY );
+		}
+		
+		// Requests the gadget to auto-compute the required values
+		void moveRelative(){
+			this->autoValues.posX = true;
+			this->autoValues.posY = true;
+			notifyDependentGadgets( onMove );
+		}
+		
+		
+		//! Get the Relative X-position
+		_coord getX() const { return this->x; }
+		
+		//! Get the Relative Y-position
+		_coord getY() const { return this->y; }
+		
+		
+		//! Set the Relative X-Position
+		void setXInternal( _coord val );
+		void setX( _coord val ){
+			this->autoValues.posY = false;
+			setXInternal( val );
+		}
+		void setX(){
+			this->autoValues.posY = true;
+			notifyDependentGadgets( onMove );
+		}
+		
+		//! Set the Relative Y-Position
+		void setYInternal( _coord val );
+		void setY( _coord val ){
+			this->autoValues.posY = false;
+			setYInternal( val );
+		}
+		void setY(){
+			this->autoValues.posY = true;
+			notifyDependentGadgets( onMove );
+		}
+		
+		
+		//! Check if position is auto-computed
+		bool hasAutoX() const { return this->autoValues.posX; }
+		bool hasAutoY() const { return this->autoValues.posY; }
+		
+		
+		//////////////////
+		//     Size     //
+		//////////////////
 		
 		/**
-		 * Set Height " " "
+		 * Set Height
 		 */
-		virtual void setHeight( _length val );
+		// Internal call, that does not violate the state of auto-computed values
+		void setHeightInternal( _length val );
+		
+		// Sets specific height
+		void setHeight( _length val ){
+			this->autoValues.height = false;
+			setHeightInternal( val );
+		}
+		
+		// Requests the gadget to auto-compute the required values
+		void setHeight(){
+			this->autoValues.height = true;
+			notifyDependentGadgets( onResize );
+		}
+		
 		
 		/**
-		 * Set Width " " "
+		 * Set Width
 		 */
-		virtual void setWidth( _length val );
+		// Internal call, that does not violate the state of auto-computed values
+		void setWidthInternal( _length val );
+		
+		// Set specific width
+		void setWidth( _length val ){
+			this->autoValues.width = false;
+			setWidthInternal( val );
+		}
+		
+		// Requests the gadget to auto-compute the required values
+		void setWidth(){
+			this->autoValues.width = true;
+			notifyDependentGadgets( onResize );
+		}
 		
 		/**
-		 * Blur the Gadget
+		 * Set Size
 		 */
-		bool blur()
-		{
+		// Internal call, that does not violate the state of auto-computed values
+		void setSizeInternal( _length width , _length height );
+		
+		// Sets a specific size
+		void setSize( _length width , _length height ){
+			this->autoValues.width = false;
+			this->autoValues.height = false;
+			setSizeInternal( width , height );
+		}
+		
+		// Requests the gadget to auto-compute its size
+		void setSize(){
+			this->autoValues.width = true;
+			this->autoValues.height = true;
+			notifyDependentGadgets( onResize );
+		}
+		
+		
+		//! Get the Size of the Gadget as a _rect inheriting the position (0,0)
+		_rect getSizeRect() const { return _rect( 0 , 0 , this->getWidth() , this->getHeight() ); }
+		
+		//! Get the Size of the Gadget as a pair of (width|height)
+		_2s32 getSize() const { return _2s32( this->getWidth() , this->getHeight() ); }
+		
+		//! Get the relative Area that normal children can inherit
+		_rect getClientRect() const { return _rect( 0 , 0 , this->getWidth() , this->getHeight() ).applyPadding( this->padding ); }
+		
+		
+		//! Get the height of the Gadget
+		_length getHeight() const { return this->bitmap.getHeight(); }
+		
+		//! Get the width of the Gadget
+		_length getWidth() const { return this->bitmap.getWidth(); }
+		
+		
+		//! Check if size is auto-computed
+		bool hasAutoHeight() const { return this->autoValues.height; }
+		bool hasAutoWidth() const { return this->autoValues.width; }
+		
+		
+		//////////////////
+		// Minimum Size //
+		//////////////////
+		
+		//! Get the minimum height:
+		//! The sum of vertical padding, but at least 1px
+		_length getDefMinHeight() const { return max( 1 , this->padding.top + this->padding.bottom ); } // Gadget-given minHeight
+		
+		//! Get the minimum allowed height, specified by the attribute 'minHeight'
+		_length getMinHeight() const { return this->minHeight > 0 ? this->minHeight : this->getDefMinHeight(); }
+		
+		
+		//! Get the minimum width:
+		//! The sum of horizontal padding, but at least 1px
+		_length getDefMinWidth() const { return max( 1 , this->padding.left + this->padding.right ); } // Gadget-given minWidth
+		
+		//! Get the minimum allowed width, specified by the attribute 'minWidth'
+		_length getMinWidth() const { return this->minWidth > 0 ? this->minWidth : this->getDefMinWidth(); }
+		
+		
+		//! Set minimum width
+		void setMinWidth( _optValue<_length> val = ignore ){
+			this->minWidth = val.isValid() ? max<_length>( 1 , val ) : 0;
+			this->setWidth( this->getWidth() ); // Check if right width given
+		}
+		
+		//! Set minimum height
+		void setMinHeight( _optValue<_length> val = ignore ){
+			this->minHeight = val.isValid() ? max<_length>( 1 , val ) : 0;
+			this->setHeight( this->getHeight() ); // Check if right height given
+		}
+		
+		
+		////////////////
+		// DOM - Tree //
+		////////////////
+		
+		//! Get the Gadgets Parent
+		_gadget* getParent() const { return this->parent; }
+		
+		//! Set the Gadgets Parent
+		void setParent( _gadget* val );
+		
+		//! Set the Gadgets Parent and enhance the gadget
+		void enhanceToParent( _gadget* val );
+		
+		//! Returns the Toppest Parent, which is usually the Screen/Windows itself
+		noinline _gadgetScreen* getScreen() const {
+			if( this->parent != nullptr )
+				return this->parent->getScreen();
+			if( this->type == _gadgetType::screen )
+				return (_gadgetScreen*)this;
+			return nullptr;
+		}
+		
+		
+		//! Remove a specific child (no matter whether it is enhanced)
+		void removeChild( _gadget* child );
+		
+		//! Remove all 'normal' children and optionally 'delete' them
+		void removeChildren( bool remove = false );
+		
+		//! Remove all enhanced children and optionally 'delete' them
+		void removeEnhancedChildren( bool remove = false );
+		
+		//! Add a child-gadget to this one
+		void addChild( _gadget* child );
+		
+		//! Add an enhanced child-gadget to this one
+		void addEnhancedChild( _gadget* child );
+		
+		//! Get the toppest child owned by the parent
+		_gadget* getToppestChild() const {	return this->children.front(); }
+		
+		//! Get the lowest child owned by the parent
+		_gadget* getLowestChild() const {	return this->children.back(); }
+		
+		//! Get the focused gadget inside the parent
+		_gadget* getFocusedChild() const {	return this->focusedChild; }
+		
+		//! Get the toppest enhanced child owned by the parent
+		_gadget* getToppestEnhancedChild() const {	return this->enhancedChildren.front(); }
+		
+		//! Helps to find adjacent children
+		_gadget*	getPrecedentChild( bool skipHidden = false );
+		_gadget*	getSubcedentChild( bool skipHidden = false );
+		
+		//! Tries to focus a child and returns whether this succeded
+		bool focusChild( _gadget* child );
+		
+		//! Tries to blur the currently focused child, if there is one
+		//! @return Whether there is no child focused anymore
+		bool blurChild();
+		
+		
+		/////////////////
+		//    State    //
+		/////////////////		
+		
+		//! Hide the Gadget
+		void hide(){
+			if( !this->hidden ){
+				this->hidden = true;
+				this->redraw();
+			}
+		}
+		
+		//! Unhide the Gadget
+		void show(){
+			if( this->hidden ){
+				this->hidden = false;
+				this->redraw();
+			}
+		}
+		
+		//! Blur the Gadget
+		bool blur(){
 			if( this->parent && this->parent->focusedChild == this )
 				return this->parent->blurChild();
 			return this->type == _gadgetType::screen; // You can do everything with a screen!
 		}
 		
-		/**
-		 * Focus the Gadget
-		 */
-		bool focus()
-		{
+		//! Focus the Gadget
+		bool focus(){
 			if( this->parent )
 				return this->parent->focusChild( this );
 			return this->type == _gadgetType::screen; // You can do everything with a screen!
 		}
 		
-		/**
-		 * Get the toppest child owned by the parent
-		 */
-		_gadget* getToppestChild() const {	return this->children.front(); }
+		//! Set the Padding of the Gadget
+		void setPadding( const _padding& p ){
+			if( this->padding != p ){
+				this->padding = p;
+				this->redraw();
+			}
+		}
 		
-		/**
-		 * Get the Type of the Gadget (enum)
-		 * @see type.h:111
-		 */
+		//! Get the Padding of the Gadget
+		const _padding& getPadding() const { return this->padding; }
+		
+		
+		//! Get the Type of the Gadget (enum)
 		_gadgetType getType() const { return this->type; }
 		
-		/**
-		 * Let the gadget blink! This is used if anything can't loose focus
-		 */
+		
+		//! Let the gadget blink! This is used if anything can't loose focus
 		void blink();
 		
 	protected:
@@ -623,49 +757,116 @@ class _gadget
 		 * There's no public setType, because you shouldn't change the type of a Gadget
 		 */
 		void setType( _gadgetType type ){ this->type = type; }
+		
 	
-	
-	private: // More attributes!
+	private:
+		
+		//////////////////
+		// Dependencies //
+		//////////////////
+		
+		//! Add a dependency, that if it changes throws an 'onDependencyChange'-event
+		void addDependency( _eventType type ){
+			this->dependencies.set( type , true );
+		}
+		
+		//! Remove a specific dependency
+		void removeDependency( _eventType type ){
+			this->dependencies.set( type , false );
+		}
+		
+		//! Check whether a gadget is dependent of another
+		bool isDependentOf( _eventType type ){
+			return this->dependencies.get( type );
+		}
+		
+		//! Inform dependent gadgets about something that changed
+		void		notifyDependentGadgets( _eventType change , bool notifySelf = true , _dependencyParam param = _dependencyParam() ){
+			if( notifySelf )
+				notifyDependentSelf( change , param );
+			notifyDependentParent( change , param );
+			notifyDependentAdjacents( change , param );
+			notifyDependentChildren( change , param );
+		}
+		void		notifyDependentSelf( _eventType change , _dependencyParam param );
+		void		notifyDependentChildren( _eventType change , _dependencyParam param );
+		void		notifyDependentParent( _eventType change , _dependencyParam param , _optValue<_gadget*> parent = ignore );
+		void		notifyDependentAdjacents( _eventType change , _dependencyParam param , _optValue<_gadget*> pre = ignore , _optValue<_gadget*> post = ignore );
+		
+		
+		//////////////////////////////////
+		// More attributes and methods! //
+		//////////////////////////////////
 		
 		//! Internal callbacks for removeChildren( true/false )
-		static bool		removeDeleteCallback( _gadget* g );
-		static bool		removeCallback( _gadget* g );
+		static bool	removeDeleteCallback( _gadget* g );
+		static bool	removeCallback( _gadget* g );
 		
-		//! // Used to receive the gadget that a mouse position is in
-		_gadget*		getGadgetOfMouseDown( _coord posX , _coord posY );
+		
+		
+		//! Used to receive the gadget that a mouse position is in
+		_gadget*	getGadgetOfMouseDown( _coord posX , _coord posY );
 		
 		//! Determine whether a gadget can currently be clicked either because it has focus or because it cannot receive focus at all
-		bool			hasClickRights() const ;
+		bool		hasClickRights() const ;
 		
 		//! Let the gadget blink! This is used if anything can't loose focus
-		void			blinkHandler(); 
+		void		blinkHandler(); 
 		
-		//! _gadget::dragHandler and
-		//! _gadget::blinkHandler use this
+		//! _gadget::dragHandler and _gadget::blinkHandler
 		union{
-			_gadget*	dragTemp;
-			int			counter;
+		_gadget*	draggedChild;
+		_u8			counter;
 		};
 		
 		//! Type of the Gadget
-		_gadgetType 	type;
+		_gadgetType type;
 		
-		//! State
+		//! Range-bound-refreshes are only private
+		void redraw( _area&& areaToRefresh );
+		void redrawParents( _area&& areaToRefresh );
+		
+		
+		////////////////////
+		//  State-Object  //
+		////////////////////
+		
 		union 
 		{
 			_u8 state; // used to reset everything quickly
 			struct{
-				bool hidden : 1;
-				bool minimized : 1;
-				bool pressed : 1;
-				bool enhanced : 1;
-				bool dragged : 1;
-				bool focused : 1;
-				bool maximized : 1;
-			} __attribute__(( packed ));
+				bool	hidden : 1;
+				bool	pressed : 1;
+				bool	enhanced : 1;
+				bool	dragged : 1;
+				bool	focused : 1;
+			} PACKED ;
 		};
+		
+		
+		///////////////////////////////////
+		// Automatically computed values //
+		///////////////////////////////////
+		
+		union{
+			struct
+			{
+				bool	width : 1;
+				bool	height : 1;
+				bool	posX : 1;
+				bool	posY : 1;
+			} PACKED ;
+			_u8			sum;
+		}				autoValues;
+		
+		///////////////////////
+		// Dependency Object //
+		///////////////////////
+		
+		_dependency		dependencies;
 };
 
-inline _gadgetType typeOfGadget( const _gadget* g ){ return g->getType(); }
+// Include useful helpers
+#include "_type/type.gadget.helpers.h"
 
 #endif

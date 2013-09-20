@@ -23,6 +23,8 @@ class _keyboard : public _gadgetScreen {
 		_s8				toKeyboardExpansion;
 		_s8				curState; // Variable to get the current state of the keyboard
 		_coord			handlePosition;
+		bool			manuallyOpened;
+		bool			ignoreNextVBL;
 		
 		//! Internal Array for Keyboard-Layout
 		static _rect 	buttonDimensions[];
@@ -43,18 +45,16 @@ class _keyboard : public _gadgetScreen {
 		_animation		anim;
 		
 		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn updateHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
 		static _callbackReturn keyHandler( _event event );
 		static _callbackReturn dragHandler( _event event );
 		
 		//! Setter for the animation and for the dragHandler
-		int		setState( int val );
+		void	setState( int val );
 		
 		//! Prepares 'anim' before a new animation starts
 		void	prepareAnimation();
-		
-		//! Update the keyboard-buttons
-		void	refreshKeys();
 	
 	public:
 	
@@ -63,6 +63,9 @@ class _keyboard : public _gadgetScreen {
 		
 		//! Open!
 		void open( bool useAnim = true );
+		
+		//! Resets the zoom in opened state
+		void resetZoom( bool useAnim = true );
 		
 		//! Close
 		void close( bool useAnim = true );
@@ -77,13 +80,13 @@ class _keyboard : public _gadgetScreen {
 		//! Set Capslock on ('true') or off ('false')
 		void setCaps( bool caps = true ){
 			this->caps = caps;
-			refreshKeys();
+			this->update();
 		}
 		
 		//! Set Shift on ('true') or off ('false')
 		void setShift( bool shift = true ){
 			this->shift = shift;
-			refreshKeys();
+			this->update();
 		}
 		
 		//! Ctor

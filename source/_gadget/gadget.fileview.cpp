@@ -7,7 +7,7 @@ _fileview::_fileview( _length width , _length height , _coord x , _coord y , str
 	, directory( path )
 	, viewType( viewtype )
 {
-	// Set Real Type!
+	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
 	
 	// Generate _fileobject's
@@ -26,28 +26,25 @@ void _fileview::generateChildren( bool singleClickToExecute )
 {
 	this->removeChildren( true );
 	
-	int fileObjectHeight = _system::getUser()->fOH;
-	int i = -fileObjectHeight;
-	
 	this->directory.rewindChildren();
 	
 	switch( this->viewType )
 	{
 		case _fileviewType::symbol_big:
 		{
-			_length curX = 1;
-			_length curY = 1;
+			//_length curX = 1;
+			//_length curY = 1;
 			// Read Children of directory
 			for( string str; this->directory.readChild( str ) != false ; )
 			{
-				_fileobject* fo = new _fileobject( curX , curY , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
-				curX += fo->getWidth() + 2;
-				if( fo->getDimensions().getX2() >= this->getWidth() )
-				{
-					curX = 0;
-					curY += fo->getHeight() + 1;
-					fo->moveTo( curX , curY );
-				}
+				_fileobject* fo = new _fileobject( 1 , 1 , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
+				//curX += fo->getWidth() + 2;
+				//if( fo->getDimensions().getX2() >= this->getWidth() )
+				//{
+				//	curX = 0;
+				//	curY += fo->getHeight() + 1;
+				//	fo->moveTo( curX , curY );
+				//}
 				this->addChild( fo );
 			}
 			break;
@@ -56,31 +53,28 @@ void _fileview::generateChildren( bool singleClickToExecute )
 		default:
 			// Read Children of directory
 			for( string str; this->directory.readChild( str ) != false ; )
-				this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + str , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , ( i += fileObjectHeight + 1 ) , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+				this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + str , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
+			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
 			break;
 	}
 }
-
 
 _fileview::~_fileview(){
 	this->removeChildren( true );

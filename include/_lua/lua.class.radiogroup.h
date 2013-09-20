@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUARADIOGROUP_
-#define _WIN_LUARADIOGROUP_
+#ifndef _WIN_L_RADIOGROUP_
+#define _WIN_L_RADIOGROUP_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"

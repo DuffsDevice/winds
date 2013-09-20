@@ -1,5 +1,6 @@
 #include "_lua/lua.class.color.h"
-
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##            Lua-Color           ##
@@ -12,7 +13,7 @@ _lua_color::_lua_color( _color rc ) : _color( rc )
 _lua_color::_lua_color( lua_State* L )
 {
 	if( lua_gettop( L ) == 1 )
-		_color::setColor( luaL_checkcolor( L , 1 ) );
+		_color::setColor( check<_pixel>( L , 1 ) );
 }
 
 //! getR
@@ -37,40 +38,40 @@ int _lua_color::getL(lua_State* L){ lua_pushnumber( L , _color::getL() ); return
 int _lua_color::getColor(lua_State* L){ lua_pushnumber( L , _color::getColor() ); return 1; }
 
 //! setR
-int _lua_color::setR(lua_State* L){ _color::setR( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setR(lua_State* L){ _color::setR( check<int>( L , 1 ) ); return 0; }
 
 //! setG
-int _lua_color::setG(lua_State* L){ _color::setG( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setG(lua_State* L){ _color::setG( check<int>( L , 1 ) ); return 0; }
 
 //! setB
-int _lua_color::setB(lua_State* L){ _color::setB( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setB(lua_State* L){ _color::setB( check<int>( L , 1 ) ); return 0; }
 
 //! setH
-int _lua_color::setH(lua_State* L){ _color::setH( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setH(lua_State* L){ _color::setH( check<int>( L , 1 ) ); return 0; }
 
 //! setS
-int _lua_color::setS(lua_State* L){ _color::setS( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setS(lua_State* L){ _color::setS( check<int>( L , 1 ) ); return 0; }
 
 //! setL
-int _lua_color::setL(lua_State* L){ _color::setL( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_color::setL(lua_State* L){ _color::setL( check<int>( L , 1 ) ); return 0; }
 
 //! setColor
-int _lua_color::setColor(lua_State* L){ _color::setColor( luaL_checkcolor( L , 1 ) ); return 0; }
+int _lua_color::setColor(lua_State* L){ _color::setColor( check<_pixel>( L , 1 ) ); return 0; }
 
 //! setRGB
-int _lua_color::setRGB(lua_State* L){ _color::setRGB( luaL_checkint( L , 1 ) , luaL_optint( L , 2 , 100 ) , luaL_optint( L , 3 , 50 ) ); return 0; }
+int _lua_color::setRGB(lua_State* L){ _color::setRGB( check<int>( L , 1 ) , lightcheck( L , 2 , 100 ) , lightcheck( L , 3 , 50 ) ); return 0; }
 
 //! setHSL
-int _lua_color::setHSL(lua_State* L){ _color::setHSL( luaL_checkint( L , 1 ) , luaL_optint( L , 2 , 100 ) , luaL_optint( L , 3 , 50 ) ); return 0; }
+int _lua_color::setHSL(lua_State* L){ _color::setHSL( check<int>( L , 1 ) , lightcheck( L , 2 , 100 ) , lightcheck( L , 3 , 50 ) ); return 0; }
 
 //! adjustRGB
-int _lua_color::adjustRGB(lua_State* L){ _color::adjustRGB( luaL_checkint( L , 1 ) , luaL_optint( L , 2 , 0 ) , luaL_optint( L , 3 , 0 ) ); return 0; }
+int _lua_color::adjustRGB(lua_State* L){ _color::adjustRGB( check<int>( L , 1 ) , lightcheck( L , 2 , 0 ) , lightcheck( L , 3 , 0 ) ); return 0; }
 
 //! adjustHSL
-int _lua_color::adjustHSL(lua_State* L){ _color::adjustHSL( luaL_checkint( L , 1 ) , luaL_optint( L , 2 , 0 ) , luaL_optint( L , 3 , 0 ) ); return 0; }
+int _lua_color::adjustHSL(lua_State* L){ _color::adjustHSL( check<int>( L , 1 ) , lightcheck( L , 2 , 0 ) , lightcheck( L , 3 , 0 ) ); return 0; }
 
 //! Lua-_rect
-const char _lua_color::className[] = "_color";
+const char _lua_color::className[] = "Color";
 Lunar<_lua_color>::FunctionType _lua_color::methods[] = {
 	{ "setRGB" , &_lua_color::setRGB },
 	{ "setHSL" , &_lua_color::setHSL },

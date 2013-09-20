@@ -21,8 +21,11 @@ class _rect{
 			public:
 				
 				//! Ctors
-				_area( initializer_list<_rect> rects ) : t_rects( rects ) {}
-				_area( _rect rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( rc ); }
+				_area( _initializerList<_rect> rects ) : t_rects( rects ) {}
+				_area( _vector<_rect>&& rects ) : t_rects( move(rects) ) {}
+				_area( const _vector<_rect>& rects ) : t_rects( rects ) {}
+				_area( _rect&& rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( (_rect&&)rc ); }
+				_area( const _rect& rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( rc ); }
 				_area(){}
 					
 				//! Push-back Aliases
@@ -42,7 +45,9 @@ class _rect{
 				
 				//! Relativate all t_rects
 				_area& toRelative( const _coord absX , const _coord absY );
-				_area& toRelative( const _2s32 position ){ this->toRelative( position.first , position.second ); return *this; }
+				_area toRelative( const _coord absX , const _coord absY ) const ;
+				_area& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
+				_area toRelative( const _2s32 position ) const { return this->toRelative( position.first , position.second ); }
 				
 				//! Clip all t_rects to the supplied one
 				_area& clipToIntersect( const _rect& limits );
@@ -69,6 +74,13 @@ class _rect{
 		 * @param height Height of the Rect
 		 */
 		_rect( _coord x , _coord y , _length width , _length height ) : width( width ) , height( height ) , x( x ) , y( y ) {}
+		
+		/**
+		 * Constructor
+		 * @param pos (X|Y)-Position
+		 * @param size (width|height)
+		 */
+		_rect( _2s32 pos , _2s32 size ) : width( size.first ) , height( size.second ) , x( pos.first ) , y( pos.second ) {}
 		
 		//! All about Setters and Getters...
 		_coord getX2() const { return x + _coord(width) - 1; }
@@ -102,9 +114,12 @@ class _rect{
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
 		_rect& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
-		_rect& toRelative( const _coord absX , const _coord absY )
-		{
+		_rect toRelative( const _2s32 position ) const { return this->toRelative( position.first , position.second ); }
+		_rect& toRelative( const _coord absX , const _coord absY ){
 			this->x -= absX; this->y -= absY; return *this;
+		}
+		_rect toRelative( const _coord absX , const _coord absY ) const {
+			return _rect( this->x - absX, this->y - absY , this->width , this->height );
 		}
 		
 		//! Returns an _area (=_list of rectangle-pieces) rooting from an Rectangle AND'ed with this one

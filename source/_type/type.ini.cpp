@@ -86,7 +86,7 @@ _s16 _ini::read()
 void _ini::write()
 {
 	this->output.clear();
-	for( pair<const string,map<string,string>>& section : this->array )
+	for( _pair<const string,_map<string,string>>& section : this->array )
 	{
 		if( section.first != "_global_" )
 		{
@@ -94,7 +94,7 @@ void _ini::write()
 			this->output += section.first;
 			this->output += "]\r\n";
 		}
-		for( pair<const string,string>& nvp : section.second )
+		for( _pair<const string,string>& nvp : section.second )
 		{
 			if( !nvp.first.length() )
 				continue;

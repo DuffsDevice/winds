@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAFONT_
-#define _WIN_LUAFONT_
+#ifndef _WIN_L_FONT_
+#define _WIN_L_FONT_
 
 #include "_lua/lunar.h"
 #include "_type/type.font.h"

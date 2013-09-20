@@ -1,9 +1,11 @@
 // Check if already included
-#ifndef _WIN_LUA_INPUTINTERFACE_
-#define _WIN_LUA_INPUTINTERFACE_
+#ifndef _WIN_L_INPUTINTERFACE_
+#define _WIN_L_INPUTINTERFACE_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.font.h"
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /**
  * Proxy Classes
@@ -57,10 +59,10 @@ class _lua_interface_input{
 		int getColor( lua_State* L ){ lua_pushnumber( L , this->input->getColor() ); return 1; }
 		
 		//! setColor
-		int setColor( lua_State* L ){ this->input->setColor( luaL_checkcolor( L , 1 ) ); return 0; }
+		int setColor( lua_State* L ){ this->input->setColor( check<_pixel>( L , 1 ) ); return 0; }
 		
 		//! setBgColor
-		int setBgColor( lua_State* L ){ this->input->setColor( luaL_checkcolor( L , 1 ) ); return 0; }
+		int setBgColor( lua_State* L ){ this->input->setBgColor( check<_pixel>( L , 1 ) ); return 0; }
 		
 		//! getBgColor
 		int getBgColor( lua_State* L ){ lua_pushnumber( L , this->input->getBgColor() ); return 1; }

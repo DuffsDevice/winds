@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAFILE_
-#define _WIN_LUAFILE_
+#ifndef _WIN_L_FILE_
+#define _WIN_L_FILE_
 
 #include "_lua/lunar.h"
 #include "_type/type.direntry.h"

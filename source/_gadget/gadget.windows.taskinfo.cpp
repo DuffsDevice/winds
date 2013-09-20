@@ -14,12 +14,8 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 	// Receive Gadget
 	_windowsTaskInfo* that = event.getGadget<_windowsTaskInfo>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	bP.copy( bP.getWidth() - 6 , 0 , BMP_TaskInfoRightPart() ); // Right Side
 	bP.copyHorizontalStretch( 9 , 0 , bP.getWidth() - 15 , BMP_TaskInfoMiddlePart() ); // Middle Part
@@ -34,22 +30,20 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 _windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style&& style ) :
 	_gadget( _gadgetType::imagegadget , 25 , 10 , x - 25 , y , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
 	, time( new _label( 24 , 10 , 0 , 0 , "00:00" ) )
+	, timer( make_inline_callback<void()>( [this]{ this->redraw(); } ) , 10000 , true ) // Make the clock update itself
 {
 	// Adjust Label
 	this->time->setAlign( _align::right );
 	this->time->setColor( COLOR_WHITE );
 	
 	// Register Event-Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_windowsTaskInfo::refreshHandler ) );
-	
-	// Make the clock update itself
-	_system::executeTimer( _gadget::eventForwardRefreshGadget( this ) , 10000 , true );
+	this->setInternalEventHandler( onDraw , make_callback( &_windowsTaskInfo::refreshHandler ) );
 	
 	// Add our time
 	this->addEnhancedChild( this->time );
 	
 	// Refresh
-	this->refreshBitmap();
+	this->redraw();
 }
 
 _windowsTaskInfo::~_windowsTaskInfo(){

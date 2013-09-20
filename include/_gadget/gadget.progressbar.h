@@ -3,7 +3,7 @@
 #define _WIN_G_PROGRESSBAR_
 
 #include "_type/type.gadget.h"
-#include "_type/type.animation.h"
+#include "_type/type.timer.h"
 
 class _progressbar : public _gadget {
 	
@@ -17,16 +17,19 @@ class _progressbar : public _gadget {
 		static _callbackReturn refreshHandler( _event event );
 		
 		void	step();
+		_timer	timer;
 	
 	public:
 	
+		//! Constructor
+		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style&& style = _style() | _styleAttr::notClickable );
+		
 		//! Set Receiver of Key-Events
 		void setIntValue( _u8 value ){ // 0 - 127
-			if( value != this->value )
-			{
-				this->value = value;
-				this->bubbleRefresh( true );
-			}
+			if( value == this->value )
+				return;
+			this->value = value;
+			this->redraw();
 		}
 		
 		//! getIntValue
@@ -43,21 +46,14 @@ class _progressbar : public _gadget {
 		//! set Color Scheme ( true for the blue theme used at the bootup )
 		void setColorScheme( bool blue )
 		{
-			if( this->blue != blue )
-			{
-				this->blue = blue;
-				this->bubbleRefresh( true );
-			}
+			if( this->blue == blue )
+				return;
+			this->blue = blue;
+			this->redraw();
 		}
 		
 		//! get Color Scheme
 		bool getColorScheme(){ return this->blue; }
-		
-		//! Constructor
-		_progressbar( _length width , _coord x , _coord y  , bool type = true , _style&& style = _style() | _styleAttr::notClickable );
-		
-		//! Destructor
-		~_progressbar();
 };
 
 #endif

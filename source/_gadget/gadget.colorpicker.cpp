@@ -20,25 +20,25 @@ _colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y
 	
 	refreshBigGradient();
 	
-	this->hueSatTable = new _gadget( hueSatImage.getWidth() , hueSatImage.getHeight() , 1 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
-	this->lumTable = new _gadget( 11 , hueSatImage.getHeight() , hueSatImage.getWidth() + 2 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
+	this->hueSatTable = new _gadget( _gadgetType::none , hueSatImage.getWidth() , hueSatImage.getHeight() , 1 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
+	this->lumTable = new _gadget( _gadgetType::none , 11 , hueSatImage.getHeight() , hueSatImage.getWidth() + 2 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
 	
-	this->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
-	this->setInternalEventHandler( onResize , _classCallback( this , &_colorpicker::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( this , &_colorpicker::refreshHandler ) );
+	this->setInternalEventHandler( onResize , make_callback( this , &_colorpicker::resizeHandler ) );
 	
-	this->hueSatTable->setInternalEventHandler( dragging , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->setInternalEventHandler( keyDown , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->setInternalEventHandler( keyRepeat , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->setInternalEventHandler( mouseDown , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->hueSatTable->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
-	this->hueSatTable->refreshBitmap();
+	this->hueSatTable->setInternalEventHandler( onDragging , make_callback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( onKeyDown , make_callback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( onKeyRepeat , make_callback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( onMouseDown , make_callback( this , &_colorpicker::inputHandler ) );
+	this->hueSatTable->setInternalEventHandler( onDraw , make_callback( this , &_colorpicker::hueSatRefreshHandler ) );
+	this->hueSatTable->redraw();
 	
-	this->lumTable->setInternalEventHandler( dragging , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->setInternalEventHandler( mouseDown , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->setInternalEventHandler( keyRepeat , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->setInternalEventHandler( keyDown , _classCallback( this , &_colorpicker::inputHandler ) );
-	this->lumTable->setInternalEventHandler( refresh , _classCallback( this , &_colorpicker::refreshHandler ) );
-	this->lumTable->refreshBitmap();
+	this->lumTable->setInternalEventHandler( onDragging , make_callback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( onMouseDown , make_callback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( onKeyRepeat , make_callback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( onKeyDown , make_callback( this , &_colorpicker::inputHandler ) );
+	this->lumTable->setInternalEventHandler( onDraw , make_callback( this , &_colorpicker::lumRefreshHandler ) );
+	this->lumTable->redraw();
 	
 	// Add Image
 	this->addChild( this->hueSatTable );
@@ -65,90 +65,86 @@ void _colorpicker::setColor( _pixel color )
 		this->hue = newHue;
 		this->sat = newSat;
 		this->lum = newLum;
-		this->hueSatTable->bubbleRefresh( true );
-		this->lumTable->bubbleRefresh( true );
+		this->hueSatTable->redraw();
+		this->lumTable->redraw();
 	}
 	else if( this->lum != newLum )
 	{
 		this->lum = newLum;
-		this->lumTable->bubbleRefresh( true );
+		this->lumTable->redraw();
 	}
+}
+
+_callbackReturn _colorpicker::hueSatRefreshHandler( _event event )
+{
+	// Get bitmapPort
+	_bitmapPort bP = event.getGadget()->getBitmapPort( event );
+	
+	bP.copy( 0 , 0 , this->hueSatImage );
+	
+	// Compute X/Y - Coordinates
+	_int x = this->hue * this->hueSatTable->getWidth();
+	x /= 361;
+	_int y = this->sat * this->hueSatTable->getHeight() + 50;
+	y /= 101;
+	
+	// Limit
+	y = mid( 0 , y , this->hueSatTable->getHeight() - 1 );
+	
+	bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , _glyph::circle , COLOR_BLACK );
+	
+	return handled;
+}
+
+_callbackReturn _colorpicker::lumRefreshHandler( _event event )
+{
+	// Get bitmapPort
+	_bitmapPort bP = event.getGadget()->getBitmapPort( event );
+	
+	// Compute Y - Coordinate
+	_int y = ( 100 - this->lum ) * this->lumTable->getHeight() + 50;
+	y /= 101;
+	
+	bP.fill( COLOR_WHITE );
+	
+	// Draw Gradient!
+	_int height = event.getGadget()->getHeight();
+	_pixel col = _color().setHSL( this->hue , this->sat , 50 ).getColor();
+	bP.drawVerticalGradient( 0 , 0 , 7 , height >> 1 , COLOR_WHITE , col );
+	bP.drawVerticalGradient( 0 , height >> 1 , 7 , height >> 1 , col , COLOR_BLACK );
+	
+	// Draw Arrow
+	bP.drawChar( 8 , y - 4 , _system::getFont("SystemSymbols8") , _glyph::arrowLeft , COLOR_BLACK );
+	
+	return handled;
+}
+
+_callbackReturn _colorpicker::resizeHandler( _event event )
+{
+	// Fetch Gadget
+	_colorpicker* that = event.getGadget<_colorpicker>();
+	
+	// Refresh the colorful Gradient
+	that->hueSatImage.resize( that->getWidth() - 14 , that->getHeight() - 2 );
+	that->refreshBigGradient();
+	
+	// Resize both gradients
+	that->hueSatTable->setDimensions( _rect( 1 , 1 , that->getWidth() - 14 , that->getHeight() - 2 ) );
+	that->lumTable->setDimensions( _rect( hueSatImage.getWidth() + 2 , 1 , 11 , hueSatImage.getHeight() ) );
+	
+	return handled;
 }
 
 _callbackReturn _colorpicker::refreshHandler( _event event )
 {
-
-	if( event.getGadget() == this->hueSatTable )
-	{
-		_bitmapPort bP = event.getGadget()->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( event.getGadget()->getAbsolutePosition() ) );
-		else
-			bP.normalizeClippingRects();
-		
-		bP.copy( 0 , 0 , this->hueSatImage );
-		
-		// Compute X/Y - Coordinates
-		_int x = this->hue * this->hueSatTable->getWidth();
-		x /= 361;
-		_int y = this->sat * this->hueSatTable->getHeight() + 50;
-		y /= 101;
-		
-		// Limit
-		y = mid( 0 , y , this->hueSatTable->getHeight() - 1 );
-		
-		bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , glyph::circle , COLOR_BLACK );
-	}
-	else if( event.getGadget() == this->lumTable )
-	{
-		_bitmapPort bP = event.getGadget()->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( event.getGadget()->getAbsolutePosition() ) );
-		else
-			bP.normalizeClippingRects();
-		
-		// Compute Y - Coordinate
-		_int y = ( 100 - this->lum ) * this->lumTable->getHeight() + 50;
-		y /= 101;
-		
-		bP.fill( COLOR_WHITE );
-		
-		// Draw Gradient!
-		_int height = event.getGadget()->getHeight();
-		_pixel col = _color().setHSL( this->hue , this->sat , 50 ).getColor();
-		bP.drawVerticalGradient( 0 , 0 , 7 , height >> 1 , COLOR_WHITE , col );
-		bP.drawVerticalGradient( 0 , height >> 1 , 7 , height >> 1 , col , COLOR_BLACK );
-		
-		// Draw Arrow
-		bP.drawChar( 8 , y - 4 , _system::getFont("SystemSymbols8") , glyph::arrowLeft , COLOR_BLACK );
-	}
-	else
-	{
-		// Resize event?
-		if( event.getType() == onResize )
-		{
-			// Refresh the colorful Gradient
-			this->hueSatImage.resize( this->getWidth() - 14 , this->getHeight() - 2 );
-			this->refreshBigGradient();
-			
-			// Resize both gradients
-			this->hueSatTable->setDimensions( _rect( 1 , 1 , this->getWidth() - 14 , this->getHeight() - 2 ) );
-			this->lumTable->setDimensions( _rect( hueSatImage.getWidth() + 2 , 1 , 11 , hueSatImage.getHeight() ) );
-			
-			return handled;
-		}
-		
-		_bitmapPort bP = this->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
-		else
-			bP.normalizeClippingRects();
-		
-		bP.fill( COLOR_WHITE );
-	}
+	// Fetch Gadget
+	_colorpicker* that = event.getGadget<_colorpicker>();
+	
+	// get bitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
+	
+	// Reset to white
+	bP.fill( COLOR_WHITE );
 	
 	return handled;
 }
@@ -191,7 +187,7 @@ _callbackReturn _colorpicker::inputHandler( _event event )
 	
 	if( event.getGadget() == hSTable )
 	{
-		if( event.getType() == keyDown || event.getType() == keyRepeat )
+		if( event == onKeyDown || event == onKeyRepeat )
 		{
 			_s8 dx = ( event.getKeyCode() == DSWindows::KEY_RIGHT ) - ( event.getKeyCode() == DSWindows::KEY_LEFT );
 			_s8 dy = ( event.getKeyCode() == DSWindows::KEY_UP ) - ( event.getKeyCode() == DSWindows::KEY_DOWN );
@@ -200,7 +196,7 @@ _callbackReturn _colorpicker::inputHandler( _event event )
 			
 			goto end;
 		}
-		else if( event.getType() == dragging )
+		else if( event == onDragging )
 		{
 			event.setPosX( event.getPosX() - hSTable->getX() );
 			event.setPosY( event.getPosY() - hSTable->getY() );
@@ -216,14 +212,14 @@ _callbackReturn _colorpicker::inputHandler( _event event )
 	}
 	else if( event.getGadget() == lTable )
 	{
-		if( event.getType() == keyDown || event.getType() == keyRepeat )
+		if( event == onKeyDown || event == onKeyRepeat )
 		{
 			_s8 dy = ( event.getKeyCode() == DSWindows::KEY_UP ) - ( event.getKeyCode() == DSWindows::KEY_DOWN );
 			newLum = mid( 0 , this->lum + dy * 3 , 100 );
 			
 			goto end;
 		}
-		else if( event.getType() == dragging )
+		else if( event == onDragging )
 			event.setPosY( event.getPosY() - lTable->getY() );
 		
 		_int y = max( 0 , min( lTable->getHeight() - 1 - event.getPosY() , lTable->getHeight() - 1 ) );
@@ -240,23 +236,18 @@ _callbackReturn _colorpicker::inputHandler( _event event )
 		this->hue = newHue;
 		this->sat = newSat;
 		this->lum = newLum;
-		hSTable->bubbleRefresh( true );
-		lTable->bubbleRefresh( true );
+		hSTable->redraw();
+		lTable->redraw();
 		
-		this->triggerEvent( onChange );
+		this->triggerEvent( onEdit );
 	}
 	else if( this->lum != newLum )
 	{
 		this->lum = newLum;
-		lTable->bubbleRefresh( true );
+		lTable->redraw();
 		
-		this->triggerEvent( onChange );
+		this->triggerEvent( onEdit );
 	}
 	
 	return handled;
-}
-
-_colorpicker::~_colorpicker()
-{
-	this->removeChildren( true );
 }

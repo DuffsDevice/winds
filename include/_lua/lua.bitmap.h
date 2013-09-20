@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUABITMAP_
-#define _WIN_LUABITMAP_
+#ifndef _WIN_L_BITMAP_
+#define _WIN_L_BITMAP_
 
 extern "C"{
 	#include "_lua/lua.h"

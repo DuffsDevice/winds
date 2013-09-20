@@ -46,41 +46,38 @@ class _styleAttr
 		static const _pStyleAttr<3>					resizeable;
 		static const _nStyleAttr<3>					notResizeable;
 		
-		static const _pStyleAttr<( 1 << 2 )> 		destroyable;
-		static const _nStyleAttr<( 1 << 2 )> 		notDestroyable;
+		static const _pStyleAttr<( 1 << 2 )> 		enabled;
+		static const _nStyleAttr<( 1 << 2 )> 		disabled;
 		
 		static const _pStyleAttr<( 1 << 3 )> 		clickable;
 		static const _nStyleAttr<( 1 << 3 )> 		notClickable;
 		
-		static const _pStyleAttr<( 1 << 4 )> 		minimizeable;
-		static const _nStyleAttr<( 1 << 4 )> 		notMinimizeable;
+		static const _pStyleAttr<( 1 << 4 )> 		canTakeFocus;
+		static const _nStyleAttr<( 1 << 4 )> 		canNotTakeFocus;
 		
-		static const _pStyleAttr<( 1 << 5 )> 		canTakeFocus;
-		static const _nStyleAttr<( 1 << 5 )> 		canNotTakeFocus;
+		static const _pStyleAttr<( 1 << 5 )> 		canLooseFocus;
+		static const _nStyleAttr<( 1 << 5 )> 		canNotLooseFocus;
 		
-		static const _pStyleAttr<( 1 << 6 )> 		canLooseFocus;
-		static const _nStyleAttr<( 1 << 6 )> 		canNotLooseFocus;
+		static const _pStyleAttr<( 1 << 6 )> 		canReceiveFocus;
+		static const _nStyleAttr<( 1 << 6 )> 		canNotReceiveFocus;
 		
-		static const _pStyleAttr<( 1 << 7 )> 		canReceiveFocus;
-		static const _nStyleAttr<( 1 << 7 )> 		canNotReceiveFocus;
+		static const _nStyleAttr<( 1 << 7 )> 		defaultDragTrig;
+		static const _pStyleAttr<( 1 << 7 )> 		smallDragTrig;
 		
-		static const _nStyleAttr<( 1 << 8 )> 		defaultDragTrig;
-		static const _pStyleAttr<( 1 << 8 )> 		smallDragTrig;
+		static const _nStyleAttr<( 1 << 8 )> 		mouseClickDefault;
+		static const _pStyleAttr<( 1 << 8 )> 		mouseClickRepeat;
 		
-		static const _nStyleAttr<( 1 << 9 )> 		mouseClickDefault;
-		static const _pStyleAttr<( 1 << 9 )> 		mouseClickRepeat;
+		static const _pStyleAttr<( 1 << 9 )> 		doubleClickable;
+		static const _nStyleAttr<( 1 << 9 )> 		notDoubleClickable;
 		
-		static const _pStyleAttr<( 1 << 10 )> 		doubleClickable;
-		static const _nStyleAttr<( 1 << 10 )> 		notDoubleClickable;
+		static const _pStyleAttr<( 1 << 10 )> 		keyboardRequest;
+		static const _nStyleAttr<( 1 << 10 )> 		noKeyboardRequest;
 		
-		static const _pStyleAttr<( 1 << 11 )> 		keyboardRequest;
-		static const _nStyleAttr<( 1 << 11 )> 		noKeyboardRequest;
+		static const _pStyleAttr<( 1 << 11 )> 		draggable;
+		static const _nStyleAttr<( 1 << 11 )> 		notDraggable;
 		
-		static const _pStyleAttr<( 1 << 12 )> 		draggable;
-		static const _nStyleAttr<( 1 << 12 )> 		notDraggable;
-		
-		static const _pStyleAttr<( 1 << 13 )> 		focusBringsFront;
-		static const _nStyleAttr<( 1 << 13 )> 		focusNoAction;
+		static const _pStyleAttr<( 1 << 12 )> 		focusBringsFront;
+		static const _nStyleAttr<( 1 << 12 )> 		focusNoAction;
 };
 
 //! Predefine class
@@ -98,9 +95,8 @@ struct _style
 		{
 			bool	resizeableX : 1;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
 			bool	resizeableY : 1;
-			bool	destroyable : 1;		/** Is destroyable?  */
+			bool	enabled : 1;			/** Is editable */
 			bool	clickable : 1;			/** Is clickable?  */
-			bool	minimizeable : 1;		/** A Link is added to the taskbar */
 			bool	canTakeFocus : 1;		/** Can blur the focused gadget */
 			bool	canLooseFocus : 1;		/** Can be blurred */
 			bool	canReceiveFocus : 1;	/** Can receive focus */
