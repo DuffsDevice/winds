@@ -47,7 +47,7 @@ _passcodebox::_passcodebox( _coord x , _coord y , _length width , string value ,
 	if( !replaceFont )
 		replaceFont = _system::getFont("SystemSymbols8");
 	if( !replaceChar )
-		replaceChar = glyph::smallCircleFilled;
+		replaceChar = _glyph::smallCircleFilled;
 }
 
 _passcodebox::_passcodebox( _coord x , _coord y , _length width , _length height , string value , const _font* repFont , _char repChar , _style&& style ) :
@@ -59,5 +59,5 @@ _passcodebox::_passcodebox( _coord x , _coord y , _length width , _length height
 	if( !replaceFont )
 		replaceFont = _system::getFont("SystemSymbols8");
 	if( !replaceChar )
-		replaceChar = glyph::smallCircleFilled;
+		replaceChar = _glyph::smallCircleFilled;
 }

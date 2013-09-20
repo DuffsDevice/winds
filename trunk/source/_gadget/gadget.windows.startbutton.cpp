@@ -21,12 +21,8 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 	// Receive Gadget
 	_windowsStartButton* that = event.getGadget<_windowsStartButton>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	if( that->isPressed() || that->startMenu->isOpened() )
 		bP.copy( 0 , 0 , BMP_StartButtonPressed() );
@@ -44,10 +40,13 @@ _windowsStartButton::_windowsStartButton( _coord x , _coord y , _style&& style )
 	_button( 38 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
 	, startMenu( new _startMenu() )
 {
-	this->setInternalEventHandler( mouseClick , _classCallback( this , &_windowsStartButton::mouseHandler ) );
-	this->setInternalEventHandler( refresh , _staticCallback( &_windowsStartButton::refreshHandler ) );
-	this->startMenu->setInternalEventHandler( onOpen , _gadget::eventForwardRefreshGadget( this ) );
-	this->startMenu->setInternalEventHandler( onClose , _gadget::eventForwardRefreshGadget( this ) );
+	this->setInternalEventHandler( onMouseClick , make_callback( this , &_windowsStartButton::mouseHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_windowsStartButton::refreshHandler ) );
 	
-	this->refreshBitmap();
+	// Register Handlers to change the startButton to 'pressed' or to 'closed'
+	this->startMenu->setInternalEventHandler( onOpen , _gadgetHelpers::eventForwardRefreshGadget( this ) );
+	this->startMenu->setInternalEventHandler( onClose , _gadgetHelpers::eventForwardRefreshGadget( this ) );
+	
+	// Refresh
+	this->redraw();
 }

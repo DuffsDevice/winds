@@ -1,4 +1,6 @@
 #include "_lua/lua.gadget.textbox.h"
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##           Lua-Textbox          ##
@@ -6,27 +8,26 @@
 
 _lua_textbox::_lua_textbox( lua_State* L ) : 
 	_lua_gadget( 
-		new _textbox( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_optstring( L , 4 , "" ) , luaL_optstyle( L , 5 ) )
+		new _textbox( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<string>( L , 4 , "" ) , lightcheck<_style>( L , 6 , _style() ) )
 	)
 	, _lua_interface_input( (_textbox*)_lua_gadget::getGadget() )
 { }
 
 
 //! setCursor
-int _lua_textbox::setCursor( lua_State* L ){ _lua_interface_input::input->setCursor( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_textbox::setCursor( lua_State* L ){ _lua_interface_input::input->setCursor( check<int>( L , 1 ) ); return 0; }
 
 //! getCursor
 int _lua_textbox::getCursor( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getCursor() ); return 1; }
 
 //! Lua-window
-const char _lua_textbox::className[] = "_textbox";
+const char _lua_textbox::className[] = "TextBox";
 Lunar<_lua_textbox>::FunctionType _lua_textbox::methods[] = {
-	GADGET_FUNCS( _lua_textbox ),
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_textbox>::PropertyType _lua_textbox::properties[] = {
-	GADGET_ATTRS( _lua_textbox ),
+	GADGET_BASE_ATTR,
 	{ "text" , &_lua_textbox::getStrValue , &_lua_textbox::setStrValue },
 	{ "color" , &_lua_textbox::getColor , &_lua_textbox::setColor },
 	{ "cursor" , &_lua_textbox::getCursor , &_lua_textbox::setCursor },

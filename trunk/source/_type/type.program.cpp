@@ -6,6 +6,7 @@
 #include "_resource/PROG_Explorer.h"
 #include "PROG_exampleprogram_bin.h"
 #include "PROG_pong_bin.h"
+#include "PROG_paint_bin.h"
 
 void _program::main( _gadget* w , _cmdArgs&& args  ){
 	this->gadgetHost = w;
@@ -41,6 +42,13 @@ _program* _program::fromFile( string filename )
 	{
 		string str = (const _char*)PROG_exampleprogram_bin;
 		str.resize( PROG_exampleprogram_bin_size );
+		return new _progLua( move( str ) );
+	}
+	
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/paint.exe" ) )
+	{
+		string str = (const _char*)PROG_paint_bin;
+		str.resize( PROG_paint_bin_size );
 		return new _progLua( move( str ) );
 	}
 	

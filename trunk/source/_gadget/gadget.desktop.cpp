@@ -11,12 +11,8 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	// Receive Gadget
 	_desktop* that = event.getGadget<_desktop>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_color c = _system::getUser()->dTC;
 	c.setL( c.getL() + 22 );
@@ -41,8 +37,8 @@ _desktop::_desktop( _style&& style ) :
 {
 	//ft = new _freetypefont("/font.ttf");
 	
-	this->setInternalEventHandler( refresh , _staticCallback( &_desktop::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_desktop::refreshHandler ) );
 	
 	// Refresh
-	this->refreshBitmap();
+	this->redraw();
 }

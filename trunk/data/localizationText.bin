@@ -55,25 +55,67 @@ s = Anterior
 f = Précédent
 
 [lbl_ok]
+e = OK
+g = OK
+i = OK
+s = OK
+f = OK
+
+[lbl_submit]
 e = Submit
 g = Bestätigen
-i = OK
-s = Confirmar
-f = OK
+i = Envio
+s = Enviar
+f = Envoi
+
+[lbl_yes]
+e = Yes
+g = Ja
+i = Sí
+s = Sí
+f = Oui
+
+[lbl_no]
+e = No
+g = Nein
+i = No
+s = No
+f = Non
 
 [lbl_cancel]
 e = Cancel
 g = Abbrechen
-i = Annula
-s = Confirmar
-f = Annuler
+i = Cancella
+s = Cancelar
+f = Annulation
 
 [lbl_dismiss]
 e = Dismiss
 g = Ignorieren
-i = Ignora
-s = Dejar
-f = Laisser
+i = Ignorare
+s = Descartar
+f = Rejeter
+
+[lbl_error]
+e = Error
+g = Fehler
+i = Errore
+s = Error
+f = Erreur
+
+[lbl_warning]
+e = Warning
+g = Warnung
+i = Avvertimento
+s = Aviso
+f = Prévenir
+
+[lbl_info]
+e = Info
+g = Hinweis
+i = Informazioni
+s = Info
+f = Info
 
 [lbl_to_continue]
 e = To Continue, click [Next]
@@ -111,32 +153,39 @@ s = Ajustes sistema
 f = Paramètres système
 
 [txt_system_clock]
-e = Please adjust the system clock:
-g = Bitte stelle Die Uhrzeit ein:
-i = Regolate il clock di sistema:
-s = Ajuste el reloj del sistema:
-f = Réglez l'horloge système:
+e = Please adjust the system time and date:
+g = Bitte stelle die Uhrzeit und das Datum ein:
+i = Regolate il clock e la data di sistema:
+s = Ajuste la hora y fecha del sistema:
+f = Réglez l'horloge et la date système:
 
 [txt_system_clock_auto_fetch_1]
 e = Reference time from the Internet
 g = Uhrzeit über das Internet bestimmen
-i = 
-s = 
-f = 
+i = Determinare il tempo e la data attraverso internet
+s = Determinar la fecha y hora por Internet
+f = Déterminer la date et l'heure via Internet
 
 [txt_system_clock_auto_fetch_2]
 e = (Needs WiFi)
 g = (Benötigt WiFi)
-i = 
-s = 
-f = 
+i = (Richiede WiFi)
+s = (Requiere WiFi)
+f = (Nécessite WiFi)
 
 [lbl_finished]
 e = Setup finished
-g = Fertig
-i = Pronto
-s = Preparado
-f = Configuration terminée
+g = Konfigurierung abgeschlossen
+i = Configurazione finito
+s = Configuración ascabado
+f = Configuration fini
+
+[lbl_wait_installing]
+e = Please wait while WinDS is being installed
+g = Bitte warten Sie, während WinDS installiert wird
+i = Attendere che l'installazione di Windows è finita
+s = Espere mientras WinDS se está instalando
+f = Attendez que l'installation de Windows est fini
 
 [txt_winds_ready]
 e = WinDS is now ready to be used!
@@ -176,9 +225,9 @@ f = Guest
 [lbl_start_btn]
 e = start
 g = start
-i = start
-s = start
-f = start
+i = avvio
+s = inicio
+f = démarrer
 
 ;[]
 ;e = 

@@ -27,12 +27,8 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	// Receive Gadget
 	_windowsTaskButton* that = event.getGadget<_windowsTaskButton>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_length myW = bP.getWidth();
 	_length myH = bP.getHeight();
@@ -97,7 +93,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	}
 	
 	if( that->reference->hasIcon() )
-		bP.copyTransparent( 3 , 2 , *that->reference->getIcon() );
+		bP.copyTransparent( 3 , 2 , that->reference->getIcon() );
 	
 	// Corners!
 	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
@@ -116,8 +112,11 @@ _windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference
 {
 	this->setFontColor( RGB( 27 , 27 , 27 ) );
 	this->setAlign( _align::left );
-	this->setInternalEventHandler( onAction , _staticCallback( &_windowsTaskButton::mouseHandler ) );
-	this->setInternalEventHandler( refresh , _staticCallback( &_windowsTaskButton::refreshHandler ) );
 	
-	this->refreshBitmap();
+	// Register some event handlers
+	this->setInternalEventHandler( onMouseClick , make_callback( &_windowsTaskButton::mouseHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_windowsTaskButton::refreshHandler ) );
+	
+	// Refresh
+	this->redraw();
 }

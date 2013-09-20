@@ -12,8 +12,8 @@ class _runtimeAttributes
 
 		string			defaultFont;
 		_u8				defaultFontSize;
-		vector<_char>	keyboardChar[2];
-		vector<string>	keyboardText[2];
+		_vector<_char>	keyboardChar[2];
+		_vector<string>	keyboardText[2];
 		_bitmap			windowBar;
 		_bitmap			windowBarBlurred;
 		_pixel			selectForeground;
@@ -24,7 +24,7 @@ class _runtimeAttributes
 		bool			magnifyKeyboardFocus;
 		
 		// Associative Directories: e.g. %WINDIR%
-		vector<pair<string,string>> assocDirectories;
+		_vector<_pair<string,string>> assocDirectories;
 		
 	public:
 		
@@ -43,11 +43,11 @@ class _runtimeAttributes
 		_pixel	getSelectionBackground() const { return this->selectBackground; }
 		bool	isKeyboardMagnifEnabled(){ return this->magnifyKeyboardFocus; }
 		const _user*			getUser() const { return this->user; }
-		const vector<_char>& 	getKeyboardChars( _u8 layout ) const { return keyboardChar[layout]; }
-		const vector<string>& 	getKeyboardTexts( _u8 layout ) const { return keyboardText[layout]; }
+		const _vector<_char>& 	getKeyboardChars( _u8 layout ) const { return keyboardChar[layout]; }
+		const _vector<string>& 	getKeyboardTexts( _u8 layout ) const { return keyboardText[layout]; }
 		const _bitmap& 			getWindowsDesignActive() const { return this->windowBar; }
 		const _bitmap& 			getWindowsDesignBlurred() const { return this->windowBarBlurred; }
-		const vector<_pair<string,string>>&	getAssociativeDirectories() const { return this->assocDirectories; }
+		const _vector<_pair<string,string>>&	getAssociativeDirectories() const { return this->assocDirectories; }
 		
 		
 		//! Setters

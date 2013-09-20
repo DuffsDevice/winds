@@ -42,7 +42,7 @@ void _textbox::setInternalCursor( _u32 cursor )
 		this->scroll = max( maxCursorScroll , _s32(this->scroll) );
 	}
 	
-	this->bubbleRefresh( true );
+	this->redraw();
 }
 
 void _textbox::removeStr( _int position , _length numChars )
@@ -112,12 +112,8 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	// Receive Gadget
 	_textbox* that = event.getGadget<_textbox>();
 
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_length myH = that->getHeight();
 	_length myW = that->getWidth();
@@ -183,7 +179,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 			that->setInternalCursor( that->cursor - 1 );
 			
 			// Trigger Handler
-			that->triggerEvent( _event( onChange ) );
+			that->triggerEvent( onEdit );
 			break;
 		case DSWindows::KEY_CARRIAGE_RETURN:
 			break;
@@ -206,7 +202,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 			that->setInternalCursor( that->cursor + 1 );
 			
 			// Trigger Handler
-			that->triggerEvent( _event( onChange ) );
+			that->triggerEvent( onEdit );
 			break;
 	}
 	
@@ -216,7 +212,7 @@ _callbackReturn _textbox::keyHandler( _event event )
 _callbackReturn _textbox::focusHandler( _event event )
 {
 	// Set Cursor
-	event.getGadget<_textbox>()->setInternalCursor( event.getType() == onFocus ? stringExtractor::strLen( event.getGadget<_textbox>()->strValue.c_str() ) + 1 : 0 );
+	event.getGadget<_textbox>()->setInternalCursor( event == onFocus ? stringExtractor::strLen( event.getGadget<_textbox>()->strValue.c_str() ) + 1 : 0 );
 	
 	return use_default;
 }
@@ -227,14 +223,14 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	
 	_coord position = event.getPosX();
 	
-	if( event.getType() == dragging )
+	if( event == onDragging )
 	{
 		// X-Coordinate of stylus relative to this _textbox
 		position -= that->getX();
 	}
 	
 	if( !that->font || !that->font->isValid() )
-		return handled;
+		return not_handled;
 	
 	_length pos = 0;
 	
@@ -261,16 +257,16 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 	, scroll( 0 )
 {
 	// Regsiter Handling Functions for events
-	this->setInternalEventHandler( onFocus , _staticCallback( &_textbox::focusHandler ) );
-	this->setInternalEventHandler( onBlur , _staticCallback( &_textbox::focusHandler ) );
-	this->setInternalEventHandler( refresh , _staticCallback( &_textbox::refreshHandler ) );
-	this->setInternalEventHandler( mouseDown , _staticCallback( &_textbox::mouseHandler ) );
-	this->setInternalEventHandler( keyDown , _staticCallback( &_textbox::keyHandler ) );
-	this->setInternalEventHandler( keyRepeat , _staticCallback( &_textbox::keyHandler ) );
-	this->setInternalEventHandler( dragging , _staticCallback( &_textbox::mouseHandler ) );
+	this->setInternalEventHandler( onFocus , make_callback( &_textbox::focusHandler ) );
+	this->setInternalEventHandler( onBlur , make_callback( &_textbox::focusHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_textbox::refreshHandler ) );
+	this->setInternalEventHandler( onMouseDown , make_callback( &_textbox::mouseHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_textbox::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_textbox::keyHandler ) );
+	this->setInternalEventHandler( onDragging , make_callback( &_textbox::mouseHandler ) );
 	
 	// Refresh Myself
-	this->refreshBitmap();
+	this->redraw();
 }
 
 // C++0x I Love you! Delegating Ctors! Yeehaa...

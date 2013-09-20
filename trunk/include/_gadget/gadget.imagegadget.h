@@ -8,26 +8,24 @@
 class _imagegadget : public _gadget {
 	
 	private:
-	
-		_bitmap img;
 		
 		static _callbackReturn refreshHandler( _event event );
 		
 	public:
 		
-		noinline void setImage( const _bitmap& img )
-		{
-			this->img = img;
-			this->setHeight( img.getHeight() );
-			this->setWidth( img.getWidth() );
-			this->bubbleRefresh( true );
+		//! set the image the easy way
+		void setImage( const _bitmap& img ){
+			this->setBitmap( img );
 		}
 		
-		const _bitmap& getImage(){ return this->img; }
+		//! Get the bitmap
+		const _bitmap& getImage() const { return this->getBitmap(); }
 		
-		_bitmap& getModifyableImage(){ return this->img; }
-		
-		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style&& style = _style() | _styleAttr::notClickable );
+		//! Ctor
+		_imagegadget( _coord x , _coord y , _bitmap&& bmp , _style&& style = _style() | _styleAttr::notClickable );
+		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style&& style = _style() | _styleAttr::notClickable ) :
+			_imagegadget( x , y , _bitmap( bmp ) , (_style&&) style )
+		{}
 };
 
 #endif

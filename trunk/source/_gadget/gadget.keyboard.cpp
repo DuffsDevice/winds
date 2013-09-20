@@ -67,9 +67,6 @@ _rect _keyboard::buttonDimensions[]{
 	_rect( 221 , 82 , 33 , 18 ) // Shift
 };
 
-bool manuallyOpened = false;
-
-
 void _keyboard::vbl()
 {
 	#ifdef KEYBOARD_TOP_SCREEN
@@ -85,7 +82,7 @@ void _keyboard::vbl()
 	if(
 		this->lastCurrentFocus != _system::_currentFocus_ // If the focused gadgets changed
 		|| (
-			!manuallyOpened
+			!this->manuallyOpened
 			&& this->mode !=
 			(
 				_system::_currentFocus_
@@ -96,17 +93,26 @@ void _keyboard::vbl()
 	{
 		this->lastCurrentFocus = _system::_currentFocus_;
 		
+		if( this->ignoreNextVBL )
+		{
+			this->ignoreNextVBL = false;
+			return;
+		}
+		
 		if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
 		{
-			open();
-			manuallyOpened = false;
+			bool wasManuallyOpened = this->manuallyOpened; // if the keyboard was previously opened by hand we only zoom to the currently focused gadget
+			this->open();
+			this->manuallyOpened = wasManuallyOpened;
 		}
-		else if( !manuallyOpened )
-			close();
+		else if( !this->manuallyOpened )
+			this->close();
+		else
+			this->resetZoom();
 	}
 }
 
-int _keyboard::setState( int value )
+void _keyboard::setState( int value )
 {
 	if( value != this->curState )
 	{
@@ -137,8 +143,6 @@ int _keyboard::setState( int value )
 		// Set Current State
 		this->curState = value;
 	}
-	
-	return value;
 }
 
 void _keyboard::prepareAnimation()
@@ -154,6 +158,32 @@ void _keyboard::prepareAnimation()
 	this->anim.setToValue( sEnd );
 }
 
+void _keyboard::resetZoom( bool useAnim )
+{
+	// Set s all 'from'-values
+	this->prepareAnimation();
+	
+	// Set Animation parameters
+	this->toX = 0;
+	this->toY = sEnd;
+	this->toFactor = 1;
+	this->toKeyboardExpansion = sEnd;
+	
+	// Altem Ziel den Fokus wieder nehmen
+	if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
+		_system::_currentFocus_->blur();
+	
+	// Reset Zoom
+	if( useAnim )
+		this->anim.start();
+	else
+	{
+		anim.terminate();
+		this->curState = sStart;
+		this->setState( sEnd );
+	}
+}
+
 void _keyboard::close( bool useAnim )
 {
 	// Set Animation parameters
@@ -163,12 +193,17 @@ void _keyboard::close( bool useAnim )
 	this->toFactor = 1;
 	this->toKeyboardExpansion = sStart;
 	
-	// Altes Ziel den Fokus wieder nehmen
+	// Altem Ziel den Fokus wieder nehmen
 	if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
 	{
-		manuallyOpened = true; // Set flag to true to prevent the keyboardVBL to close the keyboard again since we 'blur' the currentFocus
+		// Set 'ignoreNextVBL' to true to prevent that the keyboardVBL closes the keyboard a second time
+		// since the currentFocus changes probably to some gadget that doesn't require keyboard
+		// This would ruin the whole keyboard animation
+		this->ignoreNextVBL = true;
 		_system::_currentFocus_->blur();
 	}
+	
+	this->manuallyOpened = false;
 	
 	this->mode = false; // Indicate we have closen the keyboard
 	
@@ -180,7 +215,7 @@ void _keyboard::close( bool useAnim )
 		this->anim.start();
 	else
 	{
-		anim.terminate();
+		this->anim.terminate();
 		this->curState = sStart;
 		this->setState( sEnd );
 	}
@@ -188,12 +223,10 @@ void _keyboard::close( bool useAnim )
 
 void _keyboard::open( bool useAnim )
 {
-	manuallyOpened = true;
-	
 	// Prepare animation
 	this->prepareAnimation();
 	
-	//! If not already visible
+	// Also zoom to a gadget?
 	if( this->lastCurrentFocus && this->lastCurrentFocus->requestsKeyboard() )
 	{
 		_rect dim = this->lastCurrentFocus->getAbsoluteDimensions();
@@ -251,7 +284,9 @@ void _keyboard::open( bool useAnim )
 	if( this->toX == this->fromX && this->toY == this->fromY && this->toFactor == this->fromFactor && this->toKeyboardExpansion == this->fromKeyboardExpansion )
 		return;
 	
-	// Reset Keyboard
+	this->manuallyOpened = true;
+	
+	// Open Keyboard
 	if( useAnim )
 		this->anim.start();
 	else
@@ -267,12 +302,8 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	//! Unused
 	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , BMP_Grip() );
@@ -301,21 +332,23 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	return use_default;
 }
 
-void _keyboard::refreshKeys()
+_callbackReturn _keyboard::updateHandler( _event event )
 {
-	bool useShiftMap = this->shift != this->caps;
+	_keyboard* that = event.getGadget<_keyboard>();
+	
+	bool useShiftMap = that->shift != that->caps;
 	
 	auto textmap = _system::_rtA_->getKeyboardTexts( useShiftMap );
 	auto charmap = _system::_rtA_->getKeyboardChars( useShiftMap );
 	
 	int i = 0;
 	
-	for( _gadget* btn : this->children )
+	for( _gadget* btn : that->children )
 	{
 		if( i == 30 /* Caps Lock */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( this->caps )[ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( that->caps )[ i ] );
 		else if( i == 45 || i == 40 /* Shift */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( this->shift )[ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( that->shift )[ i ] );
 		else
 		{
 			((_keyboardButton*)btn)->setStrValue( textmap[i] );
@@ -323,6 +356,8 @@ void _keyboard::refreshKeys()
 		}
 		i++;
 	}
+	
+	return handled;
 }
 
 _callbackReturn _keyboard::keyHandler( _event event )
@@ -330,47 +365,42 @@ _callbackReturn _keyboard::keyHandler( _event event )
 	// Receive Gadget
 	_keyboard* that = event.getGadget<_keyboard>();
 	
-	if( event.getKeyCode() == DSWindows::KEY_SHIFT )
+	if( event == onKeyClick )
 	{
-		if( event.getType() == keyClick )
+		switch( event.getKeyCode() )
 		{
-			that->shift = !that->shift;
-			that->refreshKeys();
+			case DSWindows::KEY_SHIFT:
+				that->shift = !that->shift;
+				that->update();
+				return handled;
+			case DSWindows::KEY_CAPS:
+				that->caps = !that->caps;
+				that->update();
+				return handled;
+			case DSWindows::KEY_WINDOWS:
+				if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows ){
+					_windows* win = (_windows*)_system::_gadgetHost_;
+					
+					if( win->isStartMenuOpened() )
+						win->closeStartMenu();
+					else
+						win->openStartMenu();
+				}
+				return handled;
+			default:
+				break;
 		}
 	}
-	else if( event.getKeyCode() == DSWindows::KEY_CAPS )
-	{
-		if( event.getType() == keyClick )
-		{
-			that->caps = !that->caps;
-			that->refreshKeys();
-		}
-	}
-	else if( event.getKeyCode() == DSWindows::KEY_WINDOWS )
-	{
-		if( event.getType() == keyClick && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-		{
-			_windows* win = (_windows*)_system::_gadgetHost_;
-			
-			if( win->isStartMenuOpened() )
-				win->closeStartMenu();
-			else
-				win->openStartMenu();
-		}
-	}
-	else
-	{
-		if( that->lastCurrentFocus != nullptr )
-			that->lastCurrentFocus->handleEvent( event );
-		else if( _system::_gadgetHost_ )
-			_system::_gadgetHost_->handleEvent( event );
-		
-		// Remove Shift
-		if( that->shift )
-		{
-			that->shift = false;
-			that->refreshKeys();
-		}
+	
+	if( that->lastCurrentFocus )
+		that->lastCurrentFocus->triggerEvent( event );
+	else if( _system::_gadgetHost_ )
+		_system::_gadgetHost_->triggerEvent( event );
+	
+	// Remove Shift
+	if( that->shift && event == onKeyClick ){
+		that->shift = false;
+		that->update();
 	}
 	
 	return handled;
@@ -383,23 +413,23 @@ _callbackReturn _keyboard::dragHandler( _event event )
 	
 	static int deltaY = 0;
 	
-	if( event.getType() == dragStart )
+	if( event == onDragStart )
 	{
 		// If y pos is not on the windowbar, let my children gagdet be the object of Dragment :-)
-		if( event.getPosY() > 11 )
-		{
+		if( event.getPosY() > 11 ){
 			that->dragMe = false;
-			// Check children
 			return use_default;
 		}
 		
 		that->dragMe = true;
 		
+		// Obtain offset of drag to left-top-corner
 		deltaY = event.getPosY();
 		
-		//! Prepare the animation
+		// Prepare the animation
 		that->prepareAnimation();
 		
+		// Set Destination
 		if( that->mode )
 		{
 			that->toY = sStart;
@@ -413,34 +443,24 @@ _callbackReturn _keyboard::dragHandler( _event event )
 			that->toX = 0;
 			that->toFactor = 1;
 			that->toKeyboardExpansion = sEnd;
-		}		
-		
-		// If y is on the windowbar, drag Me!
-		return handled;
+		}
 	}
-	else if( event.getType() == dragging )
+	else if( event == onDragging )
 	{		
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
 		if( !that->dragMe )
 			return use_default;
 		
-		/**
-		 * Handling of my 'dragment' !
-		 */
+		// Handling of my 'dragment'!
 		_s16 tempTouch = SCREEN_HEIGHT - event.getEffectivePosY() + deltaY - 10;
 		
-		_s16 val = sEnd;
-		val = float( ( tempTouch - that->fromKeyboardExpansion ) * sEnd ) / float( that->toKeyboardExpansion - that->fromKeyboardExpansion );
-		
+		_s16 val = float( ( tempTouch - that->fromKeyboardExpansion ) * sEnd ) / float( that->toKeyboardExpansion - that->fromKeyboardExpansion );
 		val = mid( val , (_s16)sEnd , (_s16)sStart );
 		
 		that->setState( val );
-		
-		// Return
-		return handled;
 	}
-	else if( event.getType() == dragStop )
+	else if( event == onDragStop )
 	{
 		// Check if there is a gadget who receives drag-events,
 		// If not, it has to be me who's dragged
@@ -460,13 +480,10 @@ _callbackReturn _keyboard::dragHandler( _event event )
 			that->open();
 		
 		that->dragMe = false;
-		
-		// Return
-		return handled;
 	}
 	
 	// Default return
-	return not_handled;
+	return handled;
 }
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord position , _style&& style ) :
@@ -483,13 +500,13 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, toKeyboardExpansion( 0 )
 	, curState( -1 )
 	, handlePosition( position )
+	, manuallyOpened( false )
+	, ignoreNextVBL( false )
 	, shift( false )
 	, caps( false )
 	, mode( false ) // Means "Hidden"
 	, anim( 0 , 0 , 800 )
 {
-	_screen::getBitmap().reset( NO_COLOR );
-	
 	const _font* fnt 		= _system::getFont( "CourierNew10" );
 	const _font* systemFont = _system::getFont( "SystemSymbols8" );
 	
@@ -519,23 +536,24 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	
 	//! Animations
 	this->anim.setEasing( _animation::_expo::easeOut );
-	this->anim.setter( new _classCallback( this , &_keyboard::setState ) );
+	this->anim.setter( _classCallback<void(int)>( this , &_keyboard::setState ) );
 	
 	this->setState( 0 ); // Reset Keyboard
 	
 	//! Register my handler as the default Refresh-Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_keyboard::refreshHandler ) );
-	this->setInternalEventHandler( keyDown , _staticCallback( &_keyboard::keyHandler ) );
-	this->setInternalEventHandler( keyUp , _staticCallback( &_keyboard::keyHandler ) );
-	this->setInternalEventHandler( keyClick , _staticCallback( &_keyboard::keyHandler ) );
-	this->setInternalEventHandler( keyRepeat , _staticCallback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_keyboard::refreshHandler ) );
+	this->setInternalEventHandler( onUpdate , make_callback( &_keyboard::updateHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( onKeyUp , make_callback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( onKeyClick , make_callback( &_keyboard::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_keyboard::keyHandler ) );
 	
-	this->setInternalEventHandler( dragStart , _staticCallback( &_keyboard::dragHandler ) );
-	this->setInternalEventHandler( dragStop , _staticCallback( &_keyboard::dragHandler ) );
-	this->setInternalEventHandler( dragging , _staticCallback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( onDragStart , make_callback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( onDragStop , make_callback( &_keyboard::dragHandler ) );
+	this->setInternalEventHandler( onDragging , make_callback( &_keyboard::dragHandler ) );
 	
 	// Refresh Me
-	this->refreshBitmap();
+	this->redraw();
 }
 
 _keyboard::~_keyboard()

@@ -1,0 +1,69 @@
+#ifndef _WIN_G_SCROLLBAR_
+#define _WIN_G_SCROLLBAR_
+
+#include "_type/type.gadget.h"
+#include "_type/type.animation.h"
+#include "_gadget/gadget.scrollBar.button.h"
+
+class _scrollBar : public _gadget {
+	
+	private:
+		
+		_u32 		value;
+		_u32 		length; // Length of the visible Part -> scrollHandle length
+		_u32 		length2;// Length of the whole scrollCanvas
+		_u32 		cache;  // Will be "Physically scrollbar Height" - "theoratically scrollbarHeight"
+							// This will keep the scrollBar in a more visible state
+		_u16		step;
+		
+		_dimension 	dim;
+		
+		_scrollButton* 	dragHandle;
+		_scrollButton* 	higherHandle;
+		_scrollButton* 	lowerHandle;
+		
+		_animation	anim;
+		
+		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn clickHandler( _event event );
+		static _callbackReturn resizeHandler( _event e );
+		static _callbackReturn dragHandler( _event e );
+		
+		void refreshHandleWidth();
+		void refreshPosition();
+	
+	public:
+		
+		//! Ctor
+		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style&& style = _style() );
+		
+		//! Dtor
+		~_scrollBar();
+		
+		//! Simply set the value
+		//! @note: this triggers a onScroll-Event!
+		void setValue( int value );
+		
+		//! This one doesn't
+		void setValue( _u32 value , bool ease );
+		
+		_u32 getValue(){ return this->value; }
+		
+		void setDimension( _dimension dim );
+		_dimension getDimension(){ return this->dim; }
+		
+		void setStep( _u16 value ){ this->step = value; }
+		_u16 getStep(){ return this->step; }
+		
+		void setLength( _u32 value );
+		_u32 getLength(){ return this->length; }
+		
+		void setLength2( _u32 value );
+		_u32 getLength2(){ return this->length2; }
+		
+};
+
+extern _map<string,_dimension> string2dimension;
+extern _map<_dimension,string> dimension2string;
+
+#endif

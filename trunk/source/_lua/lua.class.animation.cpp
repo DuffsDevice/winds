@@ -1,5 +1,6 @@
 #include "_lua/lua.class.animation.h"
-
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##           Lua-Border           ##
@@ -10,26 +11,26 @@ _lua_animation::_lua_animation( _animation rc ) : _animation( rc )
 
 //! Constructor
 _lua_animation::_lua_animation( lua_State* L ) : 
-	_animation( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) )
+	_animation( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) )
 { }
 
 //! setFromValue
-int _lua_animation::setFromValue(lua_State* L){ _animation::setFromValue( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_animation::setFromValue(lua_State* L){ _animation::setFromValue( check<int>( L , 1 ) ); return 0; }
 
 //! setToValue
-int _lua_animation::setToValue(lua_State* L){ _animation::setToValue( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_animation::setToValue(lua_State* L){ _animation::setToValue( check<int>( L , 1 ) ); return 0; }
 
 //! setDuration
-int _lua_animation::setDuration(lua_State* L){ _animation::setDuration( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_animation::setDuration(lua_State* L){ _animation::setDuration( check<int>( L , 1 ) ); return 0; }
 
 //! setSetter
-int _lua_animation::setSetter(lua_State* L){ _animation::setter( new _luaCallback( L , 1 ) ); return 0; }
+int _lua_animation::setSetter(lua_State* L){ _animation::setter( _luaCallback<void(int)>( L , 1 ) ); return 0; }
 
 //! setFinish
-int _lua_animation::setFinish(lua_State* L){ _animation::finish( new _luaCallback( L , 1 ) ); return 0; }
+int _lua_animation::setFinish(lua_State* L){ _animation::finish( _luaCallback<void(int)>( L , 1 ) ); return 0; }
 
 //! setEasing
-int _lua_animation::setEasing(lua_State* L){ _animation::setEasing( string2easingFunc[ luaL_checkstring( L , 1 ) ] ); return 1; }
+int _lua_animation::setEasing(lua_State* L){ _animation::setEasing( string2easingFunc[ check<string>( L , 1 ) ] ); return 1; }
 
 //! getFromValue
 int _lua_animation::getFromValue(lua_State* L){ lua_pushnumber( L , _animation::getFromValue() ); return 1; }
@@ -50,13 +51,13 @@ int _lua_animation::getRunning(lua_State* L){ lua_pushboolean( L , _animation::i
 int _lua_animation::start(lua_State* L){ _animation::start(); return 0; }
 
 //! terminate
-int _lua_animation::terminate(lua_State* L){ _animation::terminate( luaL_optboolean( L , 1 , false ) ); return 0; }
+int _lua_animation::terminate(lua_State* L){ _animation::terminate( lightcheck( L , 1 , false ) ); return 0; }
 
 //! pause
 int _lua_animation::pause(lua_State* L){ _animation::pause(); return 0; }
 
 //! Lua-_rect
-const char _lua_animation::className[] = "_animation";
+const char _lua_animation::className[] = "Animation";
 Lunar<_lua_animation>::FunctionType _lua_animation::methods[] = {
 	{ "onSet" , &_lua_animation::setSetter },
 	{ "onFinish" , &_lua_animation::setFinish },

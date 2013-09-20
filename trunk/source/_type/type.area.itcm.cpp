@@ -47,3 +47,17 @@ __attribute__((hot)) _area& _area::toRelative( const _coord absX , const _coord 
 		rc.toRelative( absX , absY );
 	return *this;
 }
+
+__attribute__((hot)) _area _area::toRelative( const _coord absX , const _coord absY ) const
+{
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a =_codeAnalyzer( "_rect::toRelative (const)" );
+	#endif
+	
+	_vector<_rect> tR;
+	
+	for( const _rect &rc : t_rects )
+		tR.emplace_back( rc.x - absX , rc.y - absY , rc.width , rc.height );
+	
+	return _area( move(tR) );
+}

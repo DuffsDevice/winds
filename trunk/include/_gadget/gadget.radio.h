@@ -17,14 +17,14 @@ class _radio : public _gadget {
 		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
+		static _callbackReturn keyHandler( _event event );
 		
 		friend class _singleValueGroup<_radio>;
 		
 	public:
 		
 		//! setIntValue
-		void setIntValue( _s32 val ){ this->intValue = val; this->bubbleRefresh( true ); }
+		void setIntValue( _s32 val ){ this->intValue = val; this->redraw(); }
 		
 		//! getIntValue
 		_s32 getIntValue(){ return this->intValue; }

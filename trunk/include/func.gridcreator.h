@@ -12,7 +12,7 @@ static unused _vector<int> computeGrid( int wholeLength , int numFields )
 	// Temp...
 	int curScaledLength = 0;
 	int oldLength = 0;
-	vector<int> out = vector<int>();
+	_vector<int> out = _vector<int>();
 	
 	// Compute scaled quotient
 	int trig = div32( wholeLengthScaled , numFields );

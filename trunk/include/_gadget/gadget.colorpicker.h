@@ -19,7 +19,10 @@ class _colorpicker : public _gadget
 		_gadget*	lumTable;
 		_bitmap		hueSatImage;
 		
+		_callbackReturn lumRefreshHandler( _event event );
+		_callbackReturn hueSatRefreshHandler( _event event );
 		_callbackReturn refreshHandler( _event event );
+		_callbackReturn resizeHandler( _event event );
 		_callbackReturn inputHandler( _event event );
 		
 		// Refreshes the big colorful base gradient
@@ -39,7 +42,9 @@ class _colorpicker : public _gadget
 		_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
 		
 		//! Dtor
-		~_colorpicker();
+		~_colorpicker(){
+			this->removeChildren( true );
+		}
 };
 
 #endif

@@ -10,15 +10,11 @@
 	
 	_startMenu* that = event.getGadget<_startMenu>();
 	
-	_bitmapPort bP = that->getBitmapPort();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
-	
-	_length myW = that->dimensions.width;
-	_length myH = that->dimensions.height;
+	_length myW = that->getWidth();
+	_length myH = that->getHeight();
 	
 	// Top Border and Header
 	bP.drawVerticalGradient( 1 , 1 , myW - 2 , CONST_TOP_BAR_HEIGHT , RGB255( 33 , 119 , 214 ) , RGB255( 59 , 155 , 238 ) );
@@ -50,31 +46,31 @@
 }
 
 _startMenu::_startMenu( _style&& style ) :
-	_contextMenu( 110 , 110 , (_style&&)style )
+	_popup( 110 , 110 , nullptr , (_style&&)style )
 {
 	// Left Side
 	this->addChild(
-		new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 ,
+		new _fileview( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 ,
 			1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent , true
 		)
 	);
 	
 	// Right Side
-	//this->addChild( new _fileview( ( this->dimensions.width - 2 ) >> 1 , this->dimensions.height - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->dimensions.width + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
+	//this->addChild( new _fileview( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->getWidth() + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// User-Image
 	this->addChild( new _imagegadget( 3 , 2 , _system::getUser()->getLogo() ) );
 	
 	// Username
-	_label* usrName = new _label( this->dimensions.width - 20 - 2 , 14 , 20 , 2 , _system::getUser()->getUsername() );
+	_label* usrName = new _label( this->getWidth() - 20 - 2 , 14 , 20 , 2 , _system::getUser()->getUsername() );
 	usrName->setVAlign( _valign::middle );
 	usrName->setAlign( _align::left );
 	usrName->setColor( COLOR_WHITE );
 	this->addChild( usrName );
 	
 	// Registering Event Handlers
-	this->setInternalEventHandler( refresh , _staticCallback( &_startMenu::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_startMenu::refreshHandler ) );
 	
 	// Refresh...
-	this->refreshBitmap();
+	this->redraw();
 }

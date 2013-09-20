@@ -1,70 +1,12 @@
 // Check if already included
-#ifndef _WIN_LUAGADGET_
-#define _WIN_LUAGADGET_
+#ifndef _WIN_L_GADGET_
+#define _WIN_L_GADGET_
 
 #include "_lua/lunar.h"
 #include "_type/type.gadget.h"
-
-#define GADGET_FUNCS( g ) \
-	LUA_CLASS_FUNC(g,applyStyle), \
-	LUA_CLASS_FUNC(g,hasFocus), \
-	LUA_CLASS_FUNC(g,isEnhanced), \
-	LUA_CLASS_FUNC(g,isInvisible), \
-	LUA_CLASS_FUNC(g,isHidden), \
-	LUA_CLASS_FUNC(g,isMinimized), \
-	LUA_CLASS_FUNC(g,isMaximized), \
-	LUA_CLASS_FUNC(g,isMinimizeable), \
-	LUA_CLASS_FUNC(g,isResizeable), \
-	LUA_CLASS_FUNC(g,isResizeableX), \
-	LUA_CLASS_FUNC(g,isResizeableY), \
-	LUA_CLASS_FUNC(g,hasSmallDragTrig), \
-	LUA_CLASS_FUNC(g,isMouseClickRepeat), \
-	LUA_CLASS_FUNC(g,isDoubleClickable), \
-	LUA_CLASS_FUNC(g,requestsKeyboard), \
-	LUA_CLASS_FUNC(g,bubbleRefresh), \
-	LUA_CLASS_FUNC(g,refreshBitmap), \
-	LUA_CLASS_FUNC(g,getBitmapPort), \
-	LUA_CLASS_FUNC(g,getBitmap), \
-	LUA_CLASS_FUNC(g,getScreen), \
-	LUA_CLASS_FUNC(g,setUserEventHandler), \
-	LUA_CLASS_FUNC(g,setInternalEventHandler), \
-	LUA_CLASS_FUNC(g,removeUserEventHandler), \
-	LUA_CLASS_FUNC(g,removeInternalEventHandler), \
-	LUA_CLASS_FUNC(g,triggerEvent), \
-	LUA_CLASS_FUNC(g,canReactTo), \
-	LUA_CLASS_FUNC(g,handleEvent), \
-	LUA_CLASS_FUNC(g,handleEventUser), \
-	LUA_CLASS_FUNC(g,handleEventInternal), \
-	LUA_CLASS_FUNC(g,handleEventDefault), \
-	LUA_CLASS_FUNC(g,getAbsoluteX), \
-	LUA_CLASS_FUNC(g,getAbsoluteY), \
-	LUA_CLASS_FUNC(g,getAbsolutePosition), \
-	LUA_CLASS_FUNC(g,hide), \
-	LUA_CLASS_FUNC(g,show), \
-	LUA_CLASS_FUNC(g,focus), \
-	LUA_CLASS_FUNC(g,blur), \
-	LUA_CLASS_FUNC(g,enhanceToParent), \
-	LUA_CLASS_FUNC(g,removeChild), \
-	LUA_CLASS_FUNC(g,removeChildren), \
-	LUA_CLASS_FUNC(g,removeEnhancedChildren), \
-	LUA_CLASS_FUNC(g,addChild), \
-	LUA_CLASS_FUNC(g,addEnhancedChild), \
-	LUA_CLASS_FUNC(g,getAbsoluteDimensions), \
-	LUA_CLASS_FUNC(g,getSize), \
-	LUA_CLASS_FUNC(g,moveTo), \
-	LUA_CLASS_FUNC(g,moveRelative), \
-	LUA_CLASS_FUNC(g,toDerived), \
-	LUA_CLASS_FUNC(g,getToppestChild)
 	
-#define GADGET_ATTRS(g) \
-	{ "padding" , &_lua_gadget::getPadding , &_lua_gadget::setPadding }, \
-	{ "x" , &_lua_gadget::getX , &_lua_gadget::setX }, \
-	{ "y" , &_lua_gadget::getY , &_lua_gadget::setY }, \
-	{ "parent" , &_lua_gadget::getParent , &_lua_gadget::setParent }, \
-	{ "dimensions" , &_lua_gadget::getDimensions , &_lua_gadget::setDimensions }, \
-	{ "height" , &_lua_gadget::getHeight , &_lua_gadget::setHeight }, \
-	{ "width" , &_lua_gadget::getWidth , &_lua_gadget::setWidth }, \
-	{ "type" , &_lua_gadget::getType , nullptr } \
+#define GADGET_BASE_ATTR \
+	{ "base" , &_lua_gadget::baseFunc , nullptr } \
 
 
 /**
@@ -81,6 +23,7 @@ class _lua_gadget{
 	
 		// Check for _lua_gadget's and derived
 		static _lua_gadget* getLuaGadget( lua_State* L , int narg );
+		static _lua_gadget* getLuaGadgetLight( lua_State* L , int narg );
 		
 		
 		//! C-Ctor
@@ -89,7 +32,6 @@ class _lua_gadget{
 		//! Lua-Ctor
 		_lua_gadget( lua_State* L );
 		
-		
 		//! Dtor
 		virtual ~_lua_gadget();
 		
@@ -97,15 +39,24 @@ class _lua_gadget{
 		//! Set Gadget to contain
 		void setGadget( _gadget* g , bool wasAllocated = true );
 		
-		//! Get contained gadget
+		//! Get underlying _gadget instace
 		_gadget* getGadget(){ return this->gadget; }
 		
+		//! base
+		int baseFunc( lua_State* L );
 		
-		//! bubbleRefresh
-		int bubbleRefresh(lua_State* L);
 		
-		//! refreshBitmap
-		int refreshBitmap( lua_State* );
+		//! redraw
+		int redraw(lua_State* L);
+		
+		//! redrawParents
+		int redrawParents(lua_State* L);
+		
+		//! update
+		int update( lua_State* );
+		
+		//! updateNow
+		int updateNow( lua_State* );
 		
 		//! hasFocus
 		int hasFocus( lua_State* );
@@ -115,6 +66,9 @@ class _lua_gadget{
 		
 		//! getBitmap
 		int getBitmap( lua_State* L );
+		
+		//! setBitmap
+		int setBitmap( lua_State* L );
 		
 		//! getBitmapPort
 		int getBitmapPort( lua_State* L );
@@ -139,6 +93,15 @@ class _lua_gadget{
 		
 		//! triggerEvent
 		int triggerEvent(lua_State* L);
+		
+		//! triggerEventUser
+		int triggerEventUser( lua_State* L );
+		
+		//! triggerEventInternal
+		int triggerEventInternal( lua_State* L );
+		
+		//! triggerEventDefault
+		int triggerEventDefault( lua_State* L );
 		
 		//! canReactTo
 		int canReactTo( lua_State* L );
@@ -176,11 +139,23 @@ class _lua_gadget{
 		//! Set Y
 		int setY(lua_State* L);
 		
+		//! hasAutoX
+		int hasAutoX(lua_State* L);
+		
+		//! hasAutoY
+		int hasAutoY(lua_State* L);
+		
+		//! moveToInternal
+		int moveToInternal(lua_State* L);
+		
 		//! moveTo
 		int moveTo(lua_State* L);
 		
 		//! moveRelative
 		int moveRelative(lua_State* L);
+		
+		//! moveRelativeInternal
+		int moveRelativeInternal(lua_State* L);
 		
 		//! getParent
 		int getParent( lua_State* L );
@@ -188,8 +163,20 @@ class _lua_gadget{
 		//! setParent
 		int setParent( lua_State* L );
 		
+		//! getPrecedentChild
+		int getPrecedentChild( lua_State* L );
+		
+		//! getSubcedentChild
+		int getSubcedentChild( lua_State* L );
+		
+		//! getToppestEnhancedChild
+		int getToppestEnhancedChild( lua_State* L );
+		
 		//! getToppestChild
 		int getToppestChild( lua_State* L );
+		
+		//! getLowestChild
+		int getLowestChild( lua_State* L );
 		
 		//! enhanceToParent
 		int enhanceToParent( lua_State* L );
@@ -218,6 +205,9 @@ class _lua_gadget{
 		//! setDimensions
 		int setDimensions( lua_State* L );
 		
+		//! setDimensionsInternal
+		int setDimensionsInternal( lua_State* L );
+		
 		//! setPadding
 		int setPadding( lua_State* L );
 		
@@ -227,14 +217,11 @@ class _lua_gadget{
 		//! isEnhanced
 		int isEnhanced( lua_State* L );
 		
+		//! isPressed
+		int isPressed( lua_State* L );
+		
 		//! isHidden
 		int isHidden( lua_State* L );
-		
-		//! isInvisible
-		int isInvisible( lua_State* L );
-		
-		//! isMinimized
-		int isMinimized( lua_State* L );
 		
 		//! isResizeable
 		int isResizeable( lua_State* L );
@@ -245,11 +232,17 @@ class _lua_gadget{
 		//! isResizeableY
 		int isResizeableY( lua_State* L );
 		
-		//! isMinimizeable
-		int isMinimizeable( lua_State* L );
+		//! isChildDragged
+		int isChildDragged( lua_State* L );
 		
-		//! isMaximized
-		int isMaximized( lua_State* L );
+		//! isEnabled
+		int isEnabled( lua_State* L );
+		
+		//! isClickable
+		int isClickable( lua_State* L );
+		
+		//! isDraggable
+		int isDraggable( lua_State* L );
 		
 		//! hasSmallDragTrig
 		int hasSmallDragTrig( lua_State* L );
@@ -263,11 +256,32 @@ class _lua_gadget{
 		//! requestsKeyboard
 		int requestsKeyboard( lua_State* L );
 		
+		//! getClientRect
+		int getClientRect(lua_State* L);
+		
+		//! setSize
+		int setSize(lua_State* L);
+		
+		//! setSizeInternal
+		int setSizeInternal(lua_State* L);
+		
 		//! getHeight
 		int getHeight( lua_State* L );
 		
 		//! getWidth
 		int getWidth( lua_State* L );
+		
+		//! getMinHeight
+		int getMinHeight( lua_State* L );
+		
+		//! getMinWidth
+		int getMinWidth( lua_State* L );
+		
+		//! hasAutoWidth
+		int hasAutoWidth( lua_State* L );
+		
+		//! hasAutoHeight
+		int hasAutoHeight( lua_State* L );
 		
 		//! setWidth
 		int setWidth(lua_State* L);
@@ -275,8 +289,17 @@ class _lua_gadget{
 		//! setHeight
 		int setHeight(lua_State* L);
 		
+		//! setMinWidth
+		int setMinWidth(lua_State* L);
+		
+		//! setMinHeight
+		int setMinHeight(lua_State* L);
+		
 		//! getSize
 		int getSize( lua_State* L );
+		
+		//! getSizeRect
+		int getSizeRect( lua_State* L );
 		
 		//! hide
 		int hide( lua_State* L );
@@ -290,12 +313,17 @@ class _lua_gadget{
 		//! blur
 		int blur( lua_State* L );
 		
+		//! focusChild
+		int focusChild( lua_State* L );
+		
+		//! blurChild
+		int blurChild( lua_State* L );
+		
+		//! blink
+		int blink( lua_State* L );
+		
 		//! getType
 		int getType( lua_State* L );
-		
-		//! toDerived !//
-		//! Method to get the lua-class of the gadget, because there is no inheritance in Lua
-		int toDerived( lua_State* );
 		
 		
 		//! Lunar !//

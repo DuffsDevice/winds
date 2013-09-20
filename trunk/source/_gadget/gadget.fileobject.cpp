@@ -4,8 +4,9 @@
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
 #include "_type/type.shortcut.h"
+#include "_type/type.gadget.helpers.h"
 
-_callbackReturn _fileobject::doubleClickHandler( _event event )
+_callbackReturn _fileobject::clickHandler( _event event )
 {
 	_fileobject* that = event.getGadget<_fileobject>();
 	
@@ -14,15 +15,14 @@ _callbackReturn _fileobject::doubleClickHandler( _event event )
 	{
 		if( that->parent->getType() == _gadgetType::fileview )
 		{
-			// Trigger 'onChange'-Event
-			that->parent->triggerEvent( onChange );
+			// Trigger 'onEdit'-Event
+			that->parent->triggerEvent( onEdit );
 			
 			((_fileview*)that->parent)->setPath( that->file->getFileName() );
 		}
 	}
 	else
 		that->file->execute();
-		printf("execute!");
 	
 	return handled;
 }
@@ -32,12 +32,8 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 	// Receive Gadget
 	_fileobject* that = event.getGadget<_fileobject>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
@@ -154,8 +150,15 @@ _fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType view
 	switch( this->viewType )
 	{
 		case _fileviewType::symbol_big:
+		{
 			this->setDimensions( _rect( x , y , 26 , 26 ) );
+			
+			auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 2 , 2 , true , 0 );
+			this->setInternalEventHandler( onParentSet , cb );
+			this->setInternalEventHandler( onParentResize , cb );
+			this->setInternalEventHandler( onPreSet , cb );
 			break;
+		}
 		case _fileviewType::list:
 		default:
 		{
@@ -174,21 +177,26 @@ _fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType view
 			
 			this->setWidth( ft->getStringWidth( fullName ) + 11 );
 			
+			auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 2 , 2 , false , 0);
+			this->setInternalEventHandler( onParentSet , cb );
+			this->setInternalEventHandler( onPreSet , cb );
+			
 			break;
 		}
 	};
 	
 	// Register Handlers
-	this->setInternalEventHandler( refresh , _staticCallback( &_fileobject::refreshHandler ) );
-	//this->setInternalEventHandler( dragging , _staticCallback( &_fileobject::dragHandler ) );
-	//this->setInternalEventHandler( dragStart , _staticCallback( &_fileobject::dragHandler ) );
-	//this->setInternalEventHandler( dragStop , _staticCallback( &_fileobject::dragHandler ) );
-	this->setInternalEventHandler( onFocus , _gadget::eventForwardRefresh() );
-	this->setInternalEventHandler( onBlur , _gadget::eventForwardRefresh() );
-	this->setInternalEventHandler( singleClickToExecute ? mouseClick : mouseDoubleClick , _staticCallback( &_fileobject::doubleClickHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_fileobject::refreshHandler ) );
+	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( singleClickToExecute ? onMouseClick : onMouseDblClick , make_callback( &_fileobject::clickHandler ) );
+	
+	//this->setInternalEventHandler( onDragging , make_callback( &_fileobject::dragHandler ) );
+	//this->setInternalEventHandler( onDragStart , make_callback( &_fileobject::dragHandler ) );
+	//this->setInternalEventHandler( onDragStop , make_callback( &_fileobject::dragHandler ) );
 	
 	// Refresh...
-	this->refreshBitmap();
+	this->redraw();
 }
 
 _fileobject::~_fileobject()

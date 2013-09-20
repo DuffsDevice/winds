@@ -3,23 +3,80 @@
 #include "_resource/BMP_ScrollButtons.h"
 #include "_type/type.system.h"
 
-_callbackReturn _select::refreshHandler( _event event )
+_select::_select( _length width , _u8 height , _coord x , _coord y , const _contextMenuList& lst , _s32 initialValue , _style&& style ) :
+	_gadget( _gadgetType::selectbox , width , _system::getUser()->sOH , x , y , (_style&&)style )
+	, contextMenu( new _contextMenu( move(lst) , this , width , true , initialValue ) )
+	, arrow( new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonBottom ) )
+{
+	// Refresh on contextMenu change
+	this->contextMenu->setUserEventHandler( onEdit , make_callback( this , &_select::editHandler ) );
+	this->contextMenu->setUserEventHandler( onOpen , make_callback( this , &_select::refreshButtonHandler ) );
+	this->contextMenu->setUserEventHandler( onClose , make_callback( this , &_select::refreshButtonHandler ) );
+	
+	// Register handler
+	this->setInternalEventHandler( onDraw , make_callback( &_select::refreshHandler ) );
+	this->setInternalEventHandler( onMouseDown , make_callback( this , &_select::toggleContextMenuHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_select::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_select::keyHandler ) );
+	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onResize , make_callback( &_select::resizeHandler ) );
+	
+	// Toggle the _contextMenu when the arrow button is clicked
+	this->arrow->setUserEventHandler( onMouseDown , make_callback( this , &_select::toggleContextMenuHandler ) );
+	
+	// Refresh Me
+	this->redraw();
+	
+	// Add arrow
+	this->updateArrowButton(); // This updates only its position and type
+	this->addChild( this->arrow );
+}
+
+void _select::toggleContextMenu()
+{
+	// Open contextMenu
+	this->contextMenu->toggle( this->getAbsoluteX() , this->getAbsoluteY() + this->getHeight() );
+}
+
+void _select::updateArrowButton()
+{
+	this->arrow->moveTo( this->getWidth() - 9 , ( this->getHeight() - this->arrow->getHeight() ) >> 1 );
+	this->arrow->setButtonType( this->contextMenu->isOpened() ? _scrollButtonType::buttonTop : _scrollButtonType::buttonBottom );
+}
+
+_callbackReturn _select::editHandler( _event event )
+{
+	// Redraw _select
+	this->redraw();
+	
+	// Forward event to _select
+	this->handleEvent( (_event&&)event );
+	
+	return use_internal;
+}
+
+_callbackReturn _select::refreshButtonHandler( _event event ){
+	// Update hem button
+	this->updateArrowButton();	
+	return use_internal;
+}
+
+_callbackReturn _select::toggleContextMenuHandler( _event event ){
+	this->toggleContextMenu();
+	return handled;
+}
+
+_callbackReturn _select::resizeHandler( _event event )
 {
 	// Receive Gadget
 	_select* that = event.getGadget<_select>();
 	
-	_bitmapPort bP = that->getBitmapPort();
+	// Move the arrow to the right position!
+	that->updateArrowButton();
+	that->contextMenu->setWidth( that->getWidth() );
 	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
-	
-	bP.fill( COLOR_WHITE );
-	
-	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
-	
-	return use_default;
+	return handled;
 }
 
 _callbackReturn _select::keyHandler( _event event )
@@ -27,96 +84,36 @@ _callbackReturn _select::keyHandler( _event event )
 	// Receive Gadget
 	_select* that = event.getGadget<_select>();
 	
-	_contextMenuEntryList::iterator itSelected = that->entries.find( that->selected );
+	// Provide control by Hardware buttons
+	if( event.getKeyCode() == DSWindows::KEY_A || event.getKeyCode() == DSWindows::KEY_DOWN )
+		that->toggleContextMenu();
 	
-	if( itSelected == that->entries.end() ) // If nothing selected
-	{
-		if( event.getKeyCode() == DSWindows::KEY_DOWN )
-			itSelected = that->entries.begin();
-		else if( event.getKeyCode() == DSWindows::KEY_UP )
-			itSelected = (that->entries.rbegin()++).base();
-	}
-	else
-	{
-		if( event.getKeyCode() == DSWindows::KEY_DOWN )
-		{
-			itSelected++;
-			if( itSelected == that->entries.end() ) // Bound
-				itSelected = that->entries.begin();
-		}
-		else if( event.getKeyCode() == DSWindows::KEY_UP )
-		{
-			_contextMenuEntryList::reverse_iterator itRevSelected = _contextMenuEntryList::reverse_iterator( itSelected );
-			if( itRevSelected == that->entries.rend() ) // Bound
-				itRevSelected = that->entries.rbegin();
-			else
-				itRevSelected++;
-			itSelected = itRevSelected.base();
-		}
-	}
+	return handled;
+}
+
+_callbackReturn _select::refreshHandler( _event event )
+{
+	// Receive Gadget
+	_select* that = event.getGadget<_select>();
 	
-	// Set Value
-	that->setSelected( itSelected->first );
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
-	that->triggerEvent( onChange );
+	bP.fill(
+		that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_WHITE
+	);
+	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
+	
+	const _font* font = _system::getFont();
+	_u8 fontSize = _system::_rtA_->getDefaultFontSize();
+	
+	bP.drawString(
+		2
+		, ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 )
+		, font , that->getStrValue()
+		, that->hasFocus() ? COLOR_WHITE : COLOR_BLACK
+		, fontSize
+	);
 	
 	return use_default;
-}
-
-_select::_select( _length width , _u8 height , _coord x , _coord y , _contextMenuEntryList lst , _style&& style ) :
-	_scrollArea( width , height * _system::getUser()->sOH + 2 , x , y , _scrollType::prevent , _scrollType::meta , (_style&&)style )
-	, entries( lst )
-	, selected( -1 )
-{
-	this->setPaddingOffset( _padding( 1 , 1 , 1 , 1 ) );
-	this->setType( _gadgetType::selectbox );
-	
-	this->setInternalEventHandler( refresh , _staticCallback( &_select::refreshHandler ) );
-	this->setInternalEventHandler( keyDown , _staticCallback( &_select::keyHandler ) );
-	this->setInternalEventHandler( keyRepeat , _staticCallback( &_select::keyHandler ) );
-	
-	// Refresh Me
-	this->refreshList();
-}
-
-_select::~_select()
-{
-	// Remove and delet 'em all
-	this->removeChildren( true );
-}
-
-void _select::setSelected( _s32 val )
-{
-	if( val != this->selected )
-	{
-		_selectItem* s;
-		for( _gadget* g : this->children )
-			if( ( s = (_selectItem*)g) -> getIntValue() == val )
-				s->setActive( true );
-			else
-				s->setActive( false );
-		this->selected = val;
-	}
-}
-
-void _select::refreshList()
-{
-	this->removeChildren( true );
-	
-	int nth = 0;
-	
-	_selectItem* test = nullptr;
-	
-	for( pair<const _s32,string>& entry : this->entries )
-	{
-		if( selected == entry.first )
-			this->addChild( test = new _selectItem( nth++ , this->dimensions.width - 2 , entry.second , entry.first ) );
-		else
-			this->addChild( new _selectItem( nth++ , this->dimensions.width - 2 , entry.second , entry.first ) );
-	}
-	
-	if( !test )
-		this->selected = -1;
-	else
-		test->setActive( true );
 }

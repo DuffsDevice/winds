@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUARECT_
-#define _WIN_LUARECT_
+#ifndef _WIN_L_RECT_
+#define _WIN_L_RECT_
 
 #include "_lua/lunar.h"
 #include "_type/type.rect.h"

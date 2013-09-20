@@ -3,6 +3,10 @@
 
 #include "_type/type.h"
 #include "_type/type.scenario.h"
+#include "_scenario/scenario.setup.h"
+#include "_scenario/scenario.bootup.h"
+#include "_scenario/scenario.desktop.h"
+#include "_scenario/scenario.login.h"
 
 class _systemController
 {

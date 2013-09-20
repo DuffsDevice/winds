@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUALABEL_
-#define _WIN_LUALABEL_
+#ifndef _WIN_L_LABEL_
+#define _WIN_L_LABEL_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_label : public _lua_gadget , public _lua_interface_input<_label> {
 		
 		_lua_label( lua_State* L );
 		
-		_lua_label( _label* c ) : _lua_gadget( c ) , _lua_interface_input( c )
+		_lua_label( _label* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
 		{ }
 		
 		

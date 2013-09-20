@@ -125,6 +125,7 @@ string stringIntegrator::fontChangePhrase( const _font* ft )
 	b.i2 = i2 & 1;
 	b.i3 = i3 & 1;
 	b.i4 = i4 & 1;
+	b.notNull = 1;
 	
 	_char ret[7] = {	
 		DSWindows::STR_CHANGEFONT

@@ -1,5 +1,7 @@
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##            Lua-File            ##
@@ -12,11 +14,11 @@ _lua_direntry::_lua_direntry( _direntry& f ) :
 
 //! Lua-Ctor
 _lua_direntry::_lua_direntry( lua_State* L ) : 
-	_direntry( string( luaL_checkstring( L , 1 ) ) )
+	_direntry( string( check<string>( L , 1 ) ) )
 { }
 
 int _lua_direntry::open( lua_State* L ){
-	lua_pushboolean( L , _direntry::open( luaL_checkstring( L , 1 ) ) );
+	lua_pushboolean( L , _direntry::open( check<string>( L , 1 ) ) );
 	return 1;
 }
 
@@ -46,7 +48,7 @@ int _lua_direntry::close( lua_State* L ){
 }
 
 int _lua_direntry::readString( lua_State* L ){
-	lua_pushstring( L , _direntry::readString( luaL_optint( L , 1 , -1 ) ).c_str() );
+	lua_pushstring( L , _direntry::readString( lightcheck( L , 1 , -1 ) ).c_str() );
 	return 1;
 }
 
@@ -66,12 +68,12 @@ int _lua_direntry::rewindChildren( lua_State* L )
 }
 
 int _lua_direntry::writeString( lua_State* L ){
-	lua_pushboolean( L , _direntry::writeString( luaL_checkstring( L , 1 ) ) );
+	lua_pushboolean( L , _direntry::writeString( check<string>( L , 1 ) ) );
 	return 1;
 }
 
 int _lua_direntry::setAttrs( lua_State* L ){
-	lua_pushboolean( L , _direntry::setAttrs( luaL_checkint( L , 1 ) ) );
+	lua_pushboolean( L , _direntry::setAttrs( check<int>( L , 1 ) ) );
 	return 0;
 }
 
@@ -91,12 +93,12 @@ int _lua_direntry::getName( lua_State* L ){
 }
 
 int _lua_direntry::rename( lua_State* L ){
-	lua_pushboolean( L , _direntry::rename( luaL_checkstring( L , 1 ) ) );
+	lua_pushboolean( L , _direntry::rename( check<string>( L , 1 ) ) );
 	return 1;
 }
 
 int _lua_direntry::unlink( lua_State* L ){
-	lua_pushboolean( L , _direntry::unlink( luaL_optboolean( L , 1 , false ) ) );
+	lua_pushboolean( L , _direntry::unlink( lightcheck( L , 1 , false ) ) );
 	return 1;
 }
 
@@ -131,7 +133,7 @@ int _lua_direntry::getFileImage( lua_State* L ){
 }
 
 //! Lua-_gadget
-const char _lua_direntry::className[] = "_direntry";
+const char _lua_direntry::className[] = "Direntry";
 Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 	LUA_CLASS_FUNC(_lua_direntry,open),
 	LUA_CLASS_FUNC(_lua_direntry,openwrite),

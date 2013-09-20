@@ -1,6 +1,5 @@
-#ifndef _WIN_T_SYSTEMSCENARIO_
-#define _WIN_T_SYSTEMSCENARIO_
-
+#ifndef _WIN_T_SCENARIO_
+#define _WIN_T_SCENARIO_
 
 class _scenario
 {
@@ -8,13 +7,6 @@ class _scenario
 		
 		// Virtual Dtor
 		inline virtual ~_scenario(){ };
-		
 };
-
-// Includes all types of scenarios
-#include "_type/type.scenario.login.h"
-#include "_type/type.scenario.setup.h"
-#include "_type/type.scenario.bootup.h"
-#include "_type/type.scenario.desktop.h"
 
 #endif

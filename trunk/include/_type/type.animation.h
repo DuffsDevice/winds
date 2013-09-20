@@ -5,7 +5,8 @@
 #include "_type/type.h"
 #include "_type/type.callback.h"
 
-typedef _float (_easingFunction)( _float t , _float b , _float c , _float d );
+typedef _float						(_easingFunction)( _float t , _float b , _float c , _float d );
+typedef _vector<class _animation*>	_animationList;
 
 // t = elapsed Time since Start
 // b = startValue
@@ -16,20 +17,29 @@ class _animation{
 	private:
 	
 		friend class _system;
-		_tempTime			startTime;
-		_tempTime			duration; //! In Milliseconds
+		_tempTime				startTime;
+		_tempTime				duration; //! In Milliseconds
 		
 		//! Additionally: call a setter function
-		const _callback* 	setterFunc;
-		const _callback* 	finishFunc;
+		const _intSetCallback*	setterFunc;
+		const _intSetCallback*	finishFunc;
 		
-		_easingFunction*	easeFunc;
+		_easingFunction*		easeFunc;
 		
-		int					fromValue;
-		int					toValue;
-		int					deltaValue;
+		int						fromValue;
+		int						toValue;
+		int						deltaValue;
 		
-		bool				runs;
+		bool					runs;
+		
+		// performes one frame of the animation
+		void step();
+		
+		static _animationList	globalAnimations;
+		static _animationList	globalAnimationsToExecute;
+		
+		// Processes one frame of each running animation
+		static void	runAnimations();
 		
 	public:
 	
@@ -40,10 +50,12 @@ class _animation{
 		~_animation();
 		
 		//! Set a lamda-expression to be the setter
-		void setter( const _callback* setterFunc ){ if( this->setterFunc ) delete this->setterFunc; this->setterFunc = setterFunc; }
+		template<typename T>
+		void setter( T&& setterFunc ){ if( this->setterFunc ) delete this->setterFunc; this->setterFunc = new T( move(setterFunc) ); }
 		
 		//! Set a lamda-expression to be called at the end of the animation
-		void finish( const _callback* finishFunc ){ if( this->finishFunc ) delete this->finishFunc; this->finishFunc = finishFunc; }
+		template<typename T>
+		void finish( T&& finishFunc ){ if( this->finishFunc ) delete this->finishFunc; this->finishFunc = new T( move(finishFunc) ); }
 		
 		//! Start the animation
 		void start();
@@ -84,9 +96,6 @@ class _animation{
 		int getToValue(){
 			return this->toValue;
 		}
-		
-		//! Apply the Value
-		void step();
 		
 		//! setEasing
 		void setEasing( _easingFunction* easeFunc ){

@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUASCROLLAREA_
-#define _WIN_LUASCROLLAREA_
+#ifndef _WIN_L_SCROLLAREA_
+#define _WIN_L_SCROLLAREA_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_scrollarea : public _lua_gadget{
 		
 		_lua_scrollarea( lua_State* L );
 		
-		_lua_scrollarea( _scrollArea* s ) : _lua_gadget( s )
+		_lua_scrollarea( _scrollArea* s ) : _lua_gadget( s , false )
 		{ }
 		
 		//! setScrollTypeX
@@ -24,12 +24,6 @@ class _lua_scrollarea : public _lua_gadget{
 		
 		//! setScrollTypeY
 		int setScrollTypeY( lua_State* L );
-		
-		//! setCanvasWidth
-		int setCanvasWidth( lua_State* L );
-		
-		//! setCanvasHeight
-		int setCanvasHeight( lua_State* L );
 		
 		//! scrollToX
 		int scrollToX( lua_State* L );

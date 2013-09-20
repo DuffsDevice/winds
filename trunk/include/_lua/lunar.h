@@ -10,11 +10,6 @@
 #include <type_traits>
 
 extern bool luaL_is( lua_State* L , int narg , string type );
-extern bool luaL_checkboolean( lua_State* L , int narg );
-extern _pixel luaL_checkcolor( lua_State* L , int narg );
-extern bool luaL_optboolean( lua_State* L , int narg , bool val );
-extern _style luaL_optstyle( lua_State* L , int narg , _style style = _style() );
-extern _pixel luaL_optcolor( lua_State* L , int narg , _pixel style = NO_COLOR );
 
 template<class T> struct hasStaticMethods
 {
@@ -38,7 +33,7 @@ class Lunar
 		
 		// Will be enabled
 		template<typename T2>
-		static typename enable_if<hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
+		static typename std::enable_if<hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
 		{
 			lua_newtable(L);
 			int classNameTable = lua_gettop(L);
@@ -58,7 +53,7 @@ class Lunar
 		}
 		// Fallback
 		template<typename T2>
-		static typename enable_if<!hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
+		static typename std::enable_if<!hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
 		{
 			lua_pushcfunction(L, &Lunar < T2 >::constructor);
 			lua_setglobal(L, T2::className);
@@ -68,18 +63,18 @@ class Lunar
 		
 		struct PropertyType {
 			const char	*name;
-			int			(T::*getter)(lua_State *);
-			int			(T::*setter)(lua_State *);
+			int			(T::*getter)(lua_State*);
+			int			(T::*setter)(lua_State*);
 		};
 
 		struct FunctionType {
 			const char	*name;
-			int			(T::*func)(lua_State *);
+			int			(T::*func)(lua_State*);
 		};
 		
 		struct StaticType {
 			const char	*name;
-			int	 		(*func)(lua_State *);
+			int	 		(*func)(lua_State*);
 		};
 
 		/*
@@ -87,7 +82,7 @@ class Lunar
 			Retrieves a wrapped class from the arguments passed to the func, specified by narg (position).
 			This func will raise an exception if the argument is not of the correct type.
 		*/
-		static T* check(lua_State * L, int narg)
+		static T* check(lua_State* L, int narg)
 		{
 			T** obj = static_cast<T**>( luaL_checkudata(L, narg, T::className) );
 			return *obj;		// pointer to T object
@@ -99,7 +94,7 @@ class Lunar
 			This func will return nullptr if the argument is not of the correct type.  Useful for supporting
 			multiple types of arguments passed to the func
 		*/ 
-		static T* lightcheck(lua_State * L, int narg) {
+		static T* lightcheck(lua_State* L, int narg) {
 			T** obj = static_cast<T**>( luaL_testudata(L, narg, T::className) );
 			if ( !obj )
 				return nullptr; // lightcheck returns nullptr if not found.
@@ -110,7 +105,7 @@ class Lunar
 			Description:
 			Registers your class with Lua.  Leave namespac "" if you want to load it into the global space.
 		*/
-		static void Register(lua_State * L, const char *namespac = NULL ) {
+		static void Register( lua_State* L /*, const char *namespac = NULL*/ ) {
 			
 			/// This is just uncommented because of Memory usage
 			//if ( namespac && strlen(namespac) )
@@ -179,7 +174,7 @@ class Lunar
 			Arguments:
 			* L - Lua State
 		*/
-		static int constructor(lua_State * L)
+		static int constructor(lua_State* L)
 		{
 			T*  ap = new T(L);
 			T** a = static_cast<T**>(lua_newuserdata(L, sizeof(T *))); // Push value = userdata
@@ -194,7 +189,7 @@ class Lunar
 			Description:
 			Loads an instance of the class into the Lua stack, and provides you a pointer so you can modify it.
 		*/
-		static void push(lua_State * L, T* instance )
+		static void push(lua_State* L, T* instance )
 		{
 			if( !instance )
 				return;

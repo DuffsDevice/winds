@@ -21,23 +21,17 @@ class _button : public _gadget {
 		_align			align;
 		_valign 		vAlign;
 		
-		_u8 			computeW;
-		_u8 			computeH;
-		
 		static _callbackReturn refreshHandler( _event event );
 		static _callbackReturn mouseHandler( _event event );
-		
-		void init( string text );
-		
-		void computeSize();
+		static _callbackReturn updateHandler( _event event );
 		
 	public:
 		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->bubbleRefresh( true ); }
+		void setAlign( _align align ){ if( this->align == align ) return; this->align = align; this->redraw(); }
 		
 		//! Vertical-Align-setting
-		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->bubbleRefresh( true ); }
+		void setVAlign( _valign vAlign ){ if( this->vAlign == vAlign ) return; this->vAlign = vAlign; this->redraw(); }
 		
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }
@@ -52,10 +46,10 @@ class _button : public _gadget {
 		string getStrValue(){ return this->strValue; }
 		
 		//! Whether the button should be outlined by a blue line
-		void setAutoSelect( bool aS );
+		void setAutoSelect( bool aS ){ if( this->autoSelect == aS ) return; this->autoSelect = aS; this->redraw(); }
 		
 		//! Whether the button should be outlined by a blue line
-		bool isAutoSelect();
+		bool isAutoSelect(){ return this->autoSelect; }
 		
 		//! Set Text Font
 		void setFont( const _font* ft );
@@ -70,22 +64,19 @@ class _button : public _gadget {
 		void setFontSize( _u8 size );
 		
 		//! Set Text Color
-		void setFontColor( _pixel col ){ this->fontColor = col; this->bubbleRefresh( true ); }
+		void setFontColor( _pixel col ){ if( this->fontColor == col ) return; this->fontColor = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getFontColor(){ return this->fontColor; }
 		
-		// Methods to set Size
-		void setWidth( _length width );
-		void setDimensions( _rect dim );
-		void setHeight( _length height );
-		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_button( _length width , _length height , _coord x , _coord y , string title = "" , _style&& style = _style() );
+		_button( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string title = "" , _style&& style = _style() );
 		
 		//! Constructor with coordinates, title and optional: Style
 		//! The Width will be computed by the font
-		_button( _coord x , _coord y , string text = "" , _style&& style = _style() );
+		_button( _coord x , _coord y , string text = "" , _style&& style = _style() ) : 
+			_button( ignore , ignore , x , y , text , (_style&&)style )
+		{}
 };
 
 #endif

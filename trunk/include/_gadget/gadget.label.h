@@ -12,9 +12,6 @@ class _label : public _gadget {
 		_pixel			color;
 		_pixel			bgColor;
 		
-		_u8 			computeW;
-		_u8 			computeH;
-		
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
 		const _font* 	font;
@@ -27,11 +24,9 @@ class _label : public _gadget {
 		//! String to be displayed
 		string 			strValue;
 		
-		//! Method to cumpute Space-Requirements
-		void computeSize();
-		
 		//! Refresh-Handler
 		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn updateHandler( _event event );
 		
 	public:
 		
@@ -42,13 +37,13 @@ class _label : public _gadget {
 		string getStrValue(){ return this->strValue; }
 		
 		//! Set Text Color
-		void setColor( _pixel col ){ this->color = col; this->bubbleRefresh( true ); }
+		void setColor( _pixel col ){ this->color = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getColor(){ return this->color; }
 		
 		//! Set Text Color
-		void setBgColor( _pixel col ){ this->bgColor = col; this->bubbleRefresh( true ); }
+		void setBgColor( _pixel col ){ this->bgColor = col; this->redraw(); }
 		
 		//! Get Text Color
 		_pixel getBgColor(){ return this->bgColor; }
@@ -60,10 +55,10 @@ class _label : public _gadget {
 		_u8 getFontSize(){ return this->fontSize; }
 		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->bubbleRefresh( true ); }
+		void setAlign( _align align ){ this->align = align; this->redraw(); }
 		
 		//! Vertical-Align-setting
-		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->bubbleRefresh( true ); }
+		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->redraw(); }
 		
 		//! Get Alignment of the Label
 		_align getAlign(){ return this->align; }
@@ -78,15 +73,12 @@ class _label : public _gadget {
 		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
-		_label( _length width , _length height , _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable );
+		_label( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable );
 		
 		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string text , _style&& style = _style() | _styleAttr::notClickable );
-		
-		// Methods to set Size
-		void setWidth( _u8 width );
-		void setDimensions( _rect dim );
-		void setHeight( _u8 height );
+		_label( _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable ) :
+			_label( ignore , ignore , x , y , value , (_style&&)style )
+		{}
 };
 
 #endif

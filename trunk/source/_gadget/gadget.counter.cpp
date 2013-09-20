@@ -3,50 +3,95 @@
 #include "_type/type.system.h"
 #include "func.memory.h"
 
-_callbackReturn _counter::changeHandler( _event event )
+_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style&& style ) :
+	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , (_style&&)style )
+	, circular( circular )
+	, intValue( mid( lowerBound , value , upperBound ) )
+	, lowerBound( lowerBound )
+	, upperBound( upperBound )
+	, numbersystem( numbersystem )
 {
+	// Regsiter draw and key Handlers
+	this->setInternalEventHandler( onDraw , make_callback( &_counter::refreshHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_counter::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_counter::keyHandler ) );
+	this->setInternalEventHandler( onBlur , make_callback( &_counter::focusHandler ) );
+	this->setInternalEventHandler( onFocus , make_callback( &_counter::focusHandler ) );
+	
+	// Read the number of decimals we have to fill with letters
+	this->refreshDecimals();
+	
+	//
+	// Add Gadgets
+	//
+	
+	// Create buttons for increasing and decreasing
+	this->increaseHandle = new _scrollButton( 8 , 6 , this->getWidth() - 9 , 1 , _scrollButtonType::buttonTop );
+	this->decreaseHandle = new _scrollButton( 8 , 8 , this->getWidth() - 9 , 7 , _scrollButtonType::buttonBottom );
+	
+	// Create Label to hold value
+	this->valueLabel = new _label( this->getWidth() - 10 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
+	this->valueLabel->setAlign( _align::center );
+	this->valueLabel->setVAlign( _valign::middle );
+	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
+	
+	// Register onClick handlers to buttons
+	this->increaseHandle->setUserEventHandler( onMouseClick , make_callback( this , &_counter::btnClickHandler ) );
+	this->decreaseHandle->setUserEventHandler( onMouseClick , make_callback( this , &_counter::btnClickHandler ) );
+	
+	this->addEnhancedChild( this->increaseHandle );
+	this->addEnhancedChild( this->decreaseHandle );
+	this->addChild( this->valueLabel );
+	
+	// Refresh Me
+	this->redraw();
+}
+
+_counter::~_counter()
+{
+	delete this->increaseHandle;
+	delete this->decreaseHandle;
+	delete this->valueLabel;
+}
+
+// For Key-Events
+_callbackReturn _counter::keyHandler( _event event )
+{
+	_counter* that = event.getGadget<_counter>();
+	
+	if( event.getKeyCode() == DSWindows::KEY_UP )
+		that->increaseInternal();
+	else if( event.getKeyCode() == DSWindows::KEY_DOWN )
+		that->decreaseInternal();
+	
+	return handled;
+}
+
+// For clicks onto one of the buttons
+_callbackReturn _counter::btnClickHandler( _event event )
+{	
+	if( event.getGadget() == this->increaseHandle )
+		this->increaseInternal();
+	else if( event.getGadget() == this->decreaseHandle )
+		this->decreaseInternal();
+	
+	return handled;
+}
+
+// Handles blur and focus of the colorpicker
+_callbackReturn _counter::focusHandler( _event event )
+{
+	_counter* that = event.getGadget<_counter>();
+	
 	// Blur and Focus changes the style of the label
-	if( event.getType() == onFocus )
-	{
-		_counter* that = event.getGadget<_counter>();
-		
+	if( event == onFocus ){
 		that->valueLabel->setBgColor( RGB255( 10 , 36 , 106 ) );
 		that->valueLabel->setColor( COLOR_WHITE );
-		return handled;
 	}
-	if( event.getType() == onBlur )
-	{
-		_counter* that = event.getGadget<_counter>();
-		
+	else{
 		that->valueLabel->setBgColor( COLOR_WHITE );
 		that->valueLabel->setColor( COLOR_BLACK );
-		return handled;
 	}
-	
-	// For Key-Events
-	if( event.getType() == keyDown || event.getType() == keyRepeat )
-	{
-		_counter* that = event.getGadget<_counter>();
-		
-		if( event.getKeyCode() == DSWindows::KEY_UP )
-			that->increase();
-		else if( event.getKeyCode() == DSWindows::KEY_DOWN )
-			that->decrease();
-		
-		that->handleEvent( _event( onChange ) );
-		
-		return handled;
-	}
-	
-	_scrollButton* that = event.getGadget<_scrollButton>();
-	_counter* cntr = ((_counter*)that->getParent());
-	
-	if( that == cntr->increaseHandle )
-		cntr->increase();
-	else if( that == cntr->decreaseHandle )
-		cntr->decrease();
-	
-	cntr->handleEvent( _event( onChange ) );
 	
 	return handled;
 }
@@ -56,68 +101,16 @@ _callbackReturn _counter::refreshHandler( _event event )
 	// Receive Gadget
 	_counter* that = event.getGadget<_counter>();
 	
-	_bitmapPort bP = that->getBitmapPort();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
-	
-	bP.fill( COLOR_WHITE );
-	
+	bP.fill( COLOR_WHITE ); // reset Color
 	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
 	
 	return use_default;
 }
 
-_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style&& style ) :
-	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , (_style&&)style )
-	, circular( circular )
-	, intValue( value )
-	, lowerBound( lowerBound )
-	, upperBound( upperBound )
-	, numbersystem( numbersystem )
-{
-	// Read the number of decimals we have to fill with letters
-	refreshDecimals();
-	
-	this->increaseHandle = new _scrollButton( 8 , 6 , this->dimensions.width - 9 , 1 , _scrollButtonType::buttonTop );
-	this->decreaseHandle = new _scrollButton( 8 , 8 , this->dimensions.width - 9 , 7 , _scrollButtonType::buttonBottom );
-	
-	this->valueLabel = new _label( this->getWidth() - 10 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
-	this->valueLabel->setAlign( _align::center );
-	this->valueLabel->setVAlign( _valign::middle );
-	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
-	
-	this->increaseHandle->setInternalEventHandler( onAction , _staticCallback( &_counter::changeHandler ) );
-	this->decreaseHandle->setInternalEventHandler( onAction , _staticCallback( &_counter::changeHandler ) );
-	
-	//! Refresh - Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_counter::refreshHandler ) );
-	this->setInternalEventHandler( keyDown , _staticCallback( &_counter::changeHandler ) );
-	this->setInternalEventHandler( keyRepeat , _staticCallback( &_counter::changeHandler ) );
-	this->setInternalEventHandler( onBlur , _staticCallback( &_counter::changeHandler ) );
-	this->setInternalEventHandler( onFocus , _staticCallback( &_counter::changeHandler ) );
-	
-	this->addEnhancedChild( this->increaseHandle );
-	this->addEnhancedChild( this->decreaseHandle );
-	this->addChild( this->valueLabel );
-	
-	// Refresh Me
-	this->refreshBitmap();
-}
-
-_counter::~_counter()
-{
-	if( this->increaseHandle )
-		delete this->increaseHandle;
-	if( this->decreaseHandle )
-		delete this->decreaseHandle;
-	if( this->valueLabel )
-		delete this->valueLabel;
-}
-
-void _counter::setIntValue( int value )
+void _counter::setIntValue( _s32 value )
 {
 	if( value > this->upperBound )
 		value = this->circular ? this->lowerBound : this->upperBound;

@@ -44,8 +44,8 @@ class _bitmap
 		 */
 		_bitmap( _pixelArray base , _length w , _length h ) :
 			bmp( base )
-			, width( max( 1 , int(w) ) )
-			, height( max( 1 , int(h) ) )
+			, width( max( (_length)1 , w ) )
+			, height( max( (_length)1 , h ) )
 			, wasAllocated( false )
 		{
 			this->resetClippingRect();
@@ -58,12 +58,25 @@ class _bitmap
 		 * @return void
 		 */
 		_bitmap( _length w , _length h ) :
-			width( max( 1 , int(w) ) )
-			, height( max( 1 , int(h) ) )
+			width( max( (_length)1 , w ) )
+			, height( max( (_length)1 , h ) )
 			, wasAllocated( true )
 		{
 			this->bmp = new _pixel[w*h];
 			this->resetClippingRect();
+		}
+		
+		/**
+		 * Construcor: Make Bitmap out of dimensions (data will be allocated automatically) and resetted to the passed color
+		 * @param w Width of the bmp
+		 * @param h Height of the bmp
+		 * @param col Initial Color of the bitmap
+		 * @return void
+		 */
+		_bitmap( _length w , _length h , _pixel col ) :
+			_bitmap( w , h )
+		{
+			memSet( this->bmp , col , this->width * this->height );
 		}
 		
 		/**
@@ -240,15 +253,10 @@ class _bitmap
 		_pixel getPixel( _coord x , _coord y ) const 
 		{			
 			// Prevent Overflows
-			if( x >= _coord( this->width ) || y >= _coord( this->height ) )
+			if( !this->isValid() || x >= _coord( this->width ) || y >= _coord( this->height ) )
 				return NO_COLOR;
 			
-			_u32 position = y * this->width + x;
-			
-			if( position + 1 > _length( this->height * this->width ) )
-				return NO_COLOR;
-			
-			return this->bmp[position];
+			return this->bmp[y * this->width + x];
 		}
 		
 		/**
@@ -257,9 +265,11 @@ class _bitmap
 		 * @param y Y-Position to check
 		 * @return _pixel The Pixel at the specified location
 		 */
+		private:
 		_pixel getPixelUnsafe( _coord x , _coord y ) const {
 			return this->bmp[ y * this->width + x ];
 		}
+		public:
 		
 		/**
 		 * Set the Pixel at a specific location
@@ -275,6 +285,19 @@ class _bitmap
 		}
 		
 		/**
+		 * Set the Pixel at a specific location, but without a check if the poition is inside the bmp
+		 * @param x X-Position
+		 * @param y Y-Position
+		 * @param color Color of the Pixel to set
+		 * @return void
+		 */
+		private:
+		void drawPixelUnsafe( _coord x , _coord y , _pixel color ){
+			this->bmp[y * this->width + x] = color;
+		}
+		public:
+		
+		/**
 		 * Fill a part of the memory with the color supplied
 		 * @param x X-Position
 		 * @param y Y-Position
@@ -284,20 +307,9 @@ class _bitmap
 		 */
 		private:
 		void blitFill( _coord x , _coord y , _pixel color , _length length ){
-			memSet( &this->bmp[ y * this->width + x ] , color , length );
+			if( this->isValid() ) memSet( &this->bmp[ y * this->width + x ] , color , length );
 		}
 		public:
-		
-		/**
-		 * Set the Pixel at a specific location, but without a check if the poition is inside the bmp
-		 * @param x X-Position
-		 * @param y Y-Position
-		 * @param color Color of the Pixel to set
-		 * @return void
-		 */
-		void drawPixelUnsafe( _coord x , _coord y , _pixel color ){
-			this->bmp[y * this->width + x] = color;
-		}
 		
 		/**
 		 * Erase the whole bmp
@@ -480,12 +492,13 @@ class _bitmap
 		 */
 		_u16 drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
-			// Check if font is valid
-			if( !font || !font->isValid() ) 
+			// Check if everything is valid
+			if( !this->isValid() || !font || !font->isValid() ) 
 				return 0;
 			
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 		}
+		private:
 		_u16 drawCharUnsafe( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 )
 		{
 			// Fetch the destination where to draw To
@@ -494,6 +507,7 @@ class _bitmap
 			// Let the font do the hard work!
 			return font->drawCharacter( dest , this->width , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
 		}
+		public:
 		
 		/**
 		 * Draw a String to a specific Position
@@ -555,19 +569,24 @@ class _bitmap
 		void move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height );
 		
 		/**
-		 * Set the active ClippingRect
+		 * Set the active ClippingRect with bounds checking
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		 */
-		void setClippingRect( _rect rc ){
-			this->activeClippingRect = _rect::fromCoords( 
-				rc.x < 0 ? 0 : rc.x // x
-				, rc.y < 0 ? 0 : rc.y // y
-				, min( rc.getX2() , _coord( this->width ) ) // x2
-				, min( rc.getY2() , _coord( this->height ) ) // y2
-			);
+		void setClippingRect( _rect&& rc ){
+			this->setClippingRectUnsafe( (_rect&&)rc.clipToIntersect( _rect( 0 , 0 , this->width , this->height ) ) );
 		}
-		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = rc; }
+		void setClippingRect( const _rect& rc ){ this->setClippingRect( _rect(rc) ); }
+		
+		
+		/**
+		 * Set the active ClippingRect without clipping that one to the dimensions of the bitmap
+		 + @note Hence, the _rect MUST be COMPLETELY inside the bitmaps dimensions
+		 * @param rc Rect The rect to be clipped to
+		 * @return void
+		 */
+		void setClippingRectUnsafe( _rect&& rc ){ this->activeClippingRect = (_rect&&)rc; }
+		void setClippingRectUnsafe( const _rect& rc ){ this->setClippingRectUnsafe( _rect(rc) ); }
 		
 		/**
 		 * Get the active ClippingRect
@@ -589,7 +608,7 @@ class _bitmap
 		}
 		
 		/**
-		 * Check if a Rectangle specified by borders is visible if it gets clipped by the activeClippingRect
+		 * Check if a Rectangle specified by its limits is visible if it gets clipped by the activeClippingRect
 		 * @param s16 left Left side of the Rectangle to check
 		 * @param s16 top Top side of the Rectangle to check
 		 * @param s16 right Right side of the Rectangle to check

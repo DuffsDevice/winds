@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUASCROLLBAR_
-#define _WIN_LUASCROLLBAR_
+#ifndef _WIN_L_SCROLLBAR_
+#define _WIN_L_SCROLLBAR_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -17,7 +17,7 @@ class _lua_scrollbar : public _lua_gadget , public _lua_interface_input<_scrollB
 		
 		_lua_scrollbar( lua_State* L );
 		
-		_lua_scrollbar( _scrollBar* s ) : _lua_gadget( s )
+		_lua_scrollbar( _scrollBar* s ) : _lua_gadget( s , false )
 		{ }
 		
 		//! setValue

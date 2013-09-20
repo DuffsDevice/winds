@@ -1,16 +1,13 @@
 #include "_gadget/gadget.window.button.h"
+#include "_gadget/gadget.window.h"
 
 _callbackReturn _windowButton::refreshHandler( _event event )
 {
 	// Get Source
 	_windowButton* that = event.getGadget<_windowButton>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_pixel color[] = { 
 		RGB255( 114 , 154 , 250 ) , RGB255( 5 , 88 , 226 ) , RGB255( 75 , 126 , 245 ) , // Blue Values
@@ -36,7 +33,7 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 			// Maximize/Restore
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] ); // White Border
 			
-			if( that->getParent()->isMaximized() )
+			if( ((_window*)that->getParent())->isMaximized() )
 			{
 				bP.drawRect( 3 , 2 , 3 , 3 , color[0] ); // Semi-White Line
 				bP.drawRect( 2 , 4 , 2 , 2 , color[0] ); // Semi-White Line
@@ -82,6 +79,6 @@ _windowButton::_windowButton( _coord x , _coord y , _u8 buttonType , _style&& st
 	// Reset Bitmap
 	this->bitmap.reset( NO_COLOR );
 	
-	this->setInternalEventHandler( refresh , _staticCallback( &_windowButton::refreshHandler ) );
-	this->refreshBitmap();
+	this->setInternalEventHandler( onDraw , make_callback( &_windowButton::refreshHandler ) );
+	this->redraw();
 }

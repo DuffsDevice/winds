@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUABORDER_
-#define _WIN_LUABORDER_
+#ifndef _WIN_L_BORDER_
+#define _WIN_L_BORDER_
 
 #include "_lua/lunar.h"
 #include "_type/type.h"

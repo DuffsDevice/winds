@@ -1,9 +1,6 @@
 #include "_gadget/gadget.button.h"
 #include "_type/type.system.h"
 
-void _button::setAutoSelect( bool aS ){ this->autoSelect = aS; this->bubbleRefresh( true ); }
-bool _button::isAutoSelect(){ return this->autoSelect; }
-
 void _button::setStrValue( string val )
 {
 	if( this->strValue == val )
@@ -12,11 +9,11 @@ void _button::setStrValue( string val )
 	// Set Value...
 	this->strValue = val;
 	
-	if( this->computeW == 1 ){
-		this->computeW = 2;
-		this->computeSize();
-	}
-	this->bubbleRefresh( true );
+	// Inform that maybe, size should change now
+	this->update();
+	
+	// ...and refresh!
+	this->redraw();
 }
 
 void _button::setFont( const _font* ft )
@@ -26,8 +23,11 @@ void _button::setFont( const _font* ft )
 	
 	this->font = ft;
 	
-	this->computeSize();
-	this->bubbleRefresh( true );
+	// Inform that maybe, size should change now
+	this->update();
+	
+	// ...and refresh!
+	this->redraw();
 }
 
 void _button::setFontSize( _u8 fontSize )
@@ -37,26 +37,28 @@ void _button::setFontSize( _u8 fontSize )
 	
 	// Set FontSize...
 	this->fontSize = fontSize;
-	if( this->computeW )
-		this->computeW = 2;
-	if( this->computeH )
-		this->computeH = 2;
-	this->computeSize();
-	this->bubbleRefresh( true );
+	
+	// Inform that maybe, size should change now
+	this->update();
+	
+	// ...and refresh!
+	this->redraw();
 }
 
-void _button::computeSize()
+_callbackReturn _button::updateHandler( _event event )
 {
-	if( !this->font->isValid() )
-		return;
+	// Receive Gadget
+	_button* that = event.getGadget<_button>();
 	
-	// Compute Height
-	if( this->computeH == 2 && ( this->computeH = 1 ) )
-		this->setHeight( this->font->getHeight() + 2 );
+	if( !that->font || !that->font->isValid() )
+		return handled;
 	
-	// Compute Width
-	if( this->computeW == 2 && ( this->computeW = 1 ) )
-		this->setWidth( max( 28 , 7 + this->font->getStringWidth( this->getStrValue() ) ) );
+	if( that->hasAutoHeight() )
+		that->setHeightInternal( max( 1 , that->font->getHeight( that->fontSize ) + 2 ) );
+	if( that->hasAutoWidth() )
+		that->setWidthInternal( max( 28 , that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 7 ) );
+	
+	return handled;
 }
 
 _callbackReturn _button::refreshHandler( _event event )
@@ -64,12 +66,8 @@ _callbackReturn _button::refreshHandler( _event event )
 	// Receive Gadget
 	_button* that = event.getGadget<_button>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
@@ -154,7 +152,7 @@ _callbackReturn _button::refreshHandler( _event event )
 			x = 0;
 			break;
 		case _align::right:
-			x = that->dimensions.width - that->font->getStringWidth( that->getStrValue() , that->fontSize );
+			x = that->getWidth() - that->font->getStringWidth( that->getStrValue() , that->fontSize );
 			break;
 	}
 	
@@ -167,7 +165,7 @@ _callbackReturn _button::refreshHandler( _event event )
 			y = 0;
 			break;
 		case _valign::bottom:
-			y = that->dimensions.height - that->font->getAscent( that->fontSize );
+			y = that->getHeight() - that->font->getAscent( that->fontSize );
 			break;
 	}
 	
@@ -180,72 +178,37 @@ _callbackReturn _button::refreshHandler( _event event )
 _callbackReturn _button::mouseHandler( _event event )
 {
 	// Update button status
-	event.getGadget<_button>()->pressed = event.getType() == onMouseEnter ? true : false;
+	event.getGadget<_button>()->pressed = ( event == onMouseEnter ) ? true : false;
 	
 	// Refresh
-	event.getGadget()->bubbleRefresh( true );
+	event.getGadget()->redraw();
 	
 	return handled;
 }
 
-void _button::init( string text )
-{
-	this->style.doubleClickable = false;
-	
-	// Font
-	this->strValue = text;
-	this->font = _system::getFont();
-	this->fontSize = _system::_rtA_->getDefaultFontSize();
-	this->fontColor = COLOR_BLACK;
-	this->pressed = false;
-	
-	this->vAlign = _valign::middle;
-	this->align = _align::center;
-	
-	// Register my handler as the default Refresh-Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_button::refreshHandler ) );
-	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_button::mouseHandler ) );
-	this->setInternalEventHandler( onMouseLeave , _staticCallback( &_button::mouseHandler ) );
-	this->setInternalEventHandler( mouseClick , _gadget::eventForward<onAction>() );
-	this->setInternalEventHandler( mouseRepeat , _gadget::eventForward<onAction>() );
-	
-	// Compute the necesary Width
-	this->computeSize();
-
-	// Refresh Me
-	this->refreshBitmap();
-}
-
-// Methods to set Size
-void _button::setWidth( _length width ){ 
-	if( !width ){ this->computeW = 2; this->computeSize(); return; }
-	this->computeW = 0; _gadget::setWidth( width );
-}
-void _button::setDimensions( _rect dim ){
-	if( !dim.isValid() ){ this->computeH = 2; this->computeW = 2; this->computeSize(); return; }
-	this->computeH = 0; this->computeW = 0; _gadget::setDimensions( dim );
-}
-void _button::setHeight( _length height ){
-	if( !height ){ this->computeH = 2; this->computeSize(); return; }
-	this->computeH = 0; _gadget::setHeight( height );
-}
-
-_button::_button( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
-	_gadget( _gadgetType::button , width , height , x , y , (_style&&)style )
+_button::_button( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style ) :
+	_gadget( _gadgetType::button , move(width) , move(height) , x , y , style | _styleAttr::notDoubleClickable )
 	, autoSelect( false )
-	, computeW( 0 )
-	, computeH( 0 )
+	, strValue( value )
+	, font( _system::getFont() )
+	, fontColor( COLOR_BLACK )
+	, fontSize( _system::_rtA_->getDefaultFontSize() )
+	, pressed( false )
+	, align( _align::center )
+	, vAlign( _valign::middle )
 {
-	// Link to Constructor
-	this->init( text );
-}
-
-_button::_button( _coord x , _coord y , string text , _style&& style ) :
-	_gadget( _gadgetType::button , 32 , 9 , x , y , (_style&&)style )
-	, autoSelect( false )
-	, computeW( 2 )
-	, computeH( 2 )
-{	
-	// Link to Constructor
-	this->init( text );	
+	this->setInternalEventHandler( onUpdate , make_callback( &_button::updateHandler ) );
+	
+	// force update of size
+	this->updateNow();
+	
+	// Register my handlers
+	this->setInternalEventHandler( onDraw , make_callback( &_button::refreshHandler ) );
+	this->setInternalEventHandler( onMouseEnter , make_callback( &_button::mouseHandler ) );
+	this->setInternalEventHandler( onMouseLeave , make_callback( &_button::mouseHandler ) );
+	this->setInternalEventHandler( onMouseRepeat , _gadgetHelpers::eventForward(onMouseClick) );
+	this->setInternalEventHandler( onResize , make_callback( &_button::updateHandler ) );
+	
+	// Refresh
+	this->redraw();
 }

@@ -11,12 +11,8 @@ _callbackReturn _checkbox::refreshHandler( _event event )
 	// Receive Gadget
 	_checkbox* that = event.getGadget<_checkbox>();
 	
-	_bitmapPort bP = that->getBitmapPort();
-	
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
 	
 	bP.fill( NO_COLOR );
 	
@@ -39,12 +35,12 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 	// Receive Gadget
 	_checkbox* that = event.getGadget<_checkbox>();
 	
-	// change Value
+	// Change Value
 	that->setIntValue( ! bool( that->getIntValue() ) );
-	that->triggerEvent( _event( onChange ) );
+	that->triggerEvent( onEdit );
 	
 	// Refresh
-	that->bubbleRefresh( true );
+	that->redraw();
 	
 	return handled;
 }
@@ -52,15 +48,15 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 
 
 _checkbox::_checkbox( _coord x , _coord y , _style&& style ) :
-	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , (_style&&)style )
+	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , style | _styleAttr::notResizeable )
 	, intValue( 0 )
 {
-	// Register my handler as the default Refresh-Handler
-	this->setInternalEventHandler( refresh , _staticCallback( &_checkbox::refreshHandler ) );
-	this->setInternalEventHandler( mouseClick , _staticCallback( &_checkbox::mouseHandler ) );
-	this->setInternalEventHandler( onMouseEnter , _gadget::eventForwardRefresh() );
-	this->setInternalEventHandler( onMouseLeave , _gadget::eventForwardRefresh() );
+	// Register my handlers
+	this->setInternalEventHandler( onDraw , make_callback( &_checkbox::refreshHandler ) );
+	this->setInternalEventHandler( onMouseClick , make_callback( &_checkbox::mouseHandler ) );
+	this->setInternalEventHandler( onMouseEnter , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onMouseLeave , _gadgetHelpers::eventForwardRefresh() );
 	
 	// Refresh Me
-	this->refreshBitmap();
+	this->redraw();
 }

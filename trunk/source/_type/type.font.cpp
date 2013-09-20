@@ -61,7 +61,7 @@ _length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fon
 #include "_resource/FONT_System7.h"
 #include "_resource/FONT_SystemSymbols8.h"
 
-vector<_memoryfont*> builtInFonts =
+_vector<_memoryfont*> builtInFonts =
 {
 	new FONT_ArialBlack13()
 	, new FONT_CourierNew10()

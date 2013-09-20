@@ -1,9 +1,6 @@
 #include "_type/type.h"
 #include <nds/bios.h>
 
-_length SCREEN_WIDTH = 256;
-_length SCREEN_HEIGHT = 192;
-
 void* operator new(size_t size)		{	return malloc(size);	}
 void operator delete(void *p)		{	free(p);				}
 void* operator new[](size_t size)	{	return malloc(size);	}
@@ -31,6 +28,16 @@ _map<string,_valign> string2valign = {
 	{ "top" , _valign::top },
 	{ "middle" , _valign::middle },
 	{ "bottom" , _valign::bottom }
+};
+
+_map<_dimension,string> dimension2string = {
+	{ _dimension::horizontal , "horizontal" },
+	{ _dimension::vertical , "vertical" }
+};
+
+_map<string,_dimension> string2dimension = {
+	{ "horizontal" , _dimension::horizontal },
+	{ "vertical" , _dimension::vertical }
 };
 
 // Casts for _margin and _padding
@@ -102,29 +109,77 @@ int string2int( const _char *p ){
 
 const _char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+#include <stdio.h>
+
 string int2string( _int val , _u8 zeroFill , _u8 numbersystem )
 {
-	_char result[32]; // string which will contain the number
-	int i = 31;
+	_char result[34]; // string which will contain the number
 	
+	// Check if negative
+	bool valNegative = val < 0;
+	val = valNegative ? -val : val;
+	
+	// pos will be the current position in the array of chars
+	_u8 pos = 32; // we start at 32, because we need index '33' for the ending \0 character
+	
+	// Reduce the numbers of zeros to write when we need an extra '-' to index the sign
+	if( zeroFill && valNegative )
+		zeroFill--;
+	
+	// We work from right to left
 	do{
 		int remainder;
+		
+		// We divide by the numbersystem
 		swiDivMod( val , numbersystem , &val , &remainder );
-		result[--i] = numbers[remainder];
-	}while( val );
+		// -> The remainder is the number we will write
+		// -> The next round we work with the divided result!
+		
+		result[pos] = numbers[remainder];
+		
+		// Step one to the left
+		pos--;
+	}while( val != 0 );
 	
+	// Check if we have to fill up with leading zeros
 	if( zeroFill )
-		while( i > 31 - zeroFill )
-			result[--i] = '0';
+	{
+		_u8 lettersWrote = 32 - pos;
+		
+		// Check if we havent reached the index until
+		// which we have to fill up with zeros
+		while( zeroFill > lettersWrote )
+		{
+			// Fill index with zero
+			result[pos] = '0';
+			
+			// Step one to the left
+			pos--;
+			
+			// Increase letters that are already written down
+			lettersWrote++;
+		}
+	}
 	
-	result[31] = 0; // Delimiter
+	if( valNegative )
+	{
+		// Fill index with minus-sign
+		result[pos] = '-';
+		
+		// Step one to the left
+		pos--;
+	}
 	
-	return &result[i];
+	result[33] = 0; // Delimiter
+	
+	// Return the index we wrote to last
+	return &result[pos+1];
 }
 
 int countDecimals( _s32 value , _u8 numbersystem )
 {
-	int i = 0;
+	int i = value < 0; // Start with one letter offset if we a sign
+	
 	switch( numbersystem )
 	{
 		case 0:

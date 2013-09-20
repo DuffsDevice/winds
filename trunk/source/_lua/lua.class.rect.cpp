@@ -1,5 +1,7 @@
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##            Lua-Rect            ##
@@ -10,28 +12,28 @@ _lua_rect::_lua_rect( _rect rc ) : _rect( rc )
 
 //! Constructor
 _lua_rect::_lua_rect( lua_State* L ) : 
-	_rect( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) )
+	_rect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) )
 { }
 //! Set X
-int _lua_rect::setX(lua_State* L){ _rect::x = luaL_checkint( L , 1 ); return 0; }
+int _lua_rect::setX(lua_State* L){ _rect::x = check<int>( L , 1 ); return 0; }
 //! Set Y
-int _lua_rect::setY(lua_State* L){ _rect::y = luaL_checkint( L , 1 ); return 0; }
+int _lua_rect::setY(lua_State* L){ _rect::y = check<int>( L , 1 ); return 0; }
 //! Get X
 int _lua_rect::getX(lua_State* L){ lua_pushnumber( L , _rect::x ); return 1; }
 //! Get Y
 int _lua_rect::getY(lua_State* L){ lua_pushnumber( L , _rect::y ); return 1; }
 //! Set X2
-int _lua_rect::setX2(lua_State* L){ _rect::setX2( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_rect::setX2(lua_State* L){ _rect::setX2( check<int>( L , 1 ) ); return 0; }
 //! Set Y2
-int _lua_rect::setY2(lua_State* L){ _rect::setY2( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_rect::setY2(lua_State* L){ _rect::setY2( check<int>( L , 1 ) ); return 0; }
 //! Get X2
 int _lua_rect::getX2(lua_State* L){ lua_pushnumber( L , _rect::getX2() ); return 1; }
 //! Get Y2
 int _lua_rect::getY2(lua_State* L){ lua_pushnumber( L , _rect::getY2() ); return 1; }
 //! Set Width
-int _lua_rect::setWidth(lua_State* L){ _rect::width = luaL_checkint( L , 1 ); return 0; }
+int _lua_rect::setWidth(lua_State* L){ _rect::width = check<int>( L , 1 ); return 0; }
 //! Set Height
-int _lua_rect::setHeight(lua_State* L){ _rect::height = luaL_checkint( L , 1 ); return 0; }
+int _lua_rect::setHeight(lua_State* L){ _rect::height = check<int>( L , 1 ); return 0; }
 //! Get Width
 int _lua_rect::getWidth(lua_State* L){ lua_pushnumber( L , _rect::width ); return 1; }
 //! Get Height
@@ -41,7 +43,7 @@ int _lua_rect::isValid(lua_State* L){ lua_pushboolean( L , _rect::isValid() ); r
 //! Contains (Coords)
 int _lua_rect::contains(lua_State* L){
 	if( lua_gettop(L) == 2 )
-		lua_pushboolean( L , _rect::contains( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ) );
+		lua_pushboolean( L , _rect::contains( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 	else{
 		_lua_rect* rc = Lunar<_lua_rect>::check( L , 1 );
 		if( !rc ) 
@@ -55,17 +57,17 @@ int _lua_rect::fromCoords(lua_State* L){
 	Lunar<_lua_rect>::push( L ,
 		new _lua_rect( 
 			_rect::fromCoords( 
-				luaL_checkint( L , 1 ),
-				luaL_checkint( L , 2 ),
-				luaL_checkint( L , 3 ),
-				luaL_checkint( L , 4 )
+				check<int>( L , 1 ),
+				check<int>( L , 2 ),
+				check<int>( L , 3 ),
+				check<int>( L , 4 )
 			)
 		) 
 	); 
 	return 1;
 }
 //! toRelative
-int _lua_rect::toRelative(lua_State* L){ _rect::toRelative( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
+int _lua_rect::toRelative(lua_State* L){ _rect::toRelative( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
 //! AND
 int _lua_rect::clipToIntersect(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; _rect::clipToIntersect( *rc ); return 0; }
 //! +
@@ -78,7 +80,7 @@ int _lua_rect::combine(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L
 int _lua_rect::intersectsWith(lua_State* L){ _lua_rect* rc = Lunar<_lua_rect>::check( L , 1 ); if( !rc ) return 0; lua_pushboolean( L , _rect::intersectsWith( *rc ) ); return 1; }
 
 //! Lua-_rect
-const char _lua_rect::className[] = "_rect";
+const char _lua_rect::className[] = "Rect";
 Lunar<_lua_rect>::FunctionType _lua_rect::methods[] = {
   LUA_CLASS_FUNC(_lua_rect, setX2),
   LUA_CLASS_FUNC(_lua_rect, setY2),

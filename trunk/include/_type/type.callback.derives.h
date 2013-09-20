@@ -2,220 +2,114 @@
 #ifndef _WIN_T_CALLBACK_DERIVES_
 #define _WIN_T_CALLBACK_DERIVES_
 
+#include <type_traits>
 #include "_type/type.callback.h"
 
 //! For the Lua-Part of the callbacks
-#include "_lua/lua.hpp"
-
-#include <functional>
+#include "_lua/lua.funcs.h"
 
 class unknownClass;
+template<typename T> class _staticCallback{ };
 
-extern void 			lua_callVoidFn( lua_State* L , int handler );
-extern int 				lua_callIntFn( lua_State* L , int handler , int i );
-extern _callbackReturn 	lua_callEventFn( lua_State* L , int handler , _event&& e );
-extern int 				lua_checkFunction( lua_State* L , int narg );
-extern void 			lua_popFunction( lua_State* L , int index );
-
-class _staticCallback : public _callback
+template<typename T,typename... Parameters>
+class _staticCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
-		union{
-			void 			(*voidFn)();
-			int 			(*intFn)( int );
-			_callbackReturn (*eventFn)( _event );
-		};
-		_callbackType		funcType;
+		T 			(*func)(Parameters...);
 		
 		// Internal
 		_callbackClassType getType() const { return _callbackClassType::static_func; }
 		
 		// Internal
-		_u8 equals( const _callback& param ) const
-		{
-			return ((_staticCallback&)param).voidFn == this->voidFn;
+		_s8 equals( const _callback<T(Parameters...)>& param ) const {
+			return ((_staticCallback<T(Parameters...)>&)param).func == this->func;
 		}
 		
 	public:
 		
-		void operator()() const ;
-		int operator()( int i ) const ;
-		noinline _callbackReturn operator()( _event&& e ) const
-		{
-			if( this->eventFn )
-			{				
-				switch( this->funcType )
-				{
-					case _callbackType::eventFunc:
-						return this->eventFn( (_event&&)e );
-						break;
-					// Allow calling an event Handler which is actually an int function
-					case _callbackType::intFunc:
-						return (_callbackReturn) this->intFn( e.getHeldTime() );
-						break;
-					// Allow calling an event Handler which is actually a void function
-					default:
-						this->voidFn();
-						return handled;
-				}
-			}
-			
-			return not_handled;
+		T operator()( Parameters... args ) const {
+			if( this->func )
+				return this->func( forward<Parameters>(args)... );
+			return T();
 		}
 		
-		_staticCallback( void (*voidFn)() ) : voidFn( voidFn ) , funcType( _callbackType::voidFunc ) {}
-		
-		_staticCallback( int (*intFn)( int ) ) : intFn( intFn ) , funcType( _callbackType::intFunc ) {}
-		
-		_staticCallback( _callbackReturn (*eventFn)( _event ) ) : eventFn( eventFn ) , funcType( _callbackType::eventFunc ) {}
+		//! Ctor
+		_staticCallback( T (*func)(Parameters...) ) : func( func ) {}
 };
 
-class _fastEventCallback : public _callback
+template<typename T> class _classCallback{ };
+
+template<typename T, typename... Parameters>
+class _classCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
-		_callbackReturn (*fn)( _event&& );
+		unknownClass* 	instance;
 		
-		// Internal
-		_callbackClassType getType() const { return _callbackClassType::fast_event_func; }
-		
-		// Internal
-		_u8 equals( const _callback& param ) const
-		{
-			return ((_fastEventCallback&)param).fn == this->fn;
-		}
-		
-	public:
-		
-		noinline _callbackReturn operator()( _event&& e ) const	{
-			if( this->fn )
-				return this->fn( (_event&&)e );
-			return not_handled;
-		}
-		void operator()() const {}
-		int operator()( int ) const { return 0; }
-		
-		_fastEventCallback( _callbackReturn (*fn)( _event&& ) ) : fn( fn ) {}
-};
-
-
-class _classCallback : public _callback
-{
-	private:
-		
-		unknownClass* instance;
-		
-		union{
-			void 			(unknownClass::*voidFn)();
-			int 			(unknownClass::*intFn)( int );
-			_callbackReturn (unknownClass::*eventFn)( _event );
-		};
-		_callbackType		funcType;
+		T				(unknownClass::*func)(Parameters...);
 		
 		// Internal
 		_callbackClassType getType() const { return _callbackClassType::class_func; }
 		
 		// Internal
-		_u8 equals( const _callback& param ) const 
-		{
-			return ((_classCallback&)param).voidFn == this->voidFn;
+		_s8 equals( const _callback<T(Parameters...)>& param ) const {
+			return ((_classCallback<T(Parameters...)>&)param).func == this->func;
 		}
 		
 	public:
 		
-		void operator()() const ;
-		int operator()( int i ) const ;
-		noinline _callbackReturn operator()( _event&& e ) const
-		{
-			if( this->eventFn && this->instance )
-			{
-				switch( this->funcType )
-				{
-					case _callbackType::eventFunc:
-						return (this->instance->*eventFn)( (_event&&)e );
-						break;
-					// Allow calling an event Handler which is actually an int function
-					case _callbackType::intFunc:
-						return (_callbackReturn) (this->instance->*intFn)( e.getHeldTime() );
-						break;
-					// Allow calling an event Handler which is actually a void function
-					default:
-						(this->instance->*voidFn)();
-						return handled;
-						break;
-				}
-			}
-			
-			return not_handled;
+		T operator()( Parameters... args ) const {
+			if( this->func && this->instance )
+				return (this->instance->*func)( forward<Parameters>(args)... );
+			return T();
 		}
 		
-		template<typename T>
-		_classCallback( T* ptr , void (T::*voidFn)() ) :
+		//! Ctor
+		template<class C>
+		_classCallback( C* ptr , T (C::*func)(Parameters...) ) :
 			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, voidFn( reinterpret_cast<void (unknownClass::*)()>(voidFn) )
-			, funcType( _callbackType::voidFunc )
-		{}
-		
-		template<typename T>
-		_classCallback( T* ptr , int (T::*intFn)( int ) ) :
-			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, intFn( reinterpret_cast<int (unknownClass::*)( int )>(intFn) )
-			, funcType( _callbackType::intFunc )
-		{}
-		
-		template<typename T>
-		_classCallback( T* ptr , _callbackReturn (T::*eventFn)( _event ) ) :
-			instance( reinterpret_cast<unknownClass*>(ptr) )
-			, eventFn( reinterpret_cast<_callbackReturn (unknownClass::*)( _event )>(eventFn) )
-			, funcType( _callbackType::eventFunc )
+			, func( reinterpret_cast<T (unknownClass::*)(Parameters...)>(func) )
 		{}
 };
 
-class _inlineCallback : public _callback
+template<typename T> class _inlineCallback{ };
+
+template<typename T, typename... Parameters>
+class _inlineCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
-		function<void()>					voidFn;
-		function<int(int)>					intFn;
-		function<_callbackReturn(_event)>	eventFn;
+		function<T(Parameters...)>					func;
 		
 		// Internal
 		_callbackClassType getType() const { return _callbackClassType::inline_func; }
 		
 		// Internal
-		_u8 equals( const _callback& param ) const
-		{
+		_s8 equals( const _callback<T(Parameters...)>& param ) const {
 			return true;
 		}
 		
 	public:
 		
-		void operator()() const ;
-		int operator()( int i ) const ;
-		_callbackReturn operator()( _event&& e ) const ;
+		T operator()(Parameters... args) const {
+			return func( forward<Parameters>(args)... );
+		}
 		
-		_inlineCallback( function<void()> voidFn ) :
-			voidFn( voidFn )
-			, intFn( nullptr )
-			, eventFn( nullptr )
-		{}
-		
-		_inlineCallback( function<int(int)> intFn ) :
-			voidFn( nullptr )
-			, intFn( intFn )
-			, eventFn( nullptr )
-		{}
-		
-		_inlineCallback( function<_callbackReturn(_event)> eventFn ) :
-			voidFn( nullptr )
-			, intFn( nullptr )
-			, eventFn( eventFn )
+		_inlineCallback( function<T(Parameters...)> func ) :
+			func( func )
 		{}
 };
 
+namespace luaCallbackFunctions{
+	
+	void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
+}
 
-class _luaCallback : public _callback
+template<typename T> class _luaCallback{ };
+
+template<typename T,typename... Parameters>
+class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
@@ -226,13 +120,32 @@ class _luaCallback : public _callback
 		_callbackClassType getType() const { return _callbackClassType::lua_func; }
 		
 		// Internal
-		_u8 equals( const _callback& param ) const ;
+		_s8 equals( const _callback<T(Parameters...)>& c ) const 
+		{
+			const _luaCallback<T(Parameters...)>& cb = (_luaCallback&) c;
+			
+			if( cb.state != this->state )								return 0;
+			else if( cb.index == LUA_NOREF || this->index == LUA_NOREF )return -1;
+			else if( cb.index == this->index )							return 1;
+			
+			// Push both indices onto stack and compare!
+			lua_rawgeti( this->state , LUA_REGISTRYINDEX, index );
+			lua_rawgeti( this->state , LUA_REGISTRYINDEX, cb.index );
+			
+			if ( lua_rawequal(this->state, -1, -2) ){ // Are they equal? 
+				lua_pop(this->state, 2); // Remove both values
+				return 1;
+			}
+			
+			lua_pop(this->state, 2); // Remove both values
+			return -1;
+		}
 		
 		friend class _progLua;
 		
 	public:
 		
-		// Move operator needed!
+		//! Move ctor needed!
 		_luaCallback( _luaCallback&& cb ) :
 			state( cb.state ),
 			index( cb.index )
@@ -240,31 +153,63 @@ class _luaCallback : public _callback
 			// invalidate the passed _luaCallback
 			cb.state = 0;
 		}
-			
-		void operator()() const {
-			lua_callVoidFn( state , index );
-		}
-		int operator()( int i ) const {
-			return lua_callIntFn( state , index , i );
-		}
-		_callbackReturn operator()( _event&& e ) const {
-			return lua_callEventFn( state , index , (_event&&)e );
-		}
 		
+		//! Ctor
 		_luaCallback( lua_State* state , int narg ) : 
 			state( state )
-			, index( lua_checkFunction( state , narg ) )
+			, index( _luafunc::checkfunction( state , narg ) )
 		{}
 		
+		//! Ctor
 		_luaCallback( lua_State* state ) : 
 			state( state )
 			, index( LUA_NOREF )
 		{}
 		
-		~_luaCallback(){
-			lua_popFunction( state , index );
+		//! Dtor
+		~_luaCallback()
+		{
+			if( state )
+				luaL_unref( state , LUA_REGISTRYINDEX , index ); // Unreference the handler
 		}
-
+		
+		T operator()(Parameters... params) const
+		{
+			//! No state registered?
+			if( !state || index == LUA_NOREF )
+				return T();
+			
+			//! Put the Lua-Handler-Function on top of the Stack
+			lua_rawgeti( state , LUA_REGISTRYINDEX, index );
+			
+			//! Call it with params
+			_luafunc::push( state , forward<Parameters>(params)... );
+			
+			if( lua_pcall( state , sizeof...(Parameters) , 1 , 0 ) ){
+				luaCallbackFunctions::debug( "Callback-Lua-Err: %s" , lua_tostring( state , -1 ) );
+			}
+			
+			if( std::is_same<T,void>::value && lua_isnil( state , -1 ) )
+				return T();
+			//! Forward the Value returned by the Handler
+			return _luafunc::check<T>( state , -1 );
+		}
 };
+
+//
+// Named Ctors
+//
+template<typename T,typename... Parameters>
+constexpr _staticCallback<T(Parameters...)> make_callback( T (*func)(Parameters...) ){
+	return _staticCallback<T(Parameters...)>( func );
+}
+template<typename T, class C, typename... Parameters>
+constexpr _classCallback<T(Parameters...)> make_callback( C* obj , T (C::*func)(Parameters...) ){
+	return _classCallback<T(Parameters...)>( obj , func );
+}
+template<typename T>
+constexpr _inlineCallback<T> make_inline_callback( function<T> func ){
+	return _inlineCallback<T>( func );
+}
 
 #endif

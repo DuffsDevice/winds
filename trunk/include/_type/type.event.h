@@ -2,9 +2,11 @@
 #ifndef _WIN_EVENT_
 #define _WIN_EVENT_
 
-#include "type.h"
-#include "type.rect.h"
-#include "type.flexptr.h"
+#include "_type/type.h"
+#include "_type/type.rect.h"
+#include "_type/type.flexptr.h"
+#include "_type/type.dependency.h"
+#include "_type/type.style.h"
 
 /**
  * Specifies how the event was handled
@@ -35,24 +37,22 @@ enum _callbackReturn : _s8
 enum _eventType : _u16
 {
 	_none_,
-	_internal_,
-	refresh,
-	mouseClick,
-	mouseDoubleClick,
-	mouseDown,
-	mouseUp,
-	mouseRepeat, // Fired if the stylus is kept held down
-	keyDown,
-	keyUp,
-	keyClick,
-	keyRepeat, // Fired if a key is kept held down
-	dragStart,
-	dragStop,
-	dragging,
+	onDraw,
+	onMouseClick,
+	onMouseDblClick,
+	onMouseDown,
+	onMouseUp,
+	onMouseRepeat, // Fired if the stylus is kept held down
+	onKeyDown,
+	onKeyUp,
+	onKeyClick,
+	onKeyRepeat, // Fired if a key is kept held down
+	onDragStart,
+	onDragStop,
+	onDragging,
 	
-	onResize,
-	onAction,
-	onChange,
+	onUpdate,
+	onEdit,
 	onBlur,
 	onFocus,
 	onOpen,
@@ -64,18 +64,54 @@ enum _eventType : _u16
 	onMinimize,
 	onRestore,
 	onScroll,
-	onStyleSet,
-	onDelete
+	
+	onResize,
+	onMove,
+	onRestyle,
+	onVisibility,
+	onSet,
+	
+	onParentResize,
+	onParentMove,
+	onParentRestyle,
+	onParentVisibility,
+	onParentSet,
+	
+	onChildResize,
+	onChildMove,
+	onChildRestyle,
+	onChildVisibility,
+	onChildSet,
+	
+	onPreResize,
+	onPreMove,
+	onPreRestyle,
+	onPreVisibility,
+	onPreSet,
+	
+	onPostResize,
+	onPostMove,
+	onPostRestyle,
+	onPostVisibility,
+	onPostSet,
 };
+
+//! Converts a dependency EventType to a more specific type
+unused static inline constexpr _eventType depType2parentType( _eventType et ){ return _eventType( et + ( onParentResize - onResize ) ); }
+unused static inline constexpr _eventType depType2childType( _eventType et ){ return _eventType( et + ( onChildResize - onResize ) ); }
+unused static inline constexpr _eventType depType2preType( _eventType et ){ return _eventType( et + ( onPreResize - onResize ) ); }
+unused static inline constexpr _eventType depType2postType( _eventType et ){ return _eventType( et + ( onPostResize - onResize ) ); }
+unused static inline constexpr bool isDepType( _eventType et ){ return et >= onParentResize && et <= onPostSet; }
+
 
 //! Checks if an eventType is a user-Event-type
 unused static inline bool constexpr isUserET( _eventType et ){
-	return _u16(et) >> 8;
+	return et >> 8;
 }
 
 //! Converts an internal event-type to an user-eventType
 unused static inline constexpr _eventType eventType2userET( _eventType et ){
-	return isUserET( et ) ? et : _eventType( _u16(et) << 8 );
+	return isUserET( et ) ? et :  _eventType( et << 8 );
 }
 
 //! Converts an user-eventType to an internal event-type
@@ -88,13 +124,24 @@ unused static inline constexpr _eventType userET2eventType( _eventType et ){
 //typedef string _eventType;
 
 // Predefines
+class _gadget;
 extern _map<_callbackReturn,string> callbackReturn2string;
 extern _map<string,_callbackReturn> string2callbackReturn;
-
 extern _map<_eventType,string> eventType2string;
 extern _map<string,_eventType> string2eventType;
 
-class _gadget;
+struct _dependencyParam
+{
+	_gadget*	gadget;				//! Gadget-parameter
+	_u8			flag;				//! Boolean-parameter
+	
+	_dependencyParam( _u8 val = 0 ) : 
+		gadget( nullptr )
+		, flag( val )
+	{}
+	
+	_dependencyParam& setSource( _gadget* g ){ gadget = g; return *this; }
+};
 
 class _event
 {
@@ -108,17 +155,26 @@ class _event
 		/**
 		 * Parameters
 		 */
-		mutable _gadget*	gadget;			//! Gadget to receive the Event
-		_coord 				posX;			//! X-Position of the Mouse when the Event was triggered
-		_coord 				posY;			//! Y-Position of the Mouse when the Event was triggered
-		_coord 				effectiveX;		//! X-Position of the Stylus on the Screen when the Event was triggered
-		_coord 				effectiveY;		//! Y-Position of the Stylus on the Screen when the Event was triggered
-		_key 				currentKeyCodes;//! Keycode-State of that Moment the Event was triggered
-		flex_ptr<_area>		damagedRects;	//! this Attribute will specify the Area, that is invalid/damaged and has to be repainted
-		_coord 				deltaX;			//! Delta-X, used at dragging-events
-		_coord 				deltaY;			//! Delta-Y, used at dragging-events
-		_key 				keyCode;		//! KeyCode of the Button that triggered the Event
-		_u32				heldTime; 		//! Time the Button was Pressed (only for: keyUp, keyClick, mouseUp, mouseClick )
+		mutable _gadget*		gadget;				//! Gadget to receive the Event
+		_int 					posX;				//! X-Position of the Mouse when the Event was triggered
+		_int 					posY;				//! Y-Position of the Mouse when the Event was triggered
+		_int 					effectiveX;			//! X-Position of the Stylus on the Screen when the Event was triggered
+		_int 					effectiveY;			//! Y-Position of the Stylus on the Screen when the Event was triggered
+		_key 					currentKeyCodes;	//! Keycode-State of that Moment the Event was triggered
+		flex_ptr<_area>			damagedRects;		//! this Attribute will specify the Area, that is invalid/damaged and has to be repainted
+		_int 					deltaX;				//! Delta-X, used at dragging-events
+		_int 					deltaY;				//! Delta-Y, used at dragging-events
+		union{
+			//! Only used at: keyUp, keyClick
+			struct{
+				_key			keyCode;			//! KeyCode of the Button that triggered the Event
+				_u32			heldTime;			//! Duration the Button/Stylus was pressed
+			};
+			
+			//! Only used at onDependencyChange
+			_dependencyParam	depParam;
+		};
+		
 	
 	public:
 		
@@ -138,10 +194,18 @@ class _event
 		{ }
 		
 		//! Shortcut to generate specific Events:
-		static _event refreshEvent( const _area& damagedRects ){ return refreshEvent( _area( damagedRects ) ); }
-		static _event refreshEvent( _area&& damagedRects ){
-			_event evt{ refresh };
+		static _event drawEvent( const _area& damagedRects ){ return drawEvent( _area( damagedRects ) ); }
+		static _event drawEvent( _area&& damagedRects ){
+			_event evt;
+			evt.type = onDraw;
 			evt.damagedRects = move(damagedRects);
+			return evt;
+		}
+		
+		static _event dependencyEvent( _eventType type , _dependencyParam param ){
+			_event evt;
+			evt.type = type;
+			evt.depParam = param;
 			return evt;
 		}
 		
@@ -174,38 +238,47 @@ class _event
 			this->type = type;
 			return *this;
 		}
-		_event& setDestination( _gadget* newVal ){ this->gadget = newVal; return *this; }//!............................<= Set the Destination
-		_event& setPosX( _coord val ){ this->posX = val; return *this; }//!.............................................<= Set Triggering Point X
-		_event& setPosY( _coord val ){ this->posY = val; return *this; }//!.............................................<= Set Triggering Point Y
-		_event& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!..............................<= Set Triggering Point X which results in the position on the screen that the user effectively touched
-		_event& setEffectivePosY( _coord val ){ this->effectiveY = val; return *this; }//!..............................<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
-		_event& setDeltaX( _coord val ){ if( this->type != refresh ) this->deltaX = val; return *this; }//!.............<= Set Triggering Point X
-		_event& setDeltaY( _coord val ){ if( this->type != refresh ) this->deltaY = val; return *this; }//!.............<= Set Triggering Point Y
-		_event& setKeyCode( _key code ){ if( this->type != refresh ) this->keyCode = code; return *this; }//!...........<= Set triggering KeyCode
-		_event& setHeldTime( _u16 heldTime ){ if( this->type != refresh ) this->heldTime = heldTime; return *this; }//!.<= Set Held Time of the key that triggered the Event
-		_event& setCurrentKeys( _key code ){ this->currentKeyCodes = code; return *this; }//!...........................<= Set KeyCode State of that Moment the Event was triggered
-		_event& setDamagedRects( const _area& rects ){ return this->setDamagedRects( _area( rects ) ); }//!.............<= Set Rects to be repainted
-		_event& setDamagedRects( _area&& rects ){ this->damagedRects = move(rects); return *this; }//!..................<= Set Rects to be repainted
+		_event& setDestination( _gadget* newVal ){ this->gadget = newVal; return *this; }//!...........<= Set the Destination
+		_event& setPosX( _int val ){ this->posX = val; return *this; }//!..............................<= Set Triggering Point X
+		_event& setPosY( _int val ){ this->posY = val; return *this; }//!..............................<= Set Triggering Point Y
+		_event& setEffectivePosX( _int val ){ this->effectiveX = val; return *this; }//!...............<= Set Triggering Point X which results in the position on the screen that the user effectively touched
+		_event& setEffectivePosY( _int val ){ this->effectiveY = val; return *this; }//!...............<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
+		_event& setDeltaX( _int val ){ this->deltaX = val; return *this; }//!..........................<= Set Delta Point X
+		_event& setDeltaY( _int val ){ this->deltaY = val; return *this; }//!..........................<= Set Delta Point Y
+		_event& setKeyCode( _key code ){ this->keyCode = code; return *this; }//!......................<= Set triggering KeyCode
+		_event& setHeldTime( _u16 heldTime ){ this->heldTime = heldTime; return *this; }//!............<= Set Held Time of the key that triggered the Event
+		_event& setCurrentKeys( _key code ){ this->currentKeyCodes = code; return *this; }//!........................<= Set KeyCode State of that Moment the Event was triggered
+		_event& setDamagedRects( const _area& rects ){ this->damagedRects = rects; return *this; }//!..<= Set Rects to be repainted
+		_event& setDamagedRects( _area&& rects ){ this->damagedRects = move(rects); return *this; }//!.<= Set Rects to be repainted
+		_event& setFlagParam( bool flag ){ this->depParam.flag = flag; return *this; }//!..............<= Set the dimensions-dependency that changed
+		_event& setGadgetParam( _gadget* gadget ){ this->depParam.gadget = gadget; return *this; }//!..<= Set the dimensions-dependency that changed
 		
 		//! Getters
-		_gadget* getDestination() const { return this->gadget; }//!............<= Get Destination Gadget
-		_coord getPosX() const { return this->posX; }//!.......................<= Get Triggering Point X
-		_coord getPosY() const { return this->posY; }//!.......................<= Get Triggering Point Y
-		_coord getEffectivePosX() const { return this->effectiveX; }//!........<= Get effective Triggering Point X
-		_coord getEffectivePosY() const { return this->effectiveY; }//!........<= Get effective Triggering Point Y
-		_coord getDeltaX() const { return this->deltaX; }//!...................<= Get Delta-X
-		_coord getDeltaY() const { return this->deltaY; }//!...................<= Get Delta-Y
-		_key getKeyCode() const { return this->keyCode; }//!...................<= Get triggering KeyCode
-		_u16 getHeldTime() const { return this->heldTime; }//!.................<= Get Held Time of the key that triggered the Event
-		_key getCurrentKeys() const { return this->currentKeyCodes; }//!.......<= Get KeyCode State of that Moment the Event was triggered
-		_area* getDamagedRectsSource() const { return this->damagedRects; }//!.<= Get Rects to be repainted (the pointer to the source)
-		_area& getDamagedRects(){ return *this->damagedRects; }//!.............<= Get Rects to be repainted (a modifyable copy of them)
-		bool hasClippingRects() const {//!.....................................<= Check if the (refresh-) Event crops the area to be painted on
+		_gadget* getDestination() const { return this->gadget; }//!..................<= Get Destination Gadget
+		_int getPosX() const { return this->posX; }//!...............................<= Get Triggering Point X
+		_int getPosY() const { return this->posY; }//!...............................<= Get Triggering Point Y
+		_int getEffectivePosX() const { return this->effectiveX; }//!................<= Get effective Triggering Point X
+		_int getEffectivePosY() const { return this->effectiveY; }//!................<= Get effective Triggering Point Y
+		_int getDeltaX() const { return this->deltaX; }//!...........................<= Get Delta-X
+		_int getDeltaY() const { return this->deltaY; }//!...........................<= Get Delta-Y
+		_key getKeyCode() const { return this->keyCode; }//!.........................<= Get triggering KeyCode
+		_u16 getHeldTime() const { return this->heldTime; }//!.......................<= Get Held Time of the key that triggered the Event
+		_key getCurrentKeys() const { return this->currentKeyCodes; }//!.............<= Get KeyCode State of that Moment the Event was triggered
+		_area* getDamagedRectsSource(){ return this->damagedRects; }//!..............<= Get Rects to be repainted (the pointer to the source)
+		const _area* getDamagedRectsSource() const { return this->damagedRects; }//!.<= Get Rects to be repainted (the pointer to the source)
+		_area& getDamagedRects(){ return *this->damagedRects; }//!...................<= Get Rects to be repainted (a modifyable copy of them)
+		const _area& getDamagedRects() const { return *this->damagedRects; }//!......<= Get Rects to be repainted (a modifyable copy of them)
+		bool hasClippingRects() const {//!...........................................<= Check if the (onDraw-) Event crops the area to be painted on
 			return this->damagedRects && !this->damagedRects->empty();
 		}
+		bool getFlagParam() const { return this->depParam.flag; }//!.................<= Get the flag param that is brought along events like onParentVisibility events
+		_gadget* getGadgetParam() const { return this->depParam.gadget; }//!.........<= Get the _gadget param that is brought along events like onChildSet events
 		
 		//! Merge this event with another
 		bool mergeWith( _event& event );
+		
+		bool operator==( _eventType type ) const { return this->type == type; }
+		bool operator!=( _eventType type ) const { return this->type != type; }
 };
 
 #endif

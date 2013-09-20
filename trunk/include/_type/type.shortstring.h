@@ -5,7 +5,6 @@
 
 namespace std
 {
-
 	template<int maxBytes,typename dataType = char>
 	class shortString
 	{
@@ -128,5 +127,8 @@ namespace std
 	using sstring = shortString<20,_char>;
 	using ssstring = shortString<6,_char>;
 }
+
+using std::sstring;
+using std::ssstring;
 
 #endif

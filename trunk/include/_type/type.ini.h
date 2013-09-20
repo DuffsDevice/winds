@@ -6,7 +6,7 @@
 
 #include "_type/type.h"
 
-typedef map<string,map<string,string>> _iniStructure;
+typedef _map<string,_map<string,string>> _iniStructure;
 
 class _ini
 {

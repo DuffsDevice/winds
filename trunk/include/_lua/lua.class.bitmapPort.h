@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUABITMAPPORT_
-#define _WIN_LUABITMAPPORT_
+#ifndef _WIN_L_BITMAPPORT_
+#define _WIN_L_BITMAPPORT_
 
 #include "_lua/lunar.h"
 #include "_type/type.bitmapPort.h"

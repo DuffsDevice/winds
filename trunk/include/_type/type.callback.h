@@ -14,36 +14,24 @@ enum class _callbackClassType : _u8 {
 	lua_func
 };
 
-enum class _callbackType : _u8 {
-	voidFunc,
-	intFunc,
-	eventFunc
+template<typename T>
+class _callback{
 };
 
-struct _callbackData
-{
-	_tempTime	startTime;
-	_tempTime	duration;
-	bool 		repeating;
-	bool		preDelete;
-};
-
-class _callback
+template<typename T,typename... Parameters>
+class _callback<T(Parameters...)>
 {
 	protected:
 		
 		virtual _callbackClassType getType() const = 0;
 		
-		virtual _u8 equals( const _callback& param ) const = 0; // 0 = false ; 1 = true ; -1 = semi-true
+		virtual _s8 equals( const _callback& param ) const = 0; // 0 = false ; 1 = true ; -1 = semi-true
 		
 	public:
 		
-		virtual void operator()() const = 0;
-		virtual int operator()( int ) const = 0;
-		virtual _callbackReturn operator()( _event&& ) const = 0;
-		_callbackReturn operator()( const _event& ev ) const { return this->operator()( _event( ev ) ); }
+		virtual T operator()(Parameters...) const = 0;
 		
-		_u8 operator==( const _callback& param ) const 
+		_s8 operator==( const _callback<T(Parameters...)>& param ) const 
 		{
 			if( param.getType() != this->getType() )
 				return 0;
@@ -51,9 +39,10 @@ class _callback
 		}
 		
 		virtual ~_callback(){}
-
 };
 
-#include "_type/type.callback.derives.h"
+typedef _callback<void()> _voidCallback;
+typedef _callback<void(int)> _intSetCallback;
+typedef _callback<int(void)> _intGetCallback;
 
 #endif

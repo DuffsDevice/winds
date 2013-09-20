@@ -1,7 +1,8 @@
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.font.h"
-
+#include "_lua/lua.funcs.h"
+using namespace _luafunc;
 
 /*##################################
 ##           Lua-Bitmap           ##
@@ -20,7 +21,7 @@ _lua_bitmap::_lua_bitmap( const _bitmap* b ) :
 
 _lua_bitmap::_lua_bitmap( _bitmap&& b ) :
 	wasAllocated( true )
-	, bm( new _bitmap( b ) ) // Copy bitmap
+	, bm( new _bitmap( move(b) ) ) // Copy bitmap
 { }
 
 // Lua-Ctor
@@ -28,7 +29,7 @@ _lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
 	if( !lua_gettop(L) )
 		this->bm = new _bitmap();
 	else
-		this->bm = new _bitmap( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) );
+		this->bm = new _bitmap( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<_pixel>( L , 3 , NO_COLOR ) );
 }
 
 //! Dtor
@@ -37,9 +38,9 @@ _lua_bitmap::~_lua_bitmap(){ if( this->bm != nullptr && this->wasAllocated ) del
 //! opertor[pos] and operator(x,y)
 int _lua_bitmap::get( lua_State* L ){ 
 	if( lua_gettop(L) == 1 )
-		lua_pushnumber( L , this->bm->operator[]( luaL_checkint( L , 1 ) ) );
+		lua_pushnumber( L , this->bm->operator[]( check<int>( L , 1 ) ) );
 	else
-		lua_pushnumber( L , this->bm->operator()( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ) );
+		lua_pushnumber( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 	return 1;
 }
 
@@ -50,59 +51,59 @@ int _lua_bitmap::getWidth(lua_State* L ){ lua_pushnumber( L , this->bm->getWidth
 int _lua_bitmap::getHeight(lua_State* L ){ lua_pushnumber( L , this->bm->getHeight() ); return 1; }
 
 //! setWidth
-int _lua_bitmap::setWidth( lua_State* L ){ this->bm->setWidth( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_bitmap::setWidth( lua_State* L ){ this->bm->setWidth( check<int>( L , 1 ) ); return 0; }
 
 //! setHeight
-int _lua_bitmap::setHeight( lua_State* L ){ this->bm->setHeight( luaL_checkint( L , 1 ) ); return 0; }
+int _lua_bitmap::setHeight( lua_State* L ){ this->bm->setHeight( check<int>( L , 1 ) ); return 0; }
 
 //! resize
-int _lua_bitmap::resize( lua_State* L ){ this->bm->resize( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ); return 0; }
+int _lua_bitmap::resize( lua_State* L ){ this->bm->resize( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
 
 //! getPixel
-int _lua_bitmap::getPixel( lua_State* L ){ lua_pushnumber( L , this->bm->getPixel( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) ) ); return 1; }
+int _lua_bitmap::getPixel( lua_State* L ){ lua_pushnumber( L , this->bm->getPixel( check<int>( L , 1 ) , check<int>( L , 2 ) ) ); return 1; }
 
 //! drawPixel
-int _lua_bitmap::drawPixel( lua_State* L ){ this->bm->drawPixel( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkcolor( L , 3 ) ); return 0; }
+int _lua_bitmap::drawPixel( lua_State* L ){ this->bm->drawPixel( check<int>( L , 1 ) , check<int>( L , 2 ) , check<_pixel>( L , 3 ) ); return 0; }
 
 //! reset
-int _lua_bitmap::reset( lua_State* L ){ this->bm->reset( luaL_checkcolor( L , 1 ) ); return 0; }
+int _lua_bitmap::reset( lua_State* L ){ this->bm->reset( check<_pixel>( L , 1 ) ); return 0; }
 
 //! fill
-int _lua_bitmap::fill( lua_State* L ){ this->bm->fill( luaL_checkcolor( L , 1 ) ); return 0; }
+int _lua_bitmap::fill( lua_State* L ){ this->bm->fill( check<_pixel>( L , 1 ) ); return 0; }
 
 //! replaceColor
-int _lua_bitmap::replaceColor( lua_State* L ){ this->bm->replaceColor( luaL_checkcolor( L , 1 ) , luaL_checkcolor( L , 2 ) ); return 0; }
+int _lua_bitmap::replaceColor( lua_State* L ){ this->bm->replaceColor( check<_pixel>( L , 1 ) , check<_pixel>( L , 2 ) ); return 0; }
 
 //! drawLine
-int _lua_bitmap::drawLine( lua_State* L ){ this->bm->drawLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkcolor( L , 5 ) ); return 0; }
+int _lua_bitmap::drawLine( lua_State* L ){ this->bm->drawLine( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
 
 //! drawHorizontalLine
-int _lua_bitmap::drawHorizontalLine( lua_State* L ){ this->bm->drawHorizontalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawHorizontalLine( lua_State* L ){ this->bm->drawHorizontalLine( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawVerticalLine
-int _lua_bitmap::drawVerticalLine( lua_State* L ){ this->bm->drawVerticalLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawVerticalLine( lua_State* L ){ this->bm->drawVerticalLine( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawHorizontalDottedLine
-int _lua_bitmap::drawHorizontalDottedLine( lua_State* L ){ this->bm->drawHorizontalDottedLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawHorizontalDottedLine( lua_State* L ){ this->bm->drawHorizontalDottedLine( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawVerticalDottedLine
-int _lua_bitmap::drawVerticalDottedLine( lua_State* L ){ this->bm->drawVerticalDottedLine( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawVerticalDottedLine( lua_State* L ){ this->bm->drawVerticalDottedLine( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawRect
-int _lua_bitmap::drawRect( lua_State* L ){ this->bm->drawRect( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkcolor( L , 5 )); return 0; }
+int _lua_bitmap::drawRect( lua_State* L ){ this->bm->drawRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 )); return 0; }
 
 //! drawFilledRect
-int _lua_bitmap::drawFilledRect( lua_State* L ){ this->bm->drawFilledRect( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkcolor( L , 5 )); return 0; }
+int _lua_bitmap::drawFilledRect( lua_State* L ){ this->bm->drawFilledRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 )); return 0; }
 
 //! drawVerticalGradient
 int _lua_bitmap::drawVerticalGradient( lua_State* L ){ 
 	this->bm->drawVerticalGradient( 
-		luaL_checkint( L , 1 )
-		, luaL_checkint( L , 2 )
-		, luaL_checkint( L , 3 )
-		, luaL_checkint( L , 4 )
-		, luaL_checkcolor( L , 5 )
-		, luaL_checkcolor( L , 6 )
+		check<int>( L , 1 )
+		, check<int>( L , 2 )
+		, check<int>( L , 3 )
+		, check<int>( L , 4 )
+		, check<_pixel>( L , 5 )
+		, check<_pixel>( L , 6 )
 	); 
 	return 0;
 }
@@ -110,27 +111,27 @@ int _lua_bitmap::drawVerticalGradient( lua_State* L ){
 //! drawHorizontalGradient
 int _lua_bitmap::drawHorizontalGradient( lua_State* L ){ 
 	this->bm->drawHorizontalGradient( 
-		luaL_checkint( L , 1 )
-		, luaL_checkint( L , 2 )
-		, luaL_checkint( L , 3 )
-		, luaL_checkint( L , 4 )
-		, luaL_checkcolor( L , 5 )
-		, luaL_checkcolor( L , 6 )
+		check<int>( L , 1 )
+		, check<int>( L , 2 )
+		, check<int>( L , 3 )
+		, check<int>( L , 4 )
+		, check<_pixel>( L , 5 )
+		, check<_pixel>( L , 6 )
 	); 
 	return 0;
 }
 
 //! drawCircle
-int _lua_bitmap::drawCircle( lua_State* L ){ this->bm->drawCircle( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawCircle( lua_State* L ){ this->bm->drawCircle( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawFilledCircle
-int _lua_bitmap::drawFilledCircle( lua_State* L ){ this->bm->drawFilledCircle( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkcolor( L , 4 ) ); return 0; }
+int _lua_bitmap::drawFilledCircle( lua_State* L ){ this->bm->drawFilledCircle( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<_pixel>( L , 4 ) ); return 0; }
 
 //! drawEllipse
-int _lua_bitmap::drawEllipse( lua_State* L ){ this->bm->drawEllipse( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkcolor( L , 5 ) ); return 0; }
+int _lua_bitmap::drawEllipse( lua_State* L ){ this->bm->drawEllipse( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
 
 //! drawFilledEllipse
-int _lua_bitmap::drawFilledEllipse( lua_State* L ){ this->bm->drawFilledEllipse( luaL_checkint( L , 1 ) , luaL_checkint( L , 2 ) , luaL_checkint( L , 3 ) , luaL_checkint( L , 4 ) , luaL_checkcolor( L , 5 ) ); return 0; }
+int _lua_bitmap::drawFilledEllipse( lua_State* L ){ this->bm->drawFilledEllipse( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
 
 //! drawChar
 int _lua_bitmap::drawChar( lua_State* L ){ 
@@ -140,11 +141,11 @@ int _lua_bitmap::drawChar( lua_State* L ){
 	lua_pushnumber( 
 		L
 		,this->bm->drawChar( 
-			luaL_checkint( L , 1 ) ,
-			luaL_checkint( L , 2 ) ,
+			check<int>( L , 1 ) ,
+			check<int>( L , 2 ) ,
 			f->font ,
-			luaL_checkstring( L , 4 )[0] ,
-			luaL_checkcolor( L , 5 ) 
+			check<string>( L , 4 )[0] ,
+			check<_pixel>( L , 5 ) 
 		)
 	);
 	return 1;
@@ -156,11 +157,11 @@ int _lua_bitmap::drawString( lua_State* L ){
 	if( !f || !f->font )
 		return 0;
 	this->bm->drawString( 
-		luaL_checkint( L , 1 ) ,
-		luaL_checkint( L , 2 ) ,
+		check<int>( L , 1 ) ,
+		check<int>( L , 2 ) ,
 		f->font ,
-		luaL_checkstring( L , 4 ) ,
-		luaL_checkcolor( L , 5 ) 
+		check<string>( L , 4 ) ,
+		check<_pixel>( L , 5 ) 
 	);
 	return 0;
 }
@@ -170,7 +171,7 @@ int _lua_bitmap::copy( lua_State* L ){
 	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
 	if( !b )
 		return 0;
-	this->bm->copy( luaL_checkint( L , 1 ) ,	luaL_checkint( L , 2 ) ,	*b->bm ); return 0; 
+	this->bm->copy( check<int>( L , 1 ) ,	check<int>( L , 2 ) ,	*b->bm ); return 0; 
 }
 
 //! copyTransparent
@@ -179,8 +180,8 @@ int _lua_bitmap::copyTransparent( lua_State* L ){
 	if( !b )
 		return 0;
 	this->bm->copyTransparent( 
-		luaL_checkint( L , 1 ) ,
-		luaL_checkint( L , 2 ) ,
+		check<int>( L , 1 ) ,
+		check<int>( L , 2 ) ,
 		*b->bm
 	); return 0; 
 }
@@ -191,9 +192,9 @@ int _lua_bitmap::copyHorizontalStretch( lua_State* L ){
 	if( !b )
 		return 0;
 	this->bm->copyHorizontalStretch( 
-		luaL_checkint( L , 1 ) ,
-		luaL_checkint( L , 2 ) ,
-		luaL_checkint( L , 3 ) ,
+		check<int>( L , 1 ) ,
+		check<int>( L , 2 ) ,
+		check<int>( L , 3 ) ,
 		*b->bm
 	); return 0; 
 }
@@ -212,7 +213,7 @@ int _lua_bitmap::isValid( lua_State* L ){ lua_pushboolean( L , this->bm->isValid
 
 
 //! Lua-_gadget
-const char _lua_bitmap::className[] = "_bitmap";
+const char _lua_bitmap::className[] = "Bitmap";
 Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmap, resize),
 	LUA_CLASS_FUNC(_lua_bitmap, getPixel),

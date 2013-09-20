@@ -3,71 +3,50 @@
 
 #include "_type/type.h"
 #include "_type/type.gadget.h"
-#include "_resource/BMP_AlertImages.h"
 
-enum class _dialogType : _u8
+enum class _dialogResult : _u8
 {
-	none,
-	yesNo,
-	enterText,
-	image
+	undefined,
+	cancel,
+	yes,
+	no,
+	apply
 };
 
 class _dialog{
 	
-	private:
+	protected:
 		
-		_dialogType			dType;
+		_callback<void(_dialogResult)>* callback; // Will be called right after Exit
 		
-		void**				data; // Temporary data
+		_s32						intResult;
+		string						strResult;
+		bool						runs;
 		
-		const _callback* 	exitFunc; // Will be called right after Exit
+		virtual void executeInternal() = 0;
+		virtual void cleanupInternal() = 0;
 		
-		_s32				intResult;
-		string				strResult;
+		// Calls the callback with the result of the dialog as parameter
+		void callCallback( _dialogResult result ){
+			if( this->callback )
+				(*this->callback)( result );
+		}
 		
-		bool				finished;
-		
-		void 				internalExecution();
-		void 				internalCleanup();
-		
-		_callbackReturn 	internalEventHandler( _event e );
+		void cleanup(){
+			if( !this->runs )
+				return;
+			this->runs = false;
+			this->cleanupInternal();
+		}
 	
 	public:
 	
+		//! Ctor
 		_dialog() : 
-			dType( _dialogType::none )
-			, data( nullptr )
-			, exitFunc( nullptr )
-			, intResult( 1 << 31 )
-			, finished( true )
-		{ }
-		
-		//! For Yes/No - Dialog
-		static void yesNoDialog( _dialog& d , string msg , string windowLbl , string yesLbl = "Yes" , string noLbl = "No" );
-		
-		//! For text prompt
-		static void enterTextDialog( _dialog& d , string msg , string windowLbl , string okLbl = "OK" , string cancelLbl = "Cancel" );
-		
-		//! For a Popup with an image
-		static void imageDialog( _dialog& d , string msg , string windowLbl , const _bitmap& bmp , string okLbl = "OK" , string otherLbl = "" );
-		
-		//! For an Error-Popup
-		static void errorDialog( _dialog& d , string msg , string windowLbl , string okLbl = "Dismiss" , string otherLbl = "" )
-		{
-			imageDialog( d , msg , windowLbl , BMP_AlertImageError() , okLbl , otherLbl );
-		}
-		//! For an Info-Dialog
-		static void infoDialog( _dialog& d , string msg , string windowLbl , string okLbl = "OK" , string otherLbl = "" )
-		{
-			imageDialog( d , msg , windowLbl , BMP_AlertImageInfo() , okLbl , otherLbl );
-		}
-		//! For a Warning Popup
-		static void warningDialog( _dialog& d , string msg , string windowLbl , string okLbl = "Dismiss" , string otherLbl = "" )
-		{
-			imageDialog( d , msg , windowLbl , BMP_AlertImageWarning() , okLbl , otherLbl );
-		}
-		
+			callback( nullptr )
+			, intResult( 0 )
+			, runs( false )
+		{ }		
 		
 		//! Execute the dialog
 		void execute();
@@ -83,17 +62,32 @@ class _dialog{
 		string getStrResult(){ return this->strResult; }
 		
 		//! Set the onExit Func
-		void onExit( const _callback* cb ){ this->exitFunc = cb; }
+		template<typename T>
+		void setCallback( T&& cb )
+		{
+			typedef typename std::remove_reference<T>::type T2;
+			typedef typename T2::_callback def;
+			
+			// Delete old
+			if( this->callback )
+				delete this->callback;
+			
+			// Set new callback
+			this->callback = new T2( move(cb) );
+		}
+		
+		//! Removes the callback
+		void deleteCallback();
 		
 		//! Check if the dialog finished already
 		//! @note this also returns 'true' if the dialog hasn't even started
-		bool hasFinished(){ return this->finished; }
-		
-		//! Check if the dialog was closed or the 'Cancel'-button was clicked
-		bool wasAborted(){ return this->intResult == -1; }
+		bool isRunning(){ return this->runs; }
 		
 		//! Dtor
-		~_dialog();
+		virtual ~_dialog(){
+			this->deleteCallback();
+			this->terminate();
+		}
 };
 
 #endif

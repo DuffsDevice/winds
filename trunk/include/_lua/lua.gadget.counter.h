@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUACOUNTER_
-#define _WIN_LUACOUNTER_
+#ifndef _WIN_L_COUNTER_
+#define _WIN_L_COUNTER_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_counter : public _lua_gadget , public _lua_interface_input<_counter> 
 		
 		_lua_counter( lua_State* L );
 		
-		_lua_counter( _counter* c ) : _lua_gadget( c ) , _lua_interface_input( c )
+		_lua_counter( _counter* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
 		{ }
 		
 		//! setUpperBound
@@ -30,6 +30,12 @@ class _lua_counter : public _lua_gadget , public _lua_interface_input<_counter> 
 		
 		//! getUpperBound
 		int getUpperBound( lua_State* L );
+		
+		//! increase
+		int increase( lua_State* L );
+		
+		//! decrease
+		int decrease( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

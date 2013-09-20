@@ -1,13 +1,15 @@
 #include "_gadget/gadget.calendar.h"
 #include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
+#include "_type/type.color.h"
 #include "func.gridcreator.h"
 
-_calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _style&& style )
+_calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor , _style&& style )
 	: _gadget( _gadgetType::button , width , height , x , y , (_style&&)style )
 	, _singleValueGroup<_stickybutton>()
 	, curMonth( month )
 	, curYear( year )
+	, bgColor( bgColor )
 	, monthLabel( nullptr )
 	, leftArrow( nullptr )
 	, rightArrow( nullptr )
@@ -18,15 +20,11 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	this->selectedDate.set( _timeAttr::month , month , false );
 	this->selectedDate.set( _timeAttr::day , dayOfMonth );
 	
-	this->setInternalEventHandler( refresh , _classCallback( this , &_calendar::handler ) );
-	this->setInternalEventHandler( keyClick , _classCallback( this , &_calendar::handler ) );
-	
-	
 	//! Allocate sticky-buttons
 	for( _u32 curSize = 0; curSize < 31 ; curSize++ )
 	{
 		_stickybutton* btn = new _stickybutton( 15 , 15 , -5 , -5 , int2string( curSize + 1 ) , _style::storeInt( curSize + 1 ) );
-		btn->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
+		btn->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
 		// Add to singleValueGroup
 		this->addSelector( btn , curSize + 1 );
 	}
@@ -37,15 +35,25 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
 	this->monthLabel	= new _label( this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 , arrowWidth + 2 , 1 , "" );
-	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowRight ) , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowLeft ) , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::reset ) );
-	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , glyph::arrowRotateLeft ) );
+	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRight ) , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowLeft ) , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::reset ) );
+	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRotateLeft ) );
 	
-	this->leftArrow->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
-	this->rightArrow->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
-	this->todayButton->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
-	this->resetButton->setInternalEventHandler( onAction , _classCallback( this , &_calendar::handler ) );
+	// Register my handler
+	this->leftArrow->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
+	this->rightArrow->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
+	this->todayButton->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
+	this->resetButton->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
+	
+	// Update (that will register all buttons inside the _calendar)
+	this->setInternalEventHandler( onUpdate , make_callback( this , &_calendar::updateHandler ) );
+	this->updateNow();
+	
+	
+	this->setInternalEventHandler( onDraw , make_callback( &_calendar::refreshHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( this , &_calendar::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( this , &_calendar::keyHandler ) );
 	
 	// Set Symbol-font
 	this->leftArrow->setFont( symbolFt );
@@ -55,106 +63,123 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	
 	this->monthLabel->setAlign( _align::center );
 	
+	// Add Children!
 	this->addEnhancedChild( this->monthLabel );
 	this->addEnhancedChild( this->leftArrow );
 	this->addEnhancedChild( this->rightArrow );
 	this->addEnhancedChild( this->todayButton );
 	this->addEnhancedChild( this->resetButton );
 	
-	
 	// Fill the calendar
-	this->populateGUI();
+	this->redraw();
 }
 
 void _calendar::selectDate( _u16 year , _u8 month , _u8 dayOfMonth )
 {
-	bool refreshFlag = false;
-	
-	if( this->selectedDate.get( _timeAttr::year ) != year || this->selectedDate.get( _timeAttr::month ) != month )
-		refreshFlag = true;
+	if( this->selectedDate.get( _timeAttr::day ) == dayOfMonth && this->selectedDate.get( _timeAttr::year ) == year && this->selectedDate.get( _timeAttr::month ) == month )
+		return;
 	
 	this->selectedDate.set( _timeAttr::year , year , false );
 	this->selectedDate.set( _timeAttr::month , month , false );
 	this->selectedDate.set( _timeAttr::day , dayOfMonth );
 	
-	if( refreshFlag )
-		this->populateGUI();
+	// refresh
+	this->update();
 }
 
-_callbackReturn _calendar::handler( _event event )
+_callbackReturn _calendar::keyHandler( _event event )
 {
-	if( event.getType() == refresh )
+	switch( event.getKeyCode() )
 	{
-		_bitmapPort bP = this->getBitmapPort();
-		
-		if( event.hasClippingRects() )
-			bP.addClippingRects( event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
-		else
-			bP.normalizeClippingRects();
-			
-		bP.fill( COLOR_WHITE );
-		
-		bP.drawHorizontalLine( 0 , this->getMonthSelectorHeight() - 1 , bP.getWidth() , COLOR_BLACK );
+		case DSWindows::KEY_RIGHT:
+			this->selectedDate.add( _timeAttr::day , 1 );
+			break;
+		case DSWindows::KEY_LEFT:
+			this->selectedDate.add( _timeAttr::day , -1 );
+			break;
+		case DSWindows::KEY_DOWN:
+			this->selectedDate.add( _timeAttr::day , 7 );
+			break;
+		case DSWindows::KEY_UP:
+			this->selectedDate.add( _timeAttr::day , -7 );
+			break;
+		default:
+			return use_default;
 	}
-	else if( event.getType() == onAction )
+	
+	// Set active month
+	this->curMonth = this->selectedDate.get( _timeAttr::month );
+	this->curYear = this->selectedDate.get( _timeAttr::year );
+	
+	// Update
+	this->update();
+	
+	// Notify date has changed
+	this->triggerEvent( onEdit );
+	
+	return handled;
+}
+
+_callbackReturn _calendar::refreshHandler( _event event )
+{
+	_calendar* that = event.getGadget<_calendar>();
+	
+	// Get BitmapPort
+	_bitmapPort bP = that->getBitmapPort( event );
+	
+	// Draw background
+	bP.fill( that->bgColor );
+	
+	// Draw Month label
+	bP.drawHorizontalLine( 0 , that->getMonthSelectorHeight() - 1 , bP.getWidth() , _color(that->bgColor).getL() > 70 ? COLOR_BLACK : COLOR_WHITE );
+	
+	return use_default;
+}
+
+// For 'onAction'-events
+_callbackReturn _calendar::clickHandler( _event event )
+{
+	if( event.getGadget() == this->leftArrow )
+		this->decreaseMonth();
+	else if( event.getGadget() == this->rightArrow )
+		this->increaseMonth();
+	else if( event.getGadget() == this->todayButton )
 	{
-		if( event.getGadget() == this->leftArrow )
-		{
-			if( this->curMonth > 1 )
-				this->curMonth--;
-			else
-			{
-				this->curYear--;
-				this->curMonth = 12;
-			}
-		}
-		else if( event.getGadget() == this->rightArrow )
-		{
-			if( this->curMonth < 12 )
-				this->curMonth++;
-			else
-			{
-				this->curYear++;
-				this->curMonth = 1;
-			}
-		}
-		else if( event.getGadget() == this->todayButton )
-		{
-			_time now = _time::now();
-			
-			_u8 tempM = this->curMonth;
-			_u16 tempY = this->curYear;
-			
-			this->curYear = now.get( _timeAttr::year );
-			this->curMonth = now.get( _timeAttr::month );
-			
-			if( tempM == this->curMonth && tempY == this->curYear )
-				return handled;
-		}
-		else if( event.getGadget() == this->resetButton )
-		{
-			_u8 tempM = this->curMonth;
-			_u16 tempY = this->curYear;
-			
-			this->curYear = this->selectedDate.get( _timeAttr::year );
-			this->curMonth = this->selectedDate.get( _timeAttr::month );
-			
-			if( tempM == this->curMonth && tempY == this->curYear )
-				return handled;
-		}
-		else
-		{
-			this->selectedDate = _time::date( this->curYear , this->curMonth , event.getGadget()->getStyle().val );
-			this->triggerEvent( onChange );
-			
-			return handled;
-		}
+		_time now = _time::now();
 		
-		// Refresh!
-		this->populateGUI();
+		_u8 tempM = this->curMonth;
+		_u16 tempY = this->curYear;
+		
+		this->curYear = now.get( _timeAttr::year );
+		this->curMonth = now.get( _timeAttr::month );
+		
+		if( tempM == this->curMonth && tempY == this->curYear )
+			return handled;
+	}
+	else if( event.getGadget() == this->resetButton )
+	{
+		_u8 tempM = this->curMonth;
+		_u16 tempY = this->curYear;
+		
+		this->curYear = this->selectedDate.get( _timeAttr::year );
+		this->curMonth = this->selectedDate.get( _timeAttr::month );
+		
+		if( tempM == this->curMonth && tempY == this->curYear )
+			return handled;
 	}
 	else
-		this->bubbleRefresh( true );
+	{
+		// only click onto one of the buttons
+		this->selectedDate = _time::date( this->curYear , this->curMonth , event.getGadget()->getStyle().val );
+		
+		// Notify date has changed
+		this->triggerEvent( onEdit );
+		
+		return handled;
+	}
+	
+	// Refresh buttons
+	this->update();
 	
 	return handled;
 }
@@ -170,7 +195,7 @@ _u8 _calendar::getWeeksInMonth( _time firstDay , _u32 daysInMonth ) const
 }
 
 
-void _calendar::populateGUI()
+_callbackReturn _calendar::updateHandler( _event event )
 {
 	//! Strings!
 	//string weekdays[] = { "Mo" , "Di" , "Mi" , "Do" , "Fr" , "Sa" , "So" };
@@ -187,24 +212,40 @@ void _calendar::populateGUI()
 	_u16 todayMonth = now.get( _timeAttr::month );
 	_u16 todayDayOfMonth = now.get( _timeAttr::day );
 	
-	//! Compute excesses
+	// Do we only have to adjust the selected Date?
+	if( this->lastCurMonth == this->curMonth && this->lastCurYear == this->curYear )
+	{
+		//! Enable the selected stickybutton
+		if( this->curMonth == selectedMonth && this->curYear == selectedYear )
+			_singleValueGroup::setIntValue( selectedDayOfMonth );
+		else
+			_singleValueGroup::setIntValue( -1 );
+		
+		return handled;
+	}
+	
+	// Indicate a complete update of the month and the year
+	this->lastCurMonth = this->curMonth;
+	this->lastCurYear = this->curYear;
+	
+	// Compute boundaries
 	_time	firstDateInMonth = _time::date( this->curYear , this->curMonth , 1 );
 	_time	lastDateInMonth = firstDateInMonth;
 	lastDateInMonth.add( _timeAttr::month , 1 );
 	
 	
-	//! Compute number of days
+	// Compute number of days
 	_u32 daysInMonth = ( _int( lastDateInMonth ) - _int( firstDateInMonth ) ) / 86400 /* Seconds per Day */;
 	
 	
-	//! Month Selector
+	// Store Height of the Month Selector and the title in temporary
 	int monthSelectorHeight = this->getMonthSelectorHeight();
 	
 	// Sizes of each table element
-	vector<int> rowHeights = computeGrid( this->getHeight() - 1 - monthSelectorHeight , this->getWeeksInMonth( firstDateInMonth , daysInMonth ) );
-	vector<int> colWidths = computeGrid( this->getWidth() - 1 , 7 );
+	_vector<int> rowHeights = computeGrid( this->getHeight() - 1 - monthSelectorHeight , this->getWeeksInMonth( firstDateInMonth , daysInMonth ) );
+	_vector<int> colWidths = computeGrid( this->getWidth() - 1 , 7 );
 	
-	//! Choose font to be used
+	// Choose font to be used
 	const _font* ft;
 	
 	if( rowHeights[0] > 12 && colWidths[0] > 15 )
@@ -213,21 +254,21 @@ void _calendar::populateGUI()
 		ft = _system::getFont( "System7" );
 	
 	
-	//! Some counter Variables
+	// Some counter Variables
 	int x = 0;
 	int y = monthSelectorHeight;
 	int curRow = 0;
 	int arrowWidth = this->getArrowWidth();
 	
 	
-	//! Process Offset for weekdays
+	// Process Offset for weekdays
 	int	weekday = firstDateInMonth.get( _timeAttr::dayOfWeek );
 	
 	int i = 0;
 	while( i < weekday )
 		x += colWidths[i++];
 	
-	//! Arrows & month label
+	// Arrows & month label
 	this->leftArrow->setDimensions( _rect( 1 , 1 , arrowWidth , monthSelectorHeight - 3 ) );
 	this->rightArrow->setDimensions( _rect( this->getWidth() - 1 - arrowWidth , 1 , arrowWidth , monthSelectorHeight - 3 ) );
 	this->todayButton->setDimensions( _rect( arrowWidth + 2 , 1 , 9 , monthSelectorHeight - 3 ) );
@@ -237,17 +278,26 @@ void _calendar::populateGUI()
 	this->monthLabel->setStrValue( _system::getLocalizedMonth( this->curMonth - 1 ).substr( 0 , 3 ) + " " + int2string( this->curYear ) );
 	this->monthLabel->setDimensions( _rect( arrowWidth + 2 , 1 , this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 ) );
 	this->monthLabel->setFont( ft );
+	this->monthLabel->setColor( _color(this->bgColor).getL() > 70 ? COLOR_BLACK : COLOR_WHITE );
 	
 	
 	// Remove Buttons again
 	this->removeChildren();
+	
+	// Flag indicating that there is not enough room for spaces in between the buttons
+	bool noSpaces = false;
+	if( colWidths[0] * rowHeights[0] < 64 )
+		noSpaces = true;
 	
 	//! Move days to right position!
 	for( _u8 curDay = 1; curDay <= daysInMonth ; curDay++ )
 	{
 		_stickybutton* btn = this->registeredSelectors[curDay];
 		
-		btn->setDimensions( _rect( x + 1 , y + 1 , colWidths[weekday] - 1 , rowHeights[curRow] - 1 ) );
+		if( noSpaces )
+			btn->setDimensions( _rect( x , y , colWidths[weekday] + 1 , rowHeights[curRow] + 1 ) );
+		else
+			btn->setDimensions( _rect( x , y , colWidths[weekday] + 1 , rowHeights[curRow] + 1 ) );
 		btn->setFont( ft );
 		btn->setAutoSelect( false );
 		
@@ -278,6 +328,8 @@ void _calendar::populateGUI()
 		if( it != this->registeredSelectors.end() )
 			it->second->setAutoSelect( true );
 	}
+	
+	return handled;
 }
 
 _calendar::~_calendar()

@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAIMAGEGADGET_
-#define _WIN_LUAIMAGEGADGET_
+#ifndef _WIN_L_IMAGEGADGET_
+#define _WIN_L_IMAGEGADGET_
 
 #include "_lua/lunar.h"
 #include "_lua/lua.class.gadget.h"
@@ -16,7 +16,7 @@ class _lua_imagegadget : public _lua_gadget {
 		
 		_lua_imagegadget( lua_State* L );
 		
-		_lua_imagegadget( _imagegadget* c ) : _lua_gadget( c )
+		_lua_imagegadget( _imagegadget* c ) : _lua_gadget( c , false )
 		{ }
 		
 		//! getImage

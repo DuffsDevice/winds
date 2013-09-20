@@ -58,7 +58,7 @@ _user::_user( string folderName ) :
 					{ "wallpaper" , "default" } ,
 					{ "wallpaperView" , "0" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "guest.png" } ,
+					{ "userLogo" , "%APPDATA%/usericons/guest.png" } ,
 					{ "showFileExtension" , "1" } ,
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
@@ -69,7 +69,7 @@ _user::_user( string folderName ) :
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
 					{ "fileObjectHeight" , "10" } ,
-					{ "selectObjectHeight" , "9" } ,
+					{ "selectObjectHeight" , "10" } ,
 					{ "magnifyKeyboardFocus" , "1" }
 				}
 			} };

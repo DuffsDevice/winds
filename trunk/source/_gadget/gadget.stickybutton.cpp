@@ -12,7 +12,7 @@ _callbackReturn _stickybutton::mouseHandler( _event event )
 	if( that->group )
 	{
 		that->group->enableSelector( that );
-		that->triggerEvent( _event( onChange ) );
+		that->triggerEvent( onEdit );
 	}
 	
 	return handled;
@@ -22,18 +22,22 @@ _stickybutton::_stickybutton( _length width , _length height , _coord x , _coord
 	_button( width , height , x , y , text , (_style&&)style )
 	, group( nullptr )
 {
+	this->setType( _gadgetType::stickybutton );
+	
 	// Register some new handlers
-	this->removeInternalEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( onMouseRepeat );
 	this->removeInternalEventHandler( onMouseLeave );
-	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_stickybutton::mouseHandler ) );
+	this->setInternalEventHandler( onMouseEnter , make_callback( &_stickybutton::mouseHandler ) );
 }
 
 _stickybutton::_stickybutton( _coord x , _coord y , string text , _style&& style ) :
 	_button( x , y , text , (_style&&)style )
 	, group( nullptr )
 {
+	this->setType( _gadgetType::stickybutton );
+	
 	// Register some new handlers
-	this->removeInternalEventHandler( mouseRepeat );
+	this->removeInternalEventHandler( onMouseRepeat );
 	this->removeInternalEventHandler( onMouseLeave );
-	this->setInternalEventHandler( onMouseEnter , _staticCallback( &_stickybutton::mouseHandler ) );
+	this->setInternalEventHandler( onMouseEnter , make_callback( &_stickybutton::mouseHandler ) );
 }

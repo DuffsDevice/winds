@@ -1,0 +1,84 @@
+using "System.Color"
+using "System.Event"
+using "Drawing.Bitmap"
+using "Drawing.BitmapPort"
+using "Drawing.Area"
+using "Drawing.Rect"
+using "UI.Gadget"
+using "UI.Window"
+using "UI.ImageGadget"
+using "UI.ResizeHandle"
+
+local wnd
+local resizeHndl
+local canvas
+local greyBackground
+local curColor = "red"
+
+function main()
+
+	local wndIcon = Bitmap( 6 , 6 )
+	wndIcon.drawFilledRect( 3 , 0 , 3 , 3 , System.rgb255( 181 , 230 , 29 ) )
+	wndIcon.drawFilledRect( 3 , 3 , 3 , 3 , System.rgb255( 255 , 210 , 14 ) )
+	wndIcon.drawFilledRect( 0 , 0 , 3 , 3 , System.rgb255( 255 , 127 , 39 ) )
+	wndIcon.drawFilledRect( 0 , 3 , 3 , 3 , System.rgb255( 153 , 217 , 255 ) )
+	
+	resizeHndl = ResizeHandle()
+	
+	canvas = Bitmap( 65 , 55 , "white" )
+	
+	greyBackground = ImageGadget( 0 , 0 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
+	greyBackground.base.setInternalEventHandler( "onDraw" , refreshHandler )
+	greyBackground.base.setUserEventHandler( "onDragging" , dragHandler )
+	greyBackground.base.setUserEventHandler( "onDragStop" , dragHandler )
+	greyBackground.base.setUserEventHandler( "onDragStart" , dragHandler )
+	greyBackground.base.setUserEventHandler( "onMouseDown" , dragHandler )
+	greyBackground.base.setUserEventHandler( "onMouseUp" , dragHandler )
+	greyBackground.base.redraw()
+	
+	wnd = Window( 100 , 100 , 10 , 10 , "Paint" , wndIcon , true , "minimizeable" )
+	wnd.base.addChild( greyBackground )
+	wnd.base.setUserEventHandler( "onResize" , windowResizeHandler )
+	wnd.base.addEnhancedChild( resizeHndl )
+	
+	System.addChild( wnd )
+
+end
+
+local lastX = -1
+local lastY = -1
+local pressed = false
+
+function dragHandler( event )
+	if pressed then
+		canvas.drawLine( lastX , lastY , event.posX - 2 , event.posY - 2 , curColor )
+	else
+		canvas.drawPixel( event.posX - 2 , event.posY - 2 , curColor )
+	end
+	lastX = event.posX - 2
+	lastY = event.posY - 2
+	greyBackground.base.redraw()
+	
+	if event.type == "onDragStop" or event.type == "onMouseUp" then
+		pressed = false
+	else
+		pressed = true
+	end
+	return "handled"
+end
+
+function refreshHandler( event )
+	local port = greyBackground.base.getBitmapPort( event )
+	
+	port.fill( "gray" )
+	port.copy( 2 , 2 , canvas )
+	port.drawVerticalLine( canvas.width + 2 , 3 , canvas.height - 1 , "black" )
+	port.drawHorizontalLine( 3 , canvas.height + 2 , canvas.width , "black" )
+	return "handled"
+end
+
+function windowResizeHandler()
+	local clientRect = wnd.base.getClientRect()
+	greyBackground.base.setSize( clientRect.width , clientRect.height )
+	return "use_internal"
+end

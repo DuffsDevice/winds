@@ -1,103 +1,121 @@
 #include "_type/type.gadget.h"
 #include "_type/type.gadgetScreen.h"
 #include "_type/type.system.h"
+#include "_type/type.timer.h"
 #include "_gadget/gadget.button.h"
 
-_array<_fastEventCallback,13>
+_array<_staticCallback<_defaultEventHandler>,13>
 	_gadget::defaultEventHandlers = { {
-	/* refresh */ _fastEventCallback( &_gadget::gadgetRefreshHandler ) ,
-	/* mouseClick */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDoubleClick */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseDown */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseUp */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
-	/* mouseRepeat */ _fastEventCallback( &_gadget::gadgetMouseHandler ) ,
-	/* keyDown */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyUp */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyClick */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
-	/* keyRepeat */ _fastEventCallback( &_gadget::gadgetKeyHandler ) ,
-	/* dragStart */ _fastEventCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragStop */ _fastEventCallback( &_gadget::gadgetDragHandler ) ,
-	/* dragging */ _fastEventCallback( &_gadget::gadgetDragHandler )
+	/* onDraw */ make_callback( &_gadget::gadgetRefreshHandler ),
+	/* onMouseClick */ make_callback( &_gadget::gadgetMouseHandler ),
+	/* onMouseDoubleClick */ make_callback( &_gadget::gadgetMouseHandler ),
+	/* onMouseDown */ make_callback( &_gadget::gadgetMouseHandler ),
+	/* onMouseUp */ make_callback( &_gadget::gadgetMouseHandler ),
+	/* onMouseRepeat */ make_callback( &_gadget::gadgetMouseHandler ),
+	/* onKeyDown */ make_callback( &_gadget::gadgetKeyHandler ),
+	/* onKeyUp */ make_callback( &_gadget::gadgetKeyHandler ),
+	/* onKeyClick */ make_callback( &_gadget::gadgetKeyHandler ),
+	/* onKeyRepeat */ make_callback( &_gadget::gadgetKeyHandler ),
+	/* onDragStart */ make_callback( &_gadget::gadgetDragStartHandler ),
+	/* onDragStop */ make_callback( &_gadget::gadgetDragStopHandler ),
+	/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler )
 } };
 
 
-_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , _style&& style ) :
+_gadget::_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _bitmap&& bmp , _style&& style ) :
 	padding( _padding( 0 ) )
-	, dimensions( _rect( posX , posY , max( 1 , width )
-	, max( 1 , height ) ) )
+	, minWidth( 0 )
+	, minHeight( 0 )
+	, x( posX )
+	, y( posY )
 	, style( (_style&&)style )
 	, focusedChild( nullptr )
 	, parent( nullptr )
-	, bitmap( this->getWidth() , this->getHeight() )
-	, dragTemp ( nullptr )
+	, bitmap( move( bmp ) )
+	, draggedChild ( nullptr )
 	, type( type )
 	, state( 0 )
-{}
-
-_gadget::_gadget( _gadgetType type , int width , int height , int posX , int posY , true_type , _style&& style ) :
-	padding( _padding( 0 ) )
-	, dimensions( _rect( posX , posY , max( 1 , width )
-	, max( 1 , height ) ) )
-	, style( (_style&&)style )
-	, focusedChild( nullptr )
-	, parent( nullptr )
-	, bitmap()
-	, dragTemp ( nullptr )
-	, type( type )
-	, state( 0 )
-{}
+{
+	bitmap.resize( width , height );
+	autoValues.width = !width.isValid();
+	autoValues.height = !height.isValid();
+	autoValues.posX = !posX.isValid();
+	autoValues.posY = !posY.isValid();
+}
 
 
 _gadget::~_gadget()
 {	
 	_system::removeEventsOf( this );
 	
-	// Call onDelete Handler
-	this->handleEvent( _event( onDelete ) , true );
-	
 	// Remove itself from parent
 	this->setParent( nullptr );
 	
-	// Remove Children
-	this->removeChildren();
-	this->removeEnhancedChildren();
+	// Handle destructor event
+	this->handleEvent( onSet );
 	
 	// Delete callbacks
-	for( _pair<_eventType,_callback*> cb : this->eventHandlers )
+	for( _pair<_eventType,_callback<_eventHandler>*> cb : this->eventHandlers )
 	{
 		if( cb.second )
 			delete cb.second;
 	}
+	
+	// Clear list and dependencies
+	this->eventHandlers.clear();
+	this->dependencies.sum = 0;
+	
+	// Remove Children
+	this->removeChildren();
+	this->removeEnhancedChildren();
 }
 
 
-void _gadget::triggerEvent( _event&& event ){
-	_system::generateEvent( (_event&&)event.setDestination( this ) );
+void _gadget::triggerEvent( _event&& event , _eventCallType callType ){
+	_system::generateEvent( (_event&&)event.setDestination( this ) , callType );
 }
 
-
-void _gadget::bubbleRefresh( bool includeThis , _event&& event )
+void _gadget::redrawParents( _area&& areaToRefresh )
 {
-	// Bubble!
+	if( !this->parent )
+		return;
+	
+	// Crop rects to parents area
+	areaToRefresh.clipToIntersect( this->parent->getAbsoluteDimensions() );
+	
+	if( !areaToRefresh.empty() )
+		this->parent->redraw( (_area&&)areaToRefresh ); // Forces std::move
+}
+
+void _gadget::redraw( _area&& areaToRefresh )
+{
 	if( this->parent )
 	{
-		if( includeThis )
-			this->handleEventDefault( event );
-		
-		if( !event.hasClippingRects() )
-			event.getDamagedRects().add( this->getAbsoluteDimensions() );
+		this->handleEvent( _event::drawEvent( areaToRefresh ) );
 		
 		// Crop rects to parents area
-		_rect dim = this->parent->getAbsoluteDimensions();
-		event.getDamagedRects().clipToIntersect( dim );
+		areaToRefresh.clipToIntersect( this->parent->getAbsoluteDimensions() );
 		
-		if( event.hasClippingRects() )
-			this->parent->bubbleRefresh( true , (_event&&)event ); // Forces std::move
+		if( !areaToRefresh.empty() )
+			this->parent->redraw( (_area&&)areaToRefresh ); // Forces std::move
 	}
-	else if( includeThis )
-		this->handleEventDefault( (_event&&)event );
+	else
+		this->handleEvent( _event::drawEvent( (_area&&)areaToRefresh ) ); // Forces std::move
 }
 
+void _gadget::removeInternalEventHandler( _eventType type ){
+	// Unbind the Handler
+	_eventHandlerMap::iterator data = this->eventHandlers.find( type );
+	
+	if( data != this->eventHandlers.end() && data->second )
+	{
+		delete data->second;
+		this->eventHandlers.erase( data );
+	}
+	
+	if( isDepType( type ) )
+		this->removeDependency( type );
+}
 
 bool _gadget::removeDeleteCallback( _gadget* g )
 {
@@ -113,6 +131,10 @@ bool _gadget::removeDeleteCallback( _gadget* g )
 		_system::_currentFocus_ = g->parent;
 	}
 	
+	// Trigger dependency event
+	g->notifyDependentGadgets( onSet );
+	
+	// Remove parent from child
 	g->parent = nullptr;
 	
 	// Delete
@@ -134,19 +156,28 @@ bool _gadget::removeCallback( _gadget* g )
 			
 		// Remove current focus
 		_system::_currentFocus_ = g->parent;
+		_system::_currentFocus_ = g->parent;
 	}
 	
+	// Trigger dependency event
+	g->notifyDependentGadgets( onSet );
+	
+	// Remove parent from child
 	g->parent = nullptr;
 	
 	return true;
 }
 
+// All about blinking
+namespace{
+	_timer blinkTimer = _timer( 70 , true );
+}
 
 void _gadget::blinkHandler()
 {
 	if( this->counter > 5 )
 	{
-		_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
+		blinkTimer.terminate();
 		this->counter = 0;
 		return;
 	}
@@ -159,8 +190,9 @@ void _gadget::blinkHandler()
 
 void _gadget::blink()
 {
-	_system::terminateTimer( _classCallback( this , &_gadget::blinkHandler ) );
-	_system::executeTimer( _classCallback( this , &_gadget::blinkHandler ) , 70 , true );
+	blinkTimer.terminate();
+	blinkTimer.setCallback( make_callback( this , &_gadget::blinkHandler ) );
+	blinkTimer.start();
 }
 
 
@@ -215,7 +247,7 @@ bool _gadget::focusChild( _gadget* child )
 	// - the child cannot even receive the focus or 
 	// - the child is unvisible
 	// return false;
-	if( !child || child->isInvisible() )
+	if( !child || child->isHidden() )
 		return false;
 	
 	// Return true if the child already has focus
@@ -275,7 +307,7 @@ bool _gadget::focusChild( _gadget* child )
 		}
 		
 		// Refresh the Gadget so that it appears at the front
-		child->bubbleRefresh();
+		child->redraw();
 	}
 	
 	return true;
@@ -284,13 +316,13 @@ bool _gadget::focusChild( _gadget* child )
 
 _callbackReturn _gadget::handleEventDefault( _event&& event )
 {
-	_s32 posInArray = _s32( event.getType() ) - 2;
+	_s32 posInArray = _s32( event.getType() ) - 1;
 	
 	// Use the default EventHandler if available
 	if( posInArray >= 0 && _u32(posInArray) < defaultEventHandlers.size() )
 	{
 		event.setGadget( this );
-		return defaultEventHandlers[ posInArray ]( (_event&&)event );
+		return defaultEventHandlers[ posInArray ]( move(event) );
 	}
 	
 	// If the Handler for the given event doesn't exist, return 
@@ -300,8 +332,8 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 
 __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool noDefault )
 {
-	const _callback* ret1 = nullptr;
-	const _callback* ret2 = nullptr;
+	const _callback<_eventHandler>* ret1 = nullptr;
+	const _callback<_eventHandler>* ret2 = nullptr;
 	
 	_eventType eventType1 = event.getType();
 	_eventType eventType2 = eventType2userET( eventType1 );
@@ -375,7 +407,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool
 
 _callbackReturn _gadget::handleEventUser( _event&& event )
 {
-	const _callback* cb = this->eventHandlers[ eventType2userET(event.getType()) ];
+	const _callback<_eventHandler>* cb = this->eventHandlers[ eventType2userET(event.getType()) ];
 	
 	// Check for Normal Event Handlers
 	if( cb )
@@ -388,7 +420,7 @@ _callbackReturn _gadget::handleEventUser( _event&& event )
 
 _callbackReturn _gadget::handleEventInternal( _event&& event )
 {
-	const _callback* cb = this->eventHandlers[ event.getType() ];
+	const _callback<_eventHandler>* cb = this->eventHandlers[ event.getType() ];
 	
 	// Check for Normal Event Handlers
 	if( cb )
@@ -400,7 +432,7 @@ _callbackReturn _gadget::handleEventInternal( _event&& event )
 }
 
 
-void _gadget::setX( _coord val )
+void _gadget::setXInternal( _coord val )
 {
 	int diff = val - this->x;
 	
@@ -409,28 +441,30 @@ void _gadget::setX( _coord val )
 		_2s32 pos = this->getAbsolutePosition();
 		this->x = val;
 		
-		if( !this->parent )
-			return;
+		// Refresh if there is a parent
+		if( this->parent )
+		{
+			_length width = this->getWidth();
+			_length height = this->getHeight();
+			
+			if( max( -diff , diff ) < width )
+				this->redrawParents( _rect( pos.first , pos.second , width , height ).expandX( diff ) );
+			else
+				this->redrawParents(
+					{
+						_rect( pos.first , pos.second , width , height )
+						, _rect( pos.first + diff , pos.second , width , height )
+					}
+				);
+		}
 		
-		if( max( -diff , diff ) < this->height )
-		{
-			_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expandX( diff );
-			
-			if( !this->parent || this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
-		}
-		else
-		{
-			_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first + diff , pos.second , this->width , this->height ) };
-			
-			if( !this->parent || this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
-		}
+		// Notify dependent gadgets
+		this->notifyDependentGadgets( onMove );
 	}
 }
 
 
-void _gadget::setY( _coord val )
+void _gadget::setYInternal( _coord val )
 {
 	int diff = val - this->y;
 	
@@ -439,53 +473,54 @@ void _gadget::setY( _coord val )
 		_2s32 pos = this->getAbsolutePosition();
 		this->y = val;
 		
-		if( !this->parent )
-			return;
-		
-		if( max( -diff , diff ) < this->height )
+		// Refresh if there is a parent
+		if( this->parent )
 		{
-			_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expandY( diff );
+			_length width = this->getWidth();
+			_length height = this->getHeight();
 			
-			if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+			if( max( -diff , diff ) < height )
+				this->redrawParents( _rect( pos.first , pos.second , width , height ).expandY( diff ) );
+			else
+				this->redrawParents(
+					{
+						_rect( pos.first , pos.second , width , height )
+						, _rect( pos.first , pos.second + diff , width , height )
+					}
+				);	
 		}
-		else
-		{
-			_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first , pos.second + diff , this->width , this->height ) };
-			
-			if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-				this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
-		}
+		// Notify dependent gadgets
+		this->notifyDependentGadgets( onMove );
 	}
 }
 
 
-void _gadget::moveRelative( _s16 dX , _s16 dY )
+void _gadget::moveRelativeInternal( _s16 dX , _s16 dY )
 {
 	if( !dX && !dY )
-		return;
-	if( !this->parent )
 		return;
 	
 	_2s32 pos = this->getAbsolutePosition();
 	
 	this->x += dX;
-	this->y += dY; 
+	this->y += dY;
 	
-	if( max( (_s16)-dX , dX ) < this->width && max( (_s16)-dY , dY ) < this->height )
+	// Refresh if there is a parent
+	if( this->parent )
 	{
-		_rect refreshRects = _rect( pos.first , pos.second , this->width , this->height ).expand( dX , dY );
-		
-		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		if( max( (_s16)-dX , dX ) < this->getWidth() && max( (_s16)-dY , dY ) < this->getHeight() )
+			this->redrawParents( _rect( pos.first , pos.second , this->getWidth() , this->getHeight() ).expand( dX , dY ) );
+		else
+			this->redrawParents(
+				{
+					_rect( pos.first , pos.second , this->getWidth() , this->getHeight() )
+					, _rect( pos.first + dX , pos.second + dY , this->getWidth() , this->getHeight() )
+				}
+			);
 	}
-	else
-	{
-		_area refreshRects { _rect( pos.first , pos.second , this->width , this->height ) , _rect( pos.first + dX , pos.second + dY , this->width , this->height ) };
-		
-		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
-	}
+	
+	// Notify dependent gadgets
+	this->notifyDependentGadgets( onMove );
 }
 
 
@@ -532,7 +567,7 @@ void _gadget::removeChildren( bool remove )
 		this->children.remove_if( _gadget::removeCallback );
 	
 	//! Signalize there are no children left!
-	this->bubbleRefresh( true );
+	this->redraw();
 }
 
 
@@ -547,7 +582,7 @@ void _gadget::removeEnhancedChildren( bool remove )
 		this->enhancedChildren.remove_if( _gadget::removeCallback );
 	
 	//! Signalize there are no children left!
-	this->bubbleRefresh( true );
+	this->redraw();
 }
 
 
@@ -566,10 +601,14 @@ void _gadget::removeChild( _gadget* child )
 		
 		if( this->focusedChild == child )
 			this->focusedChild = nullptr;
-			
+		
 		// Remove current focus
 		_system::_currentFocus_ = this;
 	}
+	
+	//! Temp...
+	_gadget* subcedent = child->getSubcedentChild();
+	_gadget* precedent = child->getPrecedentChild();
 	
 	// Erase the Connection on both sides
 	if( child->isEnhanced() )
@@ -577,10 +616,16 @@ void _gadget::removeChild( _gadget* child )
 	else
 		this->children.remove( child );
 	
+	// Remove parent of child
 	child->parent = nullptr;
 	
 	// Make it appear deleted
-	this->bubbleRefresh( true , _event::refreshEvent( { absDim } ) );
+	this->redraw( absDim );
+	
+	// Notify dependent gadgets
+	child->notifyDependentAdjacents( onSet , _dependencyParam() , precedent , subcedent );
+	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
+	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(child) );
 }
 
 
@@ -597,14 +642,17 @@ void _gadget::addChild( _gadget* child )
 	child->enhanced = false;
 	child->hidden = false;
 	child->dragged = false;
-	child->minimized = false;
 	child->pressed = false;
 	
 	// Set Parent
 	child->parent = this;
 	
-	//! Paint it on my bmp
-	child->bubbleRefresh( true );
+	// Paint it on my bmp
+	child->redraw();
+	
+	// Notify dependent gadgets
+	child->notifyDependentGadgets( onSet , false );
+	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
 }
 
 
@@ -621,15 +669,19 @@ void _gadget::addEnhancedChild( _gadget* child )
 	child->enhanced = true;
 	child->hidden = false;
 	child->dragged = false;
-	child->minimized = false;
 	child->pressed = false;
 	
 	// Set Parent
 	child->parent = this;
 	
 	//! Paint it on my bmp
-	child->bubbleRefresh( true );
+	child->redraw();
+	
+	// Notify dependent gadgets
+	child->notifyDependentGadgets( onSet , false );
+	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
 }
+
 
 _2s32 _gadget::getAbsolutePosition() const
 {
@@ -648,184 +700,201 @@ _2s32 _gadget::getAbsolutePosition() const
 }
 
 
-void _gadget::setDimensions( _rect rc )
+void _gadget::setDimensionsInternal( _rect rc )
 {
-	if( !rc.isValid() )
-		return;
-	
-	_rect absDim = this->getAbsoluteDimensions();
+	_2s32 pos = this->getAbsolutePosition();
+	_2s32 size = this->getSize();
 	
 	// Respect Fixed width/height of the gadget
 	if( !this->isResizeableX() )
-		rc.width = this->width;
+		rc.width = this->getWidth();
 	if( !this->isResizeableY() )
-		rc.height = this->height;
+		rc.height = this->getHeight();
 	
-	this->dimensions = rc;
-	_rect newAbsDim = this->getAbsoluteDimensions();
+	// Limit
+	rc.width = max( rc.width , this->getMinWidth() );
+	rc.height = max( rc.height , this->getMinHeight() );
 	
-	if( newAbsDim.width != absDim.width || newAbsDim.height != absDim.height )
+	// Apply Position
+	this->x = rc.x;
+	this->y = rc.y;
+	
+	// Compute new position
+	_2s32 newPos = this->getAbsolutePosition();
+	_2s32 newSize = _2s32( rc.width , rc.height );
+	
+	if( size != newSize )
 	{
-		this->bitmap.resize( this->width , this->height );
-		this->handleEvent( onResize );
+		this->bitmap.resize( rc.width , rc.height );
+		
+		// Notify dependent gadgets
+		this->notifyDependentGadgets( onResize );
+		if( pos != newPos )
+			this->notifyDependentGadgets( onMove );
 		
 		if( !this->parent )
-			this->refreshBitmap();
+			this->redraw();
 		else
-			this->bubbleRefresh( true , _event::refreshEvent( absDim.combine( newAbsDim ) ) );
+			this->redraw( _rect(pos, size).combine( _rect(newPos, newSize) ) );
 	}
-	else if( newAbsDim.x != absDim.x || newAbsDim.y != absDim.y )
+	else if( pos != newPos )
 	{
-		if( !this->parent )
-			return;
+		this->redrawParents( _rect( pos , size ).combine( _rect( newPos , size ) ) );
 		
-		_area refreshRects = absDim.combine( newAbsDim );
-		
-		// Delete the parts that originally were gadget, but became damaged
-		if( this->parent->getAbsoluteDimensions().intersectsWith( refreshRects ) )
-			this->bubbleRefresh( false , _event::refreshEvent( move(refreshRects) ) );
+		// Notify dependent gadgets
+		this->notifyDependentGadgets( onMove );
 	}
 }
 
 
-void _gadget::setHeight( _length val )
+void _gadget::setHeightInternal( _length val )
 {
-	if( int(val) < 1 )
-		val = 1;
-	
-	if( !this->isResizeableY() || val == this->height )
+	if( !this->isResizeableY() )
 		return;
 	
+	val = max( val , this->getMinHeight() );
+	
+	// Check if something to do
+	if( val == this->getHeight() )
+		return;
+	
+	// Save old dimensions
 	_rect dim = this->getAbsoluteDimensions();
 	dim.height = max( val , dim.height );
 	
-	this->height = val;
+	// Effectively set width
 	this->bitmap.setHeight( val );
 	
-	this->handleEvent( onResize );
+	// Notify dependent gadgets
+	this->notifyDependentGadgets( onResize );
 	
-	if( !this->parent )
-		this->refreshBitmap();
-	else
-		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleRefresh( true , _event::refreshEvent( dim ) );
+	// Refresh...
+	this->redraw( (_rect&&)dim );
 }
 
 
-void _gadget::setWidth( _length val )
-{	
-	if( !this->isResizeableX() || val == this->width )
+void _gadget::setWidthInternal( _length val )
+{
+	if( !this->isResizeableX() )
 		return;
 	
-	if( int(val) < 1 )
-		val = 1;
+	val = max( val , this->getMinWidth() );
 	
+	// Check if something to do
+	if( val == this->getWidth() )
+		return;
+	
+	// Save old dimensions
 	_rect dim = this->getAbsoluteDimensions();
 	dim.width = max( val , dim.width );
 	
-	this->width = val;
+	// Effectively set width
 	this->bitmap.setWidth( val );
 	
-	this->handleEvent( onResize );
+	// Notify dependent gadgets
+	this->notifyDependentGadgets( onResize );
 	
-	if( !this->parent )
-		this->refreshBitmap();
+	// Refresh...
+	this->redraw( dim );
+}
+
+
+void _gadget::setBitmap( _bitmap&& bmp )
+{
+	_2s32 pos = this->getAbsolutePosition();
+	_2s32 size = this->getSize();
+	
+	_length newWidth = bmp.getWidth();
+	_length newHeight = bmp.getHeight();
+	
+	
+	// Respect Fixed width/height of the gadget and size limits
+	if( !this->isResizeableX() )
+		newWidth = this->getWidth();
 	else
-		// Delete the parts that originally were gadget, but became damaged
-		this->bubbleRefresh( true , _event::refreshEvent( dim ) );
+		newWidth = max( newWidth , this->getMinWidth() );
+	
+	if( !this->isResizeableY() )
+		newHeight = this->getHeight();
+	else
+		newHeight = max( newHeight , this->getMinHeight() );
+	
+	
+	// resize bitmap to applyable size
+	bmp.resize( newWidth , newHeight );
+	
+	// Apply bitmap
+	this->bitmap = bmp;
+	
+	// Compute area to redraw
+	_2s32 refreshSize = _2s32( max( newWidth , (_length)size.first ) , max( newHeight , (_length)size.second ) );
+	
+	// Redraw!
+	this->redraw( _rect( pos , refreshSize ) );
+	
+	
+	// Notify dependent gadgets
+	if( newWidth != this->getWidth() || newHeight != this->getHeight() )
+		this->notifyDependentGadgets( onResize );
 }
 
 
-void _gadget::minimize()
+void _gadget::setSizeInternal( _length width , _length height )
 {
-	if( !this->minimized && this->style.minimizeable )
-	{
-		// Blur
-		this->blur();
-		
-		this->minimized = true;
-		this->bubbleRefresh();
-		this->triggerEvent( onMinimize );
-	}
-}
-
-
-void _gadget::unMaximize()
-{
-	if( this->maximized )
-	{
-		this->maximized = false;
-		
-		// Set back the old dimensions
-		this->setDimensions( this->normalDimensions );
-		this->triggerEvent( onUnMaximize );
-	}
-}
-
-
-void _gadget::restore()
-{
-	if( this->minimized )
-	{
-		this->minimized = false;
-		this->bubbleRefresh();
-		this->triggerEvent( onRestore );
-	}
-}
-
-
-void _gadget::maximize()
-{
-	if( this->maximized || !this->isResizeable() )
+	_2s32 size = this->getSize();
+	
+	// Respect Fixed width/height of the gadget and size limits
+	if( !this->isResizeableX() )
+		width = this->getWidth();
+	else
+		width = max( width , this->getMinWidth() );
+	
+	if( !this->isResizeableY() )
+		height = this->getHeight();
+	else
+		height = max( height , this->getMinHeight() );
+	
+	if( width == this->getWidth() && height == this->getHeight() )
 		return;
 	
-	_gadgetScreen* screen = this->getScreen();
+	// Compute area to redraw
+	_2s32 refreshSize = _2s32( max( width , (_length)size.first ) , max( height , (_length)size.second ) );
+	_2s32 refreshPos = this->getAbsolutePosition();
 	
-	// Fail
-	if( screen == nullptr )
-		return;
+	// Refresh
+	this->bitmap.resize( width , height );
 	
-	// Fetch maximized Dimensions from the _screen
-	_rect maxDim = screen->getMaximizedDimensions();
+	// Notify dependent gadgets
+	this->notifyDependentGadgets( onResize );
 	
-	if( maxDim.isValid() )
-	{
-		this->maximized = true;
-		this->normalDimensions = this->dimensions;
-		
-		// Maximizing
-		this->setDimensions( maxDim );
-		this->triggerEvent( onMaximize );
-	}
+	// Refresh
+	this->redraw( _rect( refreshPos , refreshSize ) );
 }
 
 
 _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 {
+	#ifdef DEBUG_PROFILING
+	_codeAnalyzer a = _codeAnalyzer( "_gadget::refreshHandler" );
+	#endif
+	
 	_gadget* that = event.getGadget();
 	
-	//! If this event is bubbling,
-	//! also call the gadget-specific refreshHandler
-	if( event.hasClippingRects() )
-		that->handleEvent( event , true );
-	
-	//! Break up, if there are no children to paint!
+	// Break up, if there are no children to paint!
 	if( that->children.empty() && that->enhancedChildren.empty() )
 		return handled;
 	
 	// Receive Bitmap-Port
-	_bitmapPort bP = that->getBitmapPort();
+	_bitmapPort bP = that->getBitmapPort( event );
 	
-	//! Set the available Area for the gadget
-	if( event.hasClippingRects() )
-		bP.addClippingRects( event.getDamagedRects().toRelative( that->getAbsolutePosition() ) );
-	else
-		bP.normalizeClippingRects();
+	// Draw All enhanced Children
 	
-	//! Draw All enhanced Children
+	int numEnhancedChildren = that->children.empty() ? that->enhancedChildren.size() : 0;
+	int cnt1 = 0;
+	
 	for( _gadget* gadget : that->enhancedChildren )
 	{
-		if( gadget->isInvisible() )
+		if( gadget->isHidden() )
 			continue;
 		
 		_rect dim = gadget->getDimensions();
@@ -833,22 +902,33 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 		// Copy...
 		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
 		
+		if( ++cnt1 == numEnhancedChildren )
+			break;
+		
 		// Reduce Painting Area
 		bP.clippingRects.reduce( dim );
 	}
 	
-	// Crop to area having the parents padding applied
-	bP.clippingRects.clipToIntersect( that->getSize().applyPadding( that->getPadding() ) );
+	// Break up?
+	if( that->children.empty() )
+		return handled;
+	
+	// Apply the parents padding to the drawing area
+	bP.clippingRects.clipToIntersect( that->getSizeRect().applyPadding( that->getPadding() ) );
 	
 	// Store padding in termporaries
 	_length padLeft = that->padLeft;
 	_length padTop = that->padTop;
 	
 	
-	//! Draw all other children
+	// Draw all other children
+	
+	int numChildren = that->children.size();
+	int cnt2 = 0;
+	
 	for( _gadget* gadget : that->children )
 	{
-		if( gadget->isInvisible() )
+		if( gadget->isHidden() )
 			continue;
 		
 		_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
@@ -856,12 +936,12 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
 		// Copy...
 		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
 		
+		if( ++cnt2 == numChildren )
+			break;
+		
 		// Reduce Painting Area
 		bP.clippingRects.reduce( dim );
 	}
-	
-	//if( !event.hasClippingRects() )
-	//	that->bubbleRefresh( false , (_event&&)event );
 	
 	return handled;
 }
@@ -875,7 +955,7 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 	for( _gadget* gadget : this->enhancedChildren )
 	{
 		// Check if event position was inside this Gadget's Area
-		if( gadget->isInvisible() )
+		if( gadget->isHidden() )
 			continue;
 		
 		if( gadget->getDimensions().contains( posX , posY ) )
@@ -885,7 +965,7 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 	for( _gadget* gadget : this->children )
 	{
 		// Check if event position was inside this Gadget's Area
-		if( gadget->isInvisible() )
+		if( gadget->isHidden() )
 			continue;
 		
 		if( gadget->getDimensions().contains( posPadX , posPadY ) )
@@ -893,6 +973,18 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 	}
 	
 	return nullptr;
+}
+
+
+_callbackReturn	_gadget::gadgetKeyHandler( _event&& event )
+{
+	_gadget* that = event.getGadget();
+	
+	// Forward key-event to parent
+	if( that->parent )
+		that->parent->handleEvent( move(event) );
+	
+	return not_handled;
 }
 
 
@@ -919,7 +1011,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 		}
 		
 		//! Do not try to focus the child of a gadget that can't even be clicked!
-		if( event.getType() == mouseDown && mouseContain->isClickable() )
+		if( event == onMouseDown && mouseContain->isClickable() )
 		{
 			// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
 			_system::_lastClickedGadget_ = mouseContain;
@@ -942,12 +1034,12 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 			if( ret != not_handled )
 				return ret;
 			
-			if( event.getType() == mouseDown )
+			if( event == onMouseDown )
 			{
 				mouseContain->pressed = true;
 				mouseContain->triggerEvent( onMouseEnter );
 			}
-			else if( event.getType() == mouseUp && mouseContain->pressed )
+			else if( event == onMouseUp && mouseContain->pressed )
 			{
 				mouseContain->pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
@@ -965,145 +1057,262 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 		_system::_lastClickedGadget_ = that;
 	
 	// If no Gadget received the Mousedown, blur the Focussed Child
-	if( event.getType() == mouseDown )
+	if( event == onMouseDown )
 		that->blurChild();
 	
 	return not_handled;
 }
 
 
-_callbackReturn _gadget::gadgetDragHandler( _event&& event )
+_callbackReturn _gadget::gadgetDraggingHandler( _event&& event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
-	_gadget*& dragTemp = that->dragTemp;
+	_gadget*& draggedChild = that->draggedChild; // Shortcut
 	
-	// Temp...
-	_coord posX = event.getPosX();
-	_coord posY = event.getPosY();
-	
-	// Start Dragging
-	if( event.getType() == dragStart )
-	{
-		// Temp...
-		_gadget* mouseContain = that->getGadgetOfMouseDown( posX , posY );
-		
-		if( !mouseContain )
-			return not_handled;
-		
-		//! Trigger the Event if the gadget is now focused or if it never will have any focus,
-		//! because otherwise it wouldn't make any sence to forward the event!
-		if( !mouseContain->hasClickRights() )
-			return not_handled;
-		
-		// Rewrite Destination
-		event.setDestination( mouseContain );
-		
-		// Make the touch position relative to the Child
-		event.posX -= mouseContain->getX();
-		event.posY -= mouseContain->getY();
-		
-		// if the child is not enhanced
-		if( !mouseContain->isEnhanced() )
-		{
-			event.posX -= that->padLeft;
-			event.posY -= that->padTop;
-		}
-		
-		// Set Gadget, which receives all other drag Events until dragStop is called
-		dragTemp = mouseContain;
-		
-		_callbackReturn ret = mouseContain->handleEventDefault( event );
-		
-		// Mark the gadget as 'dragged' (but only if no child wants to be dragged -> check that first)
-		if( ret == not_handled )
-		{
-			if(
-				mouseContain->isDraggable()
-				&& mouseContain->isClickable()
-				&& mouseContain->handleEvent( (_event&&)event , true ) != prevent_default
-			)
-				mouseContain->dragged = true;
-			else
-				return not_handled;
-		}
-		
-		return handled;
-	}
-	
-	if( !dragTemp )
-		return prevent_default; // 'dragging'- or 'dragStop'-events without an object doesn't make sence
+	// 'dragging'-events without an object doesn't make sence
+	if( !draggedChild )
+		return prevent_default;
 	
 	// Make touch positions relative to parent
 	event.posX -= that->getX();
 	event.posY -= that->getY();
 	
 	// if the child is not enhanced
-	if( !dragTemp->isEnhanced() )
+	if( !draggedChild->isEnhanced() ){
+		event.posX -= that->padLeft;
+		event.posY -= that->padTop;
+	}
+	
+	if( // Check if we have to fire an 'onMouseLeave'-event
+		!draggedChild->isDraggable() // Do not fire if 'draggedChild' is draggable, because it would look strange on some gadgets (e.g. scrollbutton)
+		&& draggedChild->pressed
+		&& !draggedChild->getDimensions().contains( event.getPosX() , event.getPosY() )
+	){
+		draggedChild->pressed = false;
+		draggedChild->triggerEvent( onMouseLeave );
+	}
+	
+	// Forward 'dragging'-event to child
+	if( draggedChild->dragged )
+	{
+		// Rewrite Destination and retrigger the Event
+		if( draggedChild->handleEvent( (_event&&)event ) == prevent_default )
+		{
+			draggedChild->dragged = false; // If the dragged gadget no longer wants to be dragged
+			return prevent_default; // Force the upper gadget also to stop dragging
+		}
+	}
+	else
+		return draggedChild->handleEventDefault( (_event&&)event );
+	
+	return handled;
+}
+
+
+_callbackReturn _gadget::gadgetDragStopHandler( _event&& event )
+{
+	// Temp...
+	_gadget* that = event.getGadget();
+	_gadget*& draggedChild = that->draggedChild; // Shortcut
+	
+	// 'dragStop'-events without an object doesn't make sence
+	if( !draggedChild )
+		return prevent_default;
+	
+	// Check if the child was actually dragged, if not-> don't fire an 'onDragStop'-Event!
+	if( draggedChild->dragged )
+	{
+		// Make touch positions relative to parent
+		event.posX -= that->getX();
+		event.posY -= that->getY();
+		
+		// if the child is not enhanced
+		if( !draggedChild->isEnhanced() ){
+			event.posX -= that->padLeft;
+			event.posY -= that->padTop;
+		}
+		
+		// Rewrite Destination and trigger the Event
+		draggedChild->handleEvent( (_event&&)event );
+		
+		// Update _style
+		draggedChild->dragged = false;
+	}
+	else
+		draggedChild->handleEventDefault( (_event&&)event ); // Forward the dragStop-event to the children
+	
+	if( draggedChild->pressed ){
+		draggedChild->pressed = false;
+		draggedChild->triggerEvent( onMouseLeave );
+	}
+	
+	// No Gadget will receive Events anymore (reset)
+	draggedChild = nullptr;
+	
+	return handled;
+}
+
+
+_callbackReturn _gadget::gadgetDragStartHandler( _event&& event )
+{
+	// Temp...
+	_gadget* that = event.getGadget();
+	
+	// Temp...
+	_coord posX = event.getPosX();
+	_coord posY = event.getPosY();
+	
+	// Start Dragging
+	_gadget* mouseContain = that->getGadgetOfMouseDown( posX , posY );
+	
+	if( !mouseContain )
+		return not_handled;
+	
+	//! Trigger the Event if the gadget is now focused or if it never will have any focus,
+	//! because otherwise it wouldn't make any sence to forward the event!
+	if( !mouseContain->hasClickRights() )
+		return not_handled;
+	
+	// Rewrite Destination
+	event.setDestination( mouseContain );
+	
+	// Make the touch position relative to the Child
+	event.posX -= mouseContain->getX();
+	event.posY -= mouseContain->getY();
+	
+	// if the child is not enhanced
+	if( !mouseContain->isEnhanced() )
 	{
 		event.posX -= that->padLeft;
 		event.posY -= that->padTop;
 	}
 	
-	// Rewrite Destination
-	event.setDestination( dragTemp );
+	// Set Gadget, which receives all other drag Events until dragStop is called
+	that->draggedChild = mouseContain;
 	
-	// 'dragStop'
-	if( event.getType() == dragStop )
+	_callbackReturn ret = mouseContain->handleEventDefault( event );
+	
+	// Mark the gadget as 'dragged' (but only if no child wants to be dragged -> check that first)
+	if( ret == not_handled )
 	{
-		if( dragTemp->dragged )
-		{
-			// Rewrite Destination and trigger the Event
-			dragTemp->handleEvent( (_event&&)event );
-			
-			// Update _style
-			dragTemp->dragged = false;
-		}
+		if(
+			mouseContain->isDraggable()
+			&& mouseContain->isClickable()
+			&& mouseContain->handleEvent( (_event&&)event , true ) != prevent_default
+		)
+			mouseContain->dragged = true;
 		else
-			dragTemp->handleEventDefault( (_event&&)event ); // Forward the dragStop-event to the children
-		
-		if( dragTemp->pressed )
-		{
-			dragTemp->pressed = false;
-			dragTemp->triggerEvent( onMouseLeave );
-		}
-		
-		// No Gadget will receive Events anymore
-		dragTemp = nullptr;
-		
-		return handled;
+			return not_handled;
 	}
-	
-	//!
-	//! Control will only get here on 'dragging'-events
-	//!
-	if( // Check if we have to fire an 'onMouseLeave'-event
-		!dragTemp->isDraggable() // Do not fire if 'dragTemp' is draggable, because it would look strange on some gadgets (e.g. scrollbutton)
-		&& dragTemp->pressed
-		&& !dragTemp->dimensions.contains( event.getPosX() , event.getPosY() )
-	){
-		dragTemp->pressed = false;
-		dragTemp->triggerEvent( onMouseLeave );
-	}
-	
-	if( dragTemp->dragged )
-	{
-		// Rewrite Destination andTrigger the Event
-		if( dragTemp->handleEvent( (_event&&)event ) == prevent_default )
-		{
-			dragTemp->dragged = false; // If the dragged gadget no longer wants to be dragged
-			return prevent_default; // Force the upper gadget also to stop dragging
-		}
-	}
-	else
-		return dragTemp->handleEventDefault( (_event&&)event );
 	
 	return handled;
 }
 
+
+_gadget* _gadget::getSubcedentChild( bool skipHidden ){
+	if( this->parent )
+	{
+		_gadgetList& ch = this->isEnhanced() ? this->parent->enhancedChildren : this->parent->children;
+		
+		auto it = find( ch.begin() , ch.end() , this );
+		
+		if( it == ch.end() )
+			return nullptr;
+		
+		while( ++it != ch.end() )
+		{
+			if( !skipHidden || !(*it)->isHidden() )
+				return *it;
+			it++;
+		}
+	}
+	return nullptr;
+}
+
+_gadget* _gadget::getPrecedentChild( bool skipHidden ){
+	if( this->parent )
+	{
+		_gadgetList& ch = this->isEnhanced() ? this->parent->enhancedChildren : this->parent->children;
+		
+		auto it = find( ch.rbegin() , ch.rend() , this );
+		
+		if( it == ch.rend() )
+			return nullptr;
+		
+		while( ++it != ch.rend() )
+		{
+			if( !skipHidden || !(*it)->isHidden() )
+				return *it;
+		}
+	}
+	return nullptr;
+}
+
+
+void _gadget::notifyDependentSelf( _eventType change , _dependencyParam param ){
+	this->handleEvent( _event::dependencyEvent( change , param ) );
+}
+
+
+void _gadget::notifyDependentParent( _eventType change , _dependencyParam param , _optValue<_gadget*> parent )
+{
+	_gadget* g = parent.isValid() ? (_gadget*)parent : this->parent;
+	
+	if( !g )
+		return;
+	
+	_eventType newType = depType2childType( change );
+	
+	// Notifying Parent...
+	if( g->isDependentOf( newType ) )
+		g->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
+}
+
+
+void _gadget::notifyDependentChildren( _eventType type , _dependencyParam param )
+{
+	_eventType newType = depType2parentType( type );
+	
+	// Children
+	for( _gadget* g : this->children )
+		if( g->isDependentOf( newType ) )
+			g->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
+	
+	// Enhanced Children
+	for( _gadget* g : this->enhancedChildren )
+		if( g->isDependentOf( newType ) )
+			g->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
+}
+
+
+void _gadget::notifyDependentAdjacents( _eventType type , _dependencyParam param , _optValue<_gadget*> pre , _optValue<_gadget*> post )
+{
+	_gadget* g1 = post.isValid() ? (_gadget*)post : this->getSubcedentChild();
+	_gadget* g2 = pre.isValid() ? (_gadget*)pre : this->getPrecedentChild();
+	
+	// Subcedent child
+	if( g1 ){
+		_eventType newType = depType2preType( type );
+		
+		if( g1->isDependentOf( newType ) )
+			g1->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
+	}
+	
+	// Precedent child
+	if( g2 ){
+		_eventType newType = depType2postType( type );
+		
+		if( g2->isDependentOf( newType ) )
+			g2->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
+	}
+}
+
+
 // Convert a gadgetType to a string
 _map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::button , "button" },
+	{ _gadgetType::stickybutton , "stickybutton" },
 	{ _gadgetType::label , "label" },
 	{ _gadgetType::checkbox , "checkbox" },
 	{ _gadgetType::calendar , "calendar" },
@@ -1123,6 +1332,63 @@ _map<_gadgetType,string> gadgetType2string = {
 	{ _gadgetType::scrollbar , "scrollbar" },
 	{ _gadgetType::window , "window" },
 	{ _gadgetType::screen , "screen" },
+	{ _gadgetType::popup , "popup" },
+	{ _gadgetType::slider , "slider" },
+	{ _gadgetType::counter , "counter" },
 	{ _gadgetType::contextmenu , "contextmenu" },
-	{ _gadgetType::_plain , "_plain" }
+	{ _gadgetType::contextmenuentry , "contextmenuentry" },
+	{ _gadgetType::resizehandle , "resizehandle" },
+	{ _gadgetType::none , "none" }
+};
+
+
+_map<string,_gadgetType> string2gadgetType = {
+	{ "button" , _gadgetType::button },
+	{ "stickybutton" , _gadgetType::stickybutton },
+	{ "label" , _gadgetType::label },
+	{ "checkbox" , _gadgetType::checkbox },
+	{ "calendar" , _gadgetType::calendar },
+	{ "radiobox" , _gadgetType::radiobox },
+	{ "textbox" , _gadgetType::textbox },
+	{ "textarea" , _gadgetType::textarea },
+	{ "selectbox" , _gadgetType::selectbox },
+	{ "selectitem" , _gadgetType::selectitem },
+	{ "progressbar" , _gadgetType::progressbar },
+	{ "keyboard" , _gadgetType::keyboard },
+	{ "desktop" , _gadgetType::desktop },
+	{ "fileview" , _gadgetType::fileview },
+	{ "fileobject" , _gadgetType::fileobject },
+	{ "imagegadget" , _gadgetType::imagegadget },
+	{ "scrollarea" , _gadgetType::scrollarea },
+	{ "scrollbutton" , _gadgetType::scrollbutton },
+	{ "scrollbar" , _gadgetType::scrollbar },
+	{ "window" , _gadgetType::window },
+	{ "screen" , _gadgetType::screen },
+	{ "popup" , _gadgetType::popup },
+	{ "counter" , _gadgetType::counter },
+	{ "slider" , _gadgetType::slider },
+	{ "contextmenu" , _gadgetType::contextmenu },
+	{ "contextmenuentry" , _gadgetType::contextmenuentry },
+	{ "resizehandle" , _gadgetType::resizehandle },
+	{ "none" , _gadgetType::none }
+};
+
+
+// Convert a string to an eventCallType
+_map<string,_eventCallType> string2eventCallType = {
+	{ "normal" , _eventCallType::normal },
+	{ "normalNoDefault" , _eventCallType::normalNoDef },
+	{ "user" , _eventCallType::user },
+	{ "internal" , _eventCallType::internal },
+	{ "default" , _eventCallType::def }
+};
+
+
+// ...and back
+_map<_eventCallType,string> eventCallType2string = {
+	{ _eventCallType::normal , "normal" },
+	{ _eventCallType::normalNoDef , "normalNoDefault" },
+	{ _eventCallType::user , "user" },
+	{ _eventCallType::internal , "internal" },
+	{ _eventCallType::def , "default" }
 };

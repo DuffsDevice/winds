@@ -11,7 +11,7 @@ _time _time::now()
 
 _time::_time( _int rawTime )
 {
-	time_t rawtime = rawTime;
+	std::time_t rawtime = rawTime;
 	
 	struct std::tm * timeinfo = std::gmtime( &rawtime ); // Convert to UTC
 	
@@ -39,7 +39,7 @@ _time::operator _int() const
 
 _time::operator string() const 
 {
-	time_t rawtime = (_int)*this;
+	std::time_t rawtime = (_int)*this;
 	
 	return std::ctime( &rawtime ); // Convert to UTC
 }

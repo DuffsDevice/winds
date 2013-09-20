@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_LUAIMAGEFILE_
-#define _WIN_LUAIMAGEFILE_
+#ifndef _WIN_L_IMAGEFILE_
+#define _WIN_L_IMAGEFILE_
 
 #include "_lua/lunar.h"
 #include "_type/type.h"
