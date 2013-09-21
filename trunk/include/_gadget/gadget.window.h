@@ -23,7 +23,6 @@ class _window : public _gadget {
 		_rect*			normalDimensions; // Ptr where original dimensions are stored when maximized
 		bool			minimizeable : 1;
 		bool			minimized : 1;
-		bool			maximized : 1;
 		bool			closeable : 1;
 		
 		static _callbackReturn refreshHandler( _event event );
@@ -68,7 +67,7 @@ class _window : public _gadget {
 		void restore();
 		
 		//! Check whether the window is currently maximized
-		bool isMaximized() const { return this->maximized; }
+		bool isMaximized() const { return this->normalDimensions != nullptr; }
 		
 		//! Check whether the window is currently minimized
 		bool isMinimized() const { return this->minimized; }

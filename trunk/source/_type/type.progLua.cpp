@@ -26,6 +26,7 @@ using namespace _luafunc;
 #include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.dialogs.h"
 #include "_lua/lua.class.color.h"
+#include "_lua/lua.class.timer.h"
 
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.checkbox.h"
@@ -51,6 +52,7 @@ _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "System" , "Direntry" , &Lunar<_lua_direntry>::Register ),
 	make_tuple( "System" , "Event" , &Lunar<_lua_event>::Register ),
 	make_tuple( "System" , "ImageFile" , &Lunar<_lua_imagefile>::Register ),
+	make_tuple( "System" , "Timer" , &Lunar<_lua_timer>::Register ),
 	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::Register ),
 	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::Register ),
 	make_tuple( "Drawing" , "BitmapPort" , &Lunar<_lua_bitmapPort>::Register ),

@@ -189,7 +189,7 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 				luaCallbackFunctions::debug( "Callback-Lua-Err: %s" , lua_tostring( state , -1 ) );
 			}
 			
-			if( std::is_same<T,void>::value && lua_isnil( state , -1 ) )
+			if( std::is_same<T,void>::value || lua_isnil( state , -1 ) )
 				return T();
 			//! Forward the Value returned by the Handler
 			return _luafunc::check<T>( state , -1 );
