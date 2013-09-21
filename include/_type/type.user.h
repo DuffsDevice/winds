@@ -38,6 +38,7 @@ class _user : public _registry
 		_pixel	sBTC;// startButtonTextColor
 		_pixel	dTC; // desktopColor
 		bool	mKF; // magnifyKeyboardFocus
+		bool	isAdmin; // whether the user has admin rights
 		
 		//! Ctor
 		_user( string username );

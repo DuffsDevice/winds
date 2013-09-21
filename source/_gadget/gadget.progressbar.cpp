@@ -88,7 +88,7 @@ void _progressbar::setBarType( bool type )
 		this->type = type;
 		if( type )
 		{
-			this->timer.terminate();
+			this->timer.stop();
 			this->redraw();
 		}
 		else

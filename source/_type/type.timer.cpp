@@ -12,7 +12,7 @@ void _timer::start()
 	_timer::globalTimersToExecute.push_back( this ); // kotzen
 }
 
-void _timer::terminate()
+void _timer::stop()
 {
 	if( !this->runs )
 		return;

@@ -50,9 +50,9 @@ namespace _luafunc
 	template<> inline _dimension		check<_dimension>( lua_State* L , int index ){ return string2dimension[ luaL_checkstring( L , index ) ]; }
 	template<> inline _style			check<_style>( lua_State* L , int index ){ _style style; applyString2style( style , luaL_checkstring( L , index ) ); return style; }
 	template<> inline _pixel			check<_pixel>( lua_State* L , int index ){
-		if( lua_isstring( L , index ) )
-			return string2color[ lua_tolstring( L , index , nullptr ) ];
-		return lua_tointeger( L , index );
+		if( lua_isnumber( L , index ) )
+			return lua_tointeger( L , index );
+		return string2color[ luaL_checkstring( L , index ) ];
 	}
 	inline int							checkfunction( lua_State* L , int index )
 	{
@@ -83,6 +83,13 @@ namespace _luafunc
 	template<> inline _eventCallType	lightcheck<_eventCallType>( lua_State* L , int index , _eventCallType&& fallback ){ return lua_isstring( L , index ) ? string2eventCallType[ luaL_checkstring( L , index ) ] : fallback; }
 	template<> inline _dimension		lightcheck<_dimension>( lua_State* L , int index , _dimension&& fallback ){ return lua_isstring( L , index ) ? string2dimension[luaL_checkstring(L, index)] : fallback; }
 	template<> inline _style			lightcheck<_style>( lua_State* L , int index , _style&& style ){ if( lua_isstring( L , index ) ) applyString2style( style , luaL_checkstring( L , index ) ); return (_style&&)style; }
+	template<> inline _pixel			lightcheck<_pixel>( lua_State* L , int index , _pixel&& fallback ){
+		if( lua_isnumber( L , index ) )
+			return lua_tointeger( L , index );
+		if( lua_type( L , index ) == LUA_TSTRING )
+			return string2color[ lua_tolstring( L , index , nullptr ) ];
+		return fallback;
+	}
 	template<typename T1, typename T2> _map<T1,T2>
 										lightcheck( lua_State* L , int index , _map<T1,T2>&& fallback )
 	{
@@ -145,13 +152,6 @@ namespace _luafunc
 			
 			lua_pop( L , 1 );// Pop Value
 		}
-		return fallback;
-	}
-	template<> inline _pixel			lightcheck<_pixel>( lua_State* L , int index , _pixel&& fallback ){
-		if( lua_isstring( L , index ) )
-			return string2color[ lua_tolstring( L , index , nullptr ) ];
-		if( lua_isnumber( L , index ) )
-			return lua_tointeger( L , index );
 		return fallback;
 	}
 

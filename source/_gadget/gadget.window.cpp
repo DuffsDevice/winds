@@ -5,7 +5,7 @@
 
 void _window::maximize()
 {
-	if( this->maximized || !this->isResizeable() )
+	if( this->isMaximized() || !this->isResizeable() )
 		return;
 	
 	_gadgetScreen* screen = this->getScreen();
@@ -19,11 +19,11 @@ void _window::maximize()
 	
 	if( maxDim.isValid() )
 	{
-		this->maximized = true;
 		this->normalDimensions = new _rect( this->getDimensions() );
 		
 		// Maximizing
 		this->setDimensions( maxDim );
+		this->setStyle( this->getStyle() | _styleAttr::notResizeable );
 		this->triggerEvent( onMaximize );
 	}
 }
@@ -40,14 +40,14 @@ void _window::restore()
 
 void _window::unMaximize()
 {
-	if( this->maximized )
+	if( this->isMaximized() )
 	{
-		this->maximized = false;
-		
 		_rect dims = *this->normalDimensions;
 		delete this->normalDimensions;
+		this->normalDimensions = nullptr;
 		
 		// Set back the old dimensions
+		this->setStyle( this->getStyle() | _styleAttr::resizeable );
 		this->setDimensions( dims );
 		this->triggerEvent( onUnMaximize );
 	}
@@ -90,7 +90,7 @@ _callbackReturn _window::updateHandler( _event event )
 	else
 		that->button[0]->hide();
 	
-	if( that->isResizeable() )
+	if( that->isResizeable() || that->isMaximized() )
 	{
 		lblWidth -= 10;
 		btnX -= 9;
@@ -226,7 +226,10 @@ _callbackReturn _window::mouseClickHandler( _event event )
 	// Get Source
 	_window* that = (_window*)event.getGadget();
 	
-	if( event.getPosY() > 11 || !that->isResizeable() )
+	if( event.getPosY() > 11 )
+		return not_handled;
+	
+	if( !that->isResizeable() && !that->isMaximized() )
 		return not_handled;
 	
 	if( that->isMaximized() )
@@ -328,7 +331,6 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )
 	, minimized( false )
-	, maximized( false )
 	, closeable( closeable )
 {
 	this->setPadding( { 1 , 10 , 1 , 1 } );
@@ -345,7 +347,7 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6
-	this->icon = new _imagegadget( 2 , 2 , bmp );
+	this->icon = new _imagegadget( 2 , 2 , move(bmp) );
 	
 	// Append it to this button
 	this->addEnhancedChild( this->label );

@@ -66,12 +66,12 @@ class _timer
 		
 		//! Dtor
 		~_timer(){
-			this->terminate();
+			this->stop();
 			this->deleteCallback();
 		}
 		
-		//! Terminates all instances of this timer that are currently runs
-		void terminate();
+		//! Terminates all instances of this timer that are currently running
+		void stop();
 		
 		//! Starts the timer
 		void start();
@@ -94,6 +94,22 @@ class _timer
 				delete this->callback;
 			this->callback = nullptr;
 		}
+		
+		//! Set duration after which the callback should be called
+		void setDuration( _tempTime duration ){
+			this->duration = duration;
+		}
+		
+		//! Get duration after which the callback is called
+		_tempTime getDuration(){ return this->duration; }
+		
+		//! Set whether the callback should repeatingly be called
+		void setRepeating( bool repeating = true ){
+			this->repeating = repeating;
+		}
+		
+		//! Check if the timer is set on repeat
+		bool isRepeating(){ return this->repeating; }
 };
 
 

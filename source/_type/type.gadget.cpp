@@ -177,7 +177,7 @@ void _gadget::blinkHandler()
 {
 	if( this->counter > 5 )
 	{
-		blinkTimer.terminate();
+		blinkTimer.stop();
 		this->counter = 0;
 		return;
 	}
@@ -190,7 +190,7 @@ void _gadget::blinkHandler()
 
 void _gadget::blink()
 {
-	blinkTimer.terminate();
+	blinkTimer.stop();
 	blinkTimer.setCallback( make_callback( this , &_gadget::blinkHandler ) );
 	blinkTimer.start();
 }

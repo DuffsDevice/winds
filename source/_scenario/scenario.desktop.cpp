@@ -53,14 +53,14 @@ _scDesktop::_scDesktop()
 	
 	//_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
 	_system::executeCommand("%SYSTEM%/exampleprogram.exe ");
-	//_system::executeCommand("%SYSTEM%/paint.exe");
-	//_system::executeCommand("%SYSTEM%/pong.exe");
+	_system::executeCommand("%SYSTEM%/paint.exe");
+	_system::executeCommand("%SYSTEM%/pong.exe");
 	//_system::executeCommand("%SYSTEM%/pong.exe");
 	//_system::executeCommand("%SYSTEM%/pong.exe");
 	//_system::executeCommand("%SYSTEM%/pong.exe");
 	
 	//_system::_gadgetHost_->addChild( new _calendar( 99 , 80 , 10 , 10 , _time::date( 2015 , 3 , 1 ) ) );
-	_system::_gadgetHost_->addChild( new _counter( 30 , 50 , 30 ) );
+	//_system::_gadgetHost_->addChild( new _counter( 30 , 50 , 30 ) );
 	
 	//_system::_gadgetHost_->addChild( new _colorpicker( 60 , 40 , 20 , 20 ) );
 	

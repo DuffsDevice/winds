@@ -91,6 +91,7 @@ _user::_user( string folderName ) :
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	this->dTC = this->getIntAttr( "desktopColor" );	
 	this->mKF = this->getIntAttr( "magnifyKeyboardFocus" );	
+	this->isAdmin = this->getIntAttr( "adminRights" );
 	
 	// Set Currently Working directory
 	_cwdchanger cw ( "%USERS%/" + this->folderName );

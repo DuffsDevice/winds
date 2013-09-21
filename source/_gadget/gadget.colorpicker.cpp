@@ -146,7 +146,7 @@ _callbackReturn _colorpicker::refreshHandler( _event event )
 	// Reset to white
 	bP.fill( COLOR_WHITE );
 	
-	return handled;
+	return use_default;
 }
 
 void _colorpicker::refreshBigGradient()
