@@ -6,11 +6,8 @@ using namespace _luafunc;
 ##            Lua-Label           ##
 ##################################*/
 
-_lua_label::_lua_label( lua_State* L ) : 
-	_lua_gadget( 
-		new _label( check<int>( L , 1 ) , check<int>( L , 2 ) , check<string>( L , 3 ) , lightcheck<_style>( L , 4 , _style() ) )
-	)
-	, _lua_interface_input( (_label*)_lua_gadget::getGadget() )
+_lua_label::_lua_label( lua_State* L ) :
+	_lua_gadget( new _label( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , check<string>( L , 5 ) , lightcheck<_style>( L , 6 , _style() ) ) )
 { }
 
 //! Lua-window

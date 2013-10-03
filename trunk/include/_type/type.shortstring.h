@@ -120,6 +120,14 @@ namespace std
 				return this->data[ std::max( 0 , std::min( maxBytes - 1 , idx ) ) ];
 			}
 			
+			size_t length() const {
+				return strlen( this->data );
+			}
+			
+			bool empty() const {
+				return this->data[0] == '\0';
+			}
+			
 			const char* c_str() const { return this->data; }
 		
 	};

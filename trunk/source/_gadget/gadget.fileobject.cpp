@@ -6,23 +6,50 @@
 #include "_type/type.shortcut.h"
 #include "_type/type.gadget.helpers.h"
 
-_callbackReturn _fileobject::clickHandler( _event event )
+_callbackReturn _fileobject::updateHandler( _event event )
 {
 	_fileobject* that = event.getGadget<_fileobject>();
 	
-	// Execute!
-	if( that->file->isDirectory() )
+	switch( that->viewType )
 	{
-		if( that->parent->getType() == _gadgetType::fileview )
+		case _fileviewType::symbol_big:
+			that->setSizeIfAuto( 26 , 26 );
+			break;
+		case _fileviewType::list:
+			that->setSizeIfAuto(
+				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::_rtA_->getDefaultFontSize() ) + 11
+				, _system::getUser()->fOH
+			);
+			break;
+		default:
+			break;
+	};
+	
+	return handled;
+}
+
+void _fileobject::execute( _cmdArgs&& args , bool openInNewWindow )
+{
+	// Execute!
+	if( this->file->isDirectory() )
+	{
+		if( openInNewWindow )
+			_system::executeCommand("%SYSTEM%/explorer.exe -" + this->file->getFileName() );
+		else if( this->parent->getType() == _gadgetType::fileview )
 		{
-			// Trigger 'onEdit'-Event
-			that->parent->triggerEvent( onEdit );
+			((_fileview*)this->parent)->setPath( this->file->getFileName() );
 			
-			((_fileview*)that->parent)->setPath( that->file->getFileName() );
+			// Trigger 'onEdit'-Event
+			this->parent->triggerEvent( onEdit );
 		}
 	}
 	else
-		that->file->execute();
+		this->file->execute( move(args) );
+}
+
+_callbackReturn _fileobject::clickHandler( _event event )
+{
+	event.getGadget<_fileobject>()->execute();
 	
 	return handled;
 }
@@ -44,27 +71,16 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 		{	
 			bP.fill( COLOR_TRANSPARENT );
 			
-			string ext = that->file->getExtension();
-			
-			// Certain Files do not have an .extension
-			if( !_system::getUser()->sFE || !ext.length() )
-				ext = "";
-			else
-				ext = "." + ext;
-			
-			string fullName = that->file->getName() + ext;
-			
 			// Receive Font
-			const _font* ft = _system::getFont();
-			
-			// Font Size
-			int ftSize = _system::_rtA_->getDefaultFontSize();
+			const _font*	ft = _system::getFont();
+			_u8				ftSize = _system::_rtA_->getDefaultFontSize();
+			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
 			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , COLOR_WHITE , ftSize );
 			
-			// Set Icon
-			const _bitmap& fileIcon = that->file->getFileImage();
+			// Copy Icon
+			_constbitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				( 25 - fileIcon.getWidth() ) >> 1 // X
@@ -74,49 +90,31 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			// Draw Outer Dotted Line Background
 			if( that->hasFocus() )
-			{
-				that->bitmap.drawVerticalDottedLine( 0 , 0 , myH , RGB255( 10 , 36 , 106 ) );
-				that->bitmap.drawVerticalDottedLine( myW - 1 , 0 , myH , RGB255( 10 , 36 , 106 ) );
-				that->bitmap.drawHorizontalDottedLine( 0 , 0 , myW , RGB255( 10 , 36 , 106 ) );
-				that->bitmap.drawHorizontalDottedLine( 0 , myH - 1 , myW , RGB255( 10 , 36 , 106 ) );
-			}
+				that->bitmap.drawDottedRect( 0 , 0 , myH , myW , RGB255( 10 , 36 , 106 ) );
 			
 			break;
 		}
 		case _fileviewType::list:
 		default:
 		{
-			// Darw Background
+			// Draw Background
 			bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_TRANSPARENT );
 			
-			string ext = that->file->getExtension();
-			
-			// Certain Files do not have an .extension
-			if( !_system::getUser()->sFE || !ext.length() )
-				ext = "";
-			else
-				ext = "." + ext;
-			
-			string fullName = that->file->getName() + ext;
-			
-			// Receive Font
-			const _font* ft = _system::getFont();
-			
-			// Font Size
-			int ftSize = _system::_rtA_->getDefaultFontSize();
-			
-			// Font Color
-			_pixel ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
+			// Font
+			const _font*	ft = _system::getFont();
+			_u8				ftSize = _system::_rtA_->getDefaultFontSize();
+			_pixel			ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
+			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
 			bP.drawString( 11 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
-			// Set Icon
-			const _bitmap& fileIcon = that->file->getFileImage();
+			// Copy Icon
+			_constbitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				5 - ( fileIcon.getWidth() >> 1 ) // X
-				, ( _system::getUser()->fOH >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
+				, ( that->getHeight() >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
 			
@@ -135,8 +133,8 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType viewtype , bool singleClickToExecute , _style&& style ) :
-	_gadget( _gadgetType::fileobject , 50 , _system::getUser()->fOH , x , y , (_style&&)style )
+_fileobject::_fileobject( _optValue<_length> width , _optValue<_length> height , _optValue<_coord> x , _optValue<_coord> y , string&& fl , _fileviewType viewtype , bool singleClickToExecute , _style&& style ) :
+	_gadget( _gadgetType::fileobject , move(width) , move(height) , move(x) , move(y) , (_style&&)style )
 	, file( new _direntry(fl) )
 	, viewType( viewtype )
 	, pressed( false )
@@ -147,43 +145,11 @@ _fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType view
 		this->file = new _shortcut( fl );
 	}
 	
-	switch( this->viewType )
-	{
-		case _fileviewType::symbol_big:
-		{
-			this->setDimensions( _rect( x , y , 26 , 26 ) );
-			
-			auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 2 , 2 , true , 0 );
-			this->setInternalEventHandler( onParentSet , cb );
-			this->setInternalEventHandler( onParentResize , cb );
-			this->setInternalEventHandler( onPreSet , cb );
-			break;
-		}
-		case _fileviewType::list:
-		default:
-		{
-			string ext = this->file->getExtension();
-			
-			// Certain Files do not have an .extension
-			if( !_system::getUser()->sFE || !ext.length() )
-				ext = "";
-			else
-				ext = "." + ext;
-			
-			string fullName = this->file->getName() + ext;
-			
-			// Receive Font
-			const _font* ft = _system::getFont();
-			
-			this->setWidth( ft->getStringWidth( fullName ) + 11 );
-			
-			auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 2 , 2 , false , 0);
-			this->setInternalEventHandler( onParentSet , cb );
-			this->setInternalEventHandler( onPreSet , cb );
-			
-			break;
-		}
-	};
+	// Register Update Handler..
+	this->setInternalEventHandler( onUpdate , make_callback( &_fileobject::updateHandler ) );
+	
+	// and update Size
+	this->updateNow();
 	
 	// Register Handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_fileobject::refreshHandler ) );
@@ -191,17 +157,12 @@ _fileobject::_fileobject( _coord x , _coord y , string&& fl , _fileviewType view
 	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( singleClickToExecute ? onMouseClick : onMouseDblClick , make_callback( &_fileobject::clickHandler ) );
 	
-	//this->setInternalEventHandler( onDragging , make_callback( &_fileobject::dragHandler ) );
-	//this->setInternalEventHandler( onDragStart , make_callback( &_fileobject::dragHandler ) );
-	//this->setInternalEventHandler( onDragStop , make_callback( &_fileobject::dragHandler ) );
-	
 	// Refresh...
 	this->redraw();
 }
 
 _fileobject::~_fileobject()
 {
-	this->removeChildren( true );
 	if( this->file )
 		delete this->file;
 }

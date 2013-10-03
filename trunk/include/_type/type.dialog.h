@@ -86,7 +86,6 @@ class _dialog{
 		//! Dtor
 		virtual ~_dialog(){
 			this->deleteCallback();
-			this->terminate();
 		}
 };
 

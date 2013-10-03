@@ -16,7 +16,7 @@ class _lua_label : public _lua_gadget , public _lua_interface_input<_label> {
 		
 		_lua_label( lua_State* L );
 		
-		_lua_label( _label* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
+		_lua_label( _label* c ) : _lua_gadget( c , false )
 		{ }
 		
 		

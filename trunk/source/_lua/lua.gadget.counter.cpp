@@ -26,27 +26,25 @@ _lua_counter::_lua_counter( lua_State* L )
 			check<int>( L , 3 );
 			break;
 	}
-	
-	_lua_interface_input::input = (_counter*)_lua_gadget::getGadget();
 }
 
 //! setUpperBound
-int _lua_counter::setUpperBound( lua_State* L ){ _lua_interface_input::input->setUpperBound( check<int>( L , 1 ) ); return 0; }
+int _lua_counter::setUpperBound( lua_State* L ){ getDerived()->setUpperBound( check<int>( L , 1 ) ); return 0; }
 
 //! setLowerBound
-int _lua_counter::setLowerBound( lua_State* L ){ _lua_interface_input::input->setLowerBound( check<int>( L , 1 ) ); return 0; }
+int _lua_counter::setLowerBound( lua_State* L ){ getDerived()->setLowerBound( check<int>( L , 1 ) ); return 0; }
 
 //! getLowerBound
-int _lua_counter::getLowerBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getUpperBound() ); return 1; }
+int _lua_counter::getLowerBound( lua_State* L ){ lua_pushnumber( L , getDerived()->getUpperBound() ); return 1; }
 
 //! getUpperBound
-int _lua_counter::getUpperBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getLowerBound() ); return 1; }
+int _lua_counter::getUpperBound( lua_State* L ){ lua_pushnumber( L , getDerived()->getLowerBound() ); return 1; }
 
 //! increase
-int _lua_counter::increase( lua_State* L ){ _lua_interface_input::input->increase(); return 0; }
+int _lua_counter::increase( lua_State* L ){ getDerived()->increase(); return 0; }
 
 //! decrease
-int _lua_counter::decrease( lua_State* L ){ _lua_interface_input::input->decrease(); return 0; }
+int _lua_counter::decrease( lua_State* L ){ getDerived()->decrease(); return 0; }
 
 //! Lua-button
 const char _lua_counter::className[] = "Counter";

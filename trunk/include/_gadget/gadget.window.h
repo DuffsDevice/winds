@@ -79,7 +79,7 @@ class _window : public _gadget {
 		void setMinimizeable( bool val ){ this->minimizeable = val; this->update(); }
 		
 		//! Get the window's icon
-		const _bitmap& getIcon() const { return this->icon->getImage(); }
+		_constbitmap& getIcon() const { return this->icon->getImage(); }
 		
 		//! Ctor
 		_window( _length width , _length height , _coord x , _coord y , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable ) :

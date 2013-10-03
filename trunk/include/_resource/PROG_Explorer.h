@@ -21,6 +21,8 @@ class PROG_Explorer : public _progC {
 		void		main( _cmdArgs&& args );
 		void		destruct();
 		
+		void setWindowTitle();
+		
 		_callbackReturn handler( _event event );
 		
 	public:

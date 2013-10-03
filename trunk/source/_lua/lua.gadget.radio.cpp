@@ -9,7 +9,6 @@ using namespace _luafunc;
 
 _lua_radio::_lua_radio( lua_State* L ) : 
 	_lua_gadget( new _radio( check<int>( L , 1 ) , check<int>( L , 2 ) , Lunar<_lua_radiogroup>::check( L , 3 ) , lightcheck<int>( L , 4 , -1 ) , lightcheck<_style>( L , 5 , _style() ) ) )
-	, _lua_interface_input( (_radio*)_lua_gadget::getGadget() )
 { }
 
 //! Lua-button

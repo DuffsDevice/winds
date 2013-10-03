@@ -75,7 +75,7 @@ void _bitmap::setHeight( _length h )
 		
 		do
 			*tmpNew++ = *oldBmp++;
-		while( --cnt );
+		while( --cnt > 0 );
 		
 		// Release old Buffer and set new Buffer
 		this->destruct();
@@ -136,7 +136,7 @@ void _bitmap::resize( _length w , _length h )
 			
 			do
 				*tmpNew++ = *oldBmp++;
-			while( --cnt );
+			while( --cnt > 0 );
 		}
 		
 		// Finish work, copy buffers, free the old (if needed)
@@ -175,7 +175,7 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 	do{
 		*ptr = color;
 		ptr += this->width;
-	}while( --length );
+	}while( --length > 0 );
 }
 
 void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
@@ -187,17 +187,17 @@ void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pi
 	if ( ! this->clipCoordinatesY( x , y , y2 ) ) return;
 		
 	// Calculate new height
-	length = ( y2 - y + 1 ) >> 1;
+	length = y2 - y + 1;
 	
 	// Pointer to BitMapBase
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	while( length-- )
-	{
+	do{
 		*ptr = color;
 		ptr += this->width << 1;
-	}
+		length-=2;
+	}while( length > 0 );
 }
 
 void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
@@ -228,19 +228,58 @@ void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _
 	if ( ! this->clipCoordinatesX( x , y , x2 ) ) return;
 		
 	// Calculate new width
-	length = ( x2 - x + 1 ) >> 1;
+	length = x2 - x + 1;
 	
 	// Pointer to BitMapBase
 	_pixel* ptr = this->bmp + x + y * this->width;
 	
 	// Fill...
-	while( length-- )
+	do
 	{
 		*ptr++ = color;
 		ptr++;
-	}
+		length-=2;
+	}while( length > 0 );
 	
 }
+
+void _bitmap::drawDottedRect( _coord x , _coord y , _length w , _length h , _pixel color )
+{
+	if( !w || !h )
+		return;
+	
+	if( w == 1 )
+	{
+		if( h == 1 )
+			drawPixel( x , y , color );
+		else
+			this->drawVerticalDottedLine( x , y , h , color );
+	}
+	else if( h == 1 )
+		this->drawHorizontalDottedLine( x , y , w , color );
+	else
+	{
+		// Left and top part
+		this->drawVerticalDottedLine( x , y , h , color );
+		this->drawHorizontalDottedLine( x + 2 , y , w - 2 , color );
+		
+		_coord x2 = x + w - 1;
+		_coord y2 = y + h - 1;
+		
+		// Right part
+		if( w&1 ) // Not Divideable by 2
+			this->drawVerticalDottedLine( x2 , y + 2 , h - 2 , color );
+		else
+			this->drawVerticalDottedLine( x2 , y + 1 , h - 1 , color );
+		
+		// Bottom Part
+		if( h&1 ) // Not Divideable by 2
+			this->drawHorizontalDottedLine( x + 2 , y2 , w - 3 , color );
+		else
+			this->drawHorizontalDottedLine( x + 1 , y2 , w - 2 , color );
+	}
+}
+
 void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
 {
 	if( !w || !h )
@@ -303,7 +342,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 			case 2:		memSet( to , color , w );to += this->width;
 			case 1:		memSet( to , color , w );to += this->width;
 			case 0:		memSet( to , color , w );to += this->width;
-				} while(--tN > 0);
+				} while( --tN > 0 );
 		}
 	}
 }
@@ -324,7 +363,7 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 		{
 			if( *ptr == color )
 				*ptr = replace;
-		}while( --cnt );
+		}while( --cnt > 0 );
 	}
 	else
 	{
@@ -332,7 +371,7 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 		{
 			if( !RGB_GETA( *ptr ) )
 				*ptr = replace;
-		}while( --cnt );
+		}while( --cnt > 0 );
 	}
 }
 
@@ -350,10 +389,10 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 				if( ( val += (rand1) ) > 97 )\
 					val -= 97;\
 				pos[j-1] = *(temp + ( val & (diff2) ));\
-			}while( --j );\
+			}while( --j > 0 );\
 			pos += this->width;\
 			temp++;	\
-		}while( --h1 );\
+		}while( --h1 > 0 );\
 		\
 		h1 = min( h , _length( (diff2) + 1 ) );\
 		h -= h1;\
@@ -369,10 +408,10 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 				if( ( val += (rand1) ) > 97 )\
 					val -= 97;\
 				pos[j-1] = *( temp + ( val & (diff1) ) - (diff2) );\
-			}while( --j );\
+			}while( --j > 0 );\
 			pos += this->width;\
 			temp++;\
-		}while( --h );\
+		}while( --h > 0 );\
 		\
 		do\
 		{\
@@ -382,10 +421,10 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 				if( ( val += (rand1) ) > 97 )\
 					val -= 97;\
 				pos[j-1] = *( temp + ( val & (diff2) ) - (diff2) );\
-			}while( --j );\
+			}while( --j > 0 );\
 			pos += this->width;\
 			temp++;	\
-		}while( --h1 );\
+		}while( --h1 > 0 );\
 	}
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
@@ -483,7 +522,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 			}while( --j );
 			
 			pos += this->width;
-		}while( --h );
+		}while( --h > 0 );
 	}
 	
 	delete[] gradTable;
@@ -602,10 +641,10 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 			do
 			{
 				pos[j-1] = *temp--;
-			}while( --j );
+			}while( --j > 0 );
 			
 			pos += this->width;
-		}while( --h );
+		}while( --h > 0 );
 	}
 	
 	delete[] gradTable;
@@ -795,7 +834,7 @@ void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _cha
 	}while( *++str );
 }
 
-void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
+void _bitmap::copy( _coord x , _coord y , _constbitmap& data )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copy" );
@@ -827,10 +866,10 @@ void _bitmap::copy( _coord x , _coord y , const _bitmap& data )
 		copyData += dataWidth;
 		myData += this->width;
 		
-	}while( --h );
+	}while( --h > 0 );
 }
 
-__attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , const _bitmap& data )
+__attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , _constbitmap& data )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyTransparent" );
@@ -905,7 +944,7 @@ __attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , const 
 	#undef COPY
 }
 
-void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
+void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , _constbitmap& data )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyHorizontalStretch" );
@@ -929,14 +968,14 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , const _bi
 	_length height = y2 - y + 1;
 	_length width = x2 - x + 1;
 	
-	for( _int i = 0; i != height; i++ )
+	for( _int i = 0; i < height; i++ )
 	{
 		memSet( myData , copyData[y - origY + i] , width );
 		myData += this->width;
 	}
 }
 
-void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap& data )
+void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , _constbitmap& data )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyVerticalStretch" );
@@ -967,11 +1006,10 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , const _bitm
 	_pixelArray destination = myData;
 	
 	// Copy that line!
-	while( height-- )
-	{
+	do{
 		destination += this->width;
 		memCpy( destination , myData , width );
-	}
+	}while( --height > 0 );
 }
 
 void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord destY , _length width , _length height )
@@ -1037,7 +1075,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 		_pixelArray dst = this->bmp + destX + this->width * destY;
 		
 		// Copy up
-		for ( _int i = 0 ; i != height ; ++i , src += this->width , dst += this->width )
+		for ( _int i = 0 ; i < height ; ++i , src += this->width , dst += this->width )
 			memCpy( dst , src , width );
 	}
 	else
@@ -1046,7 +1084,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 		_pixelArray dst = this->bmp + destX + this->width * ( destY + height - 1 );
 		
 		// Copy down
-		for ( _u32 i = height ; i ; --i , src -= this->width , dst -= this->width )
+		for ( _u32 i = height ; i > 0 ; --i , src -= this->width , dst -= this->width )
 			memCpy( dst , src , width );
 	}
 }
@@ -1179,7 +1217,7 @@ void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _
 			}
 			else
 				offset += xStep;
-		}while( --i );
+		}while( --i > 0 );
 		
     }//end if xdiff > ydiff
     //case for changes more in Y than in X
@@ -1204,7 +1242,7 @@ void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _
 			else
 				offset += yStep;
 			
-		}while( --i );
+		}while( --i > 0 );
     }
 	else // For straight diagonal Line
 	{
@@ -1214,7 +1252,7 @@ void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _
 		{
 			*offset = color;
 			offset += xStep + yStep;
-		}while( --i );
+		}while( --i > 0 );
 	}
 }
 
@@ -1337,7 +1375,7 @@ void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel c
 	}
 }
 
-_bitmap& _bitmap::operator=( const _bitmap& bmp )
+_bitmap& _bitmap::operator=( _constbitmap& bmp )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a =_codeAnalyzer( "_bitmap::copyOperator" );

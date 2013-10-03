@@ -186,7 +186,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	
 	if( that->hasFocus() )
 	{
-		const _bitmap& design = _system::_rtA_->getWindowsDesignActive();
+		_constbitmap& design = _system::_rtA_->getWindowsDesignActive();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -198,7 +198,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	}
 	else
 	{
-		const _bitmap& design = _system::_rtA_->getWindowsDesignBlurred();
+		_constbitmap& design = _system::_rtA_->getWindowsDesignBlurred();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );

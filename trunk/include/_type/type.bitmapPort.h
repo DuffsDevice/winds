@@ -201,6 +201,17 @@ class _bitmapPort
 		void drawRect( _coord x , _coord y , _length width , _length height , _pixel color );
 		
 		/**
+		 * Draw a dotted Rectangle onto the bmp
+		 * @param x X-Position (left)
+		 * @param y Y-Position Start (top)
+		 * @param width Width of the Rectangle (1 means: 1Pixel in width)
+		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
+		 * @param color Color of the Rect
+		 * @return void
+		 */
+		void drawDottedRect( _coord x , _coord y , _length width , _length height , _pixel color );
+		
+		/**
 		 * Draw a filled Rectangle onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start (top)
@@ -311,7 +322,7 @@ class _bitmapPort
 		 * @param data 		Other _bitmap
 		 * @return void
 		 */
-		void copy( _coord x , _coord y , const _bitmap& data );
+		void copy( _coord x , _coord y , _constbitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap but with respecting the alpha channel
@@ -320,7 +331,7 @@ class _bitmapPort
 		 * @param data Other _bitmap
 		 * @return void
 		 */
-		void copyTransparent( _coord x , _coord y , const _bitmap& data );
+		void copyTransparent( _coord x , _coord y , _constbitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the line x=0 and stretching that line over width
@@ -330,7 +341,7 @@ class _bitmapPort
 		 * @param data Other _bitmap to copy
 		 * @return void
 		 */
-		void copyHorizontalStretch( _coord x , _coord y , _length width , const _bitmap& data );
+		void copyHorizontalStretch( _coord x , _coord y , _length width , _constbitmap& data );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap by taking the row y=0 and stretching that line over width
@@ -340,7 +351,7 @@ class _bitmapPort
 		 * @param data Other _bitmap to copy
 		 * @return void
 		 */
-		void copyVerticalStretch( _coord x , _coord y , _length width , const _bitmap& data );
+		void copyVerticalStretch( _coord x , _coord y , _length width , _constbitmap& data );
 };
 
 #endif

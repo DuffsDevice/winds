@@ -14,7 +14,7 @@ _lua_bitmap::_lua_bitmap( _bitmap* b ) :
 	, bm( b )
 { }
 
-_lua_bitmap::_lua_bitmap( const _bitmap* b ) :
+_lua_bitmap::_lua_bitmap( _constbitmap* b ) :
 	wasAllocated( true )
 	, bm( new _bitmap( *b ) ) // Copy bitmap
 { }
@@ -91,6 +91,9 @@ int _lua_bitmap::drawVerticalDottedLine( lua_State* L ){ this->bm->drawVerticalD
 
 //! drawRect
 int _lua_bitmap::drawRect( lua_State* L ){ this->bm->drawRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 )); return 0; }
+
+//! drawDottedRect
+int _lua_bitmap::drawDottedRect( lua_State* L ){ this->bm->drawDottedRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 )); return 0; }
 
 //! drawFilledRect
 int _lua_bitmap::drawFilledRect( lua_State* L ){ this->bm->drawFilledRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 )); return 0; }
@@ -227,6 +230,7 @@ Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalDottedLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalDottedLine),
 	LUA_CLASS_FUNC(_lua_bitmap, drawRect),
+	LUA_CLASS_FUNC(_lua_bitmap, drawDottedRect),
 	LUA_CLASS_FUNC(_lua_bitmap, drawFilledRect),
 	LUA_CLASS_FUNC(_lua_bitmap, drawVerticalGradient),
 	LUA_CLASS_FUNC(_lua_bitmap, drawHorizontalGradient),

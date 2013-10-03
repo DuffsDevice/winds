@@ -16,14 +16,33 @@
 #include "_lua/lua.gadget.scrollBar.h"
 #include "_lua/lua.gadget.stickybutton.h"
 #include "_lua/lua.gadget.textbox.h"
+#include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.radio.h"
 #include "_lua/lua.gadget.slider.h"
 
+// For error-dialogs
+#include "_dialog/dialog.runtimeerror.h"
+
 namespace _luafunc
 {
-	void pushEvent( lua_State* L , _event&& arg )
+	_map<lua_State*,_runtimeErrorDialog*> errorDialogs;
+	
+	void errorHandler( lua_State* L , string message )
 	{
+		auto& dialogRef = errorDialogs[L];
+		
+		// If there is already a dialog: return, we only allow one dialog per state
+		if( dialogRef )
+			return;
+		
+		// Create error-dialog that will destroy itself once it finished
+		dialogRef = new _runtimeErrorDialog( _system::getLocalizedString( "lbl_lua_parser_error" ) , move(message) );
+		dialogRef->setCallback( make_inline_callback<void(_dialogResult)>( [=]( _dialogResult )->void{ delete dialogRef; } ) );
+		dialogRef->execute();
+	}
+	
+	void pushEvent( lua_State* L , _event&& arg ){
 		Lunar<_lua_event>::push( L , new _lua_event( move(arg) ) );
 	}
 	
@@ -57,6 +76,9 @@ namespace _luafunc
 				break;
 			case _gadgetType::textbox:
 				Lunar<_lua_textbox>::push( L , new _lua_textbox( (_textbox*)gadget ) );
+				break;
+			case _gadgetType::textarea:
+				Lunar<_lua_textarea>::push( L , new _lua_textarea( (_textarea*)gadget ) );
 				break;
 			case _gadgetType::counter:
 				Lunar<_lua_counter>::push( L , new _lua_counter( (_counter*)gadget ) );
@@ -116,6 +138,8 @@ namespace _luafunc
 		if( ( tmp = Lunar< _lua_select >::lightcheck( L , index ) ) != nullptr )
 			return tmp->getGadget();
 		if( ( tmp = Lunar< _lua_textbox >::lightcheck( L , index ) ) != nullptr )
+			return tmp->getGadget();
+		if( ( tmp = Lunar< _lua_textarea >::lightcheck( L , index ) ) != nullptr )
 			return tmp->getGadget();
 		if( ( tmp = Lunar< _lua_counter >::lightcheck( L , index ) ) != nullptr )
 			return tmp->getGadget();

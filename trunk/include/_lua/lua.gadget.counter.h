@@ -16,7 +16,7 @@ class _lua_counter : public _lua_gadget , public _lua_interface_input<_counter> 
 		
 		_lua_counter( lua_State* L );
 		
-		_lua_counter( _counter* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
+		_lua_counter( _counter* c ) : _lua_gadget( c , false )
 		{ }
 		
 		//! setUpperBound

@@ -16,7 +16,7 @@ class _lua_radio : public _lua_gadget , public _lua_interface_input<_radio> {
 		
 		_lua_radio( lua_State* L );
 		
-		_lua_radio( _radio* b ) : _lua_gadget( b , false ) , _lua_interface_input( b )
+		_lua_radio( _radio* b ) : _lua_gadget( b , false )
 		{ }
 		
 		//! Lunar !//

@@ -13,6 +13,7 @@ _wifiSocketClient* client = nullptr;
 #include "_gadget/gadget.progressbar.h"
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.colorpicker.h"
+#include "_gadget/gadget.expandbutton.h"
 
 namespace{
 
@@ -51,18 +52,10 @@ _scDesktop::_scDesktop()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , SCREEN_WIDTH - 80 );
 	
-	//_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
-	_system::executeCommand("%SYSTEM%/exampleprogram.exe ");
+	_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
+	//_system::executeCommand("%SYSTEM%/exampleprogram.exe");
 	_system::executeCommand("%SYSTEM%/paint.exe");
-	_system::executeCommand("%SYSTEM%/pong.exe");
 	//_system::executeCommand("%SYSTEM%/pong.exe");
-	//_system::executeCommand("%SYSTEM%/pong.exe");
-	//_system::executeCommand("%SYSTEM%/pong.exe");
-	
-	//_system::_gadgetHost_->addChild( new _calendar( 99 , 80 , 10 , 10 , _time::date( 2015 , 3 , 1 ) ) );
-	//_system::_gadgetHost_->addChild( new _counter( 30 , 50 , 30 ) );
-	
-	//_system::_gadgetHost_->addChild( new _colorpicker( 60 , 40 , 20 , 20 ) );
 	
 	//for( int i = 0; i < 60 ; i++)
 	//{

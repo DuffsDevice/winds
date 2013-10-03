@@ -20,38 +20,37 @@ _lua_scrollbar::_lua_scrollbar( lua_State* L ) :
 			, lightcheck<_style>( L , 8 , _style() )
 		)
 	)
-	, _lua_interface_input( (_scrollBar*)_lua_gadget::getGadget() )
-{ }
+{}
 
 //! setValue
-int _lua_scrollbar::setValue( lua_State* L ){ _lua_interface_input::input->setValue( check<int>( L , 1 ) ); return 0; };
+int _lua_scrollbar::setValue( lua_State* L ){ getDerived()->setValue( check<int>( L , 1 ) ); return 0; };
 
 //! getValue
-int _lua_scrollbar::getValue( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getValue() ); return 0; }
+int _lua_scrollbar::getValue( lua_State* L ){ lua_pushnumber( L , getDerived()->getValue() ); return 0; }
 
 //! setDimension
-int _lua_scrollbar::setDimension( lua_State* L ){ _lua_interface_input::input->setDimension( check<_dimension>( L , 1 ) ); return 0; };
+int _lua_scrollbar::setDimension( lua_State* L ){ getDerived()->setDimension( check<_dimension>( L , 1 ) ); return 0; };
 
 //! getDimension
-int _lua_scrollbar::getDimension( lua_State* L ){ push( L , _lua_interface_input::input->getDimension() ); return 1; }
+int _lua_scrollbar::getDimension( lua_State* L ){ push( L , getDerived()->getDimension() ); return 1; }
 
 //! setStep
-int _lua_scrollbar::setStep( lua_State* L ){ _lua_interface_input::input->setStep( check<int>( L , 1 ) ); return 0; };
+int _lua_scrollbar::setStep( lua_State* L ){ getDerived()->setStep( check<int>( L , 1 ) ); return 0; };
 
 //! getStep
-int _lua_scrollbar::getStep( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getStep() ); return 0; }
+int _lua_scrollbar::getStep( lua_State* L ){ lua_pushnumber( L , getDerived()->getStep() ); return 0; }
 
 //! setLength
-int _lua_scrollbar::setLength( lua_State* L ){ _lua_interface_input::input->setLength( check<int>( L , 1 ) ); return 0; };
+int _lua_scrollbar::setLength( lua_State* L ){ getDerived()->setLength( check<int>( L , 1 ) ); return 0; };
 
 //! getLength
-int _lua_scrollbar::getLength( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getLength() ); return 0; }
+int _lua_scrollbar::getLength( lua_State* L ){ lua_pushnumber( L , getDerived()->getLength() ); return 0; }
 
 //! setLength2
-int _lua_scrollbar::setLength2( lua_State* L ){ _lua_interface_input::input->setLength2( check<int>( L , 1 ) ); return 0; };
+int _lua_scrollbar::setLength2( lua_State* L ){ getDerived()->setLength2( check<int>( L , 1 ) ); return 0; };
 
 //! getLength2
-int _lua_scrollbar::getLength2( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getLength2() ); return 0; }
+int _lua_scrollbar::getLength2( lua_State* L ){ lua_pushnumber( L , getDerived()->getLength2() ); return 0; }
 
 //! Lua-button
 const char _lua_scrollbar::className[] = "ScrollBar";

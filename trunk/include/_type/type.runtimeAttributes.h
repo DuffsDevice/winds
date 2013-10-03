@@ -45,8 +45,8 @@ class _runtimeAttributes
 		const _user*			getUser() const { return this->user; }
 		const _vector<_char>& 	getKeyboardChars( _u8 layout ) const { return keyboardChar[layout]; }
 		const _vector<string>& 	getKeyboardTexts( _u8 layout ) const { return keyboardText[layout]; }
-		const _bitmap& 			getWindowsDesignActive() const { return this->windowBar; }
-		const _bitmap& 			getWindowsDesignBlurred() const { return this->windowBarBlurred; }
+		_constbitmap& 			getWindowsDesignActive() const { return this->windowBar; }
+		_constbitmap& 			getWindowsDesignBlurred() const { return this->windowBarBlurred; }
 		const _vector<_pair<string,string>>&	getAssociativeDirectories() const { return this->assocDirectories; }
 		
 		

@@ -3,7 +3,6 @@
 #define _WIN_G_CHECKBOX_
 
 #include "_type/type.gadget.h"
-#include "_gadget/gadget.label.h"
 
 class _checkbox : public _gadget {
 	
@@ -11,13 +10,10 @@ class _checkbox : public _gadget {
 		
 		_u8		intValue;
 		
-		static const _bitmap graphic[3];
+		static _constbitmap graphic[3];
 		
 		static _callbackReturn refreshHandler( _event event );
-		
 		static _callbackReturn mouseHandler( _event event );
-		
-		static _callbackReturn dragHandler( _event event );
 		
 	public:
 		
@@ -27,7 +23,7 @@ class _checkbox : public _gadget {
 		//! getIntValue
 		_int getIntValue(){ return this->intValue; }
 		
-		//! Constructor with dimsnions, coordinates, title and optional: Style
+		//! Constructor with dimensions, coordinates, title and optional: Style
 		_checkbox( _coord x , _coord y , _style&& style = _style() );
 };
 

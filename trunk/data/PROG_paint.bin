@@ -1,5 +1,7 @@
 using "System.Color"
 using "System.Event"
+using "System.ImageFile"
+using "Drawing.Font"
 using "Drawing.Bitmap"
 using "Drawing.BitmapPort"
 using "Drawing.Area"
@@ -14,8 +16,10 @@ local resizeHndl
 local canvas
 local greyBackground
 local curColor = "red"
+local imagefile
+local windowTitle = System.getLocalizedString("lbl_unnamed")
 
-function main()
+function main( filename )
 
 	local wndIcon = Bitmap( 6 , 6 )
 	wndIcon.drawFilledRect( 3 , 0 , 3 , 3 , System.rgb255( 181 , 230 , 29 ) )
@@ -25,7 +29,21 @@ function main()
 	
 	resizeHndl = ResizeHandle()
 	
-	canvas = Bitmap( 65 , 55 , "white" )
+	if filename ~= nil then
+		imagefile = ImageFile( filename )
+		
+		local temp = imagefile.getBitmap()
+		
+		if temp ~= nil then
+			canvas = Bitmap( temp.width , temp.height )
+			canvas.copy( 0 , 0 , temp )
+			windowTitle = filename
+		else
+			canvas = Bitmap( 65 , 55 , "white" )
+		end
+	else
+		canvas = Bitmap( 65 , 55 , "white" )
+	end
 	
 	greyBackground = ImageGadget( 0 , 0 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
 	greyBackground.base.setInternalEventHandler( "onDraw" , refreshHandler )
@@ -36,7 +54,7 @@ function main()
 	greyBackground.base.setUserEventHandler( "onMouseUp" , dragHandler )
 	greyBackground.base.redraw()
 	
-	wnd = Window( 100 , 100 , 10 , 10 , "Paint" , wndIcon , true , "minimizeable" )
+	wnd = Window( 100 , 100 , 10 , 10 , windowTitle .. " - Paint" , wndIcon , true , "minimizeable" )
 	wnd.base.addChild( greyBackground )
 	wnd.base.setUserEventHandler( "onResize" , windowResizeHandler )
 	wnd.base.addEnhancedChild( resizeHndl )

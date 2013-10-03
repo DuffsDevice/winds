@@ -52,14 +52,14 @@ bool _scSetupPage4::destroy( _gadget* viewParent )
 void _scSetupPage4::create( _gadget* viewParent )
 {
 	// Title
-	this->lblTitle = new _label( 13 , 28 , _system::getLocalizedString("lbl_profile") );
+	this->lblTitle = new _label( ignore , ignore , 13 , 28 , _system::getLocalizedString("lbl_profile") );
 	this->lblTitle->setColor( RGB( 30 , 30 , 30 ) );
 	this->lblTitle->setFont( _system::getFont( "ArialBlack13" ) );
 	viewParent->addChild( this->lblTitle );
 	
 	// Labels for both the profile name textbox and the profile icon
-	this->lblName = new _label( 20 , 60 , _system::getLocalizedString("txt_name") );
-	this->lblIcon = new _label( 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
+	this->lblName = new _label( ignore , ignore , 20 , 60 , _system::getLocalizedString("txt_name") );
+	this->lblIcon = new _label( ignore , ignore , 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
 	this->lblName->setColor( RGB( 30 , 30 , 30 ) );
 	this->lblIcon->setColor( RGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblName );
@@ -131,7 +131,7 @@ _callbackReturn _scSetupPage4::profileIconDrawHandler( _event event )
 	_imagegadget* that = event.getGadget<_imagegadget>();
 	
 	// Get index of imagegadget
-	const _bitmap& iconBitmap = imgProfileIcons[that] ;
+	_constbitmap& iconBitmap = imgProfileIcons[that] ;
 	
 	// Get bitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );

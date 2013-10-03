@@ -10,6 +10,8 @@ class _bootupScreen : public _gadgetScreen
 {
 	private:
 		
+		static _constbitmap bootLogo;
+		
 		_gadget* 		refresher;
 		_progressbar* 	bar;
 		
@@ -17,8 +19,10 @@ class _bootupScreen : public _gadgetScreen
 		
 	public:
 	
-		_bootupScreen( _u8 bgId , _style&& style = _style() | _styleAttr::canNotReceiveFocus  );
+		//! Ctor
+		_bootupScreen( _u8 bgId , _style&& style = _style() );
 		
+		//! Dtor
 		~_bootupScreen();
 	
 };

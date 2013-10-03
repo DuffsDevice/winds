@@ -1,132 +1,121 @@
+#include "_gadget/gadget.fileobject.h"
 #include "_type/type.gadget.helpers.h"
 
 namespace _gadgetHelpers
 {
 	// eventForwardRefresh :: handler
-	_callbackReturn eventForwardRefresh::refreshForwardHandler( _event event ){
+	_callbackReturn eventForwardRefresh::executor( _event event ){
 		event.getGadget()->redraw();
 		return handled;
 	}
 	
 	// eventForwardRefreshGadget :: handler
-	_callbackReturn eventForwardRefreshGadget::refreshForwardHandler(_event){
-		((_gadget*)this)->redraw();
+	_callbackReturn eventForwardRefreshGadget::executor(_event) const {
+		if( this->newGadget )
+			this->newGadget->redraw();
 		return handled;
 	}
 	
 	// eventForward :: handler
-	_callbackReturn eventForward::eventForwardHandler( _event event ){
-		return event.getGadget()->handleEvent( (_event&&)event.setType( (_eventType)(int)this ) );
+	_callbackReturn eventForward::executor( _event event ) const {
+		return event.getGadget()->handleEvent( (_event&&)event.setType( this->newType ) );
 	}
 	
 	// eventForwardGadget :: handler
-	_callbackReturn eventForwardGadget::eventForwardHandler( _event event ){
-		if( this )
-			return ((_gadget*)this)->handleEvent( (_event&&)event );
+	_callbackReturn eventForwardGadget::executor( _event event ) const {
+		if( this->destination )
+			return this->destination->handleEvent( (_event&&)event );
 		return not_handled;
 	}
 	
 	
 	// sizeParent :: ctor
 	sizeParent::sizeParent( _optValue<_length>&& smallerX , _optValue<_length>&& smallerY ) :
-		_classCallback(
-			(sizeParent*)(
-				( smallerX.isValid() ? (_length)smallerX : (-1) ) << 16
-				| ( smallerY.isValid() ? (_length)smallerY : (-1) )
-			)
-			, &sizeParent::eventHandler )
+		_dummyCallback<_eventHandler>( &sizeParent::executor )
+		, proceedX( smallerX.isValid() )
+		, proceedY( smallerY.isValid() )
+		, smallerX( (_length)smallerX )
+		, smallerY( (_length)smallerY )
 	{}
 	
 	// :: handler
-	_callbackReturn sizeParent::eventHandler( _event event )
+	_callbackReturn sizeParent::executor( _event event ) const
 	{
 		if( !event.getGadget() )
 			return not_handled;
 		
 		_gadget* parent = event.getGadget()->getParent();
-		_padding pad = parent->getPadding();
-		_length smallerX = (int)this >> 16;
-		_length smallerY = (int)this & ( ( 1 << 17 ) - 1 );
 		
-		if( smallerX >= 0 )
-		{
-			if( smallerY >= 0 )
-				event.getGadget()->setSize( parent->getWidth() - pad.left - pad.right - smallerX , parent->getHeight() - pad.top - pad.bottom - smallerY );
-			else
-				event.getGadget()->setWidth( parent->getWidth() - pad.left - pad.right - smallerX );
+		_length width = parent->getWidth() - this->smallerX;
+		_length height = parent->getHeight() - this->smallerY;
+		
+		if( !event.getGadget()->isEnhanced() ){
+			_padding pad = parent->getPadding();
+			width -= pad.left + pad.right;
+			height -= pad.top + pad.bottom;
 		}
-		else if( smallerY >= 0 )
-			event.getGadget()->setHeight( parent->getHeight() - pad.top - pad.bottom - smallerY );
+		
+		if( this->proceedX )
+		{
+			if( this->proceedY )
+				event.getGadget()->setSize( width , height );
+			else
+				event.getGadget()->setWidth( width );
+		}
+		else if( this->proceedY )
+			event.getGadget()->setHeight( height );
 		
 		return handled;
 	}
 	
 	// moveBesidePrecedent :: ctor
-	moveBesidePrecedent::moveBesidePrecedent( _dimension dim , _u8 spaceX , _u8 spaceY , bool skipHidden , _optValue<_u16>&& lbOffset ) :
-		_classCallback(
-			(moveBesidePrecedent*)(
-				(internalDataFormatStruct)
-				{
-					(_u8)dim
-					, skipHidden
-					, spaceX
-					, spaceY
-					, lbOffset.isValid() ? _u16(lbOffset) + 1 : _u16(0)
-				} // About the warning: http://www.ima.umn.edu/~arnold/disasters/ariane.html
-			)
-			, &moveBesidePrecedent::eventHandler
-		)
-	{}
+	moveBesidePrecedent::moveBesidePrecedent( _dimension dim , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY ) :
+		_dummyCallback<_eventHandler>( &moveBesidePrecedent::executor )
+		, dimension( (_u8)dim )
+		, breakLine( breakLine )
+		, spaceX( spaceX )
+		, spaceY( spaceY )
+		, offsetX( offsetX )
+		, offsetY( offsetY )
+	{} // Funny story: http://www.ima.umn.edu/~arnold/disasters/ariane.html
 	
 	// :: handler
-	_callbackReturn moveBesidePrecedent::eventHandler( _event event )
+	_callbackReturn moveBesidePrecedent::executor( _event event ) const
 	{		
 		_gadget* that = event.getGadget();
 		
-		union{
-			moveBesidePrecedent* ptr;
-			internalDataFormatStruct data;
-		} var;
-		
-		var.ptr = this;
-		
-		_dimension dim = (_dimension) var.data.dim;
-		bool skipHidden = var.data.skipHidden;
-		_u8 spaceX = var.data.spaceX;
-		_u8 spaceY = var.data.spaceY;
-		
-		_gadget* parent = that->getParent();
-		_gadget* pre = that->getPrecedentChild( skipHidden );
-		_rect parentRect = parent ? parent->getClientRect() : _rect();
+		_dimension	dim = (_dimension) this->dimension;
+		_gadget*	parent = that->getParent();
+		_gadget*	pre = that->getPrecedentChild();
+		_rect		parentRect = parent ? parent->getClientRect() : _rect();
 		
 		if( pre )
 		{
-			_coord myY = pre->getDimensions().getY2() + 1 + spaceY;
-			_coord myX = pre->getDimensions().getX2() + 1 + spaceX;
-			_coord myY2 = myY + that->getHeight();
-			_coord myX2 = myX + that->getWidth();
-			
 			if( dim == _dimension::vertical )
 			{
+				_coord newY = pre->getDimensions().getY2() + 1 + this->spaceY;
+				_coord newX = pre->getX();
+				
 				// Check if i we have to break line
-				if( var.data.lBOffset && parentRect.isValid() && parentRect.height < myY2 )
-					that->moveToInternal( myX , var.data.lBOffset-1 );
+				if( this->breakLine && parentRect.isValid() && parentRect.height < ( newY + that->getHeight() ) )
+					that->moveToIfAuto( newX , this->offsetY );
 				else
-					that->moveToInternal( pre->getX() , myY );
+					that->moveToIfAuto( newX , newY );
 			}
 			else
 			{
+				_coord newX = pre->getDimensions().getX2() + 1 + this->spaceX;
+				_coord newY = pre->getY();
+				
 				// Check if i we have to break line
-				if( var.data.lBOffset && parentRect.isValid() && parentRect.width < myX2 )
-					that->moveToInternal( var.data.lBOffset-1 , myY );
+				if( this->breakLine && parentRect.isValid() && parentRect.width < ( newX + that->getWidth() ) )
+					that->moveToIfAuto( this->offsetX , newY );
 				else
-					that->moveToInternal( myX , pre->getY() );
+					that->moveToIfAuto( newX , newY );
 			}
 		}
-		else if( dim == _dimension::vertical )
-			that->moveToInternal( spaceX , var.data.lBOffset ? var.data.lBOffset - 1 : spaceY );
 		else
-			that->moveToInternal( var.data.lBOffset ? var.data.lBOffset - 1 : spaceX , spaceY );
+			that->moveToIfAuto( offsetX , offsetY );
 		
 		return handled;
 	}

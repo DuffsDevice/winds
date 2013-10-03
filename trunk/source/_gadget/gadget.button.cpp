@@ -53,11 +53,10 @@ _callbackReturn _button::updateHandler( _event event )
 	if( !that->font || !that->font->isValid() )
 		return handled;
 	
-	if( that->hasAutoHeight() )
-		that->setHeightInternal( max( 1 , that->font->getHeight( that->fontSize ) + 2 ) );
-	if( that->hasAutoWidth() )
-		that->setWidthInternal( max( 28 , that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 7 ) );
-	
+	that->setSizeIfAuto(
+		max( 28 , that->font->getStringWidth( that->getStrValue() , that->fontSize ) + 7 )
+		, that->font->getHeight( that->fontSize ) + 2
+	);
 	return handled;
 }
 

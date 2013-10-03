@@ -67,23 +67,23 @@ _callbackReturn _scSetupPage3::clockEditHandler( _event event )
 void _scSetupPage3::create( _gadget* viewParent )
 {
 	// Title
-	this->lblTitle = new _label( 13 , 28 , _system::getLocalizedString("lbl_system_preferences") );
+	this->lblTitle = new _label( ignore , ignore , 13 , 28 , _system::getLocalizedString("lbl_system_preferences") );
 	this->lblTitle->setColor( RGB( 30 , 30 , 30 ) );
 	this->lblTitle->setFont( _system::getFont( "ArialBlack13" ) );
 	viewParent->addChild( this->lblTitle );
 	
 	// Adjust the system clock label
-	this->lblAdjustSystemClock = new _label( 32 , 48 , _system::getLocalizedString("txt_system_clock") );
+	this->lblAdjustSystemClock = new _label( ignore , ignore , 32 , 48 , _system::getLocalizedString("txt_system_clock") );
 	this->lblAdjustSystemClock->setColor( RGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblAdjustSystemClock );
 	
 	// Auto fetch time from internet label
-	this->lblFetchTime1 = new _label( 32 , 142 , _system::getLocalizedString("txt_system_clock_auto_fetch_1") );
+	this->lblFetchTime1 = new _label( ignore , ignore , 32 , 142 , _system::getLocalizedString("txt_system_clock_auto_fetch_1") );
 	this->lblFetchTime1->setColor( RGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblFetchTime1 );
 	
 	// Auto fetch time from internet label (line 2)
-	this->lblFetchTime2 = new _label( 32 , 152 , _system::getLocalizedString("txt_system_clock_auto_fetch_2") );
+	this->lblFetchTime2 = new _label( ignore , ignore , 32 , 152 , _system::getLocalizedString("txt_system_clock_auto_fetch_2") );
 	this->lblFetchTime2->setColor( RGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblFetchTime2 );
 	
@@ -109,10 +109,10 @@ void _scSetupPage3::create( _gadget* viewParent )
 	viewParent->addChild( this->cntSeconds );
 	
 	// Two colons between the counters
-	this->colon1 = new _label( 65 , 120 , ":" );
+	this->colon1 = new _label( ignore , ignore , 65 , 120 , ":" );
 	this->colon1->setFont( _system::getFont("CourierNew10") );
 	this->colon1->setColor( COLOR_WHITE );
-	this->colon2 = new _label( 95 , 120 , ":" );
+	this->colon2 = new _label( ignore , ignore , 95 , 120 , ":" );
 	this->colon2->setFont( _system::getFont("CourierNew10") );
 	this->colon2->setColor( COLOR_WHITE );
 	viewParent->addChild( this->colon1 );

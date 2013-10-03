@@ -19,9 +19,6 @@ class _staticCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		T 			(*func)(Parameters...);
 		
 		// Internal
-		_callbackClassType getType() const { return _callbackClassType::static_func; }
-		
-		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
 			return ((_staticCallback<T(Parameters...)>&)param).func == this->func;
 		}
@@ -35,7 +32,10 @@ class _staticCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		}
 		
 		//! Ctor
-		_staticCallback( T (*func)(Parameters...) ) : func( func ) {}
+		_staticCallback( T (*func)(Parameters...) ) :
+			_callback<T(Parameters...)>( _callbackType::static_func )
+			, func( func )
+		{}
 };
 
 template<typename T> class _classCallback{ };
@@ -48,9 +48,6 @@ class _classCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		unknownClass* 	instance;
 		
 		T				(unknownClass::*func)(Parameters...);
-		
-		// Internal
-		_callbackClassType getType() const { return _callbackClassType::class_func; }
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
@@ -68,7 +65,8 @@ class _classCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		//! Ctor
 		template<class C>
 		_classCallback( C* ptr , T (C::*func)(Parameters...) ) :
-			instance( reinterpret_cast<unknownClass*>(ptr) )
+			_callback<T(Parameters...)>( _callbackType::class_func )
+			, instance( reinterpret_cast<unknownClass*>(ptr) )
 			, func( reinterpret_cast<T (unknownClass::*)(Parameters...)>(func) )
 		{}
 };
@@ -83,9 +81,6 @@ class _inlineCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		function<T(Parameters...)>					func;
 		
 		// Internal
-		_callbackClassType getType() const { return _callbackClassType::inline_func; }
-		
-		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
 			return true;
 		}
@@ -96,15 +91,12 @@ class _inlineCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 			return func( forward<Parameters>(args)... );
 		}
 		
+		//! Ctor
 		_inlineCallback( function<T(Parameters...)> func ) :
-			func( func )
+			_callback<T(Parameters...)>( _callbackType::inline_func )
+			, func( func )
 		{}
 };
-
-namespace luaCallbackFunctions{
-	
-	void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
-}
 
 template<typename T> class _luaCallback{ };
 
@@ -115,9 +107,6 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		
 		lua_State* 		state;
 		int 			index;
-		
-		// Internal
-		_callbackClassType getType() const { return _callbackClassType::lua_func; }
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& c ) const 
@@ -147,22 +136,25 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		
 		//! Move ctor needed!
 		_luaCallback( _luaCallback&& cb ) :
-			state( cb.state ),
-			index( cb.index )
+			_callback<T(Parameters...)>( _callbackType::lua_func )
+			, state( cb.state )
+			, index( cb.index )
 		{
 			// invalidate the passed _luaCallback
 			cb.state = 0;
 		}
 		
 		//! Ctor
-		_luaCallback( lua_State* state , int narg ) : 
-			state( state )
+		_luaCallback( lua_State* state , int narg ) :
+			_callback<T(Parameters...)>( _callbackType::lua_func )
+			, state( state )
 			, index( _luafunc::checkfunction( state , narg ) )
 		{}
 		
 		//! Ctor
-		_luaCallback( lua_State* state ) : 
-			state( state )
+		_luaCallback( lua_State* state ) :
+			_callback<T(Parameters...)>( _callbackType::lua_func )
+			, state( state )
 			, index( LUA_NOREF )
 		{}
 		
@@ -186,7 +178,7 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 			_luafunc::push( state , forward<Parameters>(params)... );
 			
 			if( lua_pcall( state , sizeof...(Parameters) , 1 , 0 ) ){
-				luaCallbackFunctions::debug( "Callback-Lua-Err: %s" , lua_tostring( state , -1 ) );
+				_luafunc::errorHandler( state , lua_tostring( state , -1 ) );
 			}
 			
 			if( std::is_same<T,void>::value || lua_isnil( state , -1 ) )
@@ -194,6 +186,39 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 			//! Forward the Value returned by the Handler
 			return _luafunc::check<T>( state , -1 );
 		}
+};
+
+template<typename T> class _dummyCallback{ }; // A Callback like _gadgetHelpers::sizeParent
+
+template<typename T,typename... Parameters>
+class _dummyCallback<T(Parameters...)> : public _callback<T(Parameters...)>
+{
+	private:
+		
+		T (_dummyCallback::*func)(Parameters...) const;
+		
+		// Internal
+		_callbackType getType() const { return _callbackType::dummy_func; }
+		
+		// Internal
+		_s8 equals( const _callback<T(Parameters...)>& param ) const {
+			return ((_dummyCallback<T(Parameters...)>&)param).func == this->func;
+		}
+		
+	public:
+		
+		T operator()( Parameters... args ) const {
+			if( this->func )
+				return (this->*func)( forward<Parameters>(args)... );
+			return T();
+		}
+		
+		//! Ctor		
+		template<class C>
+		_dummyCallback( T (C::*executor)(Parameters...)const ) :
+			_callback<T(Parameters...)>( _callbackType::dummy_func )
+			, func( reinterpret_cast<T(_dummyCallback::*)(Parameters...)const>(executor) )
+		{}
 };
 
 //

@@ -16,7 +16,7 @@ class _lua_progressbar : public _lua_gadget , public _lua_interface_input<_progr
 		
 		_lua_progressbar( lua_State* L );
 		
-		_lua_progressbar( _progressbar* p ) : _lua_gadget( p , false ) , _lua_interface_input( p )
+		_lua_progressbar( _progressbar* p ) : _lua_gadget( p , false )
 		{ }
 		
 		//! setBarType

@@ -3,26 +3,40 @@
 
 #include "_gadget/gadget.button.h"
 
-enum class _actionButtonType : _u8
-{
-	next = 0,
+enum class _actionButtonType : _u8{
+	next,
 	prev,
-	logout,
 	shutdown,
+	logoff,
+	switchuser
 };
+
+extern _map<_actionButtonType,string> actionButtonType2string;
+extern _map<string,_actionButtonType> string2actionButtonType;
 
 class _actionButton : public _button {
 	
 	private:
 		
-		static _bitmap bitmaps[2];
-		
 		_actionButtonType type;
 		
+		static _constbitmap bitmaps[5];
 		static _callbackReturn  refreshHandler( _event );
 	
 	public:
 		
+		//! Set type of the _actionbutton
+		void setButtonType( _actionButtonType type ){
+			if( this->type == type )
+				return;
+			this->type = type;
+			this->redraw();
+		}
+		
+		//! Get type of the _actionbutton
+		_actionButtonType getButtonType(){ return this->type; }
+		
+		//! Ctor
 		_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style = _style() );
 };
 

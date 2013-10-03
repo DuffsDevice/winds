@@ -14,7 +14,6 @@ _contextMenuEntry::_contextMenuEntry( _s32 id , string value , _optValue<_length
 	this->setInternalEventHandler( onDraw , make_callback( &_contextMenuEntry::refreshHandler ) );
 	this->setInternalEventHandler( onMouseDown, make_callback( &_contextMenuEntry::mouseHandler ) );
 	this->setInternalEventHandler( onMouseClick , make_callback( &_contextMenuEntry::mouseHandler ) );
-	this->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent() );
 	
 	// Update & draw
 	this->redraw();
@@ -48,13 +47,10 @@ _callbackReturn _contextMenuEntry::updateHandler( _event event )
 {
 	_contextMenuEntry* that = event.getGadget<_contextMenuEntry>();
 	
-	if( that->hasAutoWidth() )
-	{
-		const _font* font = _system::getFont();
-		_u8 fontSize =_system::_rtA_->getDefaultFontSize();
-		
-		that->setWidthInternal( font->getStringWidth( that->text , fontSize ) + 3 );
-	}
+	const _font* font = _system::getFont();
+	_u8 fontSize =_system::_rtA_->getDefaultFontSize();
+	
+	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );
 	
 	return handled;
 }

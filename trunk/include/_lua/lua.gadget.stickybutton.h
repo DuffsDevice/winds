@@ -16,7 +16,7 @@ class _lua_stickybutton : public _lua_gadget , public _lua_interface_input<_stic
 		
 		_lua_stickybutton( lua_State* L );
 		
-		_lua_stickybutton( _stickybutton* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
+		_lua_stickybutton( _stickybutton* c ) : _lua_gadget( c , false )
 		{ }
 		
 		//! setAutoSelect

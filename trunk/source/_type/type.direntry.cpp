@@ -270,6 +270,17 @@ bool _direntry::open( string mode )
 	return false;
 }
 
+string _direntry::getDisplayName() const
+{
+	const ssstring& ext = this->extension;
+	
+	// Certain Files do not have an .extension
+	if( !_system::getUser()->sFE || ext.empty() )
+		return this->name;
+	
+	return this->name + "." + (string)ext;
+}
+
 
 bool _direntry::openread(){
 	return this->open( "rb" ); // Open for read, do not create

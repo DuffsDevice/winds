@@ -11,9 +11,9 @@ void _enterTextDialog::cleanupInternal(){
 }
 
 _enterTextDialog::_enterTextDialog( string message , string windowLbl , string initialValue , _optValue<string> okLbl , _optValue<string> cancelLbl ) : 
-	okButton( new _button( 0 , 0 , okLbl.isValid() ? (string&&)okLbl : _system::getLocalizedString("lbl_ok") ) )
-	, cancelButton( new _button( 0 , 0 , cancelLbl.isValid() ? (string&&)cancelLbl : _system::getLocalizedString("lbl_cancel") ) )
-	, msg( new _label( 2 , 2 , (string&&)message ) )
+	okButton( new _button( ignore , ignore , 0 , 0 , okLbl.isValid() ? (string&&)okLbl : _system::getLocalizedString("lbl_ok") ) )
+	, cancelButton( new _button( ignore , ignore , 0 , 0 , cancelLbl.isValid() ? (string&&)cancelLbl : _system::getLocalizedString("lbl_cancel") ) )
+	, msg( new _label( ignore , ignore , 2 , 2 , (string&&)message ) )
 	, initialValue( move(initialValue) )
 {	
 	// Buttons

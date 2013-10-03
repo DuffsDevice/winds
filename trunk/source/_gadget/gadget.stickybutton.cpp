@@ -18,20 +18,8 @@ _callbackReturn _stickybutton::mouseHandler( _event event )
 	return handled;
 }
 
-_stickybutton::_stickybutton( _length width , _length height , _coord x , _coord y , string text , _style&& style ) :
-	_button( width , height , x , y , text , (_style&&)style )
-	, group( nullptr )
-{
-	this->setType( _gadgetType::stickybutton );
-	
-	// Register some new handlers
-	this->removeInternalEventHandler( onMouseRepeat );
-	this->removeInternalEventHandler( onMouseLeave );
-	this->setInternalEventHandler( onMouseEnter , make_callback( &_stickybutton::mouseHandler ) );
-}
-
-_stickybutton::_stickybutton( _coord x , _coord y , string text , _style&& style ) :
-	_button( x , y , text , (_style&&)style )
+_stickybutton::_stickybutton( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string text , _style&& style ) :
+	_button( move(width) , move(height) , x , y , text , (_style&&)style )
 	, group( nullptr )
 {
 	this->setType( _gadgetType::stickybutton );

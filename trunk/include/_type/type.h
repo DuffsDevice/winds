@@ -338,9 +338,13 @@ class _optValue
 	private:
 		T		val;
 		_u8		isGiven;
-	
+		template<class> friend class _optValue; // Grants all _optValue instantiations to each other
 	public:
 		
+		template<typename T2>
+		_optValue( _optValue<T2>&& opt ) : val( (T&&)opt.val ) , isGiven( opt.isGiven ) {}
+		template<typename T2>
+		_optValue( const _optValue<T2>& opt ) : val( (T)opt.val ) , isGiven( opt.isGiven ) {}
 		_optValue( T&& val ) : val( move( val ) ) , isGiven( true ) { }
 		_optValue( const T& val ) : val( val ) , isGiven( true ) { }
 		_optValue( decltype(std::ignore) = std::ignore ) : val() , isGiven( false ) { }
@@ -350,17 +354,8 @@ class _optValue
 		_optValue<T>& operator =( const T& val ){ this->val = val; isGiven = true; return *this; }
 		_optValue<T>& operator =( decltype(std::ignore) ){ this->val = T(); isGiven = false; return *this; }
 		
-		template<typename T2>
-		operator T2&&(){ return (T2&&)val; }
-		
-		template<typename T2>
-		operator const T2&() const { return (T2)val; }
-		
-		template<typename T2>
-		operator _optValue<T2>&&(){ return isGiven ? _optValue<T2>( (T2&&)val ) : _optValue<T2>(); }
-		
-		template<typename T2>
-		operator const _optValue<T2>&() const { return isGiven ? _optValue<T2>( (T2)val ) : _optValue<T2>(); }
+		operator T&&(){ return (T&&)val; }
+		operator const T&() const { return (T)val; }
 };
 
 

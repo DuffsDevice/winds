@@ -15,7 +15,7 @@ void _text::wrap()
 	_u32	lastBreakIndex = 0;
 	
 	// Characters after which to break
-	static _char breakChars[] = " ,.-:;?!+=/" "\\\n";
+	static _char breakChars[] = " ,.-:;?!+=/" "\\";
 	
 	// Push start
 	this->linePositions.push_back( 0 );
@@ -37,17 +37,19 @@ void _text::wrap()
 			lastWordWidth = 0;
 			lastBreakIndex = idx;
 		}
-		else if( charisof( *ch , breakChars ) )
-		{
-			lastBreakIndex = idx;
-			lastWordWidth = 0;
-		}
-		else if( this->font->isCharSupported( *ch ) )
+		if( this->font->isCharSupported( *ch ) )
 		// advance the current lineWidth by the width of the _char to display
 		{
 			_u16 w = this->font->getCharacterWidth( *ch ) + 1;
 			lineWidth += w;
 			lastWordWidth += w;
+		}
+		
+		// Index we have a possible break here
+		if( charisof( *ch , breakChars ) )
+		{
+			lastBreakIndex = idx;
+			lastWordWidth = 0;
 		}
 		
 		if( lineWidth >= this->width )

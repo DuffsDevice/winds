@@ -2,9 +2,8 @@
 
 // Graphics
 #include "_resource/BMP_Checkboxes.h"
-#include "_resource/BMP_WindowHeader.h"
 
-const _bitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
+_constbitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
 
 _callbackReturn _checkbox::refreshHandler( _event event )
 {
@@ -48,7 +47,7 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 
 
 _checkbox::_checkbox( _coord x , _coord y , _style&& style ) :
-	_gadget( _gadgetType::checkbox , 40 , 9 , x , y , style | _styleAttr::notResizeable )
+	_gadget( _gadgetType::checkbox , 9 , 9 , x , y , style | _styleAttr::notResizeable )
 	, intValue( 0 )
 {
 	// Register my handlers

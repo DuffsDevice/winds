@@ -27,11 +27,7 @@ class _stickybutton : public _button
 		_s32 getIntValue(){ return isStuckDown(); }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_stickybutton( _length width , _length height , _coord x , _coord y , string title = "" , _style&& style = _style() );
-		
-		//! Constructor with coordinates, title and optional: Style
-		//! The Width will be computed by the font
-		_stickybutton( _coord x , _coord y , string text = "" , _style&& style = _style() );
+		_stickybutton( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string title = "" , _style&& style = _style() );
 };
 
 #endif

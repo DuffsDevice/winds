@@ -34,7 +34,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	
 	// Cache the windows-bitmap that describes how windows look like
-	const _bitmap& design = _system::_rtA_->getWindowsDesignActive();
+	_constbitmap& design = _system::_rtA_->getWindowsDesignActive();
 	
 	if( that->reference->hasFocus() || that->isPressed() )
 	{		

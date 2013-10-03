@@ -9,7 +9,7 @@ void _bitmapResizer::setSrcRect( _rect area ){
 	this->srcArea = area;
 }
 
-_bitmapResizer::_bitmapResizer( _length width , _length height , const _bitmap& src , _rect srcArea , bool doNotCompute ) :
+_bitmapResizer::_bitmapResizer( _length width , _length height , _constbitmap& src , _rect srcArea , bool doNotCompute ) :
 	_bitmap( width , height )
 	, src( &src )
 	, srcArea( srcArea )
@@ -20,7 +20,7 @@ _bitmapResizer::_bitmapResizer( _length width , _length height , const _bitmap& 
 
 // Fast Bitmap Resizing using the
 // Coarse scaling by Bresenham algorithm
-void _bitmapResizer::scaleRect( _bitmap& dest , const _bitmap& src, _rect srcArea )
+void _bitmapResizer::scaleRect( _bitmap& dest , _constbitmap& src, _rect srcArea )
 {
 	_length realDestWidth = dest.getWidth();
 	_length realSrcWidth = src.getWidth();

@@ -16,7 +16,7 @@ class _lua_window : public _lua_gadget , public _lua_interface_input<_window> {
 		
 		_lua_window( lua_State* L );
 		
-		_lua_window( _window* w ) : _lua_gadget( w , false ) , _lua_interface_input( w )
+		_lua_window( _window* w ) : _lua_gadget( w , false )
 		{ }
 		
 		//! setIcon

@@ -110,7 +110,7 @@ void _scrollArea::computeClipSize()
 				this->clipHeight -= 8;
 				
 				// Brauch ich ihn (jetzt) auch in Y-Richtung?
-				if( this->scrollTypeY == _scrollType::scroll || ( this->scrollTypeY == _scrollType::meta && this->canvasWidth > this->clipWidth ) )
+				if( this->scrollTypeY == _scrollType::scroll || ( this->scrollTypeY == _scrollType::meta && this->canvasHeight > this->clipHeight ) )
 					this->clipWidth -= 8;
 			}
 			else if( this->scrollTypeY == _scrollType::scroll || ( this->scrollTypeY == _scrollType::meta && this->canvasHeight > this->clipHeight ) )

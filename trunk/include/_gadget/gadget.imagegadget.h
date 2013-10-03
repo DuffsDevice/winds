@@ -14,16 +14,16 @@ class _imagegadget : public _gadget {
 	public:
 		
 		//! set the image the easy way
-		void setImage( const _bitmap& img ){
+		void setImage( _constbitmap& img ){
 			this->setBitmap( img );
 		}
 		
 		//! Get the bitmap
-		const _bitmap& getImage() const { return this->getBitmap(); }
+		_constbitmap& getImage() const { return this->getBitmap(); }
 		
 		//! Ctor
 		_imagegadget( _coord x , _coord y , _bitmap&& bmp , _style&& style = _style() | _styleAttr::notClickable );
-		_imagegadget( _coord x , _coord y , const _bitmap& bmp , _style&& style = _style() | _styleAttr::notClickable ) :
+		_imagegadget( _coord x , _coord y , _constbitmap& bmp , _style&& style = _style() | _styleAttr::notClickable ) :
 			_imagegadget( x , y , _bitmap( bmp ) , (_style&&) style )
 		{}
 };

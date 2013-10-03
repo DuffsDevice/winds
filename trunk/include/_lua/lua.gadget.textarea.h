@@ -16,7 +16,8 @@ class _lua_textarea : public _lua_gadget , public _lua_interface_input<_textarea
 		
 		_lua_textarea( lua_State* L );
 		
-		_lua_textarea( _textarea* t ) : _lua_gadget( t , false ) , _lua_interface_input( t ) { }
+		_lua_textarea( _textarea* t ) : _lua_gadget( t , false )
+		{ }
 		
 		//! setCursor
 		int setCursor( lua_State* L );

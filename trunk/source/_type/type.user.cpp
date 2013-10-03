@@ -14,7 +14,7 @@
 #include "_resource/BMP_DefaultUserIcon.h"
 #include "_resource/BMP_WindowsWallpaper.h"
 
-_bitmap _user::getUserLogoFromImage( const _bitmap& bmp )
+_bitmap _user::getUserLogoFromImage( _constbitmap& bmp )
 {
 	_bitmap logo = _bitmap( 14 , 14 );
 	

@@ -6,23 +6,15 @@ using namespace _luafunc;
 ##         Lua-Stickybutton       ##
 ##################################*/
 
-_lua_stickybutton::_lua_stickybutton( lua_State* L )
-{
-	if( lua_gettop( L ) <= 4 && lua_isstring( L , 3 ) )
-		// _stickybutton( _coord x , _coord y , string title = "" , _style style = _style() );
-		this->setGadget( new _stickybutton( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<string>( L , 3 , "" ) , lightcheck<_style>( L , 4 , _style() ) ) );
-	else
-		// _stickybutton( _length width , _length height , _coord x , _coord y , string title = "" , _style style = _style() );
-		this->setGadget( new _stickybutton( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 , _style() ) ) );
-	
-	_lua_interface_input::input = (_stickybutton*)_lua_gadget::getGadget();
-}
+_lua_stickybutton::_lua_stickybutton( lua_State* L ) :
+	_lua_gadget( new _stickybutton( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 , _style() ) ) )
+{}
 
 //! setAutoSelect
-int _lua_stickybutton::setAutoSelect( lua_State* L ){ _lua_interface_input::input->setAutoSelect( check<bool>( L , 1 ) ); return 0; };
+int _lua_stickybutton::setAutoSelect( lua_State* L ){ getDerived()->setAutoSelect( check<bool>( L , 1 ) ); return 0; };
 
 //! isAutoSelect
-int _lua_stickybutton::isAutoSelect( lua_State* L ){ lua_pushboolean( L , _lua_interface_input::input->isAutoSelect() ); return 1; }
+int _lua_stickybutton::isAutoSelect( lua_State* L ){ lua_pushboolean( L , getDerived()->isAutoSelect() ); return 1; }
 
 
 //! Lua-button
