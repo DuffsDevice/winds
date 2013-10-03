@@ -104,29 +104,35 @@ bool luaL_is( lua_State* L , int narg , string type )
 	return false;
 }
 
-int _progLua::lua_keyboardIsRegistered( lua_State* L ){ lua_pushboolean( L , _system::_keyboard_ != nullptr ); return 1; }
-int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; lua_pushboolean( L , _system::_keyboard_->isOpened() ); return 1; }
+int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _system::_keyboard_ != nullptr ); return 1; }
+int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; push( L , _system::_keyboard_->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
 int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
 
-int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( luaL_checkstring( L , 1 ) ); return 1; }
+int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( check<string>( L , 1 ).c_str() ); return 1; }
 int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_event>::check( L , 1 ); if( event ) _system::generateEvent( _event( *event ) , _eventCallType::normal ); return 0; }
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
-int _progLua::lua_getLocalizedString( lua_State* L ){ lua_pushstring( L , _system::getLocalizedString( luaL_checkstring( L , 1 ) ).c_str() ); return 1; }
+int _progLua::lua_getLocalizedString( lua_State* L ){ push( L , _system::getLocalizedString( check<string>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _gadget* g = lightcheck<_gadget>( L , 1 , nullptr ); if( !g ) return 0; _system::_gadgetHost_->addChild( g ); return 0; }
-int _progLua::lua_readRegistryIndex( lua_State* L ){ lua_pushstring( L , _system::_registry_->readIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ).c_str() ); return 1; }
-int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) , luaL_checkstring( L , 3 ) ); return 0; }
-int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( luaL_checkstring( L , 1 ) , luaL_checkstring( L , 2 ) ); return 0; }
-int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( luaL_checkstring( L , 1 ) ); return 0; }
-int _progLua::lua_getFont( lua_State* L ){ Lunar<_lua_font>::push( L , new _lua_font( _system::getFont( luaL_checkstring( L , 1 ) ) ) ); return 1; }
-int _progLua::lua_sizeChangePhrase( lua_State* L ){ lua_pushstring( L , stringIntegrator::sizeChangePhrase( check<int>( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_colorChangePhrase( lua_State* L ){ lua_pushstring( L , stringIntegrator::colorChangePhrase( check<_pixel>( L , 1 ) ).c_str() ); return 1; }
+int _progLua::lua_readRegistryIndex( lua_State* L ){ push( L , _system::_registry_->readIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ).c_str() ); return 1; }
+int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( check<string>( L , 1 ) , check<string>( L , 2 ) , check<string>( L , 3 ) ); return 0; }
+int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ); return 0; }
+int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( check<string>( L , 1 ) ); return 0; }
+int _progLua::lua_getFont( lua_State* L ){
+	Lunar<_lua_font>::push( L , new _lua_font(
+			lua_isstring( L , 1 ) ? _system::getFont( lua_tostring( L , 1 ) ) : _system::getFont()
+		)
+	);
+	return 1;
+}
+int _progLua::lua_sizeChangePhrase( lua_State* L ){ push( L , stringIntegrator::sizeChangePhrase( check<int>( L , 1 ) ).c_str() ); return 1; }
+int _progLua::lua_colorChangePhrase( lua_State* L ){ push( L , stringIntegrator::colorChangePhrase( check<_pixel>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_fontChangePhrase( lua_State* L ){
 	_lua_font* ft = Lunar<_lua_font>::check( L , 1 );
 	if( !ft || !ft->font )
-		lua_pushstring( L , "" );
+		push( L , "" );
 	else
-		lua_pushstring( L , stringIntegrator::fontChangePhrase( ft->font ).c_str() );
+		push( L , stringIntegrator::fontChangePhrase( ft->font ).c_str() );
 	return 1;
 }
 int _progLua::lua_RGB( lua_State* L ){ lua_pushnumber( L , RGB( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) ) ); return 1; }
@@ -136,11 +142,11 @@ int _progLua::lua_RGBA255( lua_State* L ){ lua_pushnumber( L , RGBA255( check<in
 int _progLua::lua_RGB_GETR( lua_State* L ){ lua_pushnumber( L , RGB_GETR( check<_pixel>( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETG( lua_State* L ){ lua_pushnumber( L , RGB_GETG( check<_pixel>( L , 1 ) ) ); return 1; }
 int _progLua::lua_RGB_GETB( lua_State* L ){ lua_pushnumber( L , RGB_GETB( check<_pixel>( L , 1 ) ) ); return 1; }
-int _progLua::lua_RGB_GETA( lua_State* L ){ lua_pushboolean( L , RGB_GETA( check<_pixel>( L , 1 ) ) ); return 1; }
+int _progLua::lua_RGB_GETA( lua_State* L ){ push( L , RGB_GETA( check<_pixel>( L , 1 ) ) ); return 1; }
 int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0; }
 int _progLua::lua_usingClass( lua_State* L )
 {
-	string classPath = luaL_checkstring( L , 1 );
+	string classPath = check<string>( L , 1 );
 	
 	string token;
 	_vector<string> tokens;
@@ -165,7 +171,7 @@ int _progLua::lua_usingClass( lua_State* L )
 	}
 	
 	// Return Result
-	lua_pushboolean( L , found );
+	push( L , found );
 	
 	return 1;
 }
@@ -204,23 +210,23 @@ luaL_Reg _progLua::windowsLibrary[] = {
  * Programm Stuff
  */
 _progLua::_progLua( string&& prog ) : 
-	_program( _programType::progLua ) ,
-	content( new string( move(prog) ) )
+	_program( _programType::progLua )
+	, content( new string( move(prog) ) )
 {}
 
-//! Loads system.*
+//! Loads System.*
 void _progLua::registerSystem()
 {
 	lua_newtable( this->state );
 	for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
 	{
-		lua_pushstring( this->state , lib->name );
+		push( this->state , lib->name );
 		lua_pushcfunction( this->state , lib->func );
 		lua_settable( this->state , -3 );
 	}
 	
-	//! Generate system.exit function
-	lua_pushstring( this->state , "exit" );
+	//! Generate System.exit function
+	push( this->state , "exit" );
 	lua_pushlightuserdata( this->state , this );
 	lua_pushcclosure( this->state , lua_exit , 1 );
 	lua_settable( this->state , -3 );
@@ -241,54 +247,42 @@ void _progLua::internalMain( _cmdArgs&& args )
 	// Create State
 	this->state = luaL_newstate();
 	
-	
 	// Load our lua-piece
 	luaL_loadstring( this->state , this->content->c_str() );
-	
 	
 	// _progLua.content is just there for passing the 'content' of the program to the mainFunction
 	delete this->content;
 	this->content = nullptr;
 	
-	
-	if( lua_isstring( this->state , -1 ) ){
-		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
+	if( lua_isstring( this->state , -1 ) )
+	{
+		_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
 		return;
 	}
-	
 	
 	// Open standard functions like math, table-functions etc...
 	luaL_openlibs( this->state );
 	
-	
 	// Load system.*
 	this->registerSystem();
 	
-	
 	// Parse Whole Program
-	if( lua_pcall( this->state , 0 , 0 , 0 ) ){
-		_system::debug( "Lua-Parser-Error: %s" , lua_tostring( this->state , -1 ) );
-	}
+	if( lua_pcall( this->state , 0 , 0 , 0 ) )
+		_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
 	
 	lua_getglobal( this->state , "main" );
 	
 	if( lua_isfunction( this->state , -1 ) )
 	{
-		// Create Table for arguments
-		lua_createtable( this->state , args.size() , 0 );
-		int top = lua_gettop( this->state );
-		
 		// Push Arguments
-		int i = 0;
-		for( _cmdArgs::iterator it = args.begin() ; it != args.end() ; ++it )
-		{
-			lua_pushstring( this->state , it->c_str() ); // Key
-			lua_rawseti( this->state , top , ++i );
-		}
+		for( auto val : args )
+			push( this->state , val );
 		
-		if( lua_pcall( this->state , 1 /* One Argument */ , 0 , 0 ) )
-			_system::debug( "Lua-Error in main(): %s", lua_tostring( this->state , -1 ) );
+		if( lua_pcall( this->state , args.size() /* One Argument */ , 0 , 0 ) )
+			_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
 	}
+	else
+		lua_pop( this->state , 2 );
 }
 
 void _progLua::internalVbl()

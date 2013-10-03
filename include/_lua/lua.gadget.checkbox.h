@@ -16,7 +16,7 @@ class _lua_checkbox : public _lua_gadget , public _lua_interface_input<_checkbox
 		
 		_lua_checkbox( lua_State* L );
 		
-		_lua_checkbox( _checkbox* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
+		_lua_checkbox( _checkbox* c ) : _lua_gadget( c , false )
 		{ }
 		
 		

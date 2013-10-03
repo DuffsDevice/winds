@@ -504,7 +504,7 @@ void _system::start()
 	// ------------------------------------------------------------------------
 	
 		//! Set the VBLANK Interrupt handler
-		SetYtrigger( 0 );
+		SetYtrigger( 192 );
 		irqSet( IRQ_VBLANK , _system::vblHandler );
 		//irqSet( IRQ_HBLANK , _system::hblHandler );
 		irqEnable( IRQ_VBLANK | IRQ_VCOUNT );

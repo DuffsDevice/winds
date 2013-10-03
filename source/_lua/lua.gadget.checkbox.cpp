@@ -8,8 +8,7 @@ using namespace _luafunc;
 
 _lua_checkbox::_lua_checkbox( lua_State* L ) :
 	_lua_gadget( new _checkbox( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck( L , 3 , _style() ) ) )
-	, _lua_interface_input( (_checkbox*)_lua_gadget::getGadget() )
-{ }
+{}
 
 
 //! Lua-window

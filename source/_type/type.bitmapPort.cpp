@@ -108,6 +108,18 @@ void _bitmapPort::drawRect( _coord x , _coord y , _length w , _length h , _pixel
 	}
 }
 
+void _bitmapPort::drawDottedRect( _coord x , _coord y , _length w , _length h , _pixel color )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base.setClippingRectUnsafe( rc );
+		
+		//! Standard Bitmap Routine
+		this->base.drawDottedRect( x , y , w , h , color );
+		//! Standard Bitmap Routine
+	}
+}
+
 void _bitmapPort::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
 {
 	for( const _rect& rc : clippingRects )
@@ -217,7 +229,7 @@ _length _bitmapPort::drawChar( _coord x0 , _coord y0 , const _font* font , _char
 	return font->getCharacterWidth( ch );
 }
 
-void _bitmapPort::copy( _coord x , _coord y , const _bitmap& data )
+void _bitmapPort::copy( _coord x , _coord y , _constbitmap& data )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -229,7 +241,7 @@ void _bitmapPort::copy( _coord x , _coord y , const _bitmap& data )
 	}
 }
 
-void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap& data )
+void _bitmapPort::copyTransparent( _coord x , _coord y , _constbitmap& data )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -241,7 +253,7 @@ void _bitmapPort::copyTransparent( _coord x , _coord y , const _bitmap& data )
 	}
 }
 
-void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , const _bitmap& data )
+void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , _constbitmap& data )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -253,7 +265,7 @@ void _bitmapPort::copyHorizontalStretch( _coord x , _coord y , _length w , const
 	}
 }
 
-void _bitmapPort::copyVerticalStretch( _coord x , _coord y , _length h , const _bitmap& data )
+void _bitmapPort::copyVerticalStretch( _coord x , _coord y , _length h , _constbitmap& data )
 {
 	for( const _rect& rc : clippingRects )
 	{

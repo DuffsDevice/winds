@@ -37,7 +37,7 @@ _bitmap _shortcut::getFileImage()
 	
 	if( fl.getFileName() != "" )
 	{
-		const _bitmap& icon = fl.getFileImage();
+		_constbitmap& icon = fl.getFileImage();
 		this->image.copy( ( 10 - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	

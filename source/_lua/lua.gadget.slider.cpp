@@ -33,45 +33,43 @@ _lua_slider::_lua_slider( lua_State* L )
 			check<int>( L , 3 );
 			break;
 	}
-	
-	_lua_interface_input::input = (_slider*)_lua_gadget::getGadget();
 }
 
 //! setUpperBound
-int _lua_slider::setUpperBound( lua_State* L ){ _lua_interface_input::input->setUpperBound( check<int>( L , 1 ) ); return 0; }
+int _lua_slider::setUpperBound( lua_State* L ){ getDerived()->setUpperBound( check<int>( L , 1 ) ); return 0; }
 
 //! setLowerBound
-int _lua_slider::setLowerBound( lua_State* L ){ _lua_interface_input::input->setLowerBound( check<int>( L , 1 ) ); return 0; }
+int _lua_slider::setLowerBound( lua_State* L ){ getDerived()->setLowerBound( check<int>( L , 1 ) ); return 0; }
 
 //! getLowerBound
-int _lua_slider::getLowerBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getUpperBound() ); return 1; }
+int _lua_slider::getLowerBound( lua_State* L ){ lua_pushnumber( L , getDerived()->getUpperBound() ); return 1; }
 
 //! getUpperBound
-int _lua_slider::getUpperBound( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getLowerBound() ); return 1; }
+int _lua_slider::getUpperBound( lua_State* L ){ lua_pushnumber( L , getDerived()->getLowerBound() ); return 1; }
 
 //! setLowerLabel
-int _lua_slider::setLowerLabel( lua_State* L ){ _lua_interface_input::input->setLowerLabel( check<string>( L , 1 ) ); return 0; }
+int _lua_slider::setLowerLabel( lua_State* L ){ getDerived()->setLowerLabel( check<string>( L , 1 ) ); return 0; }
 
 //! setUpperLabel
-int _lua_slider::setUpperLabel( lua_State* L ){ _lua_interface_input::input->setUpperLabel( check<string>( L , 1 ) ); return 0; }
+int _lua_slider::setUpperLabel( lua_State* L ){ getDerived()->setUpperLabel( check<string>( L , 1 ) ); return 0; }
 
 //! getLowerLabel
-int _lua_slider::getLowerLabel( lua_State* L ){ push( L , _lua_interface_input::input->getLowerLabel() ); return 1; }
+int _lua_slider::getLowerLabel( lua_State* L ){ push( L , getDerived()->getLowerLabel() ); return 1; }
 
 //! getUpperLabel
-int _lua_slider::getUpperLabel( lua_State* L ){ push( L , _lua_interface_input::input->getUpperLabel() ); return 1; }
+int _lua_slider::getUpperLabel( lua_State* L ){ push( L , getDerived()->getUpperLabel() ); return 1; }
 
 //! setSnap
-int _lua_slider::setSnap( lua_State* L ){ _lua_interface_input::input->setSnap( lightcheck<int>( L , 1 , 0 ) ); return 0; }
+int _lua_slider::setSnap( lua_State* L ){ getDerived()->setSnap( lightcheck<int>( L , 1 , 0 ) ); return 0; }
 
 //! getSnap
-int _lua_slider::getSnap( lua_State* L ){ push( L , _lua_interface_input::input->getSnap() ); return 1; }
+int _lua_slider::getSnap( lua_State* L ){ push( L , getDerived()->getSnap() ); return 1; }
 
 //! increase
-int _lua_slider::increase( lua_State* L ){ _lua_interface_input::input->increase(); return 0; }
+int _lua_slider::increase( lua_State* L ){ getDerived()->increase(); return 0; }
 
 //! decrease
-int _lua_slider::decrease( lua_State* L ){ _lua_interface_input::input->decrease(); return 0; }
+int _lua_slider::decrease( lua_State* L ){ getDerived()->decrease(); return 0; }
 
 //! Lua-button
 const char _lua_slider::className[] = "Slider";

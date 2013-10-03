@@ -54,10 +54,10 @@ _callbackReturn _label::updateHandler( _event event )
 	if( !that->font || !that->font->isValid() )
 		return handled;
 	
-	if( that->hasAutoHeight() )
-		that->setHeightInternal( max( _length(1) , that->font->getHeight( that->fontSize ) ) );
-	if( that->hasAutoWidth() )
-		that->setWidthInternal( max( _length(1) , that->font->getStringWidth( that->getStrValue() , that->fontSize ) ) );
+	that->setSizeIfAuto(
+		that->font->getStringWidth( that->getStrValue() , that->fontSize )
+		, that->font->getHeight( that->fontSize )
+	);
 	
 	return handled;
 }

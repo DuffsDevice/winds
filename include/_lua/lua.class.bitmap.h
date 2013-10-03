@@ -17,7 +17,7 @@ class _lua_bitmap{
 		
 		// Ctor
 		_lua_bitmap( _bitmap* b );
-		_lua_bitmap( const _bitmap* b );
+		_lua_bitmap( _constbitmap* b );
 		_lua_bitmap( _bitmap&& b );
 		
 		// Lua-Ctor
@@ -76,6 +76,9 @@ class _lua_bitmap{
 		
 		//! drawRect
 		int drawRect( lua_State* L );
+		
+		//! drawDottedRect
+		int drawDottedRect( lua_State* L );
 		
 		//! drawFilledRect
 		int drawFilledRect( lua_State* L );

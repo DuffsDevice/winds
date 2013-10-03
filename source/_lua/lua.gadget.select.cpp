@@ -6,37 +6,35 @@ using namespace _luafunc;
 ##           Lua-Select           ##
 ##################################*/
 
-_lua_select::_lua_select( lua_State* L ) : 
+_lua_select::_lua_select( lua_State* L ) :
 	_lua_gadget( new _select( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<_s32,string>( L , 5 , {} ) , lightcheck<int>( L , 6 , -1 ) , lightcheck<_style>( L , 7 , _style() ) ) )
-	, _lua_interface_input( (_select*)_lua_gadget::getGadget() )
-{
-}
+{}
 
 //! addIndex
 int _lua_select::addIndex( lua_State* L ){
-	_lua_interface_input::input->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
-	_lua_interface_input::input->update();
+	getDerived()->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
+	getDerived()->update();
 	return 0;
 }
 
 //! removeIndex
 int _lua_select::removeIndex( lua_State* L ){
-	_lua_interface_input::input->getList().erase( check<int>( L , 1 ) );
-	_lua_interface_input::input->update();
+	getDerived()->getList().erase( check<int>( L , 1 ) );
+	getDerived()->update();
 	return 0;
 }
 
 //! clearList
 int _lua_select::clearList( lua_State* L ){
-	_lua_interface_input::input->getList().clear();
-	_lua_interface_input::input->update();
+	getDerived()->getList().clear();
+	getDerived()->update();
 	return 0;
 }
 
 //! getList
 int _lua_select::getList( lua_State* L )
 {
-	push( L , _lua_interface_input::input->getList() );
+	push( L , getDerived()->getList() );
 	
 	return 1;
 }
@@ -44,14 +42,14 @@ int _lua_select::getList( lua_State* L )
 //! setList
 int _lua_select::setList( lua_State* L )
 {	
-	_lua_interface_input::input->setList( lightcheck<_s32,string>( L , 5 , {} ) );
+	getDerived()->setList( lightcheck<_s32,string>( L , 5 , {} ) );
 	
 	return 0;
 }
 
 //! getEntryFromNumber
 int _lua_select::getEntryFromNumber( lua_State* L ){
-	lua_pushstring( L , _lua_interface_input::input->getList()[check<int>(L,1)].c_str() );
+	lua_pushstring( L , getDerived()->getList()[check<int>(L,1)].c_str() );
 	return 1;
 }
 

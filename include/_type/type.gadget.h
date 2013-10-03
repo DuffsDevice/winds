@@ -6,64 +6,18 @@
 #include "_type/type.style.h"
 #include "_type/type.bitmapPort.h"
 #include "_type/type.event.h"
+#include "_type/type.event.calltype.h"
 #include "_type/type.callback.h"
 #include "_type/type.callback.derives.h"
 #include "_type/type.assocvector.h"
 #include "_type/type.dependency.h"
+#include "_type/type.gadget.type.h"
 
 #include <type_traits>
 
 //! Predefines
 class _gadget;
 class _gadgetScreen;
-
-/**
- * Specifies the Type of an API-Element (aka _gadget)
- */
-enum class _gadgetType : _u8
-{
-	button,
-	stickybutton,
-	label,
-	checkbox,
-	radiobox,
-	textbox,
-	textarea,
-	counter,
-	slider,
-	calendar,
-	colorpicker,
-	selectbox,
-	selectitem,
-	progressbar,
-	keyboard,
-	desktop,
-	fileview,
-	fileobject,
-	imagegadget,
-	scrollarea,
-	scrollbutton,
-	scrollbar,
-	window,
-	screen,
-	popup,
-	contextmenu,
-	contextmenuentry,
-	resizehandle,
-	none // No type set (is probably not used)
-};
-enum class _eventCallType : _u8{
-	normal,		// handleEvent( ... , false )
-	normalNoDef,// handleEvent( ... , true )
-	user,		// handleEventUser( ... )
-	internal,	// handleEventInternal( ... )
-	def 		// handleEventDefault( ... )
-};
-
-extern _map<_gadgetType,string> gadgetType2string;
-extern _map<string,_gadgetType> string2gadgetType;
-extern _map<string,_eventCallType> string2eventCallType;
-extern _map<_eventCallType,string> eventCallType2string;
 
 //! Typedef
 typedef _list<_gadget*> 									_gadgetList;
@@ -139,7 +93,7 @@ class _gadget
 		 */
 		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _bitmap&& bmp , _style&& style = _style() );
 		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _style&& style = _style() ) :
-			_gadget( type , width , height , move( posX ) , move( posY ) , _bitmap( width , height ) , (_style&&)style )
+			_gadget( type , width , height , posX , posY , _bitmap( width , height ) , (_style&&)style )
 		{} // Delegating contructor! C++11 I love you!
 		
 		/**
@@ -210,10 +164,10 @@ class _gadget
 		 * the parts that have been changed
 		 */
 		void redraw(){
-			this->redraw( this->getAbsoluteDimensions() );
+			this->redraw( getAbsoluteDimensions() );
 		}
 		void redrawParents(){
-			this->redrawParents( this->getAbsoluteDimensions() );
+			this->redrawParents( getAbsoluteDimensions() );
 		}
 		
 		/**
@@ -231,31 +185,31 @@ class _gadget
 		 */
 		_bitmapPort getBitmapPort(){ return this->bitmap; }
 		
-		// BitmapPort with area preset
+		//! BitmapPort with area preset
 		_bitmapPort getBitmapPort( _area&& areaToPaintTo ){ return _bitmapPort( this->bitmap , move(areaToPaintTo) ); }
 		_bitmapPort getBitmapPort( const _area& areaToPaintTo ){ return _bitmapPort( this->bitmap , areaToPaintTo ); }
 		
-		// BitmapPort from 'onDraw'-event
+		//! BitmapPort from 'onDraw'-event
 		_bitmapPort getBitmapPort( const _event& event ){
 			if( event == onDraw && event.hasClippingRects() )
-				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
+				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( getAbsolutePosition() ) );
 			return this->bitmap;
 		}
 		_bitmapPort getBitmapPort( _event& event ){
 			if( event == onDraw && event.hasClippingRects() )
-				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( this->getAbsolutePosition() ) );
+				return _bitmapPort( this->bitmap , event.getDamagedRects().toRelative( getAbsolutePosition() ) );
 			return this->bitmap;
 		}
 		
 		//! Get The Bitmap of the Gadget
-		const _bitmap& getBitmap() const { return this->bitmap; }
+		_constbitmap& getBitmap() const { return this->bitmap; }
 		
 		/**
 		 * Set The Bitmap of the Gadget	
 		 * This automatically resizes the gadget to to fit the bitmap
 		 */
 		void setBitmap( _bitmap&& );
-		void setBitmap( const _bitmap& bmp ){ this->setBitmap( _bitmap(bmp) ); }
+		void setBitmap( _constbitmap& bmp ){ setBitmap( _bitmap(bmp) ); }
 		
 		
 		/////////////////////
@@ -266,7 +220,7 @@ class _gadget
 		const _style& getStyle() const { return this->style; }
 		
 		//! Set the style of that Gadget
-		void setStyle( _style&& style ){ this->style = (_style&&)style; this->notifyDependentGadgets( onRestyle ); }
+		void setStyle( _style&& style ){ this->style = (_style&&)style; notifyDependentGadgets( onRestyle ); }
 		void setStyle( const _style& style ){ this->setStyle( _style(style) ); }
 		
 		
@@ -338,46 +292,46 @@ class _gadget
 		 * by only using user-registered event-handler if available
 		 */
 		_callbackReturn handleEventUser( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEventUser( const _event& event ){ return this->handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventUser( e );'
+		_callbackReturn handleEventUser( const _event& event ){ return handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventUser( e );'
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using user-registered event-handler if available
 		 */
 		_callbackReturn handleEventInternal( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEventInternal( const _event& event ){ return this->handleEventInternal( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventInternal( e );'
+		_callbackReturn handleEventInternal( const _event& event ){ return handleEventInternal( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventInternal( e );'
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using the Default gadget-event-handler if available
 		 */
 		_callbackReturn handleEventDefault( _event&& event ); 
-		_callbackReturn handleEventDefault( const _event& event ){ return this->handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'		
+		_callbackReturn handleEventDefault( const _event& event ){ return handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'		
 		
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically and it will be handled as soon as there is cpu-power available)
 		 */
-		// Will be handled using the method passed or as default by calling 'handleEvent'
+		//! Will be handled using the method passed or as default by calling 'handleEvent'
 		void triggerEvent( _event&& event , _eventCallType callType = _eventCallType::normal );
-		void triggerEvent( const _event& event , _eventCallType callType = _eventCallType::normal ){ this->triggerEvent( _event( event ) , callType ); }
+		void triggerEvent( const _event& event , _eventCallType callType = _eventCallType::normal ){ triggerEvent( _event( event ) , callType ); }
 		
 		
-		// Will be handled by 'handleEvent( ... , false )' or 'handleEvent( ... , true )'
-		void triggerEvent( _event&& event , bool noDefault ){ this->triggerEvent( move(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
-		void triggerEvent( const _event& event , bool noDefault ){ this->triggerEvent( _event(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
+		//! Will be handled by 'handleEvent( ... , false )' or 'handleEvent( ... , true )'
+		void triggerEvent( _event&& event , bool noDefault ){ triggerEvent( move(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
+		void triggerEvent( const _event& event , bool noDefault ){ triggerEvent( _event(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
 		
-		// Will be handled by a user-registered event-handler
-		void triggerEventUser( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::user ); }
-		void triggerEventUser( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::user ); }
+		//! Will be handled by a user-registered event-handler
+		void triggerEventUser( _event&& event ){ triggerEvent( move(event) , _eventCallType::user ); }
+		void triggerEventUser( const _event& event ){ triggerEvent( _event(event) , _eventCallType::user ); }
 		
-		// Will be handled by a gadget-registered handler
-		void triggerEventInternal( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::internal ); }
-		void triggerEventInternal( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::internal ); }
+		//! Will be handled by a gadget-registered handler
+		void triggerEventInternal( _event&& event ){ triggerEvent( move(event) , _eventCallType::internal ); }
+		void triggerEventInternal( const _event& event ){ triggerEvent( _event(event) , _eventCallType::internal ); }
 		
-		// Will be handled by a default-registered handler
-		void triggerEventDefault( _event&& event ){ this->triggerEvent( move(event) , _eventCallType::def ); }
-		void triggerEventDefault( const _event& event ){ this->triggerEvent( _event(event) , _eventCallType::def ); }
+		//! Will be handled by a default-registered handler
+		void triggerEventDefault( _event&& event ){ triggerEvent( move(event) , _eventCallType::def ); }
+		void triggerEventDefault( const _event& event ){ triggerEvent( _event(event) , _eventCallType::def ); }
 		
 		
 		//////////////////////////////////////
@@ -385,28 +339,37 @@ class _gadget
 		//////////////////////////////////////
 		
 		//! Get Dimensions of the Gadget (including Coords)
-		_rect getDimensions() const { return _rect( this->x , this->y , this->getWidth() , this->getHeight() ); }
+		_rect getDimensions() const { return _rect( this->x , this->y , getWidth() , getHeight() ); }
 		
 		//! Get Absolute Dimensions of the Gadget
 		_rect getAbsoluteDimensions() const {
-			_2s32 val = this->getAbsolutePosition();
-			return _rect( val.first , val.second , this->getWidth() , this->getHeight() );
+			_2s32 val = getAbsolutePosition();
+			return _rect( val.first , val.second , getWidth() , getHeight() );
 		}
 		
 		/**
 		 * Set Dimensions of the Gadget (including Coords)
 		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void setDimensionsInternal( _rect rc );
+		//! Internal call, that does not violate the state of auto-computed values
+		void setDimensionsIfAuto( _rect rc )
+		{
+			if( !this->autoValues.posX )	rc.x = this->getX();
+			if( !this->autoValues.posY )	rc.y = this->getY();
+			if( !this->autoValues.width )	rc.width = this->getWidth();
+			if( !this->autoValues.height )	rc.height = this->getHeight();
+			setDimensionsInternal( rc );
+		}
 		
-		// Sets a specific size and position
+		//! Sets a specific size and position
 		void setDimensions( _rect rc ){
 			this->autoValues.sum = false; // Set all four values to false
 			setDimensionsInternal( rc );
 		}
 		
-		// Requests the gadget to both compute position and size
-		void setDimensions(){
+		//! Requests the gadget to both compute position and size
+		void requestAutoDimensions(){
+			if( !this->autoValues.sum )
+				return;
 			this->autoValues.sum = ~false; // Set all four values to true
 			notifyDependentGadgets( onResize );
 			notifyDependentGadgets( onMove );
@@ -423,7 +386,7 @@ class _gadget
 		//! Get the absolute X-position
 		noinline _coord getAbsoluteX() const {
 			if( this->parent != nullptr )
-				return this->parent->getAbsoluteX() + this->x + ( this->isEnhanced() ? 0 : this->parent->getPadding().left );
+				return this->parent->getAbsoluteX() + this->x + ( isEnhanced() ? 0 : this->parent->getPadding().left );
 			
 			return this->x;
 		}
@@ -444,20 +407,25 @@ class _gadget
 		/**
 		 * Set the gadgets position withing the parents dimensions
 		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void moveToInternal( _coord x , _coord y ){
-			this->moveRelativeInternal( x - this->x , y - this->y );
+		//! Internal call, that does not violate the state of auto-computed values
+		void moveToIfAuto( _coord x , _coord y ){
+			if( !this->autoValues.posX )
+				moveRelativeInternal( 0 , y - this->y );
+			else if( !this->autoValues.posY )
+				moveRelativeInternal( x - this->x , 0 );
+			else
+				moveRelativeInternal( x - this->x , y - this->y );
 		}
 		
-		// Sets a specific position
+		//! Sets a specific position
 		void moveTo( _coord x , _coord y ){
-			this->autoValues.posX = false;
-			this->autoValues.posY = false;
-			moveToInternal( x , y );
+			this->moveRelative( x - this->x , y - this->y );
 		}
 		
-		// Requests the gadget to auto-compute the required values
-		void moveTo(){
+		//! Requests the gadget to auto-compute the required values
+		void requestAutoPosition(){
+			if( this->autoValues.posX && this->autoValues.posY )
+				return;
 			this->autoValues.posX = true;
 			this->autoValues.posY = true;
 			notifyDependentGadgets( onMove );
@@ -466,23 +434,22 @@ class _gadget
 		/**
 		 * Move the Gadget relatively to its current position
 		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
+		//! Internal call, that does not violate the state of auto-computed values
+		void moveRelativeIfAuto( _s16 deltaX , _s16 deltaY )
+		{
+			if( !this->autoValues.posX ) // Set to null if this value isn't auto-generated
+				deltaX = 0;
+			if( !this->autoValues.posY )
+				deltaY = 0;
+			moveRelativeInternal( deltaX , deltaY );
+		}
 		
-		// Moves by difference
+		//! Moves by difference
 		void moveRelative( _s16 deltaX , _s16 deltaY ){
 			this->autoValues.posX = false;
 			this->autoValues.posY = false;
 			moveRelativeInternal( deltaX , deltaY );
 		}
-		
-		// Requests the gadget to auto-compute the required values
-		void moveRelative(){
-			this->autoValues.posX = true;
-			this->autoValues.posY = true;
-			notifyDependentGadgets( onMove );
-		}
-		
 		
 		//! Get the Relative X-position
 		_coord getX() const { return this->x; }
@@ -492,23 +459,34 @@ class _gadget
 		
 		
 		//! Set the Relative X-Position
-		void setXInternal( _coord val );
+		void setXIfAuto( _coord val ){
+			if( this->autoValues.posX )
+				this->setXInternal( val );
+		}
 		void setX( _coord val ){
 			this->autoValues.posY = false;
 			setXInternal( val );
 		}
-		void setX(){
-			this->autoValues.posY = true;
+		void requestAutoX(){
+			if( this->autoValues.posX )
+				return;
+			this->autoValues.posX = true;
 			notifyDependentGadgets( onMove );
 		}
 		
 		//! Set the Relative Y-Position
-		void setYInternal( _coord val );
+		void setYIfAuto( _coord val )
+		{
+			if( this->autoValues.posY )
+				this->setYInternal( val );
+		}
 		void setY( _coord val ){
 			this->autoValues.posY = false;
 			setYInternal( val );
 		}
-		void setY(){
+		void requestAutoY(){
+			if( this->autoValues.posY )
+				return;
 			this->autoValues.posY = true;
 			notifyDependentGadgets( onMove );
 		}
@@ -524,57 +502,78 @@ class _gadget
 		//////////////////
 		
 		/**
-		 * Set Height
-		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void setHeightInternal( _length val );
-		
-		// Sets specific height
-		void setHeight( _length val ){
-			this->autoValues.height = false;
-			setHeightInternal( val );
-		}
-		
-		// Requests the gadget to auto-compute the required values
-		void setHeight(){
-			this->autoValues.height = true;
-			notifyDependentGadgets( onResize );
-		}
-		
-		
-		/**
 		 * Set Width
 		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void setWidthInternal( _length val );
+		//! Internal call, that does not violate the state of auto-computed values
+		void setWidthIfAuto( _length val )
+		{
+			if( this->autoValues.width )
+				this->setWidthInternal( val );
+		}
 		
-		// Set specific width
+		//! Set specific width
 		void setWidth( _length val ){
 			this->autoValues.width = false;
 			setWidthInternal( val );
 		}
 		
-		// Requests the gadget to auto-compute the required values
-		void setWidth(){
+		//! Requests the gadget to auto-compute the required values
+		void requestAutoWidth(){
+			if( this->autoValues.width )
+				return;
 			this->autoValues.width = true;
+			notifyDependentGadgets( onResize );
+		}
+		
+		/**
+		 * Set Height
+		 */
+		//! Internal call, that does not violate the state of auto-computed values
+		void setHeightIfAuto( _length val )
+		{
+			if( this->autoValues.height )
+				setHeightInternal( val );
+		}
+		
+		//! Sets specific height
+		void setHeight( _length val ){
+			this->autoValues.height = false;
+			setHeightInternal( val );
+		}
+		
+		//! Requests the gadget to auto-compute the required values
+		void requestAutoHeight(){
+			if( this->autoValues.height )
+				return;
+			this->autoValues.height = true;
 			notifyDependentGadgets( onResize );
 		}
 		
 		/**
 		 * Set Size
 		 */
-		// Internal call, that does not violate the state of auto-computed values
-		void setSizeInternal( _length width , _length height );
+		//! Internal call, that does not violate the state of auto-computed values
+		void setSizeIfAuto( _length width , _length height )
+		{
+			if( !this->autoValues.width )
+				setHeightIfAuto( height );
+			else if( !this->autoValues.height )
+				setWidthInternal( width );
+			else
+				setSizeInternal( width , height );
+		}
 		
-		// Sets a specific size
+		//! Sets a specific size
 		void setSize( _length width , _length height ){
 			this->autoValues.width = false;
 			this->autoValues.height = false;
 			setSizeInternal( width , height );
 		}
 		
-		// Requests the gadget to auto-compute its size
-		void setSize(){
+		//! Requests the gadget to auto-compute its size
+		void requestAutoSize(){
+			if( this->autoValues.width && this->autoValues.height )
+				return;
 			this->autoValues.width = true;
 			this->autoValues.height = true;
 			notifyDependentGadgets( onResize );
@@ -626,13 +625,13 @@ class _gadget
 		//! Set minimum width
 		void setMinWidth( _optValue<_length> val = ignore ){
 			this->minWidth = val.isValid() ? max<_length>( 1 , val ) : 0;
-			this->setWidth( this->getWidth() ); // Check if right width given
+			setWidth( this->getWidth() ); // Check if right width given
 		}
 		
 		//! Set minimum height
 		void setMinHeight( _optValue<_length> val = ignore ){
 			this->minHeight = val.isValid() ? max<_length>( 1 , val ) : 0;
-			this->setHeight( this->getHeight() ); // Check if right height given
+			setHeight( this->getHeight() ); // Check if right height given
 		}
 		
 		
@@ -668,11 +667,17 @@ class _gadget
 		//! Remove all enhanced children and optionally 'delete' them
 		void removeEnhancedChildren( bool remove = false );
 		
-		//! Add a child-gadget to this one
-		void addChild( _gadget* child );
+		/**
+		 * Add a child-gadget to this one
+		 * @param pushBack Whether the child should be added to the back of the children instead of the front
+		 **/
+		void addChild( _gadget* child , bool pushBack = false );
 		
-		//! Add an enhanced child-gadget to this one
-		void addEnhancedChild( _gadget* child );
+		/**
+		 * Add a enhanced child-gadget to this one
+		 * @param pushBack Whether the child should be added to the back of the children instead of the front
+		 **/
+		void addEnhancedChild( _gadget* child , bool pushBack = false );
 		
 		//! Get the toppest child owned by the parent
 		_gadget* getToppestChild() const {	return this->children.front(); }
@@ -714,7 +719,7 @@ class _gadget
 		void show(){
 			if( this->hidden ){
 				this->hidden = false;
-				this->redraw();
+				redraw();
 			}
 		}
 		
@@ -736,7 +741,7 @@ class _gadget
 		void setPadding( const _padding& p ){
 			if( this->padding != p ){
 				this->padding = p;
-				this->redraw();
+				redraw();
 			}
 		}
 		
@@ -788,10 +793,24 @@ class _gadget
 			notifyDependentAdjacents( change , param );
 			notifyDependentChildren( change , param );
 		}
-		void		notifyDependentSelf( _eventType change , _dependencyParam param );
-		void		notifyDependentChildren( _eventType change , _dependencyParam param );
-		void		notifyDependentParent( _eventType change , _dependencyParam param , _optValue<_gadget*> parent = ignore );
-		void		notifyDependentAdjacents( _eventType change , _dependencyParam param , _optValue<_gadget*> pre = ignore , _optValue<_gadget*> post = ignore );
+		void		notifyDependentSelf( _eventType change , _dependencyParam param = _dependencyParam() );
+		void		notifyDependentChildren( _eventType change , _dependencyParam param = _dependencyParam() );
+		void		notifyDependentParent( _eventType change , _dependencyParam param = _dependencyParam() , _optValue<_gadget*> parent = ignore );
+		void		notifyDependentAdjacents( _eventType change , _dependencyParam param = _dependencyParam() , _optValue<_gadget*> pre = ignore , _optValue<_gadget*> post = ignore );
+		
+		
+		//////////////////////////////////////
+		// Internal functions that          //
+		// manipulate the Size and Position //
+		//////////////////////////////////////
+		
+		void setWidthInternal( _length val );
+		void setHeightInternal( _length val );
+		void setXInternal( _length val );
+		void setYInternal( _length val );
+		void setSizeInternal( _length width , _length height );
+		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
+		void setDimensionsInternal( _rect rc );
 		
 		
 		//////////////////////////////////
@@ -813,14 +832,21 @@ class _gadget
 		//! Let the gadget blink! This is used if anything can't loose focus
 		void		blinkHandler(); 
 		
-		//! _gadget::dragHandler and _gadget::blinkHandler
-		union{
+		//! _gadget::dragHandler
 		_gadget*	draggedChild;
-		_u8			counter;
-		};
 		
 		//! Type of the Gadget
 		_gadgetType type;
+		
+		//! Reset a gadgets state-attribute
+		inline void resetState(){
+			//this->hidden = false;
+			//this->pressed = false;
+			//this->enhanced = false;
+			//this->dragged = false;
+			//this->focused = false;
+			this->state = 0; // Does the same
+		}
 		
 		//! Range-bound-refreshes are only private
 		void redraw( _area&& areaToRefresh );
@@ -840,6 +866,7 @@ class _gadget
 				bool	enhanced : 1;
 				bool	dragged : 1;
 				bool	focused : 1;
+				_u8		cntBlnk : 3; // For _gadget::blinkHandler
 			} PACKED ;
 		};
 		

@@ -108,10 +108,18 @@ void _textarea::setInternalCursor( _u32 cursor )
 		this->cursor = newCursor;
 		
 		// Compute the required y position to display the text
-		_u32 requiredHeight = this->text.getLineContainingCharIndex( this->cursor - 1 ) * ( this->text.getFont()->getHeight() + 1 );
+		_int cursorY1 = this->text.getLineContainingCharIndex( this->cursor - 1 ) * ( this->text.getFont()->getHeight() + 1 );
+		_int cursorY2 = cursorY1 + this->text.getFont()->getHeight() + 1;
+		
+		// as we have to compute the minimum scroll we need
+		// and as the scroll is the difference between the displayed text and the topper border of the textarea
+		// , we have to relativate the cursor Y2 to the topper border => subtract the width
+		cursorY2 -= this->getHeight() - _textarea::borderY * 2;
 		
 		// Adjust scrollbar position
-		this->scrollBar->setValue( max( min( requiredHeight , this->scrollBar->getValue() ) , requiredHeight + this->text.getFont()->getHeight() - this->getHeight() + _textarea::borderY * 2 + 1 ) );
+		_int scrollValue = min( cursorY1 , (_int)this->scrollBar->getValue() ); // Make sure the cursor is not above the visible area
+		scrollValue = max( scrollValue , cursorY2 ); // Make sure the cursor does not get displayed below the visible area
+		this->scrollBar->setValue( scrollValue );
 		
 		// Refresh
 		this->redraw();
@@ -198,14 +206,15 @@ _callbackReturn _textarea::keyHandler( _event event )
 			// Insert glyph
 			that->text.insert( that->cursor - 1 , event.getKeyCode() );
 			
-			// Notify content has changed
+			// Notify that content has changed
 			that->triggerEvent( onEdit );
 			
 			// Update scrollbars etc.
-			that->update();
+			that->updateNow();
 			
 			// Refresh
 			that->setInternalCursor( that->cursor + 1 );
+			
 			break;
 	}
 	
@@ -229,12 +238,21 @@ _callbackReturn _textarea::generalHandler( _event event )
 		case onResize:
 		case onUpdate: // Adjust scrollbar parameters
 		{
+			reCompute:
+			
+			that->text.setWidth( that->getWidth() - _textarea::borderX * 2 - ( that->scrollBar->isHidden() ? 0 : 9 ) );
+			
 			_length neededHeight = ( _textarea::borderY * 2 ) + that->text.getLineCount() * ( that->text.getFont()->getHeight() + 1 );
-			if( neededHeight <= that->getHeight() )
-				that->scrollBar->hide();
-			else
-				that->scrollBar->show();
-			event.getGadget<_textarea>()->text.setWidth( that->getWidth() - _textarea::borderX * 2 - ( that->scrollBar->isHidden() ? 0 : 9 ) );
+			bool hideScrollBar = neededHeight <= that->getHeight();
+			
+			if( hideScrollBar != that->scrollBar->isHidden() )
+			{
+				if( hideScrollBar )
+					that->scrollBar->hide();
+				else
+					that->scrollBar->show();
+				goto reCompute; // as the scrollbar is now shown/hidden the text-lengths have to be recomputed
+			}
 			that->scrollBar->setX( that->getWidth() - 9 /* x-coord */ );
 			that->scrollBar->setHeight( that->getHeight() - 2 /* height of the scrollbar */	);
 			that->scrollBar->setLength( that->getHeight() /* Visible Part of the canvas */ );
@@ -297,8 +315,8 @@ _textarea::_textarea( _length width , _length height , _coord x , _coord y , str
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, text( _system::getFont() , _system::_rtA_->getDefaultFontSize() , width - _textarea::borderX * 2 , value )
 	, cursor( 0 )
-	, align( _align::center )
-{	
+	, align( _align::left )
+{
 	this->scrollBar =
 		new _scrollBar(
 			width - 9 , /* x-coord */

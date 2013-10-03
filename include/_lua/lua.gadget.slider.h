@@ -16,7 +16,7 @@ class _lua_slider : public _lua_gadget , public _lua_interface_input<_slider> {
 		
 		_lua_slider( lua_State* L );
 		
-		_lua_slider( _slider* c ) : _lua_gadget( c , false ) , _lua_interface_input( c )
+		_lua_slider( _slider* c ) : _lua_gadget( c , false )
 		{ }
 		
 		//! setUpperBound

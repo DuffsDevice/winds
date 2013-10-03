@@ -61,6 +61,20 @@ i = OK
 s = OK
 f = OK
 
+[lbl_close]
+e = Close
+g = Schließen
+i = Chiudere
+s = Cerrar
+f = Fermer
+
+[lbl_runtime_error]
+e = Runtime Error
+g = Laufzeitfehler
+i = Errore di run-time
+s = Error en tiempo de ejecución
+f = Erreur d'exécution
+
 [lbl_submit]
 e = Submit
 g = Bestätigen
@@ -117,7 +131,28 @@ i = Informazioni
 s = Info
 f = Info
 
-[lbl_to_continue]
+[lbl_delete]
+e = Delete
+g = Löschen
+i = Cancellare
+s = Suprimir
+f = Supprimer
+
+[lbl_save]
+e = Save
+g = Speichern
+i = Salvare
+s = Salvar
+f = Sauver
+
+[lbl_unnamed]
+e = Unnamed
+g = Unbenannt
+i = Innominato
+s = Sin Nombre
+f = Sans Nom
+
+[lbl_to_continue_click_next]
 e = To Continue, click [Next]
 g = Zum fortfahren, [Weiter] klicken
 i = di continuare a fare clic su [Più]
@@ -228,6 +263,13 @@ g = start
 i = avvio
 s = inicio
 f = démarrer
+
+[lbl_lua_parser_error]
+e = Lua-Parser-Error
+g = Lua-Parserfehler
+i = Errore di codice Lua
+s = Error análisis del código Lua
+f = Erreur dans code Lua
 
 ;[]
 ;e = 

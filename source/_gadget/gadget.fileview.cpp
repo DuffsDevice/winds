@@ -37,14 +37,14 @@ void _fileview::generateChildren( bool singleClickToExecute )
 			// Read Children of directory
 			for( string str; this->directory.readChild( str ) != false ; )
 			{
-				_fileobject* fo = new _fileobject( 1 , 1 , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
-				//curX += fo->getWidth() + 2;
-				//if( fo->getDimensions().getX2() >= this->getWidth() )
-				//{
-				//	curX = 0;
-				//	curY += fo->getHeight() + 1;
-				//	fo->moveTo( curX , curY );
-				//}
+				// Allocate Fileobject
+				_fileobject* fo = new _fileobject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
+				
+				auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 28 , 2 );
+				fo->setInternalEventHandler( onParentSet , cb );
+				fo->setInternalEventHandler( onParentResize , cb );
+				fo->setInternalEventHandler( onPreSet , cb );
+				
 				this->addChild( fo );
 			}
 			break;
@@ -52,26 +52,19 @@ void _fileview::generateChildren( bool singleClickToExecute )
 		case _fileviewType::list:
 		default:
 			// Read Children of directory
+			//_vector<string> names = { "Haloo.txt" , "Resize.lnk" , "Halihalo.exe" };
+			//for( string str : names )
 			for( string str; this->directory.readChild( str ) != false ; )
-				this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + str , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "hello.txt" , this->viewType , singleClickToExecute ) );
-			this->addChild( new _fileobject( 1 , 1 , this->directory.getFileName() + "text.lnk" , this->viewType , singleClickToExecute ) );
+			{
+				// Allocate Fileobject
+				_fileobject* fo = new _fileobject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
+				
+				auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 30 , 2 );
+				fo->setInternalEventHandler( onParentSet , cb );
+				//fo->setInternalEventHandler( onPreSet , cb );
+				
+				this->addChild( fo , true );
+			}
 			break;
 	}
 }

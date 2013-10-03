@@ -222,56 +222,59 @@ int _lua_gadget::getY(lua_State* L){ lua_pushnumber( L , this->gadget->getY() );
 //! Set X
 int _lua_gadget::setX(lua_State* L){
 	if( lua_isnil( L , 1 ) )
-		this->gadget->setX();
+		this->gadget->requestAutoX();
 	else
 		this->gadget->setX( check<int>( L , 1 ) );
 	return 0;
 }
 
+//! setXIfAuto
+int _lua_gadget::setXIfAuto(lua_State* L){ this->gadget->setXIfAuto( check<int>( L , 1 ) ); return 0; }
+
+//! Request auto X
+int _lua_gadget::requestAutoX(lua_State* L){ this->gadget->requestAutoX(); return 0; }
+
 //! Set Y
 int _lua_gadget::setY(lua_State* L){
 	if( lua_isnil( L , 1 ) )
-		this->gadget->setY();
+		this->gadget->requestAutoY();
 	else
 		this->gadget->setY( check<int>( L , 1 ) );
 	return 0;
 }
 
-//! moveTo
-int _lua_gadget::moveTo(lua_State* L){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->moveTo();
-	else
-		this->gadget->moveTo( check<int>( L , 1 ) , check<int>( L , 2 ) );
-	return 0;
-}
+//! setYIfAuto
+int _lua_gadget::setYIfAuto(lua_State* L){ this->gadget->setYIfAuto( check<int>( L , 1 ) ); return 0; }
 
-//! moveToInternal
-int _lua_gadget::moveToInternal( lua_State* L ){ this->gadget->moveToInternal( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+//! Request auto Y
+int _lua_gadget::requestAutoY(lua_State* L){ this->gadget->requestAutoY(); return 0; }
+
+//! moveTo
+int _lua_gadget::moveTo(lua_State* L){ this->gadget->moveTo( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+
+//! moveToIfAuto
+int _lua_gadget::moveToIfAuto(lua_State* L){ this->gadget->moveToIfAuto( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+
+//! Request auto Position
+int _lua_gadget::requestAutoPosition(lua_State* L){ this->gadget->requestAutoPosition(); return 0; }
 
 //! moveRelative
-int _lua_gadget::moveRelative(lua_State* L){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->moveRelative();
-	else
-		this->gadget->moveRelative( check<int>( L , 1 ) , check<int>( L , 2 ) );
-	return 0;
-}
+int _lua_gadget::moveRelative(lua_State* L){ this->gadget->moveRelative( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
 
-//! moveRelativeInternal
-int _lua_gadget::moveRelativeInternal( lua_State* L ){ this->gadget->moveRelativeInternal( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+//! moveRelativeIfAuto
+int _lua_gadget::moveRelativeIfAuto(lua_State* L){ this->gadget->moveRelativeIfAuto( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
 
 //! setSize
-int _lua_gadget::setSize(lua_State* L){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->setSize();
-	else
-		this->gadget->setSize( check<int>( L , 1 ) , check<int>( L , 2 ) );
+int _lua_gadget::setSize(lua_State* L){ this->gadget->setSize( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+
+//! setSizeIfAuto
+int _lua_gadget::setSizeIfAuto( lua_State* L ){ this->gadget->setSizeIfAuto( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
+
+//! requestAutoSize
+int _lua_gadget::requestAutoSize( lua_State* L ){
+	this->gadget->requestAutoSize();
 	return 0;
 }
-
-//! setSizeInternal
-int _lua_gadget::setSizeInternal( lua_State* L ){ this->gadget->setSizeInternal( check<int>( L , 1 ) , check<int>( L , 2 ) ); return 0; }
 
 //! getParent
 int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() , false ) ); return 1; }
@@ -306,24 +309,25 @@ int _lua_gadget::getDimensions( lua_State* L ){ Lunar<_lua_rect>::push( L , new 
 //! getAbsoluteDimensions
 int _lua_gadget::getAbsoluteDimensions( lua_State* L ){ Lunar<_lua_rect>::push( L , new _lua_rect( this->gadget->getAbsoluteDimensions() ) ); return 1; }
 
-//! setDimensionsInternal
-int _lua_gadget::setDimensionsInternal( lua_State* L ){
+//! setDimensionsIfAuto
+int _lua_gadget::setDimensionsIfAuto( lua_State* L ){
 	_lua_rect* rc = Lunar<_lua_rect>::check( L , 1 );
 	if( rc )
-		this->gadget->setDimensionsInternal( *rc );
+		this->gadget->setDimensionsIfAuto( *rc );
 	return 0;
 }
 
 //! setDimensions
 int _lua_gadget::setDimensions( lua_State* L ){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->setDimensions();
-	else
-	{
-		_lua_rect* rc = Lunar<_lua_rect>::check( L , 1 );
-		if( rc )
-			this->gadget->setDimensions( *rc );
-	}
+	_lua_rect* rc = Lunar<_lua_rect>::check( L , 1 );
+	if( rc )
+		this->gadget->setDimensions( *rc );
+	return 0;
+}
+
+//! requestAutoDimensions
+int _lua_gadget::requestAutoDimensions( lua_State* L ){
+	this->gadget->requestAutoDimensions();
 	return 0;
 }
 
@@ -360,18 +364,30 @@ int _lua_gadget::setMinWidth( lua_State* L ){
 //! setWidth
 int _lua_gadget::setWidth(lua_State* L){
 	if( lua_isnil( L , 1 ) )
-		this->gadget->setWidth();
+		this->gadget->requestAutoWidth();
 	else
 		this->gadget->setWidth( check<int>( L , 1 ) );
+	return 0;
+}
+
+//! requestAutoWidth
+int _lua_gadget::requestAutoWidth(lua_State* L){
+	this->gadget->requestAutoWidth();
 	return 0;
 }
 
 //! setHeight
 int _lua_gadget::setHeight(lua_State* L){
 	if( lua_isnil( L , 1 ) )
-		this->gadget->setHeight();
+		this->gadget->requestAutoHeight();
 	else
 		this->gadget->setHeight( check<int>( L , 1 ) );
+	return 0;
+}
+
+//! requestAutoHeight
+int _lua_gadget::requestAutoHeight(lua_State* L){
+	this->gadget->requestAutoHeight();
 	return 0;
 }
 
@@ -523,15 +539,17 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	LUA_CLASS_FUNC(_lua_gadget,getAbsoluteX),
 	LUA_CLASS_FUNC(_lua_gadget,getAbsoluteY),
 	/*  */
-	LUA_CLASS_FUNC(_lua_gadget,moveToInternal),
+	LUA_CLASS_FUNC(_lua_gadget,moveToIfAuto),
 	LUA_CLASS_FUNC(_lua_gadget,moveTo),
-	LUA_CLASS_FUNC(_lua_gadget,moveRelativeInternal),
+	LUA_CLASS_FUNC(_lua_gadget,requestAutoPosition),
+	LUA_CLASS_FUNC(_lua_gadget,moveRelativeIfAuto),
 	LUA_CLASS_FUNC(_lua_gadget,moveRelative),
 	LUA_CLASS_FUNC(_lua_gadget,hasAutoX),
 	LUA_CLASS_FUNC(_lua_gadget,hasAutoY),
 	/*  */
-	LUA_CLASS_FUNC(_lua_gadget,setSizeInternal),
+	LUA_CLASS_FUNC(_lua_gadget,setSizeIfAuto),
 	LUA_CLASS_FUNC(_lua_gadget,setSize),
+	LUA_CLASS_FUNC(_lua_gadget,requestAutoSize),
 	LUA_CLASS_FUNC(_lua_gadget,getSizeRect),
 	LUA_CLASS_FUNC(_lua_gadget,getSize),
 	LUA_CLASS_FUNC(_lua_gadget,getClientRect),
@@ -539,7 +557,7 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	LUA_CLASS_FUNC(_lua_gadget,hasAutoHeight),
 	LUA_CLASS_FUNC(_lua_gadget,getDimensions),
 	LUA_CLASS_FUNC(_lua_gadget,setDimensions),
-	LUA_CLASS_FUNC(_lua_gadget,setDimensionsInternal),
+	LUA_CLASS_FUNC(_lua_gadget,setDimensionsIfAuto),
 	/*  */
 	LUA_CLASS_FUNC(_lua_gadget,enhanceToParent),
 	LUA_CLASS_FUNC(_lua_gadget,getScreen),

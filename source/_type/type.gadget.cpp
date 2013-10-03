@@ -175,13 +175,13 @@ namespace{
 
 void _gadget::blinkHandler()
 {
-	if( this->counter > 5 )
+	if( this->cntBlnk > 5 )
 	{
 		blinkTimer.stop();
-		this->counter = 0;
+		this->cntBlnk = 0;
 		return;
 	}
-	if( this->counter++ % 2 )
+	if( this->cntBlnk++ % 2 )
 		this->show();
 	else
 		this->hide();
@@ -196,16 +196,15 @@ void _gadget::blink()
 }
 
 
-bool _gadget::hasClickRights() const {
+bool _gadget::hasClickRights() const
+{
 	if( this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus )
 		return true;
 	
-	_gadget* cur = this->parent;
-	while( cur )
+	for( _gadget* cur = this->parent; cur ; cur = cur->parent )
 	{
 		if( !cur->style.canReceiveFocus || !this->style.canTakeFocus )
 			return true;
-		cur = cur->parent;
 	}
 	return false;
 }
@@ -622,27 +621,27 @@ void _gadget::removeChild( _gadget* child )
 	// Make it appear deleted
 	this->redraw( absDim );
 	
-	// Notify dependent gadgets
+	// Notify dependent adjacents
 	child->notifyDependentAdjacents( onSet , _dependencyParam() , precedent , subcedent );
+	// Notify itself that it does not have a parent anymore
 	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
+	// Notify parent (this gadget)
 	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(child) );
 }
 
-
-void _gadget::addChild( _gadget* child )
+void _gadget::addChild( _gadget* child , bool pushBack )
 {	
 	if( !child || child->parent == this )
 		return;
 	
 	// Add it!
-	this->children.emplace_front( child );
+	if( pushBack )
+		this->children.push_back( child );
+	else
+		this->children.push_front( child );
 	
 	// Reset style-object
-	child->focused = false;
-	child->enhanced = false;
-	child->hidden = false;
-	child->dragged = false;
-	child->pressed = false;
+	child->resetState();
 	
 	// Set Parent
 	child->parent = this;
@@ -651,25 +650,29 @@ void _gadget::addChild( _gadget* child )
 	child->redraw();
 	
 	// Notify dependent gadgets
-	child->notifyDependentGadgets( onSet , false );
-	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
+	child->notifyDependentParent( onSet );
+	child->notifyDependentAdjacents( onSet );
+	
+	// Notify itself that it has a new parent
+	if( child->isDependentOf( onParentSet ) )
+		child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
 }
 
 
-void _gadget::addEnhancedChild( _gadget* child )
+void _gadget::addEnhancedChild( _gadget* child , bool pushBack )
 {
 	if( !child || child->parent == this )
 		return;
 	
 	// Add it!
-	this->enhancedChildren.emplace_front( child );
+	if( pushBack )
+		this->enhancedChildren.push_back( child );
+	else
+		this->enhancedChildren.push_front( child );
 	
 	// Reset style-object
-	child->focused = false;
+	child->resetState();
 	child->enhanced = true;
-	child->hidden = false;
-	child->dragged = false;
-	child->pressed = false;
 	
 	// Set Parent
 	child->parent = this;
@@ -1010,43 +1013,37 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 			event.posY -= that->padTop;
 		}
 		
-		//! Do not try to focus the child of a gadget that can't even be clicked!
-		if( event == onMouseDown && mouseContain->isClickable() )
-		{
-			// Update _lastClickedGadget_ so that specialities like hasSmallDragTrig work! See _gadgetScreen::processTouch()
-			_system::_lastClickedGadget_ = mouseContain;
-			
-			// Try to focus the child
-			that->focusChild( mouseContain );
-		}
-		/** 
-		 * @note The previous 'if'-block had to go first to allow a gadget to be focused.
-		 *       This wouldn't be possible if it was written inside the 'if'-block underneath,
-		 *       because 'hasClickRigths' checks if the gadget is focused
-		 */
-		
 		// Trigger the Event if the gadget is now focused or if it never will have any focus,
-		if( mouseContain->hasClickRights() )
+		if( mouseContain->isClickable() )
 		{
-			// If a child is clicked, abort
+			// Check for children of the 'mouseContain'
 			_callbackReturn ret = mouseContain->handleEventDefault( event );
 			
+			// Abort if there's nothing to do about the 'mouseCoantain' but about its children
 			if( ret != not_handled )
 				return ret;
 			
+			// Try to focus the child if its not focused yet
 			if( event == onMouseDown )
-			{
-				mouseContain->pressed = true;
-				mouseContain->triggerEvent( onMouseEnter );
-			}
-			else if( event == onMouseUp && mouseContain->pressed )
+				that->focusChild( mouseContain );
+			
+			// Independent of whether the gadget has focus or not
+			if( event == onMouseUp && mouseContain->pressed )
 			{
 				mouseContain->pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
 			}
 			
-			// Call the user-registered event-handler
-			mouseContain->handleEvent( (_event&&)event , true );
+			if( mouseContain->hasClickRights() )
+			{
+				if( event == onMouseDown ){
+					mouseContain->pressed = true;
+					mouseContain->triggerEvent( onMouseEnter );
+				}
+				
+				// Call the user-registered event-handler
+				mouseContain->handleEvent( (_event&&)event , true );
+			}
 			
 			return handled;
 		}
@@ -1169,11 +1166,6 @@ _callbackReturn _gadget::gadgetDragStartHandler( _event&& event )
 	if( !mouseContain )
 		return not_handled;
 	
-	//! Trigger the Event if the gadget is now focused or if it never will have any focus,
-	//! because otherwise it wouldn't make any sence to forward the event!
-	if( !mouseContain->hasClickRights() )
-		return not_handled;
-	
 	// Rewrite Destination
 	event.setDestination( mouseContain );
 	
@@ -1197,7 +1189,8 @@ _callbackReturn _gadget::gadgetDragStartHandler( _event&& event )
 	if( ret == not_handled )
 	{
 		if(
-			mouseContain->isDraggable()
+			mouseContain->hasClickRights()
+			&& mouseContain->isDraggable()
 			&& mouseContain->isClickable()
 			&& mouseContain->handleEvent( (_event&&)event , true ) != prevent_default
 		)
@@ -1210,7 +1203,8 @@ _callbackReturn _gadget::gadgetDragStartHandler( _event&& event )
 }
 
 
-_gadget* _gadget::getSubcedentChild( bool skipHidden ){
+_gadget* _gadget::getSubcedentChild( bool skipHidden )
+{
 	if( this->parent )
 	{
 		_gadgetList& ch = this->isEnhanced() ? this->parent->enhancedChildren : this->parent->children;
@@ -1230,7 +1224,8 @@ _gadget* _gadget::getSubcedentChild( bool skipHidden ){
 	return nullptr;
 }
 
-_gadget* _gadget::getPrecedentChild( bool skipHidden ){
+_gadget* _gadget::getPrecedentChild( bool skipHidden )
+{
 	if( this->parent )
 	{
 		_gadgetList& ch = this->isEnhanced() ? this->parent->enhancedChildren : this->parent->children;
@@ -1307,88 +1302,3 @@ void _gadget::notifyDependentAdjacents( _eventType type , _dependencyParam param
 			g2->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
 	}
 }
-
-
-// Convert a gadgetType to a string
-_map<_gadgetType,string> gadgetType2string = {
-	{ _gadgetType::button , "button" },
-	{ _gadgetType::stickybutton , "stickybutton" },
-	{ _gadgetType::label , "label" },
-	{ _gadgetType::checkbox , "checkbox" },
-	{ _gadgetType::calendar , "calendar" },
-	{ _gadgetType::radiobox , "radiobox" },
-	{ _gadgetType::textbox , "textbox" },
-	{ _gadgetType::textarea , "textarea" },
-	{ _gadgetType::selectbox , "selectbox" },
-	{ _gadgetType::selectitem , "selectitem" },
-	{ _gadgetType::progressbar , "progressbar" },
-	{ _gadgetType::keyboard , "keyboard" },
-	{ _gadgetType::desktop , "desktop" },
-	{ _gadgetType::fileview , "fileview" },
-	{ _gadgetType::fileobject , "fileobject" },
-	{ _gadgetType::imagegadget , "imagegadget" },
-	{ _gadgetType::scrollarea , "scrollarea" },
-	{ _gadgetType::scrollbutton , "scrollbutton" },
-	{ _gadgetType::scrollbar , "scrollbar" },
-	{ _gadgetType::window , "window" },
-	{ _gadgetType::screen , "screen" },
-	{ _gadgetType::popup , "popup" },
-	{ _gadgetType::slider , "slider" },
-	{ _gadgetType::counter , "counter" },
-	{ _gadgetType::contextmenu , "contextmenu" },
-	{ _gadgetType::contextmenuentry , "contextmenuentry" },
-	{ _gadgetType::resizehandle , "resizehandle" },
-	{ _gadgetType::none , "none" }
-};
-
-
-_map<string,_gadgetType> string2gadgetType = {
-	{ "button" , _gadgetType::button },
-	{ "stickybutton" , _gadgetType::stickybutton },
-	{ "label" , _gadgetType::label },
-	{ "checkbox" , _gadgetType::checkbox },
-	{ "calendar" , _gadgetType::calendar },
-	{ "radiobox" , _gadgetType::radiobox },
-	{ "textbox" , _gadgetType::textbox },
-	{ "textarea" , _gadgetType::textarea },
-	{ "selectbox" , _gadgetType::selectbox },
-	{ "selectitem" , _gadgetType::selectitem },
-	{ "progressbar" , _gadgetType::progressbar },
-	{ "keyboard" , _gadgetType::keyboard },
-	{ "desktop" , _gadgetType::desktop },
-	{ "fileview" , _gadgetType::fileview },
-	{ "fileobject" , _gadgetType::fileobject },
-	{ "imagegadget" , _gadgetType::imagegadget },
-	{ "scrollarea" , _gadgetType::scrollarea },
-	{ "scrollbutton" , _gadgetType::scrollbutton },
-	{ "scrollbar" , _gadgetType::scrollbar },
-	{ "window" , _gadgetType::window },
-	{ "screen" , _gadgetType::screen },
-	{ "popup" , _gadgetType::popup },
-	{ "counter" , _gadgetType::counter },
-	{ "slider" , _gadgetType::slider },
-	{ "contextmenu" , _gadgetType::contextmenu },
-	{ "contextmenuentry" , _gadgetType::contextmenuentry },
-	{ "resizehandle" , _gadgetType::resizehandle },
-	{ "none" , _gadgetType::none }
-};
-
-
-// Convert a string to an eventCallType
-_map<string,_eventCallType> string2eventCallType = {
-	{ "normal" , _eventCallType::normal },
-	{ "normalNoDefault" , _eventCallType::normalNoDef },
-	{ "user" , _eventCallType::user },
-	{ "internal" , _eventCallType::internal },
-	{ "default" , _eventCallType::def }
-};
-
-
-// ...and back
-_map<_eventCallType,string> eventCallType2string = {
-	{ _eventCallType::normal , "normal" },
-	{ _eventCallType::normalNoDef , "normalNoDefault" },
-	{ _eventCallType::user , "user" },
-	{ _eventCallType::internal , "internal" },
-	{ _eventCallType::def , "default" }
-};

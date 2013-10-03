@@ -16,9 +16,13 @@ extern _map<string,_eventCallType> string2eventCallType;
 extern _map<_eventCallType,string> eventCallType2string;
 
 namespace _luafunc
-{	
-	void pushEvent( lua_State* L , _event&& );
-	void pushGadget( lua_State* L , _gadget* );
+{
+	//! Call this function to indicate a runtime-error that happened inside a lua-function
+	void	errorHandler( lua_State* L , string message );
+	
+	//! More or less helpers for the following templates
+	void	pushEvent( lua_State* L , _event&& );
+	void	pushGadget( lua_State* L , _gadget* );
 	
 	// Checks for more or less any important data type and, if it's absent, returns an invalid optValue
 	template<class T> inline _optValue<T>	optcheck( lua_State* L , int index ){ return _optValue<T>(); }

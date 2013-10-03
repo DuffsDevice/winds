@@ -415,6 +415,17 @@ class _bitmap
 		void drawFilledRect( _coord x , _coord y , _length width , _length height , _pixel color );
 		
 		/**
+		 * Draw a dotted Rectangle onto the bmp
+		 * @param x X-Position (left)
+		 * @param y Y-Position Start (top)
+		 * @param width Width of the Rectangle (1 means: 1Pixel in width)
+		 * @param height Height of the Rectangle (1 means: 1Pixel in height)
+		 * @param color Color of the Rect
+		 * @return void
+		 */
+		void drawDottedRect( _coord x , _coord y , _length w , _length h , _pixel color );
+		
+		/**
 		 * Draw a Gradient onto the bmp
 		 * @param x X-Position (left)
 		 * @param y Y-Position Start (top)

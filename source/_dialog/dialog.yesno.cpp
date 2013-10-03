@@ -10,9 +10,9 @@ void _yesNoDialog::cleanupInternal(){
 }
 
 _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string> yesLbl , _optValue<string> noLbl ) :
-	yesButton( new _button( 0 , 0 , yesLbl.isValid() ? (string&&)yesLbl : _system::getLocalizedString("lbl_yes") ) )
-	, noButton( new _button( 0 , 0 , noLbl.isValid() ? (string&&)noLbl : _system::getLocalizedString("lbl_no") ) )
-	, msg( new _label( 2 , 2 , (string&&)message ) )
+	yesButton( new _button( ignore , ignore , 0 , 0 , yesLbl.isValid() ? (string&&)yesLbl : _system::getLocalizedString("lbl_yes") ) )
+	, noButton( new _button( ignore , ignore , 0 , 0 , noLbl.isValid() ? (string&&)noLbl : _system::getLocalizedString("lbl_no") ) )
+	, msg( new _label( ignore , ignore , 2 , 2 , (string&&)message ) )
 {
 	// Buttons
 	this->yesButton->setAutoSelect( true );

@@ -74,6 +74,9 @@ int _lua_bitmapPort::replaceColor( lua_State* L ){ _bitmapPort::replaceColor( ch
 //! drawRect
 int _lua_bitmapPort::drawRect( lua_State* L ){ _bitmapPort::drawRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
 
+//! drawDottedRect
+int _lua_bitmapPort::drawDottedRect( lua_State* L ){ _bitmapPort::drawDottedRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
+
 //! drawFilledRect
 int _lua_bitmapPort::drawFilledRect( lua_State* L ){ _bitmapPort::drawFilledRect( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<_pixel>( L , 5 ) ); return 0; }
 
@@ -201,6 +204,7 @@ Lunar<_lua_bitmapPort>::FunctionType _lua_bitmapPort::methods[] = {
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalLine),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalDottedLine),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawRect),
+	LUA_CLASS_FUNC(_lua_bitmapPort, drawDottedRect),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawFilledRect),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawVerticalGradient),
 	LUA_CLASS_FUNC(_lua_bitmapPort, drawHorizontalGradient),

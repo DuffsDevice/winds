@@ -19,7 +19,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	
 	bP.drawVerticalGradient( 0 , 0 , bP.getWidth() , bP.getHeight() , c.getColor() , _system::getUser()->dTC );
 	
-	const _bitmap& wp = _system::getUser()->getWallpaper();
+	_constbitmap& wp = _system::getUser()->getWallpaper();
 	
 	if( wp.isValid() )
 		bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );

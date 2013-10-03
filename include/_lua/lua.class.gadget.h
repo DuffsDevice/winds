@@ -136,8 +136,20 @@ class _lua_gadget{
 		//! Set X
 		int setX(lua_State* L);
 		
+		//! setXIfAuto
+		int setXIfAuto(lua_State* L);
+		
 		//! Set Y
 		int setY(lua_State* L);
+		
+		//! setYIfAuto
+		int setYIfAuto(lua_State* L);
+		
+		//! request auto X
+		int requestAutoX(lua_State* L);
+		
+		//! request auto Y
+		int requestAutoY(lua_State* L);
 		
 		//! hasAutoX
 		int hasAutoX(lua_State* L);
@@ -145,8 +157,8 @@ class _lua_gadget{
 		//! hasAutoY
 		int hasAutoY(lua_State* L);
 		
-		//! moveToInternal
-		int moveToInternal(lua_State* L);
+		//! moveToIfAuto
+		int moveToIfAuto(lua_State* L);
 		
 		//! moveTo
 		int moveTo(lua_State* L);
@@ -154,8 +166,11 @@ class _lua_gadget{
 		//! moveRelative
 		int moveRelative(lua_State* L);
 		
-		//! moveRelativeInternal
-		int moveRelativeInternal(lua_State* L);
+		//! moveRelativeIfAuto
+		int moveRelativeIfAuto(lua_State* L);
+		
+		//! requestAutoPosition
+		int requestAutoPosition(lua_State* L);
 		
 		//! getParent
 		int getParent( lua_State* L );
@@ -205,8 +220,11 @@ class _lua_gadget{
 		//! setDimensions
 		int setDimensions( lua_State* L );
 		
-		//! setDimensionsInternal
-		int setDimensionsInternal( lua_State* L );
+		//! setDimensionsIfAuto
+		int setDimensionsIfAuto( lua_State* L );
+		
+		//! requestAutoDimensions
+		int requestAutoDimensions( lua_State* L );
 		
 		//! setPadding
 		int setPadding( lua_State* L );
@@ -262,8 +280,17 @@ class _lua_gadget{
 		//! setSize
 		int setSize(lua_State* L);
 		
-		//! setSizeInternal
-		int setSizeInternal(lua_State* L);
+		//! setSizeIfAuto
+		int setSizeIfAuto(lua_State* L);
+		
+		//! getSize
+		int getSize( lua_State* L );
+		
+		//! getSizeRect
+		int getSizeRect( lua_State* L );
+		
+		//! requestAutoSize
+		int requestAutoSize( lua_State* L );
 		
 		//! getHeight
 		int getHeight( lua_State* L );
@@ -277,6 +304,12 @@ class _lua_gadget{
 		//! getMinWidth
 		int getMinWidth( lua_State* L );
 		
+		//! requestAutoWidth
+		int requestAutoWidth( lua_State* L );
+		
+		//! requestAutoHeight
+		int requestAutoHeight( lua_State* L );
+		
 		//! hasAutoWidth
 		int hasAutoWidth( lua_State* L );
 		
@@ -289,17 +322,17 @@ class _lua_gadget{
 		//! setHeight
 		int setHeight(lua_State* L);
 		
+		//! setWidthIfAuto
+		int setWidthIfAuto(lua_State* L);
+		
+		//! setHeightIfAuto
+		int setHeightIfAuto(lua_State* L);
+		
 		//! setMinWidth
 		int setMinWidth(lua_State* L);
 		
 		//! setMinHeight
 		int setMinHeight(lua_State* L);
-		
-		//! getSize
-		int getSize( lua_State* L );
-		
-		//! getSizeRect
-		int getSizeRect( lua_State* L );
 		
 		//! hide
 		int hide( lua_State* L );

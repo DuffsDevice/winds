@@ -74,11 +74,6 @@ class _label : public _gadget {
 		
 		//! Construcor including dimensions
 		_label( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable );
-		
-		//! Construcor excluding dimensions
-		_label( _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable ) :
-			_label( ignore , ignore , x , y , value , (_style&&)style )
-		{}
 };
 
 #endif

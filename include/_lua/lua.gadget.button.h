@@ -16,7 +16,7 @@ class _lua_button : public _lua_gadget , public _lua_interface_input<_button> {
 		
 		_lua_button( lua_State* L );
 		
-		_lua_button( _button* b ) : _lua_gadget( b , false ) , _lua_interface_input( b )
+		_lua_button( _button* b ) : _lua_gadget( b , false )
 		{ }
 		
 		//! setAutoSelect

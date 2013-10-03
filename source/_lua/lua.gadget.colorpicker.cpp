@@ -6,13 +6,9 @@ using namespace _luafunc;
 ##         Lua-Colorpicker        ##
 ##################################*/
 
-_lua_colorpicker::_lua_colorpicker( lua_State* L )
-{
-	// _colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor = COLOR_BLUE , _style style = _style() );
-	this->setGadget( new _colorpicker( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) );
-	
-	_lua_interface_input::input = (_colorpicker*)_lua_gadget::getGadget();
-}
+_lua_colorpicker::_lua_colorpicker( lua_State* L ) :
+	_lua_gadget( new _colorpicker( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
+{}
 
 //! Lua-button
 const char _lua_colorpicker::className[] = "ColorPicker";

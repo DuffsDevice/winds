@@ -10,15 +10,14 @@ _lua_textbox::_lua_textbox( lua_State* L ) :
 	_lua_gadget( 
 		new _textbox( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<string>( L , 4 , "" ) , lightcheck<_style>( L , 6 , _style() ) )
 	)
-	, _lua_interface_input( (_textbox*)_lua_gadget::getGadget() )
-{ }
+{}
 
 
 //! setCursor
-int _lua_textbox::setCursor( lua_State* L ){ _lua_interface_input::input->setCursor( check<int>( L , 1 ) ); return 0; }
+int _lua_textbox::setCursor( lua_State* L ){ getDerived()->setCursor( check<int>( L , 1 ) ); return 0; }
 
 //! getCursor
-int _lua_textbox::getCursor( lua_State* L ){ lua_pushnumber( L , _lua_interface_input::input->getCursor() ); return 1; }
+int _lua_textbox::getCursor( lua_State* L ){ lua_pushnumber( L , getDerived()->getCursor() ); return 1; }
 
 //! Lua-window
 const char _lua_textbox::className[] = "TextBox";

@@ -143,7 +143,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	// Add the logo
 	this->addChild( img );
 	
-	_label* lbl = new _label( 20 , 4 , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
+	_label* lbl = new _label( ignore , ignore , 20 , 4 , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
 	lbl->setColor( COLOR_WHITE );
 	this->addChild( lbl );
 	

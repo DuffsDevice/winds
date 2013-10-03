@@ -15,7 +15,7 @@ int _lua_imagefile::getBitmap( lua_State* L ){
 	if( !_imagefile::isValid() )
 		return 0;
 	
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( static_cast<_bitmap*>( static_cast<_imagefile*>( this ) ) ) );
+	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( static_cast<_constbitmap*>( static_cast<_imagefile*>( this ) ) ) );
 	return 1;
 }
 

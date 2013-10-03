@@ -71,12 +71,6 @@ class _button : public _gadget {
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
 		_button( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string title = "" , _style&& style = _style() );
-		
-		//! Constructor with coordinates, title and optional: Style
-		//! The Width will be computed by the font
-		_button( _coord x , _coord y , string text = "" , _style&& style = _style() ) : 
-			_button( ignore , ignore , x , y , text , (_style&&)style )
-		{}
 };
 
 #endif

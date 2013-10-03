@@ -10,81 +10,88 @@ namespace _gadgetHelpers
 	class eventForwardRefresh : public _staticCallback<_eventHandler>
 	{
 		private:
-			static _callbackReturn refreshForwardHandler( _event event );
+			static _callbackReturn executor(_event);
 		public:
 			// Ctor
 			eventForwardRefresh() :
-				_staticCallback( &eventForwardRefresh::refreshForwardHandler )
+				_staticCallback( &eventForwardRefresh::executor )
 			{}
 	};
 	
 	//! Class to forward any event to an refresh-event thrown on a specific gadget
-	class eventForwardRefreshGadget : public _classCallback<_eventHandler>
+	class eventForwardRefreshGadget : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_callbackReturn refreshForwardHandler(_event);
+			_gadget* newGadget;
+			_callbackReturn executor(_event) const ;
 		public:
 			// Ctor
-			eventForwardRefreshGadget( _gadget* g ) :
-				_classCallback( (eventForwardRefreshGadget*)g , &eventForwardRefreshGadget::refreshForwardHandler )
+			eventForwardRefreshGadget( _gadget* gadget ) :
+				_dummyCallback<_eventHandler>( &eventForwardRefreshGadget::executor )
+				, newGadget( gadget )
 			{}
 	};
 	
 	//! Class to forward any event to any other
-	class eventForward : public _classCallback<_eventHandler>
+	class eventForward : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_callbackReturn eventForwardHandler( _event event );
+			_eventType newType;
+			_callbackReturn executor(_event) const ;
 		public:
 			// Ctor
 			eventForward( _eventType newType ) :
-				_classCallback( (eventForward*)newType , &eventForward::eventForwardHandler )
+				_dummyCallback<_eventHandler>( &eventForward::executor )
+				, newType( newType )
 			{}
 	};
 	
 	//! Class to forward any event to another gadget
-	class eventForwardGadget : public _classCallback<_eventHandler>
+	class eventForwardGadget : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_callbackReturn eventForwardHandler( _event event );
+			_gadget* destination;
+			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
 			eventForwardGadget( _gadget* dest ) :
-				_classCallback( (eventForwardGadget*)dest , &eventForwardGadget::eventForwardHandler )
+				_dummyCallback<_eventHandler>( &eventForwardGadget::executor )
+				, destination( dest )
 			{}
 	};
 	
 	//! Class to resize the gadget to the size of the parent
-	class sizeParent : public _classCallback<_eventHandler>
+	class sizeParent : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_callbackReturn eventHandler( _event event );
-			
+			struct{
+				bool proceedX : 1;
+				bool proceedY : 1;
+				_length smallerX : 15;
+				_length smallerY : 15;
+			} PACKED ;
+			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
 			sizeParent( _optValue<_length>&& smallerX = 0 , _optValue<_length>&& smallerY = 0 );
 	};
 	
 	//! Class to move the gadget to either below or dexterwise of its precedent child
-	class moveBesidePrecedent : public _classCallback<_eventHandler>
+	class moveBesidePrecedent : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_callbackReturn eventHandler( _event event );
-				struct internalDataFormatStruct{
-					_u8		dim : 1;
-					bool	skipHidden : 1;
-					_u8		spaceX : 8;
-					_u8		spaceY : 8;
-					_u16	lBOffset : 15;
-					
-					operator moveBesidePrecedent*(){
-						return *(reinterpret_cast<moveBesidePrecedent**>(this));
-					}
-				};
-			
+			struct{
+				_u8		dimension : 1;
+				bool	breakLine : 1;
+				_length	spaceX;
+				_length	spaceY;
+				_length	offsetX;
+				_length	offsetY;
+			} PACKED ; 
+			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
-			moveBesidePrecedent( _dimension dim = _dimension::vertical , _u8 spaceX = 0 , _u8 spaceY = 0 , bool skipHidden = true , _optValue<_u16>&& lbOffset = ignore );
+			moveBesidePrecedent( _dimension dim = _dimension::vertical , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 );
 	};
 }
 

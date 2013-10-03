@@ -1,6 +1,8 @@
 #include "_gadget/gadget.actionButton.h"
 #include "_resource/BMP_ActionButtons.h"
 
+_constbitmap _actionButton::bitmaps[5] = { BMP_ActionBtnNext() , BMP_ActionBtnPrev() , BMP_ActionBtnShutdown() , BMP_ActionBtnLogOff() , BMP_ActionBtnSwitchUser() };
+
 _callbackReturn _actionButton::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -14,8 +16,6 @@ _callbackReturn _actionButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_bitmap _actionButton::bitmaps[] = { BMP_ActionBtnNext() , BMP_ActionBtnPrev() };
-
 _actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style ) :
 	_button( 9 , 9 , x , y , "" , (_style&&)style )
 	, type( type )
@@ -26,3 +26,21 @@ _actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _st
 	// Refresh Me
 	this->redraw();
 }
+
+_map<_actionButtonType,string> actionButtonType2string =
+{
+	{ _actionButtonType::next , "next" },
+	{ _actionButtonType::prev , "prev" },
+	{ _actionButtonType::logoff , "logoff" },
+	{ _actionButtonType::shutdown , "shutdown" },
+	{ _actionButtonType::switchuser , "switchuser" },
+};
+
+_map<string,_actionButtonType> string2actionButtonType =
+{
+	{ "next" , _actionButtonType::next },
+	{ "prev" , _actionButtonType::prev },
+	{ "logoff" , _actionButtonType::logoff },
+	{ "shutdown" , _actionButtonType::shutdown },
+	{ "switchuser" , _actionButtonType::switchuser },
+};

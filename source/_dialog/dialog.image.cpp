@@ -10,9 +10,9 @@ void _imageDialog::cleanupInternal(){
 }
 
 _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap ,  _optValue<string> okLabel , _optValue<string> otherLabel ) : 
-	okButton( new _button( 0 , 0 , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
-	, otherButton( otherLabel.isValid() ? new _button( 0 , 0 , otherLabel ) : nullptr )
-	, msg( new _label( bitmap.getWidth() + 6 , 2 , (string&&)message ) )
+	okButton( new _button( ignore , ignore , 0 , 0 , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
+	, otherButton( otherLabel.isValid() ? new _button( ignore , ignore , 0 , 0 , otherLabel ) : nullptr )
+	, msg( new _label( ignore , ignore , bitmap.getWidth() + 6 , 2 , (string&&)message ) )
 	, image( new _imagegadget( 3 , 3 , bitmap ) )
 {	
 	// Buttons

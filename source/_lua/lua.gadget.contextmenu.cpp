@@ -8,35 +8,33 @@ using namespace _luafunc;
 
 _lua_contextmenu::_lua_contextmenu( lua_State* L ) : 
 	_lua_gadget( new _contextMenu( lightcheck<_s32,string>( L , 1 , {} ) , lightcheck<_gadget>( L , 2 , nullptr ) , lua_isnumber( L , 3 ) ? _optValue<_length>( check<int>( L , 3 ) ) : _optValue<_length>() , lightcheck<bool>( L , 4 , false ) , lightcheck<int>( L , 5 , -1 ) , lightcheck<_style>( L , 6 , _style() ) ) )
-	, _lua_interface_input( (_contextMenu*)_lua_gadget::getGadget() )
-{
-}
+{}
 
 //! addIndex
 int _lua_contextmenu::addIndex( lua_State* L ){
-	_lua_interface_input::input->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
-	_lua_interface_input::input->update();
+	getDerived()->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
+	getDerived()->update();
 	return 0;
 }
 
 //! removeIndex
 int _lua_contextmenu::removeIndex( lua_State* L ){
-	_lua_interface_input::input->getList().erase( check<int>( L , 1 ) );
-	_lua_interface_input::input->update();
+	getDerived()->getList().erase( check<int>( L , 1 ) );
+	getDerived()->update();
 	return 0;
 }
 
 //! clearList
 int _lua_contextmenu::clearList( lua_State* L ){
-	_lua_interface_input::input->getList().clear();
-	_lua_interface_input::input->update();
+	getDerived()->getList().clear();
+	getDerived()->update();
 	return 0;
 }
 
 //! getList
 int _lua_contextmenu::getList( lua_State* L )
 {
-	push( L , _lua_interface_input::input->getList() );
+	push( L , getDerived()->getList() );
 	
 	return 1;
 }
@@ -44,14 +42,14 @@ int _lua_contextmenu::getList( lua_State* L )
 //! setList
 int _lua_contextmenu::setList( lua_State* L )
 {
-	_lua_interface_input::input->setList( lightcheck<_s32,string>( L , 5 , {} ) );
+	getDerived()->setList( lightcheck<_s32,string>( L , 5 , {} ) );
 	
 	return 0;
 }
 
 //! getEntryFromNumber
 int _lua_contextmenu::getEntryFromNumber( lua_State* L ){
-	lua_pushstring( L , _lua_interface_input::input->getList()[check<int>(L,1)].c_str() );
+	lua_pushstring( L , getDerived()->getList()[check<int>(L,1)].c_str() );
 	return 1;
 }
 

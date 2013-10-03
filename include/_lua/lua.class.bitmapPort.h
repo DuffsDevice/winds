@@ -63,6 +63,9 @@ class _lua_bitmapPort : public _bitmapPort{
 		//! drawRect
 		int drawRect( lua_State* L );
 		
+		//! drawDottedRect
+		int drawDottedRect( lua_State* L );
+		
 		//! drawFilledRect
 		int drawFilledRect( lua_State* L );
 		

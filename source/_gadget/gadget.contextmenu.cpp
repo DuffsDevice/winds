@@ -156,7 +156,7 @@ _callbackReturn _contextMenu::openHandler( _event event )
 		for( _gadget* entry : that->children )
 			w = max( entry->getWidth() , w );
 		
-		that->setWidthInternal( w + 2 );
+		that->setWidthIfAuto( w + 2 );
 	}
 	
 	// Possibly unhighlight the old entry
@@ -187,12 +187,13 @@ void _contextMenu::generateChildren( const _contextMenuList& list )
 {
 	this->removeChildren( true );
 	
-	if( this->hasAutoWidth() )
-		for( const _pair<_s32,string>& entry : list )
-			this->addChild( new _contextMenuEntry( entry.first , entry.second ) );
-	else
-		for( const _pair<_s32,string>& entry : list )
-			this->addChild( new _contextMenuEntry( entry.first , entry.second , this->getWidth() - 2 ) );
+	_optValue<_length> val = this->hasAutoWidth() ? _optValue<_length>( ignore ) : _optValue<_length>( this->getWidth() - 2 );
+	for( const _pair<_s32,string>& entry : list )
+	{
+		_contextMenuEntry* cM = new _contextMenuEntry( entry.first , entry.second , _optValue<_length>( val ) );
+		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent() );
+		this->addChild( cM , true );
+	}
 }
 
 _contextMenuList _contextMenu::getList()

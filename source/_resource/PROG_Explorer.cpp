@@ -15,13 +15,16 @@ void PROG_Explorer::main( _cmdArgs&& args )
 	this->window = new _window( 120 , 90 , 40 , 40 , "Explorer" , true , true , _styleAttr() | _styleAttr::draggable );
 	this->fileview = new _fileview( 118 , 67 , 0 , 12 , this->path );
 	this->addressbar = new _textbox( 1 , 1 , 106 , this->path );
-	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 );
+	this->submitbutton = new _actionButton( _actionButtonType::next, 108 , 2 , _style() | _styleAttr::canNotTakeFocus );
 	
 	this->window->setUserEventHandler( onResize , make_callback( this , &PROG_Explorer::handler ) );
 	this->fileview->setUserEventHandler( onEdit , make_callback( this , &PROG_Explorer::handler ) );
 	this->fileview->leaveFreeCorner();
 	this->submitbutton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Explorer::handler ) );
 	this->window->setUserEventHandler( onClose , make_callback( this , &PROG_Explorer::handler ) );
+	
+	// Adjust the window's title
+	this->setWindowTitle();
 	
 	this->window->addEnhancedChild( new _resizeHandle() );
 	this->window->addChild( this->fileview );
@@ -42,6 +45,12 @@ void PROG_Explorer::destruct()
 		delete this->submitbutton;
 }
 
+void PROG_Explorer::setWindowTitle()
+{
+	string path = _direntry( this->fileview->getPath() ).getName();
+	this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+}
+
 _callbackReturn PROG_Explorer::handler( _event event )
 {
 	_gadget* that = event.getGadget();
@@ -54,16 +63,12 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		string val = this->addressbar->getStrValue();
 		this->path = val;
 		this->fileview->setPath( val );
-		
-		string path = _direntry( val ).getName();
-		this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+		this->setWindowTitle();
 	}
 	else if( that->getType() == _gadgetType::fileview )
 	{
 		this->addressbar->setStrValue( this->fileview->getPath() );
-		
-		string path = _direntry( this->fileview->getPath() ).getName();
-		this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+		this->setWindowTitle();
 	}
 	else if( that->getType() == _gadgetType::window )
 	{
