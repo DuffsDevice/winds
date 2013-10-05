@@ -15,7 +15,7 @@ class _bootupScreen : public _gadgetScreen
 		_gadget* 		refresher;
 		_progressbar* 	bar;
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 	

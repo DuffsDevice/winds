@@ -12,10 +12,10 @@ class _contextMenu : public _popup
 {
 	private:
 		
-		static _callbackReturn refreshHandler( _event e );
-		static _callbackReturn keyHandler( _event e );
-		static _callbackReturn openHandler( _event e );
-		static _callbackReturn closeHandler( _event e );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn keyHandler( _event );
+		static _callbackReturn openHandler( _event );
+		static _callbackReturn closeHandler( _event );
 		
 		// Temporary variable to be read after the contextMenu was closed
 		_contextMenuEntry*	selectedEntry;

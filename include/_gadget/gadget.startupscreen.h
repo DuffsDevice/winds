@@ -11,7 +11,7 @@ class _startupScreen : public _gadgetScreen
 		_gadget*		winLogoGadget;
 		static _bitmap* winLogo;
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 	

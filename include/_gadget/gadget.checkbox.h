@@ -12,8 +12,8 @@ class _checkbox : public _gadget {
 		
 		static _constbitmap graphic[3];
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn mouseHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn mouseHandler( _event );
 		
 	public:
 		

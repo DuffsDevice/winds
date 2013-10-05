@@ -10,7 +10,7 @@
 #include "_type/type.gadget.helpers.h"
 
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.clockgadget.h"
 #include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.calendar.h"
@@ -25,7 +25,7 @@ class _scSetupPage3 : public _view
 		_label*						lblAdjustSystemClock;
 		_label*						lblFetchTime1;
 		_label*						lblFetchTime2;
-		_imagegadget*				imgClock;
+		_clockgadget*				imgClock;
 		_calendar*					calendar;
 		_counter*					cntSeconds;
 		_counter*					cntMinutes;
@@ -42,9 +42,10 @@ class _scSetupPage3 : public _view
 		// Time Object that lasts as long as the viewswitcher exists
 		_time systemTime;
 		
-		_callbackReturn clockEditHandler( _event e );
-		_callbackReturn calendarEditHandler( _event e );
-		_callbackReturn drawClockImageHandler( _event e );
+		_callbackReturn clockEditHandler( _event );
+		_callbackReturn clockCounterHandler( _event );
+		_callbackReturn calendarEditHandler( _event );
+		_callbackReturn drawClockImageHandler( _event );
 		
 		// Increases the seconds of the clock
 		void increaseTime();
@@ -66,6 +67,13 @@ class _scSetupPage3 : public _view
 		
 		bool destroy( _gadget* viewParent )
 		{
+			_time time = this->imgClock->getTime();
+			
+			// Save the time on the _clockgadget
+			this->systemTime.set( _timeAttr::hour , time.get( _timeAttr::hour ) );
+			this->systemTime.set( _timeAttr::minute , time.get( _timeAttr::minute ) );
+			this->systemTime.set( _timeAttr::second , time.get( _timeAttr::second ) );
+			
 			delete this->lblTitle;
 			delete this->lblAdjustSystemClock;
 			delete this->lblFetchTime1;

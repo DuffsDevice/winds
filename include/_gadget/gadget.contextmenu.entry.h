@@ -15,10 +15,10 @@ class _contextMenuEntry : public _gadget
 		_s32	id;
 		
 		// Event Handlers
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
-		static _callbackReturn clickHandler( _event event );
-		static _callbackReturn mouseHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn updateHandler( _event );
+		static _callbackReturn clickHandler( _event );
+		static _callbackReturn mouseHandler( _event );
 	
 	public:
 	

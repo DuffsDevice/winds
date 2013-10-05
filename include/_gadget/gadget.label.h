@@ -25,8 +25,8 @@ class _label : public _gadget {
 		string 			strValue;
 		
 		//! Refresh-Handler
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn updateHandler( _event );
 		
 	public:
 		

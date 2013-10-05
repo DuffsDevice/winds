@@ -15,9 +15,9 @@ class _radio : public _gadget {
 		
 		static _constbitmap 		graphic[4];
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn mouseHandler( _event event );
-		static _callbackReturn keyHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn mouseHandler( _event );
+		static _callbackReturn keyHandler( _event );
 		
 		friend class _singleValueGroup<_radio>;
 		

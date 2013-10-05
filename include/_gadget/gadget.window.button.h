@@ -12,7 +12,7 @@ class _windowButton : public _button
 		_u8 buttonType;
 		
 		//! Called upon refresh events
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 		

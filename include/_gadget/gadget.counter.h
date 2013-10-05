@@ -20,10 +20,10 @@ class _counter : public _gadget{
 		_scrollButton*	decreaseHandle;
 		_label*			valueLabel;
 		
-		_callbackReturn btnClickHandler( _event event );
-		static _callbackReturn keyHandler( _event event );
-		static _callbackReturn focusHandler( _event event );
-		static _callbackReturn refreshHandler( _event event );
+		_callbackReturn btnClickHandler( _event );
+		static _callbackReturn keyHandler( _event );
+		static _callbackReturn focusHandler( _event );
+		static _callbackReturn refreshHandler( _event );
 		
 		void	refreshDecimals(){
 			this->decimals = max( countDecimals( this->upperBound , this->numbersystem ) , countDecimals( this->lowerBound , this->numbersystem ) );

@@ -8,7 +8,7 @@ class _startMenu : public _popup{
 	
 	private:
 	
-		static _callbackReturn refreshHandler( _event e );
+		static _callbackReturn refreshHandler( _event );
 	
 	public:
 	

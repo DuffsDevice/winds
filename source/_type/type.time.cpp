@@ -9,7 +9,8 @@ _time _time::now()
 	return _time( std::time( NULL ) );
 }
 
-_time::_time( _int rawTime )
+_time::_time( _int rawTime ) :
+	dirty( false )
 {
 	std::time_t rawtime = rawTime;
 	
@@ -27,25 +28,31 @@ _time::_time( _int rawTime )
 _time::operator _int() const 
 {
 	struct std::tm timeinfo;
-	timeinfo.tm_year	= year - 1900;
-	timeinfo.tm_mon		= month - 1;
-	timeinfo.tm_mday	= day;
-	timeinfo.tm_hour	= hour;
-	timeinfo.tm_min		= minute;
-	timeinfo.tm_sec		= second;
+	timeinfo.tm_year	= this->year - 1900;
+	timeinfo.tm_mon		= this->month - 1;
+	timeinfo.tm_mday	= this->day;
+	timeinfo.tm_hour	= this->hour;
+	timeinfo.tm_min		= this->minute;
+	timeinfo.tm_sec		= this->second;
 	
 	return std::mktime( &timeinfo ); 
 }
 
-_time::operator string() const 
+_time::operator string()
 {
+	// Check this time structure is valid
+	validate();
+	
 	std::time_t rawtime = (_int)*this;
 	
 	return std::ctime( &rawtime ); // Convert to UTC
 }
 
-string _time::toString( string format ) const 
+string _time::toString( string format )
 {
+	// Check this time structure is valid
+	validate();
+	
 	_char str[127];
 	
 	struct std::tm timeinfo;
@@ -61,8 +68,11 @@ string _time::toString( string format ) const
 	return string(str);
 }
 
-_int _time::get( _timeAttr attr ) const 
+_int _time::get( _timeAttr attr )
 {
+	// Check this time structure is valid
+	validate();
+	
 	switch( attr )
 	{
 		case _timeAttr::year:
@@ -73,8 +83,8 @@ _int _time::get( _timeAttr attr ) const
 			return this->day;
 		case _timeAttr::dayOfWeek:
 			if( !this->dayOfWeek )
-				return 6;
-			return this->dayOfWeek - 1;
+				return 7;
+			return this->dayOfWeek;
 		case _timeAttr::hour:
 			return this->hour;
 		case _timeAttr::minute:
@@ -88,7 +98,7 @@ _int _time::get( _timeAttr attr ) const
 	return 0;
 }
 
-void _time::set( _timeAttr attr , _int value , bool validate )
+void _time::set( _timeAttr attr , _int value )
 {
 	switch( attr )
 	{
@@ -99,7 +109,6 @@ void _time::set( _timeAttr attr , _int value , bool validate )
 			this->month = value;
 			break;
 		case _timeAttr::day:
-		case _timeAttr::dayOfWeek:
 			this->day = value;
 			break;
 		case _timeAttr::hour:
@@ -112,10 +121,13 @@ void _time::set( _timeAttr attr , _int value , bool validate )
 			this->second = value;
 			break;
 		default:
-			break;
+			return;
 	}
 	
-	// Validate this _time structure
-	if( validate )
+	this->dirty = true;
+}
+
+void _time::validate(){
+	if( dirty )
 		*this = _time( _int( *this ) );
 }

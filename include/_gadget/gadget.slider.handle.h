@@ -10,7 +10,7 @@ class _sliderHandle : public _gadget{
 		
 		_dimension dimension;
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 		

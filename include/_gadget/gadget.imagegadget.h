@@ -9,7 +9,7 @@ class _imagegadget : public _gadget {
 	
 	private:
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 		

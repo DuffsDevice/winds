@@ -16,8 +16,8 @@ _calendar::_calendar( _length width , _length height , _coord x , _coord y , _u1
 	, resetButton( nullptr )
 	, todayButton( nullptr )
 {
-	this->selectedDate.set( _timeAttr::year , year , false );
-	this->selectedDate.set( _timeAttr::month , month , false );
+	this->selectedDate.set( _timeAttr::year , year );
+	this->selectedDate.set( _timeAttr::month , month );
 	this->selectedDate.set( _timeAttr::day , dayOfMonth );
 	
 	//! Allocate sticky-buttons
@@ -79,8 +79,8 @@ void _calendar::selectDate( _u16 year , _u8 month , _u8 dayOfMonth )
 	if( this->selectedDate.get( _timeAttr::day ) == dayOfMonth && this->selectedDate.get( _timeAttr::year ) == year && this->selectedDate.get( _timeAttr::month ) == month )
 		return;
 	
-	this->selectedDate.set( _timeAttr::year , year , false );
-	this->selectedDate.set( _timeAttr::month , month , false );
+	this->selectedDate.set( _timeAttr::year , year );
+	this->selectedDate.set( _timeAttr::month , month );
 	this->selectedDate.set( _timeAttr::day , dayOfMonth );
 	
 	// refresh
@@ -261,8 +261,8 @@ _callbackReturn _calendar::updateHandler( _event event )
 	int arrowWidth = this->getArrowWidth();
 	
 	
-	// Process Offset for weekdays
-	int	weekday = firstDateInMonth.get( _timeAttr::dayOfWeek );
+	// Process Offset for weekdays (Mon=1, Sun=7)
+	int	weekday = firstDateInMonth.get( _timeAttr::dayOfWeek ) - 1;
 	
 	int i = 0;
 	while( i < weekday )
