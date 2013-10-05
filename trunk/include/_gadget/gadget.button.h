@@ -21,9 +21,9 @@ class _button : public _gadget {
 		_align			align;
 		_valign 		vAlign;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn mouseHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn mouseHandler( _event );
+		static _callbackReturn updateHandler( _event );
 		
 	public:
 		

@@ -34,11 +34,11 @@ class _scrollArea : public _gadget {
 		
 		_gadgetList	nonEnhancedChildren;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn childHandler( _event event );
-		static _callbackReturn scrollHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
-		static _callbackReturn resizeHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn childHandler( _event );
+		static _callbackReturn scrollHandler( _event );
+		static _callbackReturn updateHandler( _event );
+		static _callbackReturn resizeHandler( _event );
 		
 		void		computeClipSize();
 		void		updateScrollBars();

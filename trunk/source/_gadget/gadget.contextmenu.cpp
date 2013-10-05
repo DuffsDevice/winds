@@ -191,7 +191,7 @@ void _contextMenu::generateChildren( const _contextMenuList& list )
 	for( const _pair<_s32,string>& entry : list )
 	{
 		_contextMenuEntry* cM = new _contextMenuEntry( entry.first , entry.second , _optValue<_length>( val ) );
-		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent() );
+		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }

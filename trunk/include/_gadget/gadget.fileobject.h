@@ -24,11 +24,11 @@ class _fileobject : public _gadget {
 		
 		bool 			pressed;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
-		static _callbackReturn focusHandler( _event event );
-		static _callbackReturn clickHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn dragHandler( _event );
+		static _callbackReturn focusHandler( _event );
+		static _callbackReturn clickHandler( _event );
+		static _callbackReturn updateHandler( _event );
 		
 	public:
 	

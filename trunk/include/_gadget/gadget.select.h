@@ -13,12 +13,12 @@ class _select : public _gadget
 		_contextMenu*	contextMenu;
 		_scrollButton*	arrow;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn keyHandler( _event event );
-		static _callbackReturn resizeHandler( _event event );
-		_callbackReturn editHandler( _event event );
-		_callbackReturn toggleContextMenuHandler( _event event );
-		_callbackReturn refreshButtonHandler( _event event );
+		static _callbackReturn	refreshHandler( _event );
+		static _callbackReturn	keyHandler( _event );
+		static _callbackReturn	resizeHandler( _event );
+		_callbackReturn			editHandler( _event );
+		_callbackReturn			toggleContextMenuHandler( _event );
+		_callbackReturn			refreshButtonHandler( _event );
 		
 		// Toggles visibility of the contextMenu
 		void toggleContextMenu();

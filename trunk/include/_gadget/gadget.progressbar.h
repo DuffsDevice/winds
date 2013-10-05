@@ -14,7 +14,7 @@ class _progressbar : public _gadget {
 		_u8		state;
 		bool	blue;
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 		void	step();
 		_timer	timer;

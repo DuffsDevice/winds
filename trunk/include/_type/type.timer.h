@@ -110,6 +110,9 @@ class _timer
 		
 		//! Check if the timer is set on repeat
 		bool isRepeating(){ return this->repeating; }
+		
+		//! Check whether the timer is currently running
+		bool isRunning(){ return this->runs; }
 };
 
 

@@ -7,10 +7,10 @@
 class _resizeHandle : public _gadget
 {
 	
-	static _callbackReturn refreshHandler( _event event );
-	static _callbackReturn dragHandler( _event event );
-	static _callbackReturn positionAdjuster( _event event );
-	static _callbackReturn updateHandler( _event event );
+	static _callbackReturn refreshHandler( _event );
+	static _callbackReturn dragHandler( _event );
+	static _callbackReturn positionAdjuster( _event );
+	static _callbackReturn updateHandler( _event );
 	
 	public:
 		

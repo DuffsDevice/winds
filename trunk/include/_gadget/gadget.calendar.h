@@ -25,10 +25,10 @@ class _calendar : public _gadget , private _singleValueGroup<_stickybutton>
 		_button*	resetButton;
 		_button*	todayButton;
 		
-		_callbackReturn clickHandler( _event event );
-		_callbackReturn updateHandler( _event event );
-		static _callbackReturn refreshHandler( _event event );
-		_callbackReturn keyHandler( _event event );
+		_callbackReturn clickHandler( _event );
+		_callbackReturn updateHandler( _event );
+		static _callbackReturn refreshHandler( _event );
+		_callbackReturn keyHandler( _event );
 		
 		// Compute the height of the toppest row, that owns both
 		// month-label and the buttons for switching between months

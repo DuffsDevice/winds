@@ -33,10 +33,10 @@ class _textbox : public _gadget
 		_u32			cursor;
 		_u32			scroll;
 		
-		static _callbackReturn refreshHandler( _event e );
-		static _callbackReturn focusHandler( _event e );
-		static _callbackReturn mouseHandler( _event e );
-		static _callbackReturn keyHandler( _event e );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn focusHandler( _event );
+		static _callbackReturn mouseHandler( _event );
+		static _callbackReturn keyHandler( _event );
 		
 		//! Set the Internal Cursor
 		void setInternalCursor( _u32 cursor );

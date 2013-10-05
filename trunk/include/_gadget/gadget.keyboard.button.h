@@ -12,10 +12,7 @@ class _keyboardButton : public _button {
 		/*! This Key will be sent in the keyClick-event as 'keyCode' */
 		_key key;
 		
-		//! Used to throw an keyClick-event
-		static _callbackReturn  mouseHandler( _event );
-		
-		static _callbackReturn  refreshHandler( _event );
+		static _callbackReturn  mouseHandler( _event ); // Used to throw an keyClick-event
 	
 	public:
 		

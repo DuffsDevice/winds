@@ -44,11 +44,11 @@ class _keyboard : public _gadgetScreen {
 		//! Animation
 		_animation		anim;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
-		static _callbackReturn mouseHandler( _event event );
-		static _callbackReturn keyHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn updateHandler( _event );
+		static _callbackReturn mouseHandler( _event );
+		static _callbackReturn keyHandler( _event );
+		static _callbackReturn dragHandler( _event );
 		
 		//! Setter for the animation and for the dragHandler
 		void	setState( int val );

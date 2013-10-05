@@ -63,7 +63,7 @@ void _systemController::checkDirty()
 
 void _systemController::main()
 {
-	changeState( _systemState::desktop );
+	changeState( _systemState::setup );
 	static int i = 0;
 	static int s = 0;
 	

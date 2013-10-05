@@ -25,14 +25,14 @@ class _window : public _gadget {
 		bool			minimized : 1;
 		bool			closeable : 1;
 		
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn focusHandler( _event event );
-		static _callbackReturn dragHandler( _event event );
-		_callbackReturn buttonHandler( _event event ); // Handler for _window-Buttons
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn focusHandler( _event );
+		static _callbackReturn dragHandler( _event );
+		_callbackReturn buttonHandler( _event ); // Handler for _window-Buttons
 		
 		//! Will be called if the window is resized ->label will also be resized
-		static _callbackReturn updateHandler( _event event ); // Will be called when something like "style.resizeable" is changed
-		static _callbackReturn mouseClickHandler( _event event );
+		static _callbackReturn updateHandler( _event ); // Will be called when something like "style.resizeable" is changed
+		static _callbackReturn mouseClickHandler( _event );
 		
 	public:
 		

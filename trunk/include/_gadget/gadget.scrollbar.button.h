@@ -21,7 +21,7 @@ class _scrollButton : public _button{
 		
 		_scrollButtonType type;
 		
-		static _callbackReturn refreshHandler( _event event );
+		static _callbackReturn refreshHandler( _event );
 		
 	public:
 	

@@ -30,10 +30,10 @@ class _textarea : public _gadget{
 		//! Text-align
 		_align		align;
 		
-		static _callbackReturn refreshHandler( _event e );
-		static _callbackReturn generalHandler( _event e );
-		static _callbackReturn mouseHandler( _event e );
-		static _callbackReturn keyHandler( _event e );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn generalHandler( _event );
+		static _callbackReturn mouseHandler( _event );
+		static _callbackReturn keyHandler( _event );
 		
 		inline void checkRefresh()
 		{

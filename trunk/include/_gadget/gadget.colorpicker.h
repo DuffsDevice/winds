@@ -19,11 +19,11 @@ class _colorpicker : public _gadget
 		_gadget*	lumTable;
 		_bitmap		hueSatImage;
 		
-		_callbackReturn lumRefreshHandler( _event event );
-		_callbackReturn hueSatRefreshHandler( _event event );
-		_callbackReturn refreshHandler( _event event );
-		_callbackReturn resizeHandler( _event event );
-		_callbackReturn inputHandler( _event event );
+		_callbackReturn lumRefreshHandler( _event );
+		_callbackReturn hueSatRefreshHandler( _event );
+		_callbackReturn refreshHandler( _event );
+		_callbackReturn resizeHandler( _event );
+		_callbackReturn inputHandler( _event );
 		
 		// Refreshes the big colorful base gradient
 		void refreshBigGradient();

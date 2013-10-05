@@ -22,11 +22,11 @@ class _slider : public _gadget{
 		string			upperBoundText;
 		string			lowerBoundText;
 		
-		_callbackReturn dragHandler( _event event );
-		static _callbackReturn keyHandler( _event event );
-		static _callbackReturn focusHandler( _event event );
-		static _callbackReturn refreshHandler( _event event );
-		static _callbackReturn updateHandler( _event event );
+		_callbackReturn dragHandler( _event );
+		static _callbackReturn keyHandler( _event );
+		static _callbackReturn focusHandler( _event );
+		static _callbackReturn refreshHandler( _event );
+		static _callbackReturn updateHandler( _event );
 		
 		//! Increases the slider value and fires an onEdit-Event
 		void increaseInternal(){ this->setIntValue( this->intValue + 1 ); this->triggerEvent( onEdit ); }

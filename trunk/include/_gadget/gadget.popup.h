@@ -9,7 +9,7 @@ class _popup : public _gadget
 	
 	private:
 		
-		static _callbackReturn blurHandler( _event e );
+		static _callbackReturn blurHandler( _event );
 		
 		_align		xDir; // can either be left or right
 		_valign		yDir; // Can either bo top or bottom
