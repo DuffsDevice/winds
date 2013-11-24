@@ -30,7 +30,7 @@ class _radio : public _gadget {
 		_s32 getIntValue(){ return this->intValue; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_radio( _coord x , _coord y , _singleValueGroup<_radio>* radiogroup , _s32 assocValue = -1 , _style&& style = _style() );
+		_radio( _optValue<_coord> x , _optValue<_coord> y , _singleValueGroup<_radio>* radiogroup , _s32 assocValue = -1 , _style&& style = _style() );
 		
 		//! Destrucor
 		~_radio();

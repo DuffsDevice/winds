@@ -13,6 +13,39 @@ _viewSwitcher::~_viewSwitcher()
 	this->views.clear();
 }
 
+bool _viewSwitcher::addView( string assocName , _view* view )
+{
+	if( assocName.empty() )
+		return false;
+	
+	// Check if we could overwrfite the currently active view
+	bool isActiveView = assocName == this->currentView;
+	
+	// return false if the current view could not be replaced
+	if( isActiveView && !unset() )
+		return false;
+	
+	// Remove any Current Handler
+	_view* &data = this->views[assocName]; // reference to pointer
+	
+	if( data )
+		delete data; // Delete Current associated view
+	
+	// Insert the new View
+	data = view;
+	
+	// Tell it which switcher it belongs to
+	data->setSwitcher( this );
+	
+	// Maybe reenable the old active view if we overwrote that one
+	if( isActiveView && viewParent ){
+		data->create( viewParent );
+		this->currentView = assocName;
+	}
+	
+	return true;
+}
+
 void _viewSwitcher::removeView( string assocName )
 {
 	if( this->currentView == assocName )

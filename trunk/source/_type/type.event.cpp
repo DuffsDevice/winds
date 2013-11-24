@@ -30,7 +30,7 @@ bool _event::mergeWith( _event& event )
 			this->posY = event.posY;
 			this->effectiveX = event.effectiveX;
 			this->effectiveY = event.effectiveY;
-			this->keyCode = event.keyCode;
+			this->pressure = event.pressure;
 			this->currentKeyCodes |= event.currentKeyCodes;
 			break;
 		case onDraw:

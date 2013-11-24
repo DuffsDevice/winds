@@ -11,8 +11,7 @@ class _popup : public _gadget
 		
 		static _callbackReturn blurHandler( _event );
 		
-		_align		xDir; // can either be left or right
-		_valign		yDir; // Can either bo top or bottom
+		_direction	dir; // Direction to which it opens
 		_gadget*	owner; // The gadget that might receive focus when the popup closes
 		bool		opened; // Flag that indicates whether the popup is currently open
 		
@@ -20,12 +19,18 @@ class _popup : public _gadget
 		
 		//! Shows the popup at the specified position on the screen
 		void show( _coord x , _coord y );
+		void show( _2s32 pos ){
+			show( pos.first , pos.second );
+		}
 		
 		//! Hides the popup
 		void shelve( bool focusOwner = false );
 		
 		//! Toggle between hidden and shown
 		void toggle( _coord x , _coord y );
+		void toggle( _2s32 pos ){
+			toggle( pos.first , pos.second );
+		}
 		
 		//! Check if the popup is opened on the screen
 		bool isOpened(){ return this->opened; }

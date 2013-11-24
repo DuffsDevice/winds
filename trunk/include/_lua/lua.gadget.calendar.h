@@ -2,16 +2,15 @@
 #ifndef _WIN_L_CALENDAR_
 #define _WIN_L_CALENDAR_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.calendar.h"
 
 /**
  * Proxy Classes
  */
-class _lua_calendar : public _lua_gadget , public _lua_interface_input<_calendar> {
-	
+class _lua_calendar : public _lua_gadget
+{
 	public:
 		
 		_lua_calendar( lua_State* L );

@@ -4,8 +4,7 @@
 #include "_type/type.h"
 #include "_type/type.gadget.h"
 
-enum class _dialogResult : _u8
-{
+enum class _dialogResult : _u8{
 	undefined,
 	cancel,
 	yes,
@@ -13,15 +12,19 @@ enum class _dialogResult : _u8
 	apply
 };
 
+extern _map<_dialogResult,string> dialogResult2string;
+
 class _dialog{
 	
 	protected:
 		
-		_callback<void(_dialogResult)>* callback; // Will be called right after Exit
+		typedef _callback<void(_dialogResult)> CallbackType;
 		
-		_s32						intResult;
-		string						strResult;
-		bool						runs;
+		CallbackType*	callback; // Will be called right after Exit
+		
+		_s32			intResult;
+		string			strResult;
+		bool			runs;
 		
 		virtual void executeInternal() = 0;
 		virtual void cleanupInternal() = 0;
@@ -62,18 +65,14 @@ class _dialog{
 		string getStrResult(){ return this->strResult; }
 		
 		//! Set the onExit Func
-		template<typename T>
-		void setCallback( T&& cb )
+		void setCallback( _paramAlloc<CallbackType> cb )
 		{
-			typedef typename std::remove_reference<T>::type T2;
-			typedef typename T2::_callback def;
-			
 			// Delete old
 			if( this->callback )
 				delete this->callback;
 			
 			// Set new callback
-			this->callback = new T2( move(cb) );
+			this->callback = cb;
 		}
 		
 		//! Removes the callback

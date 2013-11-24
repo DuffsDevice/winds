@@ -217,6 +217,16 @@ _callbackReturn _textbox::focusHandler( _event event )
 	return use_default;
 }
 
+_callbackReturn _textbox::updateHandler( _event event )
+{
+	_textbox* that = event.getGadget<_textbox>();
+	
+	if( that->font && that->font->isValid() )
+		that->setHeightIfAuto( that->font->getHeight() + 2 );
+	
+	return handled;
+}
+
 _callbackReturn _textbox::mouseHandler( _event event )
 {
 	_textbox* that = event.getGadget<_textbox>();
@@ -244,18 +254,23 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	return handled;
 }
 
-_textbox::_textbox( _coord x , _coord y , _length width , _length height , string text , _style&& style ) :
-	_gadget( _gadgetType::textbox , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
+_textbox::_textbox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string text , _style&& style ) :
+	_gadget( _gadgetType::textbox , x , y , width , height , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
 	, font ( _system::getFont() )
-	, fontSize( _system::_rtA_->getDefaultFontSize() )
+	, fontSize( _system::getRTA().getDefaultFontSize() )
 	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( text )
 	, cursor( 0 )
 	, scroll( 0 )
 {
+	// Set update Handler
+	this->setInternalEventHandler( onUpdate , make_callback( &_textbox::updateHandler ) );
+	
+	this->updateNow();
+	
 	// Regsiter Handling Functions for events
 	this->setInternalEventHandler( onFocus , make_callback( &_textbox::focusHandler ) );
 	this->setInternalEventHandler( onBlur , make_callback( &_textbox::focusHandler ) );
@@ -267,12 +282,4 @@ _textbox::_textbox( _coord x , _coord y , _length width , _length height , strin
 	
 	// Refresh Myself
 	this->redraw();
-}
-
-// C++0x I Love you! Delegating Ctors! Yeehaa...
-_textbox::_textbox( _coord x , _coord y , _length width , string text , _style&& style ) :
-	_textbox( x , y , width , 10 , text , (_style&&)style )
-{
-	if( this->font && this->font->isValid() )
-		this->setHeight( this->font->getHeight() + 2 );
 }

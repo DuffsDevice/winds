@@ -2,7 +2,7 @@
 #ifndef _WIN_L_SCROLLAREA_
 #define _WIN_L_SCROLLAREA_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
 #include "_gadget/gadget.scrollArea.h"
 
@@ -24,21 +24,6 @@ class _lua_scrollarea : public _lua_gadget{
 		
 		//! setScrollTypeY
 		int setScrollTypeY( lua_State* L );
-		
-		//! scrollToX
-		int scrollToX( lua_State* L );
-		
-		//! scrollToY
-		int scrollToY( lua_State* L );
-		
-		//! scrollTo
-		int scrollTo( lua_State* L );
-		
-		//! getScrollY
-		int getScrollY( lua_State* L );
-		
-		//! getScrollX
-		int getScrollX( lua_State* L );
 		
 		
 		//! Lunar !//

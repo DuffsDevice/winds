@@ -30,21 +30,21 @@ class _select : public _gadget
 	
 		//! To receive/set the value
 		string	getStrValue(){ return this->contextMenu->getStrValue(); }
-		_s32	getIntValue(){ return this->contextMenu->getIntValue(); }
+		_int	getIntValue(){ return this->contextMenu->getIntValue(); }
 		
 		//! Set index of selected value
-		void	setIntValue( _s32 value ){ this->contextMenu->setIntValue( value ); }
+		void	setIntValue( _int value ){ this->contextMenu->setIntValue( value ); }
 		
 		//! Get the list of values
-		_contextMenuList getList(){ return this->contextMenu->getList(); }
+		_menuEntryList getList(){ return this->contextMenu->getList(); }
 		
 		//! Set the list
-		void setList( const _contextMenuList& lst ){
+		void setList( const _menuEntryList& lst ){
 			this->contextMenu->setList( lst );
 		}
 		
 		//! Ctor
-		_select( _length width , _u8 height , _coord x , _coord y , const _contextMenuList& lst = _contextMenuList( { { 0 , "" } } /* Empty List */ ) , _s32 initialValue = -1 , _style&& style = _style() );
+		_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst = _menuEntryList( { { 0 , "" } } /* Empty List */ ) , _int initialValue = -1 , _style&& style = _style() );
 		
 		//! Dtor
 		~_select(){ delete this->contextMenu; }

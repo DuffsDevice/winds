@@ -87,11 +87,11 @@ class _calendar : public _gadget , private _singleValueGroup<_stickybutton>
 		
 		
 		//! Ctor with _time object
-		_calendar( _length width , _length height , _coord x , _coord y , _time origDate , _pixel bgColor = COLOR_WHITE , _style&& style = _style() ) :
-			_calendar( width , height , x , y , origDate.get( _timeAttr::year ) , origDate.get( _timeAttr::month ) , origDate.get( _timeAttr::day ) , bgColor , (_style&&)style )
+		_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _time origDate , _pixel bgColor = COLOR_WHITE , _style&& style = _style() ) :
+			_calendar( x , y , width , height , origDate.get( _timeAttr::year ) , origDate.get( _timeAttr::month ) , origDate.get( _timeAttr::day ) , bgColor , (_style&&)style )
 		{ }
 		
-		_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor = COLOR_WHITE , _style&& style = _style() );
+		_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor = COLOR_WHITE , _style&& style = _style() );
 		
 		//! Dtor
 		~_calendar();

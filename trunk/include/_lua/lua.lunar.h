@@ -3,28 +3,25 @@
 #define _WIN_LUNAR_
 
 #include "_type/type.h"
-#include "_type/type.system.h"
 #include "_type/type.style.h"
 #include "_lua/lua.hpp"
+#include "_lua/lua.func.h"
 #include <string.h> // For strlen
 #include <type_traits>
 
-extern bool luaL_is( lua_State* L , int narg , string type );
-
-template<class T> struct hasStaticMethods
+namespace detail
 {
-    typedef char (&Yes)[1];
-    typedef char (&No)[2];
+	template <typename T>
+	class hasStaticMethods{
+		typedef char true_value;
+		typedef long false_value;
+		template <typename C> static true_value test( decltype(&C::staticmethods) ) ;
+		template <typename C> static false_value test(...);
+	public:
+		enum { value = sizeof(test<T>(0)) == sizeof(true_value) };
+	};
+}
 
-    template<class U> 
-    static Yes test(U const * data, 
-                    typename std::enable_if<std::is_same<
-							decltype(void()),
-                            decltype(data.staticmembers,void())
-                    >::value>::type * = 0);
-    static No test(...);
-    static const bool value = sizeof(Yes) == sizeof(hasStaticMethods::test((typename std::remove_reference<T>::type*)0));
-};
 
 template<class T>
 class Lunar
@@ -33,29 +30,41 @@ class Lunar
 		
 		// Will be enabled
 		template<typename T2>
-		static typename std::enable_if<hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
+		static typename std::enable_if<detail::hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
 		{
-			lua_newtable(L);
-			int classNameTable = lua_gettop(L);
+			// Create table that will hold all static methods
+			lua_createtable(L,0,1);
 			
-			lua_pushliteral(L, "__call");
-			lua_pushcfunction(L, &Lunar < T2 >::constructor);
-			lua_settable(L, classNameTable);
+			int tableIndex = lua_gettop(L);
 			
 			for (int i = 0; T::staticmethods[i].name; i++)
 			{
-				lua_pushcfunction(L, T2::staticmethods[i].func );
-				lua_pushstring(L, T2::staticmethods[i].name);
-				lua_settable(L, classNameTable);
+				lua_pushstring(L, T2::staticmethods[i].name); // Push Key
+				lua_pushcfunction(L, T2::staticmethods[i].func ); // Push Value
+				lua_rawset(L, tableIndex);
 			}
 			
+			// Create table that will become our metatable
+				lua_newtable(L);
+				int metatableIndex = lua_gettop(L);
+				
+				// Push constructor
+				lua_pushliteral(L, "__call");
+				lua_pushcfunction(L, &Lunar<T2>::constructorDeleteSelfReference);
+				lua_settable(L, metatableIndex);
+			//
+			
+			// Set metatable of table and pop it from stack
+			lua_setmetatable(L, tableIndex);
+			
+			// Adds the currently created table to the global namespace and pops it from stack
 			lua_setglobal(L, T2::className);
 		}
 		// Fallback
 		template<typename T2>
-		static typename std::enable_if<!hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
+		static typename std::enable_if<!detail::hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
 		{
-			lua_pushcfunction(L, &Lunar < T2 >::constructor);
+			lua_pushcfunction(L, &Lunar<T2>::constructor);
 			lua_setglobal(L, T2::className);
 		}
 		
@@ -170,10 +179,16 @@ class Lunar
 		}
 		
 		/*
-			constructor (internal)
+			constructorthat removes the 'self' reference that gets passed along in case the function is actually a metamethod
 			Arguments:
 			* L - Lua State
 		*/
+		static int constructorDeleteSelfReference(lua_State* L)
+		{
+			lua_remove(L,1); 
+			return constructor(L);
+		}
+		
 		static int constructor(lua_State* L)
 		{
 			T*  ap = new T(L);
@@ -261,12 +276,12 @@ class Lunar
 				T** obj = static_cast<T**>( lua_touserdata( L , 1 ) );
 				
 				if( !obj || !*obj ){
-					_system::debug( "Internal error, no object given!" );
+					_luafunc::errorHandler(L, "Internal error, no object given!" );
 					return 0;
 				}
 				
 				if( _index >> 8 ){ // Try to set a func
-					_system::debug( "Trying to set the method [%s] of class [%s]" , (*obj)->T::methods[_index ^ ( 1 << 8 ) ].name , T::className );
+					_luafunc::errorHandler(L, "Trying to set the method [%s] of class [%s]", (*obj)->T::methods[_index ^ ( 1 << 8 ) ].name , T::className );
 					return 0;
 				}
 				
@@ -303,16 +318,25 @@ class Lunar
 		*/
 		static int function_dump(lua_State * L)
 		{
-			_system::debug( "Dump of %s:" , T::className );
-			_system::debug("Methods:");
+			string output = "Dump of ";
+			output += T::className;
+			output += ":\nMethods:";
 			
 			for (int i = 0; T::methods[i].name; i++)
-				_system::debug( "  - %s" , T::methods[i].name );
+			{
+				output += "\n - ";
+				output += T::methods[i].name;
+			}
 			
-			_system::debug("Properties");
+			output += "\nProperties:";
 			
 			for (int i = 0; T::properties[i].name; i++)
-				_system::debug( "  - %s" , T::properties[i].name );
+			{
+				output += "\n - ";
+				output += T::properties[i].name;
+			}
+			
+			_luafunc::errorHandler(L, output.c_str());
 			
 			return 0;
 		}

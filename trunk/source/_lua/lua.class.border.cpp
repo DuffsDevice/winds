@@ -1,5 +1,5 @@
 #include "_lua/lua.class.border.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################

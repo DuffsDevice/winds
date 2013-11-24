@@ -3,14 +3,16 @@
 #include "_type/type.system.h"
 #include "func.memory.h"
 
-_counter::_counter( _coord x , _coord y , _length width , bool circular , _s32 value , _s32 upperBound , _s32 lowerBound , _u8 numbersystem , _style&& style ) :
-	_gadget( _gadgetType::counter , max( width , _length(15) ) , 16 , x , y , (_style&&)style )
+_counter::_counter( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool circular , _s32 value , _optValue<_s32> upperBound , _optValue<_s32> lowerBound  , _optValue<_u8> numbersystem , _style&& style ) :
+	_gadget( _gadgetType::counter , x , y , width , 16 , (_style&&)style ) //! TODO outsource '16'
 	, circular( circular )
+	, lowerBound( lowerBound.isValid() ? (_s32)lowerBound : 0 )
+	, upperBound( upperBound.isValid() ? (_s32)upperBound : 99 )
 	, intValue( mid( lowerBound , value , upperBound ) )
-	, lowerBound( lowerBound )
-	, upperBound( upperBound )
-	, numbersystem( numbersystem )
+	, numbersystem( numbersystem.isValid() ? (_u8)numbersystem : 10 )
 {
+	this->setMinWidth( 15 );
+	
 	// Regsiter draw and key Handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_counter::refreshHandler ) );
 	this->setInternalEventHandler( onKeyDown , make_callback( &_counter::keyHandler ) );
@@ -84,14 +86,8 @@ _callbackReturn _counter::focusHandler( _event event )
 	_counter* that = event.getGadget<_counter>();
 	
 	// Blur and Focus changes the style of the label
-	if( event == onFocus ){
-		that->valueLabel->setBgColor( RGB255( 10 , 36 , 106 ) );
-		that->valueLabel->setColor( COLOR_WHITE );
-	}
-	else{
-		that->valueLabel->setBgColor( COLOR_WHITE );
-		that->valueLabel->setColor( COLOR_BLACK );
-	}
+	that->valueLabel->setBgColor( _system::getRTA().getItemBackground( event == onFocus ) );
+	that->valueLabel->setColor( _system::getRTA().getItemForeground( event == onFocus ) );
 	
 	return handled;
 }

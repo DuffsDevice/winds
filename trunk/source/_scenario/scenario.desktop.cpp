@@ -52,9 +52,9 @@ _scDesktop::_scDesktop()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , SCREEN_WIDTH - 80 );
 	
-	_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
-	//_system::executeCommand("%SYSTEM%/exampleprogram.exe");
-	_system::executeCommand("%SYSTEM%/paint.exe");
+	//_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
+	_system::executeCommand("%SYSTEM%/exampleprogram.exe");
+	//_system::executeCommand("%SYSTEM%/paint.exe");
 	//_system::executeCommand("%SYSTEM%/pong.exe");
 	
 	//for( int i = 0; i < 60 ; i++)

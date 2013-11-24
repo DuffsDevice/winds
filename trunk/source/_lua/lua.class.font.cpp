@@ -1,5 +1,5 @@
 #include "_lua/lua.class.font.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -23,7 +23,7 @@ int _lua_font::getStringWidth( lua_State* L ){ lua_pushnumber( L , this->font->g
 int _lua_font::getCharacterWidth( lua_State* L ){ lua_pushnumber( L , this->font->getCharacterWidth( check<string>( L , 1 )[0] ) ); return 1; }
 
 //! getNumCharsUntilWidth
-int _lua_font::getNumCharsUntilWidth( lua_State* L ){ lua_pushnumber( L , this->font->getNumCharsUntilWidth( check<int>( L , 1 ) , check<string>( L , 2 ) , lightcheck( L , 3 , 0 ) ) ); return 1; }
+int _lua_font::getNumCharsUntilWidth( lua_State* L ){ lua_pushnumber( L , this->font->getNumCharsUntilWidth( check<int>( L , 1 ) , check<string>( L , 2 ) , lightcheck<int>( L , 3 , 0 ) ) ); return 1; }
 
 //! isMonospace
 int _lua_font::isMonospace( lua_State* L ){ lua_pushboolean( L , this->font->isMonospace() ); return 1; }

@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.textarea.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -8,16 +9,9 @@ using namespace _luafunc;
 
 _lua_textarea::_lua_textarea( lua_State* L ) : 
 	_lua_gadget( 
-		new _textarea( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 , _style() ) )
+		new _textarea( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<string>( L , 5 ) , lightcheck<_style>( L , 6 ) )
 	)
 {}
-
-
-//! setCursor
-int _lua_textarea::setCursor( lua_State* L ){ getDerived()->setCursor( check<int>( L , 1 ) ); return 0; }
-
-//! getCursor
-int _lua_textarea::getCursor( lua_State* L ){ lua_pushnumber( L , getDerived()->getCursor() ); return 1; }
 
 //! Lua-window
 const char _lua_textarea::className[] = "TextArea";
@@ -27,11 +21,11 @@ Lunar<_lua_textarea>::FunctionType _lua_textarea::methods[] = {
 
 Lunar<_lua_textarea>::PropertyType _lua_textarea::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "text" , &_lua_textarea::getStrValue , &_lua_textarea::setStrValue },
-	{ "color" , &_lua_textarea::getColor , &_lua_textarea::setColor },
-	{ "cursor" , &_lua_textarea::getCursor , &_lua_textarea::setCursor },
-	{ "bgColor" , &_lua_textarea::getBgColor , &_lua_textarea::setBgColor },
-	{ "font" , &_lua_textarea::getFont , &_lua_textarea::setFont },
-	{ "fontSize" , &_lua_textarea::getFontSize , &_lua_textarea::setFontSize },
+	{ "text"		, wrap( _lua_textarea , &_textarea::getStrValue )	, wrap( _lua_textarea , &_textarea::setStrValue ) },
+	{ "color"		, wrap( _lua_textarea , &_textarea::getColor )		, wrap( _lua_textarea , &_textarea::setColor ) },
+	{ "bgColor"		, wrap( _lua_textarea , &_textarea::getBgColor )	, wrap( _lua_textarea , &_textarea::setBgColor ) },
+	{ "cursor"		, wrap( _lua_textarea , &_textarea::getCursor )		, wrap( _lua_textarea , &_textarea::setCursor ) },
+	{ "font"		, wrap( _lua_textarea , &_textarea::getFont )		, wrap( _lua_textarea , &_textarea::setFont ) },
+	{ "fontSize"	, wrap( _lua_textarea , &_textarea::getFontSize )	, wrap( _lua_textarea , &_textarea::setFontSize ) },
 	LUA_CLASS_ATTR_END
 };

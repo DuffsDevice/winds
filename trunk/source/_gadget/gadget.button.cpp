@@ -185,13 +185,13 @@ _callbackReturn _button::mouseHandler( _event event )
 	return handled;
 }
 
-_button::_button( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style ) :
-	_gadget( _gadgetType::button , move(width) , move(height) , x , y , style | _styleAttr::notDoubleClickable )
+_button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+	_gadget( _gadgetType::button , x , y , width , height , style | _styleAttr::notDoubleClickable )
 	, autoSelect( false )
 	, strValue( value )
 	, font( _system::getFont() )
 	, fontColor( COLOR_BLACK )
-	, fontSize( _system::_rtA_->getDefaultFontSize() )
+	, fontSize( _system::getRTA().getDefaultFontSize() )
 	, pressed( false )
 	, align( _align::center )
 	, vAlign( _valign::middle )

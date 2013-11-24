@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.select.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -7,50 +8,37 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_select::_lua_select( lua_State* L ) :
-	_lua_gadget( new _select( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<_s32,string>( L , 5 , {} ) , lightcheck<int>( L , 6 , -1 ) , lightcheck<_style>( L , 7 , _style() ) ) )
+	_lua_gadget( new _select( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , lightcheck<_menuEntryList>( L , 4 ) , lightcheck<int>( L , 5 , -1 ) , lightcheck<_style>( L , 6 ) ) )
 {}
 
 //! addIndex
 int _lua_select::addIndex( lua_State* L ){
-	getDerived()->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
-	getDerived()->update();
+	_select* slc = (_select*)(_gadget*)(_lua_gadget*)this;
+	slc->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
+	slc->update();
 	return 0;
 }
 
 //! removeIndex
 int _lua_select::removeIndex( lua_State* L ){
-	getDerived()->getList().erase( check<int>( L , 1 ) );
-	getDerived()->update();
+	_select* slc = (_select*)(_gadget*)(_lua_gadget*)this;
+	slc->getList().erase( check<int>( L , 1 ) );
+	slc->update();
 	return 0;
 }
 
 //! clearList
 int _lua_select::clearList( lua_State* L ){
-	getDerived()->getList().clear();
-	getDerived()->update();
-	return 0;
-}
-
-//! getList
-int _lua_select::getList( lua_State* L )
-{
-	push( L , getDerived()->getList() );
-	
-	return 1;
-}
-
-//! setList
-int _lua_select::setList( lua_State* L )
-{	
-	getDerived()->setList( lightcheck<_s32,string>( L , 5 , {} ) );
-	
+	_select* slc = (_select*)(_gadget*)(_lua_gadget*)this;
+	slc->getList().clear();
+	slc->update();
 	return 0;
 }
 
 //! getEntryFromNumber
 int _lua_select::getEntryFromNumber( lua_State* L ){
-	lua_pushstring( L , getDerived()->getList()[check<int>(L,1)].c_str() );
-	return 1;
+	_select* slc = (_select*)(_gadget*)(_lua_gadget*)this;
+	return push( L , slc->getList()[check<int>(L,1)] );
 }
 
 //! Lua-button
@@ -65,8 +53,8 @@ Lunar<_lua_select>::FunctionType _lua_select::methods[] = {
 
 Lunar<_lua_select>::PropertyType _lua_select::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "strValue" , &_lua_select::getStrValue , nullptr },
-	{ "value" , &_lua_select::getIntValue , &_lua_select::setIntValue },
-	{ "list" , &_lua_select::getList , &_lua_select::setList },
+	{ "strValue" , wrap( _lua_select , &_select::getStrValue ) , nullptr },
+	{ "value" , wrap( _lua_select , &_select::getIntValue ) , wrap( _lua_select , &_select::setIntValue ) },
+	{ "list" , wrap( _lua_select , &_select::getList ) , wrap( _lua_select , &_select::setList ) },
 	LUA_CLASS_ATTR_END
 };

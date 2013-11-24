@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.checkbox.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -7,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_checkbox::_lua_checkbox( lua_State* L ) :
-	_lua_gadget( new _checkbox( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck( L , 3 , _style() ) ) )
+	_lua_gadget( new _checkbox( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , lightcheck<_style>( L , 3 , _style() ) ) )
 {}
 
 
@@ -19,6 +20,6 @@ Lunar<_lua_checkbox>::FunctionType _lua_checkbox::methods[] = {
 
 Lunar<_lua_checkbox>::PropertyType _lua_checkbox::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "checked" , &_lua_checkbox::getIntValue , &_lua_checkbox::setIntValue },
+	{ "checked" , wrap( _lua_checkbox , &_checkbox::getIntValue ) , wrap( _lua_checkbox , &_checkbox::setIntValue ) },
 	LUA_CLASS_ATTR_END
 };

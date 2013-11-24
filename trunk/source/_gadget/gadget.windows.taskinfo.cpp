@@ -27,9 +27,9 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 }
 
 
-_windowsTaskInfo::_windowsTaskInfo( _coord x , _coord y , _style&& style ) :
-	_gadget( _gadgetType::imagegadget , 25 , 10 , x - 25 , y , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
-	, time( new _label( 24 , 10 , 0 , 0 , "00:00" ) )
+_windowsTaskInfo::_windowsTaskInfo( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
+	_gadget( _gadgetType::imagegadget , x - 25 , y , 25 , 10 , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
+	, time( new _label( 0 , 0 , 24 , 10 , "00:00" ) )
 	, timer( make_inline_callback<void()>( [this]{ this->redraw(); } ) , 10000 , true ) // Make the clock update itself
 {
 	// Adjust Label

@@ -103,7 +103,7 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 		if( event == onFocus )
 		{
 			that->passwordbox = new _passcodebox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
-			that->passwordsubmit = new _actionButton( _actionButtonType::next , 77 , 13 , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
+			that->passwordsubmit = new _actionButton( 77 , 13 , _actionButtonType::next , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
 			that->passwordsubmit->setInternalEventHandler( onMouseClick , make_callback( &_userWrapper::submitHandler ) );
 			that->passwordbox->setUserEventHandler( onDraw , make_callback( &_userWrapper::textboxRefreshHandler ) );
 			that->passwordbox->redraw();
@@ -126,7 +126,7 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 
 
 _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style ) :
-	_gadget( _gadgetType::none , 90 , 23 , x , y , (_style&&)style )
+	_gadget( _gadgetType::none , x , y , 90 , 23 , (_style&&)style )
 	, passwordbox( nullptr )
 	, passwordsubmit( nullptr )
 	, user( user )
@@ -143,7 +143,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	// Add the logo
 	this->addChild( img );
 	
-	_label* lbl = new _label( ignore , ignore , 20 , 4 , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
+	_label* lbl = new _label( 20 , 4 , ignore , ignore , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
 	lbl->setColor( COLOR_WHITE );
 	this->addChild( lbl );
 	

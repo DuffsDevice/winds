@@ -12,31 +12,32 @@ typedef _vector<class _animation*>	_animationList;
 // b = startValue
 // c = deltaValue
 // d = duration of the whole effect
-class _animation{
+class _animation
+{
 	
 	private:
 	
 		friend class _system;
-		_tempTime				startTime;
-		_tempTime				duration; //! In Milliseconds
+		_tempTime					startTime;
+		_tempTime					duration; //! In Milliseconds
 		
 		//! Additionally: call a setter function
-		const _intSetCallback*	setterFunc;
-		const _intSetCallback*	finishFunc;
+		flex_ptr<_intSetCallback>	setterFunc;
+		flex_ptr<_intSetCallback>	finishFunc;
 		
-		_easingFunction*		easeFunc;
+		_easingFunction*			easeFunc;
 		
-		int						fromValue;
-		int						toValue;
-		int						deltaValue;
+		_int						fromValue;
+		_int						toValue;
+		_int						deltaValue;
 		
-		bool					runs;
+		_u8							runs;
 		
 		// performes one frame of the animation
 		void step();
 		
-		static _animationList	globalAnimations;
-		static _animationList	globalAnimationsToExecute;
+		static _animationList		globalAnimations;
+		static _animationList		globalAnimationsToExecute;
 		
 		// Processes one frame of each running animation
 		static void	runAnimations();
@@ -47,15 +48,17 @@ class _animation{
 		_animation( _s32 from , _s32 to , _tempTime dur );
 		
 		//! Dtor
-		~_animation();
+		~_animation(){ this->terminate(); }
 		
 		//! Set a lamda-expression to be the setter
-		template<typename T>
-		void setter( T&& setterFunc ){ if( this->setterFunc ) delete this->setterFunc; this->setterFunc = new T( move(setterFunc) ); }
+		void setter( _paramAlloc<_intSetCallback> setterFunc ){
+			this->setterFunc = setterFunc;
+		}
 		
 		//! Set a lamda-expression to be called at the end of the animation
-		template<typename T>
-		void finish( T&& finishFunc ){ if( this->finishFunc ) delete this->finishFunc; this->finishFunc = new T( move(finishFunc) ); }
+		void finish( _paramAlloc<_intSetCallback> finishFunc ){
+			this->finishFunc = finishFunc;
+		}
 		
 		//! Start the animation
 		void start();

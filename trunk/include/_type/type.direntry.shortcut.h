@@ -1,5 +1,5 @@
-#ifndef _WIN_F_SHORTCUT_
-#define _WIN_F_SHORTCUT_
+#ifndef _WIN_T_DIRENTRYSHORTCUT_
+#define _WIN_T_DIRENTRYSHORTCUT_
 
 #include "_type/type.h"
 #include "_type/type.direntry.h"

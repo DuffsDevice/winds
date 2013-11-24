@@ -18,13 +18,17 @@ class _imagegadget : public _gadget {
 			this->setBitmap( img );
 		}
 		
+		void setImage( _bitmap&& img ){
+			this->setBitmap( move(img) );
+		}
+		
 		//! Get the bitmap
 		_constbitmap& getImage() const { return this->getBitmap(); }
 		
 		//! Ctor
-		_imagegadget( _coord x , _coord y , _bitmap&& bmp , _style&& style = _style() | _styleAttr::notClickable );
-		_imagegadget( _coord x , _coord y , _constbitmap& bmp , _style&& style = _style() | _styleAttr::notClickable ) :
-			_imagegadget( x , y , _bitmap( bmp ) , (_style&&) style )
+		_imagegadget( _optValue<_coord> x , _optValue<_coord> y , _bitmap&& bmp , _style&& style = _style() | _styleAttr::notClickable );
+		_imagegadget( _optValue<_coord> x , _optValue<_coord> y , _constbitmap& bmp , _style&& style = _style() | _styleAttr::notClickable ) :
+			_imagegadget( x , y , _bitmap( bmp ) , move(style) )
 		{}
 };
 

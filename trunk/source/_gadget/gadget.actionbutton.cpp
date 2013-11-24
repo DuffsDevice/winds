@@ -16,8 +16,8 @@ _callbackReturn _actionButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_actionButton::_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style ) :
-	_button( 9 , 9 , x , y , "" , (_style&&)style )
+_actionButton::_actionButton( _optValue<_coord> x , _optValue<_coord> y , _actionButtonType type , _style&& style ) :
+	_button( x , y , 9 , 9 , "" , (_style&&)style )
 	, type( type )
 {
 	// Register handler

@@ -11,17 +11,6 @@ _animation::_animation( int from , int to , _tempTime dur ) :
 	startTime( 0 ) , duration( dur ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
 { }
 
-_animation::~_animation()
-{
-	this->terminate();
-	
-	if( setterFunc )
-		delete setterFunc;
-	
-	if( finishFunc )
-		delete finishFunc;
-}
-
 void _animation::start()
 {
 	this->deltaValue = this->toValue - this->fromValue;

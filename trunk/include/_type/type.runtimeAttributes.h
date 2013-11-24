@@ -14,13 +14,15 @@ class _runtimeAttributes
 		_u8				defaultFontSize;
 		_vector<_char>	keyboardChar[2];
 		_vector<string>	keyboardText[2];
+		_user*			user;
 		_bitmap			windowBar;
 		_bitmap			windowBarBlurred;
-		_pixel			selectForeground;
-		_pixel			selectBackground;
-		_pixel			defaultForeground;
-		_pixel			defaultBackground;
-		_user*			user;
+		_pixel			highlightForeground;
+		_pixel			highlightBackground;
+		_pixel			itemForeground;
+		_pixel			itemBackground;
+		_pixel			controlBackground;
+		_pixel			controlForeground;
 		bool			magnifyKeyboardFocus;
 		
 		// Associative Directories: e.g. %WINDIR%
@@ -36,11 +38,11 @@ class _runtimeAttributes
 		
 		//! Getters
 		_u8		getDefaultFontSize() const { return defaultFontSize; }
-		_pixel	getDefaultForeground() const { return this->defaultForeground; }
-		_pixel	getDefaultBackground() const { return this->defaultBackground; }
+		_pixel	getItemForeground( bool highlighted = false ) const { return highlighted ? this->highlightForeground : this->itemForeground; }
+		_pixel	getItemBackground( bool highlighted = false ) const { return highlighted ? this->highlightBackground : this->itemBackground; }
 		string	getDefaultFontName() const { return defaultFont; }
-		_pixel	getSelectionForeground() const { return this->selectForeground; }
-		_pixel	getSelectionBackground() const { return this->selectBackground; }
+		_pixel	getControlForeground() const { return this->controlForeground; }
+		_pixel	getControlBackground() const { return this->controlBackground; }
 		bool	isKeyboardMagnifEnabled(){ return this->magnifyKeyboardFocus; }
 		const _user*			getUser() const { return this->user; }
 		const _vector<_char>& 	getKeyboardChars( _u8 layout ) const { return keyboardChar[layout]; }

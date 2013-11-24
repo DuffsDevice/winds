@@ -1,5 +1,6 @@
 #include "_lua/lua.class.animation.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_type/type.callback.derives.h"
 using namespace _luafunc;
 
 /*##################################
@@ -51,7 +52,7 @@ int _lua_animation::getRunning(lua_State* L){ lua_pushboolean( L , _animation::i
 int _lua_animation::start(lua_State* L){ _animation::start(); return 0; }
 
 //! terminate
-int _lua_animation::terminate(lua_State* L){ _animation::terminate( lightcheck( L , 1 , false ) ); return 0; }
+int _lua_animation::terminate(lua_State* L){ _animation::terminate( lightcheck<bool>( L , 1 , false ) ); return 0; }
 
 //! pause
 int _lua_animation::pause(lua_State* L){ _animation::pause(); return 0; }

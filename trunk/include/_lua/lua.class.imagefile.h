@@ -2,7 +2,7 @@
 #ifndef _WIN_L_IMAGEFILE_
 #define _WIN_L_IMAGEFILE_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.h"
 #include "_type/type.imagefile.h"
 

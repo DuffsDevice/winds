@@ -70,8 +70,8 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_windowButton::_windowButton( _coord x , _coord y , _u8 buttonType , _style&& style ) :
-	_button( 8 , 8 , x , y , "" , (_style&&)style )
+_windowButton::_windowButton( _optValue<_coord> x , _optValue<_coord> y , _u8 buttonType , _style&& style ) :
+	_button( x , y , 8 , 8 , "" , (_style&&)style )
 	, buttonType( buttonType )
 {
 	// Reset Bitmap

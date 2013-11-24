@@ -513,7 +513,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Create the buttons
 	for( _s8 i = 45 ; i >= 0 ; i-- )
 	{
-		_keyboardButton* btn = new _keyboardButton( _system::_rtA_->getKeyboardChars(0)[i] , this->buttonDimensions[i].width , this->buttonDimensions[i].height , this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , _system::_rtA_->getKeyboardTexts(0)[i] );
+		_keyboardButton* btn = new _keyboardButton( this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , this->buttonDimensions[i].width , this->buttonDimensions[i].height , _system::_rtA_->getKeyboardChars(0)[i] , _system::_rtA_->getKeyboardTexts(0)[i] );
 		
 		switch( i )
 		{

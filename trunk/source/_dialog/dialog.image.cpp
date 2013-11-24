@@ -10,9 +10,9 @@ void _imageDialog::cleanupInternal(){
 }
 
 _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap ,  _optValue<string> okLabel , _optValue<string> otherLabel ) : 
-	okButton( new _button( ignore , ignore , 0 , 0 , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
-	, otherButton( otherLabel.isValid() ? new _button( ignore , ignore , 0 , 0 , otherLabel ) : nullptr )
-	, msg( new _label( ignore , ignore , bitmap.getWidth() + 6 , 2 , (string&&)message ) )
+	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
+	, otherButton( otherLabel.isValid() ? new _button( 0 , 0 , ignore , ignore , otherLabel ) : nullptr )
+	, msg( new _label( bitmap.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
 	, image( new _imagegadget( 3 , 3 , bitmap ) )
 {	
 	// Buttons
@@ -40,7 +40,7 @@ _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 7 , 30 ) + 11; // + 11 for the window
 	
 	// Creating the window
-	this->window = new _window( winWidth , winHeight , ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1  , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move buttons to right position
 	this->okButton->moveTo( winWidth - this->okButton->getWidth() - 3 , winHeight - this->okButton->getHeight() - 12 );

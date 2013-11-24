@@ -69,7 +69,7 @@ _user::_user( string folderName ) :
 					{ "maxDoubleClickCycles" , "60" } , 
 					{ "maxDoubleClickArea" , "6" } ,
 					{ "fileObjectHeight" , "10" } ,
-					{ "selectObjectHeight" , "10" } ,
+					{ "listItemHeight" , "9" } ,
 					{ "magnifyKeyboardFocus" , "1" }
 				}
 			} };
@@ -86,7 +86,7 @@ _user::_user( string folderName ) :
 	this->kRD = this->getIntAttr( "keyRepetitionDelay" );
 	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
 	this->fOH = this->getIntAttr( "fileObjectHeight" );
-	this->sOH = this->getIntAttr( "selectObjectHeight" );
+	this->lIH = this->getIntAttr( "listItemHeight" );
 	this->sFE = this->getIntAttr( "showFileExtension" );	
 	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
 	this->dTC = this->getIntAttr( "desktopColor" );	

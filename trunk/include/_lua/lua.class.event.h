@@ -2,7 +2,7 @@
 #ifndef _WIN_L_EVENT_
 #define _WIN_L_EVENT_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.event.h"
 
 class _lua_event : public _event {
@@ -29,6 +29,8 @@ class _lua_event : public _event {
 		int resetParams(lua_State* L);//! resetParams
 		int getDestination(lua_State* L);//! getDestination
 		int setDestination(lua_State* L);//! setDestination
+		int setPressure(lua_State* L);//! Set Pressure
+		int getPressure(lua_State* L);//! Get Pressure
 		int setPosX(lua_State* L);//! Set X
 		int setPosY(lua_State* L);//! Set Y
 		int getPosX(lua_State* L);//! Get X

@@ -37,13 +37,13 @@ class _scSetupPage1 : public _view
 		void create( _gadget* viewParent )
 		{
 			// Label
-			this->lblChooseLanguage = new _label( ignore , ignore , 86 , 72 , _system::getLocalizedString("lbl_choose_language") );
+			this->lblChooseLanguage = new _label( 86 , 72 , ignore , ignore , _system::getLocalizedString("lbl_choose_language") );
 			this->lblChooseLanguage->setColor( RGB( 30 , 30 , 30 ) );
 			viewParent->addChild( this->lblChooseLanguage );
 			
 			// Select
 			this->slcLanguage = new _select(
-				94 , 5 , 85 , 80
+				85 , 80 , 94
 				, {
 					{ 1 , "English" }
 					, { 2 , "Français" }
@@ -58,7 +58,7 @@ class _scSetupPage1 : public _view
 			viewParent->addChild( this->slcLanguage );
 			
 			// Hint to click continue
-			this->lblClickToContinue = new _label( 180 , 9 , 71 , 6 , _system::getLocalizedString("lbl_to_continue_click_next") );
+			this->lblClickToContinue = new _label( 71 , 6 , 180 , 9 , _system::getLocalizedString("lbl_to_continue_click_next") );
 			this->lblClickToContinue->setColor( RGB( 17 , 17 , 31 ) );
 			this->lblClickToContinue->setAlign( _align::right );
 			viewParent->addChild( this->lblClickToContinue );

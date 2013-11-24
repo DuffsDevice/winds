@@ -10,9 +10,9 @@ void _yesNoDialog::cleanupInternal(){
 }
 
 _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string> yesLbl , _optValue<string> noLbl ) :
-	yesButton( new _button( ignore , ignore , 0 , 0 , yesLbl.isValid() ? (string&&)yesLbl : _system::getLocalizedString("lbl_yes") ) )
-	, noButton( new _button( ignore , ignore , 0 , 0 , noLbl.isValid() ? (string&&)noLbl : _system::getLocalizedString("lbl_no") ) )
-	, msg( new _label( ignore , ignore , 2 , 2 , (string&&)message ) )
+	yesButton( new _button( 0 , 0 , ignore , ignore , yesLbl.isValid() ? (string&&)yesLbl : _system::getLocalizedString("lbl_yes") ) )
+	, noButton( new _button( 0 , 0 , ignore , ignore , noLbl.isValid() ? (string&&)noLbl : _system::getLocalizedString("lbl_no") ) )
+	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
 {
 	// Buttons
 	this->yesButton->setAutoSelect( true );
@@ -22,7 +22,7 @@ _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string
 	_length winHeight = max( this->msg->getHeight() + this->noButton->getHeight() + 8 , 30 ) + 11; // + 11 for the window
 	
 	// Create Window
-	this->window = new _window( winWidth , winHeight , ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move Buttons to right position
 	this->yesButton->moveTo( winWidth - this->yesButton->getWidth() - 3 , winHeight - this->yesButton->getHeight() - 12 );

@@ -25,8 +25,7 @@ typedef _list<_gadget*> 									_gadgetList;
 typedef _callbackReturn 									_eventHandler(_event);
 typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
 
-typedef _callbackReturn										_defaultEventHandler(_event&&);
-typedef _array<_staticCallback<_defaultEventHandler>,13>	_defaultEventHandlerMap;
+typedef _array<_staticCallback<_eventHandler>,13>	_defaultEventHandlerMap;
 
 class _gadget
 {
@@ -76,12 +75,12 @@ class _gadget
 		 * Standard/Default EventHandler that will handle
 		 * specific events if the 'normal' eventHandlers don't
 		 */
-		static _callbackReturn	gadgetRefreshHandler( _event&& event ) ITCM_CODE ;
-		static _callbackReturn	gadgetDragStartHandler( _event&& event );
-		static _callbackReturn	gadgetDraggingHandler( _event&& event );
-		static _callbackReturn	gadgetDragStopHandler( _event&& event );
-		static _callbackReturn	gadgetMouseHandler( _event&& event );
-		static _callbackReturn	gadgetKeyHandler( _event&& event );
+		static _callbackReturn	gadgetRefreshHandler( _event event ) ITCM_CODE ;
+		static _callbackReturn	gadgetDragStartHandler( _event event );
+		static _callbackReturn	gadgetDraggingHandler( _event event );
+		static _callbackReturn	gadgetDragStopHandler( _event event );
+		static _callbackReturn	gadgetMouseHandler( _event event );
+		static _callbackReturn	gadgetKeyHandler( _event event );
 		
 		//! Bitmap of the Gadget
 		_bitmap	 				bitmap;
@@ -91,9 +90,9 @@ class _gadget
 		/**
 		 * Constructor
 		 */
-		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _bitmap&& bmp , _style&& style = _style() );
-		_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _style&& style = _style() ) :
-			_gadget( type , width , height , posX , posY , _bitmap( width , height ) , (_style&&)style )
+		_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> posY , _optValue<_length> width , _optValue<_length> height , _bitmap&& bmp , _style&& style = _style() );
+		_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> posY , _optValue<_length> width , _optValue<_length> height , _style&& style = _style() ) :
+			_gadget( type , posX , posY , width , height , _bitmap( width , height ) , (_style&&)style )
 		{} // Delegating contructor! C++11 I love you!
 		
 		/**
@@ -208,8 +207,7 @@ class _gadget
 		 * Set The Bitmap of the Gadget	
 		 * This automatically resizes the gadget to to fit the bitmap
 		 */
-		void setBitmap( _bitmap&& );
-		void setBitmap( _constbitmap& bmp ){ setBitmap( _bitmap(bmp) ); }
+		void setBitmap( _bitmap );
 		
 		
 		/////////////////////
@@ -220,8 +218,7 @@ class _gadget
 		const _style& getStyle() const { return this->style; }
 		
 		//! Set the style of that Gadget
-		void setStyle( _style&& style ){ this->style = (_style&&)style; notifyDependentGadgets( onRestyle ); }
-		void setStyle( const _style& style ){ this->setStyle( _style(style) ); }
+		void setStyle( _style style ){ this->style = (_style&&)style; notifyDependentGadgets( onRestyle ); }
 		
 		
 		////////////////////
@@ -232,28 +229,10 @@ class _gadget
 		 * Register an internal Event Handler to catch some events thrown on this Gadget
 		 * This method should only be called in system-internal routines
 		 */
-		template<typename T>
-		noinline void setInternalEventHandler( _eventType type , T&& handler )
-		{
-			typedef typename std::remove_reference<T>::type T2;
-			typedef typename T2::_callback def;
-			
-			// Remove any Current Handler
-			_callback<_eventHandler>* &data = this->eventHandlers[type]; // reference to pointer
-			
-			if( data )
-				delete data; // Delete Current Event-Handler
-			
-			// Insert The Handler
-			data = new T2( move(handler) );
-			
-			if( isDepType( type ) )
-				this->addDependency( type );
-		}
+		void setInternalEventHandler( _eventType type , _paramAlloc<_callback<_eventHandler>> handler );
 		
 		//! Register an user-specific Event Handler to catch some events thrown on this Gadget
-		template<typename T>
-		void setUserEventHandler( _eventType type , T&& handler ){
+		void setUserEventHandler( _eventType type , _paramAlloc<_callback<_eventHandler>> handler ){
 			this->setInternalEventHandler( eventType2userET(type) , move(handler) );
 		}
 		
@@ -284,54 +263,45 @@ class _gadget
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 */
-		_callbackReturn handleEvent( _event&& event , bool noDefault = false ) ITCM_CODE ; // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEvent( const _event& event , bool noDefault = false ){ return this->handleEvent( _event( event ) /* Make copy */ , noDefault ); } // for variables like '_event e; g->handleEvent( e );'
+		_callbackReturn handleEvent( _event event , bool noDefault = false ) ITCM_CODE ;
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using user-registered event-handler if available
 		 */
-		_callbackReturn handleEventUser( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEventUser( const _event& event ){ return handleEventUser( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventUser( e );'
+		_callbackReturn handleEventUser( _event event );
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using user-registered event-handler if available
 		 */
-		_callbackReturn handleEventInternal( _event&& event ); // For rvalues (like handleEvent( onBlur ) )
-		_callbackReturn handleEventInternal( const _event& event ){ return handleEventInternal( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventInternal( e );'
+		_callbackReturn handleEventInternal( _event event );
 		
 		/**
 		 * Make The Gadget act onto a specific GadgetEvent
 		 * by only using the Default gadget-event-handler if available
 		 */
-		_callbackReturn handleEventDefault( _event&& event ); 
-		_callbackReturn handleEventDefault( const _event& event ){ return handleEventDefault( _event( event ) /* Make copy */ ); } // for variables like '_event e; g->handleEventDefault( e );'		
+		_callbackReturn handleEventDefault( _event event ); 
 		
 		
 		/**
 		 * Trigger an Event (its destination will be set automatically and it will be handled as soon as there is cpu-power available)
 		 */
 		//! Will be handled using the method passed or as default by calling 'handleEvent'
-		void triggerEvent( _event&& event , _eventCallType callType = _eventCallType::normal );
-		void triggerEvent( const _event& event , _eventCallType callType = _eventCallType::normal ){ triggerEvent( _event( event ) , callType ); }
+		void triggerEvent( _event event , _eventCallType callType = _eventCallType::normal );
 		
 		
 		//! Will be handled by 'handleEvent( ... , false )' or 'handleEvent( ... , true )'
-		void triggerEvent( _event&& event , bool noDefault ){ triggerEvent( move(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
-		void triggerEvent( const _event& event , bool noDefault ){ triggerEvent( _event(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
+		void triggerEvent( _event event , bool noDefault ){ triggerEvent( move(event) , noDefault ? _eventCallType::normalNoDef : _eventCallType::normal ); }
 		
 		//! Will be handled by a user-registered event-handler
-		void triggerEventUser( _event&& event ){ triggerEvent( move(event) , _eventCallType::user ); }
-		void triggerEventUser( const _event& event ){ triggerEvent( _event(event) , _eventCallType::user ); }
+		void triggerEventUser( _event event ){ triggerEvent( move(event) , _eventCallType::user ); }
 		
 		//! Will be handled by a gadget-registered handler
-		void triggerEventInternal( _event&& event ){ triggerEvent( move(event) , _eventCallType::internal ); }
-		void triggerEventInternal( const _event& event ){ triggerEvent( _event(event) , _eventCallType::internal ); }
+		void triggerEventInternal( _event event ){ triggerEvent( move(event) , _eventCallType::internal ); }
 		
 		//! Will be handled by a default-registered handler
-		void triggerEventDefault( _event&& event ){ triggerEvent( move(event) , _eventCallType::def ); }
-		void triggerEventDefault( const _event& event ){ triggerEvent( _event(event) , _eventCallType::def ); }
+		void triggerEventDefault( _event event ){ triggerEvent( move(event) , _eventCallType::def ); }
 		
 		
 		//////////////////////////////////////
@@ -409,17 +379,12 @@ class _gadget
 		 */
 		//! Internal call, that does not violate the state of auto-computed values
 		void moveToIfAuto( _coord x , _coord y ){
-			if( !this->autoValues.posX )
-				moveRelativeInternal( 0 , y - this->y );
-			else if( !this->autoValues.posY )
-				moveRelativeInternal( x - this->x , 0 );
-			else
-				moveRelativeInternal( x - this->x , y - this->y );
+			moveRelativeIfAuto( x - this->x , y - this->y );
 		}
 		
 		//! Sets a specific position
 		void moveTo( _coord x , _coord y ){
-			this->moveRelative( x - this->x , y - this->y );
+			moveRelative( x - this->x , y - this->y );
 		}
 		
 		//! Requests the gadget to auto-compute the required values
@@ -464,7 +429,7 @@ class _gadget
 				this->setXInternal( val );
 		}
 		void setX( _coord val ){
-			this->autoValues.posY = false;
+			this->autoValues.posX = false;
 			setXInternal( val );
 		}
 		void requestAutoX(){
@@ -625,13 +590,13 @@ class _gadget
 		//! Set minimum width
 		void setMinWidth( _optValue<_length> val = ignore ){
 			this->minWidth = val.isValid() ? max<_length>( 1 , val ) : 0;
-			setWidth( this->getWidth() ); // Check if right width given
+			setWidthInternal( this->getWidth() ); // Check if right width given
 		}
 		
 		//! Set minimum height
 		void setMinHeight( _optValue<_length> val = ignore ){
 			this->minHeight = val.isValid() ? max<_length>( 1 , val ) : 0;
-			setHeight( this->getHeight() ); // Check if right height given
+			setHeightInternal( this->getHeight() ); // Check if right height given
 		}
 		
 		
@@ -779,12 +744,12 @@ class _gadget
 		void removeDependency( _eventType type ){
 			this->dependencies.set( type , false );
 		}
-		
+	public:
 		//! Check whether a gadget is dependent of another
 		bool isDependentOf( _eventType type ){
 			return this->dependencies.get( type );
 		}
-		
+	private:
 		//! Inform dependent gadgets about something that changed
 		void		notifyDependentGadgets( _eventType change , bool notifySelf = true , _dependencyParam param = _dependencyParam() ){
 			if( notifySelf )
@@ -806,8 +771,8 @@ class _gadget
 		
 		void setWidthInternal( _length val );
 		void setHeightInternal( _length val );
-		void setXInternal( _length val );
-		void setYInternal( _length val );
+		void setXInternal( _coord val );
+		void setYInternal( _coord val );
 		void setSizeInternal( _length width , _length height );
 		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
 		void setDimensionsInternal( _rect rc );

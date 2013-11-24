@@ -1,12 +1,12 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
-_fileview::_fileview( _length width , _length height , _coord x , _coord y , string path , _fileviewType viewtype ,
+_fileview::_fileview( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileviewType viewtype ,
 			_scrollType scrollTypeX , _scrollType scrollTypeY , bool singleClickToExecute , _style&& style ) :
-	_scrollArea( width , height , x , y , scrollTypeX , scrollTypeY , (_style&&)style ) 
+	_scrollArea( x , y , width , height , scrollTypeX , scrollTypeY , (_style&&)style )
 	, directory( path )
 	, viewType( viewtype )
-{
+{	
 	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
 	

@@ -23,8 +23,8 @@ _callbackReturn _scLogin::userLoginHandler( _event event )
 	// Prevent it from receiving focus again
 	that->setStyle( that->getStyle() | _styleAttr::canNotReceiveFocus );
 	
-	this->welcome = new _label( 105 , 20 , 13 , 79 , _system::getLocalizedString("lbl_welcome") );
-	this->welcomeBg = new _label( 105 , 20 , 12 , 78 , _system::getLocalizedString("lbl_welcome") );
+	this->welcome = new _label( 13 , 79 , 105 , 20 , _system::getLocalizedString("lbl_welcome") );
+	this->welcomeBg = new _label( 12 , 78 , 105 , 20 , _system::getLocalizedString("lbl_welcome") );
 	
 	this->welcome->setFont( _system::getFont( "ArialBlack13" ) );
 	this->welcomeBg->setFont( _system::getFont( "ArialBlack13" ) );

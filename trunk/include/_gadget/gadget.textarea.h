@@ -96,7 +96,7 @@ class _textarea : public _gadget{
 		
 		
 		//! Ctor
-		_textarea( _length width , _length height , _coord x , _coord y , string value = "" , _style&& style = _style() );
+		_textarea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
 		
 		//! Dtor
 		~_textarea();

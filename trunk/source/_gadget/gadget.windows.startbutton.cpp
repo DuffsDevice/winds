@@ -36,8 +36,8 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 }
 
 
-_windowsStartButton::_windowsStartButton( _coord x , _coord y , _style&& style ) :
-	_button( 38 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
+_windowsStartButton::_windowsStartButton( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
+	_button( x , y , 38 , 10 , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
 	, startMenu( new _startMenu() )
 {
 	this->setInternalEventHandler( onMouseClick , make_callback( this , &_windowsStartButton::mouseHandler ) );

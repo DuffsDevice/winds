@@ -23,7 +23,7 @@ class _keyboardButton : public _button {
 		void setKey( _key key ){ this->key = key; }
 		
 		//! Ctor
-		_keyboardButton( _key key , _optValue<_length> width , _optValue<_length> height , _coord x , _coord y 
+		_keyboardButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key
 			, string title , _style&& style = _style() | _styleAttr::mouseClickRepeat );
 };
 

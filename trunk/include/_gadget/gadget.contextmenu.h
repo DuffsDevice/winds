@@ -3,10 +3,9 @@
 
 #include "_type/type.h"
 #include "_type/type.gadget.h"
+#include "_type/type.menu.h"
 #include "_gadget/gadget.popup.h"
 #include "_gadget/gadget.contextmenu.entry.h"
-
-typedef _map<_s32,string> _contextMenuList;
 
 class _contextMenu : public _popup
 {
@@ -29,29 +28,29 @@ class _contextMenu : public _popup
 		friend class _contextMenuEntry;
 		
 		// Generates all the _contextMenuEntries and removes the old ones before
-		void generateChildren( const _contextMenuList& list );
+		void generateChildren( const _menuEntryList& list );
 		
 	public:
 	
 		//! Get the index of the selected Value
-		_s32 getIntValue(){ return this->selectedEntry ? this->selectedEntry->getIntValue() : -1; }
+		_int getIntValue(){ return this->selectedEntry ? this->selectedEntry->getIntValue() : -1; }
 		
 		//! Get the text of the selected Value
 		string getStrValue(){ return this->selectedEntry ? this->selectedEntry->getStrValue() : ""; }
 		
 		//! Set Value
-		void setIntValue( _s32 id );
+		void setIntValue( _int id );
 		
 		//! Set List
-		void setList( const _contextMenuList& list ){
+		void setList( const _menuEntryList& list ){
 			this->generateChildren( list );
 		}
 		
 		//! Get List
-		_contextMenuList getList();
+		_menuEntryList getList();
 		
 		//! Ctor
-		_contextMenu( const _contextMenuList& list , _gadget* owner , _optValue<_length> width = ignore , bool preserveValue = false , _s32 initialValue = -1 , _style&& style = _style() );
+		_contextMenu( _optValue<_length> width , const _menuEntryList& list , _gadget* owner = nullptr , bool preserveValue = false , _int initialValue = -1 , _style&& style = _style() );
 		
 		//! Dtor
 		~_contextMenu();

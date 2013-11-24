@@ -34,7 +34,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	
 	// Cache the windows-bitmap that describes how windows look like
-	_constbitmap& design = _system::_rtA_->getWindowsDesignActive();
+	_constbitmap& design = _system::getRTA().getWindowsDesignActive();
 	
 	if( that->reference->hasFocus() || that->isPressed() )
 	{		
@@ -106,8 +106,8 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 
 
 
-_windowsTaskButton::_windowsTaskButton( _coord x , _coord y , _window* reference , _style&& style ) :
-	_button( 20 , 10 , x , y , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
+_windowsTaskButton::_windowsTaskButton( _optValue<_coord> x , _optValue<_coord> y , _window* reference , _style&& style ) :
+	_button( x , y , 20 , 10 , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
 	, reference( reference )
 {
 	this->setFontColor( RGB( 27 , 27 , 27 ) );

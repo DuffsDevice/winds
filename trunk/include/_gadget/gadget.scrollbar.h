@@ -31,18 +31,16 @@ class _scrollBar : public _gadget {
 		
 		void refreshHandleWidth();
 		void refreshPosition();
+		
+		void setValueInternal( int value );
 	
 	public:
 		
 		//! Ctor
-		_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style&& style = _style() );
+		_scrollBar( _optValue<_coord> x , _optValue<_coord> y , _length gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value = 0 , _style&& style = _style() );
 		
 		//! Dtor
 		~_scrollBar();
-		
-		//! Simply set the value
-		//! @note: this triggers a onScroll-Event!
-		void setValue( int value );
 		
 		//! This one doesn't
 		void setValue( _u32 value , bool ease );

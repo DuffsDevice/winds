@@ -1,5 +1,6 @@
 #include "_lua/lua.class.timer.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_type/type.callback.derives.h"
 using namespace _luafunc;
 
 /*##################################

@@ -37,7 +37,7 @@ class _gadgetScreen : public _screen , public _gadget
 		
 		//! Will be called every frame
 		//! @return bool Whether the supplied touch was inside the range
-		bool processTouch( bool held , _touch touch );
+		bool processTouch( bool held , touchPosition touch );
 		
 		//! Get the Meaning of the screen (what is it supposed to do)
 		_gadgetScreenType getScreenType(){ return this->screenType; }

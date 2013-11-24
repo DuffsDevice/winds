@@ -41,8 +41,8 @@ _callbackReturn _expandButton::mouseHandler( _event event )
 	return handled;
 }
 
-_expandButton::_expandButton( _coord x , _coord y , _style&& style ) :
-	_gadget( _gadgetType::expandbutton , 7 , 7 , x , y , style | _styleAttr::notResizeable | _styleAttr::notDoubleClickable )
+_expandButton::_expandButton( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
+	_gadget( _gadgetType::expandbutton , x , y , 7 , 7 , style | _styleAttr::notResizeable | _styleAttr::notDoubleClickable )
 	, intValue( 0 )
 {
 	// Register my handlers

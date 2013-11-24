@@ -88,12 +88,12 @@ class _slider : public _gadget{
 		void decrease(){ this->setIntValue( this->intValue - 1 ); }
 		
 		//! Basic Ctor
-		_slider( _coord x , _coord y , _length sliderLength , _s32 value = 0 , _dimension dimension = _dimension::horizontal , _style&& style = _style() ) :
+		_slider( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> sliderLength , _s32 value = 0 , _dimension dimension = _dimension::horizontal , _style&& style = _style() ) :
 			_slider( x , y , sliderLength , value , dimension , 4 , 0 , (_style&&)style )
 		{ }
 		
 		//! Full Ctor
-		_slider( _coord x , _coord y , _length sliderLength , _s32 value , _dimension dimension , _s32 upperBound , _s32 lowerBound = 0 , _style&& style = _style() );
+		_slider( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> sliderLength , _s32 value , _dimension dimension , _s32 upperBound , _s32 lowerBound = 0 , _style&& style = _style() );
 		
 		//! Dtor
 		~_slider();

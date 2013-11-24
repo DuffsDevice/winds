@@ -22,35 +22,28 @@ void _popup::show( _coord x , _coord y )
 	_length width = this->getWidth();
 	_length height = this->getHeight();
 	
-	if( x + width >= SCREEN_WIDTH && y + height >= SCREEN_HEIGHT )
-	{
+	if( x + width >= SCREEN_WIDTH && y + height >= SCREEN_HEIGHT ){
 		this->x = x - width;
 		this->y = y - height;
-		this->xDir = _align::left;
-		this->yDir = _valign::top;
+		this->dir = _direction::upleft;
 	}
-	else if( x + width >= SCREEN_WIDTH )
-	{
+	else if( x + width >= SCREEN_WIDTH ){
 		this->x = x - width;
-		this->xDir = _align::left;
-		this->yDir = _valign::bottom;
+		this->dir = _direction::downleft;
 	}
-	else if( y + height >= SCREEN_HEIGHT )
-	{
+	else if( y + height >= SCREEN_HEIGHT ){
 		this->y = y - height;
-		this->xDir = _align::right;
-		this->yDir = _valign::top;
+		this->dir = _direction::upright;
 	}
-	else
-	{
+	else{
 		this->y = y;
 		this->x = x;
-		this->xDir = _align::right;
-		this->yDir = _valign::bottom;
+		this->dir = _direction::downright;
 	}
 	
 	// View
-	this->setParent( _system::_gadgetHost_ );
+	_gadget* par = parent ? parent : _system::_gadgetHost_;
+	this->setParent( par );
 	
 	// Focus
 	this->focus();
@@ -64,8 +57,7 @@ void _popup::shelve( bool focusOwner )
 	this->opened = false;
 	
 	// Trigger Check-Event
-	if( this->handleEvent( onClose ) == prevent_default )
-	{
+	if( this->handleEvent( onClose ) == prevent_default ){
 		this->opened = true;
 		return;
 	}
@@ -87,8 +79,9 @@ void _popup::toggle( _coord x , _coord y )
 }
 
 _popup::_popup( _optValue<_length> width , _optValue<_length> height , _gadget* owner , _style&& style ) :
-	_gadget( _gadgetType::popup , move(width) , move(height) , 0 , 0 , (_style&&)style )
+	_gadget( _gadgetType::popup , 0 , 0 , width , height , (_style&&)style )
 	, owner( owner )
+	, opened( false )
 {
 	this->setInternalEventHandler( onBlur , make_callback( &_popup::blurHandler ) );
 }

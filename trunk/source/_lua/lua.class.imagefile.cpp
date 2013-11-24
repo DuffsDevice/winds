@@ -1,6 +1,6 @@
 #include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################

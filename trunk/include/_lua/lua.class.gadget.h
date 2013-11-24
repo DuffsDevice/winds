@@ -2,7 +2,7 @@
 #ifndef _WIN_L_GADGET_
 #define _WIN_L_GADGET_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.gadget.h"
 	
 #define GADGET_BASE_ATTR \
@@ -20,11 +20,6 @@ class _lua_gadget{
 		bool wasAllocated;
 		
 	public:
-	
-		// Check for _lua_gadget's and derived
-		static _lua_gadget* getLuaGadget( lua_State* L , int narg );
-		static _lua_gadget* getLuaGadgetLight( lua_State* L , int narg );
-		
 		
 		//! C-Ctor
 		_lua_gadget( _gadget* g = nullptr , bool wasAllocated = true );
@@ -39,8 +34,17 @@ class _lua_gadget{
 		//! Set Gadget to contain
 		void setGadget( _gadget* g , bool wasAllocated = true );
 		
-		//! Get underlying _gadget instace
+		//! Get underlying _gadget instance
 		_gadget* getGadget(){ return this->gadget; }
+		operator _gadget&(){ return *this->gadget; }
+		
+		//! Get the internal _gadget pointer casted to a derived class of _gadget
+		template<typename T>
+		operator T&()
+		{
+			typedef typename T::_gadget def;
+			return * static_cast<T*>(this->gadget);
+		}
 		
 		//! base
 		int baseFunc( lua_State* L );

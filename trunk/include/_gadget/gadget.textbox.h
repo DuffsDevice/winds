@@ -37,6 +37,7 @@ class _textbox : public _gadget
 		static _callbackReturn focusHandler( _event );
 		static _callbackReturn mouseHandler( _event );
 		static _callbackReturn keyHandler( _event );
+		static _callbackReturn updateHandler( _event );
 		
 		//! Set the Internal Cursor
 		void setInternalCursor( _u32 cursor );
@@ -98,11 +99,8 @@ class _textbox : public _gadget
 		//! Get the current cursor (-1 equals no cursor)
 		_s64 getCursor(){ return _s64(this->cursor) - 1; }
 		
-		//! Ctor without height
-		_textbox( _coord x , _coord y , _length width , string value = "" , _style&& style = _style() );
-		
 		//! Ctor
-		_textbox( _coord x , _coord y , _length width , _length height , string value = "" , _style&& style = _style() );
+		_textbox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
 };
 
 #endif

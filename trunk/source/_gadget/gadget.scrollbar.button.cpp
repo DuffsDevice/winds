@@ -217,8 +217,8 @@ _callbackReturn _scrollButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_scrollButton::_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style&& style ) :
-	_button( width , height , x , y , "" , (_style&&)style )
+_scrollButton::_scrollButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollButtonType type , _style&& style ) :
+	_button( x , y , width , height , "" , (_style&&)style )
 	, type( type )
 {
 	_gadget::setType( _gadgetType::scrollbutton );

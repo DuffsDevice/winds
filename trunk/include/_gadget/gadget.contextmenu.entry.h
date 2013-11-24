@@ -12,12 +12,11 @@ class _contextMenuEntry : public _gadget
 		string	text;
 		
 		// Index in the context menu
-		_s32	id;
+		_int	id;
 		
 		// Event Handlers
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn updateHandler( _event );
-		static _callbackReturn clickHandler( _event );
 		static _callbackReturn mouseHandler( _event );
 	
 	public:
@@ -26,10 +25,10 @@ class _contextMenuEntry : public _gadget
 		string getStrValue(){ return this->text; }
 		
 		//! Get id
-		_s32 getIntValue(){ return this->id; }
+		_int getIntValue(){ return this->id; }
 		
 		//! Ctor
-		_contextMenuEntry( _s32 index , string value , _optValue<_length>&& width = ignore , _style&& style = _style() );
+		_contextMenuEntry( _optValue<_length> width , _int index , string value , _style&& style = _style() );
 };
 
 #endif

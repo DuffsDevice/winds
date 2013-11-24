@@ -2,15 +2,15 @@
 #ifndef _WIN_L_ANIMATION_
 #define _WIN_L_ANIMATION_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.h"
 #include "_type/type.animation.h"
 
 /**
  * Proxy Classes
  */
-class _lua_animation : public _animation {	
-		
+class _lua_animation : public _animation
+{
 	public:
 		
 		_lua_animation( _animation a );

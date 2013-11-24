@@ -2,21 +2,21 @@
 #ifndef _WIN_L_SELECT_
 #define _WIN_L_SELECT_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.select.h"
 
 /**
  * Proxy Classes
  */
-class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
-{	
-	
+class _lua_select : public _lua_gadget
+{
 	public:
 		
+		//! Lua-Ctor
 		_lua_select( lua_State* L );
 		
+		//! C-Ctor
 		_lua_select( _select* s ) : _lua_gadget( s , false )
 		{ }
 		
@@ -28,12 +28,6 @@ class _lua_select : public _lua_gadget , public _lua_interface_input<_select>
 		
 		//! clearList
 		int clearList( lua_State* L );
-		
-		//! getList
-		int getList( lua_State* L );
-		
-		//! setList
-		int setList( lua_State* L );
 		
 		//! getEntryFromNumber
 		int getEntryFromNumber( lua_State* L );

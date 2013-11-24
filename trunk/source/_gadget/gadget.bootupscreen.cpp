@@ -18,8 +18,8 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 
 _bootupScreen::_bootupScreen( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::bootUp , style | _styleAttr::canNotReceiveFocus)
-	, refresher( new _gadget( _gadgetType::none , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 ) )
-	, bar( new _progressbar( 51 , 102 , 125 , false ) )
+	, refresher( new _gadget( _gadgetType::none , 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ) )
+	, bar( new _progressbar( 102 , 125 , 51 , false ) )
 {	
 	refresher->setInternalEventHandler( onDraw , make_callback( &_bootupScreen::refreshHandler ) );
 	refresher->redraw();

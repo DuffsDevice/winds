@@ -59,6 +59,16 @@ namespace assocVectorPrivate
 			const Data& rhs) const
 		{ return operator()(lhs, rhs.first); }
 	};
+	
+	template<typename T>
+	struct return_false_compar{
+		typedef T first_argument_type;
+		typedef T second_argument_type;
+		typedef bool result_type;
+		bool operator()( const T& , const T& ) const {
+			return false;
+		}
+	};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -360,4 +370,3 @@ void swap(_assocVector<K, V, C, A>& lhs, _assocVector<K, V, C, A>& rhs)
 { lhs.swap(rhs); }
 
 #endif // end file guardian
-

@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.colorpicker.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -7,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_colorpicker::_lua_colorpicker( lua_State* L ) :
-	_lua_gadget( new _colorpicker( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
+	_lua_gadget( new _colorpicker( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
 {}
 
 //! Lua-button
@@ -18,6 +19,6 @@ Lunar<_lua_colorpicker>::FunctionType _lua_colorpicker::methods[] = {
 
 Lunar<_lua_colorpicker>::PropertyType _lua_colorpicker::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "color" , &_lua_colorpicker::getColor , &_lua_colorpicker::setColor },
+	{ "color" , wrap( _lua_colorpicker , &_colorpicker::getColor ) , wrap( _lua_colorpicker , &_colorpicker::setColor ) },
 	LUA_CLASS_ATTR_END
 };

@@ -226,7 +226,7 @@ const unsigned char FONT_ArialBlack13_width[222] = {
 
 FONT_ArialBlack13::FONT_ArialBlack13( unsigned char fixedWidth )
 : _memoryfont (
-	"ArialBlack13",
+	"Arial Black",
 	33, // First Char
 	254, // Last Char
 	15, // Height

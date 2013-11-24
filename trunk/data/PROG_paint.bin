@@ -1,6 +1,7 @@
 using "System.Color"
 using "System.Event"
 using "System.ImageFile"
+using "System.Menu"
 using "Drawing.Font"
 using "Drawing.Bitmap"
 using "Drawing.BitmapPort"
@@ -9,10 +10,12 @@ using "Drawing.Rect"
 using "UI.Gadget"
 using "UI.Window"
 using "UI.ImageGadget"
-using "UI.ResizeHandle"
+using "UI.WindowBar"
+using "UI.WindowMenu"
 
 local wnd
-local resizeHndl
+local windowBar
+local windowMenu
 local canvas
 local greyBackground
 local curColor = "red"
@@ -27,7 +30,10 @@ function main( filename )
 	wndIcon.drawFilledRect( 0 , 0 , 3 , 3 , System.rgb255( 255 , 127 , 39 ) )
 	wndIcon.drawFilledRect( 0 , 3 , 3 , 3 , System.rgb255( 153 , 217 , 255 ) )
 	
-	resizeHndl = ResizeHandle()
+	windowBar = WindowBar()
+	
+	local menu = WindowMenu.getStandardMenu()
+	windowMenu = WindowMenu( menu )
 	
 	if filename ~= nil then
 		imagefile = ImageFile( filename )
@@ -42,10 +48,10 @@ function main( filename )
 			canvas = Bitmap( 65 , 55 , "white" )
 		end
 	else
-		canvas = Bitmap( 65 , 55 , "white" )
+		canvas = Bitmap( 100 , 80 , "white" )
 	end
 	
-	greyBackground = ImageGadget( 0 , 0 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
+	greyBackground = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
 	greyBackground.base.setInternalEventHandler( "onDraw" , refreshHandler )
 	greyBackground.base.setUserEventHandler( "onDragging" , dragHandler )
 	greyBackground.base.setUserEventHandler( "onDragStop" , dragHandler )
@@ -54,10 +60,11 @@ function main( filename )
 	greyBackground.base.setUserEventHandler( "onMouseUp" , dragHandler )
 	greyBackground.base.redraw()
 	
-	wnd = Window( 100 , 100 , 10 , 10 , windowTitle .. " - Paint" , wndIcon , true , "minimizeable" )
+	wnd = Window( 10 , 10 , 100 , 100 , windowTitle .. " - Paint" , wndIcon , true , "minimizeable" )
 	wnd.base.addChild( greyBackground )
 	wnd.base.setUserEventHandler( "onResize" , windowResizeHandler )
-	wnd.base.addEnhancedChild( resizeHndl )
+	wnd.base.addEnhancedChild( windowMenu )
+	wnd.base.addEnhancedChild( windowBar )
 	
 	System.addChild( wnd )
 
@@ -68,15 +75,23 @@ local lastY = -1
 local pressed = false
 
 function dragHandler( event )
-	if pressed then
-		canvas.drawLine( lastX , lastY , event.posX - 2 , event.posY - 2 , curColor )
-	else
-		canvas.drawPixel( event.posX - 2 , event.posY - 2 , curColor )
+	local curX = event.posX - 2
+	local curY = event.posY - 2
+	if event.type == "onDragging" then
+		curY = curY - greyBackground.base.y
+		curX = curX - greyBackground.base.x
 	end
-	lastX = event.posX - 2
-	lastY = event.posY - 2
+	if pressed then
+		canvas.drawFilledCircle( curX , curY , event.pressure / 100 , curColor )
+		--canvas.drawLine( lastX , lastY , curX , curY , curColor )
+	else
+		canvas.drawFilledCircle( curX , curY , event.pressure / 100 , curColor )
+		--canvas.drawPixel( curX , curY , curColor )
+	end
+	lastX = curX
+	lastY = curY
 	greyBackground.base.redraw()
-	
+
 	if event.type == "onDragStop" or event.type == "onMouseUp" then
 		pressed = false
 	else

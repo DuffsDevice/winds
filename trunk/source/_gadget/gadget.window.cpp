@@ -146,10 +146,8 @@ void _window::setStrValue( string title )
 		((_windows*)_system::_gadgetHost_)->refreshTask( this );
 }
 
-void _window::setIcon( _bitmap bmp )
+void _window::setIcon( const _bitmap& bmp )
 {
-	bmp.resize( 6 , 6 ); // resize to 6x6
-	
 	this->icon->setImage( bmp );
 	
 	this->update();
@@ -182,11 +180,11 @@ _callbackReturn _window::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( RGB( 30 , 30 , 29 ) );
+	bP.fill( _system::getRTA().getControlBackground() );
 	
 	if( that->hasFocus() )
 	{
-		_constbitmap& design = _system::_rtA_->getWindowsDesignActive();
+		_constbitmap& design = _system::getRTA().getWindowsDesignActive();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -198,7 +196,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	}
 	else
 	{
-		_constbitmap& design = _system::_rtA_->getWindowsDesignBlurred();
+		_constbitmap& design = _system::getRTA().getWindowsDesignBlurred();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -238,6 +236,20 @@ _callbackReturn _window::mouseClickHandler( _event event )
 		that->maximize();
 	
 	return handled;
+}
+
+void _window::close()
+{
+	// Check for permission
+	if( this->handleEvent( onClose , true ) != prevent_default )
+	{
+		// Close the window
+		this->setParent( nullptr );
+		
+		// Unregister window from taskbar 
+		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
+			((_windows*)_system::_gadgetHost_)->removeTask( this );
+	}
 }
 
 _callbackReturn _window::dragHandler( _event event )
@@ -284,17 +296,7 @@ _callbackReturn _window::buttonHandler( _event event )
 {
 	// Close
 	if( event.getGadget<_windowButton>() == this->button[0] )
-	{
-		// Check for permission
-		if( this->handleEvent( onClose , true ) != prevent_default )
-		{
-			// Close the window
-			this->setParent( nullptr );
-			
-			if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-				((_windows*)_system::_gadgetHost_)->removeTask( this );
-		}
-	}
+		this->close();
 	// maximize or restore
 	else if( event.getGadget<_windowButton>() == this->button[1] )
 	{
@@ -326,8 +328,8 @@ _window::~_window()
 		((_windows*)_system::_gadgetHost_)->removeTask( this );
 }
 
-_window::_window( _length width , _length height , _coord x , _coord y , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
-	_gadget( _gadgetType::window , width , height , x , y , style | _styleAttr::doubleClickable | _styleAttr::focusBringsFront )
+_window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
+	_gadget( _gadgetType::window , x , y , width , height , style | _styleAttr::doubleClickable | _styleAttr::focusBringsFront )
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )
 	, minimized( false )
@@ -340,14 +342,14 @@ _window::_window( _length width , _length height , _coord x , _coord y , string 
 	this->setMinHeight( 19 );
 	
 	// Create a Label
-	this->label = new _label( this->getWidth() - 2 , 6 , 2 , 2 , title );
+	this->label = new _label( 2 , 2 , this->getWidth() - 2 , 6 , title );
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( COLOR_WHITE );
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6
-	this->icon = new _imagegadget( 2 , 2 , move(bmp) );
+	this->icon = new _imagegadget( 2 , 2 , move(bmp) , _style() | _styleAttr::notResizeable );
 	
 	// Append it to this button
 	this->addEnhancedChild( this->label );
