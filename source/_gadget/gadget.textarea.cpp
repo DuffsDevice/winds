@@ -119,7 +119,7 @@ void _textarea::setInternalCursor( _u32 cursor )
 		// Adjust scrollbar position
 		_int scrollValue = min( cursorY1 , (_int)this->scrollBar->getValue() ); // Make sure the cursor is not above the visible area
 		scrollValue = max( scrollValue , cursorY2 ); // Make sure the cursor does not get displayed below the visible area
-		this->scrollBar->setValue( scrollValue );
+		this->scrollBar->setValue( scrollValue , false );
 		
 		// Refresh
 		this->redraw();
@@ -309,11 +309,11 @@ _callbackReturn _textarea::mouseHandler( _event event )
 	return handled;
 }
 
-_textarea::_textarea( _length width , _length height , _coord x , _coord y , string value , _style&& style ) :
-	_gadget( _gadgetType::textarea , width , height , x , y , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
+_textarea::_textarea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+	_gadget( _gadgetType::textarea , x , y , width , height , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
-	, text( _system::getFont() , _system::_rtA_->getDefaultFontSize() , width - _textarea::borderX * 2 , value )
+	, text( _system::getFont() , _system::getRTA().getDefaultFontSize() , width - _textarea::borderX * 2 , value )
 	, cursor( 0 )
 	, align( _align::left )
 {

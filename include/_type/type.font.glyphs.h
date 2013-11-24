@@ -74,7 +74,10 @@ namespace _glyph
 	triangle = '|',
 	aim = '}',
 	smallCircleFilled = '~',
-	smallSquareFilled = '¡';
+	smallSquareFilled = '¡',
+	resizeHandleXY = '¢',
+	resizeHandleY = '£',
+	resizeHandleX = '¤';
 };
 
 namespace tiles

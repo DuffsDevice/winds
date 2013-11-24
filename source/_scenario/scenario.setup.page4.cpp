@@ -52,21 +52,21 @@ bool _scSetupPage4::destroy( _gadget* viewParent )
 void _scSetupPage4::create( _gadget* viewParent )
 {
 	// Title
-	this->lblTitle = new _label( ignore , ignore , 13 , 28 , _system::getLocalizedString("lbl_profile") );
+	this->lblTitle = new _label( 13 , 28 , ignore , ignore , _system::getLocalizedString("lbl_profile") );
 	this->lblTitle->setColor( RGB( 30 , 30 , 30 ) );
 	this->lblTitle->setFont( _system::getFont( "ArialBlack13" ) );
 	viewParent->addChild( this->lblTitle );
 	
 	// Labels for both the profile name textbox and the profile icon
-	this->lblName = new _label( ignore , ignore , 20 , 60 , _system::getLocalizedString("txt_name") );
-	this->lblIcon = new _label( ignore , ignore , 20 , 90 , _system::getLocalizedString("txt_profile_icon") );
+	this->lblName = new _label( 20 , 60 , ignore , ignore , _system::getLocalizedString("txt_name") );
+	this->lblIcon = new _label( 20 , 90 , ignore , ignore , _system::getLocalizedString("txt_profile_icon") );
 	this->lblName->setColor( RGB( 30 , 30 , 30 ) );
 	this->lblIcon->setColor( RGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblName );
 	viewParent->addChild( this->lblIcon );
 	
 	// Textbox for profile name
-	this->txtProfileName = new _textbox( 21 , 70 , 80 , profileName  );
+	this->txtProfileName = new _textbox( 21 , 70 , 80 , ignore , profileName  );
 	this->txtProfileName->setInternalEventHandler( onEdit , make_callback( this , &_scSetupPage4::profileNameTextboxHandler ) );
 	viewParent->addChild( this->txtProfileName );
 	

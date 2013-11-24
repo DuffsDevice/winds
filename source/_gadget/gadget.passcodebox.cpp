@@ -38,19 +38,7 @@ void _passcodebox::setStrValue( string val )
 		_textbox::setStrValue( "" );
 }
 
-_passcodebox::_passcodebox( _coord x , _coord y , _length width , string value , const _font* repFont , _char repChar , _style&& style ) :
-	_textbox( x , y , width , string( value.length() , repChar ) , (_style&&)style )
-	, realText( value )
-	, replaceChar( repChar )
-	, replaceFont( repFont )
-{
-	if( !replaceFont )
-		replaceFont = _system::getFont("SystemSymbols8");
-	if( !replaceChar )
-		replaceChar = _glyph::smallCircleFilled;
-}
-
-_passcodebox::_passcodebox( _coord x , _coord y , _length width , _length height , string value , const _font* repFont , _char repChar , _style&& style ) :
+_passcodebox::_passcodebox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , const _font* repFont , _char repChar , _style&& style ) :
 	_textbox( x , y , width , height , string( value.length() , repChar ) , (_style&&)style )
 	, realText( value )
 	, replaceChar( repChar )

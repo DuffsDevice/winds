@@ -1,5 +1,5 @@
 #include "_lua/lua.class.color.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -59,16 +59,16 @@ int _lua_color::setL(lua_State* L){ _color::setL( check<int>( L , 1 ) ); return 
 int _lua_color::setColor(lua_State* L){ _color::setColor( check<_pixel>( L , 1 ) ); return 0; }
 
 //! setRGB
-int _lua_color::setRGB(lua_State* L){ _color::setRGB( check<int>( L , 1 ) , lightcheck( L , 2 , 100 ) , lightcheck( L , 3 , 50 ) ); return 0; }
+int _lua_color::setRGB(lua_State* L){ _color::setRGB( check<int>( L , 1 ) , lightcheck<int>( L , 2 , 100 ) , lightcheck<int>( L , 3 , 50 ) ); return 0; }
 
 //! setHSL
-int _lua_color::setHSL(lua_State* L){ _color::setHSL( check<int>( L , 1 ) , lightcheck( L , 2 , 100 ) , lightcheck( L , 3 , 50 ) ); return 0; }
+int _lua_color::setHSL(lua_State* L){ _color::setHSL( check<int>( L , 1 ) , lightcheck<int>( L , 2 , 100 ) , lightcheck<int>( L , 3 , 50 ) ); return 0; }
 
 //! adjustRGB
-int _lua_color::adjustRGB(lua_State* L){ _color::adjustRGB( check<int>( L , 1 ) , lightcheck( L , 2 , 0 ) , lightcheck( L , 3 , 0 ) ); return 0; }
+int _lua_color::adjustRGB(lua_State* L){ _color::adjustRGB( check<int>( L , 1 ) , lightcheck<int>( L , 2 , 0 ) , lightcheck<int>( L , 3 , 0 ) ); return 0; }
 
 //! adjustHSL
-int _lua_color::adjustHSL(lua_State* L){ _color::adjustHSL( check<int>( L , 1 ) , lightcheck( L , 2 , 0 ) , lightcheck( L , 3 , 0 ) ); return 0; }
+int _lua_color::adjustHSL(lua_State* L){ _color::adjustHSL( check<int>( L , 1 ) , lightcheck<int>( L , 2 , 0 ) , lightcheck<int>( L , 3 , 0 ) ); return 0; }
 
 //! Lua-_rect
 const char _lua_color::className[] = "Color";

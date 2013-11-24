@@ -4,8 +4,8 @@
 #include "_type/type.color.h"
 #include "func.gridcreator.h"
 
-_calendar::_calendar( _length width , _length height , _coord x , _coord y , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor , _style&& style )
-	: _gadget( _gadgetType::button , width , height , x , y , (_style&&)style )
+_calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor , _style&& style )
+	: _gadget( _gadgetType::button , x , y , width , height , (_style&&)style )
 	, _singleValueGroup<_stickybutton>()
 	, curMonth( month )
 	, curYear( year )

@@ -33,7 +33,7 @@ class _user : public _registry
 		_u16	kRD; // keyRepetitionDelay (frames until repetition)
 		_u16	kRS; // keyRepetitionSpeed (frames between each click)
 		_u8		fOH; // fileObjectHeight
-		_u8		sOH; // selectObjectHeight
+		_u8		lIH; // listItemHeight
 		_u8		sFE; // showFileExtension
 		_pixel	sBTC;// startButtonTextColor
 		_pixel	dTC; // desktopColor

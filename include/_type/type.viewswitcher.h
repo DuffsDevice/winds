@@ -34,80 +34,13 @@ class _viewSwitcher
 		
 		//! Adds an instance of the supplied maybe derived _view-class
 		//! It can later be activated by a call to set, given the associated name you already passed to this function
-		template<typename T>
-		bool addView( string assocName , T&& view )
-		{
-			if( assocName.empty() )
-				return false;
-			
-			// Check if we could overwrfite the currently active view
-			bool isActiveView = assocName == this->currentView;
-			
-			// return false if the current view could not be replaced
-			if( isActiveView && !unset() )
-				return false;
-			
-			typedef typename std::remove_reference<T>::type T2;
-			typedef typename T2::_view def;
-			
-			// Remove any Current Handler
-			_view* &data = this->views[assocName]; // reference to pointer
-			
-			if( data )
-				delete data; // Delete Current associated view
-			
-			// Insert the new View
-			data = new T2( move(view) );
-			
-			// Tell it which switcher it belongs to
-			data->setSwitcher( this );
-			
-			// Maybe reenable the old active view if we overwrote that one
-			if( isActiveView && viewParent ){
-				data->create( viewParent );
-				this->currentView = assocName;
-			}
-			
-			return true;
+		bool addView( string assocName , _paramAlloc<_view> view ){
+			return this->addView( move(assocName) , (_view*)view );
 		}
 		
 		//! Adds an instance of the supplied maybe derived _view-class
 		//! It can later be activated by a call to set, given the associated name you already passed to this function
-		template<typename T>
-		bool addView( string assocName , T* view )
-		{
-			if( assocName.empty() )
-				return false;
-			
-			// Check if we could overwrfite the currently active view
-			bool isActiveView = assocName == this->currentView;
-			
-			// return false if the current view could not be replaced
-			if( isActiveView && !unset() )
-				return false;
-			
-			typedef typename T::_view def;
-			
-			// Remove any Current Handler
-			_view* &data = this->views[assocName]; // reference to pointer
-			
-			if( data )
-				delete data; // Delete Current associated view
-			
-			// Insert the new View
-			data = view;
-			
-			// Tell it which switcher it belongs to
-			data->setSwitcher( this );
-			
-			// Maybe reenable the old active view if we overwrote that one
-			if( isActiveView && viewParent ){
-				data->create( viewParent );
-				this->currentView = assocName;
-			}
-			
-			return true;
-		}
+		bool addView( string assocName , _view* view );
 		
 		//! Removes the view with the supplied associated name
 		void removeView( string assocName );

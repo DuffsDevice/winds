@@ -375,9 +375,9 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 	}
 }
 
-#define VERTICAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 ) \
+#define VERTICAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 , initialSeed ) \
 	{\
-		_u16 val = 0;\
+		_u16 val = initialSeed;\
 		\
 		_u16 h1 = min( h , (_length)(diff2) );\
 		h -= h1;\
@@ -502,11 +502,11 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	_u32 j = w;
 	
 	if( difference >= 8 )
-		VERTICAL_GRADIENT_FILLER_RAND( 23 , 15 , 8 )
+		VERTICAL_GRADIENT_FILLER_RAND( 23 , 15 , 8 , x )
 	else if( difference >= 4 )
-		VERTICAL_GRADIENT_FILLER_RAND( 11 , 7 , 4 )
+		VERTICAL_GRADIENT_FILLER_RAND( 11 , 7 , 4 , x )
 	else if( difference >= 2 )
-		VERTICAL_GRADIENT_FILLER_RAND( 6 , 3 , 2 )
+		VERTICAL_GRADIENT_FILLER_RAND( 6 , 3 , 2 , x )
 	else
 	{
 		_u16 val;
@@ -530,9 +530,9 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 
 #undef VERTICAL_GRADIENT_FILLER_RAND
 
-#define HORIZONTAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 ) \
+#define HORIZONTAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 , initialSeed ) \
 {\
-	_u16 val = 0;\
+	_u16 val = initialSeed;\
 	do\
 	{\
 		temp = end;\
@@ -626,11 +626,11 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	_u32 j = w;
 	
 	if( difference >= 8 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 23 , 15 , 7 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 23 , 15 , 7 , y )
 	else if( difference >= 4 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 11 , 7 , 3 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 11 , 7 , 3 , y )
 	else if( difference >= 2 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 6 , 3 , 1 )
+		HORIZONTAL_GRADIENT_FILLER_RAND( 6 , 3 , 1 , y )
 	else
 	{
 		// Loop Unwinding

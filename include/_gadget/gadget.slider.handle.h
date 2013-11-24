@@ -24,6 +24,6 @@ class _sliderHandle : public _gadget{
 		}
 		
 		//! Ctors
-		_sliderHandle( _coord x , _coord y , _dimension dimension , _style&& style = _style() );
+		_sliderHandle( _optValue<_coord> x , _optValue<_coord> y , _dimension dimension , _style&& style = _style() );
 };
 #endif

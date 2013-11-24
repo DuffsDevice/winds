@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.calendar.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -7,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_calendar::_lua_calendar( lua_State* L ) :
-	_lua_gadget( new _calendar( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , check<int>( L , 4 ) , check<int>( L , 5 ) , check<int>( L , 6 ) , check<int>( L , 7 ) , lightcheck<_pixel>( L , 8 , COLOR_WHITE ) , lightcheck( L , 8 , _style() ) ) )
+	_lua_gadget( new _calendar( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , check<int>( L , 5 ) , check<int>( L , 6 ) , check<int>( L , 7 ) , lightcheck<_pixel>( L , 8 , COLOR_WHITE ) , lightcheck<_style>( L , 8 ) ) )
 {}
 
 //! Lua-button
@@ -18,7 +19,7 @@ Lunar<_lua_calendar>::FunctionType _lua_calendar::methods[] = {
 
 Lunar<_lua_calendar>::PropertyType _lua_calendar::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "date" , &_lua_calendar::getIntValue , &_lua_calendar::setIntValue },
-	{ "bgColor" , &_lua_calendar::getBgColor , &_lua_calendar::setBgColor },
+	{ "date" 	, wrap( _lua_calendar , &_calendar::getIntValue )	, wrap( _lua_calendar , &_calendar::setIntValue ) },
+	{ "bgColor" , wrap( _lua_calendar , &_calendar::getBgColor )	, wrap( _lua_calendar , &_calendar::setBgColor ) },
 	LUA_CLASS_ATTR_END
 };

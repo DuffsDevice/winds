@@ -63,8 +63,8 @@ _callbackReturn _radio::mouseHandler( _event event )
 	return handled;
 }
 
-_radio::_radio( _coord x , _coord y , _singleValueGroup<_radio>* group , _s32 assocValue , _style&& style ) :
-	_gadget( _gadgetType::radiobox , 9 , 9 , x , y , (_style&&)style )
+_radio::_radio( _optValue<_coord> x , _optValue<_coord> y , _singleValueGroup<_radio>* group , _s32 assocValue , _style&& style ) :
+	_gadget( _gadgetType::radiobox , x , y , 9 , 9 , (_style&&)style )
 	, intValue( 0 )
 	, group( nullptr ) // Will be set when the _radio will be added to the _radiogroup
 {

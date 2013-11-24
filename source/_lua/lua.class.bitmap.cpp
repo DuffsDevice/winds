@@ -1,7 +1,7 @@
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.font.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -10,18 +10,18 @@ using namespace _luafunc;
 
 // Ctor
 _lua_bitmap::_lua_bitmap( _bitmap* b ) : 
-	wasAllocated( false )
-	, bm( b )
+	bm( b )
+	, wasAllocated( false )
 { }
 
 _lua_bitmap::_lua_bitmap( _constbitmap* b ) :
-	wasAllocated( true )
-	, bm( new _bitmap( *b ) ) // Copy bitmap
+	bm( new _bitmap( *b ) ) // Copy bitmap
+	, wasAllocated( true )
 { }
 
 _lua_bitmap::_lua_bitmap( _bitmap&& b ) :
-	wasAllocated( true )
-	, bm( new _bitmap( move(b) ) ) // Copy bitmap
+	bm( new _bitmap( move(b) ) ) // Copy bitmap
+	, wasAllocated( true )
 { }
 
 // Lua-Ctor
@@ -138,15 +138,12 @@ int _lua_bitmap::drawFilledEllipse( lua_State* L ){ this->bm->drawFilledEllipse(
 
 //! drawChar
 int _lua_bitmap::drawChar( lua_State* L ){ 
-	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
-	if( !f || !f->font )
-		return 0;
 	lua_pushnumber( 
 		L
 		,this->bm->drawChar( 
 			check<int>( L , 1 ) ,
 			check<int>( L , 2 ) ,
-			f->font ,
+			check<const _font*>( L , 1 ) ,
 			check<string>( L , 4 )[0] ,
 			check<_pixel>( L , 5 ) 
 		)
@@ -157,12 +154,12 @@ int _lua_bitmap::drawChar( lua_State* L ){
 //! drawString
 int _lua_bitmap::drawString( lua_State* L ){ 
 	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
-	if( !f || !f->font )
+	if( !f || !(const _font*)f )
 		return 0;
 	this->bm->drawString( 
 		check<int>( L , 1 ) ,
 		check<int>( L , 2 ) ,
-		f->font ,
+		(const _font*)f ,
 		check<string>( L , 4 ) ,
 		check<_pixel>( L , 5 ) 
 	);

@@ -64,16 +64,32 @@ namespace _gadgetHelpers
 	class sizeParent : public _dummyCallback<_eventHandler>
 	{
 		private:
+			_length smallerX;
+			_length smallerY;
 			struct{
-				bool proceedX : 1;
-				bool proceedY : 1;
-				_length smallerX : 15;
-				_length smallerY : 15;
-			} PACKED ;
+			_u8 proceedX : 1;
+			_u8 proceedY : 1;
+			}PACKED;
 			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
-			sizeParent( _optValue<_length>&& smallerX = 0 , _optValue<_length>&& smallerY = 0 );
+			sizeParent( _optValue<_length> smallerX = 0 , _optValue<_length> smallerY = 0 );
+	};
+	
+	//! Class to move the gadget to a position relative to the parents right and/or bottom border
+	class rightBottomAlign : public _dummyCallback<_eventHandler>
+	{
+		private:
+			_length distanceX;
+			_length distanceY;
+			struct{
+			_u8 proceedX : 1;
+			_u8 proceedY : 1;
+			}PACKED;
+			_callbackReturn executor( _event event ) const ;
+		public:
+			// Ctor
+			rightBottomAlign( _optValue<_length> distanceX = 0 , _optValue<_length> distanceY = 0 );
 	};
 	
 	//! Class to move the gadget to either below or dexterwise of its precedent child

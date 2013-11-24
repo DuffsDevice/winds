@@ -37,7 +37,7 @@ class _actionButton : public _button {
 		_actionButtonType getButtonType(){ return this->type; }
 		
 		//! Ctor
-		_actionButton( _actionButtonType type , _coord x , _coord y , _style&& style = _style() );
+		_actionButton( _optValue<_coord> x , _optValue<_coord> y , _actionButtonType type , _style&& style = _style() );
 };
 
 #endif

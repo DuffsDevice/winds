@@ -9,9 +9,15 @@
 _runtimeAttributes::_runtimeAttributes( _user* user ) :
 	defaultFont( "System7" )
 	, defaultFontSize( 8 )
+	, user( user )
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )
-	, user( user )
+	, highlightForeground( COLOR_WHITE )
+	, highlightBackground( RGB255( 10 , 36 , 106 ) /* Dark blue */ )
+	, itemForeground( COLOR_BLACK )
+	, itemBackground( COLOR_WHITE )
+	, controlBackground( RGB( 28 , 28 , 27 ) )
+	, controlForeground( RGB( 22 , 22 , 20 ) )
 {
 	
 	this->assocDirectories = {

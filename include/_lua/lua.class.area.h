@@ -2,7 +2,7 @@
 #ifndef _WIN_L_AREA_
 #define _WIN_L_AREA_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.rect.h"
 
 class _lua_area : public _area {

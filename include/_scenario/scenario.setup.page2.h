@@ -21,16 +21,16 @@ class _scSetupPage2 : public _view
 		void create( _gadget* viewParent )
 		{
 			// Welcome label
-			this->title = new _label( ignore , ignore , 13 , 28 , _system::getLocalizedString("lbl_welcome_to_winds") );
+			this->title = new _label( 13 , 28 , ignore , ignore , _system::getLocalizedString("lbl_welcome_to_winds") );
 			this->title->setColor( RGB( 30 , 30 , 30 ) );
 			this->title->setFont( _system::getFont( "ArialBlack13" ) );
 			
 			// Few steps to set up label
-			this->line1 = new _label( ignore , ignore , 20 , 60 , _system::getLocalizedString("txt_few_step_setup") );
+			this->line1 = new _label( 20 , 60 , ignore , ignore , _system::getLocalizedString("txt_few_step_setup") );
 			this->line1->setColor( RGB( 30 , 30 , 30 ) );
 			
 			// Few steps to set up label (line 2)
-			this->line2 = new _label( ignore , ignore , 20 , 70 , _system::getLocalizedString("txt_few_step_setup_2") );
+			this->line2 = new _label( 20 , 70 , ignore , ignore , _system::getLocalizedString("txt_few_step_setup_2") );
 			this->line2->setColor( RGB( 30 , 30 , 30 ) );			
 			
 			viewParent->addChild( this->title );

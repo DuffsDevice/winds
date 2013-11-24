@@ -7,7 +7,7 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_gadget/gadget.label.h"
 
-enum _fileviewType{
+enum class _fileviewType : _u8{
 	detail = 0,
 	list = 1,
 	symbol_small = 2,
@@ -33,10 +33,7 @@ class _fileobject : public _gadget {
 	public:
 	
 		//! Ctor
-		_fileobject( _optValue<_length> width , _optValue<_length> height , _optValue<_coord> x , _optValue<_coord> y , string&& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() );
-		_fileobject( _optValue<_length> width , _optValue<_length> height , _optValue<_coord> x , _optValue<_coord> y , const string& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() ) :
-			_fileobject( move(width) , move(height) , move(x) , move(y) , string( dir ) , viewType , singleClickToExecute , move(style) )
-		{ }
+		_fileobject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() );
 		
 		//! Dtor
 		~_fileobject();

@@ -70,7 +70,7 @@ class _button : public _gadget {
 		_pixel getFontColor(){ return this->fontColor; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_button( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string title = "" , _style&& style = _style() );
+		_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title = "" , _style&& style = _style() );
 };
 
 #endif

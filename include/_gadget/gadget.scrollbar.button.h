@@ -32,6 +32,6 @@ class _scrollButton : public _button{
 		void setButtonType( _scrollButtonType type ){ if( this->type == type ) return; this->type = type; this->redraw(); }
 		
 		//! Ctor
-		_scrollButton( _length width , _length height , _coord x , _coord y , _scrollButtonType type , _style&& style = _style() );
+		_scrollButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollButtonType type , _style&& style = _style() );
 };	
 #endif

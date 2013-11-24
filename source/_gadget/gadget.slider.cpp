@@ -9,8 +9,8 @@
 constexpr _length V_SLIDER_BASE_WIDTH( bool drawSnaps ){ return 12 + (!!drawSnaps) * 6; }
 constexpr _length H_SLIDER_BASE_HEIGHT( bool drawSnaps ){ return 10 + (!!drawSnaps) * 5; }
 
-_slider::_slider( _coord x , _coord y , _length sliderLength , _s32 value , _dimension dim , _s32 upperBound , _s32 lowerBound , _style&& style ) :
-	_gadget( _gadgetType::slider , x , y , dim == _dimension::horizontal ? sliderLength : 20 , dim == _dimension::vertical ? sliderLength : 16 , move(style) )
+_slider::_slider( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> sliderLength , _s32 value , _dimension dim , _s32 upperBound , _s32 lowerBound , _style&& style ) :
+	_gadget( _gadgetType::slider , x , y , dim == _dimension::horizontal ? sliderLength : _optValue<_length>(20) , dim == _dimension::vertical ? sliderLength : _optValue<_length>(16) , move(style) )
 	, intValue( mid( lowerBound , value , upperBound ) )
 	, lowerBound( lowerBound )
 	, upperBound( upperBound )
@@ -116,7 +116,7 @@ _callbackReturn _slider::refreshHandler( _event event )
 	
 	// Fetch Font for labels
 	const _font* font = _system::getFont();
-	_u8 fontSize = _system::_rtA_->getDefaultFontSize();
+	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	if( that->dimension == _dimension::horizontal )
 	{
@@ -215,7 +215,7 @@ _callbackReturn _slider::updateHandler( _event event )
 	}
 	
 	const _font* font = _system::getFont();
-	_u8 fontSize = _system::_rtA_->getDefaultFontSize();
+	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	// Update Size of the slider, because the labels might have changed
 	if( that->dimension == _dimension::horizontal )

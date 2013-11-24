@@ -28,3 +28,11 @@ void _dialog::deleteCallback()
 		delete this->callback;
 	this->callback = 0;
 }
+
+_map<_dialogResult,string> dialogResult2string = {
+	{ _dialogResult::undefined , "undefined" },
+	{ _dialogResult::cancel , "cancel" },
+	{ _dialogResult::yes , "yes" },
+	{ _dialogResult::no , "no" },
+	{ _dialogResult::apply , "apply" }
+};

@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.resizehandle.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -7,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_resizehandle::_lua_resizehandle( lua_State* L ) : 
-	_lua_gadget( new _resizeHandle( lightcheck<_style>( L , 1 , _style() ) ) )
+	_lua_gadget( new _resizeHandle( optcheck<_pixel>( L , 1 ) , lightcheck<_style>( L , 2 ) ) )
 { }
 
 //! Lua-window
@@ -18,5 +19,6 @@ Lunar<_lua_resizehandle>::FunctionType _lua_resizehandle::methods[] = {
 
 Lunar<_lua_resizehandle>::PropertyType _lua_resizehandle::properties[] = {
 	GADGET_BASE_ATTR,
+	{ "bgColor" , wrap( _lua_resizehandle , &_resizeHandle::getBgColor ) , wrap( _lua_resizehandle , &_resizeHandle::setBgColor ) },
 	LUA_CLASS_ATTR_END
 };

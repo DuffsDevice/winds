@@ -106,8 +106,8 @@ void _clockgadget::timerCallback()
 	this->redraw();
 }
 
-_clockgadget::_clockgadget( _length width , _length height , _coord x , _coord y , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease , _style&& style ) :
-	_gadget( _gadgetType::clockimage , width , height , x , y , style | _styleAttr::notClickable )
+_clockgadget::_clockgadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease , _style&& style ) :
+	_gadget( _gadgetType::clockimage , x , y , width , height , style | _styleAttr::notClickable )
 	, outerBgColor( COLOR_TRANSPARENT )
 	, innerBgColor( COLOR_WHITE )
 	, secondsColor( COLOR_RED )

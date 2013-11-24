@@ -10,6 +10,7 @@
 #include <array>
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <tuple>
 #include <functional>
 
@@ -17,7 +18,7 @@
 #include <nds/memory.h>
 
 //! Undefine if you don't want any speed profiling
-#define DEBUG_PROFILING
+//#define DEBUG_PROFILING
 
 //! Overload new and delete
 void* operator new(size_t size) __attribute__((malloc));
@@ -31,6 +32,8 @@ template<typename T>
 	using _vector = std::vector<T>;
 template<typename T,typename T2>
 	using _map = std::map<T,T2>;
+template<typename T,typename T2>
+	using _unorderedMap = std::unordered_map<T,T2>;
 template<typename T,typename T2>
 	using _pair = std::pair<T,T2>;
 template<typename...T>
@@ -70,6 +73,21 @@ typedef _vector<string>				_cmdArgs;
 enum class _dimension : _u8{
 	horizontal = 0 ,
 	vertical = 1
+};
+
+enum class _direction : _u8{
+	left = 0,
+	leftup = 4,
+	leftdown = 12,
+	up = 5,
+	upleft = leftup,
+	upright = 6,
+	down = 13,
+	downright = 14,
+	downleft = leftdown,
+	right = 10,
+	rightup = upright,
+	rightdown = downright
 };
 
 //! Convert _dimension to string and back
@@ -283,21 +301,22 @@ namespace DSWindows
 
 //! Alignment enumeration
 enum class _align : _u8 {
-	left,
-	center,
-	right
+	left = 0,
+	center = 1,
+	right = 2
 };
 
 //! Vertical Alignment enumeration
 enum class _valign : _u8 {
-	top,
-	middle,
-	bottom
+	top = 4,
+	middle = 8,
+	bottom = 12
 };
 
 class _padding;
 class _margin;
 
+//! Class that describes the width of the four borders of a rectangle
 struct _border
 {
 	_length left;
@@ -332,6 +351,13 @@ struct _margin : _border{
 	_margin(){}
 };
 
+/**
+ * This class will, used as parameter type, allow the omission
+ * of one parameter using 'std::ignore' or just 'ignore'
+ *
+ * @note This is not like a default parameter,
+ * 		 but a way of indicating the lack of a value at all
+ */
 template<typename T>
 class _optValue
 {
@@ -341,9 +367,9 @@ class _optValue
 		template<class> friend class _optValue; // Grants all _optValue instantiations to each other
 	public:
 		
-		template<typename T2>
+		template<class T2>
 		_optValue( _optValue<T2>&& opt ) : val( (T&&)opt.val ) , isGiven( opt.isGiven ) {}
-		template<typename T2>
+		template<class T2>
 		_optValue( const _optValue<T2>& opt ) : val( (T)opt.val ) , isGiven( opt.isGiven ) {}
 		_optValue( T&& val ) : val( move( val ) ) , isGiven( true ) { }
 		_optValue( const T& val ) : val( val ) , isGiven( true ) { }
@@ -358,6 +384,55 @@ class _optValue
 		operator const T&() const { return (T)val; }
 };
 
+/**
+ * Class that will used as parameter type quickly allocate
+ * a copy of the passed object or moves it into a new allocation
+ * 
+ * @note This is especially useful with subclasses that have to get stored as a pointer
+ */
+template<class T>
+class _paramAlloc
+{
+	private:
+		
+		T*	ptr;
+		_u8	passed;
+	
+	public:
+		
+		//! Ctor that will allocate the object
+		template<typename T2>
+		_paramAlloc( T2&& obj ) :
+			passed( false )
+		{
+			typedef typename std::remove_reference<T2>::type T3;
+			typedef decltype( std::is_convertible<T3,T>::value ) check; // Check if T2 can be casted to T
+			ptr = (T*) new T3( (T2&&)obj );
+		}
+		
+		//! Move and copy ctors
+		_paramAlloc( const _paramAlloc& ) = delete;
+		_paramAlloc( _paramAlloc&& from ) :
+			ptr( from.ptr ) , passed( from.passed )
+		{
+			from.passed = true;
+			from.ptr = nullptr;
+		}
+		
+		//! Get the now allocated pointer
+		operator T*(){ this->passed = true; return this->ptr; }
+		T* get(){ this->passed = true; return this->ptr; }
+		
+		//! Dtor
+		~_paramAlloc(){
+			if( !this->passed )
+				delete this->ptr;
+		}
+		
+		//! There is no assign!
+		_paramAlloc& operator=( const _paramAlloc& ) = delete;
+		_paramAlloc& operator=( _paramAlloc&& ) = delete;
+};
 
 //! Holds useful information about the touch of the stylus
 struct _touch

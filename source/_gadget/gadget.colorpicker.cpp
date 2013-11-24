@@ -8,8 +8,8 @@
 
 #define M_PI 3.14159265359f
 
-_colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor , _style&& style ) :
-	_gadget( _gadgetType::colorpicker , width , height , x , y , (_style&&)style )
+_colorpicker::_colorpicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor , _style&& style ) :
+	_gadget( _gadgetType::colorpicker , x , y , width , height , (_style&&)style )
 	, hueSatImage( width - 14 , height - 2 )
 {
 	// Set Color
@@ -20,8 +20,8 @@ _colorpicker::_colorpicker( _length width , _length height , _coord x , _coord y
 	
 	refreshBigGradient();
 	
-	this->hueSatTable = new _gadget( _gadgetType::none , hueSatImage.getWidth() , hueSatImage.getHeight() , 1 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
-	this->lumTable = new _gadget( _gadgetType::none , 11 , hueSatImage.getHeight() , hueSatImage.getWidth() + 2 , 1 , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
+	this->hueSatTable = new _gadget( _gadgetType::none , 1 , 1 , hueSatImage.getWidth() , hueSatImage.getHeight() , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
+	this->lumTable = new _gadget( _gadgetType::none , hueSatImage.getWidth() + 2 , 1 , 11 , hueSatImage.getHeight() , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
 	
 	this->setInternalEventHandler( onDraw , make_callback( this , &_colorpicker::refreshHandler ) );
 	this->setInternalEventHandler( onResize , make_callback( this , &_colorpicker::resizeHandler ) );

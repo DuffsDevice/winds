@@ -14,6 +14,21 @@ namespace std
 				delete this->ptr;
 				this->ptr = nullptr;
 			}
+			
+			template<typename T>
+			using CopyCtible = typename std::is_copy_constructible<T>;
+			
+			// Does copy construction if possible
+			template<typename T>
+				typename std::enable_if<CopyCtible<T>::value,T*>::type
+			makeCopy( const T& from ){
+				return new T( from );
+			}
+			template<typename T>
+				typename std::enable_if<!CopyCtible<T>::value,T*>::type
+			makeCopy( const T& from ){
+				return nullptr;
+			}
 		
 		public:
 		
@@ -23,7 +38,7 @@ namespace std
 			flex_ptr( Type&& other ) : ptr( new Type( move(other) ) ) {}
 			
 			// Copy Ctor
-			flex_ptr( const flex_ptr<Type>& other ) : ptr( other.ptr ? new Type( *other.ptr ) : nullptr ) {}
+			flex_ptr( const flex_ptr<Type>& other ) : ptr( other.ptr ? makeCopy<Type>(*other.ptr) : nullptr ) {}
 			
 			// Move Ctor
 			flex_ptr( flex_ptr<Type>&& other ) : ptr( other.ptr ) { other.ptr = nullptr; }
@@ -34,14 +49,14 @@ namespace std
 			// Copy operator
 			flex_ptr<Type>& operator=( const flex_ptr<Type>& other ){
 				this->freeData();
-				this->ptr = other.ptr ? new Type( *other.ptr ) : nullptr;
+				this->ptr = other.ptr ? makeCopy<Type>(other.ptr) : nullptr ;
 				return *this;
 			}
 			
 			// Copy operator for pointer Data
 			flex_ptr<Type>& operator=( const Type& other ){
 				this->freeData();
-				this->ptr = new Type( other );
+				this->ptr = makeCopy<Type>(other);
 				return *this;
 			}
 			
@@ -75,18 +90,12 @@ namespace std
 			
 			// Dereferencing operator
 			Type& operator*(){
-				if( this->ptr )
-					return *this->ptr;
-				static Type t = Type();
-				return t;
+				return *this->ptr;
 			}
 			
 			// Const Dereferencing operator
 			const Type& operator*() const {
-				if( this->ptr )
-					return *this->ptr;
-				static Type t = Type();
-				return t;
+				return *this->ptr;
 			}
 			
 			// Dereferencing operator
@@ -125,7 +134,6 @@ namespace std
 			}
 			
 			// Un-Equality operator
-			template<class Type2>
 			bool operator!=( const Type* other ) const {
 				return this->ptr != other;
 			}

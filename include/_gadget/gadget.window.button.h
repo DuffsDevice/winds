@@ -17,7 +17,7 @@ class _windowButton : public _button
 	public:
 		
 		//! Ctor
-		_windowButton( _coord x , _coord y , _u8 buttonType , _style&& style = _style() );
+		_windowButton( _optValue<_coord> x , _optValue<_coord> y , _u8 buttonType , _style&& style = _style() );
 };
 
 #endif

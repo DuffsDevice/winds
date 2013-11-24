@@ -1,8 +1,9 @@
 #include "_gadget/gadget.contextmenu.h"
+#include "_gadget/gadget.contextmenu.entry.divider.h"
 #include "_type/type.system.h"
 
-_contextMenu::_contextMenu( const _contextMenuList& list , _gadget* owner , _optValue<_length> width , bool preserveValue , _s32 initialValue , _style&& style ) :
-	_popup( move(width) , _system::getUser()->fOH * list.size() + 2 , owner )
+_contextMenu::_contextMenu( _optValue<_length> width , const _menuEntryList& list , _gadget* owner , bool preserveValue , _int initialValue , _style&& style ) :
+	_popup( width , ignore , owner )
 	, selectedEntry( nullptr )
 	, activeEntry( nullptr )
 	, preserveValue( preserveValue )
@@ -86,11 +87,22 @@ _callbackReturn _contextMenu::refreshHandler( _event event )
 	// Get Port to draw to
 	_bitmapPort bP = that->getBitmapPort( event );
 	
+	_length myW = bP.getWidth();
+	_length myH = bP.getHeight();
+	
 	// Fill Bg
 	bP.fill( COLOR_WHITE );
 	
 	// Fill Border
-	bP.drawRect( 0 , 0 , that->getWidth() , that->getHeight() , RGB( 19 , 19 , 19 ) );
+	bP.drawRect( 0 , 0 , myW , myH , RGB( 19 , 19 , 19 ) );
+	
+	//// Draw "Shadow"
+	//bP.drawHorizontalLine( 1 , myH - 1 , myW - 1 , RGB( 9 , 9 , 9 ) );
+	//bP.drawVerticalLine( myW - 1 , 1 , myH - 1 , RGB( 9 , 9 , 9 ) );
+	//
+	//// Erase corners
+	//bP.drawPixel( myW - 1 , 0 , COLOR_TRANSPARENT );
+	//bP.drawPixel( 0 , myH - 1 , COLOR_TRANSPARENT );
 	
 	return use_default;
 }
@@ -102,21 +114,43 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 	
 	if( event.getKeyCode() == DSWindows::KEY_DOWN )
 	{
-		_contextMenuEntry* next = (_contextMenuEntry*)( that->activeEntry ? that->activeEntry->getSubcedentChild() : nullptr );
-		
-		if( next )
-			that->highlightEntry( next );
-		else if( that->getToppestChild() )
-			that->highlightEntry( (_contextMenuEntry*)that->getToppestChild() );
+		_contextMenuEntry* next = that->activeEntry;
+		if( next ){
+			do
+				next = (_contextMenuEntry*) next->getSubcedentChild();
+			while( next && next->getStrValue() == "----" );
+			if( next ){
+				that->highlightEntry( next );
+				return handled;
+			}
+		}
+		next = (_contextMenuEntry*) that->getToppestChild();
+		if( next ){
+			while( next && next->getStrValue() == "----" )
+				next = (_contextMenuEntry*) next->getSubcedentChild();
+			if( next )
+				that->highlightEntry( next );
+		}
 	}
 	else if( event.getKeyCode() == DSWindows::KEY_UP )
 	{
-		_contextMenuEntry* prev = (_contextMenuEntry*)( that->activeEntry ? that->activeEntry->getPrecedentChild() : nullptr );
-		
-		if( prev )
-			that->highlightEntry( prev );
-		else if( that->getLowestChild() )
-			that->highlightEntry( (_contextMenuEntry*)that->getLowestChild() );
+		_contextMenuEntry* next = that->activeEntry;
+		if( next ){
+			do
+				next = (_contextMenuEntry*) next->getPrecedentChild();
+			while( next && next->getStrValue() == "----" );
+			if( next ){
+				that->highlightEntry( next );
+				return handled;
+			}
+		}
+		next = (_contextMenuEntry*) that->getLowestChild();
+		if( next ){
+			while( next && next->getStrValue() == "----" )
+				next = (_contextMenuEntry*) next->getPrecedentChild();
+			if( next )
+				that->highlightEntry( next );
+		}
 	}
 	else if( event.getKeyCode() == DSWindows::KEY_A ) //!@todo move KEY_A into rtA!
 		that->selectEntry( that->activeEntry );
@@ -159,6 +193,9 @@ _callbackReturn _contextMenu::openHandler( _event event )
 		that->setWidthIfAuto( w + 2 );
 	}
 	
+	// Adjust height
+	that->setHeight( that->getLowestChild()->getDimensions().getY2() + 3 );
+	
 	// Possibly unhighlight the old entry
 	if( !that->preserveValue )
 	{
@@ -171,7 +208,7 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	return handled;
 }
 
-void _contextMenu::setIntValue( _s32 id ){
+void _contextMenu::setIntValue( _int id ){
 	_gadgetList::iterator entry = find_if(
 		this->children.begin()
 		, this->children.end()
@@ -183,27 +220,33 @@ void _contextMenu::setIntValue( _s32 id ){
 		this->selectEntry( ((_contextMenuEntry*)*entry) );
 }
 
-void _contextMenu::generateChildren( const _contextMenuList& list )
+void _contextMenu::generateChildren( const _menuEntryList& list )
 {
 	this->removeChildren( true );
 	
 	_optValue<_length> val = this->hasAutoWidth() ? _optValue<_length>( ignore ) : _optValue<_length>( this->getWidth() - 2 );
-	for( const _pair<_s32,string>& entry : list )
+	for( const _pair<_int,string>& entry : list )
 	{
-		_contextMenuEntry* cM = new _contextMenuEntry( entry.first , entry.second , _optValue<_length>( val ) );
+		_contextMenuEntry* cM;
+		
+		if( entry.second != "----" )
+			cM = new _contextMenuEntry( _optValue<_length>(val) , entry.first , entry.second );
+		else
+			cM = new _contextMenuEntryDivider();
+		
 		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }
 
-_contextMenuList _contextMenu::getList()
+_menuEntryList _contextMenu::getList()
 {
-	_contextMenuList list;
+	_menuEntryList list;
 	
 	for( _gadget* g : this->children )
 	{
 		_contextMenuEntry* entry = ((_contextMenuEntry*)g);
-		list[entry->getIntValue()] = entry->getStrValue();
+		list.insert( make_pair(entry->getIntValue(), entry->getStrValue()) );
 	}
 	
 	return list;

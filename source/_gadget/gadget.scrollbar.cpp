@@ -6,12 +6,14 @@
 _bitmap scroll_bg_vert 			= BMP_ScrollBgSnipVertical();
 _bitmap scroll_bg_horiz 		= BMP_ScrollBgSnipHorizontal();
 
-_scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style&& style ) :
+_scrollBar::_scrollBar( _optValue<_coord> x , _optValue<_coord> y , _length gadgetLength , _u32 length , _u32 length2 , _dimension dim , _u32 value , _style&& style ) :
 	_gadget( 
 		_gadgetType::scrollbar
+		, x , y 
 		, dim == _dimension::horizontal ? gadgetLength : 8
 		,  dim == _dimension::vertical ? gadgetLength : 8 
-		, x , y , (_style&&)style )
+		, (_style&&)style
+	)
 	, value( 0 )
 	, length( length )
 	, length2( length2 )
@@ -20,19 +22,19 @@ _scrollBar::_scrollBar( _coord x , _coord y , _u32 gadgetLength , _u32 length , 
 	, anim( 0 , 1 , 600 )
 {
 	this->anim.setEasing( _animation::_cubic::easeInOut );
-	this->anim.setter( make_callback( this , (void(_scrollBar::*)(int)) &_scrollBar::setValue ) );
+	this->anim.setter( make_callback( this , (void(_scrollBar::*)(int)) &_scrollBar::setValueInternal ) );
 	
 	if( dim == _dimension::horizontal )
 	{
-		this->dragHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonHandleX );
-		this->higherHandle	= new _scrollButton( 8 , 8 , this->getWidth() - 8 , 0 , _scrollButtonType::buttonRight );
-		this->lowerHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonLeft );
+		this->dragHandle	= new _scrollButton( 0 , 0 , 8 , 8 , _scrollButtonType::buttonHandleX );
+		this->higherHandle	= new _scrollButton( this->getWidth() - 8 , 0 , 8 , 8 , _scrollButtonType::buttonRight );
+		this->lowerHandle	= new _scrollButton( 0 , 0 , 8 , 8 , _scrollButtonType::buttonLeft );
 	}
 	else
 	{
-		this->dragHandle	= new _scrollButton( 8 , 8 , 0 , 8 , _scrollButtonType::buttonHandleY  );
-		this->higherHandle	= new _scrollButton( 8 , 8 , 0 , this->getHeight() - 8 , _scrollButtonType::buttonBottom );
-		this->lowerHandle	= new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonTop );
+		this->dragHandle	= new _scrollButton( 0 , 8 , 8 , 8 , _scrollButtonType::buttonHandleY  );
+		this->higherHandle	= new _scrollButton( 0 , this->getHeight() - 8 , 8 , 8 , _scrollButtonType::buttonBottom );
+		this->lowerHandle	= new _scrollButton( 0 , 0 , 8 , 8 , _scrollButtonType::buttonTop );
 	}
 	
 	//! Register Event-Handlers
@@ -89,11 +91,11 @@ void _scrollBar::setDimension( _dimension dim )
 		this->lowerHandle->setButtonType( _scrollButtonType::buttonTop );
 	}
 	
-	this->setValue( this->value );
+	this->setValueInternal( this->value );
 }
 
 
-void _scrollBar::setValue( int val )
+void _scrollBar::setValueInternal( int val )
 {
 	val = mid( 0 , val , this->length2 - this->length );
 	if( val != (int)this->value )
@@ -121,7 +123,7 @@ void _scrollBar::setValue( _u32 val , bool ease )
 		this->anim.start();
 	}
 	else
-		this->setValue( val );
+		this->setValueInternal( val );
 }
 
 
@@ -148,9 +150,9 @@ _callbackReturn _scrollBar::dragHandler( _event event )
 	
 	// Set The value
 	if( bar->dim == _dimension::horizontal )
-		bar->setValue( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->getWidth() - 15 + bar->cache ) >> 8 );
+		bar->setValueInternal( div32( ( event.getPosX() - deltaX - 8 ) * bar->length2 << 8 , bar->getWidth() - 15 + bar->cache ) >> 8 );
 	else
-		bar->setValue( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->getHeight() - 15 + bar->cache ) >> 8 );
+		bar->setValueInternal( div32( ( event.getPosY() - deltaY - 8 ) * bar->length2 << 8 , bar->getHeight() - 15 + bar->cache ) >> 8 );
 	
 	return handled;
 }
@@ -209,18 +211,18 @@ _callbackReturn _scrollBar::clickHandler( _event event ) {
 			if( bar->value + bar->length >= bar->length2 )
 				break;
 			if( bar->value + bar->length + bar->step >= bar->length2 )
-				bar->setValue( bar->length2 - bar->length );
+				bar->setValueInternal( bar->length2 - bar->length );
 			else
-				bar->setValue( bar->value + bar->step );
+				bar->setValueInternal( bar->value + bar->step );
 			break;
 		case _scrollButtonType::buttonTop :
 		case _scrollButtonType::buttonLeft :
 			if( bar->value <= 0 )
 				break;
 			if( (int)bar->value - (int)bar->step < 0 )
-				bar->setValue( 0 );
+				bar->setValueInternal( 0 );
 			else
-				bar->setValue( bar->value - bar->step );
+				bar->setValueInternal( bar->value - bar->step );
 			break;
 		default:
 			break;
@@ -284,7 +286,7 @@ void _scrollBar::setLength( _u32 value )
 	
 	this->length = value;
 	refreshHandleWidth();
-	this->setValue( max( _u32(0) , min( this->value , this->length - this->length2 ) ) );
+	this->setValueInternal( max( _u32(0) , min( this->value , this->length - this->length2 ) ) );
 }
 
 
@@ -295,5 +297,5 @@ void _scrollBar::setLength2( _u32 value )
 	
 	this->length2 = value;
 	refreshHandleWidth();
-	this->setValue( max( _u32(0) , min( this->value , this->length2 - this->length ) ) );
+	this->setValueInternal( max( _u32(0) , min( this->value , this->length2 - this->length ) ) );
 }

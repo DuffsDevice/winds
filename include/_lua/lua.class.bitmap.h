@@ -2,25 +2,33 @@
 #ifndef _WIN_L_BITMAP_
 #define _WIN_L_BITMAP_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.bitmap.h"
 
 /**
  * Proxy Classes
  */
-class _lua_bitmap{
+class _lua_bitmap
+{
+	friend class _lua_bitmapPort;
+	
+	private:
+		
+		_bitmap* 	bm;
+		bool 		wasAllocated;
 	
 	public:
 		
-		bool 		wasAllocated;
-		_bitmap* 	bm;
+		operator _bitmap&(){
+			return *this->bm;
+		}
 		
-		// Ctor
+		//! C-Ctor
 		_lua_bitmap( _bitmap* b );
 		_lua_bitmap( _constbitmap* b );
 		_lua_bitmap( _bitmap&& b );
 		
-		// Lua-Ctor
+		//! Lua-Ctor
 		_lua_bitmap( lua_State* L );
 		
 		//! Lua-Dtor

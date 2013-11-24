@@ -4,25 +4,26 @@
 #include "_type/type.timer.h"
 #include "_gadget/gadget.button.h"
 
-_array<_staticCallback<_defaultEventHandler>,13>
-	_gadget::defaultEventHandlers = { {
-	/* onDraw */ make_callback( &_gadget::gadgetRefreshHandler ),
-	/* onMouseClick */ make_callback( &_gadget::gadgetMouseHandler ),
-	/* onMouseDoubleClick */ make_callback( &_gadget::gadgetMouseHandler ),
-	/* onMouseDown */ make_callback( &_gadget::gadgetMouseHandler ),
-	/* onMouseUp */ make_callback( &_gadget::gadgetMouseHandler ),
-	/* onMouseRepeat */ make_callback( &_gadget::gadgetMouseHandler ),
-	/* onKeyDown */ make_callback( &_gadget::gadgetKeyHandler ),
-	/* onKeyUp */ make_callback( &_gadget::gadgetKeyHandler ),
-	/* onKeyClick */ make_callback( &_gadget::gadgetKeyHandler ),
-	/* onKeyRepeat */ make_callback( &_gadget::gadgetKeyHandler ),
-	/* onDragStart */ make_callback( &_gadget::gadgetDragStartHandler ),
-	/* onDragStop */ make_callback( &_gadget::gadgetDragStopHandler ),
-	/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler )
-} };
+_array<_staticCallback<_eventHandler>,13> _gadget::defaultEventHandlers = {
+	{
+		/* onDraw */ make_callback( &_gadget::gadgetRefreshHandler ),
+		/* onMouseClick */ make_callback( &_gadget::gadgetMouseHandler ),
+		/* onMouseDoubleClick */ make_callback( &_gadget::gadgetMouseHandler ),
+		/* onMouseDown */ make_callback( &_gadget::gadgetMouseHandler ),
+		/* onMouseUp */ make_callback( &_gadget::gadgetMouseHandler ),
+		/* onMouseRepeat */ make_callback( &_gadget::gadgetMouseHandler ),
+		/* onKeyDown */ make_callback( &_gadget::gadgetKeyHandler ),
+		/* onKeyUp */ make_callback( &_gadget::gadgetKeyHandler ),
+		/* onKeyClick */ make_callback( &_gadget::gadgetKeyHandler ),
+		/* onKeyRepeat */ make_callback( &_gadget::gadgetKeyHandler ),
+		/* onDragStart */ make_callback( &_gadget::gadgetDragStartHandler ),
+		/* onDragStop */ make_callback( &_gadget::gadgetDragStopHandler ),
+		/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler )
+	}
+};
 
 
-_gadget::_gadget( _gadgetType type , _optValue<_length> width , _optValue<_length> height , _optValue<_coord> posX , _optValue<_coord> posY , _bitmap&& bmp , _style&& style ) :
+_gadget::_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> posY , _optValue<_length> width , _optValue<_length> height , _bitmap&& bmp , _style&& style ) :
 	padding( _padding( 0 ) )
 	, minWidth( 0 )
 	, minHeight( 0 )
@@ -45,7 +46,7 @@ _gadget::_gadget( _gadgetType type , _optValue<_length> width , _optValue<_lengt
 
 
 _gadget::~_gadget()
-{	
+{
 	_system::removeEventsOf( this );
 	
 	// Remove itself from parent
@@ -71,7 +72,7 @@ _gadget::~_gadget()
 }
 
 
-void _gadget::triggerEvent( _event&& event , _eventCallType callType ){
+void _gadget::triggerEvent( _event event , _eventCallType callType ){
 	_system::generateEvent( (_event&&)event.setDestination( this ) , callType );
 }
 
@@ -103,6 +104,24 @@ void _gadget::redraw( _area&& areaToRefresh )
 		this->handleEvent( _event::drawEvent( (_area&&)areaToRefresh ) ); // Forces std::move
 }
 
+void _gadget::setInternalEventHandler( _eventType type , _paramAlloc<_callback<_eventHandler>> handler )
+{
+	// Remove any Current Handler
+	_callback<_eventHandler>* &data = this->eventHandlers[type]; // reference to pointer
+	
+	if( data )
+		delete data; // Delete Current Event-Handler
+	
+	// Insert The Handler
+	data = handler;
+	
+	// Check if we have to convert back to 'basic' eventTypes
+	type = userET2eventType( type );
+	
+	if( isDepType( type ) ) // Check if we have to set an identity flag here
+		this->addDependency( type );
+}
+
 void _gadget::removeInternalEventHandler( _eventType type ){
 	// Unbind the Handler
 	_eventHandlerMap::iterator data = this->eventHandlers.find( type );
@@ -113,6 +132,7 @@ void _gadget::removeInternalEventHandler( _eventType type ){
 		this->eventHandlers.erase( data );
 	}
 	
+	type = userET2eventType( type );
 	if( isDepType( type ) )
 		this->removeDependency( type );
 }
@@ -313,7 +333,7 @@ bool _gadget::focusChild( _gadget* child )
 }
 
 
-_callbackReturn _gadget::handleEventDefault( _event&& event )
+_callbackReturn _gadget::handleEventDefault( _event event )
 {
 	_s32 posInArray = _s32( event.getType() ) - 1;
 	
@@ -329,7 +349,7 @@ _callbackReturn _gadget::handleEventDefault( _event&& event )
 }
 
 
-__attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool noDefault )
+__attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool noDefault )
 {
 	const _callback<_eventHandler>* ret1 = nullptr;
 	const _callback<_eventHandler>* ret2 = nullptr;
@@ -389,7 +409,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool
 	{
 		event.setGadget( this );
 		_callbackReturn ret = (*ret2)( event );
-		if( ret == use_default )
+		if( ret == use_default || ret == use_internal )
 			goto usedefault;
 		return ret;
 	}
@@ -404,7 +424,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event&& event , bool
 }
 
 
-_callbackReturn _gadget::handleEventUser( _event&& event )
+_callbackReturn _gadget::handleEventUser( _event event )
 {
 	const _callback<_eventHandler>* cb = this->eventHandlers[ eventType2userET(event.getType()) ];
 	
@@ -417,7 +437,7 @@ _callbackReturn _gadget::handleEventUser( _event&& event )
 	return not_handled;
 }
 
-_callbackReturn _gadget::handleEventInternal( _event&& event )
+_callbackReturn _gadget::handleEventInternal( _event event )
 {
 	const _callback<_eventHandler>* cb = this->eventHandlers[ event.getType() ];
 	
@@ -802,7 +822,7 @@ void _gadget::setWidthInternal( _length val )
 }
 
 
-void _gadget::setBitmap( _bitmap&& bmp )
+void _gadget::setBitmap( _bitmap bmp )
 {
 	_2s32 pos = this->getAbsolutePosition();
 	_2s32 size = this->getSize();
@@ -823,11 +843,10 @@ void _gadget::setBitmap( _bitmap&& bmp )
 		newHeight = max( newHeight , this->getMinHeight() );
 	
 	
-	// resize bitmap to applyable size
+	// Resize bitmap to applyable size
 	bmp.resize( newWidth , newHeight );
 	
-	// Apply bitmap
-	this->bitmap = bmp;
+	this->bitmap = move(bmp);
 	
 	// Compute area to redraw
 	_2s32 refreshSize = _2s32( max( newWidth , (_length)size.first ) , max( newHeight , (_length)size.second ) );
@@ -875,7 +894,7 @@ void _gadget::setSizeInternal( _length width , _length height )
 }
 
 
-_callbackReturn _gadget::gadgetRefreshHandler( _event&& event )
+_callbackReturn _gadget::gadgetRefreshHandler( _event event )
 {
 	#ifdef DEBUG_PROFILING
 	_codeAnalyzer a = _codeAnalyzer( "_gadget::refreshHandler" );
@@ -979,7 +998,7 @@ _gadget* _gadget::getGadgetOfMouseDown( _coord posX , _coord posY )
 }
 
 
-_callbackReturn	_gadget::gadgetKeyHandler( _event&& event )
+_callbackReturn	_gadget::gadgetKeyHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -991,7 +1010,7 @@ _callbackReturn	_gadget::gadgetKeyHandler( _event&& event )
 }
 
 
-_callbackReturn _gadget::gadgetMouseHandler( _event&& event )
+_callbackReturn _gadget::gadgetMouseHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
@@ -1061,7 +1080,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event&& event )
 }
 
 
-_callbackReturn _gadget::gadgetDraggingHandler( _event&& event )
+_callbackReturn _gadget::gadgetDraggingHandler( _event event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
@@ -1107,7 +1126,7 @@ _callbackReturn _gadget::gadgetDraggingHandler( _event&& event )
 }
 
 
-_callbackReturn _gadget::gadgetDragStopHandler( _event&& event )
+_callbackReturn _gadget::gadgetDragStopHandler( _event event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();
@@ -1151,7 +1170,7 @@ _callbackReturn _gadget::gadgetDragStopHandler( _event&& event )
 }
 
 
-_callbackReturn _gadget::gadgetDragStartHandler( _event&& event )
+_callbackReturn _gadget::gadgetDragStartHandler( _event event )
 {
 	// Temp...
 	_gadget* that = event.getGadget();

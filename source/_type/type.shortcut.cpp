@@ -1,5 +1,5 @@
 //! Headers
-#include "_type/type.shortcut.h"
+#include "_type/type.direntry.shortcut.h"
 #include "_type/type.system.h"
 
 //! Graphics

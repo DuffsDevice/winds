@@ -31,8 +31,8 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 	return handled;
 }
 
-_keyboardButton::_keyboardButton( _key key , _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string title , _style&& style ) :
-	_button( move(width) , move(height) , x , y , title , (_style&&)style )
+_keyboardButton::_keyboardButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key , string title , _style&& style ) :
+	_button( x , y , width , height , title , (_style&&)style )
 	, key( key )
 {	
 	this->setInternalEventHandler( onMouseDown , make_callback( &_keyboardButton::mouseHandler ) );

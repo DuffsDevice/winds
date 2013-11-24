@@ -2,28 +2,23 @@
 #ifndef _WIN_L_STICKYBUTTON_
 #define _WIN_L_STICKYBUTTON_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.stickybutton.h"
 
 /**
  * Proxy Classes
  */
-class _lua_stickybutton : public _lua_gadget , public _lua_interface_input<_stickybutton> {
-	
+class _lua_stickybutton : public _lua_gadget
+{
 	public:
 		
+		//! Lua-Ctor
 		_lua_stickybutton( lua_State* L );
 		
+		//! C-Ctor
 		_lua_stickybutton( _stickybutton* c ) : _lua_gadget( c , false )
 		{ }
-		
-		//! setAutoSelect
-		int setAutoSelect( lua_State* L );
-		
-		//! isAutoSelect
-		int isAutoSelect( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

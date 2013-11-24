@@ -24,7 +24,7 @@ class _expandButton : public _gadget {
 		_int getIntValue(){ return this->intValue; }
 		
 		//! Constructor with dimensions, coordinates, title and optional: Style
-		_expandButton( _coord x , _coord y , _style&& style = _style() );
+		_expandButton( _optValue<_coord> x , _optValue<_coord> y , _style&& style = _style() );
 };
 
 #endif

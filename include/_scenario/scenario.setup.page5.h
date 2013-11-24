@@ -25,14 +25,14 @@ class _scSetupPage5 : public _view
 			timer = _timer( make_callback( this , &_scSetupPage5::timerCallback ) , 0 , false );
 			
 			// Label
-			this->lblInitializingProgress = new _label( ignore , ignore , 0 , 60 , _system::getLocalizedString("lbl_wait_installing") );
+			this->lblInitializingProgress = new _label( 0 , 60 , ignore , ignore , _system::getLocalizedString("lbl_wait_installing") );
 			this->lblInitializingProgress->setColor( RGB( 30 , 30 , 30 ) );
 			this->lblInitializingProgress->setAlign( _align::center );
 			this->lblInitializingProgress->setWidth( SCREEN_WIDTH );
 			viewParent->addChild( this->lblInitializingProgress );
 			
 			// Progressbar
-			this->progressBar = new _progressbar( 50 , 101 , 72 , false );
+			this->progressBar = new _progressbar( 101 , 72 , 50 , false );
 			viewParent->addChild( this->progressBar );
 			
 			// Start execution

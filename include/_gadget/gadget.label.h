@@ -73,7 +73,7 @@ class _label : public _gadget {
 		void setFontSize( _u8 fontSize );
 		
 		//! Construcor including dimensions
-		_label( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style = _style() | _styleAttr::notClickable );
+		_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style = _style() | _styleAttr::notClickable );
 };
 
 #endif

@@ -3,7 +3,7 @@
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
 #include "_lua/lua.class.font.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -21,7 +21,7 @@ _lua_bitmapPort::_lua_bitmapPort( lua_State* L ) :
 { }
 
 int _lua_bitmapPort::addClippingRects( lua_State* L ){
-	if( luaL_is( L , 1 , "_rect" ) )
+	if( is_a( L , 1 , "_rect" ) )
 		_bitmapPort::addClippingRects( *Lunar<_lua_rect>::check( L , 1 ) );
 	else
 		_bitmapPort::addClippingRects( *Lunar<_lua_area>::check( L , 1 ) );
@@ -122,14 +122,14 @@ int _lua_bitmapPort::drawFilledEllipse( lua_State* L ){ _bitmapPort::drawFilledE
 int _lua_bitmapPort::drawChar( lua_State* L )
 { 
 	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
-	if( !f || !f->font )
+	if( !f || !(const _font*)f )
 		return 0;
 	lua_pushnumber( 
 		L
 		, _bitmapPort::drawChar( 
 			check<int>( L , 1 ) ,
 			check<int>( L , 2 ) ,
-			f->font ,
+			(const _font*)f ,
 			check<string>( L , 4 )[0] ,
 			check<_pixel>( L , 5 ) 
 		)
@@ -141,12 +141,12 @@ int _lua_bitmapPort::drawChar( lua_State* L )
 int _lua_bitmapPort::drawString( lua_State* L )
 {
 	_lua_font* f = Lunar<_lua_font>::check( L , 3 );
-	if( !f || !f->font )
+	if( !f || !(const _font*)f )
 		return 0;
 	_bitmapPort::drawString( 
 		check<int>( L , 1 ) ,
 		check<int>( L , 2 ) ,
-		f->font ,
+		(const _font*)f ,
 		check<string>( L , 4 ) ,
 		check<_pixel>( L , 5 ) 
 	);
@@ -159,7 +159,7 @@ int _lua_bitmapPort::copy( lua_State* L )
 	_lua_bitmap* b = Lunar<_lua_bitmap>::check( L , 3 );
 	if( !b )
 		return 0;
-	_bitmapPort::copy( check<int>( L , 1 ) ,	check<int>( L , 2 ) , *b->bm );
+	_bitmapPort::copy( check<int>( L , 1 ) , check<int>( L , 2 ) , *b->bm );
 	return 0;
 }
 

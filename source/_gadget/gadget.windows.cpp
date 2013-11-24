@@ -60,7 +60,7 @@ _callbackReturn _windows::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Taskbar
-	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _system::_rtA_->getWindowsDesignActive() );
+	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _system::getRTA().getWindowsDesignActive() );
 	
 	return use_default;
 }
@@ -70,6 +70,9 @@ _callbackReturn _windows::refreshHandler( _event event )
 _windows::_windows( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::windows , (_style&&)style )
 {
+	// Register Event-Handlers
+	this->setInternalEventHandler( onDraw , make_callback( &_windows::refreshHandler ) );
+	
 	// Set Padding
 	this->setPadding( _padding( 0 , 0 , 0 , 10 ) );
 	

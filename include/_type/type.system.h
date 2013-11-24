@@ -33,6 +33,9 @@ class _system{
 		static _direntry*					_debugFile_;
 		static _gadget*						_currentFocus_;
 		static _gadget*						_lastClickedGadget_;
+		static _screen*						_topScreen_;
+		static _registry*					_registry_;
+		static _runtimeAttributes*			_rtA_; // _runtimeAttributes_
 		
 		//! Disables/enables the VBlank interrupt
 		//! to not be interrupted during an important process
@@ -101,16 +104,7 @@ class _system{
 			_system::generateEvent( _event(event) , callType );
 		}
 		
-	public:
-	
-		static _gadgetScreen*			_gadgetHost_;
-		static _keyboard*				_keyboard_;
-		static _screen*					_topScreen_;
-		static _registry*				_registry_;
-		static _registry*				_localizationTextTable_;
-		static _registry*				_localizationMonthTable_;
-		static _runtimeAttributes*		_rtA_; // _runtimeAttributes_
-		
+		// Makes sure that no events concerning a gadget are on the buffer anymore (for _gadget::~_gadget)
 		static void removeEventsOf( _gadget* g ) __attribute__(( nonnull(1) ))
 		{
 			_eventList& buff = _eventBuffer_[_curEventBuffer_];
@@ -122,37 +116,45 @@ class _system{
 			);
 		}
 		
+	public:
+		
+		//! More attributes
+		static _gadgetScreen*				_gadgetHost_;
+		static _keyboard*					_keyboard_;
+		static _registry*					_localizationTextTable_;
+		static _registry*					_localizationMonthTable_;
+		
 		//! Constructor
-		static void start();
+		static void			start();
 		
 		//! Destructor
-		static void end();
+		static void			end();
 		
 		//! Execute the supplied command
-		static bool executeCommand( string&& cmd );
-		static bool executeCommand( const string& cmd ){ return _system::executeCommand( string( cmd ) ); }
+		static bool			executeCommand( string&& cmd );
+		static bool			executeCommand( const string& cmd ){ return _system::executeCommand( string( cmd ) ); }
 		
 		//! Get Current Time (milliseconds since system startup)
-		static _tempTime getHighResTime();
+		static _tempTime	getHighResTime();
 		
 		//! Get a Font by Name
-		static const _font* getFont( string font )
+		static const _font*	getFont( string font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
 				return _system::getFont();
 			
 			return _fonts_[font];
 		}
-		static const _font* getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
+		static const _font*	getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
 		
 		//! Get current Cpu-usage
-		static _u8 getCpuUsage(){ return _cpuUsageTemp_; }
+		static _u8			getCpuUsage(){ return _cpuUsageTemp_; }
 		
 		//! Obtain current Keys
-		static _u16 getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
+		static _u16			getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
 		
 		//! Get string
-		static string getLocalizedString( string name )
+		static string		getLocalizedString( string name )
 		{
 			string value = _system::_localizationTextTable_->readIndex( name , _system::_curLanguageShortcut_ );
 			if( value.empty() )
@@ -162,7 +164,7 @@ class _system{
 		
 		//! Get localized month
 		//! Pass month from 0 - 11
-		static string getLocalizedMonth( _u8 month )
+		static string		getLocalizedMonth( _u8 month )
 		{
 			string value = _system::_localizationMonthTable_->readIndex( int2string( month ) , _system::_curLanguageShortcut_ );
 			if( value.empty() )
@@ -171,36 +173,40 @@ class _system{
 		}
 		
 		//! Things for termination
-		static void terminateProgram( _program* prog ) __attribute__(( nonnull(1) ));
-		static void terminateTimer( const _callback<void()>& cb , bool luaStateRemove = false );
+		static void			terminateProgram( _program* prog ) __attribute__(( nonnull(1) ));
 		
 		//! Turn Device off
-		static void shutDown();
+		static void			shutDown();
 		
 		//! main Loop...
-		static void main();
+		static void			main();
 		
 		//! Press Any Key to continue...
-		static void submit();
+		static void			submit();
 		
 		//! Set Language
-		static void setLanguage( _language );
+		static void			setLanguage( _language );
 		
 		//! Get the current Langauge
-		static _language getLanguage();
+		static _language	getLanguage();
 		
 		//! Get the name of the user within the DS internal firmware
-		static string getDSUserName();
+		static string		getDSUserName();
 		
 		//! Checks if the binary is executed on real hardware or on an emulator
-		static bool isRunningOnEmulator();
+		static bool			isRunningOnEmulator();
 		
 		//! Debugging
-		static void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
-		static void vdebug( const char* fmt , va_list );
+		static void			debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
+		static void			vdebug( const char* fmt , va_list );
 		
 		//! Get the Currently Logged in _user object
-		static const _user* getUser(){ return _system::_rtA_->getUser(); }
+		static const _user*					getUser(){ return _system::_rtA_->getUser(); }
+		
+		//! And some getters...
+		static _screen*						getTopScreen(){ return _system::_topScreen_; }
+		static const _registry& 			getRegistry(){ return *_system::_registry_; }
+		static const _runtimeAttributes&	getRTA(){ return *_system::_rtA_; }
 };
 
 #endif

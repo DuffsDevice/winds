@@ -96,8 +96,8 @@ void _progressbar::setBarType( bool type )
 	}
 }
 
-_progressbar::_progressbar( _length width , _coord x , _coord y  , bool type , _style&& style ) :
-	_gadget( _gadgetType::progressbar , width , 8 , x , y , (_style&&)style )
+_progressbar::_progressbar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool type , _style&& style ) :
+	_gadget( _gadgetType::progressbar , x , y , width , 8 , (_style&&)style )
 	, type( !type )
 	, value( 70 )
 	, blue( false )

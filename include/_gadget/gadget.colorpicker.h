@@ -39,7 +39,7 @@ class _colorpicker : public _gadget
 		_pixel getIntValue() const { return this->getColor(); }
 		
 		//! Ctor
-		_colorpicker( _length width , _length height , _coord x , _coord y , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
+		_colorpicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
 		
 		//! Dtor
 		~_colorpicker(){

@@ -1,4 +1,6 @@
 #include "_gadget/gadget.resizehandle.h"
+#include "_type/type.system.h"
+#include "_type/type.font.glyphs.h"
 
 _callbackReturn _resizeHandle::refreshHandler( _event event )
 {
@@ -8,30 +10,18 @@ _callbackReturn _resizeHandle::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( NO_COLOR );
+	bP.fill( that->bgColor );
 	
 	if( that->parent )
 	{
+		_pixel col = _system::getRTA().getControlForeground();
+		
 		if( that->parent->isResizeableX() && that->parent->isResizeableY() )
-		{
-			bP.drawLine( 0 , 7 , 7 , 0 , COLOR_GRAY );
-			bP.drawLine( 3 , 7 , 7 , 3 , COLOR_GRAY );
-			bP.drawLine( 6 , 7 , 7 , 6 , COLOR_GRAY );
-		}
+			bP.drawChar( 0 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
 		else if( that->parent->isResizeableY() )
-		{
-			bP.drawPixel( 7 , 0 , COLOR_GRAY );
-			bP.drawHorizontalLine( 5 , 2 , 3 , COLOR_GRAY );
-			bP.drawHorizontalLine( 3 , 4 , 5 , COLOR_GRAY );
-			bP.drawHorizontalLine( 1 , 6 , 7 , COLOR_GRAY );
-		}
+			bP.drawChar( 1 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
 		else if( that->parent->isResizeableX() )
-		{
-			bP.drawPixel( 0 , 7 , COLOR_GRAY );
-			bP.drawVerticalLine( 2 , 5 , 3 , COLOR_GRAY );
-			bP.drawVerticalLine( 4 , 3 , 5 , COLOR_GRAY );
-			bP.drawVerticalLine( 6 , 1 , 7 , COLOR_GRAY );
-		}
+			bP.drawChar( 0 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
 	}
 	
 	return use_default;
@@ -74,13 +64,16 @@ _callbackReturn _resizeHandle::positionAdjuster( _event event )
 	if( event == onParentRestyle )
 		that->update();
 	
-	that->moveTo( that->parent->getWidth() - 9 , that->parent->getHeight() - 9 );
+	_padding pad = that->isEnhanced() ? that->parent->getPadding() : _padding(0);
+	
+	that->moveTo( that->parent->getWidth() - 8 - pad.right , that->parent->getHeight() - 8 - pad.bottom );
 	
 	return handled;
 }
 
-_resizeHandle::_resizeHandle( _style&& style ) :
+_resizeHandle::_resizeHandle( _optValue<_pixel> bgColor , _style&& style ) :
 	_gadget( _gadgetType::resizehandle , 8 , 8 , 0 , 0 , style | _styleAttr::draggable )
+	, bgColor( bgColor.isValid() ? (_pixel)bgColor : COLOR_TRANSPARENT )
 {
 	this->setInternalEventHandler( onParentResize , make_callback(  &_resizeHandle::positionAdjuster ) );
 	this->setInternalEventHandler( onParentSet , make_callback(  &_resizeHandle::positionAdjuster ) );

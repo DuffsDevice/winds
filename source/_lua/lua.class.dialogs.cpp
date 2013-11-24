@@ -1,6 +1,6 @@
 #include "_lua/lua.class.dialogs.h"
 #include "_type/type.system.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################

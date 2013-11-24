@@ -29,21 +29,57 @@ namespace _gadgetHelpers
 	}
 	
 	
+	// rightBottomAlign :: ctor
+	rightBottomAlign::rightBottomAlign( _optValue<_length> distanceX , _optValue<_length> distanceY ) :
+		_dummyCallback<_eventHandler>( &rightBottomAlign::executor )
+		, distanceX( distanceX )
+		, distanceY( distanceY )
+		, proceedX( distanceX.isValid() )
+		, proceedY( distanceY.isValid() )
+	{}
+	
+	// :: handler
+	_callbackReturn rightBottomAlign::executor( _event event ) const
+	{
+		_gadget* that = event.getGadget();
+		_gadget* parent = that->getParent();
+		
+		_length width = parent->getWidth();
+		_length height = parent->getHeight();
+		
+		if( !that->isEnhanced() ){
+			_padding pad = parent->getPadding();
+			width -= pad.left + pad.right;
+			height -= pad.top + pad.bottom;
+		}
+		
+		if( this->proceedX )
+		{
+			if( this->proceedY )
+				that->moveToIfAuto( width - this->distanceX - that->getWidth() , height - this->distanceY - that->getHeight() );
+			else
+				that->setXIfAuto( width - this->distanceX - that->getWidth() );
+		}
+		else if( this->proceedY )
+			that->setYIfAuto( height - this->distanceY - that->getHeight() );
+		
+		
+		return use_internal;
+	}
+	
+	
 	// sizeParent :: ctor
-	sizeParent::sizeParent( _optValue<_length>&& smallerX , _optValue<_length>&& smallerY ) :
+	sizeParent::sizeParent( _optValue<_length> smallerX , _optValue<_length> smallerY ) :
 		_dummyCallback<_eventHandler>( &sizeParent::executor )
+		, smallerX( smallerX )
+		, smallerY( smallerY )
 		, proceedX( smallerX.isValid() )
 		, proceedY( smallerY.isValid() )
-		, smallerX( (_length)smallerX )
-		, smallerY( (_length)smallerY )
 	{}
 	
 	// :: handler
 	_callbackReturn sizeParent::executor( _event event ) const
 	{
-		if( !event.getGadget() )
-			return not_handled;
-		
 		_gadget* parent = event.getGadget()->getParent();
 		
 		_length width = parent->getWidth() - this->smallerX;
@@ -58,15 +94,16 @@ namespace _gadgetHelpers
 		if( this->proceedX )
 		{
 			if( this->proceedY )
-				event.getGadget()->setSize( width , height );
+				event.getGadget()->setSizeIfAuto( width , height );
 			else
-				event.getGadget()->setWidth( width );
+				event.getGadget()->setWidthIfAuto( width );
 		}
 		else if( this->proceedY )
-			event.getGadget()->setHeight( height );
+			event.getGadget()->setHeightIfAuto( height );
 		
-		return handled;
+		return use_internal;
 	}
+	
 	
 	// moveBesidePrecedent :: ctor
 	moveBesidePrecedent::moveBesidePrecedent( _dimension dim , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY ) :
@@ -94,7 +131,7 @@ namespace _gadgetHelpers
 			if( dim == _dimension::vertical )
 			{
 				_coord newY = pre->getDimensions().getY2() + 1 + this->spaceY;
-				_coord newX = pre->getX();
+				_coord newX = pre->hasAutoX() ? pre->getX() : offsetX;
 				
 				// Check if i we have to break line
 				if( this->breakLine && parentRect.isValid() && parentRect.height < ( newY + that->getHeight() ) )
@@ -105,7 +142,7 @@ namespace _gadgetHelpers
 			else
 			{
 				_coord newX = pre->getDimensions().getX2() + 1 + this->spaceX;
-				_coord newY = pre->getY();
+				_coord newY = pre->hasAutoY() ? pre->getY() : offsetY;
 				
 				// Check if i we have to break line
 				if( this->breakLine && parentRect.isValid() && parentRect.width < ( newX + that->getWidth() ) )
@@ -117,6 +154,6 @@ namespace _gadgetHelpers
 		else
 			that->moveToIfAuto( offsetX , offsetY );
 		
-		return handled;
+		return use_internal;
 	}
 }

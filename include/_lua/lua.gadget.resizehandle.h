@@ -2,19 +2,21 @@
 #ifndef _WIN_L_RESIZEHANDLE_
 #define _WIN_L_RESIZEHANDLE_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
 #include "_gadget/gadget.resizehandle.h"
 
 /**
  * Proxy Class
  */
-class _lua_resizehandle : public _lua_gadget {
-	
+class _lua_resizehandle : public _lua_gadget
+{
 	public:
 		
+		//! Lua-Ctor
 		_lua_resizehandle( lua_State* L );
 		
+		//! C-Ctor
 		_lua_resizehandle( _resizeHandle* c ) : _lua_gadget( c , false )
 		{ }
 		

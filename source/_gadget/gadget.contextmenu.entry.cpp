@@ -1,8 +1,9 @@
+#include "_gadget/gadget.contextmenu.entry.h"
 #include "_gadget/gadget.contextmenu.h"
 #include "_type/type.system.h"
 
-_contextMenuEntry::_contextMenuEntry( _s32 id , string value , _optValue<_length>&& width , _style&& style ) :
-	_gadget( _gadgetType::contextmenuentry , move(width) , _system::getUser()->fOH , ignore , ignore , move(style) )
+_contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _int id , string value , _style&& style ) :
+	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _system::getUser()->lIH , move(style) )
 	, text( move(value) )
 	, id( id )
 {
@@ -28,17 +29,17 @@ _callbackReturn _contextMenuEntry::refreshHandler( _event event )
 	
 	// Fetch Font data
 	const _font* font = _system::getFont();
-	_u8 fontSize =_system::_rtA_->getDefaultFontSize();
+	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	_contextMenu* parent = ((_contextMenu*)that->parent);
 	
-	bool drawHighlighted = parent ? that == parent->activeEntry : false;
+	bool drawHighlighted = parent && parent->getType() == _gadgetType::contextmenu ? that == parent->activeEntry : false;
 	
 	// Fill Background
-	bP.fill( drawHighlighted ? RGB255( 10 , 36 , 106 ) : COLOR_WHITE );
+	bP.fill( _system::getRTA().getItemBackground( drawHighlighted ) );
 	
 	// Draw text
-	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , drawHighlighted ? COLOR_WHITE : COLOR_BLACK );
+	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _system::getRTA().getItemForeground( drawHighlighted ) );
 	
 	return handled;
 }
@@ -48,7 +49,7 @@ _callbackReturn _contextMenuEntry::updateHandler( _event event )
 	_contextMenuEntry* that = event.getGadget<_contextMenuEntry>();
 	
 	const _font* font = _system::getFont();
-	_u8 fontSize =_system::_rtA_->getDefaultFontSize();
+	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );
 	
@@ -61,6 +62,9 @@ _callbackReturn _contextMenuEntry::mouseHandler( _event event )
 	
 	// Fetch contextMenu instance
 	_contextMenu* parent = (_contextMenu*)that->parent;
+	
+	if( parent->getType() != _gadgetType::contextmenu )
+		return not_handled;
 	
 	if( parent )
 	{

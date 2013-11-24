@@ -5,10 +5,6 @@
 #include <type_traits>
 #include "_type/type.callback.h"
 
-//! For the Lua-Part of the callbacks
-#include "_lua/lua.funcs.h"
-
-class unknownClass;
 template<typename T> class _staticCallback{ };
 
 template<typename T,typename... Parameters>
@@ -44,6 +40,8 @@ template<typename T, typename... Parameters>
 class _classCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
+		
+		class unknownClass;
 		
 		unknownClass* 	instance;
 		
@@ -98,6 +96,30 @@ class _inlineCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		{}
 };
 
+// For the Lua-Part of the callbacks
+#include "_lua/lua.hpp"
+
+namespace{
+	static unused noinline int compareCallbacks( lua_State* L1 , lua_State* L2 , int cb1 , int cb2 )
+	{
+		if( L1 != L2 )									return 0;
+		else if( cb1 == LUA_NOREF || cb2 == LUA_NOREF )	return -1;
+		else if( cb1 == cb2 )							return 1;
+		
+		// Push both indices onto stack and compare!
+		lua_rawgeti(L1, LUA_REGISTRYINDEX, cb2);
+		lua_rawgeti(L1, LUA_REGISTRYINDEX, cb1);
+		
+		if ( lua_rawequal(L1, -1, -2) ){ // Are they equal? 
+			lua_pop(L1, 2); // Remove both values
+			return 1;
+		}
+		
+		lua_pop(L1, 2); // Remove both values
+		return -1;
+	}
+}
+
 template<typename T> class _luaCallback{ };
 
 template<typename T,typename... Parameters>
@@ -112,22 +134,7 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		_s8 equals( const _callback<T(Parameters...)>& c ) const 
 		{
 			const _luaCallback<T(Parameters...)>& cb = (_luaCallback&) c;
-			
-			if( cb.state != this->state )								return 0;
-			else if( cb.index == LUA_NOREF || this->index == LUA_NOREF )return -1;
-			else if( cb.index == this->index )							return 1;
-			
-			// Push both indices onto stack and compare!
-			lua_rawgeti( this->state , LUA_REGISTRYINDEX, index );
-			lua_rawgeti( this->state , LUA_REGISTRYINDEX, cb.index );
-			
-			if ( lua_rawequal(this->state, -1, -2) ){ // Are they equal? 
-				lua_pop(this->state, 2); // Remove both values
-				return 1;
-			}
-			
-			lua_pop(this->state, 2); // Remove both values
-			return -1;
+			return compareCallbacks( cb.state , this->state , cb.index , this->index );
 		}
 		
 		friend class _progLua;
@@ -148,8 +155,15 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		_luaCallback( lua_State* state , int narg ) :
 			_callback<T(Parameters...)>( _callbackType::lua_func )
 			, state( state )
-			, index( _luafunc::checkfunction( state , narg ) )
-		{}
+		{
+			if( state && lua_isfunction( state , narg ) )
+			{
+				lua_pushvalue( state , narg ); // Copy
+				index = luaL_ref( state , LUA_REGISTRYINDEX );
+			}
+			else
+				index = LUA_NOREF;
+		}
 		
 		//! Ctor
 		_luaCallback( lua_State* state ) :
@@ -165,28 +179,48 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 				luaL_unref( state , LUA_REGISTRYINDEX , index ); // Unreference the handler
 		}
 		
-		T operator()(Parameters... params) const
-		{
-			//! No state registered?
-			if( !state || index == LUA_NOREF )
-				return T();
-			
-			//! Put the Lua-Handler-Function on top of the Stack
-			lua_rawgeti( state , LUA_REGISTRYINDEX, index );
-			
-			//! Call it with params
-			_luafunc::push( state , forward<Parameters>(params)... );
-			
-			if( lua_pcall( state , sizeof...(Parameters) , 1 , 0 ) ){
-				_luafunc::errorHandler( state , lua_tostring( state , -1 ) );
-			}
-			
-			if( std::is_same<T,void>::value || lua_isnil( state , -1 ) )
-				return T();
-			//! Forward the Value returned by the Handler
-			return _luafunc::check<T>( state , -1 );
-		}
+		//! Call operator
+		T operator()(Parameters... params) const ;
 };
+
+namespace _luafunc
+{
+	namespace detail
+	{
+		// ~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
+		template<typename T, typename... Args>
+		inline _luaCallback<T(Args...)>	check( lua_State* L , int index , _callback<T(Args...)>* dummy ){
+			return _luaCallback<T(Args...)>( L , index );
+		}
+		template<typename T, typename... Args>
+		inline bool	is_a( lua_State* L , int index , _callback<T(Args...)>* dummy ){ return lua_isfunction( L , index ); }
+	}
+}
+
+#include "_lua/lua.func.h"
+
+template<typename T, typename... Parameters>
+T _luaCallback<T(Parameters...)>::operator()(Parameters... params) const
+{
+	//! No state registered?
+	if( !state || index == LUA_NOREF )
+		return T();
+	
+	//! Put the Lua-Handler-Function on top of the Stack
+	lua_rawgeti( state , LUA_REGISTRYINDEX, index );
+	
+	//! Call it with params
+	_luafunc::push( state , forward<Parameters>(params)... );
+	
+	if( lua_pcall( state , sizeof...(Parameters) , 1 , 0 ) ){
+		_luafunc::errorHandler( state , lua_tostring( state , -1 ) );
+	}
+	
+	if( std::is_same<T,void>::value || lua_isnil( state , -1 ) )
+		return T();
+	//! Forward the Value returned by the Handler
+	return _luafunc::check<T>( state , -1 );
+}
 
 template<typename T> class _dummyCallback{ }; // A Callback like _gadgetHelpers::sizeParent
 

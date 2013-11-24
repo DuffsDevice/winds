@@ -4,7 +4,7 @@
 
 _gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _style&& style ) :
 	_screen( bgId )
-	, _gadget( _gadgetType::screen , SCREEN_WIDTH , SCREEN_HEIGHT , 0 , 0 , _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT ) , (_style&&)style )
+	, _gadget( _gadgetType::screen , 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT , _bitmap( _screen::getMemoryPtr() , SCREEN_WIDTH, SCREEN_HEIGHT ) , (_style&&)style )
 	, screenType( sType )
 	, touchCycles( 0 )
 	, cyclesLastClick( 0 )
@@ -28,25 +28,41 @@ bool _gadgetScreen::touchInside( _touch touch )
 }
 
 
-bool _gadgetScreen::processTouch( bool held , _touch newTouch )
+bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 {
 	// Temp...
-	_event event = _event().setCurrentKeys( _system::getCurrentKeys() );
+	_event event = _event( _none_ ).setCurrentKeys( _system::getCurrentKeys() );
 	
 	// Increase clickCycles and prevent overflow
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )
 		this->cyclesLastClick++;
 	
+	_touch newTouch = origTouch;
+	
 	_touch  newNewTouch = _gadgetScreen::adjustTouch( newTouch );
 	bool newTouchInside = this->touchInside( newNewTouch );
 	
+	//float cPR = 0.45f; // Stands for Cross-Panel-Resistance (á la Pressure)
+	//if( origTouch.z1 && origTouch.z2 )
+	//	float(origTouch.z2) / origTouch.z1;
+	//cPR = 0.45f / cPR;
+	//if( origTouch.z1 && origTouch.z2 )
+	//{		
+	//	cPR *= float( SCREEN_WIDTH - newTouch.x ) / 197.f + 1.f; // X-Correction
+	//	_int sH2 = SCREEN_HEIGHT / 2;
+	//	float xCorr = ( sH2 - abs( newTouch.y - sH2 ) ) / sH2;
+	//	cPR *= 0.9f + xCorr * 0.1f; // Y-Correction
+	//}
+	//if( cPR < 0 )
+	//	cPR = 0;
+	//printf("Pressure: %f\n",cPR);
 	/*!
 	 * Handle the Pen!
 	  */
 	if( held )
 	{
-		
 		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
+		//event.setPressure( touch.px * touch.z2 / touch.z1 - touch.px );
 		
 		//! Check if this is the first Cycle the pen is down
 		if( this->touchCycles == 0 )
@@ -123,7 +139,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 		
 		
 		//! Set parameters
-		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y );		
+		event.setEffectivePosX( lastTouch.x ).setEffectivePosY( lastTouch.y ).setPosX( newLastTouch.x ).setPosY( newLastTouch.y ).setPressure(0);		
 		
 		
 		// Temporary flag

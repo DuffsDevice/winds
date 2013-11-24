@@ -73,7 +73,7 @@ class _scrollArea : public _gadget {
 		_padding getPaddingOffset(){ return this->offset; }
 		
 		//! Default Constructor width optional scrolltypes
-		_scrollArea( _length width , _length height , _coord x , _coord y , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style&& style = _style() );
+		_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style&& style = _style() );
 		
 		//! Destrucor
 		~_scrollArea(){

@@ -17,7 +17,7 @@ class _windowsTaskInfo : public _gadget {
 	public:
 		
 		//! Ctor
-		_windowsTaskInfo( _coord x , _coord y , _style&& style = _style() );
+		_windowsTaskInfo( _optValue<_coord> x , _optValue<_coord> y , _style&& style = _style() );
 		
 		//! Dtor
 		~_windowsTaskInfo();

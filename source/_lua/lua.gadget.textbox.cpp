@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.textbox.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -8,16 +9,9 @@ using namespace _luafunc;
 
 _lua_textbox::_lua_textbox( lua_State* L ) : 
 	_lua_gadget( 
-		new _textbox( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<string>( L , 4 , "" ) , lightcheck<_style>( L , 6 , _style() ) )
+		new _textbox( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 ) )
 	)
 {}
-
-
-//! setCursor
-int _lua_textbox::setCursor( lua_State* L ){ getDerived()->setCursor( check<int>( L , 1 ) ); return 0; }
-
-//! getCursor
-int _lua_textbox::getCursor( lua_State* L ){ lua_pushnumber( L , getDerived()->getCursor() ); return 1; }
 
 //! Lua-window
 const char _lua_textbox::className[] = "TextBox";
@@ -27,11 +21,11 @@ Lunar<_lua_textbox>::FunctionType _lua_textbox::methods[] = {
 
 Lunar<_lua_textbox>::PropertyType _lua_textbox::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "text" , &_lua_textbox::getStrValue , &_lua_textbox::setStrValue },
-	{ "color" , &_lua_textbox::getColor , &_lua_textbox::setColor },
-	{ "cursor" , &_lua_textbox::getCursor , &_lua_textbox::setCursor },
-	{ "bgColor" , &_lua_textbox::getBgColor , &_lua_textbox::setBgColor },
-	{ "font" , &_lua_textbox::getFont , &_lua_textbox::setFont },
-	{ "fontSize" , &_lua_textbox::getFontSize , &_lua_textbox::setFontSize },
+	{ "text" 		, wrap( _lua_textbox , &_textbox::getStrValue )	, wrap( _lua_textbox , &_textbox::setStrValue ) },
+	{ "color" 		, wrap( _lua_textbox , &_textbox::getColor )	, wrap( _lua_textbox , &_textbox::setColor ) },
+	{ "bgColor" 	, wrap( _lua_textbox , &_textbox::getBgColor )	, wrap( _lua_textbox , &_textbox::setBgColor ) },
+	{ "cursor" 		, wrap( _lua_textbox , &_textbox::getCursor )	, wrap( _lua_textbox , &_textbox::setCursor ) },
+	{ "font" 		, wrap( _lua_textbox , &_textbox::getFont )		, wrap( _lua_textbox , &_textbox::setFont ) },
+	{ "fontSize"	, wrap( _lua_textbox , &_textbox::getFontSize )	, wrap( _lua_textbox , &_textbox::setFontSize ) },
 	LUA_CLASS_ATTR_END
 };

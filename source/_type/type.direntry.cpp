@@ -56,7 +56,7 @@ string dirname( string path )
 
 void _direntry::replaceASSOCS( string& path )
 {
-	for( const _pair<string,string>& assoc : _system::_rtA_->getAssociativeDirectories() )
+	for( const _pair<string,string>& assoc : _system::getRTA().getAssociativeDirectories() )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )

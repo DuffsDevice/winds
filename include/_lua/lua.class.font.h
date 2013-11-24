@@ -2,23 +2,30 @@
 #ifndef _WIN_L_FONT_
 #define _WIN_L_FONT_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_type/type.font.h"
 
 /**
  * Proxy Classes
  */
-class _lua_font{
+class _lua_font
+{
+	private:
+		
+		const _font*	font;
 	
 	public:
 		
-		const _font*	font;
-		
-		//! Ctor
+		//! C-Ctor
 		_lua_font( const _font* f );
 		
 		//! Lua-Ctor
 		_lua_font( lua_State* L );
+		
+		//! Operator that allows casts to 'const font*'
+		operator const _font*(){
+			return this->font;
+		}
 		
 		//! getStringWidth
 		int getStringWidth( lua_State* L );

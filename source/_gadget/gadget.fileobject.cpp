@@ -3,7 +3,7 @@
 #include "_gadget/gadget.imagegadget.h"
 #include "_type/type.mime.h"
 #include "_type/type.system.h"
-#include "_type/type.shortcut.h"
+#include "_type/type.direntry.shortcut.h"
 #include "_type/type.gadget.helpers.h"
 
 _callbackReturn _fileobject::updateHandler( _event event )
@@ -17,7 +17,7 @@ _callbackReturn _fileobject::updateHandler( _event event )
 			break;
 		case _fileviewType::list:
 			that->setSizeIfAuto(
-				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::_rtA_->getDefaultFontSize() ) + 11
+				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 11
 				, _system::getUser()->fOH
 			);
 			break;
@@ -73,11 +73,11 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			// Receive Font
 			const _font*	ft = _system::getFont();
-			_u8				ftSize = _system::_rtA_->getDefaultFontSize();
+			_u8				ftSize = _system::getRTA().getDefaultFontSize();
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
-			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , COLOR_WHITE , ftSize );
+			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , _system::getRTA().getItemForeground( true ) , ftSize );
 			
 			// Copy Icon
 			_constbitmap& fileIcon = that->file->getFileImage();
@@ -90,7 +90,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			// Draw Outer Dotted Line Background
 			if( that->hasFocus() )
-				that->bitmap.drawDottedRect( 0 , 0 , myH , myW , RGB255( 10 , 36 , 106 ) );
+				that->bitmap.drawDottedRect( 0 , 0 , myH , myW , _system::getRTA().getItemBackground( true ) );
 			
 			break;
 		}
@@ -102,7 +102,7 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 			
 			// Font
 			const _font*	ft = _system::getFont();
-			_u8				ftSize = _system::_rtA_->getDefaultFontSize();
+			_u8				ftSize = _system::getRTA().getDefaultFontSize();
 			_pixel			ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
 			string			fullName = that->file->getDisplayName();
 			
@@ -133,8 +133,8 @@ _callbackReturn _fileobject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileobject::_fileobject( _optValue<_length> width , _optValue<_length> height , _optValue<_coord> x , _optValue<_coord> y , string&& fl , _fileviewType viewtype , bool singleClickToExecute , _style&& style ) :
-	_gadget( _gadgetType::fileobject , move(width) , move(height) , move(x) , move(y) , (_style&&)style )
+_fileobject::_fileobject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& fl , _fileviewType viewtype , bool singleClickToExecute , _style&& style ) :
+	_gadget( _gadgetType::fileobject , x , y , width , height , (_style&&)style )
 	, file( new _direntry(fl) )
 	, viewType( viewtype )
 	, pressed( false )

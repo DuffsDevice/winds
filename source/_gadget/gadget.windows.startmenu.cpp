@@ -50,8 +50,9 @@ _startMenu::_startMenu( _style&& style ) :
 {
 	// Left Side
 	this->addChild(
-		new _fileview( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 ,
-			1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent , true
+		new _fileview( 1 , CONST_TOP_BAR_HEIGHT + 2
+			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
+			, "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent , true
 		)
 	);
 	
@@ -62,7 +63,7 @@ _startMenu::_startMenu( _style&& style ) :
 	this->addChild( new _imagegadget( 3 , 2 , _system::getUser()->getLogo() ) );
 	
 	// Username
-	_label* usrName = new _label( this->getWidth() - 20 - 2 , 14 , 20 , 2 , _system::getUser()->getUsername() );
+	_label* usrName = new _label( 20 , 2 , this->getWidth() - 20 - 2 , 14 , _system::getUser()->getUsername() );
 	usrName->setVAlign( _valign::middle );
 	usrName->setAlign( _align::left );
 	usrName->setColor( COLOR_WHITE );

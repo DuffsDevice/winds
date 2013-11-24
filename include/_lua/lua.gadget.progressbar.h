@@ -2,34 +2,21 @@
 #ifndef _WIN_L_PROGRESSBAR_
 #define _WIN_L_PROGRESSBAR_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_gadget/gadget.progressbar.h"
 
 /**
  * Proxy Classes
  */
-class _lua_progressbar : public _lua_gadget , public _lua_interface_input<_progressbar> {
-	
+class _lua_progressbar : public _lua_gadget
+{
 	public:
 		
 		_lua_progressbar( lua_State* L );
 		
 		_lua_progressbar( _progressbar* p ) : _lua_gadget( p , false )
 		{ }
-		
-		//! setBarType
-		int setBarType( lua_State* L );
-		
-		//! getBarType
-		int getBarType( lua_State* L );
-		
-		//! setColorScheme
-		int setColorScheme( lua_State* L );
-		
-		//! getColorScheme
-		int getColorScheme( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

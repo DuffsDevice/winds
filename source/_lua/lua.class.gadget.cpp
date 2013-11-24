@@ -7,7 +7,7 @@
 #include "_lua/lua.class.border.h"
 
 #include "_type/type.system.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -76,7 +76,7 @@ int _lua_gadget::getBitmap( lua_State* L ){ Lunar<_lua_bitmap>::push( L , new _l
 int _lua_gadget::setBitmap( lua_State* L ){
 	_lua_bitmap* bmp = Lunar<_lua_bitmap>::check( L , 1 );
 	if( bmp )
-		this->gadget->setBitmap( *(bmp->bm) );
+		this->gadget->setBitmap( *bmp );
 	return 0;
 }
 
@@ -116,10 +116,10 @@ int _lua_gadget::getLowestChild( lua_State* L ){ _gadget* g = this->gadget->getL
 int _lua_gadget::getToppestEnhancedChild( lua_State* L ){ _gadget* g = this->gadget->getToppestEnhancedChild(); if( !g ) return 0; return push( L , g ); }
 
 //! getPrecedentChild
-int _lua_gadget::getPrecedentChild( lua_State* L ){ _gadget* g = this->gadget->getPrecedentChild( lightcheck( L , 1 , false ) ); if( !g ) return 0; return push( L , g ); }
+int _lua_gadget::getPrecedentChild( lua_State* L ){ _gadget* g = this->gadget->getPrecedentChild( lightcheck<bool>( L , 1 , false ) ); if( !g ) return 0; return push( L , g ); }
 
 //! getSubcedentChild
-int _lua_gadget::getSubcedentChild( lua_State* L ){ _gadget* g = this->gadget->getSubcedentChild( lightcheck( L , 1 , false ) ); if( !g ) return 0; return push( L , g ); }
+int _lua_gadget::getSubcedentChild( lua_State* L ){ _gadget* g = this->gadget->getSubcedentChild( lightcheck<bool>( L , 1 , false ) ); if( !g ) return 0; return push( L , g ); }
 
 //! setUserEventHandler
 int _lua_gadget::setUserEventHandler( lua_State* L ){
@@ -193,7 +193,7 @@ int _lua_gadget::triggerEventDefault(lua_State* L)
 int _lua_gadget::canReactTo( lua_State* L ){ lua_pushboolean( L , this->gadget->canReactTo( string2eventType[ check<string>( L , 1 ) ] ) ); return 1; }
 
 //! handleEvent
-int _lua_gadget::handleEvent( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , callbackReturn2string[ this->gadget->handleEvent( *e , lightcheck( L , 2 , false ) ) ].c_str() ); return 1; }
+int _lua_gadget::handleEvent( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , callbackReturn2string[ this->gadget->handleEvent( *e , lightcheck<bool>( L , 2 , false ) ) ].c_str() ); return 1; }
 
 //! handleEventUser
 int _lua_gadget::handleEventUser( lua_State* L ){ _lua_event* e = Lunar<_lua_event>::check( L , 1 ); if( !e ) return 0; lua_pushstring( L , callbackReturn2string[ this->gadget->handleEventUser( *e ) ].c_str() ); return 1; }
@@ -280,13 +280,13 @@ int _lua_gadget::requestAutoSize( lua_State* L ){
 int _lua_gadget::getParent( lua_State* L ){ if( !this->gadget ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget->getParent() , false ) ); return 1; }
 
 //! setParent
-int _lua_gadget::setParent( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget>( L , 1 , nullptr ) ) != nullptr ) this->gadget->setParent( g ); return 0; }
+int _lua_gadget::setParent( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget*>( L , 1 , nullptr ) ) != nullptr ) this->gadget->setParent( g ); return 0; }
 
 //! enhanceToParent
-int _lua_gadget::enhanceToParent( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget>( L , 1 , nullptr ) ) != nullptr ) this->gadget->enhanceToParent( g ); return 0; }
+int _lua_gadget::enhanceToParent( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget*>( L , 1 , nullptr ) ) != nullptr ) this->gadget->enhanceToParent( g ); return 0; }
 
 //! removeChild
-int _lua_gadget::removeChild( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget>( L , 1 , nullptr ) ) != nullptr ) this->gadget->removeChild( g ); return 0; }
+int _lua_gadget::removeChild( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget*>( L , 1 , nullptr ) ) != nullptr ) this->gadget->removeChild( g ); return 0; }
 
 //! removeChildren
 int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren(); return 0; }
@@ -295,13 +295,13 @@ int _lua_gadget::removeChildren( lua_State* L ){ this->gadget->removeChildren();
 int _lua_gadget::removeEnhancedChildren( lua_State* L ){ this->gadget->removeEnhancedChildren(); return 0; }
 
 //! addChild
-int _lua_gadget::addChild( lua_State* L ){ _gadget* g = lightcheck<_gadget>( L , 1 , nullptr ); if( g ) this->gadget->addChild( g ); return 0; }
+int _lua_gadget::addChild( lua_State* L ){ _gadget* g = lightcheck<_gadget*>( L , 1 , nullptr ); if( g ) this->gadget->addChild( g ); return 0; }
 
 //! addEnhancedChild
-int _lua_gadget::addEnhancedChild( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget>( L , 1 , nullptr ) ) != nullptr ) this->gadget->addEnhancedChild( g ); return 0; }
+int _lua_gadget::addEnhancedChild( lua_State* L ){ _gadget* g = nullptr; if( ( g = lightcheck<_gadget*>( L , 1 , nullptr ) ) != nullptr ) this->gadget->addEnhancedChild( g ); return 0; }
 
 //! focusChild
-int _lua_gadget::focusChild( lua_State* L ){ _gadget* g = lightcheck<_gadget>( L , 1 , nullptr ); if( g ) this->gadget->focusChild( g ); return 0; }
+int _lua_gadget::focusChild( lua_State* L ){ _gadget* g = lightcheck<_gadget*>( L , 1 , nullptr ); if( g ) this->gadget->focusChild( g ); return 0; }
 
 //! getDimensions
 int _lua_gadget::getDimensions( lua_State* L ){ Lunar<_lua_rect>::push( L , new _lua_rect( this->gadget->getDimensions() ) ); return 1; }

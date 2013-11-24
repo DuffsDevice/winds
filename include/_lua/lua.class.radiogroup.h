@@ -2,9 +2,8 @@
 #ifndef _WIN_L_RADIOGROUP_
 #define _WIN_L_RADIOGROUP_
 
-#include "_lua/lunar.h"
+#include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.inputInterface.h"
 #include "_type/type.singlevaluegroup.h"
 #include "_gadget/gadget.radio.h"
 

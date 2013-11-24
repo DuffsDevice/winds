@@ -3,9 +3,9 @@
 #include "_resource/BMP_ScrollButtons.h"
 #include "_type/type.system.h"
 
-_select::_select( _length width , _u8 height , _coord x , _coord y , const _contextMenuList& lst , _s32 initialValue , _style&& style ) :
-	_gadget( _gadgetType::selectbox , width , _system::getUser()->sOH , x , y , (_style&&)style )
-	, contextMenu( new _contextMenu( move(lst) , this , width , true , initialValue ) )
+_select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst , _int initialValue , _style&& style ) :
+	_gadget( _gadgetType::selectbox , x , y , width , 10 , (_style&&)style ) //!@TODO outsource '10'
+	, contextMenu( new _contextMenu( width , move(lst) , this , true , initialValue ) )
 	, arrow( new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonBottom ) )
 {
 	// Refresh on contextMenu change
@@ -105,7 +105,7 @@ _callbackReturn _select::refreshHandler( _event event )
 	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
 	
 	const _font* font = _system::getFont();
-	_u8 fontSize = _system::_rtA_->getDefaultFontSize();
+	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	bP.drawString(
 		2

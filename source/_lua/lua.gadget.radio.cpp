@@ -1,6 +1,7 @@
 #include "_lua/lua.gadget.radio.h"
 #include "_lua/lua.class.radiogroup.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -8,7 +9,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_radio::_lua_radio( lua_State* L ) : 
-	_lua_gadget( new _radio( check<int>( L , 1 ) , check<int>( L , 2 ) , Lunar<_lua_radiogroup>::check( L , 3 ) , lightcheck<int>( L , 4 , -1 ) , lightcheck<_style>( L , 5 , _style() ) ) )
+	_lua_gadget( new _radio( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , Lunar<_lua_radiogroup>::check( L , 3 ) , lightcheck<int>( L , 4 , -1 ) , lightcheck<_style>( L , 5 ) ) )
 { }
 
 //! Lua-button
@@ -19,6 +20,6 @@ Lunar<_lua_radio>::FunctionType _lua_radio::methods[] = {
 
 Lunar<_lua_radio>::PropertyType _lua_radio::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "checked" , &_lua_radio::getIntValue , &_lua_radio::setIntValue },
+	{ "checked" , wrap( _lua_radio , &_radio::getIntValue ) , wrap( _lua_radio , &_radio::setIntValue ) },
 	LUA_CLASS_ATTR_END
 };

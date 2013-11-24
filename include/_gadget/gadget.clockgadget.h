@@ -133,11 +133,11 @@ class _clockgadget : public _gadget {
 		void decrease();
 		
 		//! Complex Constructor
-		_clockgadget( _length width , _length height , _coord x , _coord y , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease = true , _style&& style = _style() );
+		_clockgadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease = true , _style&& style = _style() );
 		
 		//! Constructor
-		_clockgadget( _length width , _length height , _coord x , _coord y , _time initialTime , bool autoIncrease = true , _style&& style = _style() )
-			: _clockgadget( width , height , x , y
+		_clockgadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _time initialTime , bool autoIncrease = true , _style&& style = _style() )
+			: _clockgadget( x , y , width , height
 				, initialTime.get( _timeAttr::hour )
 				, initialTime.get( _timeAttr::minute )
 				, initialTime.get( _timeAttr::second )

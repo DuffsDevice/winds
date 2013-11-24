@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.progressbar.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -9,26 +10,14 @@ using namespace _luafunc;
 _lua_progressbar::_lua_progressbar( lua_State* L ) :
 	_lua_gadget( 
 		new _progressbar(
-			check<int>( L , 1 )
-			, check<int>( L , 2 )
-			, check<int>( L , 3 )
+			optcheck<int>( L , 1 )
+			, optcheck<int>( L , 2 )
+			, optcheck<int>( L , 3 )
 			, lightcheck<bool>( L , 4 , true )
-			, lightcheck<_style>( L , 5 , _style() )
+			, lightcheck<_style>( L , 5 )
 		)
 	)
 {}
-
-//! setColorScheme
-int _lua_progressbar::setColorScheme( lua_State* L ){ getDerived()->setColorScheme( check<bool>( L , 1 ) ); return 0; };
-
-//! getColorScheme
-int _lua_progressbar::getColorScheme( lua_State* L ){ lua_pushboolean( L , getDerived()->getColorScheme() ); return 1; }
-
-//! setBarType
-int _lua_progressbar::setBarType( lua_State* L ){ getDerived()->setBarType( check<bool>( L , 1 ) ); return 0; };
-
-//! getBarType
-int _lua_progressbar::getBarType( lua_State* L ){ lua_pushboolean( L , getDerived()->getColorScheme() ); return 1; }
 
 //! Lua-button
 const char _lua_progressbar::className[] = "ProgressBar";
@@ -38,8 +27,8 @@ Lunar<_lua_progressbar>::FunctionType _lua_progressbar::methods[] = {
 
 Lunar<_lua_progressbar>::PropertyType _lua_progressbar::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "value" , &_lua_progressbar::getIntValue , &_lua_progressbar::setIntValue },
-	{ "colorScheme" , &_lua_progressbar::getColorScheme , &_lua_progressbar::setColorScheme },
-	{ "barType" , &_lua_progressbar::getBarType , &_lua_progressbar::setBarType },
+	{ "value" 		, wrap( _lua_progressbar , &_progressbar::getIntValue )		, wrap( _lua_progressbar , &_progressbar::setIntValue ) },
+	{ "colorScheme" , wrap( _lua_progressbar , &_progressbar::getColorScheme )	, wrap( _lua_progressbar , &_progressbar::setColorScheme ) },
+	{ "barType" 	, wrap( _lua_progressbar , &_progressbar::getBarType )		, wrap( _lua_progressbar , &_progressbar::setBarType ) },
 	LUA_CLASS_ATTR_END
 };

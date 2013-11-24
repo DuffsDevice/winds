@@ -1,6 +1,6 @@
 #include "_resource/FONT_SystemSymbols8.h"
 
-static const _u16 FONT_SystemSymbols8_glyphdata[402] = {
+static const _u16 FONT_SystemSymbols8_glyphdata[415] = {
 /* '!' */	0x0028,0x28EF,0x00FF,0x0000,0x0000,
 /* '"' */	0x0000,0x00FF,0x00EF,0x2828,0x2800,
 /* '#' */	0x0080,0x003F,0x202F,0x2828,0x2800,
@@ -96,9 +96,12 @@ static const _u16 FONT_SystemSymbols8_glyphdata[402] = {
 /* '}' */	0x0008,0x4F90,0x8000,
 /* '~' */	0x006F,0xF600,0x0000,
 /* 0xA1 */	0x007F,0xC000,
+/* 0xA2 */	0x0001,0x0204,0x0912,0x2449,0x9200,
+/* 0xA3 */	0x0004,0x0070,0x07C0,0x7F00,
+/* 0xA4 */	0x0000,0x0810,0xA14A,0x95AA,
 };
 
-static const unsigned short int FONT_SystemSymbols8_offset[129] = {
+static const unsigned short int FONT_SystemSymbols8_offset[132] = {
     0,    5,   10,   15,   20,   25,   30,   33,   36,   40,   44,   48,   52,   56,   60,   62,
    67,   72,   77,   82,   87,   92,   97,  102,  107,  112,  117,  120,  125,  128,  131,  134,
   139,  141,  143,  146,  149,  154,  160,  165,  170,  175,  180,  184,  188,  192,  195,  199,
@@ -107,10 +110,10 @@ static const unsigned short int FONT_SystemSymbols8_offset[129] = {
   340,  343,  348,  353,  358,  363,  368,  373,  378,  383,  388,  391,  394,  397,  400,  400,
   400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,
   400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,
-  400
+  400,  402,  407,  411
 };
 
-static const unsigned char FONT_SystemSymbols8_width[129] = {
+static const unsigned char FONT_SystemSymbols8_width[132] = {
  8, 8, 8, 8, 8, 8, 5, 5, 7, 7, 7, 7, 7, 6, 3, 8,
  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 8, 5, 4, 4, 8,
  3, 3, 5, 5, 8,10, 8, 8, 8, 8, 7, 6, 6, 5, 7, 7,
@@ -119,13 +122,13 @@ static const unsigned char FONT_SystemSymbols8_width[129] = {
  5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 5, 5, 4, 0, 0,
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3
+ 3, 8, 7, 7
 };
 
 FONT_SystemSymbols8::FONT_SystemSymbols8( unsigned char fixedWidth ) : _memoryfont (
 	"SystemSymbols",
 	33,
-	161,
+	164,
 	9, // Height
 	7, // Main-Height
 	FONT_SystemSymbols8_glyphdata,

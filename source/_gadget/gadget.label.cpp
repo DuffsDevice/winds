@@ -115,12 +115,12 @@ _callbackReturn _label::refreshHandler( _event event )
 }
 
 
-_label::_label( _optValue<_length> width , _optValue<_length> height , _coord x , _coord y , string value , _style&& style ) :
-	_gadget( _gadgetType::label , move(width) , move(height) , x , y , (_style&&)style )
+_label::_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+	_gadget( _gadgetType::label , x , y , width , height , (_style&&)style )
 	, color( COLOR_BLACK )
 	, bgColor( COLOR_TRANSPARENT )
 	, font( _system::getFont() )
-	, fontSize( _system::_rtA_->getDefaultFontSize() )
+	, fontSize( _system::getRTA().getDefaultFontSize() )
 	, align( _align::left )
 	, vAlign( _valign::middle )
 	, strValue( value )

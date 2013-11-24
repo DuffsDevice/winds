@@ -1,5 +1,6 @@
 #include "_lua/lua.gadget.label.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -18,10 +19,10 @@ Lunar<_lua_label>::FunctionType _lua_label::methods[] = {
 
 Lunar<_lua_label>::PropertyType _lua_label::properties[] = {
 	GADGET_BASE_ATTR,
-	{ "text" , &_lua_label::getStrValue , &_lua_label::setStrValue },
-	{ "color" , &_lua_label::getColor , &_lua_label::setColor },
-	{ "bgColor" , &_lua_label::getBgColor , &_lua_label::setBgColor },
-	{ "font" , &_lua_label::getFont , &_lua_label::setFont },
-	{ "fontSize" , &_lua_label::getFontSize , &_lua_label::setFontSize },
+	{ "text" 		, wrap( _lua_label , &_label::getStrValue )	, wrap( _lua_label , &_label::setStrValue ) },
+	{ "color" 		, wrap( _lua_label , &_label::getColor )	, wrap( _lua_label , &_label::setColor ) },
+	{ "bgColor" 	, wrap( _lua_label , &_label::getBgColor )	, wrap( _lua_label , &_label::setBgColor ) },
+	{ "font" 		, wrap( _lua_label , &_label::getFont )		, wrap( _lua_label , &_label::setFont ) },
+	{ "fontSize"	, wrap( _lua_label , &_label::getFontSize )	, wrap( _lua_label , &_label::setFontSize ) },
 	LUA_CLASS_ATTR_END
 };

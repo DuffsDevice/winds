@@ -1,12 +1,13 @@
 #include "_type/type.progLua.h"
 #include "_type/type.system.h"
 #include "_type/type.callback.h"
+#include "_type/type.callback.derives.h"
 #include "_type/type.textphrases.h"
 #include "_type/type.stringtokenizer.h"
 #include "_gadget/gadget.keyboard.h"
 
-#include "_lua/lunar.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.lunar.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 /**
  * Proxy Classes
@@ -23,6 +24,8 @@ using namespace _luafunc;
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.event.h"
 #include "_lua/lua.class.radiogroup.h"
+#include "_lua/lua.class.menu.h"
+#include "_lua/lua.class.menu.rule.h"
 #include "_lua/lua.class.imagefile.h"
 #include "_lua/lua.class.dialogs.h"
 #include "_lua/lua.class.color.h"
@@ -45,6 +48,8 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.window.h"
+#include "_lua/lua.gadget.window.bar.h"
+#include "_lua/lua.gadget.window.menu.h"
 #include "_lua/lua.gadget.resizehandle.h"
 
 _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
@@ -53,6 +58,8 @@ _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "System" , "Event" , &Lunar<_lua_event>::Register ),
 	make_tuple( "System" , "ImageFile" , &Lunar<_lua_imagefile>::Register ),
 	make_tuple( "System" , "Timer" , &Lunar<_lua_timer>::Register ),
+	make_tuple( "System" , "Menu" , &Lunar<_lua_menu>::Register ),
+	make_tuple( "System" , "MenuRule" , &Lunar<_lua_menurule>::Register ),
 	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::Register ),
 	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::Register ),
 	make_tuple( "Drawing" , "BitmapPort" , &Lunar<_lua_bitmapPort>::Register ),
@@ -69,6 +76,8 @@ _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "RadioGroup" , &Lunar<_lua_radiogroup>::Register ),
 	make_tuple( "UI" , "Gadget" , &Lunar<_lua_gadget>::Register ),
 	make_tuple( "UI" , "Window" , &Lunar<_lua_window>::Register ),
+	make_tuple( "UI" , "WindowBar" , &Lunar<_lua_windowbar>::Register ),
+	make_tuple( "UI" , "WindowMenu" , &Lunar<_lua_windowmenu>::Register ),
 	make_tuple( "UI" , "Calendar" , &Lunar<_lua_calendar>::Register ),
 	make_tuple( "UI" , "Counter" , &Lunar<_lua_counter>::Register ),
 	make_tuple( "UI" , "ColorPicker" , &Lunar<_lua_colorpicker>::Register ),
@@ -88,22 +97,6 @@ _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "TextArea" , &Lunar<_lua_textarea>::Register )
 };
 
-bool luaL_is( lua_State* L , int narg , string type )
-{
-	void *p = lua_touserdata(L, narg);
-	if (p != NULL) {  /* value is a userdata? */
-		if (lua_getmetatable(L, narg)) {  /* does it have a metatable? */
-			luaL_getmetatable(L, type.c_str());  /* get correct metatable */
-			if (lua_rawequal(L, -1, -2)) {  /* does it have the correct mt? */
-				lua_pop(L, 2);  /* remove both metatables */
-				return true;
-			}
-			lua_pop(L, 2);  /* remove both metatables */
-		}
-	}
-	return false;
-}
-
 int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _system::_keyboard_ != nullptr ); return 1; }
 int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; push( L , _system::_keyboard_->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
@@ -113,7 +106,7 @@ int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( check<string>( L ,
 int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_event>::check( L , 1 ); if( event ) _system::generateEvent( _event( *event ) , _eventCallType::normal ); return 0; }
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ push( L , _system::getLocalizedString( check<string>( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_addChild( lua_State* L ){ _gadget* g = lightcheck<_gadget>( L , 1 , nullptr ); if( !g ) return 0; _system::_gadgetHost_->addChild( g ); return 0; }
+int _progLua::lua_addChild( lua_State* L ){ _system::_gadgetHost_->addChild( check<_gadget*>( L , 1 ) ); return 0; }
 int _progLua::lua_readRegistryIndex( lua_State* L ){ push( L , _system::_registry_->readIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ).c_str() ); return 1; }
 int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( check<string>( L , 1 ) , check<string>( L , 2 ) , check<string>( L , 3 ) ); return 0; }
 int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ); return 0; }
@@ -128,11 +121,11 @@ int _progLua::lua_getFont( lua_State* L ){
 int _progLua::lua_sizeChangePhrase( lua_State* L ){ push( L , stringIntegrator::sizeChangePhrase( check<int>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_colorChangePhrase( lua_State* L ){ push( L , stringIntegrator::colorChangePhrase( check<_pixel>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_fontChangePhrase( lua_State* L ){
-	_lua_font* ft = Lunar<_lua_font>::check( L , 1 );
-	if( !ft || !ft->font )
+	const _font* ft = check<const _font*>( L , 1 );
+	if( !ft )
 		push( L , "" );
 	else
-		push( L , stringIntegrator::fontChangePhrase( ft->font ).c_str() );
+		push( L , stringIntegrator::fontChangePhrase( ft ) );
 	return 1;
 }
 int _progLua::lua_RGB( lua_State* L ){ lua_pushnumber( L , RGB( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) ) ); return 1; }

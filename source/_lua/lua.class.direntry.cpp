@@ -1,6 +1,6 @@
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.func.h"
 using namespace _luafunc;
 
 /*##################################
@@ -48,7 +48,7 @@ int _lua_direntry::close( lua_State* L ){
 }
 
 int _lua_direntry::readString( lua_State* L ){
-	lua_pushstring( L , _direntry::readString( lightcheck( L , 1 , -1 ) ).c_str() );
+	lua_pushstring( L , _direntry::readString( lightcheck<int>( L , 1 , -1 ) ).c_str() );
 	return 1;
 }
 
@@ -98,7 +98,7 @@ int _lua_direntry::rename( lua_State* L ){
 }
 
 int _lua_direntry::unlink( lua_State* L ){
-	lua_pushboolean( L , _direntry::unlink( lightcheck( L , 1 , false ) ) );
+	lua_pushboolean( L , _direntry::unlink( lightcheck<bool>( L , 1 , false ) ) );
 	return 1;
 }
 

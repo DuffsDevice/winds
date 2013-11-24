@@ -2,8 +2,8 @@
 #ifndef _WIN_L__DIALOGINTERFACE_
 #define _WIN_L__DIALOGINTERFACE_
 
-#include "_lua/lunar.h"
-#include "_lua/lua.funcs.h"
+#include "_lua/lua.lunar.h"
+#include "_lua/lua.func.h"
 #include "_type/type.callback.h"
 #include "_type/type.dialog.h"
 using namespace _luafunc;

@@ -11,9 +11,9 @@ void _enterTextDialog::cleanupInternal(){
 }
 
 _enterTextDialog::_enterTextDialog( string message , string windowLbl , string initialValue , _optValue<string> okLbl , _optValue<string> cancelLbl ) : 
-	okButton( new _button( ignore , ignore , 0 , 0 , okLbl.isValid() ? (string&&)okLbl : _system::getLocalizedString("lbl_ok") ) )
-	, cancelButton( new _button( ignore , ignore , 0 , 0 , cancelLbl.isValid() ? (string&&)cancelLbl : _system::getLocalizedString("lbl_cancel") ) )
-	, msg( new _label( ignore , ignore , 2 , 2 , (string&&)message ) )
+	okButton( new _button( 0 , 0 , ignore , ignore , okLbl.isValid() ? (string&&)okLbl : _system::getLocalizedString("lbl_ok") ) )
+	, cancelButton( new _button( 0 , 0 , ignore , ignore , cancelLbl.isValid() ? (string&&)cancelLbl : _system::getLocalizedString("lbl_cancel") ) )
+	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
 	, initialValue( move(initialValue) )
 {	
 	// Buttons
@@ -23,12 +23,12 @@ _enterTextDialog::_enterTextDialog( string message , string windowLbl , string i
 	_length winWidth = max( this->msg->getWidth() + 4 , this->okButton->getWidth() + this->cancelButton->getWidth() + 5 );
 	
 	// Textbox
-	this->textBox = new _textbox( 2 , this->msg->getHeight() + 4 , winWidth - 6 , this->initialValue );
+	this->textBox = new _textbox( winWidth - 6 , ignore , 2 , this->msg->getHeight() + 4 , this->initialValue );
 	
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 10 + this->textBox->getHeight() , 30 ) + 11; // + 11 for the window
 	
 	// Window
-	this->window = new _window( winWidth , winHeight , ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1  , (string&&)windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move Buttons
 	this->cancelButton->moveTo( winWidth - this->okButton->getWidth() - this->cancelButton->getWidth() - 4 , winHeight - this->cancelButton->getHeight() - 12 );

@@ -30,10 +30,7 @@ class _passcodebox : public _textbox
 		string getStrValue(){ return this->realText; }
 		
 		//! Ctor
-		_passcodebox( _coord x , _coord y , _length width , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
-		
-		//! Ctor
-		_passcodebox( _coord x , _coord y , _length width , _length height , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
+		_passcodebox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
 };
 
 #endif
