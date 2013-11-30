@@ -1,6 +1,7 @@
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -17,41 +18,6 @@ _lua_direntry::_lua_direntry( lua_State* L ) :
 	_direntry( string( check<string>( L , 1 ) ) )
 { }
 
-int _lua_direntry::open( lua_State* L ){
-	lua_pushboolean( L , _direntry::open( check<string>( L , 1 ) ) );
-	return 1;
-}
-
-int _lua_direntry::openwrite( lua_State* L ){
-	lua_pushboolean( L , _direntry::openwrite() );
-	return 1;
-}
-
-int _lua_direntry::openread( lua_State* L ){
-	lua_pushboolean( L , _direntry::openread() );
-	return 1;
-}
-
-int _lua_direntry::create( lua_State* L ){
-	lua_pushboolean( L , _direntry::create() );
-	return 1;
-}
-
-int _lua_direntry::exists( lua_State* L ){
-	lua_pushboolean( L , _direntry::isExisting() );
-	return 1;
-}
-
-int _lua_direntry::close( lua_State* L ){
-	lua_pushboolean( L , _direntry::close() );
-	return 1;
-}
-
-int _lua_direntry::readString( lua_State* L ){
-	lua_pushstring( L , _direntry::readString( lightcheck<int>( L , 1 , -1 ) ).c_str() );
-	return 1;
-}
-
 int _lua_direntry::readChild( lua_State* L )
 {
 	string child;
@@ -61,104 +27,41 @@ int _lua_direntry::readChild( lua_State* L )
 	return 1;
 }
 
-int _lua_direntry::rewindChildren( lua_State* L )
-{
-	_direntry::rewindChildren();
-	return 1;
-}
-
-int _lua_direntry::writeString( lua_State* L ){
-	lua_pushboolean( L , _direntry::writeString( check<string>( L , 1 ) ) );
-	return 1;
-}
-
-int _lua_direntry::setAttrs( lua_State* L ){
-	lua_pushboolean( L , _direntry::setAttrs( check<int>( L , 1 ) ) );
-	return 0;
-}
-
-int _lua_direntry::getAttrs( lua_State* L ){
-	lua_pushnumber( L , _direntry::getAttrs() );
-	return 1;
-}
-
-int _lua_direntry::getFileName( lua_State* L ){
-	lua_pushstring( L , _direntry::getFileName().c_str() );
-	return 1;
-}
-
-int _lua_direntry::getName( lua_State* L ){
-	lua_pushstring( L , _direntry::getName().c_str() );
-	return 1;
-}
-
-int _lua_direntry::rename( lua_State* L ){
-	lua_pushboolean( L , _direntry::rename( check<string>( L , 1 ) ) );
-	return 1;
-}
-
-int _lua_direntry::unlink( lua_State* L ){
-	lua_pushboolean( L , _direntry::unlink( lightcheck<bool>( L , 1 , false ) ) );
-	return 1;
-}
-
-int _lua_direntry::isDirectory( lua_State* L ){
-	lua_pushboolean( L , _direntry::isDirectory() );
-	return 1;
-}
-
-int _lua_direntry::getExtension( lua_State* L ){
-	lua_pushstring( L , _direntry::getExtension().c_str() );
-	return 1;
-}
-
-int _lua_direntry::getMimeType( lua_State* L ){
-	lua_pushstring( L , string(_direntry::getMimeType()).c_str() );
-	return 1;
-}
-
-int _lua_direntry::getSize( lua_State* L ){
-	lua_pushnumber( L , _direntry::getSize() );
-	return 1;
+int _lua_direntry::openwrite( lua_State* L ){
+	return push( L , _direntry::openwrite( lightcheck<bool>( L , 1 , false ) ) );
 }
 
 int _lua_direntry::execute( lua_State* L ){
-	lua_pushboolean( L , _direntry::execute() );
-	return 1;
-}
-
-int _lua_direntry::getFileImage( lua_State* L ){
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( const_cast<_bitmap&&>( _direntry::getFileImage() ) ) );
-	return 1;
+	return push( L , _direntry::execute( lightcheck<_cmdArgs>( L , 1 ) ) );
 }
 
 //! Lua-_gadget
 const char _lua_direntry::className[] = "Direntry";
 Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
-	LUA_CLASS_FUNC(_lua_direntry,open),
-	LUA_CLASS_FUNC(_lua_direntry,openwrite),
-	LUA_CLASS_FUNC(_lua_direntry,openread),
-	LUA_CLASS_FUNC(_lua_direntry,create),
-	LUA_CLASS_FUNC(_lua_direntry,exists),
-	LUA_CLASS_FUNC(_lua_direntry,close),
-	LUA_CLASS_FUNC(_lua_direntry,readChild),
-	LUA_CLASS_FUNC(_lua_direntry,rewindChildren),
-	LUA_CLASS_FUNC(_lua_direntry,readString),
-	LUA_CLASS_FUNC(_lua_direntry,writeString),
-	LUA_CLASS_FUNC(_lua_direntry,getFileName),
-	LUA_CLASS_FUNC(_lua_direntry,getName),
-	LUA_CLASS_FUNC(_lua_direntry,getExtension),
-	LUA_CLASS_FUNC(_lua_direntry,getMimeType),
-	LUA_CLASS_FUNC(_lua_direntry,execute),
-	LUA_CLASS_FUNC(_lua_direntry,rename),
-	LUA_CLASS_FUNC(_lua_direntry,unlink),
-	LUA_CLASS_FUNC(_lua_direntry,getFileImage),
-	LUA_CLASS_FUNC(_lua_direntry,isDirectory),
+	{ "open"			, wrap( _lua_direntry , &_direntry::open ) },
+	{ "openwrite"		, &_lua_direntry::openwrite },
+	{ "openread"		, wrap( _lua_direntry , &_direntry::openread ) },
+	{ "create"			, wrap( _lua_direntry , &_direntry::create ) },
+	{ "exists"			, wrap( _lua_direntry , &_direntry::isExisting ) },
+	{ "close"			, wrap( _lua_direntry , &_direntry::close ) },
+	{ "readChild"		, &_lua_direntry::readChild },
+	{ "rewindChildren"	, wrap( _lua_direntry , &_direntry::rewindChildren ) },
+	{ "readString"		, wrap( _lua_direntry , &_direntry::readString ) },
+	{ "writeString"		, wrap( _lua_direntry , &_direntry::writeString ) },
+	{ "execute"			, &_lua_direntry::execute },
+	{ "rename"			, wrap( _lua_direntry , &_direntry::rename ) },
+	{ "unlink"			, wrap( _lua_direntry , &_direntry::unlink ) },
+	{ "isDirectory"		, wrap( _lua_direntry , &_direntry::isDirectory ) },
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
-	{ "attributes" , &_lua_direntry::getAttrs , &_lua_direntry::setAttrs },
-	{ "size" , &_lua_direntry::getSize , nullptr },
+	{ "filename"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
+	{ "name"		, wrap( _lua_direntry , &_direntry::getName ) , nullptr },
+	{ "extension"	, wrap( _lua_direntry , &_direntry::getExtension ) , nullptr },
+	{ "mimeType"	, wrap( _lua_direntry , &_direntry::getMimeType ) , nullptr },
+	{ "image"		, wrap( _lua_direntry , &_direntry::getFileImage ) , nullptr },
+//	{ "attributes"	, wrap( _lua_direntry , &_direntry::getAttrs ) , wrap( _lua_direntry , &_direntry::setAttrs ) },
+	{ "size"		, wrap( _lua_direntry , &_direntry::getSize ) , nullptr },
 	LUA_CLASS_ATTR_END
 };

@@ -39,7 +39,8 @@ union _direntryAttributes
 	
 	//! Ctor
 	_direntryAttributes( _u8 val = 0 ) :
-		sum( val ){}
+		sum( val )
+	{}
 	
 	//! Convert to _u8
 	operator _u8(){
@@ -122,7 +123,7 @@ class _direntry{
 		
 		
 		//! Open a file. The Mode for opening is specified with mode
-		virtual bool open( string mode = "" );
+		virtual bool open( string mode );
 		
 		
 		//! open the file for reading
@@ -171,7 +172,7 @@ class _direntry{
 		
 		
 		//! Read the contents of the file into std::string
-		string readString( _u32 size = 0 );
+		string readString( _optValue<_u32> size = ignore );
 		
 		
 		//! Get Filename
@@ -199,8 +200,7 @@ class _direntry{
 		
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
-		virtual bool execute( _cmdArgs&& args = _cmdArgs() );
-		bool execute( const _cmdArgs& args ){ return this->execute( _cmdArgs( args ) ); }
+		virtual bool execute( _cmdArgs args = _cmdArgs() );
 		
 		
 		//! Get File-Image

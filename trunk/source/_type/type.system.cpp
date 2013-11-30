@@ -151,7 +151,7 @@ void _system::leaveCriticalSection()
 		irqEnable( IRQ_VBLANK ); // Leave critical Section
 }
 
-void _system::executeProgram( _program* prog , _cmdArgs&& args )
+void _system::executeProgram( _program* prog , _cmdArgs args )
 {
 	prog->main( _gadgetHost_ , move(args) ); // Execute main
 	_programs_.push_back(
@@ -689,7 +689,7 @@ bool _system::isRunningOnEmulator()
 	return result != 0xBAAE1880 /* DS Mode */ && result != 0xBAAE187F;
 }
 
-bool _system::executeCommand( string&& cmd )
+bool _system::executeCommand( string cmd )
 {
 	string destination;
 	

@@ -33,15 +33,12 @@ class _bitmapPort
 		 * @param bm the base _bitmap the work is done on
 		 * @param clippings clippingRects to work in
 		 */
-		_bitmapPort( _bitmap& bm , _area&& clippings ) :
+		_bitmapPort( _bitmap& bm , _area clippings ) :
 			base( bm )
 			, clippingRects( (_area&&)clippings )
 		{
 			this->clippingRects.clipToIntersect( _rect( 0 , 0 , this->getWidth() , this->getHeight() ) );
 		}
-		_bitmapPort( _bitmap& bm , const _area& clippings ) :
-			_bitmapPort( bm , _area(clippings) )
-		{}
 		
 		/**
 		 * Add a Clipping Rect to the list

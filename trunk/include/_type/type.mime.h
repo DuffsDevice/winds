@@ -33,9 +33,9 @@ typedef enum{
 	application_x_bat
 }_mime;
 
-extern _map<string,_mime> string2mimeType;
-extern _map<string,_mime> extension2mimeType;
-extern _map<_mime,string> mimeType2string;
+extern _fromStr<_mime>	string2mimeType;
+extern _fromStr<_mime>	extension2mimeType;
+extern _toStr<_mime>	mimeType2string;
 	
 
 class _mimeType{
@@ -58,7 +58,7 @@ class _mimeType{
 			return extension2mimeType[ext];
 		}
 		
-		operator string(){
+		operator _literal(){
 			return mimeType2string[ this->type ];
 		}
 		

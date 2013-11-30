@@ -69,6 +69,9 @@ _gadget::~_gadget()
 	// Remove Children
 	this->removeChildren();
 	this->removeEnhancedChildren();
+	
+	if( _system::_lastClickedGadget_ == this )
+		_system::_lastClickedGadget_ = nullptr;
 }
 
 
@@ -84,7 +87,7 @@ void _gadget::redrawParents( _area&& areaToRefresh )
 	// Crop rects to parents area
 	areaToRefresh.clipToIntersect( this->parent->getAbsoluteDimensions() );
 	
-	if( !areaToRefresh.empty() )
+	if( !areaToRefresh.isEmpty() )
 		this->parent->redraw( (_area&&)areaToRefresh ); // Forces std::move
 }
 
@@ -97,7 +100,7 @@ void _gadget::redraw( _area&& areaToRefresh )
 		// Crop rects to parents area
 		areaToRefresh.clipToIntersect( this->parent->getAbsoluteDimensions() );
 		
-		if( !areaToRefresh.empty() )
+		if( !areaToRefresh.isEmpty() )
 			this->parent->redraw( (_area&&)areaToRefresh ); // Forces std::move
 	}
 	else
@@ -1066,15 +1069,12 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			
 			return handled;
 		}
-		
-		return not_handled;
 	}
-	else
-		_system::_lastClickedGadget_ = that;
-	
 	// If no Gadget received the Mousedown, blur the Focussed Child
-	if( event == onMouseDown )
+	else if( event == onMouseDown )
 		that->blurChild();
+	
+	_system::_lastClickedGadget_ = that;
 	
 	return not_handled;
 }

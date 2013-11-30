@@ -63,13 +63,13 @@ class _progLua : public _program
 	public:
 		
 		//! Ctor
-		_progLua( string&& prog );
+		_progLua( string prog );
 		
 		//! Dtor
 		~_progLua();
 		
 		//! Main function that will be called at the start of execution (one shot)
-		void internalMain( _cmdArgs&& args );
+		void internalMain( _cmdArgs args );
 };
 
 #endif

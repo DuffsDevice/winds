@@ -3,6 +3,7 @@
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
 #include "_lua/lua.class.font.h"
+#include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
 
@@ -32,6 +33,10 @@ namespace _luafunc
 		
 		bool is_a( lua_State* L , int index , const _font** dummy ){
 			return _luafunc::is_a( L , index , _lua_font::className );
+		}
+		
+		bool is_a( lua_State* L , int index , _border* dummy ){
+			return _luafunc::is_a( L , index , _lua_border::className );
 		}
 	}
 }

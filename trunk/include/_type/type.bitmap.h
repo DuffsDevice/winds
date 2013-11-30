@@ -584,10 +584,9 @@ class _bitmap
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		 */
-		void setClippingRect( _rect&& rc ){
+		void setClippingRect( _rect rc ){
 			this->setClippingRectUnsafe( (_rect&&)rc.clipToIntersect( _rect( 0 , 0 , this->width , this->height ) ) );
 		}
-		void setClippingRect( const _rect& rc ){ this->setClippingRect( _rect(rc) ); }
 		
 		
 		/**
@@ -596,8 +595,7 @@ class _bitmap
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		 */
-		void setClippingRectUnsafe( _rect&& rc ){ this->activeClippingRect = (_rect&&)rc; }
-		void setClippingRectUnsafe( const _rect& rc ){ this->setClippingRectUnsafe( _rect(rc) ); }
+		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = (_rect&&)rc; }
 		
 		/**
 		 * Get the active ClippingRect

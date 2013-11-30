@@ -125,10 +125,10 @@ unused static inline constexpr _eventType userET2eventType( _eventType et ){
 
 // Predefines
 class _gadget;
-extern _map<_callbackReturn,string> callbackReturn2string;
-extern _map<string,_callbackReturn> string2callbackReturn;
-extern _map<_eventType,string> eventType2string;
-extern _map<string,_eventType> string2eventType;
+extern _toStr<_callbackReturn>		callbackReturn2string;
+extern _fromStr<_callbackReturn>	string2callbackReturn;
+extern _toStr<_eventType>			eventType2string;
+extern _fromStr<_eventType>			string2eventType;
 
 struct _dependencyParam
 {
@@ -272,7 +272,7 @@ class _event
 		_area& getDamagedRects(){ return *this->damagedRects; }//!...................<= Get Rects to be repainted (a modifyable copy of them)
 		const _area& getDamagedRects() const { return *this->damagedRects; }//!......<= Get Rects to be repainted (a modifyable copy of them)
 		bool hasClippingRects() const {//!...........................................<= Check if the (onDraw-) Event crops the area to be painted on
-			return this->damagedRects && !this->damagedRects->empty();
+			return this->damagedRects && !this->damagedRects->isEmpty();
 		}
 		bool getFlagParam() const { return this->depParam.flag; }//!.................<= Get the flag param that is brought along events like onParentVisibility events
 		_gadget* getGadgetParam() const { return this->depParam.gadget; }//!.........<= Get the _gadget param that is brought along events like onChildSet events

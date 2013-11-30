@@ -2,11 +2,8 @@
 	#include "_lua/lua.func.h"
 #endif
 
-#ifndef _WIN_L_FUNC_CHECK_
-#define _WIN_L_FUNC_CHECK_
-
-#include "_lua/lua.func.h"
-#include "_lua/lua.func.isa.h"
+#ifndef _WIN_L_FUNC_CHECK_1_
+#define _WIN_L_FUNC_CHECK_1_
 
 namespace _luafunc
 {
@@ -46,15 +43,24 @@ namespace _luafunc
 		_gadget*									check( lua_State* L , int index , _gadget** dummy );
 		_rect										check( lua_State* L , int index , _rect* dummy );
 		_area										check( lua_State* L , int index , _area* dummy );
+		_event										check( lua_State* L , int index , _event* dummy );
 		const _font*								check( lua_State* L , int index , const _font** dummy );
+		_border										check( lua_State* L , int index , _border* dummy );
 		static unused inline _callbackReturn		check( lua_State* L , int index , _callbackReturn* dummy ){ return string2callbackReturn[ luaL_checkstring( L , index ) ]; }
 		static unused inline _eventCallType			check( lua_State* L , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( L , index ) ]; }
+		static unused inline _eventType				check( lua_State* L , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( L , index ) ]; }
 		static unused inline _dimension				check( lua_State* L , int index , _dimension* dummy ){ return string2dimension[ luaL_checkstring( L , index ) ]; }
 		static unused inline _style					check( lua_State* L , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( L , index ) ); return style; }
 		static unused inline _pixel					check( lua_State* L , int index , _pixel* dummy ){
 			if( lua_isnumber( L , index ) )
 				return lua_tointeger( L , index );
 			return string2color[ luaL_checkstring( L , index ) ];
+		}
+		template<typename T>
+		static unused inline _optValue<T>			check( lua_State* L , int index , _optValue<T>* dummy ){
+			if( is_a( L , index , (T*)nullptr ) )
+				return check( L , index , (T*)nullptr );
+			return ignore;
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~

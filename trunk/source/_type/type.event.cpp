@@ -34,7 +34,7 @@ bool _event::mergeWith( _event& event )
 			this->currentKeyCodes |= event.currentKeyCodes;
 			break;
 		case onDraw:
-			return ( !this->damagedRects || this->damagedRects->empty() ) && ( !event.damagedRects || event.damagedRects->empty() );
+			return ( !this->damagedRects || this->damagedRects->isEmpty() ) && ( !event.damagedRects || event.damagedRects->isEmpty() );
 		case onEdit:
 		case onUpdate:
 			break;
@@ -71,7 +71,7 @@ bool _event::mergeWith( _event& event )
 	return true;
 }
 
-_map<string,_callbackReturn> string2callbackReturn = {
+_fromStr<_callbackReturn> string2callbackReturn = {
 	{ "handled" , handled },
 	{ "prevent_default" , prevent_default },
 	{ "use_default" , use_default },
@@ -79,7 +79,7 @@ _map<string,_callbackReturn> string2callbackReturn = {
 	{ "not_handled" , not_handled },
 };
 
-_map<_callbackReturn,string> callbackReturn2string = {
+_toStr<_callbackReturn> callbackReturn2string = {
 	{ handled , "handled" },
 	{ prevent_default , "prevent_default" },
 	{ use_default , "use_default" },
@@ -87,7 +87,7 @@ _map<_callbackReturn,string> callbackReturn2string = {
 	{ not_handled , "not_handled" },
 };
 
-_map<string,_eventType> string2eventType = {
+_fromStr<_eventType> string2eventType = {
 	{ "_none_" , _none_ },
 	{ "onDraw" , onDraw },
 	{ "onMouseClick" , onMouseClick },
@@ -144,7 +144,7 @@ _map<string,_eventType> string2eventType = {
 	{ "onPostSet" , onPostSet }
 };
 
-_map<_eventType,string> eventType2string = {
+_toStr<_eventType> eventType2string = {
 	{ _none_ , "_none_" },
 	{ onDraw , "onDraw" },
 	{ onMouseRepeat , "onMouseRepeat" },

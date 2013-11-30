@@ -54,7 +54,7 @@ void _scLogin::loginSwitchDesktop()
 	// Log the User in
 	_system::switchUser( new _user( *this->userWrapper.front()->user ) );
 	
-	_systemController::changeState( _systemController::_systemState::desktop );
+	_systemController::changeState( _systemState::desktop );
 }
 
 
@@ -66,7 +66,7 @@ _scLogin::_scLogin() :
 	// see if this is a new Setup
 	if( _system::_registry_->readIndex( "_global_" , "firstTimeUse" ).length() )
 	{
-		_systemController::changeState( _systemController::_systemState::setup );
+		_systemController::changeState( _systemState::setup );
 		return;
 	}
 	
@@ -87,7 +87,7 @@ _scLogin::_scLogin() :
 	//! Copy users and their logos
 	int userHeight = 24;
 	
-	loginAnim.setter( make_callback( this , &_scLogin::loginAnimSetter ) );
+	loginAnim.setSetter( make_callback( this , &_scLogin::loginAnimSetter ) );
 	loginAnim.setEasing( _animation::_sinus::easeInOut );
 	loginAnim.setToValue( 78 );
 	

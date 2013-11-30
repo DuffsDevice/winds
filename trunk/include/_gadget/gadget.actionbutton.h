@@ -11,8 +11,8 @@ enum class _actionButtonType : _u8{
 	switchuser
 };
 
-extern _map<_actionButtonType,string> actionButtonType2string;
-extern _map<string,_actionButtonType> string2actionButtonType;
+extern _toStr<_actionButtonType>	actionButtonType2string;
+extern _fromStr<_actionButtonType>	string2actionButtonType;
 
 class _actionButton : public _button {
 	

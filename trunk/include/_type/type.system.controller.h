@@ -8,19 +8,17 @@
 #include "_scenario/scenario.desktop.h"
 #include "_scenario/scenario.login.h"
 
+enum class _systemState : _u8
+{
+	empty,
+	login,
+	bootup,
+	setup,
+	desktop
+};
+
 class _systemController
 {
-	public:
-		
-		enum class _systemState : _u8
-		{
-			empty,
-			login,
-			bootup,
-			setup,
-			desktop
-		};
-	
 	private:
 		
 		static _systemState state;

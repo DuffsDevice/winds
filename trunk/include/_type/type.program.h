@@ -29,14 +29,13 @@ class _program
 		_programType	type;
 		
 		//! Virtual main function to be overwritten in subclasses
-		virtual void	internalMain( _cmdArgs&& args ) = 0;
+		virtual void	internalMain( _cmdArgs args ) = 0;
 		
 		//! Called every 1/60s
 		virtual	void	internalVbl(){}
 		
 		//! Main function to be called from _system
-		void 			main( _gadget* w , _cmdArgs&& args  );
-		void 			main( _gadget* w , const _cmdArgs& args  ){ this->main( w , _cmdArgs( args ) ); }
+		void 			main( _gadget* w , _cmdArgs args );
 		
 	protected:
 		
@@ -51,8 +50,7 @@ class _program
 		{}
 		
 		//! Execute it! Means pushing it to _system's list of programs
-		void 			execute( _cmdArgs&& args = _cmdArgs() );
-		void 			execute( const _cmdArgs& args ){ this->execute( _cmdArgs( args ) ); }
+		void 			execute( _cmdArgs args = _cmdArgs() );
 		
 		//! Terminate the program
 		void 			terminate();

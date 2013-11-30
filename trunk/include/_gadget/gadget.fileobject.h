@@ -44,7 +44,7 @@ class _fileobject : public _gadget {
 		}
 		
 		//! Execute this file
-		void execute( _cmdArgs&& args = _cmdArgs() , bool openInNewWindow = false );
+		void execute( _cmdArgs args = _cmdArgs() , bool openInNewWindow = false );
 };
 
 #endif

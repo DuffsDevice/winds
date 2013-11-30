@@ -50,14 +50,24 @@ class _animation
 		//! Dtor
 		~_animation(){ this->terminate(); }
 		
-		//! Set a lamda-expression to be the setter
-		void setter( _paramAlloc<_intSetCallback> setterFunc ){
+		//! Set a callback to be the setter
+		void setSetter( _paramAlloc<_intSetCallback> setterFunc ){
 			this->setterFunc = setterFunc;
 		}
 		
-		//! Set a lamda-expression to be called at the end of the animation
-		void finish( _paramAlloc<_intSetCallback> finishFunc ){
+		//! Set a callback to be called at the end of the animation
+		void setFinisher( _paramAlloc<_intSetCallback> finishFunc ){
 			this->finishFunc = finishFunc;
+		}
+		
+		//! Remove the currently bound setter-callback
+		void deleteSetter(){
+			this->setterFunc = nullptr;
+		}
+		
+		//! Remove the currently bound finisher-callback
+		void deleteFinisher(){
+			this->finishFunc = nullptr;
 		}
 		
 		//! Start the animation
@@ -175,7 +185,7 @@ class _animation
 		};
 };
 
-extern _map<string,_easingFunction*> string2easingFunc;
-extern _map<_easingFunction*,string> easingFunc2string;
+extern _fromStr<_easingFunction*>	string2easingFunc;
+extern _toStr<_easingFunction*>		easingFunc2string;
 
 #endif

@@ -1,6 +1,6 @@
 #include "_type/type.mime.h"
 
-_map<string,_mime> string2mimeType = {
+_fromStr<_mime> string2mimeType = {
 	{ "directory" , directory } ,
 	{ "image/jpeg" , image_jpeg } ,
 	{ "image/png" , image_png } ,
@@ -29,7 +29,7 @@ _map<string,_mime> string2mimeType = {
 };
 
 // File Extensions#
-_map<string,_mime> extension2mimeType = {
+_fromStr<_mime> extension2mimeType = {
 	{ "jpg" , image_jpeg } ,
 	{ "jpeg" , image_jpeg } ,
 	{ "png" , image_png } ,
@@ -65,7 +65,7 @@ _map<string,_mime> extension2mimeType = {
 	{ "bat" , application_x_nintendo_gba_rom }
 };
 
-_map<_mime,string> mimeType2string = {
+_toStr<_mime> mimeType2string = {
 	{ directory , "directory" } , 
 	{ image_jpeg , "image/jpeg" } , 
 	{ image_png, "image/png" } ,

@@ -12,7 +12,7 @@ enum class _dialogResult : _u8{
 	apply
 };
 
-extern _map<_dialogResult,string> dialogResult2string;
+extern _toStr<_dialogResult> dialogResult2string;
 
 class _dialog{
 	

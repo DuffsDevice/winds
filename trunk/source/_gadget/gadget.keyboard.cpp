@@ -536,7 +536,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	
 	//! Animations
 	this->anim.setEasing( _animation::_expo::easeOut );
-	this->anim.setter( _classCallback<void(int)>( this , &_keyboard::setState ) );
+	this->anim.setSetter( _classCallback<void(int)>( this , &_keyboard::setState ) );
 	
 	this->setState( 0 ); // Reset Keyboard
 	

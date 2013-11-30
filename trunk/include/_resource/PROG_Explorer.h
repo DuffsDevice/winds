@@ -7,8 +7,8 @@
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.textbox.h"
 
-class PROG_Explorer : public _progC {
-	
+class PROG_Explorer : public _progC
+{
 	private:
 		
 		string		path;
@@ -18,7 +18,7 @@ class PROG_Explorer : public _progC {
 		_textbox*	addressbar;
 		_button*	submitbutton;
 		
-		void		main( _cmdArgs&& args );
+		void		main( _cmdArgs args );
 		void		destruct();
 		
 		void setWindowTitle();

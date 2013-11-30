@@ -53,7 +53,7 @@ class _rect{
 				_area& clipToIntersect( const _rect& limits );
 				
 				//! Check for contained t_rects
-				bool empty() const { return t_rects.empty(); }
+				bool isEmpty() const { return t_rects.empty(); }
 		};
 		
 		//! Dimensions

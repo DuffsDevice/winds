@@ -29,7 +29,7 @@ void _dialog::deleteCallback()
 	this->callback = 0;
 }
 
-_map<_dialogResult,string> dialogResult2string = {
+_toStr<_dialogResult> dialogResult2string = {
 	{ _dialogResult::undefined , "undefined" },
 	{ _dialogResult::cancel , "cancel" },
 	{ _dialogResult::yes , "yes" },

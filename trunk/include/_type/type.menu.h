@@ -27,7 +27,7 @@ class _menu : private _rawMenuEntryLists
 			return const_cast<_menuEntryList&>(((const _menu*)this)->getList( index ));
 		}
 		// Internal setter
-		void setListInternal( _int index , _menuEntryList&& list ){
+		void setListInternal( _int index , _menuEntryList list ){
 			(*this)[index] = move(list);
 		}
 		
@@ -54,7 +54,7 @@ class _menu : private _rawMenuEntryLists
 		}
 		
 		//! Set entry point of the menu; the list that makes the first appearence
-		void setMainList( _menuEntryList&& list ){
+		void setMainList( _menuEntryList list ){
 			setListInternal( 0 , move(list) );
 		}
 		
@@ -67,7 +67,7 @@ class _menu : private _rawMenuEntryLists
 		}
 		
 		//! Supply the list of index 'index' to the menu
-		void setList( _int index , _menuEntryList&& list ){
+		void setList( _int index , _menuEntryList list ){
 			setListInternal( index , move(list) );
 		}
 		

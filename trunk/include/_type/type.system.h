@@ -96,12 +96,9 @@ class _system{
 		friend class _keyboard;
 		
 		//! Add Thinks for execution
-		static void executeProgram( _program* prog , _cmdArgs&& args = _cmdArgs() ) __attribute__(( nonnull(1) ));
-		static void generateEvent( _event&& event , _eventCallType callType ){
+		static void executeProgram( _program* prog , _cmdArgs args = _cmdArgs() ) __attribute__(( nonnull(1) ));
+		static void generateEvent( _event event , _eventCallType callType ){
 			_eventBuffer_[_curEventBuffer_].emplace_back( make_pair(move(event) , callType) );
-		}
-		static void generateEvent( const _event& event , _eventCallType callType ){
-			_system::generateEvent( _event(event) , callType );
 		}
 		
 		// Makes sure that no events concerning a gadget are on the buffer anymore (for _gadget::~_gadget)
@@ -131,8 +128,7 @@ class _system{
 		static void			end();
 		
 		//! Execute the supplied command
-		static bool			executeCommand( string&& cmd );
-		static bool			executeCommand( const string& cmd ){ return _system::executeCommand( string( cmd ) ); }
+		static bool			executeCommand( string cmd );
 		
 		//! Get Current Time (milliseconds since system startup)
 		static _tempTime	getHighResTime();
