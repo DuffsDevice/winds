@@ -11,7 +11,7 @@ enum class _eventCallType : _u8{
 	def 		// handleEventDefault( ... )
 };
 
-extern _map<string,_eventCallType> string2eventCallType;
-extern _map<_eventCallType,string> eventCallType2string;
+extern _fromStr<_eventCallType>	string2eventCallType;
+extern _toStr<_eventCallType>	eventCallType2string;
 
 #endif

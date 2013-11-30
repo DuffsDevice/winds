@@ -1,5 +1,6 @@
 #include "_lua/lua.class.color.h"
 #include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -15,27 +16,6 @@ _lua_color::_lua_color( lua_State* L )
 	if( lua_gettop( L ) == 1 )
 		_color::setColor( check<_pixel>( L , 1 ) );
 }
-
-//! getR
-int _lua_color::getR(lua_State* L){ lua_pushnumber( L , _color::getR() ); return 1; }
-
-//! getG
-int _lua_color::getG(lua_State* L){ lua_pushnumber( L , _color::getG() ); return 1; }
-
-//! getB
-int _lua_color::getB(lua_State* L){ lua_pushnumber( L , _color::getB() ); return 1; }
-
-//! getH
-int _lua_color::getH(lua_State* L){ lua_pushnumber( L , _color::getH() ); return 1; }
-
-//! getS
-int _lua_color::getS(lua_State* L){ lua_pushnumber( L , _color::getS() ); return 1; }
-
-//! getL
-int _lua_color::getL(lua_State* L){ lua_pushnumber( L , _color::getL() ); return 1; }
-
-//! getColor
-int _lua_color::getColor(lua_State* L){ lua_pushnumber( L , _color::getColor() ); return 1; }
 
 //! setR
 int _lua_color::setR(lua_State* L){ _color::setR( check<int>( L , 1 ) ); return 0; }
@@ -81,12 +61,12 @@ Lunar<_lua_color>::FunctionType _lua_color::methods[] = {
 };
 
 Lunar<_lua_color>::PropertyType _lua_color::properties[] = {
-	{ "red" , &_lua_color::getR , &_lua_color::setR },
-	{ "green" , &_lua_color::getB , &_lua_color::setG },
-	{ "blue" , &_lua_color::getB , &_lua_color::setB },
-	{ "hue" , &_lua_color::getH , &_lua_color::setH },
-	{ "sat" , &_lua_color::getS , &_lua_color::setS },
-	{ "lum" , &_lua_color::getL , &_lua_color::setL },
-	{ "color" , &_lua_color::getColor , &_lua_color::setColor },
+	{ "red" , wrap( _lua_color , &_color::getR ) , &_lua_color::setR },
+	{ "green" , wrap( _lua_color , &_color::getG ) , &_lua_color::setG },
+	{ "blue" , wrap( _lua_color , &_color::getB ) , &_lua_color::setB },
+	{ "hue" , wrap( _lua_color , &_color::getH ) ,&_lua_color::setH },
+	{ "sat" , wrap( _lua_color , &_color::getS ) , &_lua_color::setS },
+	{ "lum" , wrap( _lua_color , &_color::getL ) , &_lua_color::setL },
+	{ "color" , wrap( _lua_color , &_color::getColor ) , &_lua_color::setColor },
 	LUA_CLASS_ATTR_END
 };

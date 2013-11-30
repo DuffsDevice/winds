@@ -61,7 +61,7 @@ class _scrollBar : public _gadget {
 		
 };
 
-extern _map<string,_dimension> string2dimension;
-extern _map<_dimension,string> dimension2string;
+extern _fromStr<_dimension>	string2dimension;
+extern _toStr<_dimension>	dimension2string;
 
 #endif

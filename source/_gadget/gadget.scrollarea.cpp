@@ -235,14 +235,14 @@ void _scrollArea::setScrollTypeY( _scrollType typeY ){
 	this->updateScrollBars();
 }
 
-_map<string,_scrollType> string2scrollType = {
+_fromStr<_scrollType> string2scrollType = {
 	{ "scroll" , _scrollType::scroll },
 	{ "meta" , _scrollType::meta },
 	{ "hidden" , _scrollType::hidden },
 	{ "prevent" , _scrollType::prevent }
 };
 
-_map<_scrollType,string> scrollType2string = {
+_toStr<_scrollType> scrollType2string = {
 	{ _scrollType::scroll , "scroll" },
 	{ _scrollType::meta , "meta" },
 	{ _scrollType::hidden , "hidden" },

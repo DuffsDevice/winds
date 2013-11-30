@@ -27,7 +27,7 @@ _actionButton::_actionButton( _optValue<_coord> x , _optValue<_coord> y , _actio
 	this->redraw();
 }
 
-_map<_actionButtonType,string> actionButtonType2string =
+_toStr<_actionButtonType> actionButtonType2string =
 {
 	{ _actionButtonType::next , "next" },
 	{ _actionButtonType::prev , "prev" },
@@ -36,7 +36,7 @@ _map<_actionButtonType,string> actionButtonType2string =
 	{ _actionButtonType::switchuser , "switchuser" },
 };
 
-_map<string,_actionButtonType> string2actionButtonType =
+_fromStr<_actionButtonType> string2actionButtonType =
 {
 	{ "next" , _actionButtonType::next },
 	{ "prev" , _actionButtonType::prev },

@@ -1,7 +1,7 @@
 #include "_lua/lua.class.menu.h"
 #include "_lua/lua.class.menu.rule.h"
 #include "_lua/lua.func.h"
-#include "_type/type.callback.derives.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -47,18 +47,22 @@ int _lua_menu::callHandler(lua_State* L){
 	return 0;
 }
 
+
+using typedefHelper1 = const _menuEntryList&(_menu::*)(_int)const;
+using typedefHelper2 = const _menuEntryList&(_menu::*)()const;
+
 //! Lua-window
 const char _lua_menu::className[] = "Menu";
 Lunar<_lua_menu>::FunctionType _lua_menu::methods[] = {
 	LUA_CLASS_FUNC( _lua_menu , addMenuHandler ) ,
-	LUA_CLASS_FUNC( _lua_menu , getList ) ,
-	LUA_CLASS_FUNC( _lua_menu , setList ) ,
-	LUA_CLASS_FUNC( _lua_menu , clear ) ,
-	LUA_CLASS_FUNC( _lua_menu , callHandler ) ,
+	{ "getList"		, wrap( _lua_menu , (typedefHelper1)&_menu::getList ) },
+	{ "setList"		, wrap( _lua_menu , &_menu::setList ) },
+	{ "clear"		, wrap( _lua_menu , &_menu::clear ) },
+	{ "callHandler"	, wrap( _lua_menu , &_menu::callHandler ) },
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_menu>::PropertyType _lua_menu::properties[] = {
-	{ "mainList" , &_lua_menu::getMainList , &_lua_menu::setMainList },
+	{ "mainList" , wrap( _lua_menu , (typedefHelper2)&_menu::getMainList ) , wrap( _lua_menu , (const _menuEntryList&(_menu::*)()const)&_menu::setMainList ) },
 	LUA_CLASS_ATTR_END
 };

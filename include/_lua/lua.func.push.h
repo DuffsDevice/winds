@@ -27,17 +27,22 @@ namespace _luafunc
 	template<typename... TN>	inline int push(lua_State* L, const string& arg				, TN... args){ lua_pushstring( L , arg.c_str() ); return 1 + push( L , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, const char* arg				, TN... args){ lua_pushstring( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, _dimension arg				, TN... args){ return 1 + push( L , dimension2string[arg] , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _event&& arg					, TN... args){ pushEvent( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, const _event& arg				, TN... args){ return push( L , _event(arg) , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _mimeType arg					, TN... args){ return 1 + push( L , (_literal)arg , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _event arg					, TN... args){ pushEvent( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, _dialogResult arg				, TN... args){ return push( L , dialogResult2string[arg] , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _eventType arg				, TN... args){ return push( L , eventType2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, _gadget* arg					, TN... args){ pushGadget( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _rect&& arg					, TN... args){ pushRect( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _area&& arg					, TN... args){ pushArea( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _bitmap&& arg					, TN... args){ pushBitmap( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _rect arg						, TN... args){ pushRect( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _area	arg						, TN... args){ pushArea( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _bitmap arg					, TN... args){ pushBitmap( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, _bitmap& arg					, TN... args){ pushBitmapRef( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _constbitmap& arg				, TN... args){ return push( L , _bitmap(arg) , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _bitmapPort&& arg				, TN... args){ pushBitmapPort( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _bitmapPort arg				, TN... args){ pushBitmapPort( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push(lua_State* L, const _font* arg				, TN... args){ pushFont( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _2s32 arg						, TN... args){ return push( L , arg.first ) + push( L , arg.second , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _2u32 arg						, TN... args){ return push( L , arg.first ) + push( L , arg.second , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _border arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _padding arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push(lua_State* L, _margin arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
 	
 	// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~
 	template<typename T, typename... TN>

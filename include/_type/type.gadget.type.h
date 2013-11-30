@@ -41,10 +41,13 @@ enum class _gadgetType : _u8
 	contextmenu,
 	contextmenuentry,
 	resizehandle,
+	grid,
+	griddescriber,
+	gridbox,
 	none // No type set (is probably not used)
 };
 
-extern _map<_gadgetType,string> gadgetType2string;
-extern _map<string,_gadgetType> string2gadgetType;
+extern _toStr<_gadgetType>		gadgetType2string;
+extern _fromStr<_gadgetType>	string2gadgetType;
 
 #endif

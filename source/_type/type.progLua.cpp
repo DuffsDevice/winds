@@ -202,7 +202,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
 /**
  * Programm Stuff
  */
-_progLua::_progLua( string&& prog ) : 
+_progLua::_progLua( string prog ) : 
 	_program( _programType::progLua )
 	, content( new string( move(prog) ) )
 {}
@@ -232,7 +232,7 @@ void _progLua::registerSystem()
 	lua_setglobal( this->state , "using" );
 }
 
-void _progLua::internalMain( _cmdArgs&& args )
+void _progLua::internalMain( _cmdArgs args )
 {
 	if( !this->content )
 		return;

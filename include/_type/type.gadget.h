@@ -656,6 +656,9 @@ class _gadget
 		//! Get the toppest enhanced child owned by the parent
 		_gadget* getToppestEnhancedChild() const {	return this->enhancedChildren.front(); }
 		
+		//! Get the lowest enhanced child owned by the parent
+		_gadget* getLowestEnhancedChild() const {	return this->enhancedChildren.back(); }
+		
 		//! Helps to find adjacent children
 		_gadget*	getPrecedentChild( bool skipHidden = false );
 		_gadget*	getSubcedentChild( bool skipHidden = false );

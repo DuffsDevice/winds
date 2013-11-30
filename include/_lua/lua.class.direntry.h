@@ -84,8 +84,8 @@ class _lua_direntry : public _direntry {
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_direntry>::FunctionType methods[];
-		static Lunar<_lua_direntry>::PropertyType properties[];
+		static Lunar<_lua_direntry>::FunctionType	methods[];
+		static Lunar<_lua_direntry>::PropertyType	properties[];
 };
 
 #endif

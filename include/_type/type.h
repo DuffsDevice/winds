@@ -3,6 +3,7 @@
 #define _WIN_TYPES_
 
 #include <malloc.h>
+#include <string.h>
 #include <list>
 #define _GLIBCXX_DEBUG // Because vector::operator[] leads to undefined behaviour when undefined
 #include <vector>
@@ -26,6 +27,13 @@ void operator delete(void *p);
 void* operator new[](size_t size) __attribute__((malloc));
 void operator delete[](void *p);
 
+using std::make_pair;
+using std::make_tuple;
+using std::move;
+using std::forward;
+using std::function;
+using std::ignore;
+
 template<typename T>
 	using _list = std::list<T>;
 template<typename T>
@@ -42,13 +50,6 @@ template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
 template<typename T>
 	using _initializerList = std::initializer_list<T>;
-
-using std::make_pair;
-using std::make_tuple;
-using std::move;
-using std::forward;
-using std::function;
-using std::ignore;
 
 typedef uint8_t 					_u8;
 typedef int8_t 						_s8;
@@ -69,6 +70,13 @@ typedef float 						_float;
 typedef _u64 						_tempTime;
 typedef std::basic_string<_char>	string;
 typedef _vector<string>				_cmdArgs;
+typedef const _char*				_literal;
+
+//! Templates that specify the conversion between strings and 'T'
+template<typename T>
+	using _toStr = _map<T,_literal>;
+template<typename T>
+	using _fromStr = _map<string,T>;
 
 enum class _dimension : _u8{
 	horizontal = 0 ,
@@ -91,11 +99,12 @@ enum class _direction : _u8{
 };
 
 //! Convert _dimension to string and back
-extern _map<_dimension,string> dimension2string;
-extern _map<string,_dimension> string2dimension;
+extern _toStr<_dimension>	dimension2string;
+extern _fromStr<_dimension>	string2dimension;
 
 #define unused __attribute__(( unused ))
-#define noinline __attribute__ ((noinline))
+#define noinline __attribute__((noinline))
+#define forceinline __attribute__((always_inline)) inline
 #define DEPRECATED __attribute__((deprecated))
 
 /**
@@ -456,12 +465,12 @@ struct _touch
 };
 
 //! Convert _align and _valign to string
-extern _map<_align,string> align2string;
-extern _map<_valign,string> valign2string;
+extern _toStr<_align>	align2string;
+extern _toStr<_valign>	valign2string;
 
 //! Convert a given string to either _align or _valign
-extern _map<string,_align> string2align;
-extern _map<string,_valign> string2valign;
+extern _fromStr<_align>		string2align;
+extern _fromStr<_valign>	string2valign;
 
 //! Enumerates available _languages for WinDS
 enum class _language : _u8

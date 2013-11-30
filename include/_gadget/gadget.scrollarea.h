@@ -82,7 +82,7 @@ class _scrollArea : public _gadget {
 		}
 };
 
-extern _map<string,_scrollType> string2scrollType;
-extern _map<_scrollType,string> scrollType2string;
+extern _fromStr<_scrollType>	string2scrollType;
+extern _toStr<_scrollType>		scrollType2string;
 
 #endif

@@ -8,12 +8,12 @@
 #include "PROG_pong_bin.h"
 #include "PROG_paint_bin.h"
 
-void _program::main( _gadget* w , _cmdArgs&& args  ){
+void _program::main( _gadget* w , _cmdArgs args  ){
 	this->gadgetHost = w;
 	this->internalMain( move( args ) );
 }
 
-void _program::execute( _cmdArgs&& args ){
+void _program::execute( _cmdArgs args ){
 	_system::executeProgram( this , move( args ) );
 }
 

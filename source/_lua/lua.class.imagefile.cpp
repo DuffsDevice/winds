@@ -14,15 +14,14 @@ _lua_imagefile::_lua_imagefile( lua_State* L ) :
 int _lua_imagefile::getBitmap( lua_State* L ){
 	if( !_imagefile::isValid() )
 		return 0;
-	
-	Lunar<_lua_bitmap>::push( L , new _lua_bitmap( static_cast<_constbitmap*>( static_cast<_imagefile*>( this ) ) ) );
+	push( L , (_constbitmap&)(_imagefile&)*this );
 	return 1;
 }
 
-//! Lua-window
+//! Lua-ImageFile
 const char _lua_imagefile::className[] = "ImageFile";
 Lunar<_lua_imagefile>::FunctionType _lua_imagefile::methods[] = {
-	LUA_CLASS_FUNC( _lua_imagefile , getBitmap ),
+	{ "getBitmap" , &_lua_imagefile::getBitmap },
 	LUA_CLASS_FUNC_END
 };
 

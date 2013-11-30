@@ -346,7 +346,7 @@ bool _direntry::readChild( string& child )
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::closed && this->open() == false )
+		if( this->mode == _direntryMode::closed && this->openread() == false )
 			return false;
 		if( !this->dHandle )
 			return false;
@@ -432,9 +432,9 @@ bool _direntry::writeString( string str )
 }
 
 
-string _direntry::readString( _u32 size )
+string _direntry::readString( _optValue<_u32> size )
 {	
-	if( !size )
+	if( !size.isValid() )
 		size = this->getSize();
 	
 	_direntryMode modePrev = this->mode;
@@ -448,7 +448,7 @@ string _direntry::readString( _u32 size )
 	string out;
 	
 	// Temp...
-	_char* text = new _char[size];
+	_char* text = new _char[(_u32)size];
 	
 	// Read the Contents
 	_u32 actualSize = fread( text , sizeof(_char) , size , this->fHandle );
@@ -504,7 +504,7 @@ _u32 _direntry::getSize()
 }
 
 
-bool _direntry::execute( _cmdArgs&& args )
+bool _direntry::execute( _cmdArgs args )
 {
 	if( !_system::isRunningOnEmulator() && !this->fatInited )
 		return false;

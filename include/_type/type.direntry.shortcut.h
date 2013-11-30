@@ -24,7 +24,7 @@ class _shortcut : public _direntry {
 		const string& getDestination();
 		
 		//! execute the thing behind the shortcut
-		bool execute(_cmdArgs&& args = _cmdArgs());
+		bool execute( _cmdArgs args = _cmdArgs() );
 		
 		//! get the shortcuts extension, which is anyway null
 		const ssstring& getExtension() const {

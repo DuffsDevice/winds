@@ -5,7 +5,7 @@
 // Callback to change systemState
 void callback()
 {
-	_systemController::changeState( _systemController::_systemState::login );
+	_systemController::changeState( _systemState::login );
 }
 
 

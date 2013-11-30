@@ -6,36 +6,36 @@ void operator delete(void *p)		{	free(p);				}
 void* operator new[](size_t size)	{	return malloc(size);	}
 void operator delete[](void *p)		{	free(p);				}
 
-_map<_align,string> align2string = {
+_toStr<_align> align2string = {
 	{ _align::left , "left" },
 	{ _align::center , "center" },
 	{ _align::right , "right" }
 };
 
-_map<_valign,string> valign2string = {
+_toStr<_valign> valign2string = {
 	{ _valign::top , "top" },
 	{ _valign::middle , "middle" },
 	{ _valign::bottom , "bottom" }
 };
 
-_map<string,_align> string2align = {
+_fromStr<_align> string2align = {
 	{ "left" , _align::left },
 	{ "center" , _align::center },
 	{ "right" , _align::right }
 };
 
-_map<string,_valign> string2valign = {
+_fromStr<_valign> string2valign = {
 	{ "top" , _valign::top },
 	{ "middle" , _valign::middle },
 	{ "bottom" , _valign::bottom }
 };
 
-_map<_dimension,string> dimension2string = {
+_toStr<_dimension> dimension2string = {
 	{ _dimension::horizontal , "horizontal" },
 	{ _dimension::vertical , "vertical" }
 };
 
-_map<string,_dimension> string2dimension = {
+_fromStr<_dimension> string2dimension = {
 	{ "horizontal" , _dimension::horizontal },
 	{ "vertical" , _dimension::vertical }
 };

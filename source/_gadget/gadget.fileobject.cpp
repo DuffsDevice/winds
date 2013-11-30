@@ -28,7 +28,7 @@ _callbackReturn _fileobject::updateHandler( _event event )
 	return handled;
 }
 
-void _fileobject::execute( _cmdArgs&& args , bool openInNewWindow )
+void _fileobject::execute( _cmdArgs args , bool openInNewWindow )
 {
 	// Execute!
 	if( this->file->isDirectory() )

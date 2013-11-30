@@ -46,7 +46,7 @@ _bitmap _shortcut::getFileImage()
 	return this->image;
 }
 
-bool _shortcut::execute( _cmdArgs&& args ){
+bool _shortcut::execute( _cmdArgs args ){
 	return _direntry( this->getDestination() ).execute( move(args) );
 }
 

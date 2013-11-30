@@ -9,13 +9,13 @@ class _progC : public _program
 {
 	private:
 		
-		void internalMain( _cmdArgs&& args ){
-			this->main( move( args ) );
+		void internalMain( _cmdArgs args ){
+			this->main( move(args) );
 		}
 		
 	protected:
 		
-		virtual void main( _cmdArgs&& args ) = 0;
+		virtual void main( _cmdArgs args ) = 0;
 		virtual void destruct(){};
 		
 	public:

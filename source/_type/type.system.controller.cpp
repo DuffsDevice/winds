@@ -132,7 +132,6 @@ void _systemController::main()
 	}
 }
 
-_systemController::_systemState 	
-				_systemController::state = _systemController::_systemState::empty; // I know, that one is quite long ;)
+_systemState 	_systemController::state = _systemState::empty; // I know, that one is quite long ;)
 bool 			_systemController::dirty = false;
 _scenario*		_systemController::scenario	= nullptr;

@@ -8,7 +8,7 @@ PROG_Explorer::PROG_Explorer() :
 	path( "/" )
 { }
 
-void PROG_Explorer::main( _cmdArgs&& args )
+void PROG_Explorer::main( _cmdArgs args )
 {
 	if( !args.empty() && !args[0].empty() )
 		this->path = args[0];

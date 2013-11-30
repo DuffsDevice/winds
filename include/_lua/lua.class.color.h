@@ -18,27 +18,6 @@ class _lua_color : public _color {
 		//! Constructor
 		_lua_color( lua_State* L );
 		
-		//! getR
-		int getR(lua_State* L);
-		
-		//! getG
-		int getG(lua_State* L);
-		
-		//! getB
-		int getB(lua_State* L);
-		
-		//! getH
-		int getH(lua_State* L);
-		
-		//! getS
-		int getS(lua_State* L);
-		
-		//! getL
-		int getL(lua_State* L);
-		
-		//! getColor
-		int getColor(lua_State* L);
-		
 		//! setR
 		int setR(lua_State* L);
 		

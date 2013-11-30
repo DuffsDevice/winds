@@ -22,7 +22,7 @@ _scrollBar::_scrollBar( _optValue<_coord> x , _optValue<_coord> y , _length gadg
 	, anim( 0 , 1 , 600 )
 {
 	this->anim.setEasing( _animation::_cubic::easeInOut );
-	this->anim.setter( make_callback( this , (void(_scrollBar::*)(int)) &_scrollBar::setValueInternal ) );
+	this->anim.setSetter( make_callback( this , &_scrollBar::setValueInternal ) );
 	
 	if( dim == _dimension::horizontal )
 	{

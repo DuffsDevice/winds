@@ -56,13 +56,14 @@ bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 	//if( cPR < 0 )
 	//	cPR = 0;
 	//printf("Pressure: %f\n",cPR);
+	
 	/*!
 	 * Handle the Pen!
 	  */
 	if( held )
 	{
 		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
-		//event.setPressure( touch.px * touch.z2 / touch.z1 - touch.px );
+		event.setPressure( 400 );
 		
 		//! Check if this is the first Cycle the pen is down
 		if( this->touchCycles == 0 )

@@ -26,11 +26,11 @@ namespace wrapHelpers
 				, size_t maxIndex
 				, class... CollectedArgs 
 			>
-			inline typename std::enable_if<( curIndex == maxIndex && std::is_same<Return,void>::value ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs&&... params)
+			forceinline typename std::enable_if<( curIndex == maxIndex && std::is_same<Return,void>::value ),int>::type
+				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params)
 			{
 				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class
-				(dest->*funcToWrap)(params...);
+				(dest->*funcToWrap)(std::move(params)...);
 				return 0;
 			}
 			
@@ -40,12 +40,14 @@ namespace wrapHelpers
 				, size_t maxIndex
 				, class... CollectedArgs
 			>
-			inline typename std::enable_if<( curIndex == maxIndex && !std::is_same<Return,void>::value ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs&&... params)
+			forceinline typename std::enable_if<( curIndex == maxIndex && !std::is_same<Return,void>::value ),int>::type
+				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params)
 			{
 				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class
-				(dest->*funcToWrap)(params...);
-				_luafunc::push( L , (dest->*funcToWrap)(params...) );
+				_luafunc::push(
+					L
+					, (dest->*funcToWrap)(std::move(params)...)
+				);
 				return 1;
 			}
 			
@@ -55,8 +57,8 @@ namespace wrapHelpers
 				, class... ParamTypes
 				, class... CollectedArgs
 			>
-			inline typename std::enable_if<( curIndex < maxIndex ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs&&... params )
+			forceinline typename std::enable_if<( curIndex < maxIndex ),int>::type
+				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params )
 			{
 				typedef nth_type<curIndex,ParamTypes...> curType;
 				return
@@ -73,7 +75,6 @@ namespace wrapHelpers
 			// Method that will dispatch all calls to the wrapped function
 			int dispatcher( lua_State* L )
 			{
-				asm volatile( "@dispatcher" );
 				return this->call_with_params<0,sizeof...(Args), Args...>( L , *reinterpret_cast<ProxyClass*>(this) );
 			}
 			
@@ -90,7 +91,7 @@ namespace wrapHelpers
 		typename Return,
 		typename... Args
 	>
-	inline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) )
+	forceinline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) )
 		-> wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
 	{
 		return wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();
@@ -104,7 +105,7 @@ namespace wrapHelpers
 		typename Return,
 		typename... Args
 	>
-	inline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) const )
+	forceinline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) const )
 		-> wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
 	{
 		return wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();

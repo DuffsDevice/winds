@@ -4,6 +4,7 @@
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
 #include "_lua/lua.class.font.h"
+#include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmapPort.h"
 #include "_lua/lua.gadget.window.h"
@@ -72,6 +73,10 @@ namespace _luafunc
 	
 	void pushBitmapRef( lua_State* L , _bitmap& arg ){
 		Lunar<_lua_bitmap>::push( L , new _lua_bitmap(&arg) );
+	}
+	
+	void pushBorder( lua_State* L , _border&& arg ){
+		Lunar<_lua_border>::push( L , new _lua_border(arg) );
 	}
 	
 	void pushBitmap( lua_State* L , _bitmap&& arg ){
@@ -221,12 +226,14 @@ namespace _luafunc
 			return nullptr;
 		}
 		
-		_bitmap check( lua_State* L , int index , _bitmap* dummy )
-		{
+		_bitmap check( lua_State* L , int index , _bitmap* dummy ){
 			_lua_bitmap* bmp = Lunar<_lua_bitmap>::lightcheck( L , index );
-			if( bmp )
-				return *bmp;
-			return _bitmap();
+			return bmp ? (_bitmap&)*bmp : _bitmap();
+		}
+		
+		_border check( lua_State* L , int index , _border* dummy ){
+			_lua_border* b = Lunar<_lua_border>::lightcheck( L , index );
+			return b ? *b : _border();
 		}
 		
 		_bitmapPort check( lua_State* L , int index , _bitmapPort* dummy )
@@ -240,24 +247,22 @@ namespace _luafunc
 			return _bitmapPort(bitmapFallback);
 		}
 		
-		_rect check( lua_State* L , int index , _rect* dummy )
-		{
+		_rect check( lua_State* L , int index , _rect* dummy ){
 			_lua_rect* rc = Lunar<_lua_rect>::lightcheck( L , index );
-			if( rc )
-				return *rc;
-			return _rect();
+			return rc ? *rc : _rect();
 		}
 		
-		_area check( lua_State* L , int index , _area* dummy )
-		{
+		_area check( lua_State* L , int index , _area* dummy ){
 			_lua_area* ar = Lunar<_lua_area>::lightcheck( L , index );
-			if( ar )
-				return *ar;
-			return _area();
+			return ar ? *ar : _area();
 		}
 		
-		const _font* check( lua_State* L , int index , const _font** dummy )
-		{
+		_event check( lua_State* L , int index , _event* dummy ){
+			_lua_event* ev = Lunar<_lua_event>::check( L , 1 );
+			return ev ? *ev : _event();
+		}
+		
+		const _font* check( lua_State* L , int index , const _font** dummy ){
 			_lua_font* ft = Lunar<_lua_font>::lightcheck( L , index );
 			if( ft )
 				return *ft; // You CAN cast _lua_font to _font
