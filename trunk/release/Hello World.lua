@@ -1,11 +1,13 @@
-system.require("_bitmap")
-system.require("_area")
-system.require("_bitmapPort")
-system.require("_event")
-system.require("_color")
-system.require("_window")
-system.require("_imagegadget")
-system.require("_font")
+using "Drawing.Bitmap"
+using "Drawing.Area"
+using "Drawing.BitmapPort"
+using "Drawing.Color"
+using "Drawing.Font"
+using "System.Event"
+using "System.Timer"
+using "UI.Window"
+using "UI.Gadget"
+using "UI.ImageGadget"
 
 -- Gadgets
 local pongBmp
@@ -19,13 +21,14 @@ local gameState = 0 -- Indicates the state of the Game:
 
 local p1 = 0
 local p2 = 0
-local ballX = 10
-local ballY = 10
+local ballX = -10
+local ballY = -10
 local ballVX = 1
 local ballVY = 1
 local pLength = 15 -- width of the paddle
 local gameHeight = 60
 local gameWidth = 100
+local timer
 
 
 -- Parameters that are used when the KI should start the game
@@ -68,11 +71,6 @@ function handleComputerCollision()
 	end
 end
 
--- starts the global Timer calling frame() every 1/60s
-function startTimer()
-	system.executeTimer( frame , 1000/60 , true )
-end
-
 -- Main entry point
 function main()
 	
@@ -81,26 +79,33 @@ function main()
 	p2 = p1
 	
 	-- create the image
-	pongBmp = _imagegadget( 0 , 0 , _bitmap( gameWidth , gameHeight ) )
-	pongBmp.setUserEventHandler( "refresh" , refresher )
+	pongBmp = ImageGadget( 0 , 0 , Bitmap( gameWidth , gameHeight ) )
+	pongBmp.base.setUserEventHandler( "onDraw" , refresher )
 	
-	window = _window( gameWidth + 2 , gameHeight + 11 , 10 , 10 , "Pong" , "notResizeable | minimizeable" )
+	local bmp = Bitmap(6, 6)
 	
-	window.addChild( pongBmp )
-	window.setUserEventHandler( "keyDown" , eventHandler )
-	window.setUserEventHandler( "keyUp" , eventHandler )
-	window.setUserEventHandler( "onBlur" , eventHandler )
-	window.setUserEventHandler( "onFocus" , eventHandler )
+	bmp.reset( "black" )
+	bmp.drawVerticalLine( 0 , 1 , 3 , "green" )
+	bmp.drawVerticalLine( 5 , 3 , 3 , "green" )
+	bmp.drawFilledRect( 2 , 2 , 2 , 2 , "magenta" )
 	
-	system.addChild( window )
+	window = Window( 40 , 20 , gameWidth + 2 , gameHeight + 11 , "Pong" , bmp , true , true , "notResizeable" )
 	
-	window.focus()
+	window.base.addChild( pongBmp )
+	window.base.setUserEventHandler( "onKeyDown" , eventHandler )
+	window.base.setUserEventHandler( "onKeyUp" , eventHandler )
+	window.base.setUserEventHandler( "onBlur" , eventHandler )
+	window.base.setUserEventHandler( "onFocus" , eventHandler )
+	
+	System.addChild( window )
+	
+	timer = Timer( frame , 1000/60 , true )
 	
 end
 
 function frame()
 	move()
-	pongBmp.redraw()
+	pongBmp.base.redraw()
 end
 
 function move()
@@ -173,23 +178,23 @@ end
 function refresher( event )
 	
 	-- Receive Gadget
-	local port = pongBmp.getBitmapPort( event )
+	local port = pongBmp.base.getBitmapPort( event )
 	
 	-- reset to black
 	port.fill( "black" )
 	
 	-- Draw Paddles
-	port.drawFilledRect( 1 , p1 + 1 , 3 , pLength , system.rgb( 0 , 31 , 0 ) )
-	port.drawFilledRect( gameWidth - 4 , p2 + 1 , 3 , pLength , system.rgb( 0 , 31 , 0 ) )
+	port.drawFilledRect( 1 , p1 + 1 , 3 , pLength , "green" )
+	port.drawFilledRect( gameWidth - 4 , p2 + 1 , 3 , pLength , "green" )
 	
 	-- Draw middle Line and Ball
-	port.drawVerticalDottedLine( gameWidth/2 , 0 , gameHeight , system.rgb( 0 , 31 , 0 ) )
-	port.drawFilledCircle( ballX , ballY , 2 , system.rgb( 31 , 0 , 31 ) )
+	port.drawVerticalDottedLine( gameWidth/2 , 0 , gameHeight , "green" )
+	port.drawFilledCircle( ballX , ballY , 2 , "magenta" )
 	
 	-- Paint Scores
-	local font = system.getFont("ArialBlack13")
-	port.drawString( gameWidth / 2 - 15 , 3 , font , scoreUser , system.rgb( 0 , 31 , 0 ) )
-	port.drawString( gameWidth / 2 + 10 , 3 , font , scoreComputer , system.rgb( 0 , 31 , 0 ) )
+	local font = System.getFont("ArialBlack13")
+	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "green" )
+	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "green" )
 	
 	return "handled"
 end
@@ -197,7 +202,7 @@ end
 -- called on keyDown, keyUp , onBlur and onFocus
 function eventHandler( event )
 
-	if event.type == "keyDown" then
+	if event.type == "onKeyDown" then
 		if event.keyCode == 7 then -- Up
 			keyUpPressed = true
 		elseif event.keyCode == 14 then -- Down
@@ -205,7 +210,7 @@ function eventHandler( event )
 		elseif event.keyCode == 1 then -- A
 			gameState = 2
 		end
-	elseif event.type == "keyUp" then
+	elseif event.type == "onKeyUp" then
 		if event.keyCode == 7 then -- Up
 			keyUpPressed = false
 		elseif event.keyCode == 14 then -- Down
@@ -214,9 +219,9 @@ function eventHandler( event )
 	elseif event.type == "onBlur" then
 		keyUpPressed = false
 		keyDownPressed = false
-		system.terminateTimer( frame )
+		timer.stop();
 	elseif event.type == "onFocus" then
-		startTimer()
+		timer.start()
 	end
 	
 	-- Calls the internal gadget-specific eventHandler
