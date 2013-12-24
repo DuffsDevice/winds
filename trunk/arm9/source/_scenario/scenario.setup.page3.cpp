@@ -73,7 +73,7 @@ void _scSetupPage3::create( _gadget* viewParent )
 	
 	
 	// Create the Clock image...
-	this->imgClock = new _clockgadget( 55 , 64 , 50 , 50 , this->systemTime , true );
+	this->imgClock = new _clockGadget( 55 , 64 , 50 , 50 , this->systemTime , true );
 	this->imgClock->setOuterBgColor( RGBHEX( 0x5A7EDC ) );
 	this->imgClock->setInnerBgColor( RGBHEX( 0x6082E3 ) );
 	this->imgClock->setMarkingsColor( COLOR_WHITE );

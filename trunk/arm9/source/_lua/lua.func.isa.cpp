@@ -5,7 +5,7 @@
 #include "_lua/lua.class.font.h"
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.bitmapPort.h"
+#include "_lua/lua.class.bitmap.port.h"
 
 namespace _luafunc
 {

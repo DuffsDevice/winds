@@ -15,14 +15,14 @@ class _lua_progressbar : public _lua_gadget
 		
 		_lua_progressbar( lua_State* L );
 		
-		_lua_progressbar( _progressbar* p ) : _lua_gadget( p , false )
+		_lua_progressbar( _progressBar* p ) : _lua_gadget( p , false )
 		{ }
 		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_progressbar>::FunctionType methods[];
 		static Lunar<_lua_progressbar>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_progressbar>::BaseClassType<_lua_gadget>;
 };
 
 #endif

@@ -6,7 +6,7 @@
 #include "_gadget/gadget.scrollBar.h"
 #include "_type/type.text.h"
 
-class _textarea : public _gadget{
+class _textArea : public _gadget{
 	
 	private:
 		
@@ -96,10 +96,10 @@ class _textarea : public _gadget{
 		
 		
 		//! Ctor
-		_textarea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
+		_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
 		
 		//! Dtor
-		~_textarea();
+		~_textArea();
 };
 
 #endif

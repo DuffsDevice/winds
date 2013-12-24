@@ -18,7 +18,6 @@ Lunar<_lua_button>::FunctionType _lua_button::methods[] = {
 };
 
 Lunar<_lua_button>::PropertyType _lua_button::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "text"		, wrap( _lua_button , &_button::getStrValue )	, wrap( _lua_button , &_button::setStrValue ) },
 	{ "autoSelect"	, wrap( _lua_button , &_button::isAutoSelect )	, wrap( _lua_button , &_button::setAutoSelect ) },
 	{ "font"		, wrap( _lua_button , &_button::getFont )		, wrap( _lua_button , &_button::setFont ) },

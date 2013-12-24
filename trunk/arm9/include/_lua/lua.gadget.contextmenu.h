@@ -40,7 +40,7 @@ class _lua_contextmenu : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_contextmenu>::FunctionType methods[];
 		static Lunar<_lua_contextmenu>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_contextmenu>::BaseClassType<_lua_gadget>;
 };
 
 #endif

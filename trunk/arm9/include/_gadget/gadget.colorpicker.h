@@ -2,9 +2,9 @@
 #define _WIN_G_COLORPICKER_
 
 #include "_type/type.gadget.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 
-class _colorpicker : public _gadget
+class _colorPicker : public _gadget
 {
 	protected:
 		
@@ -39,10 +39,10 @@ class _colorpicker : public _gadget
 		_pixel getIntValue() const { return this->getColor(); }
 		
 		//! Ctor
-		_colorpicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
+		_colorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor = COLOR_BLUE , _style&& style = _style() );
 		
 		//! Dtor
-		~_colorpicker(){
+		~_colorPicker(){
 			this->removeChildren( true );
 		}
 };

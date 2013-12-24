@@ -19,7 +19,6 @@ Lunar<_lua_checkbox>::FunctionType _lua_checkbox::methods[] = {
 };
 
 Lunar<_lua_checkbox>::PropertyType _lua_checkbox::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "checked" , wrap( _lua_checkbox , &_checkbox::getIntValue ) , wrap( _lua_checkbox , &_checkbox::setIntValue ) },
 	LUA_CLASS_ATTR_END
 };

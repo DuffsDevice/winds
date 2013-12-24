@@ -3,7 +3,7 @@
 
 #include "_type/type.h"
 #include "_lua/lua.func.h"
-#include "_lua/lua.hpp"
+#include "_lua/lua.h"
 #include <type_traits>
 
 namespace wrapHelpers
@@ -27,7 +27,7 @@ namespace wrapHelpers
 				, class... CollectedArgs 
 			>
 			forceinline typename std::enable_if<( curIndex == maxIndex && std::is_same<Return,void>::value ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params)
+				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params)
 			{
 				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class
 				(dest->*funcToWrap)(std::move(params)...);
@@ -41,11 +41,11 @@ namespace wrapHelpers
 				, class... CollectedArgs
 			>
 			forceinline typename std::enable_if<( curIndex == maxIndex && !std::is_same<Return,void>::value ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params)
+				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params)
 			{
 				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class
 				_luafunc::push(
-					L
+					state
 					, (dest->*funcToWrap)(std::move(params)...)
 				);
 				return 1;
@@ -58,24 +58,24 @@ namespace wrapHelpers
 				, class... CollectedArgs
 			>
 			forceinline typename std::enable_if<( curIndex < maxIndex ),int>::type
-				call_with_params( lua_State* L , ProxyClass& instance , CollectedArgs... params )
+				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params )
 			{
 				typedef nth_type<curIndex,ParamTypes...> curType;
 				return
 					this->call_with_params<curIndex+1,maxIndex,ParamTypes...>(
-						L
+						state
 						, instance
 						, std::move(params)...
-						, _luafunc::check<curType>(L, curIndex+1 )
+						, _luafunc::check<curType>(state, curIndex+1 )
 					);
 			}
 		
 		public:
 			
 			// Method that will dispatch all calls to the wrapped function
-			int dispatcher( lua_State* L )
+			int dispatcher( lua_State* state )
 			{
-				return this->call_with_params<0,sizeof...(Args), Args...>( L , *reinterpret_cast<ProxyClass*>(this) );
+				return this->call_with_params<0,sizeof...(Args), Args...>( state , *reinterpret_cast<ProxyClass*>(this) );
 			}
 			
 			operator proxyFuncType(){

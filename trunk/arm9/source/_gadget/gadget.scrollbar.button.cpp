@@ -1,7 +1,11 @@
 #include "_gadget/gadget.scrollBar.button.h"
-#include "_resource/BMP_ScrollButtons.h"
+#include "_resource/resource.image.scrollbuttons.h"
+
 _bitmap btn_background_released = BMP_ScrollButton();
 _bitmap btn_background_pressed 	= BMP_ScrollButtonPressed();
+
+// Center part of the scroll buttons that
+// can be repeated to allow expanding of the scrollbutton to a variable length
 _pixel 	snip_released_bmp[8] 	= { 64311, 65369, 65368, 65368, 65367, 65367, 64311, 60015 };
 _pixel 	snip_pressed_bmp[8]		= { 61008, 63153, 63121, 63122, 63154, 63155, 63187, 64278 };
 

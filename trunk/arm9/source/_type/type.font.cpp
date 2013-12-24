@@ -1,8 +1,8 @@
 #include "_type/type.font.h"
-#include "_type/type.memoryfont.h"
-#include "_type/type.freetypefont.h"
+#include "_type/type.font.memory.h"
+#include "_type/type.font.freetype.h"
 #include "_type/type.direntry.h"
-#include "_type/type.textphrases.h"
+#include "_type/type.text.phrases.h"
 
 _length _font::getStringWidth( const _char* str , _u8 fontSize ) const
 {
@@ -56,12 +56,12 @@ _length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fon
 	return numChars;
 }
 
-#include "_resource/FONT_ArialBlack13.h"
-#include "_resource/FONT_CourierNew10.h"
-#include "_resource/FONT_System7.h"
-#include "_resource/FONT_SystemSymbols8.h"
+#include "_resource/resource.font.arialblack.13.h"
+#include "_resource/resource.font.couriernew.10.h"
+#include "_resource/resource.font.system.7.h"
+#include "_resource/resource.font.systemsymbols.8.h"
 
-_vector<_memoryfont*> builtInFonts =
+_vector<_memoryFont*> builtInFonts =
 {
 	new FONT_ArialBlack13()
 	, new FONT_CourierNew10()
@@ -79,7 +79,7 @@ const _font* _font::fromFile( string path )
 	transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
 	
 	if( d.isExisting() )
-		return new _freetypefont( path );
+		return new _freetypeFont( path );
 	
 	// If not existing, look, if 
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/arialblack13.ttf" ) )

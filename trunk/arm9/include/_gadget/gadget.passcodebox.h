@@ -3,7 +3,7 @@
 
 #include "_gadget/gadget.textbox.h"
 
-class _passcodebox : public _textbox
+class _passcodeBox : public _textBox
 {
 	private:
 		
@@ -17,7 +17,7 @@ class _passcodebox : public _textbox
 		//! Internal
 		void refresher();
 		
-		//! Override of _textbox::(..)
+		//! Override of _textBox::(..)
 		void removeStr( _int position , _length numChars = 1 );
 		void insertStr( _int position , string s );
 		
@@ -30,7 +30,7 @@ class _passcodebox : public _textbox
 		string getStrValue(){ return this->realText; }
 		
 		//! Ctor
-		_passcodebox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
+		_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
 };
 
 #endif

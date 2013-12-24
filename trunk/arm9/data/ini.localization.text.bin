@@ -1,0 +1,279 @@
+[lbl_choose_language]
+e = Choose your language:
+g = Sprache wählen:
+i = Scegli la lingua:
+s = Escoja el idioma:
+f = Choisissez la langue:
+
+[lbl_welcome]
+e = Welcome
+g = Wilkommen
+i = Benvenuto
+s = Bienvenida
+f = Bienvenu
+
+[lbl_welcome_to_winds]
+e = Welcome to WinDS
+g = Willkommen bei WinDS
+i = Benvenuti al WinDS
+s = Bienvenida a WinDS
+f = Bienvenue sur WinDS
+
+[txt_few_step_setup]
+e = Let's spend a few minutes setting
+g = In ein paar Schritten wird WinDS auf
+i = Spendiamo qualche minuto la
+s = Vamos a dedicar unos minutos a
+f = Nous allons consacrer quelques minutes
+
+[txt_few_step_setup_2]
+e = up your DS.
+g = deinem DS installiert.
+i = configurazione del DS.
+s = la configuración de su DS.
+f = à la configuration de votre DS.
+
+[lbl_next]
+e = Next
+g = Weiter
+i = Più
+s = Siga
+f = Continuer
+
+[lbl_finish]
+e = Finish
+g = Abschließen
+i = Completare
+s = Finalizar
+f = Continuer
+
+[lbl_prev]
+e = Previous
+g = Zurück
+i = Precedente
+s = Anterior
+f = Précédent
+
+[lbl_ok]
+e = OK
+g = OK
+i = OK
+s = OK
+f = OK
+
+[lbl_close]
+e = Close
+g = Schließen
+i = Chiudere
+s = Cerrar
+f = Fermer
+
+[lbl_runtime_error]
+e = Runtime Error
+g = Laufzeitfehler
+i = Errore di run-time
+s = Error en tiempo de ejecución
+f = Erreur d'exécution
+
+[lbl_submit]
+e = Submit
+g = Bestätigen
+i = Envio
+s = Enviar
+f = Envoi
+
+[lbl_yes]
+e = Yes
+g = Ja
+i = Sí
+s = Sí
+f = Oui
+
+[lbl_no]
+e = No
+g = Nein
+i = No
+s = No
+f = Non
+
+[lbl_cancel]
+e = Cancel
+g = Abbrechen
+i = Cancella
+s = Cancelar
+f = Annulation
+
+[lbl_dismiss]
+e = Dismiss
+g = Ignorieren
+i = Ignorare
+s = Descartar
+f = Rejeter
+
+[lbl_error]
+e = Error
+g = Fehler
+i = Errore
+s = Error
+f = Erreur
+
+[lbl_warning]
+e = Warning
+g = Warnung
+i = Avvertimento
+s = Aviso
+f = Prévenir
+
+[lbl_info]
+e = Info
+g = Hinweis
+i = Informazioni
+s = Info
+f = Info
+
+[lbl_delete]
+e = Delete
+g = Löschen
+i = Cancellare
+s = Suprimir
+f = Supprimer
+
+[lbl_save]
+e = Save
+g = Speichern
+i = Salvare
+s = Salvar
+f = Sauver
+
+[lbl_unnamed]
+e = Unnamed
+g = Unbenannt
+i = Innominato
+s = Sin Nombre
+f = Sans Nom
+
+[lbl_to_continue_click_next]
+e = To Continue, click [Next]
+g = Zum fortfahren, [Weiter] klicken
+i = di continuare a fare clic su [Più]
+s = para continuar, haga clic [Siga]
+f = Pour continuer, cliquez sur [Continuer]
+
+[lbl_profile]
+e = Your Profile
+g = Dein Profil
+i = Il tuo profilo
+s = Su perfil
+f = Votre Profil
+
+[txt_name]
+e = Name of the Profile:
+g = Name des Profils:
+i = Nome del profilo:
+s = Nombre del Perfil:
+f = Nom du profil:
+
+[txt_profile_icon]
+e = Choose your profile Icon:
+g = Wähle dein Profil Icon:
+i = Scegli il tuo profilo Icona:
+s = Seleccione el icono de su perfil:
+f = Choisissez votre profil Icône:
+
+[lbl_system_preferences]
+e = System Preferences
+g = System-Einstellungen
+i = Impostazioni di sistema
+s = Ajustes sistema
+f = Paramètres système
+
+[txt_system_clock]
+e = Please adjust the system time and date:
+g = Bitte stelle die Uhrzeit und das Datum ein:
+i = Regolate il clock e la data di sistema:
+s = Ajuste la hora y fecha del sistema:
+f = Réglez l'horloge et la date système:
+
+[txt_system_clock_auto_fetch_1]
+e = Reference time from the Internet
+g = Uhrzeit über das Internet bestimmen
+i = Determinare il tempo e la data attraverso internet
+s = Determinar la fecha y hora por Internet
+f = Déterminer la date et l'heure via Internet
+
+[txt_system_clock_auto_fetch_2]
+e = (Needs WiFi)
+g = (Benötigt WiFi)
+i = (Richiede WiFi)
+s = (Requiere WiFi)
+f = (Nécessite WiFi)
+
+[lbl_finished]
+e = Setup finished
+g = Konfigurierung abgeschlossen
+i = Configurazione finito
+s = Configuración ascabado
+f = Configuration fini
+
+[lbl_wait_installing]
+e = Please wait while WinDS is being installed
+g = Bitte warten Sie, während WinDS installiert wird
+i = Attendere che l'installazione di Windows è finita
+s = Espere mientras WinDS se está instalando
+f = Attendez que l'installation de Windows est fini
+
+[txt_winds_ready]
+e = WinDS is now ready to be used!
+g = WinDS kann jetzt benutzt werden!
+i = WinDS è ora pronto per essere utilizzato!
+s = WinDS ya está listo para ser utilizado!
+f = WinDS est maintenant prêt à être utilisé!
+
+[txt_restart_ds]
+e = Please restart your Nintendo DS!
+g = Bitte starten sie den Nintendo DS neu!
+i = Riavviare il Nintendo DS!
+s = Reinicia tu Nintendo DS!
+f = S'il vous plaît redémarrer votre Nintendo DS!
+
+[lbl_passcode]
+e = Passcode
+g = Passwort
+i = Password
+s = Password
+f = Passcode
+
+[lbl_welcome]
+e = Welcome
+g = Willkommen
+i = Benvenuto
+s = Bienvenido
+f = Bonjour
+
+[lbl_guest]
+e = Guest
+g = Gast
+i = Guest
+s = Huésped
+f = Guest
+
+[lbl_start_btn]
+e = start
+g = start
+i = avvio
+s = inicio
+f = démarrer
+
+[lbl_lua_parser_error]
+e = Lua-Parser-Error
+g = Lua-Parserfehler
+i = Errore di codice Lua
+s = Error análisis del código Lua
+f = Erreur dans code Lua
+
+;[]
+;e = 
+;g = 
+;i = 
+;s = 
+;f = 

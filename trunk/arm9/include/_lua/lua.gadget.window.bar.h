@@ -22,7 +22,7 @@ class _lua_windowbar : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_windowbar>::FunctionType methods[];
 		static Lunar<_lua_windowbar>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_windowbar>::BaseClassType<_lua_gadget>;
 };
 
 #endif

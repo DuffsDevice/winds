@@ -18,7 +18,6 @@ Lunar<_lua_label>::FunctionType _lua_label::methods[] = {
 };
 
 Lunar<_lua_label>::PropertyType _lua_label::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "text" 		, wrap( _lua_label , &_label::getStrValue )	, wrap( _lua_label , &_label::setStrValue ) },
 	{ "color" 		, wrap( _lua_label , &_label::getColor )	, wrap( _lua_label , &_label::setColor ) },
 	{ "bgColor" 	, wrap( _lua_label , &_label::getBgColor )	, wrap( _lua_label , &_label::setBgColor ) },

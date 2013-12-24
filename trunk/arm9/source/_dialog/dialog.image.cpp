@@ -13,7 +13,7 @@ _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap
 	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
 	, otherButton( otherLabel.isValid() ? new _button( 0 , 0 , ignore , ignore , otherLabel ) : nullptr )
 	, msg( new _label( bitmap.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
-	, image( new _imagegadget( 3 , 3 , bitmap ) )
+	, image( new _imageGadget( 3 , 3 , bitmap ) )
 {	
 	// Buttons
 	this->okButton->setAutoSelect( true );	

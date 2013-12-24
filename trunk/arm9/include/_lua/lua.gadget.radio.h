@@ -22,7 +22,7 @@ class _lua_radio : public _lua_gadget{
 		static const char className[];
 		static Lunar<_lua_radio>::FunctionType methods[];
 		static Lunar<_lua_radio>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_radio>::BaseClassType<_lua_gadget>;
 };
 
 #endif

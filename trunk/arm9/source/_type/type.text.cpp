@@ -1,6 +1,6 @@
 #include "_type/type.text.h"
 #include "_type/type.system.h"
-#include "_library/syllable.h"
+#include "_library/library.syllable.h"
 
 void _text::wrap()
 {

@@ -9,8 +9,7 @@
 
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.imagegadget.h"
-#include "_type/type.time.h"
+#include "_gadget/gadget.image.h"
 
 class _scSetupPage4 : public _view
 {
@@ -19,8 +18,8 @@ class _scSetupPage4 : public _view
 		_label*						lblTitle;
 		_label*						lblName;
 		_label*						lblIcon;
-		_textbox*					txtProfileName;
-		_map<_imagegadget*,_bitmap>	imgProfileIcons;
+		_textBox*					txtProfileName;
+		_map<_imageGadget*,_bitmap>	imgProfileIcons;
 		
 		// profile name will be stored here
 		string						profileName;

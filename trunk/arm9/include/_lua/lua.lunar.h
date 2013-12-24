@@ -1,376 +1,565 @@
 // Check if already included
-#ifndef _WIN_LUNAR_
-#define _WIN_LUNAR_
+#ifndef _WIN_L_LUNAR_
+#define _WIN_L_LUNAR_
 
-#include "_type/type.h"
-#include "_type/type.style.h"
-#include "_lua/lua.hpp"
-#include "_lua/lua.func.h"
-#include <string.h> // For strlen
+#include "_lua/lua.h"
 #include <type_traits>
+#include <tuple>
+#include <map>
+#include <string>
 
-namespace detail
+namespace LunarHelper
 {
 	template <typename T>
 	class hasStaticMethods{
-		typedef char true_value;
-		typedef long false_value;
-		template <typename C> static true_value test( decltype(&C::staticmethods) ) ;
-		template <typename C> static false_value test(...);
+		template<class C> static std::true_type test( decltype(&C::staticmethods) );
+		template<class C> static std::false_type test(...);
 	public:
-		enum { value = sizeof(test<T>(0)) == sizeof(true_value) };
+		enum{ value = std::is_same<std::true_type,decltype(test<T>(nullptr))>::value };
 	};
+	
+	template <typename T>
+	class hasBaseClasses{
+		template<class C> static std::true_type test( typename C::baseclasses* );
+		template<class C> static std::false_type test(...);
+	public:
+		enum{ value = std::is_same<std::true_type,decltype(test<T>(nullptr))>::value };
+	};
+	
+	constexpr bool isFunc( int index ){ return index & ( 1 << 8 ); }
+	constexpr int index2func( int index ){ return index | ( 1 << 8 ); }
+	constexpr int func2index( int index ){ return index & (~( 1 << 8 )); }
+	
+	extern std::map<std::string,bool(*)(const char*)> className2checkIfBaseFunction;
 }
 
-
-template<class T>
+template<class Class>
 class Lunar
 {
+	template<typename> friend class Lunar;
+	
 	private:
 		
-		// Will be enabled
-		template<typename T2>
-		static typename std::enable_if<detail::hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
+		// Short typdefs
+		template<typename C,typename R = int> using requireBaseClasses = typename std::enable_if<LunarHelper::hasBaseClasses<C>::value,R>::type;
+		template<typename C,typename R = int> using requireNoBaseClasses = typename std::enable_if<!LunarHelper::hasBaseClasses<C>::value,R>::type;
+		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::hasStaticMethods<C>::value,R>::type;
+		template<typename C,typename R = void> using requireNoStatics = typename std::enable_if<!LunarHelper::hasStaticMethods<C>::value,R>::type;
+		
+		//
+		// PROPERTY - GETTERS
+		//
+		template<int index, typename bases>
+		struct propertyGetterBaseImpl{
+			static int dispatcher( lua_State* state )
+			{
+				int result = Lunar::propertyGetterBaseImpl<index-1,bases>::dispatcher( state );	// Recursion
+				if( result != -1 )																// Break up if we found the attribute
+					return result;
+				using baseType = typename std::tuple_element<index,bases>::type;				// Store current base class Type
+				return Lunar<baseType>::propertyGetterImpl( state );						// Call property-getter
+			}
+		};
+		
+		template<typename bases>
+		struct propertyGetterBaseImpl<0,bases>{
+			static int dispatcher( lua_State* state ){
+				using baseType = typename std::tuple_element<0,bases>::type;	// Store current base class Type
+				return Lunar<baseType>::propertyGetterImpl( state );		// Call property-getter
+			}
+		};
+		
+		template<typename bases>
+		struct propertyGetterBaseImpl<-1,bases>{
+			static inline int dispatcher( lua_State* state ){ return -1; } // For empty tuples
+		};
+		
+		// FRONT END FOR BACK END //
+		// ~~~~~~~~~~~~~~~~~~~~~~ //
+		template<typename TempClass>
+		static inline requireBaseClasses<TempClass> propertyGetterBase( lua_State* state ){
+			return propertyGetterBaseImpl<std::tuple_size<typename TempClass::baseclasses>::value - 1,typename TempClass::baseclasses>::dispatcher( state );
+		}
+		
+		template<typename TempClass>
+		static inline requireNoBaseClasses<TempClass> propertyGetterBase( lua_State* ){
+			return -1;
+		}
+		
+		static int propertyGetterImpl( lua_State* state )
+		{
+			// 1 -> Object
+			// 2 -> Name of the attribute
+			
+			luaL_getmetatable( state , Class::className );	// Get metatable
+			
+			if( !lua_istable( state , -1 ) ){
+				lua_pop( state , 1 );
+				return -1;
+			}
+			
+			lua_pushvalue( state , 2 );						// Push the name of the requested attribute
+			lua_rawget( state , -2 );						// Get its index
+			
+			if( lua_isnumber( state , -1 ) )				// Check if we got a valid index
+			{
+				int index = lua_tonumber( state , -1 );		// Store index
+				
+				Class** instancePtr = static_cast<Class**>( lua_touserdata( state , 1 ) );	// Fetch instance
+				Class* instance = *instancePtr;												// Unreference pointer to pointer
+				
+				// Check if the instance is valid
+				if( !instancePtr || !instance ){
+					luaL_error( state , "Internal error, no object given!" );
+					return 0;
+				}
+				
+				if( LunarHelper::isFunc(index) ) // A func
+				{
+					lua_pushnumber( state , LunarHelper::func2index(index) ); 			// Push the right function index as well as..
+					lua_pushlightuserdata( state , instance ); 							// ..the corresponding object onto the stack
+					lua_pushcclosure( state , &Lunar<Class>::functionDispatch , 2 );	// Push a C Closure having 2 upvalues (index and instance)
+					return 1;															// Return a 'function'
+				}
+				else // A normal attribute!
+				{
+					// Clean up the stack before we call the getter
+					lua_pop( state , 2 );		// Pop metatable and index
+					lua_remove( state , 1 );	// Remove userdata
+					lua_remove( state , 1 );	// Remove [key]
+					
+					return (instance->*(Class::properties[index].getter))( state );
+				}
+			}
+			else // Try base classes
+			{
+				lua_pop( state , 2 ); // Pop index and metatable
+				return propertyGetterBase<Class>( state );
+			}
+			
+			return -1; // Indicate not only we pushed nothing on the stack but also we have not found the attribute
+		}
+	
+	private:
+		
+		//
+		// PROPERTY - SETTERS
+		//
+		template<int index, typename bases>
+		struct propertySetterBaseImpl{
+			static int dispatcher( lua_State* state )
+			{
+				int result = Lunar::propertyGetterBaseImpl<index-1,bases>::dispatcher( state );	// Recursion
+				if( result != -1 )																// Break up if we found the attribute
+					return result;
+				using baseType = typename std::tuple_element<index,bases>::type;				// Store current base class Type
+				return Lunar<baseType>::propertySetterImpl( state );						// Call property-setter
+			}
+		};
+		
+		template<typename bases>
+		struct propertySetterBaseImpl<0,bases>{
+			static int dispatcher( lua_State* state ){
+				using baseType = typename std::tuple_element<0,bases>::type;	// Store current base class Type
+				return Lunar<baseType>::propertySetterImpl( state );		// Call property-setter
+			}
+		};
+		
+		template<typename bases>
+		struct propertySetterBaseImpl<-1,bases>{
+			static inline int dispatcher( lua_State* state ){ return -1; } // For empty tuples
+		};
+		
+		static int propertySetterImpl( lua_State* state )
+		{
+			// 1 -> Object
+			// 2 -> Name of the attribute
+			// 2 -> Value to apply
+			
+			luaL_getmetatable( state , Class::className );	// Get metatable
+			lua_pushvalue( state , 2 );						// Push the name of the requested attribute
+			lua_rawget( state , -2 );						// Get its index
+			
+			if( lua_isnumber( state , -1 ) )				// Check if we got a valid index
+			{
+				int index = lua_tonumber( state , -1 );		// Store index
+				
+				// Fetch instance
+				Class** instancePtr = static_cast<Class**>( lua_touserdata( state , 1 ) );
+				Class* instance = *instancePtr;				// Unreference pointer to pointer
+				
+				// Check if the instance is valid
+				if( !instance || !instancePtr ){
+					luaL_error( state , "Internal error, no object given!" );
+					return 0;
+				}
+				
+				if( LunarHelper::isFunc(index) ){			// You cannot 'set' a member method!
+					luaL_error( state , "Trying to set the method [%s] of class [%s]", Class::methods[ LunarHelper::func2index(index) ].name , Class::className );
+					return 1;
+				}
+				else // A normal attribute!
+				{
+					// Clean up the stack before we call the setter
+					lua_pop( state , 2 );		// Pop metatable and index
+					lua_remove( state , 1 );	// Remove userdata
+					lua_remove( state , 1 );	// Remove [key]
+					
+					return (instance->*(Class::properties[index].setter))( state );
+				}
+			}
+			else // Try base classes
+			{
+				lua_pop( state , 2 ); // Pop index and metatable
+				return propertySetterBase<Class>( state );
+			}
+			
+			return -1; // Indicate not only we pushed nothing on the stack but also we have not found the attribute
+		}
+		
+		// FRONT END FOR BACK END //
+		// ~~~~~~~~~~~~~~~~~~~~~~ //
+		template<typename TempClass>
+		static inline requireBaseClasses<TempClass> propertySetterBase( lua_State* state ){
+			return propertySetterBaseImpl<std::tuple_size<typename TempClass::baseclasses>::value - 1,typename TempClass::baseclasses>::dispatcher( state );
+		}
+		
+		template<typename TempClass>
+		static inline requireNoBaseClasses<TempClass> propertySetterBase( lua_State* ){
+			return -1;
+		}
+	
+	private:
+	
+		//
+		// CHECK FOR OBJECTS ON THE LUA STACK
+		//
+		template<int index, typename bases>
+		struct recursiveCheckIfBaseImpl{
+			static bool dispatcher( const char* possibleBaseClass )
+			{
+				bool result = Lunar::recursiveCheckIfBaseImpl<index-1,bases>::dispatcher( possibleBaseClass );	// Recursion
+				if( result )																					// Break up if we found the attribute
+					return result;
+				using baseType = typename std::tuple_element<index,bases>::type;	// Store current base class Type
+				return Lunar<baseType>::recursiveCheck( possibleBaseClass );		// Call property-getter
+			}
+		};
+		
+		template<typename bases>
+		struct recursiveCheckIfBaseImpl<0,bases>{
+			static bool dispatcher( const char* possibleBaseClass )
+			{
+				using baseType = typename std::tuple_element<0,bases>::type;	// Store current base class Type
+				return Lunar<baseType>::recursiveCheck( possibleBaseClass );	// Check if 'baseType' is the base class we want to receive from lua
+			}
+		};
+		
+		template<typename bases>
+		struct recursiveCheckIfBaseImpl<-1,bases>{
+			static inline bool dispatcher( const char* ){ return nullptr; } // For empty tuples
+		};
+		
+		// FRONT END FOR BACK END //
+		// ~~~~~~~~~~~~~~~~~~~~~~ //
+		template<typename TempClass>
+		static inline requireBaseClasses<TempClass,bool> recursiveCheckIfBase( const char* possibleBaseClass ){
+			return recursiveCheckIfBaseImpl<std::tuple_size<typename TempClass::baseclasses>::value - 1,typename TempClass::baseclasses>::dispatcher( possibleBaseClass );
+		}
+		
+		template<typename TempClass>
+		static inline requireNoBaseClasses<TempClass,bool> recursiveCheckIfBase( const char* ){
+			return false;
+		}
+		
+		// FRONT END FOR BACK END //
+		// ~~~~~~~~~~~~~~~~~~~~~~ //
+		static bool inline recursiveCheck( const char* possibleBaseClass )
+		{
+			// Check whether the base class we need equals this class
+			if( strcmp( possibleBaseClass , Class::className ) == 0 )
+				return true;
+			// Check whether one of our base classes is the class we need
+			return recursiveCheckIfBase<Class>( possibleBaseClass );
+		}
+	
+	private:
+		
+		////////////////
+		// MIDDLE END //
+		////////////////
+		
+		static int propertyGetter( lua_State* state )
+		{
+			int result = propertyGetterImpl( state );
+			if( result != -1 )
+				return result;
+			luaL_error( state , "Object has no such attribute!" ); // Throw error
+			return 0;
+		}
+		
+		static int propertySetter( lua_State* state )
+		{
+			int result = propertySetterImpl( state );
+			if( result != -1 )
+				return result;
+			luaL_error( state , "Object has no such attribute!" ); // Throw error
+			return 0;
+		}
+		
+		static int functionDispatch( lua_State* state )
+		{
+			int index = (int)lua_tonumber( state , lua_upvalueindex(1) ); // Fetch function index
+			
+			// Fetch instance
+			Class* instance = static_cast<Class*>( lua_touserdata( state , lua_upvalueindex(2) ) );
+			
+			// Check if the instance is valid
+			if( !instance ){
+				luaL_error( state , "Internal error in function dispatch: No object given!" );
+				return 0;
+			}
+			
+			return (instance->*(Class::methods[index].func))( state );
+		}
+		
+		static int garbageCollector( lua_State* state )
+		{
+			// Fetch instance
+			Class** instancePtr = static_cast<Class**>( lua_touserdata( state , -1 ) );
+			Class* instance = *instancePtr;	// Unreference pointer to pointer
+			
+			// Check if the instance is valid
+			if( !instance || !instancePtr ){
+				luaL_error( state , "Internal error in garbage collector: No object given!" );
+				return 0;
+			}
+			
+			// Delete the instance
+			delete instance;
+			
+			return 0;
+		}
+		
+		static int toString( lua_State* state )
+		{
+			void** instancePtr = static_cast<void**>( lua_touserdata( state , -1 ) );
+			void* instance = *instancePtr;
+			
+			if( instancePtr && instance )
+				lua_pushfstring( state , "%s (%p)" , Class::className , (void*)instance );
+			else
+				luaL_error( state , "Internal error in string conversion: No object given!" );
+			
+			return 1;
+		}
+		
+		static int constructorDeleteSelfReference( lua_State* state )
+		{
+			lua_remove( state , 1 );
+			return constructor(state);
+		}
+		
+		static int constructor( lua_State* state )
+		{
+			Class* instance = new Class(state); // Create new 'Class'
+			Class** instancePtr = static_cast<Class**>( lua_newuserdata( state , sizeof(Class*) ) ); // Create pointer to pointer
+			*instancePtr = instance; // Set that pointer to the newly allocated object
+			
+			// Set metatable
+			luaL_getmetatable( state , Class::className ); 		// Fetch global metatable Class::classname
+			lua_setmetatable( state , -2 );
+			return 1;
+		}
+		
+		template<typename TempClass>
+		static inline requireStatics<TempClass> registerConstructor( lua_State* state )
 		{
 			// Create table that will hold all static methods
-			lua_createtable(L,0,1);
+			lua_newtable( state );
+			int tableIndex = lua_gettop( state );
 			
-			int tableIndex = lua_gettop(L);
-			
-			for (int i = 0; T::staticmethods[i].name; i++)
+			for( int i = 0 ; Class::staticmethods[i].name ; i++ )
 			{
-				lua_pushstring(L, T2::staticmethods[i].name); // Push Key
-				lua_pushcfunction(L, T2::staticmethods[i].func ); // Push Value
-				lua_rawset(L, tableIndex);
+				lua_pushstring( state , Class::staticmethods[i].name ); // Push Key
+				lua_pushcfunction( state , Class::staticmethods[i].func ); // Push Value
+				lua_rawset( state , tableIndex ); // Push into table
 			}
 			
 			// Create table that will become our metatable
-				lua_newtable(L);
-				int metatableIndex = lua_gettop(L);
+				lua_newtable( state );
+				int metatableIndex = lua_gettop( state );
 				
 				// Push constructor
-				lua_pushliteral(L, "__call");
-				lua_pushcfunction(L, &Lunar<T2>::constructorDeleteSelfReference);
-				lua_settable(L, metatableIndex);
+				lua_pushliteral( state , "__call" );
+				lua_pushcfunction( state , &Lunar<Class>::constructorDeleteSelfReference );
+				lua_settable( state , metatableIndex );
 			//
 			
 			// Set metatable of table and pop it from stack
-			lua_setmetatable(L, tableIndex);
+			lua_setmetatable( state , tableIndex );
 			
 			// Adds the currently created table to the global namespace and pops it from stack
-			lua_setglobal(L, T2::className);
-		}
-		// Fallback
-		template<typename T2>
-		static typename std::enable_if<!detail::hasStaticMethods<T2>::value>::type registerStatics(lua_State* L)
-		{
-			lua_pushcfunction(L, &Lunar<T2>::constructor);
-			lua_setglobal(L, T2::className);
+			lua_setglobal( state , Class::className );
 		}
 		
+		template<typename TempClass>
+		static inline requireNoStatics<TempClass> registerConstructor( lua_State* state )
+		{
+			lua_pushcfunction( state , &Lunar<Class>::constructor );
+			lua_setglobal( state , Class::className );
+		}
+	
 	public:
 		
-		struct PropertyType {
-			const char	*name;
-			int			(T::*getter)(lua_State*);
-			int			(T::*setter)(lua_State*);
-		};
-
-		struct FunctionType {
-			const char	*name;
-			int			(T::*func)(lua_State*);
+		///////////////
+		// FRONT END //
+		///////////////
+		
+		typedef int (Class::*MemFuncPtr)( lua_State* );
+		typedef int (*FuncPtr)( lua_State* );
+		template<typename...Bases>
+		using BaseClassType = std::tuple<Bases...>;
+		
+		struct PropertyType{
+			const char*	name;
+			MemFuncPtr	getter;
+			MemFuncPtr	setter;
 		};
 		
-		struct StaticType {
-			const char	*name;
-			int	 		(*func)(lua_State*);
+		struct FunctionType{
+			const char*	name;
+			MemFuncPtr	func;
 		};
-
-		/*
-			Description:
-			Retrieves a wrapped class from the arguments passed to the func, specified by narg (position).
-			This func will raise an exception if the argument is not of the correct type.
-		*/
-		static T* check(lua_State* L, int narg)
+		
+		struct StaticType{
+			const char*	name;
+			FuncPtr		func;
+		};
+		
+		// Push objects on the lua stack
+		static void push( lua_State* state , Class* instance )
 		{
-			T** obj = static_cast<T**>( luaL_checkudata(L, narg, T::className) );
-			return *obj;		// pointer to T object
-		}
-
-		/*
-			Description:
-			Retrieves a wrapped class from the arguments passed to the func, specified by narg (position).
-			This func will return nullptr if the argument is not of the correct type.  Useful for supporting
-			multiple types of arguments passed to the func
-		*/ 
-		static T* lightcheck(lua_State* L, int narg) {
-			T** obj = static_cast<T**>( luaL_testudata(L, narg, T::className) );
-			if ( !obj )
-				return nullptr; // lightcheck returns nullptr if not found.
-			return *obj;		// pointer to T object
+			if( instance ) // Make sure the pointer passed is not null
+			{
+				Class **instancePtr = static_cast<Class**>( lua_newuserdata( state , sizeof(Class*) ) ); // Create userdata
+				*instancePtr = instance; // Write pointer
+				
+				luaL_getmetatable( state , Class::className );	// Get metatable
+				lua_setmetatable( state , -2 );					// Apply to object
+			}
+			else
+				lua_pushnil( state );
 		}
 		
-		/*
-			Description:
-			Registers your class with Lua.  Leave namespac "" if you want to load it into the global space.
-		*/
-		static void Register( lua_State* L /*, const char *namespac = NULL*/ ) {
-			
-			/// This is just uncommented because of Memory usage
-			//if ( namespac && strlen(namespac) )
-			//{
-			//	lua_getglobal(L, namespac);
-			//	if( lua_isnil(L,-1) ) // Create namespace if not present
-			//	{
-			//		lua_newtable(L);
-			//		lua_pushvalue(L,-1); // Duplicate table pointer since setglobal pops the value
-			//		lua_setglobal(L,namespac);
-			//	}
-			//	lua_pushcfunction(L, &Lunar < T >::constructor);
-			//	lua_setfield(L, -2, T::className);
-			//	lua_pop(L, 1);
-			//} else {
-				registerStatics<T>(L);
-			//}
-			
-			luaL_newmetatable(L, T::className);
-			int             metatable = lua_gettop(L);
-			
-			lua_pushliteral(L, "__gc");
-			lua_pushcfunction(L, &Lunar < T >::gc_obj);
-			lua_settable(L, metatable);
-			
-			lua_pushliteral(L, "__tostring");
-			lua_pushcfunction(L, &Lunar < T >::to_string);
-			lua_settable(L, metatable);
-			
-			lua_pushliteral(L, "dump");
-			lua_pushcfunction(L, &Lunar < T >::function_dump);
-			lua_settable(L, metatable);
-			
-			lua_pushliteral(L, "__index");
-			lua_pushcfunction(L, &Lunar < T >::property_getter);
-			lua_settable(L, metatable);
-			
-			lua_pushliteral(L, "__newindex");
-			lua_pushcfunction(L, &Lunar < T >::property_setter);
-			lua_settable(L, metatable);
-			
-			for (int i = 0; T::properties[i].name; i++)
+		// Check for objects of 'Class' on the Lua-Stack at position 'narg'
+		static Class* check( lua_State* state , int narg )
+		{
+			Class* instance = lightcheck( state , narg );
+			if( !instance )
 			{
-				// Register some properties in it
-				// Having some string associated with them
-				lua_pushstring(L, T::properties[i].name );
+				lua_typeerror( state , narg , Class::className );
+				return nullptr;
+			}
+			return instance;
+		}
+		
+		static bool test( lua_State* state , int narg )
+		{
+			// We need the name of the object that is on the stack
+			if( !lua_getmetatable( state , narg ) )
+				return false;
+			
+			lua_pushliteral( state , "__name" );
+			lua_rawget( state , -2 );
+			
+			if( !lua_isstring( state , -1 ) ){
+				lua_pop( state , 2 );
+				return false;
+			}
+			
+			const char* name = lua_tostring( state , -1 );
+			lua_pop( state , 2 ); // Pop the metatable and the classname from the stack
+			
+			// We want to check whether this class is a base class of the gadget on the stack
+			auto func = LunarHelper::className2checkIfBaseFunction[name];
+			
+			return func && (*func)( Class::className );
+		}
+		
+		static Class* lightcheck( lua_State* state , int narg )
+		{
+			if( test( state , narg ) )
+			{
+				// Fetch instance
+				Class** instancePtr = static_cast<Class**>( lua_touserdata( state , narg ) );
+				
+				// Check if the instance is valid
+				if( instancePtr )
+					return *instancePtr;
+			}
+			return nullptr;
+		}
+		
+		static void install( lua_State* state )
+		{	
+			// Register the constructor
+			Lunar<Class>::registerConstructor<Class>( state );
+			
+			// Create a metatable
+			luaL_newmetatable( state , Class::className );
+			
+			// Store its index
+			int metatable = lua_gettop( state );
+			
+			// Push Garbage-Collector handler
+			lua_pushliteral( state , "__gc");
+			lua_pushcfunction( state , &Lunar<Class>::garbageCollector );
+			lua_settable( state , metatable );
+			
+			// Tell Lua how this class gets converted to a string
+			lua_pushliteral( state , "__tostring");
+			lua_pushcfunction( state , &Lunar<Class>::toString );
+			lua_settable( state , metatable );
+			
+			// Register handler for property and function access
+			lua_pushliteral( state , "__index");
+			lua_pushcfunction( state , &Lunar<Class>::propertyGetter );
+			lua_settable( state , metatable );
+			
+			// Register a handler for setting values of properties
+			lua_pushliteral( state , "__newindex");
+			lua_pushcfunction( state , &Lunar<Class>::propertySetter );
+			lua_settable( state , metatable );
+			
+			// Pass the name of the class as an attribute in the metatable
+			lua_pushliteral( state , "__name" );
+			lua_pushstring( state , Class::className );
+			lua_settable( state , metatable );
+			
+			// Register Properties
+			for( int i = 0 ; Class::properties[i].name ; i++ )
+			{
+				// Push the unique name of the property for identification
+				lua_pushstring( state , Class::properties[i].name );
 				
 				// And a number indexing which property it is
-				lua_pushnumber(L, i);
-				lua_rawset(L, metatable);
+				lua_pushnumber( state , i );
+				lua_rawset( state , metatable );
 			}
-			for (int i = 0; T::methods[i].name; i++)
+			
+			// Register Functions
+			for( int i = 0 ; Class::methods[i].name ; i++ )
 			{
-				// Register some functions in it
-				// Having some string associated with them
-				lua_pushstring(L, T::methods[i].name );
+				// Push the unique name of the function for identification
+				lua_pushstring( state , Class::methods[i].name );
 				
 				// Add a number indexing which func it is
-				lua_pushnumber(L, i | ( 1 << 8 ) );
-				lua_rawset(L, metatable);
-			}
-		}
-		
-		/*
-			constructorthat removes the 'self' reference that gets passed along in case the function is actually a metamethod
-			Arguments:
-			* L - Lua State
-		*/
-		static int constructorDeleteSelfReference(lua_State* L)
-		{
-			lua_remove(L,1); 
-			return constructor(L);
-		}
-		
-		static int constructor(lua_State* L)
-		{
-			T*  ap = new T(L);
-			T** a = static_cast<T**>(lua_newuserdata(L, sizeof(T *))); // Push value = userdata
-			*a = ap;
-			
-			luaL_getmetatable(L, T::className); 		// Fetch global metatable T::classname
-			lua_setmetatable(L, -2);
-			return 1;
-		}
-		
-		/*
-			Description:
-			Loads an instance of the class into the Lua stack, and provides you a pointer so you can modify it.
-		*/
-		static void push(lua_State* L, T* instance )
-		{
-			if( !instance )
-				return;
-			
-			T **a = (T **) lua_newuserdata(L, sizeof(T *)); // Create userdata
-			*a = instance;
-			
-			luaL_getmetatable(L, T::className);
-			
-			lua_setmetatable(L, -2);
-		}
-		
-		/*
-			property_getter (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int property_getter(lua_State* L)
-		{
-			// Object is at 1
-			// Name is at 2
-			lua_getmetatable(L, 1); // Look up the index of a name
-			lua_pushvalue(L, 2);	// Push the name
-			lua_rawget(L, -2);		// Get the index
-			// Top has _index
-			
-			if ( lua_isnumber(L, -1) ) // Check if we got a valid index
-			{
-				// get Index
-				int _index = lua_tonumber(L, -1);
-				
-				T** obj = static_cast<T**>( lua_touserdata( L , 1 ) );
-				
-				if( _index & ( 1 << 8 ) ) // A func
-				{
-					lua_pushnumber(L, _index ^ ( 1 << 8 ) ); 	// Push the right func index
-					lua_pushlightuserdata(L, obj); 				// and the corresponding object onto the stack
-					lua_pushcclosure(L, &Lunar < T >::function_dispatch, 2); // Push a C Closure having the index and the object as upvalues
-					return 1; // Return a func
-				}
-				
-				lua_pop(L,2);    // Pop metatable and _index
-				lua_remove(L,1); // Remove userdata
-				lua_remove(L,1); // Remove [key]
-				
-				return ((*obj)->*(T::properties[_index].getter)) (L);
+				lua_pushnumber( state , LunarHelper::index2func(i) );
+				lua_rawset( state , metatable );
 			}
 			
-			luaL_error( L , "Object has no such attribute" );
-			
-			return 0;
-		}
-		
-		/*
-			@ property_setter (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int property_setter(lua_State* L)
-		{
-			lua_getmetatable(L, 1); // Look up the index from name
-			lua_pushvalue(L, 2);	//
-			lua_rawget(L, -2);		//
-			
-			if ( lua_isnumber(L, -1) ) // Check if we got a valid index
-			{
-				int _index = lua_tonumber(L, -1);
-				
-				T** obj = static_cast<T**>( lua_touserdata( L , 1 ) );
-				
-				if( !obj || !*obj ){
-					_luafunc::errorHandler(L, "Internal error, no object given!" );
-					return 0;
-				}
-				
-				if( _index >> 8 ){ // Try to set a func
-					_luafunc::errorHandler(L, "Trying to set the method [%s] of class [%s]", (*obj)->T::methods[_index ^ ( 1 << 8 ) ].name , T::className );
-					return 0;
-				}
-				
-				lua_pop(L,2);    // Pop metatable and _index
-				lua_remove(L,1); // Remove userdata
-				lua_remove(L,1); // Remove [key]
-				
-				return ((*obj)->*(T::properties[_index].setter)) (L);
-			}
-			
-			return 0;
-		}
-		
-		/*
-			@ function_dispatch (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int function_dispatch(lua_State* L)
-		{
-			// Fetch function index
-			int i = (int) lua_tonumber( L , lua_upvalueindex(1) );
-			
-			// Fetch object
-			T** obj = static_cast <T**>( lua_touserdata( L , lua_upvalueindex(2) ) );
-			
-			return ((*obj)->*(T::methods[i].func)) (L);
-		}
-		
-		/*
-			@ function_dump (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int function_dump(lua_State * L)
-		{
-			string output = "Dump of ";
-			output += T::className;
-			output += ":\nMethods:";
-			
-			for (int i = 0; T::methods[i].name; i++)
-			{
-				output += "\n - ";
-				output += T::methods[i].name;
-			}
-			
-			output += "\nProperties:";
-			
-			for (int i = 0; T::properties[i].name; i++)
-			{
-				output += "\n - ";
-				output += T::properties[i].name;
-			}
-			
-			_luafunc::errorHandler(L, output.c_str());
-			
-			return 0;
-		}
-		
-		/*
-			@ gc_obj (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int gc_obj(lua_State * L)
-		{
-			T** obj = static_cast<T**>( lua_touserdata( L , -1 ) );
-			
-			if( obj && *obj )
-				delete(*obj);
-			
-			return 0;
-		}
-		
-		/*
-			@ to_string (internal)
-			Arguments:
-			* L - Lua State
-		*/
-		static int to_string(lua_State* L)
-		{
-			void** obj = static_cast<void**>(lua_touserdata(L, -1));
-			
-			if( obj )
-				lua_pushfstring( L , "%s (%p)" , T::className , (void*)( *obj ) );
-			else
-				lua_pushliteral( L , "Empty object" );
-			
-			return 1;
+			LunarHelper::className2checkIfBaseFunction[Class::className] = static_cast<bool(*)(const char*)>( &Lunar<Class>::recursiveCheck );
 		}
 };
 

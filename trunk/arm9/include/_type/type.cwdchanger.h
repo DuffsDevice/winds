@@ -8,7 +8,7 @@ namespace unistd{
 #include <unistd.h>
 }
 
-class _cwdchanger
+class _cwdChanger
 {
 	private:
 		
@@ -25,26 +25,26 @@ class _cwdchanger
 		}
 		
 		//! Ctor
-		_cwdchanger( const _cwdchanger& ){}
+		_cwdChanger( const _cwdChanger& ){}
 	
 	public:
 		
 		//! Ctor
-		_cwdchanger( const string& newDir ) :
+		_cwdChanger( const string& newDir ) :
 			oldCwd( getCWD() )
 		{
 			setCWD( _direntry::replaceASSOCS( newDir ) );
 		}
 		
 		//! Move Ctor
-		_cwdchanger( _cwdchanger&& other ) :
+		_cwdChanger( _cwdChanger&& other ) :
 			oldCwd( move( other.oldCwd ) )
 		{
 			other.oldCwd.clear();
 		}
 		
 		//! Dtor
-		~_cwdchanger(){
+		~_cwdChanger(){
 			if( !oldCwd.empty() )
 				setCWD( oldCwd );
 		}

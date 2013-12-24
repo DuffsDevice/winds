@@ -25,7 +25,7 @@ class _lua_bitmap
 		
 		//! C-Ctor
 		_lua_bitmap( _bitmap* b );
-		_lua_bitmap( _constbitmap* b );
+		_lua_bitmap( _constBitmap* b );
 		_lua_bitmap( _bitmap&& b );
 		
 		//! Lua-Ctor

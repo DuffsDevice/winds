@@ -53,7 +53,6 @@ Lunar<_lua_contextmenu>::FunctionType _lua_contextmenu::methods[] = {
 };
 
 Lunar<_lua_contextmenu>::PropertyType _lua_contextmenu::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "strValue" , wrap( _lua_contextmenu , &_contextMenu::getStrValue ) , nullptr },
 	{ "value" , wrap( _lua_contextmenu , &_contextMenu::getIntValue ) , wrap( _lua_contextmenu , &_contextMenu::setIntValue ) },
 	{ "list" , wrap( _lua_contextmenu , &_contextMenu::getList ) , wrap( _lua_contextmenu , &_contextMenu::setList ) },

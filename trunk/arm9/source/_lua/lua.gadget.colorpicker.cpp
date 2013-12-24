@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_colorpicker::_lua_colorpicker( lua_State* L ) :
-	_lua_gadget( new _colorpicker( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
+	_lua_gadget( new _colorPicker( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
 {}
 
 //! Lua-button
@@ -18,7 +18,6 @@ Lunar<_lua_colorpicker>::FunctionType _lua_colorpicker::methods[] = {
 };
 
 Lunar<_lua_colorpicker>::PropertyType _lua_colorpicker::properties[] = {
-	GADGET_BASE_ATTR,
-	{ "color" , wrap( _lua_colorpicker , &_colorpicker::getColor ) , wrap( _lua_colorpicker , &_colorpicker::setColor ) },
+	{ "color" , wrap( _lua_colorpicker , &_colorPicker::getColor ) , wrap( _lua_colorpicker , &_colorPicker::setColor ) },
 	LUA_CLASS_ATTR_END
 };

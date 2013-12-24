@@ -13,7 +13,7 @@ class _scSetupPage5 : public _view
 	private:
 	
 		_label*			lblInitializingProgress;
-		_progressbar*	progressBar;
+		_progressBar*	progressBar;
 		_timer			timer;
 		
 		void timerCallback();
@@ -32,7 +32,7 @@ class _scSetupPage5 : public _view
 			viewParent->addChild( this->lblInitializingProgress );
 			
 			// Progressbar
-			this->progressBar = new _progressbar( 101 , 72 , 50 , false );
+			this->progressBar = new _progressBar( 101 , 72 , 50 , false );
 			viewParent->addChild( this->progressBar );
 			
 			// Start execution

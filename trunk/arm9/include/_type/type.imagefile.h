@@ -5,15 +5,15 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.direntry.h"
 
-class _imagefile : public _bitmap , private _direntry 
+class _imageFile : public _bitmap , private _direntry 
 {
 	public:
 		
 		//! Ctor
-		_imagefile( string fn );
+		_imageFile( string fn );
 		
 		//! Dtor
-		~_imagefile();
+		~_imageFile();
 		
 };
 #endif

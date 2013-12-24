@@ -4,9 +4,6 @@
 
 #include "_lua/lua.lunar.h"
 #include "_type/type.gadget.h"
-	
-#define GADGET_BASE_ATTR \
-	{ "base" , &_lua_gadget::baseFunc , nullptr } \
 
 
 /**
@@ -45,10 +42,6 @@ class _lua_gadget{
 			typedef typename T::_gadget def;
 			return * static_cast<T*>(this->gadget);
 		}
-		
-		//! base
-		int baseFunc( lua_State* L );
-		
 		
 		//! applyStyle
 		int applyStyle( lua_State* );

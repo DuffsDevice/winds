@@ -4,7 +4,7 @@
 
 #include "_type/type.gadget.h"
 
-class _textbox : public _gadget
+class _textBox : public _gadget
 {
 	protected:
 		
@@ -45,7 +45,7 @@ class _textbox : public _gadget
 		//! Internal, not private due to _userWrapper-class
 		_2s32 getFontPosition( bool noScrollApplied = false );
 		
-		//! Made virtual because of e.g. _passcodebox
+		//! Made virtual because of e.g. _passcodeBox
 		virtual void removeStr( _int position , _length numChars = 1 );
 		virtual void insertStr( _int position , string s );
 		
@@ -100,7 +100,7 @@ class _textbox : public _gadget
 		_s64 getCursor(){ return _s64(this->cursor) - 1; }
 		
 		//! Ctor
-		_textbox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
+		_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
 };
 
 #endif

@@ -45,7 +45,6 @@ Lunar<_lua_slider>::FunctionType _lua_slider::methods[] = {
 };
 
 Lunar<_lua_slider>::PropertyType _lua_slider::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "value"		, wrap( _lua_slider , &_slider::getIntValue )	, wrap( _lua_slider , &_slider::setIntValue ) },
 	{ "upperBound"	, wrap( _lua_slider , &_slider::getUpperBound )	, wrap( _lua_slider , &_slider::setUpperBound ) },
 	{ "lowerBound"	, wrap( _lua_slider , &_slider::getLowerBound )	, wrap( _lua_slider , &_slider::setLowerBound ) },

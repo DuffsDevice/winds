@@ -1,7 +1,7 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
-_fileview::_fileview( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileviewType viewtype ,
+_fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewtype ,
 			_scrollType scrollTypeX , _scrollType scrollTypeY , bool singleClickToExecute , _style&& style ) :
 	_scrollArea( x , y , width , height , scrollTypeX , scrollTypeY , (_style&&)style )
 	, directory( path )
@@ -10,19 +10,19 @@ _fileview::_fileview( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
 	
-	// Generate _fileobject's
+	// Generate _fileObject's
 	this->generateChildren( singleClickToExecute );
 }
 
 
-void _fileview::setPath( const string& path )
+void _fileView::setPath( const string& path )
 {
 	this->directory = _direntry( path );
 	this->generateChildren( false );
 }
 
 
-void _fileview::generateChildren( bool singleClickToExecute )
+void _fileView::generateChildren( bool singleClickToExecute )
 {
 	this->removeChildren( true );
 	
@@ -30,7 +30,7 @@ void _fileview::generateChildren( bool singleClickToExecute )
 	
 	switch( this->viewType )
 	{
-		case _fileviewType::symbol_big:
+		case _fileViewType::symbol_big:
 		{
 			//_length curX = 1;
 			//_length curY = 1;
@@ -38,7 +38,7 @@ void _fileview::generateChildren( bool singleClickToExecute )
 			for( string str; this->directory.readChild( str ) != false ; )
 			{
 				// Allocate Fileobject
-				_fileobject* fo = new _fileobject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
+				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
 				
 				auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 28 , 2 );
 				fo->setInternalEventHandler( onParentSet , cb );
@@ -49,7 +49,7 @@ void _fileview::generateChildren( bool singleClickToExecute )
 			}
 			break;
 		}
-		case _fileviewType::list:
+		case _fileViewType::list:
 		default:
 			// Read Children of directory
 			//_vector<string> names = { "Haloo.txt" , "Resize.lnk" , "Halihalo.exe" };
@@ -57,7 +57,7 @@ void _fileview::generateChildren( bool singleClickToExecute )
 			for( string str; this->directory.readChild( str ) != false ; )
 			{
 				// Allocate Fileobject
-				_fileobject* fo = new _fileobject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
+				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , singleClickToExecute );
 				
 				auto cb = _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 30 , 2 );
 				fo->setInternalEventHandler( onParentSet , cb );
@@ -69,6 +69,6 @@ void _fileview::generateChildren( bool singleClickToExecute )
 	}
 }
 
-_fileview::~_fileview(){
+_fileView::~_fileView(){
 	this->removeChildren( true );
 }

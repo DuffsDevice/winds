@@ -2,8 +2,8 @@
 #define _WIN_SC_SETUP_
 
 #include "_type/type.scenario.h"
-#include "_type/type.viewswitcher.h"
-#include "_gadget/gadget.actionbutton.h"
+#include "_type/type.view.switcher.h"
+#include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.label.h"
 
 class _scSetup : public _scenario

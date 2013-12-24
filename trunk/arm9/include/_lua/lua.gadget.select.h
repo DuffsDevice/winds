@@ -36,7 +36,7 @@ class _lua_select : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_select>::FunctionType methods[];
 		static Lunar<_lua_select>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_select>::BaseClassType<_lua_gadget>;
 };
 
 #endif

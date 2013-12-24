@@ -2,9 +2,9 @@
 #include "_type/type.singlevaluegroup.h"
 
 // Graphics
-#include "_resource/BMP_Radiobuttons.h"
+#include "_resource/resource.image.radiobuttons.h"
 
-_constbitmap _radio::graphic[4] = { BMP_RadioChecked() , BMP_RadioUnchecked() , BMP_RadioBorder() , BMP_RadioBorderPressed() };
+_constBitmap _radio::graphic[4] = { BMP_RadioChecked() , BMP_RadioUnchecked() , BMP_RadioBorder() , BMP_RadioBorderPressed() };
 
 _callbackReturn _radio::refreshHandler( _event event )
 {

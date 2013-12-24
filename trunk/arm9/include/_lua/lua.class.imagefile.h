@@ -9,7 +9,7 @@
 /**
  * Proxy Classes
  */
-class _lua_imagefile : public _imagefile {
+class _lua_imagefile : public _imageFile {
 	
 	public:
 		

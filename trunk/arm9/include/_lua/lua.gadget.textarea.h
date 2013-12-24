@@ -17,14 +17,14 @@ class _lua_textarea : public _lua_gadget
 		_lua_textarea( lua_State* L );
 		
 		//! C-Ctor
-		_lua_textarea( _textarea* t ) : _lua_gadget( t , false )
+		_lua_textarea( _textArea* t ) : _lua_gadget( t , false )
 		{ }
 		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_textarea>::FunctionType methods[];
 		static Lunar<_lua_textarea>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_textarea>::BaseClassType<_lua_gadget>;
 };
 
 #endif

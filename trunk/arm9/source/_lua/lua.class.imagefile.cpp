@@ -8,13 +8,13 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_imagefile::_lua_imagefile( lua_State* L ) : 
-	_imagefile( check<string>( L , 1 ) )
+	_imageFile( check<string>( L , 1 ) )
 { }
 
 int _lua_imagefile::getBitmap( lua_State* L ){
-	if( !_imagefile::isValid() )
+	if( !_imageFile::isValid() )
 		return 0;
-	push( L , (_constbitmap&)(_imagefile&)*this );
+	push( L , (_constBitmap&)(_imageFile&)*this );
 	return 1;
 }
 

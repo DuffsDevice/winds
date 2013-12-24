@@ -25,7 +25,7 @@ class _lua_windowmenu : public _lua_gadget
 		static Lunar<_lua_windowmenu>::FunctionType methods[];
 		static Lunar<_lua_windowmenu>::PropertyType properties[];
 		static Lunar<_lua_windowmenu>::StaticType	staticmethods[];
-	
+		using baseclasses = Lunar<_lua_windowmenu>::BaseClassType<_lua_gadget>;
 };
 
 #endif

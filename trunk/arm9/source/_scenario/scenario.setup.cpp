@@ -5,7 +5,7 @@
 #include "_scenario/scenario.setup.page4.h"
 #include "_scenario/scenario.setup.page5.h"
 #include "_type/type.system.h"
-#include "_gadget/gadget.startupscreen.h"
+#include "_gadget/gadget.screen.startup.h"
 #include "_gadget/gadget.keyboard.h"
 
 _u8 state = 1;

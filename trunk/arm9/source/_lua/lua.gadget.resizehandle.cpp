@@ -18,7 +18,6 @@ Lunar<_lua_resizehandle>::FunctionType _lua_resizehandle::methods[] = {
 };
 
 Lunar<_lua_resizehandle>::PropertyType _lua_resizehandle::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "bgColor" , wrap( _lua_resizehandle , &_resizeHandle::getBgColor ) , wrap( _lua_resizehandle , &_resizeHandle::setBgColor ) },
 	LUA_CLASS_ATTR_END
 };

@@ -1,10 +1,8 @@
 #include "_gadget/gadget.desktop.h"
 #include "_type/type.system.h"
-#include "_type/type.bitmapResizer.h"
+#include "_type/type.bitmap.resizer.h"
 #include "_type/type.color.h"
-#include "_type/type.freetypefont.h"
-
-//_freetypefont* ft = nullptr;
+#include "_type/type.font.freetype.h"
 
 _callbackReturn _desktop::refreshHandler( _event event )
 {
@@ -19,23 +17,19 @@ _callbackReturn _desktop::refreshHandler( _event event )
 	
 	bP.drawVerticalGradient( 0 , 0 , bP.getWidth() , bP.getHeight() , c.getColor() , _system::getUser().dTC );
 	
-	_constbitmap& wp = _system::getUser().getWallpaper();
+	_constBitmap& wp = _system::getUser().getWallpaper();
 	
 	if( wp.isValid() )
 		bP.copy( 128 - ( wp.getWidth() >> 1 ) , 96 - ( wp.getHeight() >> 1 ) , wp );
-	
-	//bP.copy( 0 , 0 , _system::getUser().userLogo );
-	//if( ft )
-	//	bP.drawString( 20 , 20 , ft , "Zelda!" , RGB( 25 , 0 , 4 ) , 30 );
 	
 	return use_default;
 }
 
 
 _desktop::_desktop( _style&& style ) :
-	_fileview( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileviewType::symbol_big , _scrollType::prevent , _scrollType::prevent , false , style | _styleAttr::focusNoAction )
+	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileViewType::symbol_big , _scrollType::prevent , _scrollType::prevent , false , style | _styleAttr::focusNoAction )
 {
-	//ft = new _freetypefont("/font.ttf");
+	//ft = new _freetypeFont("/font.ttf");
 	
 	this->setInternalEventHandler( onDraw , make_callback( &_desktop::refreshHandler ) );
 	

@@ -10,7 +10,7 @@ class _checkbox : public _gadget {
 		
 		_u8		intValue;
 		
-		static _constbitmap graphic[3];
+		static _constBitmap graphic[3];
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn mouseHandler( _event );

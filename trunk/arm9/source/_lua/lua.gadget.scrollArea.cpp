@@ -39,7 +39,6 @@ Lunar<_lua_scrollarea>::FunctionType _lua_scrollarea::methods[] = {
 };
 
 Lunar<_lua_scrollarea>::PropertyType _lua_scrollarea::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "scrollX"	, wrap( _lua_scrollarea , &_scrollArea::getScrollY ) , wrap( _lua_scrollarea , &_scrollArea::scrollToX ) },
 	{ "scrollY"	, wrap( _lua_scrollarea , &_scrollArea::getScrollY ) , wrap( _lua_scrollarea , &_scrollArea::scrollToY ) },
 	LUA_CLASS_ATTR_END

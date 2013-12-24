@@ -7,7 +7,7 @@
 #include "_type/type.animation.h"
 #include "_type/type.timer.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 
 
 class _scLogin : public _scenario
@@ -29,7 +29,7 @@ class _scLogin : public _scenario
 		
 		_label*					welcome;
 		_label*					welcomeBg;
-		_imagegadget*			separator;
+		_imageGadget*			separator;
 		
 		friend class _userWrapper;
 	

@@ -2,8 +2,8 @@
 #include "_type/type.system.h"
 #include "_type/type.callback.h"
 #include "_type/type.callback.derives.h"
-#include "_type/type.textphrases.h"
-#include "_type/type.stringtokenizer.h"
+#include "_type/type.text.phrases.h"
+#include "_type/type.tokenizer.h"
 #include "_gadget/gadget.keyboard.h"
 
 #include "_lua/lua.lunar.h"
@@ -20,7 +20,7 @@ using namespace _luafunc;
 #include "_lua/lua.class.font.h"
 #include "_lua/lua.class.direntry.h"
 #include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.bitmapPort.h"
+#include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.event.h"
 #include "_lua/lua.class.radiogroup.h"
@@ -36,7 +36,9 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.calendar.h"
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.colorpicker.h"
-#include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.button.image.h"
+#include "_lua/lua.gadget.button.sticky.h"
+#include "_lua/lua.gadget.image.h"
 #include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.scrollBar.h"
@@ -44,7 +46,6 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.radio.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.slider.h"
-#include "_lua/lua.gadget.stickybutton.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.window.h"
@@ -53,48 +54,49 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.resizehandle.h"
 
 _vector<_tuple<const char*,const char*,void(*)(lua_State*)>>	luaClasses = {
-	make_tuple( "System" , "Animation" , &Lunar<_lua_animation>::Register ),
-	make_tuple( "System" , "Direntry" , &Lunar<_lua_direntry>::Register ),
-	make_tuple( "System" , "Event" , &Lunar<_lua_event>::Register ),
-	make_tuple( "System" , "ImageFile" , &Lunar<_lua_imagefile>::Register ),
-	make_tuple( "System" , "Timer" , &Lunar<_lua_timer>::Register ),
-	make_tuple( "System" , "Menu" , &Lunar<_lua_menu>::Register ),
-	make_tuple( "System" , "MenuRule" , &Lunar<_lua_menurule>::Register ),
-	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::Register ),
-	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::Register ),
-	make_tuple( "Drawing" , "BitmapPort" , &Lunar<_lua_bitmapPort>::Register ),
-	make_tuple( "Drawing" , "Rect" , &Lunar<_lua_rect>::Register ),
-	make_tuple( "Drawing" , "Border" , &Lunar<_lua_border>::Register ),
-	make_tuple( "Drawing" , "Color" , &Lunar<_lua_color>::Register ),
-	make_tuple( "Drawing" , "Font" , &Lunar<_lua_font>::Register ),
-	make_tuple( "Dialog" , "YesNoDialog" , &Lunar<_lua_yesnodialog>::Register ),
-	make_tuple( "Dialog" , "EnterTextDialog" , &Lunar<_lua_entertextdialog>::Register ),
-	make_tuple( "Dialog" , "ImageDialog" , &Lunar<_lua_imagedialog>::Register ),
-	make_tuple( "Dialog" , "ErrorDialog" , &Lunar<_lua_errordialog>::Register ),
-	make_tuple( "Dialog" , "WarningDialog" , &Lunar<_lua_warningdialog>::Register ),
-	make_tuple( "Dialog" , "InfoDialog" , &Lunar<_lua_infodialog>::Register ),
-	make_tuple( "UI" , "RadioGroup" , &Lunar<_lua_radiogroup>::Register ),
-	make_tuple( "UI" , "Gadget" , &Lunar<_lua_gadget>::Register ),
-	make_tuple( "UI" , "Window" , &Lunar<_lua_window>::Register ),
-	make_tuple( "UI" , "WindowBar" , &Lunar<_lua_windowbar>::Register ),
-	make_tuple( "UI" , "WindowMenu" , &Lunar<_lua_windowmenu>::Register ),
-	make_tuple( "UI" , "Calendar" , &Lunar<_lua_calendar>::Register ),
-	make_tuple( "UI" , "Counter" , &Lunar<_lua_counter>::Register ),
-	make_tuple( "UI" , "ColorPicker" , &Lunar<_lua_colorpicker>::Register ),
-	make_tuple( "UI" , "ImageGadget" , &Lunar<_lua_imagegadget>::Register ),
-	make_tuple( "UI" , "Button" , &Lunar<_lua_button>::Register ),
-	make_tuple( "UI" , "Select" , &Lunar<_lua_select>::Register ),
-	make_tuple( "UI" , "CheckBox" , &Lunar<_lua_checkbox>::Register ),
-	make_tuple( "UI" , "Label" , &Lunar<_lua_label>::Register ),
-	make_tuple( "UI" , "Slider" , &Lunar<_lua_slider>::Register ),
-	make_tuple( "UI" , "Radio" , &Lunar<_lua_radio>::Register ),
-	make_tuple( "UI" , "ResizeHandle" , &Lunar<_lua_resizehandle>::Register ),
-	make_tuple( "UI" , "ScrollArea" , &Lunar<_lua_scrollarea>::Register ),
-	make_tuple( "UI" , "StickyButton" , &Lunar<_lua_stickybutton>::Register ),
-	make_tuple( "UI" , "ScrollBar" , &Lunar<_lua_scrollbar>::Register ),
-	make_tuple( "UI" , "PrograssBar" , &Lunar<_lua_progressbar>::Register ),
-	make_tuple( "UI" , "TextBox" , &Lunar<_lua_textbox>::Register ),
-	make_tuple( "UI" , "TextArea" , &Lunar<_lua_textarea>::Register )
+	make_tuple( "System" , "Animation" , &Lunar<_lua_animation>::install ),
+	make_tuple( "System" , "Direntry" , &Lunar<_lua_direntry>::install ),
+	make_tuple( "System" , "Event" , &Lunar<_lua_event>::install ),
+	make_tuple( "System" , "ImageFile" , &Lunar<_lua_imagefile>::install ),
+	make_tuple( "System" , "Timer" , &Lunar<_lua_timer>::install ),
+	make_tuple( "System" , "Menu" , &Lunar<_lua_menu>::install ),
+	make_tuple( "System" , "MenuRule" , &Lunar<_lua_menurule>::install ),
+	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::install ),
+	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::install ),
+	make_tuple( "Drawing" , "BitmapPort" , &Lunar<_lua_bitmapPort>::install ),
+	make_tuple( "Drawing" , "Rect" , &Lunar<_lua_rect>::install ),
+	make_tuple( "Drawing" , "Border" , &Lunar<_lua_border>::install ),
+	make_tuple( "Drawing" , "Color" , &Lunar<_lua_color>::install ),
+	make_tuple( "Drawing" , "Font" , &Lunar<_lua_font>::install ),
+	make_tuple( "Dialog" , "YesNoDialog" , &Lunar<_lua_yesnodialog>::install ),
+	make_tuple( "Dialog" , "EnterTextDialog" , &Lunar<_lua_entertextdialog>::install ),
+	make_tuple( "Dialog" , "ImageDialog" , &Lunar<_lua_imagedialog>::install ),
+	make_tuple( "Dialog" , "ErrorDialog" , &Lunar<_lua_errordialog>::install ),
+	make_tuple( "Dialog" , "WarningDialog" , &Lunar<_lua_warningdialog>::install ),
+	make_tuple( "Dialog" , "InfoDialog" , &Lunar<_lua_infodialog>::install ),
+	make_tuple( "UI" , "RadioGroup" , &Lunar<_lua_radiogroup>::install ),
+	make_tuple( "UI" , "Gadget" , &Lunar<_lua_gadget>::install ),
+	make_tuple( "UI" , "Window" , &Lunar<_lua_window>::install ),
+	make_tuple( "UI" , "WindowBar" , &Lunar<_lua_windowbar>::install ),
+	make_tuple( "UI" , "WindowMenu" , &Lunar<_lua_windowmenu>::install ),
+	make_tuple( "UI" , "Calendar" , &Lunar<_lua_calendar>::install ),
+	make_tuple( "UI" , "Counter" , &Lunar<_lua_counter>::install ),
+	make_tuple( "UI" , "ColorPicker" , &Lunar<_lua_colorpicker>::install ),
+	make_tuple( "UI" , "ImageGadget" , &Lunar<_lua_imagegadget>::install ),
+	make_tuple( "UI" , "ImageButton" , &Lunar<_lua_imagebutton>::install ),
+	make_tuple( "UI" , "Button" , &Lunar<_lua_button>::install ),
+	make_tuple( "UI" , "Select" , &Lunar<_lua_select>::install ),
+	make_tuple( "UI" , "CheckBox" , &Lunar<_lua_checkbox>::install ),
+	make_tuple( "UI" , "Label" , &Lunar<_lua_label>::install ),
+	make_tuple( "UI" , "Slider" , &Lunar<_lua_slider>::install ),
+	make_tuple( "UI" , "Radio" , &Lunar<_lua_radio>::install ),
+	make_tuple( "UI" , "ResizeHandle" , &Lunar<_lua_resizehandle>::install ),
+	make_tuple( "UI" , "ScrollArea" , &Lunar<_lua_scrollarea>::install ),
+	make_tuple( "UI" , "StickyButton" , &Lunar<_lua_stickybutton>::install ),
+	make_tuple( "UI" , "ScrollBar" , &Lunar<_lua_scrollbar>::install ),
+	make_tuple( "UI" , "PrograssBar" , &Lunar<_lua_progressbar>::install ),
+	make_tuple( "UI" , "TextBox" , &Lunar<_lua_textbox>::install ),
+	make_tuple( "UI" , "TextArea" , &Lunar<_lua_textarea>::install )
 };
 
 int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _system::_keyboard_ != nullptr ); return 1; }
@@ -143,7 +145,7 @@ int _progLua::lua_usingClass( lua_State* L )
 	
 	string token;
 	_vector<string> tokens;
-	_stringTokenizer tok = _stringTokenizer( classPath , token , " ." , true );
+	_tokenizer tok = _tokenizer( classPath , token , " ." , true );
 	
 	while( tok.next() )
 		tokens.push_back( move(token) );

@@ -1,5 +1,5 @@
 #include "_gadget/gadget.windows.startmenu.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
 
@@ -50,17 +50,17 @@ _startMenu::_startMenu( _style&& style ) :
 {
 	// Left Side
 	this->addChild(
-		new _fileview( 1 , CONST_TOP_BAR_HEIGHT + 2
+		new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
 			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
-			, "%WINDIR%/jumplist/" , _fileviewType::list , _scrollType::prevent , _scrollType::prevent , true
+			, "%WINDIR%/jumplist/" , _fileViewType::list , _scrollType::prevent , _scrollType::prevent , true
 		)
 	);
 	
 	// Right Side
-	//this->addChild( new _fileview( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->getWidth() + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileviewType::liste , _scrollType::prevent , _scrollType::prevent ) );
+	//this->addChild( new _fileView( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->getWidth() + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileViewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
 	// User-Image
-	this->addChild( new _imagegadget( 3 , 2 , _system::getUser().getLogo() ) );
+	this->addChild( new _imageGadget( 3 , 2 , _system::getUser().getLogo() ) );
 	
 	// Username
 	_label* usrName = new _label( 20 , 2 , this->getWidth() - 20 - 2 , 14 , _system::getUser().getUsername() );

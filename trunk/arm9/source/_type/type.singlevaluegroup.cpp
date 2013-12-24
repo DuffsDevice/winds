@@ -137,10 +137,10 @@ _s32 _singleValueGroup<_selector>::getIntValue()
 
 
 #include "_gadget/gadget.checkbox.h"
-#include "_gadget/gadget.stickybutton.h"
+#include "_gadget/gadget.button.sticky.h"
 #include "_gadget/gadget.radio.h"
 
 
 // Create Specializations
 template class _singleValueGroup<_radio>;
-template class _singleValueGroup<_stickybutton>;
+template class _singleValueGroup<_stickyButton>;

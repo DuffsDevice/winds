@@ -17,7 +17,7 @@ class _lua_textbox : public _lua_gadget
 		_lua_textbox( lua_State* L );
 		
 		//! C-Ctor
-		_lua_textbox( _textbox* t ) : _lua_gadget( t , false )
+		_lua_textbox( _textBox* t ) : _lua_gadget( t , false )
 		{ }
 		
 		//! setCursor
@@ -30,7 +30,7 @@ class _lua_textbox : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_textbox>::FunctionType methods[];
 		static Lunar<_lua_textbox>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_textbox>::BaseClassType<_lua_gadget>;
 };
 
 #endif

@@ -37,10 +37,10 @@ class _singleValueGroup{
 		//! Enable the _selector being registered under the supplied id
 		void setIntValue( _s32 id );
 		
-		//! Get the id of the currently selected _radio/_stickybutton... etc.
+		//! Get the id of the currently selected _radio/_stickyButton... etc.
 		_s32 getIntValue();
 		
-		//! Get a pointer to the currently selected _radio/_stickybutton... etc.
+		//! Get a pointer to the currently selected _radio/_stickyButton... etc.
 		_selector*	getActiveSelector(){ return this->activeSelector; }
 		
 };

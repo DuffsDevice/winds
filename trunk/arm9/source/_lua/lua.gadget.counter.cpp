@@ -20,7 +20,6 @@ Lunar<_lua_counter>::FunctionType _lua_counter::methods[] = {
 };
 
 Lunar<_lua_counter>::PropertyType _lua_counter::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "value" 		, wrap( _lua_counter , &_counter::getIntValue )		, wrap( _lua_counter , &_counter::setIntValue )  },
 	{ "upperBound" 	, wrap( _lua_counter , &_counter::getUpperBound )	, wrap( _lua_counter , &_counter::setUpperBound )  },
 	{ "lowerBound" 	, wrap( _lua_counter , &_counter::getLowerBound )	, wrap( _lua_counter , &_counter::setLowerBound )  },

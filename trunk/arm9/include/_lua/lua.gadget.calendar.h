@@ -22,7 +22,7 @@ class _lua_calendar : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_calendar>::FunctionType methods[];
 		static Lunar<_lua_calendar>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_calendar>::BaseClassType<_lua_gadget>;
 };
 
 #endif

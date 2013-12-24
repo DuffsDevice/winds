@@ -4,7 +4,7 @@
 #include "_type/type.h"
 #include "_type/type.callback.h"
 #include "_type/type.program.h"
-#include "_type/type.gadgetScreen.h"
+#include "_type/type.gadget.screen.h"
 #include "_type/type.event.h"
 #include "_type/type.font.h"
 #include "_type/type.runtimeAttributes.h"
@@ -65,7 +65,7 @@ class _system{
 		//! Unbind the old _gadgetHost_ from the DOM Tree and delete it
 		static void deleteGadgetHost();
 		static void deleteKeyboard();
-		static void switchUser( _user* usr ) __attribute__(( nonnull(1) ));
+		static void switchUser( _user&& usr );
 		
 		//! Misc...
 		static void displayMemUsage();
@@ -76,12 +76,12 @@ class _system{
 		
 		//! Friends
 		friend class _systemController;
-		friend class _freetypefont;
+		friend class _freetypeFont;
 		friend class _gadget;
 		friend class _gadgetScreen;
 		friend class _program;
 		friend class _animation;
-		friend class _progressbar;
+		friend class _progressBar;
 		friend class _progLua;
 		friend class _scLogin;
 		friend class _scSetup;

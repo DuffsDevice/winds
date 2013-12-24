@@ -1,6 +1,6 @@
 #include "_scenario/scenario.bootup.h"
 #include "_type/type.system.controller.h"
-#include "_gadget/gadget.bootupScreen.h"
+#include "_gadget/gadget.screen.bootup.h"
 
 // Callback to change systemState
 void callback()

@@ -29,7 +29,6 @@ Lunar<_lua_scrollbar>::FunctionType _lua_scrollbar::methods[] = {
 };
 
 Lunar<_lua_scrollbar>::PropertyType _lua_scrollbar::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "step"		, wrap( _lua_scrollbar , &_scrollBar::getStep ) , wrap( _lua_scrollbar , &_scrollBar::setStep )  },
 	{ "length"		, wrap( _lua_scrollbar , &_scrollBar::getLength ) , wrap( _lua_scrollbar , &_scrollBar::setLength )  },
 	{ "length2"		, wrap( _lua_scrollbar , &_scrollBar::getLength2 ) , wrap( _lua_scrollbar , &_scrollBar::setLength2 )  },

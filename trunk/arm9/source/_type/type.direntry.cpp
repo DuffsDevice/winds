@@ -11,20 +11,19 @@ namespace unistd{
 #include <unistd.h>
 }
 
-#include "_resource/BMP_FileIcon.h"
-#include "_resource/BMP_ExeIcon.h"
-#include "_resource/BMP_TxtIcon.h"
-#include "_resource/BMP_XmlIcon.h"
-#include "_resource/BMP_NdsIcon.h"
-#include "_resource/BMP_GbaIcon.h"
-#include "_resource/BMP_IniIcon.h"
-#include "_resource/BMP_LuaIcon.h"
-#include "_resource/BMP_FolderIcon.h"
-
-#include "_resource/BMP_FontIcon.h"
-#include "_resource/BMP_MusicIcon.h"
-#include "_resource/BMP_JpegIcon.h"
-#include "_resource/BMP_ImageIcon.h"
+#include "_resource/resource.icon.file.h"
+#include "_resource/resource.icon.exe.h"
+#include "_resource/resource.icon.txt.h"
+#include "_resource/resource.icon.xml.h"
+#include "_resource/resource.icon.nds.h"
+#include "_resource/resource.icon.gba.h"
+#include "_resource/resource.icon.ini.h"
+#include "_resource/resource.icon.lua.h"
+#include "_resource/resource.icon.folder.h"
+#include "_resource/resource.icon.font.h"
+#include "_resource/resource.icon.music.h"
+#include "_resource/resource.icon.jpg.h"
+#include "_resource/resource.icon.image.h"
 
 int _direntry::fatInited = -1;
 

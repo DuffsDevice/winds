@@ -1,5 +1,5 @@
 #include "_type/type.gadget.h"
-#include "_type/type.gadgetScreen.h"
+#include "_type/type.gadget.screen.h"
 #include "_type/type.system.h"
 #include "_type/type.timer.h"
 #include "_gadget/gadget.button.h"

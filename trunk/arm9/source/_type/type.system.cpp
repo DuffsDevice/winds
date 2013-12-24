@@ -1,6 +1,6 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
-#include "_type/type.stringtokenizer.h"
+#include "_type/type.tokenizer.h"
 #include "_type/type.binfile.h"
 #include "_type/type.sound.h"
 #include "_type/type.sound.stream.h"
@@ -120,9 +120,9 @@ _tempTime _system::getHighResTime()
 	return ( time >> 15 ) - ( time >> 21 ) - ( time >> 22 ); // Equals time/1000
 }
 
-void _system::switchUser( _user* usr )
+void _system::switchUser( _user&& usr )
 {
-	_system::_rtA_->setUser( usr );
+	_system::_rtA_->setUser( move(usr) );
 }
 
 namespace{
@@ -611,9 +611,9 @@ bool _system::isRunningOnEmulator()
 
 bool _system::executeCommand( string cmd )
 {
+	// Set up tokenizer
 	string destination;
-	
-	_stringTokenizer tok = _stringTokenizer( cmd , destination , " \n\r\t" , true );
+	_tokenizer tok = _tokenizer( cmd , destination , " \n\r\t" , true );
 	
 	// If its the first token
 	bool isFirst = true;

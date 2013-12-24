@@ -17,14 +17,14 @@ class _lua_colorpicker : public _lua_gadget
 		_lua_colorpicker( lua_State* L );
 		
 		//! C-Ctor
-		_lua_colorpicker( _colorpicker* c ) : _lua_gadget( c , false )
+		_lua_colorpicker( _colorPicker* c ) : _lua_gadget( c , false )
 		{ }
 		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_colorpicker>::FunctionType methods[];
 		static Lunar<_lua_colorpicker>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_colorpicker>::BaseClassType<_lua_gadget>;
 };
 
 #endif

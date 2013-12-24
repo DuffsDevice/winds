@@ -1,5 +1,5 @@
 #include "_type/type.bitmap.h"
-#include "_type/type.textphrases.h"
+#include "_type/type.text.phrases.h"
 #include "func.memory.h"
 
 #include <nds/arm9/math.h>
@@ -834,7 +834,7 @@ void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _cha
 	}while( *++str );
 }
 
-void _bitmap::copy( _coord x , _coord y , _constbitmap& data )
+void _bitmap::copy( _coord x , _coord y , _constBitmap& data )
 {
 	_codeAnalyzer analyzer {"_bitmap::copy"};
 	
@@ -868,7 +868,7 @@ void _bitmap::copy( _coord x , _coord y , _constbitmap& data )
 	}while( --h > 0 );
 }
 
-__attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , _constbitmap& data )
+__attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , _constBitmap& data )
 {
 	_codeAnalyzer analyzer {"_bitmap::copyTransparent"};
 	
@@ -941,7 +941,7 @@ __attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , _const
 	#undef COPY
 }
 
-void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , _constbitmap& data )
+void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , _constBitmap& data )
 {
 	_codeAnalyzer analyzer {"_bitmap::copyHorizontalStretch"};
 	
@@ -970,7 +970,7 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , _constbit
 	}
 }
 
-void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , _constbitmap& data )
+void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , _constBitmap& data )
 {
 	_codeAnalyzer analyzer {"_bitmap::copyVerticalStretch"};
 	
@@ -1368,9 +1368,9 @@ void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel c
 	}
 }
 
-_bitmap& _bitmap::operator=( _constbitmap& bmp )
+_bitmap& _bitmap::operator=( _constBitmap& bmp )
 {
-	_codeAnalyzer analyzer {"_bitmap::operator=( _constbitmap& bmp )"};
+	_codeAnalyzer analyzer {"_bitmap::operator=( _constBitmap& bmp )"};
 	
 	// Copy..
 	if( this == &bmp )

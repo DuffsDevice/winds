@@ -18,7 +18,6 @@ Lunar<_lua_windowbar>::FunctionType _lua_windowbar::methods[] = {
 };
 
 Lunar<_lua_windowbar>::PropertyType _lua_windowbar::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "bgColor" , wrap( _lua_windowbar , &_windowBar::getBgColor ) , wrap( _lua_windowbar , &_windowBar::setBgColor ) },
 	LUA_CLASS_ATTR_END
 };
