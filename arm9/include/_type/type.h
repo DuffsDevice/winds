@@ -374,6 +374,9 @@ class _paramAlloc
 			ptr = (T*) new T3( (T2&&)obj );
 		}
 		
+		template<typename T2>
+		_paramAlloc( T2* obj ) = delete;
+		
 		//! Move and copy ctors
 		_paramAlloc( const _paramAlloc& ) = delete;
 		_paramAlloc( _paramAlloc&& from ) :
@@ -385,6 +388,10 @@ class _paramAlloc
 		
 		//! Get the now allocated pointer
 		operator T*(){ this->passed = true; return this->ptr; }
+		operator bool(){ return this->ptr != nullptr; }
+		
+		//! Named accessors
+		bool isValid(){ return this->ptr != nullptr; }
 		T* get(){ this->passed = true; return this->ptr; }
 		
 		//! Dtor

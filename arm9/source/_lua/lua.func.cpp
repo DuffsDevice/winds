@@ -6,7 +6,7 @@
 #include "_lua/lua.class.font.h"
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.bitmapPort.h"
+#include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.bar.h"
 #include "_lua/lua.gadget.window.menu.h"
@@ -19,10 +19,11 @@
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.colorpicker.h"
 #include "_lua/lua.gadget.checkbox.h"
-#include "_lua/lua.gadget.imagegadget.h"
+#include "_lua/lua.gadget.button.image.h"
+#include "_lua/lua.gadget.image.h"
 #include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.scrollBar.h"
-#include "_lua/lua.gadget.stickybutton.h"
+#include "_lua/lua.gadget.button.sticky.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.select.h"
@@ -108,7 +109,7 @@ namespace _luafunc
 				Lunar<_lua_button>::push( L , new _lua_button( (_button*)gadget ) );
 				break;
 			case _gadgetType::stickybutton:
-				Lunar<_lua_stickybutton>::push( L , new _lua_stickybutton( (_stickybutton*)gadget ) );
+				Lunar<_lua_stickybutton>::push( L , new _lua_stickybutton( (_stickyButton*)gadget ) );
 				break;
 			case _gadgetType::label:
 				Lunar<_lua_label>::push( L , new _lua_label( (_label*)gadget ) );
@@ -120,16 +121,16 @@ namespace _luafunc
 				Lunar<_lua_select>::push( L , new _lua_select( (_select*)gadget ) );
 				break;
 			case _gadgetType::textbox:
-				Lunar<_lua_textbox>::push( L , new _lua_textbox( (_textbox*)gadget ) );
+				Lunar<_lua_textbox>::push( L , new _lua_textbox( (_textBox*)gadget ) );
 				break;
 			case _gadgetType::textarea:
-				Lunar<_lua_textarea>::push( L , new _lua_textarea( (_textarea*)gadget ) );
+				Lunar<_lua_textarea>::push( L , new _lua_textarea( (_textArea*)gadget ) );
 				break;
 			case _gadgetType::counter:
 				Lunar<_lua_counter>::push( L , new _lua_counter( (_counter*)gadget ) );
 				break;
 			case _gadgetType::progressbar:
-				Lunar<_lua_progressbar>::push( L , new _lua_progressbar( (_progressbar*)gadget ) );
+				Lunar<_lua_progressbar>::push( L , new _lua_progressbar( (_progressBar*)gadget ) );
 				break;
 			case _gadgetType::radiobox:
 				Lunar<_lua_radio>::push( L , new _lua_radio( (_radio*)gadget ) );
@@ -137,8 +138,11 @@ namespace _luafunc
 			case _gadgetType::calendar:
 				Lunar<_lua_calendar>::push( L , new _lua_calendar( (_calendar*)gadget ) );
 				break;
+			case _gadgetType::imagebutton:
+				Lunar<_lua_imagebutton>::push( L , new _lua_imagebutton( (_imageButton*)gadget ) );
+				break;
 			case _gadgetType::imagegadget:
-				Lunar<_lua_imagegadget>::push( L , new _lua_imagegadget( (_imagegadget*)gadget ) );
+				Lunar<_lua_imagegadget>::push( L , new _lua_imagegadget( (_imageGadget*)gadget ) );
 				break;
 			case _gadgetType::scrollarea:
 				Lunar<_lua_scrollarea>::push( L , new _lua_scrollarea( (_scrollArea*)gadget ) );
@@ -147,7 +151,7 @@ namespace _luafunc
 				Lunar<_lua_scrollbar>::push( L , new _lua_scrollbar( (_scrollBar*)gadget ) );
 				break;
 			case _gadgetType::colorpicker:
-				Lunar<_lua_colorpicker>::push( L , new _lua_colorpicker( (_colorpicker*)gadget ) );
+				Lunar<_lua_colorpicker>::push( L , new _lua_colorpicker( (_colorPicker*)gadget ) );
 				break;
 			case _gadgetType::resizehandle:
 				Lunar<_lua_resizehandle>::push( L , new _lua_resizehandle( (_resizeHandle*)gadget ) );
@@ -173,57 +177,8 @@ namespace _luafunc
 	{
 		_gadget* check( lua_State* L , int index , _gadget** dummy )
 		{
-			_lua_gadget* tmp;
-			
-			// Check for a derived class instance
-			if( ( tmp = Lunar< _lua_window >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_button >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_stickybutton >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_label >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_checkbox >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_select >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_textbox >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_textarea >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_counter >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_progressbar >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_radio >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_calendar >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_imagegadget >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_scrollarea >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_scrollbar >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_colorpicker >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_resizehandle >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_windowbar >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_windowmenu >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_slider >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			if( ( tmp = Lunar< _lua_contextmenu >::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			
-			// Fallback to base class _gadget
-			if( ( tmp = Lunar<_lua_gadget>::lightcheck( L , index ) ) != nullptr )
-				return tmp->getGadget();
-			
-			return nullptr;
+			_lua_gadget* gadget = Lunar<_lua_gadget>::lightcheck( L , index );
+			return gadget ? gadget->getGadget() : nullptr;
 		}
 		
 		_bitmap check( lua_State* L , int index , _bitmap* dummy ){

@@ -184,7 +184,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	
 	if( that->hasFocus() )
 	{
-		_constbitmap& design = _system::getRTA().getWindowsDesignActive();
+		_constBitmap& design = _system::getRTA().getWindowsDesignActive();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -196,7 +196,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	}
 	else
 	{
-		_constbitmap& design = _system::getRTA().getWindowsDesignBlurred();
+		_constBitmap& design = _system::getRTA().getWindowsDesignBlurred();
 		
 		// Window-Bar
 		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
@@ -349,7 +349,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6
-	this->icon = new _imagegadget( 2 , 2 , move(bmp) , _style() | _styleAttr::notResizeable );
+	this->icon = new _imageGadget( 2 , 2 , move(bmp) , _style() | _styleAttr::notResizeable );
 	
 	// Append it to this button
 	this->addEnhancedChild( this->label );

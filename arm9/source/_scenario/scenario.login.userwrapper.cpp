@@ -3,12 +3,12 @@
 
 //! Gadgets we need
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.actionButton.h"
+#include "_gadget/gadget.button.action.h"
 
 _callbackReturn _userWrapper::textboxRefreshHandler( _event event )
 {
 	// Get Gadget
-	_textbox* that = event.getGadget<_textbox>();
+	_textBox* that = event.getGadget<_textBox>();
 	
 	// Get bitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
@@ -78,7 +78,7 @@ _callbackReturn _userWrapper::submitHandler( _event event )
 		
 		if( !wrapper->user->checkPassword( wrapper->passwordbox->getStrValue() ) )
 		{
-			// Reset Password _textbox
+			// Reset Password _textBox
 			wrapper->passwordbox->setStrValue( "" );
 			
 			// Make it blink
@@ -102,7 +102,7 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 	{
 		if( event == onFocus )
 		{
-			that->passwordbox = new _passcodebox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
+			that->passwordbox = new _passcodeBox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
 			that->passwordsubmit = new _actionButton( 77 , 13 , _actionButtonType::next , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
 			that->passwordsubmit->setInternalEventHandler( onMouseClick , make_callback( &_userWrapper::submitHandler ) );
 			that->passwordbox->setUserEventHandler( onDraw , make_callback( &_userWrapper::textboxRefreshHandler ) );
@@ -137,7 +137,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	this->setInternalEventHandler( onBlur , make_callback( _userWrapper::focusHandler ) );
 	
 	// Click on the image to login a user without password
-	_imagegadget* img = new _imagegadget( 3 , 3 , this->user->getLogo() , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
+	_imageGadget* img = new _imageGadget( 3 , 3 , this->user->getLogo() , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
 	img->setInternalEventHandler( onMouseClick , make_callback( _userWrapper::submitHandler ) );
 	
 	// Add the logo

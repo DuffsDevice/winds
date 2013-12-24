@@ -5,7 +5,7 @@
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.window.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 #include "_gadget/gadget.textarea.h"
 
 class _runtimeErrorDialog : public _dialog
@@ -15,12 +15,12 @@ class _runtimeErrorDialog : public _dialog
 		_button*		closeButton;
 		_label*			msg;
 		_window*		window;
-		_imagegadget*	image;
-		_textarea*		additionalInfo;
+		_imageGadget*	image;
+		_textArea*		additionalInfo;
 		
 		_callbackReturn eventHandler( _event );
 		
-		static _constbitmap errorimage;
+		static _constBitmap errorimage;
 		
 		void executeInternal();
 		void cleanupInternal();

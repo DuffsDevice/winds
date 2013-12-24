@@ -15,7 +15,7 @@ _lua_window::_lua_window( lua_State* L ) :
 {
 	if( is_a<_bitmap>( L , 6 ) )
 	{
-		this->setGadget( 
+		this->setGadget(
 			new _window(
 				optcheck<int>( L , 1 )
 				, optcheck<int>( L , 2 )
@@ -59,7 +59,6 @@ Lunar<_lua_window>::FunctionType _lua_window::methods[] = {
 };
 
 Lunar<_lua_window>::PropertyType _lua_window::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "title"			, wrap( _lua_window , &_window::getStrValue )		, wrap( _lua_window , &_window::setStrValue ) },
 	{ "icon"			, wrap( _lua_window , &_window::getIcon )			, wrap( _lua_window , &_window::setIcon ) },
 	{ "minimizeable"	, wrap( _lua_window , &_window::isMinimizeable )	, wrap( _lua_window , &_window::setMinimizeable ) },

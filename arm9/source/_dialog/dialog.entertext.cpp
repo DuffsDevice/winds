@@ -23,7 +23,7 @@ _enterTextDialog::_enterTextDialog( string message , string windowLbl , string i
 	_length winWidth = max( this->msg->getWidth() + 4 , this->okButton->getWidth() + this->cancelButton->getWidth() + 5 );
 	
 	// Textbox
-	this->textBox = new _textbox( winWidth - 6 , ignore , 2 , this->msg->getHeight() + 4 , this->initialValue );
+	this->textBox = new _textBox( winWidth - 6 , ignore , 2 , this->msg->getHeight() + 4 , this->initialValue );
 	
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 10 + this->textBox->getHeight() , 30 ) + 11; // + 11 for the window
 	

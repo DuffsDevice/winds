@@ -25,7 +25,7 @@ class _lua_checkbox : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_checkbox>::FunctionType methods[];
 		static Lunar<_lua_checkbox>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_checkbox>::BaseClassType<_lua_gadget>;
 };
 
 #endif

@@ -1,9 +1,13 @@
 Gadgets:
 ========
 - Colorpicker-Circle
-- Image-Button
++ Image-Button (✓)
 - Treeview
 - Contextmenu for Files
+
+Types:
+======
+- Binary File for lua access
 
 Dialogs:
 ========
@@ -17,7 +21,7 @@ Features:
 =========
 - Full wifi support
 - Shoutdown process
-- Sound (✓)
++ Sound (✓)
 - Mark text
 - Copy & Paste
 - File information window

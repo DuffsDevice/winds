@@ -1,7 +1,7 @@
 #ifndef _WIN_L_FUNC_
 #define _WIN_L_FUNC_
 
-#include "_lua/lua.hpp"
+#include "_lua/lua.h"
 #include "_type/type.h"
 #include "_type/type.event.h"
 #include "_type/type.rect.h"
@@ -9,7 +9,7 @@
 #include "_type/type.color.h"
 #include "_type/type.style.h"
 #include "_type/type.bitmap.h"
-#include "_type/type.bitmapPort.h"
+#include "_type/type.bitmap.port.h"
 #include "_type/type.assocvector.h"
 #include "_type/type.callback.h"
 #include "_type/type.mime.h"
@@ -24,18 +24,18 @@ extern _toStr<_dialogResult>	dialogResult2string;
 namespace _luafunc
 {
 	//! Call this function to indicate a runtime-error that happened inside a lua-function
-	void	errorHandler( lua_State* L , const char* , ... );
+	void	errorHandler( lua_State* state , const char* , ... );
 	
 	//! More or less helpers for the following templates
-	void	pushEvent( lua_State* L , _event&& );
-	void	pushRect( lua_State* L , _rect&& );
-	void	pushArea( lua_State* L , _area&& );
-	void	pushBitmap( lua_State* L , _bitmap&& );
-	void	pushBitmapRef( lua_State* L , _bitmap& );
-	void	pushBitmapPort( lua_State* L , _bitmapPort&& );
-	void	pushGadget( lua_State* L , _gadget* );
-	void	pushFont( lua_State* L , const _font* );
-	void	pushBorder( lua_State* L , _border&& );
+	void	pushEvent( lua_State* state , _event&& );
+	void	pushRect( lua_State* state , _rect&& );
+	void	pushArea( lua_State* state , _area&& );
+	void	pushBitmap( lua_State* state , _bitmap&& );
+	void	pushBitmapRef( lua_State* state , _bitmap& );
+	void	pushBitmapPort( lua_State* state , _bitmapPort&& );
+	void	pushGadget( lua_State* state , _gadget* );
+	void	pushFont( lua_State* state , const _font* );
+	void	pushBorder( lua_State* state , _border&& );
 }
 
 #include "_lua/lua.func.isa.h"
@@ -65,39 +65,39 @@ namespace _luafunc
 		typename T
 		, typename T2 = remove_const< remove_ref<T> >
 	>
-	static unused inline bool is_a( lua_State* L , int index ){
-		return _luafunc::detail::is_a( L , index , (T2*)nullptr );
+	static unused inline bool is_a( lua_State* state , int index ){
+		return _luafunc::detail::is_a( state , index , (T2*)nullptr );
 	}
 	
 	//! Check if a stack object is of a specific class (determined by its class-name)
-	static unused inline bool	is_a( lua_State* L , int index , const char* className ){
-		if( !lua_isuserdata(L, index) ){			/* value is a userdata? */
-			if( lua_getmetatable(L, index) ){		/* does it have a metatable? */
-				luaL_getmetatable(L, className);	/* get correct metatable */
-				if (lua_rawequal(L, -1, -2)){		/* does it have the correct mt? */
-					lua_pop(L, 2);					/* remove both metatables */
-					return true;
-				}
-				lua_pop(L, 2);						/* remove both metatables */
+	static unused inline bool	is_a( lua_State* state , int index , const char* className )
+	{
+		if( lua_getmetatable( state , index ) )		// Does it have a metatable?
+		{
+			luaL_getmetatable( state , className );	// Get correct metatable
+			if( lua_rawequal( state , -1 , -2 ) ){	// Are they equal?
+				lua_pop(state, 2);					// Remove both metatables
+				return true;
 			}
+			lua_pop(state, 2);						// Remove both metatables
 		}
 		return false;
 	}
 	
 	//! check<T> for const-reference types
 	template<typename T>
-	static unused inline auto check( lua_State* L , int index , helperType1<T>* = nullptr )
-		-> decltype( _luafunc::detail::check( L , index , (remove_const<remove_ref<T>>*)nullptr ) )
+	static unused inline auto check( lua_State* state , int index , helperType1<T>* = nullptr )
+		-> decltype( _luafunc::detail::check( state , index , (remove_const<remove_ref<T>>*)nullptr ) )
 	{
-		return _luafunc::detail::check( L , index , (remove_const<remove_ref<T>>*)nullptr );
+		return _luafunc::detail::check( state , index , (remove_const<remove_ref<T>>*)nullptr );
 	}
 	
 	//! check<T> for non-reference types
 	template<typename T>
-	static unused inline auto check( lua_State* L , int index , helperType2<T>* = nullptr )
-		-> decltype( _luafunc::detail::check( L , index , (remove_const<T>*)nullptr ) )
+	static unused inline auto check( lua_State* state , int index , helperType2<T>* = nullptr )
+		-> decltype( _luafunc::detail::check( state , index , (remove_const<T>*)nullptr ) )
 	{
-		return _luafunc::detail::check( L , index , (remove_const<T>*)nullptr );
+		return _luafunc::detail::check( state , index , (remove_const<T>*)nullptr );
 	}
 	
 	//! Receive the object of type 'T' from the stack, if it doesn't exist, 'fallback' is returned
@@ -106,17 +106,17 @@ namespace _luafunc
 		, typename Ret = decltype( _luafunc::check<T>( nullptr , 0 ) )
 		, typename ParamType = Ret
 	>
-	static unused Ret lightcheck( lua_State* L , int index , ParamType&& fallback = ParamType() ){
-		if( _luafunc::is_a<T>( L , index ) )
-			return _luafunc::check<T>( L , index );
+	static unused Ret lightcheck( lua_State* state , int index , ParamType&& fallback = ParamType() ){
+		if( _luafunc::is_a<T>( state , index ) )
+			return _luafunc::check<T>( state , index );
 		return move(fallback);
 	}
 	
 	//! Receive the object of type 'T' from the stack, if it doesn't exist, an empty _optValue is returned
 	template<typename T>
-	static unused _optValue< remove_ref<T> > optcheck( lua_State* L , int index ){
-		if( _luafunc::is_a<T>( L , index ) )
-			return _luafunc::check<T>( L , index );
+	static unused _optValue< remove_ref<T> > optcheck( lua_State* state , int index ){
+		if( _luafunc::is_a<T>( state , index ) )
+			return _luafunc::check<T>( state , index );
 		return ignore;
 	}
 }

@@ -4,7 +4,7 @@
 #include "_type/type.time.h"
 
 //! Graphics
-#include "_resource/BMP_Taskinfo.h"
+#include "_resource/resource.image.windows.taskinfo.h"
 
 
 _callbackReturn _windowsTaskInfo::refreshHandler( _event event )

@@ -2,7 +2,7 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
 #include "_type/type.color.h"
-#include "_type/type.textphrases.h"
+#include "_type/type.text.phrases.h"
 #include "_type/type.font.glyphs.h"
 
 #include "_type/type.connection.h"
@@ -13,7 +13,7 @@ _wifiSocketClient* client = nullptr;
 #include "_gadget/gadget.progressbar.h"
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.colorpicker.h"
-#include "_gadget/gadget.expandbutton.h"
+#include "_gadget/gadget.button.expand.h"
 
 namespace{
 
@@ -52,10 +52,10 @@ _scDesktop::_scDesktop()
 	_system::_gadgetHost_ = new _windows( _system::_bgIdBack_ );
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ , SCREEN_WIDTH - 80 );
 	
-	_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
+	//_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
 	_system::executeCommand("%SYSTEM%/exampleprogram.exe");
-	_system::executeCommand("%SYSTEM%/paint.exe");
-	//_system::executeCommand("%SYSTEM%/pong.exe");
+	//_system::executeCommand("%SYSTEM%/paint.exe");
+	_system::executeCommand("%SYSTEM%/pong.exe");
 	
 	//for( int i = 0; i < 60 ; i++)
 	//{

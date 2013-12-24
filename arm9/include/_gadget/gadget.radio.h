@@ -13,7 +13,7 @@ class _radio : public _gadget {
 		bool						intValue;
 		_singleValueGroup<_radio>* 	group;
 		
-		static _constbitmap 		graphic[4];
+		static _constBitmap 		graphic[4];
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn mouseHandler( _event );

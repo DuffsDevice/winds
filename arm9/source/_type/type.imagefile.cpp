@@ -1,10 +1,10 @@
 #include "_type/type.imagefile.h"
 
-#include "_library/png.h"
-#include "_library/jpeg.h"
-#include "_library/bmp.h"
+#include "_library/library.image.png.h"
+#include "_library/library.image.jpeg.h"
+#include "_library/library.image.bmp.h"
 
-_imagefile::_imagefile( string fn ) :
+_imageFile::_imageFile( string fn ) :
 	_bitmap( nullptr , 0 , 0 )
 	, _direntry( fn )
 {
@@ -91,7 +91,7 @@ _imagefile::_imagefile( string fn ) :
 	}
 }
 
-_imagefile::~_imagefile()
+_imageFile::~_imageFile()
 {
 	if( this->bmp )
 		delete[] this->bmp;

@@ -5,7 +5,7 @@
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.window.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 
 class _imageDialog : public _dialog
 {
@@ -15,7 +15,7 @@ class _imageDialog : public _dialog
 		_button*		otherButton;
 		_label*			msg;
 		_window*		window;
-		_imagegadget*	image;
+		_imageGadget*	image;
 		
 		_callbackReturn eventHandler( _event );
 		
@@ -27,7 +27,7 @@ class _imageDialog : public _dialog
 		//! Ctor(s)
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
 		_imageDialog( string message , string windowLabel , _bitmap&& image , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore );
-		_imageDialog( string message , string windowLabel , _constbitmap& image , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore ) :
+		_imageDialog( string message , string windowLabel , _constBitmap& image , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore ) :
 			_imageDialog( move(message) , move(windowLabel) , _bitmap(image) , move(okLabel) , move(otherLabel) )
 		{}
 		

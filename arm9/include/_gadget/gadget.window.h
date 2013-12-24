@@ -5,7 +5,7 @@
 #include "_type/type.gadget.h"
 #include "_type/type.bitmap.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 #include "_gadget/gadget.window.button.h"
 
 
@@ -16,7 +16,7 @@ class _window : public _gadget {
 		friend class PROG_Explorer;
 		
 		_label*			label;
-		_imagegadget*	icon;
+		_imageGadget*	icon;
 		
 		_windowButton*	button[3];
 		
@@ -82,7 +82,7 @@ class _window : public _gadget {
 		void setMinimizeable( bool val ){ this->minimizeable = val; this->update(); }
 		
 		//! Get the window's icon
-		_constbitmap& getIcon() const { return this->icon->getImage(); }
+		_constBitmap& getIcon() const { return this->icon->getImage(); }
 		
 		//! Ctor
 		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable ) :

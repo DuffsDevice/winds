@@ -30,7 +30,7 @@ class _lua_scrollarea : public _lua_gadget{
 		static const char className[];
 		static Lunar<_lua_scrollarea>::FunctionType methods[];
 		static Lunar<_lua_scrollarea>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_scrollarea>::BaseClassType<_lua_gadget>;
 };
 
 #endif

@@ -9,7 +9,7 @@ using namespace _luafunc;
 
 _lua_progressbar::_lua_progressbar( lua_State* L ) :
 	_lua_gadget( 
-		new _progressbar(
+		new _progressBar(
 			optcheck<int>( L , 1 )
 			, optcheck<int>( L , 2 )
 			, optcheck<int>( L , 3 )
@@ -26,9 +26,8 @@ Lunar<_lua_progressbar>::FunctionType _lua_progressbar::methods[] = {
 };
 
 Lunar<_lua_progressbar>::PropertyType _lua_progressbar::properties[] = {
-	GADGET_BASE_ATTR,
-	{ "value" 		, wrap( _lua_progressbar , &_progressbar::getIntValue )		, wrap( _lua_progressbar , &_progressbar::setIntValue ) },
-	{ "colorScheme" , wrap( _lua_progressbar , &_progressbar::getColorScheme )	, wrap( _lua_progressbar , &_progressbar::setColorScheme ) },
-	{ "barType" 	, wrap( _lua_progressbar , &_progressbar::getBarType )		, wrap( _lua_progressbar , &_progressbar::setBarType ) },
+	{ "value" 		, wrap( _lua_progressbar , &_progressBar::getIntValue )		, wrap( _lua_progressbar , &_progressBar::setIntValue ) },
+	{ "colorScheme" , wrap( _lua_progressbar , &_progressBar::getColorScheme )	, wrap( _lua_progressbar , &_progressBar::setColorScheme ) },
+	{ "barType" 	, wrap( _lua_progressbar , &_progressBar::getBarType )		, wrap( _lua_progressbar , &_progressBar::setBarType ) },
 	LUA_CLASS_ATTR_END
 };

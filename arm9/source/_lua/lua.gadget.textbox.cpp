@@ -9,7 +9,7 @@ using namespace _luafunc;
 
 _lua_textbox::_lua_textbox( lua_State* L ) : 
 	_lua_gadget( 
-		new _textbox( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 ) )
+		new _textBox( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 ) )
 	)
 {}
 
@@ -20,12 +20,11 @@ Lunar<_lua_textbox>::FunctionType _lua_textbox::methods[] = {
 };
 
 Lunar<_lua_textbox>::PropertyType _lua_textbox::properties[] = {
-	GADGET_BASE_ATTR,
-	{ "text" 		, wrap( _lua_textbox , &_textbox::getStrValue )	, wrap( _lua_textbox , &_textbox::setStrValue ) },
-	{ "color" 		, wrap( _lua_textbox , &_textbox::getColor )	, wrap( _lua_textbox , &_textbox::setColor ) },
-	{ "bgColor" 	, wrap( _lua_textbox , &_textbox::getBgColor )	, wrap( _lua_textbox , &_textbox::setBgColor ) },
-	{ "cursor" 		, wrap( _lua_textbox , &_textbox::getCursor )	, wrap( _lua_textbox , &_textbox::setCursor ) },
-	{ "font" 		, wrap( _lua_textbox , &_textbox::getFont )		, wrap( _lua_textbox , &_textbox::setFont ) },
-	{ "fontSize"	, wrap( _lua_textbox , &_textbox::getFontSize )	, wrap( _lua_textbox , &_textbox::setFontSize ) },
+	{ "text" 		, wrap( _lua_textbox , &_textBox::getStrValue )	, wrap( _lua_textbox , &_textBox::setStrValue ) },
+	{ "color" 		, wrap( _lua_textbox , &_textBox::getColor )	, wrap( _lua_textbox , &_textBox::setColor ) },
+	{ "bgColor" 	, wrap( _lua_textbox , &_textBox::getBgColor )	, wrap( _lua_textbox , &_textBox::setBgColor ) },
+	{ "cursor" 		, wrap( _lua_textbox , &_textBox::getCursor )	, wrap( _lua_textbox , &_textBox::setCursor ) },
+	{ "font" 		, wrap( _lua_textbox , &_textBox::getFont )		, wrap( _lua_textbox , &_textBox::setFont ) },
+	{ "fontSize"	, wrap( _lua_textbox , &_textBox::getFontSize )	, wrap( _lua_textbox , &_textBox::setFontSize ) },
 	LUA_CLASS_ATTR_END
 };

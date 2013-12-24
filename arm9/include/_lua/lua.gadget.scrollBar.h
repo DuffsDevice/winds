@@ -24,7 +24,7 @@ class _lua_scrollbar : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_scrollbar>::FunctionType methods[];
 		static Lunar<_lua_scrollbar>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_scrollbar>::BaseClassType<_lua_gadget>;
 };
 
 #endif

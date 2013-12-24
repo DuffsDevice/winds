@@ -8,9 +8,9 @@ _pixel paletteBlue[4] = { RGB255( 94 , 119 , 238 ) , RGB255( 125 , 145 , 210 ) ,
 _pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) , RGB255( 46 , 211 , 49 ) , RGB255( 121 , 227 , 123 ) };
 
 
-_callbackReturn _progressbar::refreshHandler( _event event ){
+_callbackReturn _progressBar::refreshHandler( _event event ){
 	
-	_progressbar* that = event.getGadget<_progressbar>();
+	_progressBar* that = event.getGadget<_progressBar>();
 	
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
@@ -71,7 +71,7 @@ _callbackReturn _progressbar::refreshHandler( _event event ){
 }
 
 
-void _progressbar::step()
+void _progressBar::step()
 {
 	if( ++this->state >= ( ( this->getWidth() - 2 ) >> 2 ) + 3 )
 		this->state = 0;
@@ -81,7 +81,7 @@ void _progressbar::step()
 }
 
 
-void _progressbar::setBarType( bool type )
+void _progressBar::setBarType( bool type )
 {
 	if( type != this->type )
 	{
@@ -96,17 +96,17 @@ void _progressbar::setBarType( bool type )
 	}
 }
 
-_progressbar::_progressbar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool type , _style&& style ) :
+_progressBar::_progressBar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool type , _style&& style ) :
 	_gadget( _gadgetType::progressbar , x , y , width , 8 , (_style&&)style )
 	, type( !type )
 	, value( 70 )
 	, blue( false )
-	, timer( make_callback( this , &_progressbar::step ) , 120 , true ) // Progressbar-update-frequency: 120ms
+	, timer( make_callback( this , &_progressBar::step ) , 120 , true ) // Progressbar-update-frequency: 120ms
 {	
 	this->setBarType( type );
 	
 	// Register my handler as the default Refresh-Handler
-	this->setInternalEventHandler( onDraw , make_callback( &_progressbar::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_progressBar::refreshHandler ) );
 	
 	// refresh!
 	this->redraw();

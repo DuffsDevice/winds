@@ -15,7 +15,7 @@ _lua_bitmap::_lua_bitmap( _bitmap* b ) :
 	, wasAllocated( false )
 { }
 
-_lua_bitmap::_lua_bitmap( _constbitmap* b ) :
+_lua_bitmap::_lua_bitmap( _constBitmap* b ) :
 	bm( new _bitmap( *b ) ) // Copy bitmap
 	, wasAllocated( true )
 { }
@@ -50,36 +50,36 @@ using shortCutType = void (_bitmap::*)(_coord,_coord,const _font*,const _char*,_
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "Bitmap";
 Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
-	{ "get"					, &_lua_bitmap::get },
-	{ "resize"				, wrap( _lua_bitmap , &_bitmap::resize ) },
-	{ "getPixel"			, wrap( _lua_bitmap , &_bitmap::getPixel ) },
-	{ "drawPixel"			, wrap( _lua_bitmap , &_bitmap::drawPixel ) },
-	{ "reset"				, wrap( _lua_bitmap , &_bitmap::reset ) },
-	{ "fill"				, wrap( _lua_bitmap , &_bitmap::fill ) },
-	{ "replaceColor"		, wrap( _lua_bitmap , &_bitmap::replaceColor ) },
-	{ "drawLine"			, wrap( _lua_bitmap , &_bitmap::drawLine ) },
-	{ "drawVerticalLine"	, wrap( _lua_bitmap , &_bitmap::drawVerticalLine ) },
-	{ "drawHorizontalLine"	, wrap( _lua_bitmap , &_bitmap::drawHorizontalLine ) },
+	{ "get"							, &_lua_bitmap::get },
+	{ "resize"						, wrap( _lua_bitmap , &_bitmap::resize ) },
+	{ "getPixel"					, wrap( _lua_bitmap , &_bitmap::getPixel ) },
+	{ "drawPixel"					, wrap( _lua_bitmap , &_bitmap::drawPixel ) },
+	{ "reset"						, wrap( _lua_bitmap , &_bitmap::reset ) },
+	{ "fill"						, wrap( _lua_bitmap , &_bitmap::fill ) },
+	{ "replaceColor"				, wrap( _lua_bitmap , &_bitmap::replaceColor ) },
+	{ "drawLine"					, wrap( _lua_bitmap , &_bitmap::drawLine ) },
+	{ "drawVerticalLine"			, wrap( _lua_bitmap , &_bitmap::drawVerticalLine ) },
+	{ "drawHorizontalLine"			, wrap( _lua_bitmap , &_bitmap::drawHorizontalLine ) },
 	{ "drawVerticalDottedLine"		, wrap( _lua_bitmap , &_bitmap::drawVerticalDottedLine ) },
 	{ "drawHorizontalDottedLine"	, wrap( _lua_bitmap , &_bitmap::drawHorizontalDottedLine ) },
-	{ "drawRect"			, wrap( _lua_bitmap , &_bitmap::drawRect ) },
-	{ "drawDottedRect"		, wrap( _lua_bitmap , &_bitmap::drawDottedRect ) },
-	{ "drawFilledRect"		, wrap( _lua_bitmap , &_bitmap::drawFilledRect ) },
+	{ "drawRect"					, wrap( _lua_bitmap , &_bitmap::drawRect ) },
+	{ "drawDottedRect"				, wrap( _lua_bitmap , &_bitmap::drawDottedRect ) },
+	{ "drawFilledRect"				, wrap( _lua_bitmap , &_bitmap::drawFilledRect ) },
 	{ "drawVerticalGradient"		, wrap( _lua_bitmap , &_bitmap::drawVerticalGradient ) },
 	{ "drawHorizontalGradient"		, wrap( _lua_bitmap , &_bitmap::drawHorizontalGradient ) },
-	{ "drawCircle"			, wrap( _lua_bitmap , &_bitmap::drawCircle ) },
-	{ "drawFilledCircle"	, wrap( _lua_bitmap , &_bitmap::drawFilledCircle ) },
-	{ "drawEllipse"			, wrap( _lua_bitmap , &_bitmap::drawEllipse ) },
-	{ "drawFilledEllipse"	, wrap( _lua_bitmap , &_bitmap::drawFilledEllipse ) },
-	{ "drawChar"			, wrap( _lua_bitmap , &_bitmap::drawChar ) },
-	{ "drawString"			, wrap( _lua_bitmap , (shortCutType)&_bitmap::drawString ) },
-	{ "copy"				, wrap( _lua_bitmap , &_bitmap::copy ) },
-	{ "copyTransparent"		, wrap( _lua_bitmap , &_bitmap::copyTransparent ) },
+	{ "drawCircle"					, wrap( _lua_bitmap , &_bitmap::drawCircle ) },
+	{ "drawFilledCircle"			, wrap( _lua_bitmap , &_bitmap::drawFilledCircle ) },
+	{ "drawEllipse"					, wrap( _lua_bitmap , &_bitmap::drawEllipse ) },
+	{ "drawFilledEllipse"			, wrap( _lua_bitmap , &_bitmap::drawFilledEllipse ) },
+	{ "drawChar"					, wrap( _lua_bitmap , &_bitmap::drawChar ) },
+	{ "drawString"					, wrap( _lua_bitmap , (shortCutType)&_bitmap::drawString ) },
+	{ "copy"						, wrap( _lua_bitmap , &_bitmap::copy ) },
+	{ "copyTransparent"				, wrap( _lua_bitmap , &_bitmap::copyTransparent ) },
 	{ "copyHorizontalStretch"		, wrap( _lua_bitmap , &_bitmap::copyHorizontalStretch ) },
-	{ "getClippingRect"		, wrap( _lua_bitmap , &_bitmap::getClippingRect ) },
-	{ "setClippingRect"		, wrap( _lua_bitmap , &_bitmap::setClippingRect ) },
-	{ "resetClippingRect"	, wrap( _lua_bitmap , &_bitmap::resetClippingRect ) },
-	{ "isValid"				, wrap( _lua_bitmap , &_bitmap::isValid ) },
+	{ "getClippingRect"				, wrap( _lua_bitmap , &_bitmap::getClippingRect ) },
+	{ "setClippingRect"				, wrap( _lua_bitmap , &_bitmap::setClippingRect ) },
+	{ "resetClippingRect"			, wrap( _lua_bitmap , &_bitmap::resetClippingRect ) },
+	{ "isValid"						, wrap( _lua_bitmap , &_bitmap::isValid ) },
 	LUA_CLASS_FUNC_END
 };
 

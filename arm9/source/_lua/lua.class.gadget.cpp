@@ -3,7 +3,7 @@
 #include "_lua/lua.class.event.h"
 #include "_lua/lua.class.rect.h"
 #include "_lua/lua.class.area.h"
-#include "_lua/lua.class.bitmapPort.h"
+#include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.border.h"
 
 #include "_type/type.system.h"
@@ -54,22 +54,24 @@ _lua_gadget::~_lua_gadget()
 int _lua_gadget::getBitmapPort( lua_State* L )
 {
 	// Check number of arguments
-	if( lua_gettop( L ) ){
-		_lua_area* area = Lunar<_lua_area>::lightcheck( L , 1 );
-		if( area ){
-			Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort( *area ) ) );
+	if( lua_gettop( L ) )
+	{
+		_lua_event* evt = Lunar<_lua_event>::lightcheck( L , 1 );
+		
+		if( evt ){
+			push( L , this->gadget->getBitmapPort( *evt ) );
 			return 1;
 		}
 		
-		_lua_event* evt = Lunar<_lua_event>::lightcheck( L , 1 );
-		if( evt ){
-			Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort( *evt ) ) );
+		_lua_area* area = Lunar<_lua_area>::check( L , 1 );
+		if( area ){
+			push( L , this->gadget->getBitmapPort( *area ) );
 			return 1;
 		}
 	}
 	
 	// Fallback method
-	Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( this->gadget->getBitmapPort() ) );
+	push( L , this->gadget->getBitmapPort() );
 	return 1;
 }
 
@@ -144,12 +146,6 @@ int _lua_gadget::applyStyle(lua_State* L){ _style s = this->gadget->getStyle(); 
 //! getType
 int _lua_gadget::getType(lua_State* L){ lua_pushstring( L , gadgetType2string[this->gadget->getType()] ); return 1; }
 
-//! base
-int _lua_gadget::baseFunc( lua_State* L ){
-	Lunar<_lua_gadget>::push( L , new _lua_gadget( this->gadget , false ) );
-	return 1;
-}
-
 //! Lua-_gadget
 const char _lua_gadget::className[] = "Gadget";
 Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
@@ -218,8 +214,8 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "removeChild"				, wrap( _lua_gadget , &_gadget::removeChild ) },
 	{ "removeChildren"			, wrap( _lua_gadget , &_gadget::removeChildren ) },
 	{ "removeEnhancedChildren"	, wrap( _lua_gadget , &_gadget::removeEnhancedChildren ) },
-	{ "removeEnhancedChildren"	, wrap( _lua_gadget , &_gadget::removeEnhancedChildren ) },
 	{ "addChild"				, wrap( _lua_gadget , &_gadget::addChild ) },
+	//{ "addChild"				, &_lua_gadget::dummy },
 	{ "addEnhancedChild"		, wrap( _lua_gadget , &_gadget::addEnhancedChild ) },
 	{ "getLowestChild"			, wrap( _lua_gadget , &_gadget::getLowestChild ) },
 	{ "getToppestChild"			, wrap( _lua_gadget , &_gadget::getToppestChild ) },

@@ -3,9 +3,9 @@
 
 #include "_type/type.h"
 #include "_type/type.user.h"
-#include "_gadget/gadget.imagegadget.h"
+#include "_gadget/gadget.image.h"
 #include "_gadget/gadget.passcodebox.h"
-#include "_gadget/gadget.actionButton.h"
+#include "_gadget/gadget.button.action.h"
 
 
 //! Class for each user generated
@@ -13,7 +13,7 @@ class _userWrapper : public _gadget
 {
 	private:
 		
-		_passcodebox*	passwordbox;
+		_passcodeBox*	passwordbox;
 		_actionButton*	passwordsubmit;
 		_user*			user;
 		

@@ -3,7 +3,7 @@
 #define _WIN_L_DIALOGS_
 
 #include "_lua/lua.lunar.h"
-#include "_lua/lua.class.dialogInterface.h"
+#include "_lua/lua.class.dialog.interface.h"
 #include "_dialog/dialog.yesno.h"
 #include "_dialog/dialog.entertext.h"
 #include "_dialog/dialog.errorwarninginfo.h"

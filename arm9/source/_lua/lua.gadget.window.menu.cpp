@@ -29,7 +29,6 @@ Lunar<_lua_windowmenu>::FunctionType _lua_windowmenu::methods[] = {
 };
 
 Lunar<_lua_windowmenu>::PropertyType _lua_windowmenu::properties[] = {
-	GADGET_BASE_ATTR,
 	LUA_CLASS_ATTR_END
 };
 

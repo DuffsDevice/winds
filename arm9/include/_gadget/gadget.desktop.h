@@ -3,7 +3,7 @@
 
 #include "_gadget/gadget.fileview.h"
 
-class _desktop : public _fileview{
+class _desktop : public _fileView{
 	
 	private:
 		

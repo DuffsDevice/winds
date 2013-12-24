@@ -3,7 +3,7 @@
 #include "_type/type.system.h"
 
 //! Graphics
-#include "_resource/BMP_ShortcutOverlay.h"
+#include "_resource/resource.image.shortcutoverlay.h"
 
 _shortcut::_shortcut( string&& fn) :
 	_direntry( move(fn) )
@@ -37,7 +37,7 @@ _bitmap _shortcut::getFileImage()
 	
 	if( fl.getFileName() != "" )
 	{
-		_constbitmap& icon = fl.getFileImage();
+		_constBitmap& icon = fl.getFileImage();
 		this->image.copy( ( 10 - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	

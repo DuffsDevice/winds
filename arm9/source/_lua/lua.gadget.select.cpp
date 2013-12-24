@@ -52,7 +52,6 @@ Lunar<_lua_select>::FunctionType _lua_select::methods[] = {
 };
 
 Lunar<_lua_select>::PropertyType _lua_select::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "strValue" , wrap( _lua_select , &_select::getStrValue ) , nullptr },
 	{ "value" , wrap( _lua_select , &_select::getIntValue ) , wrap( _lua_select , &_select::setIntValue ) },
 	{ "list" , wrap( _lua_select , &_select::getList ) , wrap( _lua_select , &_select::setList ) },

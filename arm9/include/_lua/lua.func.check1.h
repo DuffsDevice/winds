@@ -10,115 +10,106 @@ namespace _luafunc
 	namespace detail
 	{
 		// ~~~~~~~~~~~~~~~~~~ Predefines ~~~~~~~~~~~~~~~~~~
-		template<typename ContainerType>	static unused ContainerType checkContainerInternal( lua_State* L , int index );
-		template<typename ContainerType>	static unused ContainerType checkAssociativeContainerInternal( lua_State* L , int index );
-		
-		// ~~~~~~~~~~~~~~~~~~ Errors ~~~~~~~~~~~~~~~~~~
-		static unused int type_error (lua_State *L, int narg, const char *tname) {
-			const char *msg = lua_pushfstring(L, "%s expected, got %s",tname, luaL_typename(L, narg));
-			return luaL_argerror(L, narg, msg);
-		}
-		static unused void tag_error (lua_State *L, int narg, int tag) {
-			type_error(L, narg, lua_typename(L, tag));
-		}
+		template<typename ContainerType>	static unused ContainerType checkContainerInternal( lua_State* state , int index );
+		template<typename ContainerType>	static unused ContainerType checkAssociativeContainerInternal( lua_State* state , int index );
 		
 		// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
-		static unused inline void					check( lua_State* L , int index , void* dummy ){}
-		static unused inline int					check( lua_State* L , int index , int* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline unsigned int			check( lua_State* L , int index , unsigned int* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline unsigned int			check( lua_State* L , int index , long long int* dummy ){ return luaL_checknumber( L , index ); }
-		static unused inline unsigned int			check( lua_State* L , int index , unsigned long long int* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline short int				check( lua_State* L , int index , short int* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline char					check( lua_State* L , int index , char* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline unsigned char			check( lua_State* L , int index , unsigned char* dummy ){ return luaL_checkint( L , index ); }
-		static unused inline bool					check( lua_State* L , int index , bool* dummy ){
-			if( lua_isnumber(L,index) )
-				return lua_tonumber(L,index);
-			return lua_toboolean(L, index);
+		static unused inline void					check( lua_State* state , int index , void* dummy ){}
+		static unused inline int					check( lua_State* state , int index , int* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline unsigned int			check( lua_State* state , int index , unsigned int* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline unsigned int			check( lua_State* state , int index , long long int* dummy ){ return luaL_checknumber( state , index ); }
+		static unused inline unsigned int			check( lua_State* state , int index , unsigned long long int* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline short int				check( lua_State* state , int index , short int* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline char					check( lua_State* state , int index , char* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline unsigned char			check( lua_State* state , int index , unsigned char* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline bool					check( lua_State* state , int index , bool* dummy ){
+			if( lua_isnumber(state,index) )
+				return lua_tonumber(state,index);
+			return lua_toboolean(state, index);
 		}
-		static unused inline string					check( lua_State* L , int index , string* dummy ){ return luaL_checkstring( L , index ); }
-		static unused inline const char*			check( lua_State* L , int index , const char** dummy ){ return luaL_checkstring( L , index ); }
-		_bitmapPort									check( lua_State* L , int index , _bitmapPort* dummy );
-		_bitmap										check( lua_State* L , int index , _bitmap* dummy );
-		_gadget*									check( lua_State* L , int index , _gadget** dummy );
-		_rect										check( lua_State* L , int index , _rect* dummy );
-		_area										check( lua_State* L , int index , _area* dummy );
-		_event										check( lua_State* L , int index , _event* dummy );
-		const _font*								check( lua_State* L , int index , const _font** dummy );
-		_border										check( lua_State* L , int index , _border* dummy );
-		static unused inline _callbackReturn		check( lua_State* L , int index , _callbackReturn* dummy ){ return string2callbackReturn[ luaL_checkstring( L , index ) ]; }
-		static unused inline _eventCallType			check( lua_State* L , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( L , index ) ]; }
-		static unused inline _eventType				check( lua_State* L , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( L , index ) ]; }
-		static unused inline _dimension				check( lua_State* L , int index , _dimension* dummy ){ return string2dimension[ luaL_checkstring( L , index ) ]; }
-		static unused inline _style					check( lua_State* L , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( L , index ) ); return style; }
-		static unused inline _pixel					check( lua_State* L , int index , _pixel* dummy ){
-			if( lua_isnumber( L , index ) )
-				return lua_tointeger( L , index );
-			return string2color[ luaL_checkstring( L , index ) ];
+		static unused inline string					check( lua_State* state , int index , string* dummy ){ return luaL_checkstring( state , index ); }
+		static unused inline const char*			check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
+		_bitmapPort									check( lua_State* state , int index , _bitmapPort* dummy );
+		_bitmap										check( lua_State* state , int index , _bitmap* dummy );
+		_gadget*									check( lua_State* state , int index , _gadget** dummy );
+		_rect										check( lua_State* state , int index , _rect* dummy );
+		_area										check( lua_State* state , int index , _area* dummy );
+		_event										check( lua_State* state , int index , _event* dummy );
+		const _font*								check( lua_State* state , int index , const _font** dummy );
+		_border										check( lua_State* state , int index , _border* dummy );
+		static unused inline _callbackReturn		check( lua_State* state , int index , _callbackReturn* dummy ){ return string2callbackReturn[ luaL_checkstring( state , index ) ]; }
+		static unused inline _eventCallType			check( lua_State* state , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( state , index ) ]; }
+		static unused inline _eventType				check( lua_State* state , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( state , index ) ]; }
+		static unused inline _dimension				check( lua_State* state , int index , _dimension* dummy ){ return string2dimension[ luaL_checkstring( state , index ) ]; }
+		static unused inline _style					check( lua_State* state , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( state , index ) ); return style; }
+		static unused inline _pixel					check( lua_State* state , int index , _pixel* dummy ){
+			if( lua_isnumber( state , index ) )
+				return lua_tointeger( state , index );
+			return string2color[ luaL_checkstring( state , index ) ];
 		}
 		template<typename T>
-		static unused inline _optValue<T>			check( lua_State* L , int index , _optValue<T>* dummy ){
-			if( is_a( L , index , (T*)nullptr ) )
-				return check( L , index , (T*)nullptr );
+		static unused inline _optValue<T>			check( lua_State* state , int index , _optValue<T>* dummy ){
+			if( is_a( state , index , (T*)nullptr ) )
+				return check( state , index , (T*)nullptr );
 			return ignore;
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T>
-		static unused inline _list<T>				check( lua_State* L , int index , _list<T>* dummy ){
-			return checkContainerInternal<_list<T>>( L , index );
+		static unused inline _list<T>				check( lua_State* state , int index , _list<T>* dummy ){
+			return checkContainerInternal<_list<T>>( state , index );
 		}
 		template<typename T>
-		static unused inline _vector<T>				check( lua_State* L , int index , _vector<T>* dummy ){
-			return checkContainerInternal<_vector<T>>( L , index );
+		static unused inline _vector<T>				check( lua_State* state , int index , _vector<T>* dummy ){
+			return checkContainerInternal<_vector<T>>( state , index );
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T1, typename T2>
-		static unused inline _map<T1,T2>			check( lua_State* L , int index , _map<T1,T2>* dummy ){
-			return checkAssociativeContainerInternal<_map<T1,T2>>( L , index );
+		static unused inline _map<T1,T2>			check( lua_State* state , int index , _map<T1,T2>* dummy ){
+			return checkAssociativeContainerInternal<_map<T1,T2>>( state , index );
 		}
 		template<typename T1, typename T2>
-		static unused inline _unorderedMap<T1,T2>	check( lua_State* L , int index , _unorderedMap<T1,T2>* dummy ){
-			return checkAssociativeContainerInternal<_unorderedMap<T1,T2>>( L , index );
+		static unused inline _unorderedMap<T1,T2>	check( lua_State* state , int index , _unorderedMap<T1,T2>* dummy ){
+			return checkAssociativeContainerInternal<_unorderedMap<T1,T2>>( state , index );
 		}
 		template<typename T1, typename T2, typename C, typename A>
-		static unused _assocVector<T1,T2,C,A>		check( lua_State* L , int index , _assocVector<T1,T2,C,A>* dummy ){
-			return checkAssociativeContainerInternal<_assocVector<T1,T2,C,A>>( L , index );
+		static unused _assocVector<T1,T2,C,A>		check( lua_State* state , int index , _assocVector<T1,T2,C,A>* dummy ){
+			return checkAssociativeContainerInternal<_assocVector<T1,T2,C,A>>( state , index );
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~~ Internal Container Checks ~~~~~~~~~~~~~~~~~~~
 		template<typename ContainerType>
-		static unused ContainerType checkContainerInternal( lua_State* L , int index )
+		static unused ContainerType checkContainerInternal( lua_State* state , int index )
 		{
 			// Check if table is present
-			if( !lua_istable( L , index ) )
-				detail::tag_error( L , index , LUA_TTABLE );
+			if( !lua_istable( state , index ) )
+				lua_tagerror( state , index , LUA_TTABLE );
 			
 			typedef typename ContainerType::value_type ValueType;
 			
 			ContainerType ret;
 			for( int i = 1; ; i++ )
 			{
-				lua_rawgeti( L , index , i ); // Get next index in table
+				lua_rawgeti( state , index , i ); // Get next index in table
 				
-				if( lua_isnil( L , -1 ) ){
-					lua_pop( L , 1 ); // Pop Value
+				if( lua_isnil( state , -1 ) ){
+					lua_pop( state , 1 ); // Pop Value
 					break;
 				}
-				ret.push_back( check( L , -1 , (ValueType*)nullptr ) );
+				ret.push_back( check( state , -1 , (ValueType*)nullptr ) );
 				
-				lua_pop( L , 1 );// Pop Value
+				lua_pop( state , 1 );// Pop Value
 			}
 			return ret;
 		}
 		
 		template<typename ContainerType>
-		static unused ContainerType checkAssociativeContainerInternal( lua_State* L , int index )
+		static unused ContainerType checkAssociativeContainerInternal( lua_State* state , int index )
 		{
 			// Check if table is present
-			if( !lua_istable( L , index ) )
-				detail::tag_error( L , index , LUA_TTABLE );
+			if( !lua_istable( state , index ) )
+				lua_tagerror( state , index , LUA_TTABLE );
 			
 			typedef typename ContainerType::key_type KeyType;
 			typedef typename ContainerType::mapped_type ValueType;
@@ -126,28 +117,28 @@ namespace _luafunc
 			ContainerType ret;
 			for( int i = 1; ; i++ )
 			{
-				lua_rawgeti( L , index , i ); // Get next index in table
+				lua_rawgeti( state , index , i ); // Get next index in table
 				
-				if( lua_isnil( L , -1 ) ){
-					lua_pop( L , 1 ); // Pop Value
+				if( lua_isnil( state , -1 ) ){
+					lua_pop( state , 1 ); // Pop Value
 					break;
 				}
-				else if( lua_istable( L , -1 ) )
+				else if( lua_istable( state , -1 ) )
 				{
-					lua_rawgeti( L , -1 , 1 ); // Get key
-					auto key = check( L , -1 , (KeyType*)nullptr );
-					lua_pop( L , 1 ); // pop key
+					lua_rawgeti( state , -1 , 1 ); // Get key
+					auto key = check( state , -1 , (KeyType*)nullptr );
+					lua_pop( state , 1 ); // pop key
 					
-					lua_rawgeti( L , -1 , 2 ); // Get value
-					auto value = check( L , -1 , (ValueType*)nullptr );
-					lua_pop( L , 1 ); // pop value
+					lua_rawgeti( state , -1 , 2 ); // Get value
+					auto value = check( state , -1 , (ValueType*)nullptr );
+					lua_pop( state , 1 ); // pop value
 					
 					ret[key] = value;
 				}
 				else
-					ret[ i - 1 ] = check( L , -1 , (ValueType*)nullptr );
+					ret[ i - 1 ] = check( state , -1 , (ValueType*)nullptr );
 				
-				lua_pop( L , 1 );// Pop Value
+				lua_pop( state , 1 );// Pop Value
 			}
 			
 			return ret;

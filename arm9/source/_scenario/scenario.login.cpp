@@ -7,7 +7,7 @@
 //! Gadgets we need
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.startupScreen.h"
+#include "_gadget/gadget.screen.startup.h"
 
 
 _callbackReturn _scLogin::userLoginHandler( _event event )
@@ -52,7 +52,7 @@ void _scLogin::loginAnimSetter( int val ){
 void _scLogin::loginSwitchDesktop()
 {
 	// Log the User in
-	_system::switchUser( new _user( *this->userWrapper.front()->user ) );
+	_system::switchUser( _user( *this->userWrapper.front()->user ) );
 	
 	_systemController::changeState( _systemState::desktop );
 }
@@ -119,7 +119,7 @@ _scLogin::_scLogin() :
 	separator.drawVerticalGradient( 0 , 0 			   , 1 , sepHeight >> 1 , RGBHEX( 0x5A7EDC ) , RGB( 21 , 24 , 31 ) );
 	separator.drawVerticalGradient( 0 , sepHeight >> 1 , 1 , sepHeight >> 1 , RGB( 21 , 24 , 31 ) , RGBHEX( 0x5A7EDC ) );
 	
-	this->separator = new _imagegadget( 126 , 20 , separator );
+	this->separator = new _imageGadget( 126 , 20 , separator );
 	
 	_system::_gadgetHost_->addChild( this->separator );
 }

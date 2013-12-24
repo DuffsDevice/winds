@@ -1,9 +1,9 @@
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
-#include "_type/type.textphrases.h"
+#include "_type/type.text.phrases.h"
 
-void _textbox::setFont( const _font* ft )
+void _textBox::setFont( const _font* ft )
 {
 	if( this->font != ft )
 	{ 
@@ -13,7 +13,7 @@ void _textbox::setFont( const _font* ft )
 	}
 }
 
-void _textbox::setInternalCursor( _u32 cursor )
+void _textBox::setInternalCursor( _u32 cursor )
 {
 	this->cursor = cursor;
 	
@@ -27,7 +27,7 @@ void _textbox::setInternalCursor( _u32 cursor )
 		_coord fontPosition = this->getFontPosition( true ).first;
 		_length fontWidth = this->font->getStringWidth( cstr ); // Get whole Length of the string
 		
-		_s32 minValueScroll = max( fontPosition + fontWidth - this->getWidth() + _textbox::borderX - 1 , 0 );
+		_s32 minValueScroll = max( fontPosition + fontWidth - this->getWidth() + _textBox::borderX - 1 , 0 );
 		
 		// Resize string!
 		stringExtractor::strResize( cstr , this->cursor - 1 );
@@ -35,8 +35,8 @@ void _textbox::setInternalCursor( _u32 cursor )
 		
 		delete[] cstr;
 		
-		_s32 minScroll = fontPosition + fontWidth - _textbox::borderX;
-		_s32 maxCursorScroll = fontPosition + fontWidth - this->getWidth() + _textbox::borderX - 1;
+		_s32 minScroll = fontPosition + fontWidth - _textBox::borderX;
+		_s32 maxCursorScroll = fontPosition + fontWidth - this->getWidth() + _textBox::borderX - 1;
 		
 		this->scroll = min( min( minScroll , minValueScroll ) , _s32(this->scroll) );
 		this->scroll = max( maxCursorScroll , _s32(this->scroll) );
@@ -45,16 +45,16 @@ void _textbox::setInternalCursor( _u32 cursor )
 	this->redraw();
 }
 
-void _textbox::removeStr( _int position , _length numChars )
+void _textBox::removeStr( _int position , _length numChars )
 {
 	this->strValue.erase( position , numChars );
 }
-void _textbox::insertStr( _int position , string s )
+void _textBox::insertStr( _int position , string s )
 {
 	this->strValue.insert( position , s );
 }
 
-void _textbox::setStrValue( string value )
+void _textBox::setStrValue( string value )
 {
 	if( this->strValue == value )
 		return;
@@ -63,7 +63,7 @@ void _textbox::setStrValue( string value )
 	this->setInternalCursor( min( cursor , _u32( value.length() + 1 ) ) );
 }
 
-_2s32 _textbox::getFontPosition( bool noScroll )
+_2s32 _textBox::getFontPosition( bool noScroll )
 {
 	_coord x = 0;
 	_coord y = 0;
@@ -74,10 +74,10 @@ _2s32 _textbox::getFontPosition( bool noScroll )
 			x = ( this->getWidth() >> 1 ) - ( ( this->font->getStringWidth( this->strValue ) - 1 ) >> 1 );
 			break;
 		case _align::left:
-			x = _textbox::borderX;
+			x = _textBox::borderX;
 			break;
 		case _align::right:
-			x = this->getWidth() - this->font->getStringWidth( this->strValue ) - _textbox::borderX;
+			x = this->getWidth() - this->font->getStringWidth( this->strValue ) - _textBox::borderX;
 			break;
 	}
 	
@@ -94,10 +94,10 @@ _2s32 _textbox::getFontPosition( bool noScroll )
 				);
 			break;
 		case _valign::top:
-			y = _textbox::borderY;
+			y = _textBox::borderY;
 			break;
 		case _valign::bottom:
-			y = this->getHeight() - ( ( this->font->getAscent() + this->font->getHeight() ) >> 1 ) - _textbox::borderY;
+			y = this->getHeight() - ( ( this->font->getAscent() + this->font->getHeight() ) >> 1 ) - _textBox::borderY;
 			break;
 	}
 	
@@ -107,10 +107,10 @@ _2s32 _textbox::getFontPosition( bool noScroll )
 	return _2s32( x , y );
 }
 
-_callbackReturn _textbox::refreshHandler( _event event )
+_callbackReturn _textBox::refreshHandler( _event event )
 {
 	// Receive Gadget
-	_textbox* that = event.getGadget<_textbox>();
+	_textBox* that = event.getGadget<_textBox>();
 
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
@@ -162,9 +162,9 @@ _callbackReturn _textbox::refreshHandler( _event event )
 	return use_default;
 }
 
-_callbackReturn _textbox::keyHandler( _event event )
+_callbackReturn _textBox::keyHandler( _event event )
 {
-	_textbox* that = event.getGadget<_textbox>();
+	_textBox* that = event.getGadget<_textBox>();
 	
 	string val = that->strValue;
 	
@@ -209,17 +209,17 @@ _callbackReturn _textbox::keyHandler( _event event )
 	return handled;
 }
 
-_callbackReturn _textbox::focusHandler( _event event )
+_callbackReturn _textBox::focusHandler( _event event )
 {
 	// Set Cursor
-	event.getGadget<_textbox>()->setInternalCursor( event == onFocus ? stringExtractor::strLen( event.getGadget<_textbox>()->strValue.c_str() ) + 1 : 0 );
+	event.getGadget<_textBox>()->setInternalCursor( event == onFocus ? stringExtractor::strLen( event.getGadget<_textBox>()->strValue.c_str() ) + 1 : 0 );
 	
 	return use_default;
 }
 
-_callbackReturn _textbox::updateHandler( _event event )
+_callbackReturn _textBox::updateHandler( _event event )
 {
-	_textbox* that = event.getGadget<_textbox>();
+	_textBox* that = event.getGadget<_textBox>();
 	
 	if( that->font && that->font->isValid() )
 		that->setHeightIfAuto( that->font->getHeight() + 2 );
@@ -227,15 +227,15 @@ _callbackReturn _textbox::updateHandler( _event event )
 	return handled;
 }
 
-_callbackReturn _textbox::mouseHandler( _event event )
+_callbackReturn _textBox::mouseHandler( _event event )
 {
-	_textbox* that = event.getGadget<_textbox>();
+	_textBox* that = event.getGadget<_textBox>();
 	
 	_coord position = event.getPosX();
 	
 	if( event == onDragging )
 	{
-		// X-Coordinate of stylus relative to this _textbox
+		// X-Coordinate of stylus relative to this _textBox
 		position -= that->getX();
 	}
 	
@@ -254,7 +254,7 @@ _callbackReturn _textbox::mouseHandler( _event event )
 	return handled;
 }
 
-_textbox::_textbox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string text , _style&& style ) :
+_textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string text , _style&& style ) :
 	_gadget( _gadgetType::textbox , x , y , width , height , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
 	, color( RGB( 0 , 0 , 0 ) )
 	, bgColor( RGB( 31 , 31 , 31 ) )
@@ -267,18 +267,18 @@ _textbox::_textbox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	, scroll( 0 )
 {
 	// Set update Handler
-	this->setInternalEventHandler( onUpdate , make_callback( &_textbox::updateHandler ) );
+	this->setInternalEventHandler( onUpdate , make_callback( &_textBox::updateHandler ) );
 	
 	this->updateNow();
 	
 	// Regsiter Handling Functions for events
-	this->setInternalEventHandler( onFocus , make_callback( &_textbox::focusHandler ) );
-	this->setInternalEventHandler( onBlur , make_callback( &_textbox::focusHandler ) );
-	this->setInternalEventHandler( onDraw , make_callback( &_textbox::refreshHandler ) );
-	this->setInternalEventHandler( onMouseDown , make_callback( &_textbox::mouseHandler ) );
-	this->setInternalEventHandler( onKeyDown , make_callback( &_textbox::keyHandler ) );
-	this->setInternalEventHandler( onKeyRepeat , make_callback( &_textbox::keyHandler ) );
-	this->setInternalEventHandler( onDragging , make_callback( &_textbox::mouseHandler ) );
+	this->setInternalEventHandler( onFocus , make_callback( &_textBox::focusHandler ) );
+	this->setInternalEventHandler( onBlur , make_callback( &_textBox::focusHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_textBox::refreshHandler ) );
+	this->setInternalEventHandler( onMouseDown , make_callback( &_textBox::mouseHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_textBox::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_textBox::keyHandler ) );
+	this->setInternalEventHandler( onDragging , make_callback( &_textBox::mouseHandler ) );
 	
 	// Refresh Myself
 	this->redraw();

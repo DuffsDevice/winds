@@ -22,7 +22,7 @@ class _user : public _registry
 	public:
 		
 		//! Methods to receive create a users logo
-		static _bitmap getUserLogoFromImage( _constbitmap& image );
+		static _bitmap getUserLogoFromImage( _constBitmap& image );
 		static _bitmap getUserImage( string path );
 		
 		//! Fast Int Attributes
@@ -55,10 +55,10 @@ class _user : public _registry
 		string getFoldername() const { return this->folderName; }
 		
 		//! Get User-Logo
-		_constbitmap& getLogo() const { return this->userLogo; }
+		_constBitmap& getLogo() const { return this->userLogo; }
 		
 		//! Get the wallpaper
-		_constbitmap& getWallpaper() const { return this->wallpaper; }
+		_constBitmap& getWallpaper() const { return this->wallpaper; }
 		
 		//! For view type of wallpaper
 		_wallpaperViewType getWallpaperViewType() const { return this->wallpaperView; }

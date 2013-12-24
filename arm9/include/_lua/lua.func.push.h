@@ -11,109 +11,109 @@ namespace _luafunc
 {
 	// ~~~~~~~~~~~~~~~~~~ Predefines ~~~~~~~~~~~~~~~~~~
 	template<typename... ValueType> void pushTupleElementsInternal( lua_State* , const _tuple<ValueType...>& , int = 0 );
-	template<typename ContainerType> void pushContainer( lua_State* L , ContainerType arg );
-	template<typename ContainerType> void pushAssociativeContainer( lua_State* L , ContainerType arg );
+	template<typename ContainerType> void pushContainer( lua_State* state , ContainerType arg );
+	template<typename ContainerType> void pushAssociativeContainer( lua_State* state , ContainerType arg );
 	
 	// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
 	inline int push(lua_State*){ return 0; } // Standard fallback
-	template<typename... TN>	inline int push(lua_State* L, int arg						, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, unsigned int arg				, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, char arg						, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, unsigned char arg				, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, short int arg					, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, unsigned short int arg		, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, long long int arg				, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, unsigned long long int arg	, TN... args){ lua_pushnumber( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, const string& arg				, TN... args){ lua_pushstring( L , arg.c_str() ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, const char* arg				, TN... args){ lua_pushstring( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _dimension arg				, TN... args){ return 1 + push( L , dimension2string[arg] , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _mimeType arg					, TN... args){ return 1 + push( L , (_literal)arg , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _event arg					, TN... args){ pushEvent( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _dialogResult arg				, TN... args){ return push( L , dialogResult2string[arg] , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _eventType arg				, TN... args){ return push( L , eventType2string[arg] , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _gadget* arg					, TN... args){ pushGadget( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _rect arg						, TN... args){ pushRect( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _area	arg						, TN... args){ pushArea( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _bitmap arg					, TN... args){ pushBitmap( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _bitmap& arg					, TN... args){ pushBitmapRef( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _bitmapPort arg				, TN... args){ pushBitmapPort( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, const _font* arg				, TN... args){ pushFont( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _2s32 arg						, TN... args){ return push( L , arg.first ) + push( L , arg.second , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _2u32 arg						, TN... args){ return push( L , arg.first ) + push( L , arg.second , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _border arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _padding arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push(lua_State* L, _margin arg					, TN... args){ pushBorder( L , move(arg) ); return 1 + push( L , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , int arg						, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , unsigned int arg			, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , char arg					, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , unsigned char arg			, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , short int arg				, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , unsigned short int arg		, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , long long int arg			, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , unsigned long long int arg	, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , const string& arg			, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _literal arg				, TN... args){ lua_pushstring( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _dimension arg				, TN... args){ return 1 + push( state , dimension2string[arg] , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _mimeType arg				, TN... args){ return 1 + push( state , (_literal)arg , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _event arg					, TN... args){ pushEvent( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _dialogResult arg			, TN... args){ return push( state , dialogResult2string[arg] , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _eventType arg				, TN... args){ return push( state , eventType2string[arg] , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _gadget* arg				, TN... args){ pushGadget( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _rect arg					, TN... args){ pushRect( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _area	arg					, TN... args){ pushArea( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _bitmap arg					, TN... args){ pushBitmap( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _bitmap& arg				, TN... args){ pushBitmapRef( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _bitmapPort arg				, TN... args){ pushBitmapPort( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , const _font* arg			, TN... args){ pushFont( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _2s32 arg					, TN... args){ return push( state , arg.first ) + push( state , arg.second , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _2u32 arg					, TN... args){ return push( state , arg.first ) + push( state , arg.second , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _border arg					, TN... args){ pushBorder( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _padding arg				, TN... args){ pushBorder( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _margin arg					, TN... args){ pushBorder( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	
 	// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~
 	template<typename T, typename... TN>
-	inline int push( lua_State* L , const _vector<T>& arg , TN... args ){ pushContainer( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	inline int push( lua_State* state , const _vector<T>& arg , TN... args ){ pushContainer( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename T, typename... TN>
-	inline int push( lua_State* L , const _list<T>& arg , TN... args ){ pushContainer( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	inline int push( lua_State* state , const _list<T>& arg , TN... args ){ pushContainer( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	
 	// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
 	template<typename T, typename T2, typename... TN>
-	inline int push( lua_State* L , const _map<T,T2>& arg , TN... args ){ pushAssociativeContainer( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	inline int push( lua_State* state , const _map<T,T2>& arg , TN... args ){ pushAssociativeContainer( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TS, typename... TN>
-	inline int push( lua_State* L , const _assocVector<TS...>& arg , TN... args ){ pushAssociativeContainer( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	inline int push( lua_State* state , const _assocVector<TS...>& arg , TN... args ){ pushAssociativeContainer( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename T, typename T2, typename... TN>
-	inline int push( lua_State* L , const _unorderedMap<T,T2>& arg , TN... args ){ pushAssociativeContainer( L , arg ); return 1 + push( L , forward<TN>(args)... ); }
+	inline int push( lua_State* state , const _unorderedMap<T,T2>& arg , TN... args ){ pushAssociativeContainer( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	
 	// ~~~~~~~~~~~~~~~~~~ Pair & Tuple ~~~~~~~~~~~~~~~~~~
 	template<typename T1, typename T2, typename... TN>
-	inline int push( lua_State* L , _pair<T1,T2> arg , TN... args )
+	inline int push( lua_State* state , _pair<T1,T2> arg , TN... args )
 	{
-		lua_createtable( L , 0 , 2 ); // Create table
-		push( L , arg.first ); // Push Key
-		lua_rawseti( L , -2 , 1 );
-		push( L , arg.second ); // Push Value
-		lua_rawseti( L , -2 , 2 );
-		return push( L , args... ) + 1;
+		lua_createtable( state , 0 , 2 ); // Create table
+		push( state , arg.first ); // Push Key
+		lua_rawseti( state , -2 , 1 );
+		push( state , arg.second ); // Push Value
+		lua_rawseti( state , -2 , 2 );
+		return push( state , args... ) + 1;
 	}
 	
 	template<typename... T, typename... TN>
-	inline int push( lua_State* L , _tuple<T...> arg , TN... args )
+	inline int push( lua_State* state , _tuple<T...> arg , TN... args )
 	{
-		lua_createtable( L , sizeof...(T) , 0 ); // Create table
-		pushTupleElementsInternal( L , arg );
-		return push( L , args... ) + 1;
+		lua_createtable( state , sizeof...(T) , 0 ); // Create table
+		pushTupleElementsInternal( state , arg );
+		return push( state , args... ) + 1;
 	}
 	
 	// ~~~~~~~~~~~~~~~~~~ Internal Push-Functions ~~~~~~~~~~~~~~~~~~
 	template<typename... ValueType>
-	inline void pushTupleElementsInternal( lua_State* L , const _tuple<ValueType...>& arg , int index = 0 )
+	inline void pushTupleElementsInternal( lua_State* state , const _tuple<ValueType...>& arg , int index = 0 )
 	{
-		push( L , std::get<index>( arg ) );
-		lua_rawseti( L , -2 , index + 1 );
+		push( state , std::get<index>( arg ) );
+		lua_rawseti( state , -2 , index + 1 );
 		
 		if( index + 1 < sizeof...(ValueType) )
-			pushTupleElements( L , arg , index + 1 );
+			pushTupleElements( state , arg , index + 1 );
 	}
 	
 	template<typename ContainerType>
-	void pushAssociativeContainer( lua_State* L , ContainerType arg )
+	void pushAssociativeContainer( lua_State* state , ContainerType arg )
 	{
 		// Create Table for arguments
-		lua_createtable( L , 0 , arg.size() );
+		lua_createtable( state , 0 , arg.size() );
 		
 		// Push Datasets
 		int i = 0;
 		for( const typename ContainerType::value_type& data : arg ){
-			push( L , data );
-			lua_rawseti( L , -2 , ++i );
+			push( state , data );
+			lua_rawseti( state , -2 , ++i );
 		}
 	}
 	
 	template<typename ContainerType>
-	void pushContainer( lua_State* L , ContainerType arg )
+	void pushContainer( lua_State* state , ContainerType arg )
 	{
 		// Create Table for arguments
-		lua_createtable( L , arg.size() , 0 );
+		lua_createtable( state , arg.size() , 0 );
 		
 		// Push Datasets
 		int i = 0;
 		for( const typename ContainerType::value_type& data : arg ){
-			push( L , data );
-			lua_rawseti( L , -2 , ++i );
+			push( state , data );
+			lua_rawseti( state , -2 , ++i );
 		}
 	}
 }

@@ -11,11 +11,11 @@
 #include <nds/arm9/video.h>
 
 // Resources
-#include "_resource/BMP_Grip.h"
-#include "click_bin.h"
+#include "_resource/resource.image.keyboard.grip.h"
+#include "sound_click_bin.h"
 
 // Click Sound
-_staticSound _keyboard::clickSound = _staticSound( _channelFormat::adpcm , 44100 , click_bin , click_bin_size );
+_staticSound _keyboard::clickSound = _staticSound( _channelFormat::adpcm , 44100 , sound_click_bin , sound_click_bin_size );
 
 void _keyboard::playClickSound(){
 	clickSound.setFrequency( 36600 + rand() % 15000 );

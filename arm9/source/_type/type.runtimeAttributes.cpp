@@ -2,9 +2,9 @@
 #include "_type/type.font.glyphs.h"
 
 // Bitmaps
-#include "_resource/BMP_WindowHeader.h"
-#include "_resource/BMP_Checkboxes.h"
-#include "_resource/BMP_WindowButtons.h"
+#include "_resource/resource.image.window.header.h"
+#include "_resource/resource.image.window.buttons.h"
+#include "_resource/resource.image.checkboxes.h"
 
 _runtimeAttributes::_runtimeAttributes( _paramAlloc<_user> user ) :
 	defaultFont( "System7" )
@@ -18,6 +18,7 @@ _runtimeAttributes::_runtimeAttributes( _paramAlloc<_user> user ) :
 	, itemBackground( COLOR_WHITE )
 	, controlBackground( RGB( 28 , 28 , 27 ) )
 	, controlForeground( RGB( 22 , 22 , 20 ) )
+	, magnifyKeyboardFocus( true )
 {
 	
 	this->assocDirectories = {

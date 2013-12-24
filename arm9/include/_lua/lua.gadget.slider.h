@@ -24,7 +24,7 @@ class _lua_slider : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_slider>::FunctionType methods[];
 		static Lunar<_lua_slider>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_slider>::BaseClassType<_lua_gadget>;
 };
 
 #endif

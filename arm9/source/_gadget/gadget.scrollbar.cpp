@@ -1,5 +1,5 @@
 #include "_gadget/gadget.scrollBar.h"
-#include "_resource/BMP_ScrollButtons.h"
+#include "_resource/resource.image.scrollbuttons.h"
 
 #include "nds/arm9/math.h"
 

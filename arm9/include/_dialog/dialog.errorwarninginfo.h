@@ -9,7 +9,7 @@ class _errorDialog : public _imageDialog
 {
 	private:
 		
-		static _constbitmap image;
+		static _constBitmap image;
 	
 	public:
 		
@@ -23,7 +23,7 @@ class _warningDialog : public _imageDialog
 {
 	private:
 		
-		static _constbitmap image;
+		static _constBitmap image;
 	
 	public:
 		
@@ -37,7 +37,7 @@ class _infoDialog : public _imageDialog
 {
 	private:
 		
-		static _constbitmap image;
+		static _constBitmap image;
 	
 	public:
 		

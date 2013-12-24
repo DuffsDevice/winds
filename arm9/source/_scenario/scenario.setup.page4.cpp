@@ -41,7 +41,7 @@ bool _scSetupPage4::destroy( _gadget* viewParent )
 	delete this->lblName;
 	delete this->lblIcon;
 	delete this->txtProfileName;
-	for( _pair<_imagegadget*,_bitmap> data : imgProfileIcons )
+	for( _pair<_imageGadget*,_bitmap> data : imgProfileIcons )
 		delete data.first;
 	imgProfileIcons.clear();
 	
@@ -66,7 +66,7 @@ void _scSetupPage4::create( _gadget* viewParent )
 	viewParent->addChild( this->lblIcon );
 	
 	// Textbox for profile name
-	this->txtProfileName = new _textbox( 21 , 70 , 80 , ignore , profileName  );
+	this->txtProfileName = new _textBox( 21 , 70 , 80 , ignore , profileName  );
 	this->txtProfileName->setInternalEventHandler( onEdit , make_callback( this , &_scSetupPage4::profileNameTextboxHandler ) );
 	viewParent->addChild( this->txtProfileName );
 	
@@ -79,7 +79,7 @@ void _scSetupPage4::create( _gadget* viewParent )
 					imageId2filename[ iconNumbers[i] ]
 				)
 			);
-		_imagegadget* image = new _imagegadget(
+		_imageGadget* image = new _imageGadget(
 			22 + i * 20
 			, 102
 			, icon
@@ -103,7 +103,7 @@ void _scSetupPage4::create( _gadget* viewParent )
 _callbackReturn _scSetupPage4::profileIconClickHandler( _event event )
 {
 	// Receive gadget
-	_imagegadget* that = event.getGadget<_imagegadget>();
+	_imageGadget* that = event.getGadget<_imageGadget>();
 	
 	_u8 iconNumber = that->getStyle().val;
 	_u8 oldNumber = this->profileIcon;
@@ -114,7 +114,7 @@ _callbackReturn _scSetupPage4::profileIconClickHandler( _event event )
 	this->profileIcon = iconNumber;
 	
 	// Refresh the old icon
-	for( _pair<_imagegadget*,_bitmap> g : this->imgProfileIcons )
+	for( _pair<_imageGadget*,_bitmap> g : this->imgProfileIcons )
 	{
 		if( g.first->getStyle().val == oldNumber )
 			g.first->redraw();
@@ -128,10 +128,10 @@ _callbackReturn _scSetupPage4::profileIconClickHandler( _event event )
 
 _callbackReturn _scSetupPage4::profileIconDrawHandler( _event event )
 {
-	_imagegadget* that = event.getGadget<_imagegadget>();
+	_imageGadget* that = event.getGadget<_imageGadget>();
 	
 	// Get index of imagegadget
-	_constbitmap& iconBitmap = imgProfileIcons[that] ;
+	_constBitmap& iconBitmap = imgProfileIcons[that] ;
 	
 	// Get bitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );

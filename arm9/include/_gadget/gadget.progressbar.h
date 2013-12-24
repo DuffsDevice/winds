@@ -5,7 +5,7 @@
 #include "_type/type.gadget.h"
 #include "_type/type.timer.h"
 
-class _progressbar : public _gadget {
+class _progressBar : public _gadget {
 	
 	private:
 	
@@ -22,7 +22,7 @@ class _progressbar : public _gadget {
 	public:
 	
 		//! Constructor
-		_progressbar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool type = true , _style&& style = _style() | _styleAttr::notClickable );
+		_progressBar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool type = true , _style&& style = _style() | _styleAttr::notClickable );
 		
 		//! Set Receiver of Key-Events
 		void setIntValue( _u8 value ){ // 0 - 127

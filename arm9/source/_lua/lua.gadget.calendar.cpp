@@ -18,7 +18,6 @@ Lunar<_lua_calendar>::FunctionType _lua_calendar::methods[] = {
 };
 
 Lunar<_lua_calendar>::PropertyType _lua_calendar::properties[] = {
-	GADGET_BASE_ATTR,
 	{ "date" 	, wrap( _lua_calendar , &_calendar::getIntValue )	, wrap( _lua_calendar , &_calendar::setIntValue ) },
 	{ "bgColor" , wrap( _lua_calendar , &_calendar::getBgColor )	, wrap( _lua_calendar , &_calendar::setBgColor ) },
 	LUA_CLASS_ATTR_END

@@ -11,6 +11,7 @@ enum class _gadgetType : _u8
 	button,
 	stickybutton,
 	expandbutton,
+	imagebutton,
 	label,
 	checkbox,
 	radiobox,

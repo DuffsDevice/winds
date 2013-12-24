@@ -631,6 +631,6 @@ class _bitmap
 		public:
 };
 
-typedef const _bitmap _constbitmap;
+typedef const _bitmap _constBitmap;
 
 #endif

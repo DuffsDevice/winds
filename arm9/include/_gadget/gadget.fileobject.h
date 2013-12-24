@@ -7,20 +7,20 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_gadget/gadget.label.h"
 
-enum class _fileviewType : _u8{
+enum class _fileViewType : _u8{
 	detail = 0,
 	list = 1,
 	symbol_small = 2,
 	symbol_big = 3
 };
 
-class _fileobject : public _gadget {
+class _fileObject : public _gadget {
 	
 	private:
 	
 		// My Data...
 		_direntry*		file;
-		_fileviewType	viewType;
+		_fileViewType	viewType;
 		
 		bool 			pressed;
 		
@@ -33,10 +33,10 @@ class _fileobject : public _gadget {
 	public:
 	
 		//! Ctor
-		_fileobject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileviewType viewtype = _fileviewType::list , bool singleClickToExecute = false , _style&& style = _style() );
+		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileViewType viewtype = _fileViewType::list , bool singleClickToExecute = false , _style&& style = _style() );
 		
 		//! Dtor
-		~_fileobject();
+		~_fileObject();
 		
 		//! Get the _direntry instance that this _filobject refers to
 		const _direntry& getDirentry(){

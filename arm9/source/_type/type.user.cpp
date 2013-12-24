@@ -3,7 +3,7 @@
 
 //! Types
 #include "_type/type.imagefile.h"
-#include "_type/type.bitmapResizer.h"
+#include "_type/type.bitmap.resizer.h"
 #include "_type/type.cwdchanger.h"
 #include "_type/type.time.h"
 #include "func.md5.h"
@@ -11,10 +11,10 @@
 #include "_type/type.user.h"
 
 //! BMP_DefaultUserIcon
-#include "_resource/BMP_DefaultUserIcon.h"
-#include "_resource/BMP_WindowsWallpaper.h"
+#include "_resource/resource.image.defaultuser.h"
+#include "_resource/resource.image.windows.wallpaper.h"
 
-_bitmap _user::getUserLogoFromImage( _constbitmap& bmp )
+_bitmap _user::getUserLogoFromImage( _constBitmap& bmp )
 {
 	_bitmap logo = _bitmap( 14 , 14 );
 	
@@ -31,7 +31,7 @@ _bitmap _user::getUserLogoFromImage( _constbitmap& bmp )
 
 _bitmap _user::getUserImage( string path )
 {
-	_imagefile imagefile = _imagefile( path );
+	_imageFile imagefile = _imageFile( path );
 	
 	if( imagefile.isValid() )
 		return _bitmapResizer( 12 , 12 , imagefile );
@@ -72,7 +72,7 @@ _user::_user( string folderName ) :
 					{ "listItemHeight" , "9" } ,
 					{ "magnifyKeyboardFocus" , "1" } ,
 					{ "counterObjectHeight" , "16" } ,
-					{ "selectObjectHeight" , "10" }
+					{ "selectObjectHeight" , "10" } ,
 					{ "adminRights" , "1" }
 				}
 			} };
@@ -99,7 +99,7 @@ _user::_user( string folderName ) :
 	this->sOH = this->getIntAttr( "selectObjectHeight" );	
 	
 	// Set Currently Working directory
-	_cwdchanger cw ( "%USERS%/" + this->folderName );
+	_cwdChanger cw ( "%USERS%/" + this->folderName );
 	
 	// A userImage
 	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
@@ -108,7 +108,7 @@ _user::_user( string folderName ) :
 	this->userLogo = _user::getUserLogoFromImage( bmp );
 	
 	// ... and a very nice Wallpaper!
-	this->wallpaper = _imagefile( _registry::readIndex( "_global_" , "wallpaper" ) );
+	this->wallpaper = _imageFile( _registry::readIndex( "_global_" , "wallpaper" ) );
 	if( !this->wallpaper.isValid() )
 		this->wallpaper = BMP_WindowsWallpaper();
 	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );

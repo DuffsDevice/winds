@@ -1,9 +1,9 @@
 #include "_gadget/gadget.checkbox.h"
 
 // Graphics
-#include "_resource/BMP_Checkboxes.h"
+#include "_resource/resource.image.checkboxes.h"
 
-_constbitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
+_constBitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
 
 _callbackReturn _checkbox::refreshHandler( _event event )
 {

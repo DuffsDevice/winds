@@ -1,6 +1,4 @@
 #include "_gadget/gadget.select.h"
-#include "_gadget/gadget.button.h"
-#include "_resource/BMP_ScrollButtons.h"
 #include "_type/type.system.h"
 
 _select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst , _int initialValue , _style&& style ) :

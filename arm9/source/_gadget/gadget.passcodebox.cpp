@@ -1,14 +1,14 @@
 #include "_gadget/gadget.passcodebox.h"
 #include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
-#include "_type/type.textphrases.h"
+#include "_type/type.text.phrases.h"
 
-void _passcodebox::refresher()
+void _passcodeBox::refresher()
 {
 	
 }
 
-void _passcodebox::removeStr( _int position , _length numChars )
+void _passcodeBox::removeStr( _int position , _length numChars )
 {
 	this->realText.erase( position , numChars );
 	
@@ -18,7 +18,7 @@ void _passcodebox::removeStr( _int position , _length numChars )
 		this->strValue = "";
 }
 
-void _passcodebox::insertStr( _int position , string s )
+void _passcodeBox::insertStr( _int position , string s )
 {
 	this->realText.insert( position , s );
 	
@@ -28,18 +28,18 @@ void _passcodebox::insertStr( _int position , string s )
 		this->strValue = "";
 }
 
-void _passcodebox::setStrValue( string val )
+void _passcodeBox::setStrValue( string val )
 {
 	this->realText = val;
 	
 	if( this->realText.length() )
-		_textbox::setStrValue( stringIntegrator::fontChangePhrase( this->replaceFont ) + string( this->realText.length() , (char)this->replaceChar ) );
+		_textBox::setStrValue( stringIntegrator::fontChangePhrase( this->replaceFont ) + string( this->realText.length() , (char)this->replaceChar ) );
 	else
-		_textbox::setStrValue( "" );
+		_textBox::setStrValue( "" );
 }
 
-_passcodebox::_passcodebox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , const _font* repFont , _char repChar , _style&& style ) :
-	_textbox( x , y , width , height , string( value.length() , repChar ) , (_style&&)style )
+_passcodeBox::_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , const _font* repFont , _char repChar , _style&& style ) :
+	_textBox( x , y , width , height , string( value.length() , repChar ) , (_style&&)style )
 	, realText( value )
 	, replaceChar( repChar )
 	, replaceFont( repFont )

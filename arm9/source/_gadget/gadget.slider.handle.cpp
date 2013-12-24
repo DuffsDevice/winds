@@ -1,6 +1,6 @@
 #include "_gadget/gadget.slider.h"
-#include "_resource/BMP_HorizontalSlider.h"
-#include "_resource/BMP_VerticalSlider.h"
+#include "_resource/resource.image.slider.horizontal.h"
+#include "_resource/resource.image.slider.vertical.h"
 
 _sliderHandle::_sliderHandle( _optValue<_coord> x , _optValue<_coord> y , _dimension dim , _style&& style ) :
 	_gadget( _gadgetType::none , x , y , dim == _dimension::horizontal ? 6 : 12 , dim == _dimension::horizontal ? 11 : 6 , style | _styleAttr::draggable | _styleAttr::smallDragTrig )

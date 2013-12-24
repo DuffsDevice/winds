@@ -14,7 +14,7 @@ class _enterTextDialog : public _dialog
 		_button*	okButton;
 		_button*	cancelButton;
 		_label*		msg;
-		_textbox*	textBox;
+		_textBox*	textBox;
 		_window*	window;
 		string		initialValue;
 		

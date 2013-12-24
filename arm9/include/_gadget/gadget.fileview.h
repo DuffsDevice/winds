@@ -7,12 +7,12 @@
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileobject.h"
 
-class _fileview : public _scrollArea {
+class _fileView : public _scrollArea {
 	
 	private:
 	
 		_direntry		directory;
-		_fileviewType	viewType;
+		_fileViewType	viewType;
 		
 		_gadgetList		files;
 		
@@ -27,15 +27,15 @@ class _fileview : public _scrollArea {
 		string			getPath(){ return this->directory.getFileName(); }
 		
 		//! Full Ctor
-		_fileview( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileviewType viewtype , _scrollType scrollTypeX = _scrollType::meta , _scrollType scrollTypeY = _scrollType::meta , bool singleClickToExecute = false , _style&& style = _style() );
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewtype , _scrollType scrollTypeX = _scrollType::meta , _scrollType scrollTypeY = _scrollType::meta , bool singleClickToExecute = false , _style&& style = _style() );
 		
 		//! Simple Ctor
-		_fileview( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , bool singleClickToExecute = false , _style&& style = _style() ) :
-			_fileview( x , y , width , height , path , _fileviewType::list , _scrollType::meta , _scrollType::meta , singleClickToExecute , (_style&&)style )
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , bool singleClickToExecute = false , _style&& style = _style() ) :
+			_fileView( x , y , width , height , path , _fileViewType::list , _scrollType::meta , _scrollType::meta , singleClickToExecute , (_style&&)style )
 		{ }
 		
 		//! Dtor
-		~_fileview();
+		~_fileView();
 };
 
 #endif

@@ -4,7 +4,7 @@
 
 //! Types
 #include "_type/type.gadget.h"
-#include "_type/type.gadgetScreen.h"
+#include "_type/type.gadget.screen.h"
 
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.desktop.h"

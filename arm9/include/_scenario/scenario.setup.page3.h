@@ -3,14 +3,14 @@
 
 #include "_type/type.h"
 #include "_type/type.view.h"
-#include "_type/type.viewswitcher.h"
+#include "_type/type.view.switcher.h"
 #include "_type/type.system.h"
 #include "_type/type.timer.h"
 #include "_type/type.gadget.h"
 #include "_type/type.gadget.helpers.h"
 
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.clockgadget.h"
+#include "_gadget/gadget.clock.h"
 #include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.radio.h"
 #include "_gadget/gadget.calendar.h"
@@ -25,7 +25,7 @@ class _scSetupPage3 : public _view
 		_label*						lblAdjustSystemClock;
 		_label*						lblFetchTime1;
 		_label*						lblFetchTime2;
-		_clockgadget*				imgClock;
+		_clockGadget*				imgClock;
 		_calendar*					calendar;
 		_counter*					cntSeconds;
 		_counter*					cntMinutes;
@@ -69,7 +69,7 @@ class _scSetupPage3 : public _view
 		{
 			_time time = this->imgClock->getTime();
 			
-			// Save the time on the _clockgadget
+			// Save the time on the _clockGadget
 			this->systemTime.set( _timeAttr::hour , time.get( _timeAttr::hour ) );
 			this->systemTime.set( _timeAttr::minute , time.get( _timeAttr::minute ) );
 			this->systemTime.set( _timeAttr::second , time.get( _timeAttr::second ) );

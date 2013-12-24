@@ -23,7 +23,7 @@ class _lua_label : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_label>::FunctionType methods[];
 		static Lunar<_lua_label>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_label>::BaseClassType<_lua_gadget>;
 };
 
 #endif

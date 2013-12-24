@@ -1,10 +1,10 @@
 #include "_dialog/dialog.errorwarninginfo.h"
-#include "_resource/BMP_AlertImages.h"
+#include "_resource/resource.image.alerts.h"
 #include "_type/type.system.h"
 
-_constbitmap _errorDialog::image = BMP_AlertImageError();
-_constbitmap _warningDialog::image = BMP_AlertImageWarning();
-_constbitmap _infoDialog::image = BMP_AlertImageInfo();
+_constBitmap _errorDialog::image = BMP_AlertImageError();
+_constBitmap _warningDialog::image = BMP_AlertImageWarning();
+_constBitmap _infoDialog::image = BMP_AlertImageInfo();
 
 _errorDialog::_errorDialog( string message , _optValue<string> okLabel , _optValue<string> otherLabel ) : 
 	_imageDialog( move(message) , _system::getLocalizedString("lbl_error") , image , move(okLabel) , move(otherLabel) )

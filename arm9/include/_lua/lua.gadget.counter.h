@@ -24,7 +24,7 @@ class _lua_counter : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_counter>::FunctionType methods[];
 		static Lunar<_lua_counter>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_counter>::BaseClassType<_lua_gadget>;
 };
 
 #endif

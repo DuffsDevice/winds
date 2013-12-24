@@ -2,7 +2,7 @@
 #ifndef _WIN_G_KEYBOARD_
 #define _WIN_G_KEYBOARD_
 
-#include "_type/type.gadgetScreen.h"
+#include "_type/type.gadget.screen.h"
 #include "_type/type.animation.h"
 #include "_type/type.sound.static.h"
 

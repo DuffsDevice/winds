@@ -6,7 +6,7 @@
 
 _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor , _style&& style )
 	: _gadget( _gadgetType::button , x , y , width , height , (_style&&)style )
-	, _singleValueGroup<_stickybutton>()
+	, _singleValueGroup<_stickyButton>()
 	, curMonth( month )
 	, curYear( year )
 	, bgColor( bgColor )
@@ -23,7 +23,7 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	//! Allocate sticky-buttons
 	for( _u32 curSize = 0; curSize < 31 ; curSize++ )
 	{
-		_stickybutton* btn = new _stickybutton( 15 , 15 , -5 , -5 , int2string( curSize + 1 ) , _style::storeInt( curSize + 1 ) );
+		_stickyButton* btn = new _stickyButton( 15 , 15 , -5 , -5 , int2string( curSize + 1 ) , _style::storeInt( curSize + 1 ) );
 		btn->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
 		// Add to singleValueGroup
 		this->addSelector( btn , curSize + 1 );
@@ -292,7 +292,7 @@ _callbackReturn _calendar::updateHandler( _event event )
 	//! Move days to right position!
 	for( _u8 curDay = 1; curDay <= daysInMonth ; curDay++ )
 	{
-		_stickybutton* btn = this->registeredSelectors[curDay];
+		_stickyButton* btn = this->registeredSelectors[curDay];
 		
 		if( noSpaces )
 			btn->setDimensions( _rect( x , y , colWidths[weekday] + 1 , rowHeights[curRow] + 1 ) );

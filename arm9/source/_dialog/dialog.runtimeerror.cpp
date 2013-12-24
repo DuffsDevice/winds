@@ -1,8 +1,8 @@
 #include "_dialog/dialog.runtimeerror.h"
 #include "_type/type.system.h"
-#include "_resource/BMP_AlertImages.h"
+#include "_resource/resource.image.alerts.h"
 
-_constbitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
+_constBitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
 
 void _runtimeErrorDialog::executeInternal(){
 	this->window->setParent( _system::_gadgetHost_ );
@@ -15,8 +15,8 @@ void _runtimeErrorDialog::cleanupInternal(){
 _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo ) : 
 	closeButton( new _button( 0 , 0 , ignore , ignore , _system::getLocalizedString("lbl_close") ) )
 	, msg( new _label( errorimage.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
-	, image( new _imagegadget( 3 , 3 , errorimage ) )
-	, additionalInfo( new _textarea( 1 , 1 , 50 , 25 , (string&&)additionalInfo ) )
+	, image( new _imageGadget( 3 , 3 , errorimage ) )
+	, additionalInfo( new _textArea( 1 , 1 , 50 , 25 , (string&&)additionalInfo ) )
 {
 	// Buttons
 	this->closeButton->setAutoSelect( true );

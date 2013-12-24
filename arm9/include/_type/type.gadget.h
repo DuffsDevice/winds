@@ -4,7 +4,7 @@
 
 #include "_type/type.bitmap.h"
 #include "_type/type.style.h"
-#include "_type/type.bitmapPort.h"
+#include "_type/type.bitmap.port.h"
 #include "_type/type.event.h"
 #include "_type/type.event.calltype.h"
 #include "_type/type.callback.h"
@@ -201,7 +201,7 @@ class _gadget
 		}
 		
 		//! Get The Bitmap of the Gadget
-		_constbitmap& getBitmap() const { return this->bitmap; }
+		_constBitmap& getBitmap() const { return this->bitmap; }
 		
 		/**
 		 * Set The Bitmap of the Gadget	

@@ -2,7 +2,7 @@
 #include "_type/type.system.h"
 
 //! Graphics
-#include "_resource/BMP_StartButton.h"
+#include "_resource/resource.image.windows.startbutton.h"
 
 
 _callbackReturn _windowsStartButton::mouseHandler( _event event ){

@@ -3,7 +3,7 @@
 #define _WIN_T_LUAPROG_
 
 //! Lua
-#include "_lua/lua.hpp"
+#include "_lua/lua.h"
 
 //! Program
 #include "_type/type.program.h"

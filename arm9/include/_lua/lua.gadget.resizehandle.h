@@ -24,7 +24,7 @@ class _lua_resizehandle : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_resizehandle>::FunctionType methods[];
 		static Lunar<_lua_resizehandle>::PropertyType properties[];
-	
+		using baseclasses = Lunar<_lua_resizehandle>::BaseClassType<_lua_gadget>;
 };
 
 #endif

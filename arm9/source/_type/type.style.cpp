@@ -1,5 +1,5 @@
 #include "_type/type.style.h"
-#include "_type/type.stringtokenizer.h"
+#include "_type/type.tokenizer.h"
 	
 _style _style::storeHandle( void* data , _styleAttr attr ){
 	_style g = _style( attr );
@@ -41,7 +41,7 @@ _styleAttr::_styleAttr()
 void applyString2style( _style& style , string input )
 {
 	string line;
-	_stringTokenizer tok = _stringTokenizer( input , line , " |" , true );
+	_tokenizer tok = _tokenizer( input , line , " |" , true );
 	
 	_styleAttr attr = _styleAttr( style.attrs );
 	
