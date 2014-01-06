@@ -83,7 +83,7 @@ _callbackReturn _select::keyHandler( _event event )
 	_select* that = event.getGadget<_select>();
 	
 	// Provide control by Hardware buttons
-	if( event.getKeyCode() == DSWindows::KEY_A || event.getKeyCode() == DSWindows::KEY_DOWN )
+	if( event.getKeyCode() == _key::a || event.getKeyCode() == _key::down )
 		that->toggleContextMenu();
 	
 	return handled;

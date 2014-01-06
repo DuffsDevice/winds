@@ -112,7 +112,7 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 	// Fetch Gadget
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
-	if( event.getKeyCode() == DSWindows::KEY_DOWN )
+	if( event.getKeyCode() == _key::down )
 	{
 		_contextMenuEntry* next = that->activeEntry;
 		if( next ){
@@ -132,7 +132,7 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 				that->highlightEntry( next );
 		}
 	}
-	else if( event.getKeyCode() == DSWindows::KEY_UP )
+	else if( event.getKeyCode() == _key::up )
 	{
 		_contextMenuEntry* next = that->activeEntry;
 		if( next ){
@@ -152,9 +152,9 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 				that->highlightEntry( next );
 		}
 	}
-	else if( event.getKeyCode() == DSWindows::KEY_A ) //!@todo move KEY_A into rtA!
+	else if( event.getKeyCode() == _key::a ) //!@todo move KEY_A into rtA!
 		that->selectEntry( that->activeEntry );
-	else if( event.getKeyCode() == DSWindows::KEY_B ) //!@todo move KEY_B into rtA!
+	else if( event.getKeyCode() == _key::b ) //!@todo move KEY_B into rtA!
 		that->shelve( true );
 	
 	return handled;

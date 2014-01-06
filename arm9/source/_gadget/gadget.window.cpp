@@ -8,14 +8,14 @@ void _window::maximize()
 	if( this->isMaximized() || !this->isResizeable() )
 		return;
 	
-	_gadgetScreen* screen = this->getScreen();
+	_gadget* parent = this->getParent();
 	
 	// Fail
-	if( screen == nullptr )
+	if( parent == nullptr )
 		return;
 	
 	// Fetch maximized Dimensions from the _screen
-	_rect maxDim = screen->getMaximizedDimensions();
+	_rect maxDim = parent->getClientRect();
 	
 	if( maxDim.isValid() )
 	{
@@ -66,15 +66,60 @@ void _window::minimize()
 	}
 }
 
-_callbackReturn _window::updateHandler( _event event )
+_callbackReturn _window::parentSetHandler( _event event )
 {
 	_window* that = event.getGadget<_window>();
 	
-	if( event == onMaximize || event == onUnMaximize )
+	// Refresh Task Button
+	that->checkIfTask();
+	
+	return handled;
+}
+
+_callbackReturn _window::maximizeHandler( _event event )
+{
+	event.getGadget<_window>()->button[1]->redraw();
+	return handled;
+}
+
+void _window::notifyTaskHandlers( bool onlyIfWindowIsTask ){
+	if( onlyIfWindowIsTask && !this->isTask() )
+		return;
+	for( auto handler : _window::taskHandlers )
+		(*handler)( this );
+}
+
+void _window::checkIfTask()
+{
+	bool isTask = this->isTask();
+	
+	auto it = find_if( _window::taskWindows.begin() , _window::taskWindows.end() , [this]( _window* ptr )->bool{ return ptr == this; } );
+	
+	// Check if the current list equals the desired list
+	if( isTask != ( it != _window::taskWindows.end() ) )
 	{
-		that->button[1]->redraw();
-		return handled;
+		if( isTask )
+			_window::taskWindows.push_back( this );
+		else
+			_window::taskWindows.remove( this );
+		
+		this->notifyTaskHandlers( false );
 	}
+}
+
+_callbackReturn _window::restyleHandler( _event event )
+{
+	_window* that = event.getGadget<_window>();
+	
+	that->checkIfTask();
+	that->update();
+	
+	return handled;
+}
+
+_callbackReturn _window::updateHandler( _event event )
+{
+	_window* that = event.getGadget<_window>();
 	
 	int btnX = that->getWidth();
 	int lblWidth = btnX - 3;
@@ -117,19 +162,9 @@ _callbackReturn _window::updateHandler( _event event )
 		lblWidth -= 10;
 		that->button[2]->setX( btnX - 10 );
 		that->button[2]->show();
-		
-		// Add to tasklist
-		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-			((_windows*)_system::_gadgetHost_)->registerTask( that );
 	}
 	else
-	{
 		that->button[2]->hide();
-		
-		// Remove from tasklist
-		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-			((_windows*)_system::_gadgetHost_)->removeTask( that );
-	}
 	
 	// Set label width
 	that->label->setWidth( lblWidth );
@@ -142,19 +177,18 @@ void _window::setStrValue( string title )
 	this->label->setStrValue( title );
 	
 	// Refresh Task Button
-	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-		((_windows*)_system::_gadgetHost_)->refreshTask( this );
+	this->notifyTaskHandlers();
 }
 
 void _window::setIcon( const _bitmap& bmp )
 {
 	this->icon->setImage( bmp );
 	
-	this->update();
-	
 	// Refresh Task Button
-	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-		((_windows*)_system::_gadgetHost_)->refreshTask( this );
+	this->notifyTaskHandlers();
+	
+	// Update appearence
+	this->update();
 }
 
 _callbackReturn _window::focusHandler( _event event )
@@ -165,9 +199,8 @@ _callbackReturn _window::focusHandler( _event event )
 	// Refresh
 	that->redraw();
 	
-	// Refresh Button
-	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-		((_windows*)_system::_gadgetHost_)->refreshTask( that );
+	// Refresh Task Button
+	that->notifyTaskHandlers();
 	
 	return handled;
 }
@@ -219,7 +252,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	return use_default;
 }
 
-_callbackReturn _window::mouseClickHandler( _event event )
+_callbackReturn _window::doubleClickHandler( _event event )
 {
 	// Get Source
 	_window* that = (_window*)event.getGadget();
@@ -242,14 +275,7 @@ void _window::close()
 {
 	// Check for permission
 	if( this->handleEvent( onClose , true ) != prevent_default )
-	{
-		// Close the window
-		this->setParent( nullptr );
-		
-		// Unregister window from taskbar 
-		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-			((_windows*)_system::_gadgetHost_)->removeTask( this );
-	}
+		this->setParent( nullptr ); // Unbind the window from the DOM-Tree
 }
 
 _callbackReturn _window::dragHandler( _event event )
@@ -290,8 +316,6 @@ _callbackReturn _window::dragHandler( _event event )
 	return not_handled;
 }
 
-
-
 _callbackReturn _window::buttonHandler( _event event )
 {
 	// Close
@@ -306,26 +330,21 @@ _callbackReturn _window::buttonHandler( _event event )
 			this->maximize();
 	}
 	// Minimize
-	else if( event.getGadget<_windowButton>() == this->button[2] )
-	{
+	else if( event.getGadget<_windowButton>() == this->button[2] ){
 		this->minimize();
-		if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-			((_windows*)_system::_gadgetHost_)->refreshTask( this );
+		this->notifyTaskHandlers();
 	}
 	
 	return handled;
 }
 
-// Dtor
-_window::~_window()
-{
+_window::~_window(){
 	delete this->button[0];
 	delete this->button[1];
 	delete this->button[2];
 	delete this->icon;
 	
-	if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-		((_windows*)_system::_gadgetHost_)->removeTask( this );
+	this->notifyTaskHandlers();
 }
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
@@ -342,7 +361,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	this->setMinHeight( 19 );
 	
 	// Create a Label
-	this->label = new _label( 2 , 2 , this->getWidth() - 2 , 6 , title );
+	this->label = new _label( 2 , 1 , this->getWidth() - 2 , 8 , title );
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
 	this->label->setColor( COLOR_WHITE );
@@ -380,13 +399,17 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	this->setInternalEventHandler( onFocus , make_callback( &_window::focusHandler ) );
 	this->setInternalEventHandler( onDragging , make_callback( &_window::dragHandler ) );
 	this->setInternalEventHandler( onDragStart , make_callback( &_window::dragHandler ) );
-	this->setInternalEventHandler( onRestyle , make_callback( &_window::updateHandler ) );
-	this->setInternalEventHandler( onMaximize , make_callback( &_window::updateHandler ) );
-	this->setInternalEventHandler( onUnMaximize , make_callback( &_window::updateHandler ) );
+	this->setInternalEventHandler( onRestyle , make_callback( &_window::restyleHandler ) );
+	this->setInternalEventHandler( onMaximize , make_callback( &_window::maximizeHandler ) );
+	this->setInternalEventHandler( onUnMaximize , make_callback( &_window::maximizeHandler ) );
 	this->setInternalEventHandler( onResize , make_callback( &_window::updateHandler ) );
-	this->setInternalEventHandler( onMouseDblClick , make_callback( &_window::mouseClickHandler ) );
+	this->setInternalEventHandler( onParentSet , make_callback( &_window::parentSetHandler ) );
+	this->setInternalEventHandler( onMouseDblClick , make_callback( &_window::doubleClickHandler ) );
 
 	
 	// Refresh Me
 	this->redraw();
 }
+
+_list<_window*>				_window::taskWindows;
+_list<_windowTaskHandler*>	_window::taskHandlers;

@@ -7,6 +7,8 @@
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
+#include "_lua/lua.class.hardwarekeypattern.h"
+#include "_lua/lua.class.time.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.bar.h"
 #include "_lua/lua.gadget.window.menu.h"
@@ -19,6 +21,7 @@
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.colorpicker.h"
 #include "_lua/lua.gadget.checkbox.h"
+#include "_lua/lua.gadget.clock.h"
 #include "_lua/lua.gadget.button.image.h"
 #include "_lua/lua.gadget.image.h"
 #include "_lua/lua.gadget.scrollArea.h"
@@ -85,11 +88,19 @@ namespace _luafunc
 	}
 	
 	void pushBitmapPort( lua_State* L , _bitmapPort&& arg ){
-		Lunar<_lua_bitmapPort>::push( L , new _lua_bitmapPort( move(arg) ) );
+		Lunar<_lua_bitmapport>::push( L , new _lua_bitmapport( move(arg) ) );
 	}
 	
 	void pushFont( lua_State* L , const _font* arg ){
 		Lunar<_lua_font>::push( L , new _lua_font(arg) );
+	}
+	
+	void pushTime( lua_State* L , _time&& arg ){
+		Lunar<_lua_time>::push( L , new _lua_time( move(arg) ) );
+	}
+	
+	void pushHWKP( lua_State* L , _hardwareKeyPattern&& arg ){
+		Lunar<_lua_hardwarekeypattern>::push( L , new _lua_hardwarekeypattern( move(arg) ) );
 	}
 	
 	void pushGadget( lua_State* L , _gadget* gadget )
@@ -113,6 +124,9 @@ namespace _luafunc
 				break;
 			case _gadgetType::label:
 				Lunar<_lua_label>::push( L , new _lua_label( (_label*)gadget ) );
+				break;
+			case _gadgetType::clockgadget:
+				Lunar<_lua_clockgadget>::push( L , new _lua_clockgadget( (_clockGadget*)gadget ) );
 				break;
 			case _gadgetType::checkbox:
 				Lunar<_lua_checkbox>::push( L , new _lua_checkbox( (_checkbox*)gadget ) );
@@ -191,15 +205,25 @@ namespace _luafunc
 			return b ? *b : _border();
 		}
 		
+		_time check( lua_State* L , int index , _time* dummy ){
+			_lua_time* b = Lunar<_lua_time>::lightcheck( L , index );
+			return b ? *b : _time();
+		}
+		
 		_bitmapPort check( lua_State* L , int index , _bitmapPort* dummy )
 		{
 			static _bitmap bitmapFallback;
 			
-			_lua_bitmapPort* bmp = Lunar<_lua_bitmapPort>::lightcheck( L , index );
+			_lua_bitmapport* bmp = Lunar<_lua_bitmapport>::lightcheck( L , index );
 			if( bmp )
 				return *bmp;
 			
 			return _bitmapPort(bitmapFallback);
+		}
+		
+		_hardwareKeyPattern check( lua_State* L , int index , _hardwareKeyPattern* dummy ){
+			_lua_hardwarekeypattern* hwkp = Lunar<_lua_hardwarekeypattern>::lightcheck( L , index );
+			return hwkp ? *hwkp : _hardwareKeyPattern();
 		}
 		
 		_rect check( lua_State* L , int index , _rect* dummy ){

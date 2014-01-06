@@ -105,14 +105,59 @@ namespace std
 				return *this;
 			}
 			
-			operator dataType*()
-			{
+			operator dataType*() {
 				return this->data;
 			}
 			
-			operator std::string() const
-			{
+			operator std::string() const {
 				return std::string( this->data );
+			}
+			
+			template<int maxBytes2,typename dataType2>
+			bool operator==( const shortString<maxBytes2,dataType2>& sstr ) const
+			{
+				const dataType* str = this->data;
+				const dataType* str2 = sstr.data;
+				
+				while( *str && *str2 )
+				{
+					if( *str++ != *str2++ )
+						return false;
+				}
+				if( *str != *str2 ) // Check if not both reached their ends at once
+					return false;
+				return true;
+			}
+			
+			bool operator==( const std::string& str ) const
+			{
+				if( str.length() > maxBytes - 1 )
+					return false;
+				
+				const dataType* myStr = this->data;
+				
+				for( const std::string::value_type& value : str )
+				{
+					if( *myStr++ != value )
+						return false;
+				}
+				if( *myStr ) // Check if the shortstring is actually longer that the std::string we compare to
+					return false;
+				return true;
+			}
+			
+			bool operator==( const dataType* str2 ) const
+			{
+				const dataType* str = this->data;
+				
+				while( *str && *str )
+				{
+					if( *str++ != *str2++ )
+						return false;
+				}
+				if( *str != *str2 ) // Check if the both strings have the same size
+					return false;
+				return true;
 			}
 			
 			dataType operator[]( int idx ) const

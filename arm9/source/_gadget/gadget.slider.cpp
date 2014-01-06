@@ -86,9 +86,9 @@ _callbackReturn _slider::keyHandler( _event event )
 {
 	_slider* that = event.getGadget<_slider>();
 	
-	if( event.getKeyCode() == DSWindows::KEY_DOWN || event.getKeyCode() == DSWindows::KEY_LEFT )
+	if( event.getKeyCode() == _key::down || event.getKeyCode() == _key::left )
 		that->decreaseInternal();
-	else if( event.getKeyCode() == DSWindows::KEY_UP || event.getKeyCode() == DSWindows::KEY_RIGHT )
+	else if( event.getKeyCode() == _key::up || event.getKeyCode() == _key::right )
 		that->increaseInternal();
 	
 	return handled;

@@ -38,6 +38,7 @@ class _lua_direntry : public _direntry {
 		
 		//! For Directoryies
 		int readChild( lua_State* L );
+		int readChildFolderOnly( lua_State* L );
 		int rewindChildren( lua_State* L );
 		
 		//! readString

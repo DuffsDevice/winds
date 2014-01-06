@@ -13,11 +13,12 @@ class _staticCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
+		// Pointer to function
 		T 			(*func)(Parameters...);
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
-			return ((_staticCallback<T(Parameters...)>&)param).func == this->func;
+			return ((const _staticCallback<T(Parameters...)>&)param).func == this->func;
 		}
 		
 	public:
@@ -44,13 +45,15 @@ class _classCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		
 		class unknownClass;
 		
+		// Instance to invoke on
 		unknownClass* 	instance;
 		
+		// Pointer to member function
 		T				(unknownClass::*func)(Parameters...);
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
-			return ((_classCallback<T(Parameters...)>&)param).func == this->func;
+			return ((const _classCallback<T(Parameters...)>&)param).func == this->func;
 		}
 		
 	public:
@@ -77,7 +80,8 @@ class _inlineCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 {
 	private:
 		
-		function<T(Parameters...)>					func;
+		// Function object that holds the function
+		function<T(Parameters...)> func;
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
@@ -111,7 +115,7 @@ class _dummyCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 		
 		// Internal
 		_s8 equals( const _callback<T(Parameters...)>& param ) const {
-			return ((_dummyCallback<T(Parameters...)>&)param).func == this->func;
+			return ((const _dummyCallback<T(Parameters...)>&)param).func == this->func;
 		}
 		
 	public:

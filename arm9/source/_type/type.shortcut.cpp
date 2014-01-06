@@ -15,7 +15,7 @@ const string& _shortcut::getDestination()
 	if( this->destination )
 		return *this->destination;
 	
-	_registry parser = _registry( this->readString() );
+	_ini parser = _ini( this->readString() );
 	
 	this->destination = new string( parser.readIndex( "LocalShortcut" , "URL" ) );
 	

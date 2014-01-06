@@ -1,17 +1,44 @@
 #include "_type/type.ini.h"
 #include "_type/type.system.h"
 
-_s16 _ini::read()
+const string& _ini::readIndex( const string& section , const string& name ) const
 {
-    /* Uses a fair bit of stack (use heap instead if you need to) */
+	auto it1 = this->array.find( section );	
+	
+	// Check if section available
+	if( it1 != this->array.end() )
+	{
+		auto it2 = it1->second.find( name );
+		
+		if( it2 != it1->second.end() )
+			return it2->second;
+	}
+	static const string output;
+	return output;
+}
+
+void _ini::deleteIndex( const string& section , const string& name )
+{
+	auto it1 = this->array.find( section );	
+	
+	// Check if section available
+	if( it1 != this->array.end() )
+		it1->second.erase(name);
+}
+
+_s16 _ini::read( const string& input )
+{
+	this->array.clear();
+	
+    // Uses a fair bit of stack
     string 	line, name , value , section = "_global_";
 	_u16 	lineNo = 0;
 	_u16 	errorNo = -1; // Line with error
 	
-	_u32 end = 0, start;
+	size_t end = 0, start;
 
     /* Scan through file line by line */
-    while ( true )
+    while(true)
 	{
 		start = end;
 		
@@ -19,18 +46,18 @@ _s16 _ini::read()
 			break;
 		
 		// Find Delimiter (end of line)
-		end = this->input.find_first_of( "\n\r" , start );
+		end = input.find_first_of( "\n\r" , start );
 		
 		if( end != string::npos )
 		{
 			// Get text from Start (start) to End (end)
-			line = this->input.substr( start , end - start );
+			line = input.substr( start , end - start );
 			
 			// Move beyond delimiter
 			end++;
 		}
 		else
-			line = this->input.substr( start );
+			line = input.substr( start );
 		
 		
 		/**
@@ -41,9 +68,7 @@ _s16 _ini::read()
             /* Per Python ConfigParser, allow '#' and ';' comments at start of line */
         }
 		else if( line[0] == '\r' || line[0] == '\n' )
-		{
 			end++;
-		}
         else if( line[0] == '[' )
 		{
             /* A "[section]" line */
@@ -51,8 +76,7 @@ _s16 _ini::read()
 			
             if ( end != string::npos )
 				section = line.substr( 1 , end - 1 );
-			else
-			{
+			else{
 				errorNo = lineNo;
 				continue;
 			}
@@ -64,8 +88,7 @@ _s16 _ini::read()
 			/* Must be a name:= value pair! */
 			size_t delim = line.find_first_of(":=");
 			
-			if( delim == string::npos )
-			{
+			if( delim == string::npos ){
 				errorNo = lineNo;
 				continue;
 			}
@@ -83,26 +106,86 @@ _s16 _ini::read()
 	return errorNo;
 }
 
-void _ini::write()
+_int _ini::readIndexInt( const string& section , const string& name ) const 
 {
-	this->output.clear();
-	for( _pair<const string,_map<string,string>>& section : this->array )
+	const string& attr = this->readIndex( section , name );
+	
+	// Allow formats of RGB( 14 , 6 , 9 ) and rgba( 1 , 20 , 25 , 0 )
+	if( attr.substr( 0 , 3 ) == "RGB" || attr.substr( 0 , 3 ) == "rgb" )
+	{
+		_u8 i = 2 , f = 0;
+		bool hasAlpha = false;
+		_u8 r , b , g , a = 1;
+		
+		if( isalpha( attr[3] ) && ( attr[3] == 'A' || attr[3] == 'a' ) )
+		{
+			i = 3;
+			hasAlpha = true;
+		}
+		else if( isalpha( attr[3] ) ) // No RGB
+			return string2int( attr.c_str() );
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to first number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		r = string2int( attr.substr( f , i-f ).c_str() ); // Save red part
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to second number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		g = string2int( attr.substr( f , i-f ).c_str() ); // Save green part
+		
+		for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to third number
+		f = i; // Set Mark
+		if( !isdigit( attr[i] ) ) // Check if we reached the end of the string
+			return 0;
+		for( ; isdigit( attr[i] ) ; i++ ); // Go to end of number
+		b = string2int( attr.substr( f , i-f ).c_str() ); // Save blue part
+		
+		if( hasAlpha )
+		{
+			for( ; !isdigit( attr[i] ) && attr.length() > i ; i++ ); // Go to fourth number
+			if( attr[i] == '0' )
+				a = 0;
+		}
+		
+		return RGB( r , g , b , a );
+	}
+	else if( attr == "true" )
+		return 1;
+	else if( attr == "false" )
+		return 0;
+	
+	return string2int( attr.c_str() );
+}
+
+string _ini::write()
+{	
+	string output;
+	
+	for( auto& section : this->array )
 	{
 		if( section.first != "_global_" )
 		{
-			this->output += "[";
-			this->output += section.first;
-			this->output += "]\r\n";
+			output += "[";
+			output += section.first;
+			output += "]\r\n";
 		}
-		for( _pair<const string,string>& nvp : section.second )
+		for( auto& nvp : section.second )
 		{
 			if( !nvp.first.length() )
 				continue;
-			this->output += nvp.first;
-			this->output += " = ";
-			this->output += nvp.second;
-			this->output += "\r\n";
+			output += nvp.first;
+			output += " = ";
+			output += nvp.second;
+			output += "\r\n";
 		}
-		this->output += "\r\n";
+		output += "\r\n";
 	}
+	
+	return move( output );
 }

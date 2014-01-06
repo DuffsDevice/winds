@@ -12,6 +12,28 @@ _callbackReturn _popup::blurHandler( _event event )
 	return use_default;
 }
 
+void _popup::showCentered( _coord x , _coord y )
+{
+	this->opened = true;
+	
+	// Trigger event
+	this->handleEvent( onOpen );
+	
+	_length width = this->getWidth();
+	_length height = this->getHeight();
+	
+	this->y = y - height / 2;
+	this->x = x - width / 2;
+	this->dir = _direction::downright;
+	
+	// View
+	_gadget* par = parent ? parent : _system::_gadgetHost_;
+	this->setParent( par );
+	
+	// Focus
+	this->focus();
+}
+
 void _popup::show( _coord x , _coord y )
 {
 	this->opened = true;

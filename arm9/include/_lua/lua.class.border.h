@@ -8,8 +8,8 @@
 /**
  * Proxy Classes
  */
-class _lua_border : public _border {
-	
+class _lua_border : public _border
+{
 	public:
 		
 		_lua_border( _border rc );

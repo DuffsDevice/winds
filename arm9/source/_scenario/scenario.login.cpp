@@ -81,7 +81,7 @@ _scLogin::_scLogin() :
 	userDir.rewindChildren();
 	
 	//! Read Children of directory
-	for( string str; userDir.readChild( str ) != false ; )
+	for( _literal str; userDir.readChild( str ) != false ; )
 		this->users.push_back( new _user( str ) );
 	
 	//! Copy users and their logos

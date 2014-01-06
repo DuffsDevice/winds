@@ -3,6 +3,13 @@
 
 #include "_type/type.h"
 
+// Excape characters used in fonts to prepare special actions
+enum class _escapeChar : _char{
+	changeFont = 22,
+	changeFontColor = 23,
+	changeFontSize = 24,
+};
+
 class _font;
 
 namespace stringIntegrator
@@ -17,24 +24,22 @@ namespace stringIntegrator
 			bool i3 : 1;
 			bool i4 : 1;
 			bool notNull : 4;
-		} PACKED;
+		} PACKED ;
 	} PACKED ;
 	
 	//! Generates an excape sequence that will change the displayed font
 	extern string fontChangePhrase( const _font* ft );
 	
 	//! Generates an excape sequence that will change the displayed fontSize in a string
-	unused static string sizeChangePhrase( _u8 fontSize )
-	{
-		_char ret[3] = { DSWindows::STR_CHANGEFONTSIZE , (_char)fontSize , 0 };
-		return ret;
+	unused static string sizeChangePhrase( _u8 fontSize ){
+		_char chars[] = { (_char)_escapeChar::changeFontSize , (_char)fontSize , 0 };
+		return chars;
 	}
 	
 	//! Generates an excape sequence that will change the displayed font color
-	unused static string colorChangePhrase( _pixel color )
-	{
-		_char ret[4] = { DSWindows::STR_CHANGEFONTCOLOR , _char( color >> 8 ) , _char( color & 255 ) , 0 };
-		return ret;
+	unused static string colorChangePhrase( _pixel color ){
+		_char chars[] = { (_char)_escapeChar::changeFontColor , _char( color >> 8 ) , _char( color & 255 ) , 0 };
+		return chars;
 	}
 };
 
@@ -59,8 +64,7 @@ namespace stringExtractor
 	unused static inline constexpr _u8 sizeChangePhrase( const _char* str ){ return str[1]; }
 	
 	//! Generates an excape sequence that will change the displayed font color
-	unused static constexpr _pixel colorChangePhrase( const _char* str )
-	{
+	unused static inline constexpr _pixel colorChangePhrase( const _char* str ){
 		return _pixel( ( str[1] << 8 ) | str[2] );
 	}
 };

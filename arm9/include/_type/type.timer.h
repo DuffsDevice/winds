@@ -3,6 +3,7 @@
 
 #include "_type/type.h"
 #include "_type/type.callback.h"
+#include "_type/type.flexptr.h"
 
 // List of pointers to timers
 typedef _vector<class _timer*> _timerList;
@@ -16,7 +17,7 @@ class _timer
 		bool 		repeating;
 		bool		runs;
 		
-		_callback<void()>* callback;
+		flex_ptr<_callback<void()>> callback;
 		
 		static _timerList globalTimers;
 		static _timerList globalTimersToExecute;
@@ -28,17 +29,12 @@ class _timer
 	public:
 		
 		//! Ctor
-		template<typename T>
-		_timer( T&& cb , _tempTime duration , bool repeating ) :
+		_timer( _paramAlloc<_callback<void()>> cb , _tempTime duration , bool repeating ) :
 			duration( duration )
 			, repeating( repeating )
 			, runs( false )
-		{
-			typedef typename std::remove_reference<T>::type T2; // Convert to pure type
-			typedef typename T2::_callback def; // Check if subclass of _callback
-			
-			this->callback = new T( move(cb) );
-		}
+			, callback( cb.get() )
+		{}
 		
 		//! Default Ctor
 		_timer( _tempTime duration = 0 , bool repeating = false ) : 
@@ -67,7 +63,6 @@ class _timer
 		//! Dtor
 		~_timer(){
 			this->stop();
-			this->deleteCallback();
 		}
 		
 		//! Terminates all instances of this timer that are currently running
@@ -77,21 +72,12 @@ class _timer
 		void start();
 		
 		//! Sets the callback to call if the timer fires
-		template<typename T>
-		void setCallback( T&& cb )
-		{
-			typedef typename std::remove_reference<T>::type T2; // Convert to pure type
-			typedef typename T2::_callback def; // Check if subclass of _callback
-			
-			this->deleteCallback(); // Delete old one
-			this->callback = new T( move(cb) ); // Create new one
+		void setCallback( _paramAlloc<_callback<void()>> cb ){
+			this->callback = cb.get(); // Create new one
 		}
 		
 		//! Delete the contained callback
-		void deleteCallback()
-		{
-			if( this->callback )
-				delete this->callback;
+		void deleteCallback(){
 			this->callback = nullptr;
 		}
 		

@@ -3,6 +3,6 @@
 
 #include "_type/type.h"
 
-string md5( const string txt );
+string md5( const string& txt );
 
 #endif

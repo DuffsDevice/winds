@@ -10,7 +10,7 @@
  */
 class _lua_bitmap
 {
-	friend class _lua_bitmapPort;
+	friend class _lua_bitmapport;
 	
 	private:
 		

@@ -131,8 +131,8 @@ _callbackReturn _textArea::keyHandler( _event event )
 	_textArea* that = event.getGadget<_textArea>();
 	
 	switch( event.getKeyCode() ){
-		case DSWindows::KEY_BACKSPACE:
-		case DSWindows::KEY_B:
+		case _key::backspace:
+		case _key::b:
 			if( !(that->text.getText().length()) || that->cursor < 2 ){
 				//_system::errorTone();
 				break;
@@ -146,20 +146,20 @@ _callbackReturn _textArea::keyHandler( _event event )
 			that->update();
 			//that->setInternalCursor( that->cursor - 1 );
 			//break; // (!)
-		case DSWindows::KEY_LEFT:
+		case _key::left:
 			that->setInternalCursor( that->cursor - 1 );
 			break;
-		case DSWindows::KEY_RIGHT:
+		case _key::right:
 			that->setInternalCursor( that->cursor + 1 );
 			break;
-		case DSWindows::KEY_DOWN:
-		case DSWindows::KEY_UP:
+		case _key::down:
+		case _key::up:
 			{
 				// Line 1 (current line)
 				_u32 lineOfCursor = that->text.getLineContainingCharIndex( that->cursor - 1 );
 				_u32 line2Number;
 				
-				if( event.getKeyCode() == DSWindows::KEY_UP )
+				if( event.getKeyCode() == _key::up )
 					line2Number = max( (_u32)1 , lineOfCursor ) - 1;
 				else
 					line2Number = min( that->text.getLineCount() - 1 , lineOfCursor + 1 );
@@ -199,12 +199,12 @@ _callbackReturn _textArea::keyHandler( _event event )
 				that->setInternalCursor( that->text.getLineStart( line2Number ) + idx );
 			}
 		default:
-			if( DSWindows::isHardwareKey( event.getKeyCode() ) 
-				|| ( !isprint( event.getKeyCode() ) && !iscntrl( event.getKeyCode() ) ) // Check if printable
+			if( _hardwareKeyPattern::isHardwareKey( event.getKeyCode() ) 
+				|| ( !isprint( (_char)event.getKeyCode() ) && !iscntrl( (_char)event.getKeyCode() ) ) // Check if printable
 			)
 				break;
 			// Insert glyph
-			that->text.insert( that->cursor - 1 , event.getKeyCode() );
+			that->text.insert( that->cursor - 1 , (_char)event.getKeyCode() );
 			
 			// Notify that content has changed
 			that->triggerEvent( onEdit );

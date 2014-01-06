@@ -16,6 +16,8 @@ void _program::main( _gadget* w , _cmdArgs args  ){
 	this->internalMain( move( args ) );
 }
 
+int cnt = 0;
+
 void _program::execute( _cmdArgs args )
 {
 	// Execute main
@@ -42,6 +44,16 @@ void _program::terminate()
 		}
 }
 
+void _program::terminateAllPrograms()
+{
+	for( auto& val : _program::globalPrograms )
+		delete val.first;
+	for( auto& val : _program::globalProgramsToExecute )
+		delete val.first;
+	_program::globalPrograms.clear();
+	_program::globalProgramsToExecute.clear();
+}
+
 void _program::runPrograms()
 {
 	// Move timers to execute
@@ -54,14 +66,12 @@ void _program::runPrograms()
 		remove_if( _program::globalPrograms.begin() , _program::globalPrograms.end() , 
 			[]( _programList::value_type& p )->bool
 			{
-				if( !p.first.data() )
-					return true;
-				else if( p.second.autoDelete )
-					return true;
-				// Run it
-				p.first->internalVbl();
-				
-				return false;
+				if( p.first && !p.second.autoDelete ){
+					p.first->internalVbl(); // Run it
+					return false;
+				}
+				delete p.first;
+				return true;
 			}
 		)
 		, _program::globalPrograms.end()

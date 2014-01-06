@@ -39,19 +39,19 @@ __attribute__((hot)) _area _rect::reduce( const _rect& r2 ) const
 		, r2_y2 < this_y2 /* It ends above my end */
 	};
 	
-	_area out;
+	_vector<_rect> out;
 	
 	// Check for any overlaps
 	if( overlapping[0] )
-		out.add( _rect::fromCoords( this->x , overlapping[1] ? r2.y : this->y , r2.x - 1 , overlapping[3] ? r2_y2 : this_y2 ) );
+		out.push_back( _rect::fromCoords( this->x , overlapping[1] ? r2.y : this->y , r2.x - 1 , overlapping[3] ? r2_y2 : this_y2 ) );
 	if( overlapping[1] )
-		out.add( _rect( this->x , this->y , this->width , r2.y - this->y ) );
+		out.emplace_back( this->x , this->y , this->width , r2.y - this->y );
 	if( overlapping[2] )
-		out.add( _rect::fromCoords( r2_x2 + 1 , overlapping[1] ? r2.y : this->y , this_x2 , overlapping[3] ? r2_y2 : this_y2 ) );
+		out.push_back( _rect::fromCoords( r2_x2 + 1 , overlapping[1] ? r2.y : this->y , this_x2 , overlapping[3] ? r2_y2 : this_y2 ) );
 	if( overlapping[3] )
-		out.add( _rect( this->x , r2_y2 + 1 , this->width , this_y2 - r2_y2 ) );
+		out.emplace_back( this->x , r2_y2 + 1 , this->width , this_y2 - r2_y2 );
 	
-	return out;
+	return move(out);
 }
 
 _area _rect::combine( const _rect& r2 ) const 

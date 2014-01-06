@@ -11,6 +11,7 @@
 #include "_gadget/gadget.windows.startbutton.h"
 #include "_gadget/gadget.windows.taskbutton.h"
 #include "_gadget/gadget.windows.taskinfo.h"
+#include "_gadget/gadget.windows.programswitcher.h"
 
 class _windows : public _gadgetScreen
 {
@@ -25,27 +26,22 @@ class _windows : public _gadgetScreen
 		//! Desktop-Gadget
 		_desktop*					desktop;
 		
+		//! Task-Switcher
+		_windowsProgramSwitcher*	switcher;
+		
 		//! Standard Function to be executed on refresh
 		static _callbackReturn	refreshHandler( _event );
+		static _callbackReturn	keyHandler( _event );
 		
-		//! register a gadget to shown in the taskbar
-		void registerTask( _window* w );
+		//! Update all Task-Buttons
+		void refreshTaskWidths();
 		
-		//! unregister a gadget from the taskbar
-		void removeTask( _window* w );
-		
-		//! refresh all Task-Buttons
-		void refreshTasks();
-		
-		//! Refresh the taskbutton of the window passed
-		void refreshTask( _window* w );
+		//! Handler
+		void taskHandler( _window* ref );
 		
 		friend class _window;
 		
 	public:
-		
-		//! Maximized Dimensions for (mainly) _windows, that are maximized
-		_rect getMaximizedDimensions(){ return _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 ); }
 		
 		//! Check if the startMenu is opened
 		bool isStartMenuOpened(){ return this->startButton->isMenuOpened(); }
@@ -59,6 +55,8 @@ class _windows : public _gadgetScreen
 		//! Constructor with style
 		_windows( _u8 bgId , _style&& style = _style() );
 		
+		//! Dtor
+		~_windows();
 };
 
 #endif

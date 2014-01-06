@@ -18,7 +18,7 @@ enum class _gadgetType : _u8
 	textbox,
 	textarea,
 	counter,
-	clockimage,
+	clockgadget,
 	slider,
 	calendar,
 	colorpicker,

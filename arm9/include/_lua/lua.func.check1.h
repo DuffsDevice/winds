@@ -29,6 +29,10 @@ namespace _luafunc
 		}
 		static unused inline string					check( lua_State* state , int index , string* dummy ){ return luaL_checkstring( state , index ); }
 		static unused inline const char*			check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
+		static unused inline _key					check( lua_State* state , int index , _key* dummy ){
+			return lua_isstring( state , index ) ? (_key)lua_tostring( state , index )[0] : (_key)lua_tonumber( state , index );
+		}
+		_hardwareKeyPattern									check( lua_State* state , int index , _hardwareKeyPattern* dummy );
 		_bitmapPort									check( lua_State* state , int index , _bitmapPort* dummy );
 		_bitmap										check( lua_State* state , int index , _bitmap* dummy );
 		_gadget*									check( lua_State* state , int index , _gadget** dummy );
@@ -37,10 +41,12 @@ namespace _luafunc
 		_event										check( lua_State* state , int index , _event* dummy );
 		const _font*								check( lua_State* state , int index , const _font** dummy );
 		_border										check( lua_State* state , int index , _border* dummy );
+		_time										check( lua_State* state , int index , _time* dummy );
 		static unused inline _callbackReturn		check( lua_State* state , int index , _callbackReturn* dummy ){ return string2callbackReturn[ luaL_checkstring( state , index ) ]; }
 		static unused inline _eventCallType			check( lua_State* state , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( state , index ) ]; }
 		static unused inline _eventType				check( lua_State* state , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( state , index ) ]; }
 		static unused inline _dimension				check( lua_State* state , int index , _dimension* dummy ){ return string2dimension[ luaL_checkstring( state , index ) ]; }
+		static unused inline _timeAttr				check( lua_State* state , int index , _timeAttr* dummy ){ return string2timeAttr[ luaL_checkstring( state , index ) ]; }
 		static unused inline _style					check( lua_State* state , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( state , index ) ); return style; }
 		static unused inline _pixel					check( lua_State* state , int index , _pixel* dummy ){
 			if( lua_isnumber( state , index ) )

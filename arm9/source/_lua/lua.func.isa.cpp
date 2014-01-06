@@ -6,13 +6,19 @@
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
+#include "_lua/lua.class.time.h"
+#include "_lua/lua.class.hardwarekeypattern.h"
 
 namespace _luafunc
 {
 	namespace detail
 	{
 		bool is_a( lua_State* L , int index , _bitmapPort* dummy ){
-			return _luafunc::is_a( L , index , _lua_bitmapPort::className );
+			return _luafunc::is_a( L , index , _lua_bitmapport::className );
+		}
+		
+		bool is_a( lua_State* L , int index , _hardwareKeyPattern* dummy ){
+			return _luafunc::is_a( L , index , _lua_hardwarekeypattern::className );
 		}
 		
 		bool is_a( lua_State* L , int index , _bitmap* dummy ){
@@ -37,6 +43,10 @@ namespace _luafunc
 		
 		bool is_a( lua_State* L , int index , _border* dummy ){
 			return _luafunc::is_a( L , index , _lua_border::className );
+		}
+		
+		bool is_a( lua_State* L , int index , _time* dummy ){
+			return _luafunc::is_a( L , index , _lua_time::className );
 		}
 	}
 }

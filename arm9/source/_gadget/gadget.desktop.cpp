@@ -27,7 +27,7 @@ _callbackReturn _desktop::refreshHandler( _event event )
 
 
 _desktop::_desktop( _style&& style ) :
-	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileViewType::symbol_big , _scrollType::prevent , _scrollType::prevent , false , style | _styleAttr::focusNoAction )
+	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileViewType::symbol_big , {} , _scrollType::prevent , _scrollType::prevent , false , style | _styleAttr::focusNoAction )
 {
 	//ft = new _freetypeFont("/font.ttf");
 	

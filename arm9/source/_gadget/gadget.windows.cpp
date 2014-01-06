@@ -2,25 +2,30 @@
 #include "_type/type.system.h"
 #include "func.gridcreator.h"
 
-void _windows::registerTask( _window* w )
+void _windows::taskHandler( _window* ref )
 {
-	if( count_if( this->tasks.begin() , this->tasks.end() , [&]( _windowsTaskButton* ptr )->bool{ return ptr->getReference() == w; } ) >= 1 )
-		return;
-	_windowsTaskButton* ptr;
-	this->tasks.push_back( ptr = new _windowsTaskButton( 0 , SCREEN_HEIGHT - 10 , w ) );
-	this->addEnhancedChild( ptr );
-	this->refreshTasks();
+	auto it = find_if( this->tasks.begin() , this->tasks.end() , [ref]( _windowsTaskButton* ptr )->bool{ return ptr->getReference() == ref; } );
+	
+	if( ref->isTask() )
+	{
+		if( it != this->tasks.end() )
+			(*it)->redraw();
+		else
+		{
+			_windowsTaskButton* ptr = new _windowsTaskButton( 0 , SCREEN_HEIGHT - 10 , ref );
+			this->tasks.push_back( ptr );
+			this->addEnhancedChild( ptr );
+			this->refreshTaskWidths();
+		}
+	}
+	else if( it != this->tasks.end() ){
+		delete (*it); // Delete taskbutton
+		this->tasks.erase( it );
+		this->refreshTaskWidths();
+	}
 }
 
-
-void _windows::removeTask( _window* w )
-{
-	this->tasks.remove_if( [&]( _windowsTaskButton* ptr )->bool{ if( ptr->getReference() == w ){ delete ptr; return true; } return false; } );
-	this->refreshTasks();
-}
-
-
-void _windows::refreshTasks()
+void _windows::refreshTaskWidths()
 {
 	int x = this->startButton->getWidth() + 2;
 	int i = 0;
@@ -37,19 +42,21 @@ void _windows::refreshTasks()
 	}
 }
 
-
-void _windows::refreshTask( _window* w )
+_callbackReturn _windows::keyHandler( _event event )
 {
-	for( _windowsTaskButton* tb : this->tasks )
-	{
-		if( tb->getReference() == w )
-		{
-			tb->redraw();
-			return;
-		}
-	}
+	// Receive Gadget
+	_windows* that = event.getGadget<_windows>();
+	
+	if( event.getKeyCode() != _key::l )
+		return not_handled;
+	
+	if( event == onKeyDown )
+		that->switcher->showCentered( SCREEN_WIDTH / 2 , ( SCREEN_HEIGHT - 12 ) / 2 );
+	else if( event == onKeyUp )
+		that->switcher->shelve( true );
+	
+	return handled;
 }
-
 
 _callbackReturn _windows::refreshHandler( _event event )
 {
@@ -65,13 +72,14 @@ _callbackReturn _windows::refreshHandler( _event event )
 	return use_default;
 }
 
-
 //! Constructor
 _windows::_windows( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::windows , (_style&&)style )
 {
 	// Register Event-Handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_windows::refreshHandler ) );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_windows::keyHandler ) );
+	this->setInternalEventHandler( onKeyUp , make_callback( &_windows::keyHandler ) );
 	
 	// Set Padding
 	this->setPadding( _padding( 0 , 0 , 0 , 10 ) );
@@ -82,14 +90,22 @@ _windows::_windows( _u8 bgId , _style&& style ) :
 	// Add TaskInfo
 	this->taskInfo = new _windowsTaskInfo( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
 	
+	// Add a Task-Switcher
+	this->switcher = new _windowsProgramSwitcher();
+	
 	// Allocate new _desktop and bind the _startButton
 	this->addChild( this->desktop = new _desktop() );
 	this->addEnhancedChild( this->startButton );
 	this->addEnhancedChild( this->taskInfo );
 	
-	// Register Event-Handlers
-	this->setInternalEventHandler( onDraw , make_callback( &_windows::refreshHandler ) );
-
 	// Refresh Me
 	this->redraw();
+	
+	// Get notified, when a "task" in the taskbar needs to be refreshed
+	_window::addTaskHandler( make_callback( this , &_windows::taskHandler ) );
+}
+
+_windows::~_windows(){
+	// Remove Handler
+	_window::removeTaskHandler( make_callback( this , &_windows::taskHandler ) );
 }

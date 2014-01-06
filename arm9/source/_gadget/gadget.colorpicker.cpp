@@ -189,8 +189,12 @@ _callbackReturn _colorPicker::inputHandler( _event event )
 	{
 		if( event == onKeyDown || event == onKeyRepeat )
 		{
-			_s8 dx = ( event.getKeyCode() == DSWindows::KEY_RIGHT ) - ( event.getKeyCode() == DSWindows::KEY_LEFT );
-			_s8 dy = ( event.getKeyCode() == DSWindows::KEY_UP ) - ( event.getKeyCode() == DSWindows::KEY_DOWN );
+			_s8 dx = ( event.getKeyCode() == _key::right ) - ( event.getKeyCode() == _key::left );
+			_s8 dy = ( event.getKeyCode() == _key::up ) - ( event.getKeyCode() == _key::down );
+			
+			if( !dx && !dy )
+				return use_default;
+			
 			newHue = ( this->hue + dx * 3 + 360 ) % 360;
 			newSat = mid( 0 , this->sat + dy * 3 , 100 );
 			
@@ -214,7 +218,7 @@ _callbackReturn _colorPicker::inputHandler( _event event )
 	{
 		if( event == onKeyDown || event == onKeyRepeat )
 		{
-			_s8 dy = ( event.getKeyCode() == DSWindows::KEY_UP ) - ( event.getKeyCode() == DSWindows::KEY_DOWN );
+			_s8 dy = ( event.getKeyCode() == _key::up ) - ( event.getKeyCode() == _key::down );
 			newLum = mid( 0 , this->lum + dy * 3 , 100 );
 			
 			goto end;

@@ -9,26 +9,11 @@ class _lua_event : public _event {
 	
 	public:
 		
-		// Ctor...
+		//! Ctor...
 		_lua_event( _event e );
 		
-		// Lua-Ctor...
+		//! Lua-Ctor...
 		_lua_event( lua_State* L );
-		
-		//! setType
-		int setType( lua_State* L );
-		
-		//! getType
-		int getType( lua_State* L );
-		
-		//! getGadget
-		int getGadget( lua_State* L );
-		
-		//! getDamagedRects
-		int getDamagedRects( lua_State* L );
-		
-		//! setDamagedRects
-		int setDamagedRects( lua_State* L );
 		
 		//! Lunar !//
 		static const char className[];

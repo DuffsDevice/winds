@@ -65,7 +65,7 @@ void _systemController::main()
 {
 	changeState( _systemState::desktop );
 	static int i = 0;
-	static int s = 0;
+	//static int s = 0;
 	
 	while( true )
 	{		
@@ -121,9 +121,7 @@ void _systemController::main()
 			while(true);
 		}
 		#ifdef DEBUG_PROFILING
-		if( i > 200 
-			&& false 
-		)
+		if( i > 200 )
 		{
 			_codeAnalyzer::printResults();
 			while(true);

@@ -12,8 +12,12 @@ namespace wrapHelpers
 	using nth_type
 		= typename std::tuple_element<index, std::tuple<Types...>>::type;
 	
-	template<class ProxyClass, typename WrappedFuncType,WrappedFuncType funcToWrap, typename Return, typename Class, typename... Args>
-	class wrapFunctionHelperClass
+	template<
+		class ProxyClass,			typename WrappedFuncType,
+		WrappedFuncType funcToWrap,	typename Return,
+		typename Class,				typename... Args
+	>
+	class wrapFunctionImpl
 	{
 		private:
 			
@@ -22,8 +26,7 @@ namespace wrapHelpers
 			
 			// Dispatcher for void-functions
 			template<
-				size_t curIndex
-				, size_t maxIndex
+				size_t curIndex , size_t maxIndex
 				, class... CollectedArgs 
 			>
 			forceinline typename std::enable_if<( curIndex == maxIndex && std::is_same<Return,void>::value ),int>::type
@@ -36,8 +39,7 @@ namespace wrapHelpers
 			
 			// Dispatcher for non-void-returns
 			template<
-				size_t curIndex
-				, size_t maxIndex
+				size_t curIndex , size_t maxIndex
 				, class... CollectedArgs
 			>
 			forceinline typename std::enable_if<( curIndex == maxIndex && !std::is_same<Return,void>::value ),int>::type
@@ -52,10 +54,8 @@ namespace wrapHelpers
 			}
 			
 			template<
-				size_t curIndex
-				, size_t maxIndex
-				, class... ParamTypes
-				, class... CollectedArgs
+				size_t curIndex			, size_t maxIndex
+				, class... ParamTypes	, class... CollectedArgs
 			>
 			forceinline typename std::enable_if<( curIndex < maxIndex ),int>::type
 				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params )
@@ -73,42 +73,58 @@ namespace wrapHelpers
 		public:
 			
 			// Method that will dispatch all calls to the wrapped function
-			int dispatcher( lua_State* state )
-			{
+			int dispatcher( lua_State* state ){
 				return this->call_with_params<0,sizeof...(Args), Args...>( state , *reinterpret_cast<ProxyClass*>(this) );
 			}
 			
 			operator proxyFuncType(){
-				return reinterpret_cast<proxyFuncType>(&wrapFunctionHelperClass::dispatcher);
+				return reinterpret_cast<proxyFuncType>(&wrapFunctionImpl::dispatcher);
 			}
 	};
 	
 	template<
-		class ProxyClass,
-		typename FuncType,
-		FuncType funcToWrap,
-		typename Class,
-		typename Return,
-		typename... Args
+		class ProxyClass,		typename FuncType,
+		FuncType funcToWrap,	typename Class,
+		typename Return,		typename... Args
 	>
 	forceinline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) )
-		-> wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
+		-> wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
 	{
-		return wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();
+		return wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();
 	}
 
 	template<
-		class ProxyClass,
-		typename FuncType,
-		FuncType funcToWrap,
-		typename Class,
-		typename Return,
-		typename... Args
+		class ProxyClass,		typename FuncType,
+		FuncType funcToWrap,	typename Class,
+		typename Return,		typename... Args
 	>
 	forceinline constexpr auto wrapFunctionHelper( Return (Class::*dummy)(Args...) const )
-		-> wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
+		-> wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>
 	{
-		return wrapFunctionHelperClass<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();
+		return wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, Return, Class, Args...>();
+	}
+	
+	// Ignore the return type, if the return type is a reference to the object itself is
+	template<
+		class ProxyClass,		typename FuncType,
+		FuncType funcToWrap,	typename Class,
+		typename... Args
+	>
+	forceinline constexpr auto wrapFunctionHelper( const Class& (Class::*dummy)(Args...) const )
+		-> wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, void, Class, Args...>
+	{
+		return wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, void, Class, Args...>();
+	}
+	
+	template<
+		class ProxyClass,		typename FuncType,
+		FuncType funcToWrap,	typename Class,
+		typename... Args
+	>
+	forceinline constexpr auto wrapFunctionHelper( Class (Class::*dummy)(Args...) )
+		-> wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, void, Class, Args...>
+	{
+		return wrapFunctionImpl<ProxyClass, FuncType, funcToWrap, void, Class, Args...>();
 	}
 }
 

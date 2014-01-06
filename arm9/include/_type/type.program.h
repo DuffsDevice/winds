@@ -17,7 +17,7 @@ struct _programData{
 	_tempTime	runningSince;
 };
 
-typedef _vector<_pair<flex_ptr<_program>,_programData>> _programList;
+typedef _vector<_pair<_program*,_programData>> _programList;
 
 class _program
 {
@@ -47,6 +47,7 @@ class _program
 		
 		// Processes all programs
 		static void runPrograms();
+		static void terminateAllPrograms();
 		
 	protected:
 		

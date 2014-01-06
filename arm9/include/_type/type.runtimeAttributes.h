@@ -44,7 +44,7 @@ class _runtimeAttributes
 		string	getDefaultFontName() const { return defaultFont; }
 		_pixel	getControlForeground() const { return this->controlForeground; }
 		_pixel	getControlBackground() const { return this->controlBackground; }
-		bool	isKeyboardMagnifEnabled(){ return this->magnifyKeyboardFocus; }
+		bool	isKeyboardMagnifEnabled() const { return this->magnifyKeyboardFocus; }
 		const _user&			getUser() const { return *this->user; }
 		const _vector<_char>& 	getKeyboardChars( _u8 layout ) const { return keyboardChar[layout]; }
 		const _vector<string>& 	getKeyboardTexts( _u8 layout ) const { return keyboardText[layout]; }

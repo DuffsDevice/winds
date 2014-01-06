@@ -1,56 +1,59 @@
 #ifndef _WIN_T_INI_
 #define _WIN_T_INI_
 
-#include <stdio.h>
-#include <map>
-
 #include "_type/type.h"
+#include "_type/type.assocVector.h"
 
-typedef _map<string,_map<string,string>> _iniStructure;
+typedef _assocVector<string,_assocVector<string,string>> _iniStructure;
 
 class _ini
 {
-	
 	private:
 		
-		string input;
-		string output;
-		
-		_iniStructure array;
+		_iniStructure			array;
 		
 	public:
 		
 		//! Ctor
-		_ini( string str ) : input( str ), output( "" ) { }
+		_ini( const string& input ){
+			this->read( input );
+		}
+		
+		//! Default Ctor
+		_ini(){
+		}
 		
 		//! Returns either -1 for success or the line number of error
-		_s16 read();
+		_s16 read( const string& input );
 		
 		//! Encode the std::map structure to string
-		void write();
+		string write();
 		
 		//! Get the c++ std::map representation after a previous call to ::read
-		const _iniStructure& getMap(){
+		const _iniStructure& getMap() const {
 			return this->array;
 		}
 		
 		//! Get a modifyable version of the std::map representation of the .ini file
-		_iniStructure& getMutableMap(){
+		_iniStructure& getMap(){
 			return this->array;
 		}
 		
-		//! Get the output encoded ini-string ready to be written into a file
-		string&	getString(){
-			return this->output;
-		}
+		//! Read an index from the registry out of the supplied section
+		const string& readIndex( const string& section , const string& name ) const ;
+		_int readIndexInt( const string& section , const string& name ) const ;
+		
+		//! Write an index to the registry, a section and a key will be generated, if they're not existent
+		void writeIndex( const string& section , const string& name , const string& value ){ this->array[section][name] = value; }
+		
+		//! Delete a section from the ini structure
+		void deleteSection( const string& section ){ this->array.erase( section ); }
+		
+		//! Delete an index out of the supplied region
+		void deleteIndex( const string& section , const string& name );
 		
 		//! Virtual Dtor
-		virtual ~_ini(){}
-		
-		
-		//! Allocate
-		static _ini* fromFile( string path );
+		virtual ~_ini(){};
 };
-
 
 #endif

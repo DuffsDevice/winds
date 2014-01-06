@@ -91,16 +91,16 @@ _callbackReturn _calendar::keyHandler( _event event )
 {
 	switch( event.getKeyCode() )
 	{
-		case DSWindows::KEY_RIGHT:
+		case _key::right:
 			this->selectedDate.add( _timeAttr::day , 1 );
 			break;
-		case DSWindows::KEY_LEFT:
+		case _key::left:
 			this->selectedDate.add( _timeAttr::day , -1 );
 			break;
-		case DSWindows::KEY_DOWN:
+		case _key::down:
 			this->selectedDate.add( _timeAttr::day , 7 );
 			break;
-		case DSWindows::KEY_UP:
+		case _key::up:
 			this->selectedDate.add( _timeAttr::day , -7 );
 			break;
 		default:
@@ -188,7 +188,7 @@ _callbackReturn _calendar::clickHandler( _event event )
 _u8 _calendar::getWeeksInMonth( _time firstDay , _u32 daysInMonth ) const
 {
 	// Temp...
-	_u8 weekday = firstDay.get( _timeAttr::dayOfWeek );
+	_u8 weekday = firstDay.get( _timeAttr::dayOfWeek ) - 1;
 	_u8 used = weekday + daysInMonth;
 
     return ceil( float(used) / 7 );
