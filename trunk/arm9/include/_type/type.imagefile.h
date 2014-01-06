@@ -5,15 +5,26 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.direntry.h"
 
-class _imageFile : public _bitmap , private _direntry 
+enum class _imageFileCompression : _u8{
+	low = 1,
+	middle = 2,
+	high = 3,
+	veryHigh = 4,
+};
+
+class _imageFile : public _direntry
 {
 	public:
 		
 		//! Ctor
-		_imageFile( string fn );
+		_imageFile( string filename ) :
+			_direntry( filename )
+		{}
 		
-		//! Dtor
-		~_imageFile();
+		//! Get the underlying bitmap Format
+		_bitmap readBitmap();
 		
+		//! Write to the image
+		void writeBitmap( _optValue<_imageFileCompression> compression );
 };
 #endif

@@ -54,7 +54,7 @@ _scDesktop::_scDesktop()
 	
 	//_system::executeCommand("%SYSTEM%/explorer.exe -/LUA/" );
 	_system::executeCommand("%SYSTEM%/exampleprogram.exe");
-	//_system::executeCommand("%SYSTEM%/paint.exe");
+	_system::executeCommand("%SYSTEM%/paint.exe");
 	_system::executeCommand("%SYSTEM%/pong.exe");
 	
 	//for( int i = 0; i < 60 ; i++)

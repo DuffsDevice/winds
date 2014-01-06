@@ -23,6 +23,12 @@ class _popup : public _gadget
 			show( pos.first , pos.second );
 		}
 		
+		//! Shows the popup centered at the specified position
+		void showCentered( _coord x , _coord y );
+		void showCentered( _2s32 pos ){
+			show( pos.first , pos.second );
+		}
+		
 		//! Hides the popup
 		void shelve( bool focusOwner = false );
 		
@@ -41,7 +47,7 @@ class _popup : public _gadget
 		//! ... and a getter for that one, too
 		_gadget* getOwner(){ return this->owner; }
 		
-		// Ctor
+		//! Ctor
 		_popup( _optValue<_length> width = ignore , _optValue<_length> height = ignore , _gadget* owner = nullptr , _style&& style = _style() );
 		
 };

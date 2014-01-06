@@ -2,7 +2,7 @@
 #define _WIN_T_USER_
 
 #include "_type/type.h"
-#include "_type/type.registry.h"
+#include "_type/type.ini.file.h"
 
 enum _wallpaperViewType{
 	WALLPAPER_ORIG = 0,
@@ -10,7 +10,7 @@ enum _wallpaperViewType{
 	WALLPAPER_PATTERN = 2,
 };
 
-class _user : public _registry
+class _user : public _iniFile
 {
 	private:
 		
@@ -49,7 +49,7 @@ class _user : public _registry
 		~_user();
 		
 		//! Get the user's username
-		string getUsername() const { return _registry::readIndex( "_global_" , "userName" ); }
+		string getUsername() const { return _iniFile::readIndex( "_global_" , "userName" ); }
 		
 		//! Get the foldername of the user ( it's directory in "%USERS%/" )
 		string getFoldername() const { return this->folderName; }
@@ -64,31 +64,31 @@ class _user : public _registry
 		_wallpaperViewType getWallpaperViewType() const { return this->wallpaperView; }
 		
 		//! Match a supplied raw string against the password
-		bool checkPassword( string pw ) const ;
+		bool checkPassword( const string& pw ) const ;
 		
 		//! Check if the user has a password
 		bool hasPassword() const ;
 		
 		//! Set a users password
-		void setPassword( string pw );
+		void setPassword( const string& pw );
 		
 		//! Set a users username
-		void setUsername( string name ){ _registry::writeIndex( "_global_" , "userName" , name ); }
+		void setUsername( const string& name ){ _iniFile::writeIndex( "_global_" , "userName" , name ); }
 		
 		//! Remove the user (equals unlinking its directory)
-		void remove(){ _registry::unlink(); }
+		void remove(){ _iniFile::unlink(); }
 		
 		//! Get a string value from the registry parsed as number
-		_int getIntAttr( string idx ) const { return _registry::readIndexInt( "_global_" , idx ); }
+		_int getIntAttr( const string& idx ) const { return _iniFile::readIndexInt( "_global_" , idx ); }
 		
 		//! Read a string value from the registry
-		string getStrAttr( string idx ) const { return _registry::readIndex( "_global_" , idx ); }
+		string getStrAttr( const string& idx ) const { return _iniFile::readIndex( "_global_" , idx ); }
 		
 		//! Saves the data of this user class to a folder
-		void createAs( string folderName );
+		void createAs( const string& folderName );
 		
 		//! Set the users icon (string)
-		void setUsericon( string icon , bool builtIn = false ){ _registry::writeIndex( "_global_" , "userLogo" , icon ); }
+		void setUsericon( const string& icon , bool builtIn = false ){ _iniFile::writeIndex( "_global_" , "userLogo" , icon ); }
 };
 
 #endif

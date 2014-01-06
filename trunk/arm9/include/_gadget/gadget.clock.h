@@ -19,17 +19,14 @@ class _clockGadget : public _gadget
 		_pixel	markingsColor;
 		
 		//! Values
-		_u8		seconds;
-		_u8		minutes;
-		_u8		hours;
+		_s8		seconds;
+		_s8		minutes;
+		_s8		hours;
 		
 		//! Timer
 		_timer	timer;
 		
 		static _callbackReturn refreshHandler( _event );
-		
-		//! Callback that will increase the time by one second 
-		void timerCallback();
 		
 	public:
 		

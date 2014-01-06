@@ -8,15 +8,15 @@
 /**
  * Proxy Classes
  */
-class _lua_bitmapPort : public _bitmapPort
+class _lua_bitmapport : public _bitmapPort
 {
 	public:
 		
 		//! Lua-Ctor
-		_lua_bitmapPort( lua_State* L );
+		_lua_bitmapport( lua_State* L );
 		
 		//! C-Ctor
-		_lua_bitmapPort( _bitmapPort b );
+		_lua_bitmapport( _bitmapPort b );
 		
 		//! addClippingRects
 		int addClippingRects( lua_State* L );
@@ -25,8 +25,8 @@ class _lua_bitmapPort : public _bitmapPort
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_bitmapPort>::FunctionType methods[];
-		static Lunar<_lua_bitmapPort>::PropertyType properties[];
+		static Lunar<_lua_bitmapport>::FunctionType methods[];
+		static Lunar<_lua_bitmapport>::PropertyType properties[];
 };
 
 #endif

@@ -65,5 +65,6 @@ Lunar<_lua_window>::PropertyType _lua_window::properties[] = {
 	{ "closeable"		, wrap( _lua_window , &_window::isCloseable )		, wrap( _lua_window , &_window::setCloseable ) },
 	{ "minimized"		, wrap( _lua_window , &_window::isMinimized )		, nullptr },
 	{ "maximized"		, wrap( _lua_window , &_window::isMaximized )		, nullptr },
+	{ "isTask"			, wrap( _lua_window , &_window::isTask )			, nullptr },
 	LUA_CLASS_ATTR_END
 };

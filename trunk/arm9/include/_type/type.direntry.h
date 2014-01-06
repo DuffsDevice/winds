@@ -10,6 +10,7 @@
 #include "_type/type.shortstring.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.mime.h"
+#include "_type/type.ini.h"
 
 // Libfat
 extern "C"{
@@ -65,14 +66,17 @@ class _direntry{
 		//! Flag indicating if the file exists
 		bool				exists;
 		
-		//! Falg indicating if the FAT32-System is ready to be used
+		//! Flag indicating if the FAT32-System is ready to be used
 		static int			fatInited;
+		static _ini			filetypeMappers;
+		static _ini			filetypeIcons;
 		
-		//! My Filename
+		//! Filename
 		string				filename;
 		string				name;
 		ssstring			extension;
 		
+		//! MIME-Type
 		_mimeType 			mimeType;
 		
 		//! The Mode the file was opened by
@@ -155,7 +159,8 @@ class _direntry{
 		bool unsetSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = false; return attr; } ); }*/
 		
 		//! If the _direntry is an directory, iterate through its children
-		virtual bool readChild( string& str );
+		virtual bool readChild( _literal& child , _vector<_literal>* allowedExtensions = nullptr );
+		virtual bool readChildFolderOnly( _literal& child );
 		virtual bool rewindChildren();
 		
 		

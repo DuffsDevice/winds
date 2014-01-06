@@ -12,8 +12,8 @@ class _guestUser : public _user
 		_guestUser() :
 			_user( "$guest" )
 		{
-			_registry::writeIndex( "_global_" , "userName" , _system::getLocalizedString("lbl_guest") );
-			_registry::writeIndex( "_global_" , "userCode" , "" );
+			_iniFile::writeIndex( "_global_" , "userName" , _system::getLocalizedString("lbl_guest") );
+			_iniFile::writeIndex( "_global_" , "userCode" , "" );
 		}
 };
 

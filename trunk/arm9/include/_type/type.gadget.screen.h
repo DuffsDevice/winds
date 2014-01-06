@@ -42,9 +42,6 @@ class _gadgetScreen : public _screen , public _gadget
 		//! Get the Meaning of the screen (what is it supposed to do)
 		_gadgetScreenType getScreenType(){ return this->screenType; }
 		
-		//! Dimensions for gadgets that are maximized
-		virtual _rect getMaximizedDimensions(){ return _rect(); }
-		
 		//! C-tor
 		_gadgetScreen( int bgId , _gadgetScreenType sType , _style&& style = _style() );
 };

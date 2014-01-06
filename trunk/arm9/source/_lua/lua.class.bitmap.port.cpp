@@ -11,16 +11,16 @@ using namespace _luafunc;
 ##################################*/
 
 // Ctor
-_lua_bitmapPort::_lua_bitmapPort( _bitmapPort b ) :
+_lua_bitmapport::_lua_bitmapport( _bitmapPort b ) :
 	_bitmapPort( b )
 {}
 
 // Lua-Ctor
-_lua_bitmapPort::_lua_bitmapPort( lua_State* L ) :
+_lua_bitmapport::_lua_bitmapport( lua_State* L ) :
 	_bitmapPort( *Lunar<_lua_bitmap>::check( L , 1 )->bm )
 { }
 
-int _lua_bitmapPort::addClippingRects( lua_State* L ){
+int _lua_bitmapport::addClippingRects( lua_State* L ){
 	if( is_a<_rect>( L , 1 ) )
 		_bitmapPort::addClippingRects( check<_rect>( L , 1 ) );
 	else
@@ -31,39 +31,39 @@ int _lua_bitmapPort::addClippingRects( lua_State* L ){
 using shortCutType = void (_bitmapPort::*)(_coord,_coord,const _font*,const _char*,_pixel,_u8);
 
 //! Lua-_gadget
-const char _lua_bitmapPort::className[] = "BitmapPort";
-Lunar<_lua_bitmapPort>::FunctionType _lua_bitmapPort::methods[] = {
-	{ "addClippingRects"			, &_lua_bitmapPort::addClippingRects },
-	{ "normalizeClippingRects"		, wrap( _lua_bitmapPort , &_bitmapPort::normalizeClippingRects ) },
-	{ "deleteClippingRects"			, wrap( _lua_bitmapPort , &_bitmapPort::deleteClippingRects ) },
-	{ "getPixel"					, wrap( _lua_bitmapPort , &_bitmapPort::getPixel ) },
-	{ "drawPixel"					, wrap( _lua_bitmapPort , &_bitmapPort::drawPixel ) },
-	{ "fill"						, wrap( _lua_bitmapPort , &_bitmapPort::fill ) },
-	{ "replaceColor"				, wrap( _lua_bitmapPort , &_bitmapPort::replaceColor ) },
-	{ "drawLine"					, wrap( _lua_bitmapPort , &_bitmapPort::drawLine ) },
-	{ "drawVerticalLine"			, wrap( _lua_bitmapPort , &_bitmapPort::drawVerticalLine ) },
-	{ "drawHorizontalLine"			, wrap( _lua_bitmapPort , &_bitmapPort::drawHorizontalLine ) },
-	{ "drawVerticalDottedLine"		, wrap( _lua_bitmapPort , &_bitmapPort::drawVerticalDottedLine ) },
-	{ "drawHorizontalDottedLine"	, wrap( _lua_bitmapPort , &_bitmapPort::drawHorizontalDottedLine ) },
-	{ "drawRect"					, wrap( _lua_bitmapPort , &_bitmapPort::drawRect ) },
-	{ "drawDottedRect"				, wrap( _lua_bitmapPort , &_bitmapPort::drawDottedRect ) },
-	{ "drawFilledRect"				, wrap( _lua_bitmapPort , &_bitmapPort::drawFilledRect ) },
-	{ "drawVerticalGradient"		, wrap( _lua_bitmapPort , &_bitmapPort::drawVerticalGradient ) },
-	{ "drawHorizontalGradient"		, wrap( _lua_bitmapPort , &_bitmapPort::drawHorizontalGradient ) },
-	{ "drawCircle"					, wrap( _lua_bitmapPort , &_bitmapPort::drawCircle ) },
-	{ "drawFilledCircle"			, wrap( _lua_bitmapPort , &_bitmapPort::drawFilledCircle ) },
-	{ "drawEllipse"					, wrap( _lua_bitmapPort , &_bitmapPort::drawEllipse ) },
-	{ "drawFilledEllipse"			, wrap( _lua_bitmapPort , &_bitmapPort::drawFilledEllipse ) },
-	{ "drawChar"					, wrap( _lua_bitmapPort , &_bitmapPort::drawChar ) },
-	{ "drawString"					, wrap( _lua_bitmapPort , (shortCutType)&_bitmapPort::drawString ) },
-	{ "copy"						, wrap( _lua_bitmapPort , &_bitmapPort::copy ) },
-	{ "copyTransparent"				, wrap( _lua_bitmapPort , &_bitmapPort::copyTransparent ) },
-	{ "copyHorizontalStretch"		, wrap( _lua_bitmapPort , &_bitmapPort::copyHorizontalStretch ) },
+const char _lua_bitmapport::className[] = "BitmapPort";
+Lunar<_lua_bitmapport>::FunctionType _lua_bitmapport::methods[] = {
+	{ "addClippingRects"			, &_lua_bitmapport::addClippingRects },
+	{ "normalizeClippingRects"		, wrap( _lua_bitmapport , &_bitmapPort::normalizeClippingRects ) },
+	{ "deleteClippingRects"			, wrap( _lua_bitmapport , &_bitmapPort::deleteClippingRects ) },
+	{ "getPixel"					, wrap( _lua_bitmapport , &_bitmapPort::getPixel ) },
+	{ "drawPixel"					, wrap( _lua_bitmapport , &_bitmapPort::drawPixel ) },
+	{ "fill"						, wrap( _lua_bitmapport , &_bitmapPort::fill ) },
+	{ "replaceColor"				, wrap( _lua_bitmapport , &_bitmapPort::replaceColor ) },
+	{ "drawLine"					, wrap( _lua_bitmapport , &_bitmapPort::drawLine ) },
+	{ "drawVerticalLine"			, wrap( _lua_bitmapport , &_bitmapPort::drawVerticalLine ) },
+	{ "drawHorizontalLine"			, wrap( _lua_bitmapport , &_bitmapPort::drawHorizontalLine ) },
+	{ "drawVerticalDottedLine"		, wrap( _lua_bitmapport , &_bitmapPort::drawVerticalDottedLine ) },
+	{ "drawHorizontalDottedLine"	, wrap( _lua_bitmapport , &_bitmapPort::drawHorizontalDottedLine ) },
+	{ "drawRect"					, wrap( _lua_bitmapport , &_bitmapPort::drawRect ) },
+	{ "drawDottedRect"				, wrap( _lua_bitmapport , &_bitmapPort::drawDottedRect ) },
+	{ "drawFilledRect"				, wrap( _lua_bitmapport , &_bitmapPort::drawFilledRect ) },
+	{ "drawVerticalGradient"		, wrap( _lua_bitmapport , &_bitmapPort::drawVerticalGradient ) },
+	{ "drawHorizontalGradient"		, wrap( _lua_bitmapport , &_bitmapPort::drawHorizontalGradient ) },
+	{ "drawCircle"					, wrap( _lua_bitmapport , &_bitmapPort::drawCircle ) },
+	{ "drawFilledCircle"			, wrap( _lua_bitmapport , &_bitmapPort::drawFilledCircle ) },
+	{ "drawEllipse"					, wrap( _lua_bitmapport , &_bitmapPort::drawEllipse ) },
+	{ "drawFilledEllipse"			, wrap( _lua_bitmapport , &_bitmapPort::drawFilledEllipse ) },
+	{ "drawChar"					, wrap( _lua_bitmapport , &_bitmapPort::drawChar ) },
+	{ "drawString"					, wrap( _lua_bitmapport , (shortCutType)&_bitmapPort::drawString ) },
+	{ "copy"						, wrap( _lua_bitmapport , &_bitmapPort::copy ) },
+	{ "copyTransparent"				, wrap( _lua_bitmapport , &_bitmapPort::copyTransparent ) },
+	{ "copyHorizontalStretch"		, wrap( _lua_bitmapport , &_bitmapPort::copyHorizontalStretch ) },
 	LUA_CLASS_FUNC_END
 };
 
-Lunar<_lua_bitmapPort>::PropertyType _lua_bitmapPort::properties[] = {
-	{ "width"	, wrap( _lua_bitmapPort , &_bitmapPort::getWidth )	, nullptr },
-	{ "height"	, wrap( _lua_bitmapPort , &_bitmapPort::getHeight )	, nullptr },
+Lunar<_lua_bitmapport>::PropertyType _lua_bitmapport::properties[] = {
+	{ "width"	, wrap( _lua_bitmapport , &_bitmapPort::getWidth )	, nullptr },
+	{ "height"	, wrap( _lua_bitmapport , &_bitmapPort::getHeight )	, nullptr },
 	LUA_CLASS_ATTR_END
 };

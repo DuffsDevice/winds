@@ -9,7 +9,7 @@ __attribute__((hot)) _area& _area::clipToIntersect( const _rect& limits )
 		remove_if(
 			t_rects.begin()
 			, t_rects.end()
-			, [=]( _rect& rc )->bool{
+			, [&limits]( _rect& rc )->bool{
 				rc.clipToIntersect( limits );
 				return !rc.isValid();
 			}

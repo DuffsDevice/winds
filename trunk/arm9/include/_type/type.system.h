@@ -8,9 +8,11 @@
 #include "_type/type.event.h"
 #include "_type/type.font.h"
 #include "_type/type.runtimeAttributes.h"
+#include "_type/type.key.h"
 
+class _ini;
+class _iniFile;
 class _direntry;
-class _registry;
 class _keyboard;
 class _user;
 
@@ -32,8 +34,12 @@ class _system{
 		static _gadget*						_currentFocus_;
 		static _gadget*						_lastClickedGadget_;
 		static _screen*						_topScreen_;
-		static _registry*					_registry_;
+		static _iniFile*					_registry_;
 		static _runtimeAttributes*			_rtA_; // _runtimeAttributes_
+		
+		//! Displayed as replacement if a language-specific term
+		//! is not available in the currently selected language
+		static const string					_emptyStringSignature_;
 		
 		//! Disables/enables the VBlank interrupt
 		//! to not be interrupted during an important process
@@ -87,7 +93,6 @@ class _system{
 		friend class _scSetup;
 		friend class _scDesktop;
 		friend class _scBootup;
-		friend class _keyboard;
 		
 		//! Add Thinks for execution
 		static void generateEvent( _event event , _eventCallType callType ){
@@ -111,87 +116,90 @@ class _system{
 		//! More attributes
 		static _gadgetScreen*				_gadgetHost_;
 		static _keyboard*					_keyboard_;
-		static _registry*					_localizationTextTable_;
-		static _registry*					_localizationMonthTable_;
+		static _ini*						_localizationTextTable_;
+		static _ini*						_localizationMonthTable_;
 		
 		//! Constructor
-		static void			start();
+		static void					start();
 		
 		//! Destructor
-		static void			end();
+		static void					end();
 		
 		//! Execute the supplied command
-		static bool			executeCommand( string cmd );
+		static bool					executeCommand( string cmd );
 		
 		//! Get Current Time (milliseconds since system startup)
-		static _tempTime	getHighResTime();
+		static _tempTime			getHighResTime();
 		
 		//! Get a Font by Name
-		static const _font*	getFont( string font )
+		static const _font*			getFont( string font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
 				return _system::getFont();
 			
 			return _fonts_[font];
 		}
-		static const _font*	getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
+		static const _font*			getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
 		
 		//! Get current Cpu-usage
-		static _u8			getCpuUsage(){ return _cpuUsageTemp_; }
+		static _u8					getCpuUsage(){ return _cpuUsageTemp_; }
 		
 		//! Obtain current Keys
-		static _u16			getCurrentKeys(){ return keysHeld() & (~(KEY_TOUCH|KEY_LID)); }
+		static _hardwareKeyPattern	getCurrentKeys(){ return _hardwareKeyPattern( keysHeld() & (~(KEY_TOUCH|KEY_LID)) ); }
+		
+		//! Get the currently focused gadget
+		static _gadget*				getCurrentFocus(){ return _system::_currentFocus_; }
 		
 		//! Get string
-		static string		getLocalizedString( string name )
+		static const string&		getLocalizedString( const string& name )
 		{
-			string value = _system::_localizationTextTable_->readIndex( name , _system::_curLanguageShortcut_ );
+			const string& value = _system::_localizationTextTable_->readIndex( name , _system::_curLanguageShortcut_ );
 			if( value.empty() )
-				return DSWindows::emptyStringSignature;
+				return _system::_emptyStringSignature_;
 			return value;
 		}
 		
 		//! Get localized month
 		//! Pass month from 0 - 11
-		static string		getLocalizedMonth( _u8 month )
+		static const string&		getLocalizedMonth( _u8 month )
 		{
-			string value = _system::_localizationMonthTable_->readIndex( int2string( month ) , _system::_curLanguageShortcut_ );
+			const string& value = _system::_localizationMonthTable_->readIndex( int2string( month ) , _system::_curLanguageShortcut_ );
 			if( value.empty() )
-				return DSWindows::emptyStringSignature;
+				return _system::_emptyStringSignature_;
 			return value;
 		}
 		
 		//! Turn Device off
-		static void			shutDown();
+		static void					shutDown();
 		
 		//! main Loop...
-		static void			main();
+		static void					main();
 		
 		//! Press Any Key to continue...
-		static void			submit();
+		static void					submit();
 		
 		//! Set Language
-		static void			setLanguage( _language );
+		static void					setLanguage( _language );
 		
 		//! Get the current Langauge
-		static _language	getLanguage();
+		static _language			getLanguage();
 		
 		//! Get the name of the user within the DS internal firmware
-		static string		getDSUserName();
+		static const string&		getDSUserName();
 		
 		//! Checks if the binary is executed on real hardware or on an emulator
-		static bool			isRunningOnEmulator();
+		static bool					isRunningOnEmulator();
 		
 		//! Debugging
-		static void			debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
-		static void			vdebug( const char* fmt , va_list );
+		static void					debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
+		static void					vdebug( const char* fmt , va_list );
 		
 		//! Get the Currently Logged in _user object
-		static const _user&					getUser(){ return _system::_rtA_->getUser(); }
+		static const _user&			getUser(){ return _system::_rtA_->getUser(); }
 		
 		//! And some getters...
 		static _screen*						getTopScreen(){ return _system::_topScreen_; }
-		static const _registry& 			getRegistry(){ return *_system::_registry_; }
+		static const _iniFile& 				getRegistry(){ return *_system::_registry_; }
 		static const _runtimeAttributes&	getRTA(){ return *_system::_rtA_; }
 };
 

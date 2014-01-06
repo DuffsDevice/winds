@@ -13,6 +13,8 @@
 #include "_type/type.assocvector.h"
 #include "_type/type.callback.h"
 #include "_type/type.mime.h"
+#include "_type/type.time.h"
+#include "_type/type.key.h"
 #include <type_traits>
 
 enum class _eventCallType : _u8;
@@ -36,6 +38,8 @@ namespace _luafunc
 	void	pushGadget( lua_State* state , _gadget* );
 	void	pushFont( lua_State* state , const _font* );
 	void	pushBorder( lua_State* state , _border&& );
+	void	pushTime( lua_State* state , _time&& );
+	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );
 }
 
 #include "_lua/lua.func.isa.h"

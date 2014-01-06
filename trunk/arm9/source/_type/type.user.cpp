@@ -32,9 +32,10 @@ _bitmap _user::getUserLogoFromImage( _constBitmap& bmp )
 _bitmap _user::getUserImage( string path )
 {
 	_imageFile imagefile = _imageFile( path );
+	_bitmap image = imagefile.readBitmap();
 	
-	if( imagefile.isValid() )
-		return _bitmapResizer( 12 , 12 , imagefile );
+	if( image.isValid() )
+		return _bitmapResizer( 12 , 12 , image );
 	
 	// Create default image
 	_bitmap bmp = _bitmap( 12 , 12 );
@@ -45,12 +46,12 @@ _bitmap _user::getUserImage( string path )
 }
 
 _user::_user( string folderName ) :
-	_registry( _direntry( "%USERS%/" + folderName + "/user.ini" ) )
+	_iniFile( "%USERS%/" + folderName + "/user.ini" )
 	, folderName( folderName )
 {
-	if( _registry::creation )
+	if( _iniFile::creation )
 	{
-		this->ini->getMutableMap() = 
+		this->getMap() = 
 			{ { "_global_" , 
 				{
 					{ "userName" , this->folderName } ,
@@ -102,13 +103,13 @@ _user::_user( string folderName ) :
 	_cwdChanger cw ( "%USERS%/" + this->folderName );
 	
 	// A userImage
-	_bitmap bmp = _user::getUserImage( _registry::readIndex( "_global_" , "userLogo" ) );
+	_bitmap bmp = _user::getUserImage( _iniFile::readIndex( "_global_" , "userLogo" ) );
 	
 	// ... and a Logo
 	this->userLogo = _user::getUserLogoFromImage( bmp );
 	
 	// ... and a very nice Wallpaper!
-	this->wallpaper = _imageFile( _registry::readIndex( "_global_" , "wallpaper" ) );
+	this->wallpaper = _imageFile( _iniFile::readIndex( "_global_" , "wallpaper" ) ).readBitmap();
 	if( !this->wallpaper.isValid() )
 		this->wallpaper = BMP_WindowsWallpaper();
 	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
@@ -126,30 +127,26 @@ _user::_user( string folderName ) :
 	}
 }
 
-
-void _user::createAs( string folderName )
+void _user::createAs( const string& folderName )
 {
-	_iniStructure str = move( this->ini->getMap() );
+	_iniStructure str = move( this->getMap() );
 	*this = _user( folderName );
-	this->ini->getMutableMap() = move( str );
+	this->getMap() = move( str );
 }
 
-_user::~_user()
-{
-	_registry::writeIndex( "_global_" , "lastTimeLogIn" , _time::now() );
+_user::~_user(){
+	_iniFile::writeIndex( "_global_" , "lastTimeLogIn" , _time::now() );
 }
 
-bool _user::checkPassword( string pw ) const 
-{
-	return md5( pw ) == _registry::readIndex( "_global_" , "userCode" );
+bool _user::checkPassword( const string& pw ) const {
+	return md5( pw ) == _iniFile::readIndex( "_global_" , "userCode" );
 }
 
-bool _user::hasPassword() const 
-{
-	string value = _registry::readIndex( "_global_" , "userCode" );
+bool _user::hasPassword() const {
+	string value = _iniFile::readIndex( "_global_" , "userCode" );
 	return !value.empty() && value != "d41d8cd98f00b204e9800998ecf8427e"; // this is the result for md5("")
 }
 
-void _user::setPassword( string pw ){
-	_registry::writeIndex( "_global_" , "userCode" , md5( pw ) );
+void _user::setPassword( const string& pw ){
+	_iniFile::writeIndex( "_global_" , "userCode" , md5( pw ) );
 }

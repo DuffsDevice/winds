@@ -1,6 +1,6 @@
 Gadgets:
 ========
-- Colorpicker-Circle
+- Colorpicker-Hexagon
 + Image-Button (✓)
 - Treeview
 - Contextmenu for Files
@@ -8,6 +8,7 @@ Gadgets:
 Types:
 ======
 - Binary File for lua access
++ Time available in Lua (✓)
 
 Dialogs:
 ========
@@ -27,10 +28,11 @@ Features:
 - File information window
 - Credits page
 - Switch between programs
-- Filemask/Wildcard/Regex in _fileview
++ Filemask/Wildcard/Regex in _fileview (✓)
 - Right-click
 - Create files/folders
-- Database/INI-file which program opens which filtype
+- Database/INI-file: which program opens which filetype
+- Image-Writes and GIF Support
 
 Programms:
 ==========

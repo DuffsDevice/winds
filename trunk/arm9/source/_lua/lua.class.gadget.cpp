@@ -210,12 +210,10 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "setDimensionsIfAuto"	, wrap( _lua_gadget , &_gadget::setDimensionsIfAuto ) },
 	/*  */
 	{ "enhanceToParent"			, wrap( _lua_gadget , &_gadget::enhanceToParent ) },
-	{ "getScreen"				, wrap( _lua_gadget , &_gadget::getScreen ) },
 	{ "removeChild"				, wrap( _lua_gadget , &_gadget::removeChild ) },
 	{ "removeChildren"			, wrap( _lua_gadget , &_gadget::removeChildren ) },
 	{ "removeEnhancedChildren"	, wrap( _lua_gadget , &_gadget::removeEnhancedChildren ) },
 	{ "addChild"				, wrap( _lua_gadget , &_gadget::addChild ) },
-	//{ "addChild"				, &_lua_gadget::dummy },
 	{ "addEnhancedChild"		, wrap( _lua_gadget , &_gadget::addEnhancedChild ) },
 	{ "getLowestChild"			, wrap( _lua_gadget , &_gadget::getLowestChild ) },
 	{ "getToppestChild"			, wrap( _lua_gadget , &_gadget::getToppestChild ) },

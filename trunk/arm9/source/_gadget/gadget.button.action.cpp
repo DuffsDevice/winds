@@ -31,8 +31,8 @@ _toStr<_actionButtonType> actionButtonType2string =
 {
 	{ _actionButtonType::next , "next" },
 	{ _actionButtonType::prev , "prev" },
-	{ _actionButtonType::logoff , "logoff" },
 	{ _actionButtonType::shutdown , "shutdown" },
+	{ _actionButtonType::logoff , "logoff" },
 	{ _actionButtonType::switchuser , "switchuser" },
 };
 
@@ -40,7 +40,7 @@ _fromStr<_actionButtonType> string2actionButtonType =
 {
 	{ "next" , _actionButtonType::next },
 	{ "prev" , _actionButtonType::prev },
-	{ "logoff" , _actionButtonType::logoff },
 	{ "shutdown" , _actionButtonType::shutdown },
+	{ "logoff" , _actionButtonType::logoff },
 	{ "switchuser" , _actionButtonType::switchuser },
 };

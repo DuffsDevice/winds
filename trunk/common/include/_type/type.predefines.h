@@ -20,12 +20,12 @@ typedef _s16 						_length;
 typedef _s16 						_coord;
 typedef char						_char;
 typedef int 						_int;
-typedef _u16 						_key;
-typedef short unsigned int 			_pixel;
+typedef _u16			 			_pixel;
 typedef _pixel* 					_pixelArray;
 typedef float 						_float;
 typedef _u64 						_tempTime;
 typedef const _char*				_literal;
+typedef int							_unixTime;
 
 #include <nds/ndstypes.h>
 #include <nds/touch.h>

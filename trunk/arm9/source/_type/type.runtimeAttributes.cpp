@@ -1,5 +1,6 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_type/type.font.glyphs.h"
+#include "_type/type.key.h"
 
 // Bitmaps
 #include "_resource/resource.image.window.header.h"
@@ -31,16 +32,16 @@ _runtimeAttributes::_runtimeAttributes( _paramAlloc<_user> user ) :
 	this->keyboardChar[0] = {
 		'1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0' ,
 		'q' , 'w' , 'e' , 'r' , 't' , 'z' , 'u' , 'i' , 'o' , 'p' ,
-		'a' , 's' , 'd' , 'f' , 'g' , 'h' , 'j' , 'k' , 'l' , DSWindows::KEY_BACKSPACE ,
-		DSWindows::KEY_CAPS , 'y' , 'x' , 'c' , 'v' , 'b' , 'n' , 'm' , '.' , DSWindows::KEY_CARRIAGE_RETURN ,
-		DSWindows::KEY_SHIFT , DSWindows::KEY_WINDOWS , ' ' , ',' , '-' , DSWindows::KEY_SHIFT
+		'a' , 's' , 'd' , 'f' , 'g' , 'h' , 'j' , 'k' , 'l' , (_char)_key::backspace ,
+		(_char)_key::caps , 'y' , 'x' , 'c' , 'v' , 'b' , 'n' , 'm' , '.' , (_char)_key::carriage_return ,
+		(_char)_key::shift , (_char)_key::windows , ' ' , ',' , '-' , (_char)_key::shift
 	};
 	this->keyboardChar[1] = {
 		'!' , '"' , '#' , '?' , '%' , '&' , '/' , '(' , ')' , '=' ,
 		'Q' , 'W' , 'E' , 'R' , 'T' , 'Z' , 'U' , 'I' , 'O' , 'P' ,
-		'A' , 'S' , 'D' , 'F' , 'G' , 'H' , 'J' , 'K' , 'L' , DSWindows::KEY_BACKSPACE ,
-		DSWindows::KEY_CAPS , 'Y' , 'X' , 'C' , 'V' , 'B' , 'N' , 'M' , '+' , DSWindows::KEY_CARRIAGE_RETURN ,
-		DSWindows::KEY_SHIFT , DSWindows::KEY_WINDOWS , ' ' , ';' , '_' , DSWindows::KEY_SHIFT
+		'A' , 'S' , 'D' , 'F' , 'G' , 'H' , 'J' , 'K' , 'L' , (_char)_key::backspace ,
+		(_char)_key::caps , 'Y' , 'X' , 'C' , 'V' , 'B' , 'N' , 'M' , '+' , (_char)_key::carriage_return ,
+		(_char)_key::shift , (_char)_key::windows , ' ' , ';' , '_' , (_char)_key::shift
 	};
 	this->keyboardText[0] = {
 		"1" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "0" ,

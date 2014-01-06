@@ -8,8 +8,8 @@ class _startupScreen : public _gadgetScreen
 {
 	private:
 		
-		_gadget*		winLogoGadget;
-		static _bitmap* winLogo;
+		_gadget*			winLogoGadget;
+		static _constBitmap	winLogo;
 		
 		static _callbackReturn refreshHandler( _event );
 		

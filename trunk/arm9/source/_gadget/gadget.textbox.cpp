@@ -169,8 +169,8 @@ _callbackReturn _textBox::keyHandler( _event event )
 	string val = that->strValue;
 	
 	switch( event.getKeyCode() ){
-		case DSWindows::KEY_BACKSPACE:
-		case DSWindows::KEY_B:
+		case _key::backspace:
+		case _key::b:
 			if( !(val.length()) || that->cursor < 2 ){
 				//_system::errorTone();
 				break;
@@ -181,24 +181,24 @@ _callbackReturn _textBox::keyHandler( _event event )
 			// Trigger Handler
 			that->triggerEvent( onEdit );
 			break;
-		case DSWindows::KEY_CARRIAGE_RETURN:
+		case _key::carriage_return:
 			break;
-		case DSWindows::KEY_LEFT:
+		case _key::left:
 			if( that->cursor > 1 )
 				that->setInternalCursor( that->cursor - 1 );
 			break;
-		case DSWindows::KEY_RIGHT:
+		case _key::right:
 			if( that->cursor && stringExtractor::strLen( that->strValue.c_str() ) - that->cursor + 1 > 0 )
 				that->setInternalCursor( that->cursor + 1 );
 			break;
 		default:
 			if(
-				DSWindows::isHardwareKey( event.getKeyCode() )
-				|| !isprint( event.getKeyCode() ) // Check if printable
+				_hardwareKeyPattern::isHardwareKey( event.getKeyCode() )
+				|| !isprint( (_char)event.getKeyCode() ) // Check if printable
 			)
 				break;
 			
-			that->insertStr( that->cursor - 1 , string( 1 , event.getKeyCode() ) );
+			that->insertStr( that->cursor - 1 , string( 1 , (_char)event.getKeyCode() ) );
 			that->setInternalCursor( that->cursor + 1 );
 			
 			// Trigger Handler

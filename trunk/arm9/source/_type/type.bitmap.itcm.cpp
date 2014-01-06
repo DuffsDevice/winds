@@ -3,6 +3,7 @@
 #include "func.memory.h"
 
 #include <nds/arm9/math.h>
+#include <nds/bios.h>
 
 void _bitmap::setWidth( _length w )
 {
@@ -322,13 +323,12 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 		memSet( to , color , w * h ); // optimize Algorithm for drawing on whole bitmap
 	else
 	{
-		// Add 15 to the height since we are dividing by 8
+		// Add 7 to the height since we are dividing by 8
 		h+= 7;
 		
-		int n = h / 8;
-		int rem = h % 8;
+		int n,rem;
+		swiDivMod( h , 8 , &n , &rem );
 		
-		int tN = n;
 		switch( rem ) {
 			case 7: do{ memSet( to , color , w );to += this->width;
 			case 6:		memSet( to , color , w );to += this->width;
@@ -338,7 +338,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 			case 2:		memSet( to , color , w );to += this->width;
 			case 1:		memSet( to , color , w );to += this->width;
 			case 0:		memSet( to , color , w );to += this->width;
-				} while( --tN > 0 );
+				} while( --n > 0 );
 		}
 	}
 }
@@ -506,7 +506,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	else
 	{
 		_u16 val;
-		// Loop Unwinding
+		
 		do
 		{
 			j = w;
@@ -515,7 +515,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 			do
 			{
 				pos[j-1] = val;
-			}while( --j );
+			}while( --j > 0 );
 			
 			pos += this->width;
 		}while( --h > 0 );
@@ -907,8 +907,8 @@ __attribute__((hot)) void _bitmap::copyTransparent( _coord x , _coord y , _const
 	// Add 15 to the width since we are dividing by 16
 	w+= 15;
 	
-	int n = w / 16;
-	int rem = w % 16;
+	int n, rem;
+	swiDivMod( w , 16 , &n , &rem );
 	
 	//! Duff, B*tch!
 	while( h-- )

@@ -26,19 +26,27 @@ namespace _luafunc
 			return type == LUA_TBOOLEAN || type == LUA_TNUMBER;
 		}
 		static unused inline bool	is_a( lua_State* state , int index , string* dummy ){ return lua_isstring( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _literal* dummy ){ return lua_isstring( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _key* dummy ){
+			int type = get_type( state , index );
+			return type == LUA_TSTRING || type == LUA_TNUMBER;
+		}
 		bool						is_a( lua_State* state , int index , const _font** dummy );
 		bool						is_a( lua_State* state , int index , _event* dummy );
 		bool						is_a( lua_State* state , int index , _rect* dummy );
+		bool						is_a( lua_State* state , int index , _hardwareKeyPattern* dummy );
 		bool						is_a( lua_State* state , int index , _area* dummy );
 		bool						is_a( lua_State* state , int index , _bitmap* dummy );
 		bool						is_a( lua_State* state , int index , _bitmapPort* dummy );
 		bool						is_a( lua_State* state , int index , _border* dummy );
+		bool						is_a( lua_State* state , int index , _time* dummy );
 		static unused inline bool	is_a( lua_State* state , int index , _gadget** dummy ){ return lua_isuserdata( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _callbackReturn* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _eventCallType* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _eventType* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _dimension* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _style* dummy ){ return lua_isstring( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _timeAttr* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _pixel* dummy ){
 			int type = get_type( state , index );
 			return type == LUA_TNUMBER || type == LUA_TSTRING;

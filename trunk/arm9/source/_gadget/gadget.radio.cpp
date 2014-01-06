@@ -33,9 +33,9 @@ _callbackReturn _radio::keyHandler( _event event )
 	if( !that->group )
 		return not_handled;
 	
-	if( event.getKeyCode() == DSWindows::KEY_DOWN || event.getKeyCode() == DSWindows::KEY_RIGHT )
+	if( event.getKeyCode() == _key::down || event.getKeyCode() == _key::right )
 		that->group->enableNext();
-	else if( event.getKeyCode() == DSWindows::KEY_UP || event.getKeyCode() == DSWindows::KEY_LEFT )
+	else if( event.getKeyCode() == _key::up || event.getKeyCode() == _key::left )
 		that->group->enablePrev();
 	
 	return handled;

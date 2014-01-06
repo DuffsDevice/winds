@@ -11,25 +11,32 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 	
 	_pixel color[] = { 
 		RGB255( 114 , 154 , 250 ) , RGB255( 5 , 88 , 226 ) , RGB255( 75 , 126 , 245 ) , // Blue Values
-		RGB255( 227 , 92 , 59 ) , RGB255( 234 , 131 , 106 ) , RGB255( 250 , 221 , 211 ) , // Red Values
-		RGB255( 186 , 61 , 239 ) // Violet (Blue =/= Red)
+		RGB255( 235 , 65 , 46 ) , RGB255( 248 , 116 , 88 ) , RGB255( 250 , 221 , 211 ) , // Red Values
+		RGB255( 186 , 61 , 239 ) , // Violet (Blue <-> Red)
+		RGB255( 215 , 11 , 0 ) // Dark Red (Pressed)
 	};
 	
 	bP.fill( NO_COLOR );
 	
 	switch( that->buttonType ){
 		case 0:
+		{
 			// Close
 			bP.drawRect( 0 , 0 , 8 , 8 , color[3] );
-			bP.drawRect( 1 , 1 , 6 , 6 , color[4] );
-			bP.drawRect( 2 , 2 , 4 , 4 , color[4] );
+			_u8 index = that->isPressed() ? 7 : 4;
+			bP.drawRect( 1 , 1 , 6 , 6 , color[index] );
+			bP.drawRect( 2 , 2 , 4 , 4 , color[index] );
 			bP.drawFilledRect( 3 , 3 , 2 , 2 , color[5] );
 			bP.drawPixel( 2 , 2 , color[5] );
 			bP.drawPixel( 2 , 5 , color[5] );
 			bP.drawPixel( 5 , 2 , color[5] );
 			bP.drawPixel( 5 , 5 , color[5] );
 			break;
+		}
 		case 1:
+			if( that->isPressed() )
+				bP.fill( RGB255( 24 , 65 , 158 ) );
+			
 			// Maximize/Restore
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] ); // White Border
 			
@@ -47,6 +54,9 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 			}
 			break;
 		case 2:
+			if( that->isPressed() )
+				bP.fill( RGB255( 24 , 65 , 158 ) );
+			
 			// Minimize
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
 			bP.drawHorizontalLine( 2 , 5 , 3 , RGB( 31 , 31 , 31 ) );

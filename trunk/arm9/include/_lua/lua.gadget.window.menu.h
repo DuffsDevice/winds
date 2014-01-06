@@ -13,11 +13,14 @@ class _lua_windowmenu : public _lua_gadget
 {
 	public:
 		
+		//! Lua-Ctor
 		_lua_windowmenu( lua_State* L );
 		
+		//! C-Ctor
 		_lua_windowmenu( _windowMenu* m ) : _lua_gadget( m , false )
 		{ }
 		
+		//! getStandardMenu
 		static int getStandardMenu( lua_State* L );
 		
 		//! Lunar !//

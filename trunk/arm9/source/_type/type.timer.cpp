@@ -22,14 +22,10 @@ void _timer::stop()
 
 _timer& _timer::operator=( _timer&& tmr )
 {
-	this->deleteCallback();
-	
 	this->duration = tmr.duration;
 	this->repeating = tmr.repeating;
 	this->runs = tmr.runs;
-	this->callback = tmr.callback;
-	
-	tmr.callback = nullptr;
+	this->callback = move(tmr.callback);
 	
 	// Rewrite timer in list
 	if( tmr.runs ){

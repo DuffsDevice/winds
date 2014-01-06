@@ -7,7 +7,7 @@ void _scSetupPage5::timerCallback()
 {
 	_viewSwitcher& switcher = this->getSwitcher();
 	
-	_scSetupPage3* page3 = (_scSetupPage3*) switcher.getViewByName( "3" );
+	//_scSetupPage3* page3 = (_scSetupPage3*) switcher.getViewByName( "3" );
 	_scSetupPage4* page4 = (_scSetupPage4*) switcher.getViewByName( "4" );
 	
 	string profileName = page4->profileName;

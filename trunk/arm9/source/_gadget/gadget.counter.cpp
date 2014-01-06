@@ -61,9 +61,9 @@ _callbackReturn _counter::keyHandler( _event event )
 {
 	_counter* that = event.getGadget<_counter>();
 	
-	if( event.getKeyCode() == DSWindows::KEY_UP )
+	if( event.getKeyCode() == _key::up )
 		that->increaseInternal();
-	else if( event.getKeyCode() == DSWindows::KEY_DOWN )
+	else if( event.getKeyCode() == _key::down )
 		that->decreaseInternal();
 	
 	return handled;

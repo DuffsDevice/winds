@@ -149,10 +149,7 @@ void _system::deleteGadgetHost()
 		
 		// Remove all programs that will be exeucted
 		// the next frame beacause they all have the wrong gadgetHost Set
-		_program::globalProgramsToExecute.clear();
-		
-		// So are the other programs
-		_program::globalPrograms.clear();
+		_program::terminateAllPrograms();
 		
 		// Remove all events on this gadgetHost
 		_system::removeEventsOf( _system::_gadgetHost_ );
@@ -291,7 +288,7 @@ void _system::processInput()
 	// Shortcut...
 	const _user& user = _system::getUser();
 	
-	_key keys = keysHeld();
+	_u16 keys = keysHeld();
 	
 	if( !_system::_keyboard_ || !_system::_keyboard_->processTouch( keys & KEY_TOUCH , t ) )
 		_system::_gadgetHost_->processTouch( keys & KEY_TOUCH , t );
@@ -347,7 +344,7 @@ void _system::processInput()
 		//! Again: We do not handle Pen (as well as the lid)
 		if( BIT(i) == KEY_TOUCH || BIT(i) == KEY_LID ) continue;
 		
-		event.setKeyCode( DSWindows::libnds2key[i] );
+		event.setKeyCode( _hardwareKeyPattern::libndsBit2key(i) );
 		
 		// held down
 		if( GETBIT( keys , i ) )
@@ -498,13 +495,13 @@ void _system::start()
 		_system::_debugFile_ = new _direntry("%WINDIR%/debug.txt");
 		_system::_debugFile_->create();
 		
-		_system::_registry_ = new _registry("%WINDIR%/windows.reg");
+		_system::_registry_ = new _iniFile("%WINDIR%/windows.reg");
 		
 		// Localization of Strings
-		_system::_localizationTextTable_ = new _registry( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
+		_system::_localizationTextTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
 		
 		// Localization of Months
-		_system::_localizationMonthTable_ = new _registry( (string) _binfile( "%SYSTEM%/localizationMonth.ini" ) );
+		_system::_localizationMonthTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationMonth.ini" ) );
 	
 	// -----------------------------------------------
 	// Gadget-System
@@ -535,11 +532,14 @@ _language _system::getLanguage()
 	return mp[_system::_curLanguageShortcut_];
 }
 
-string _system::getDSUserName()
+const string& _system::getDSUserName()
 {
-	string name;
-	for( int i = 0 ; i < PersonalData->nameLen ; i++ )
-		name += PersonalData->name[i];
+	static string name;
+	if( name.empty() && PersonalData->nameLen > 0 )
+	{
+		for( int i = 0 ; i < PersonalData->nameLen ; i++ )
+			name += PersonalData->name[i];
+	}
 	return name;
 }
 
@@ -645,14 +645,15 @@ void _system::shutDown(){
 //! Static Attributes...
 bool 						_system::_sleeping_ = false;
 _map<string,const _font*>	_system::_fonts_;
-_registry*					_system::_localizationTextTable_;
-_registry*					_system::_localizationMonthTable_;
+_ini*						_system::_localizationTextTable_;
+_ini*						_system::_localizationMonthTable_;
 string						_system::_curLanguageShortcut_;
 _gadgetScreen*				_system::_gadgetHost_ = nullptr;
 _screen*					_system::_topScreen_ = nullptr;
 _keyboard*					_system::_keyboard_ = nullptr;
-_registry*					_system::_registry_ = nullptr;
+_iniFile*					_system::_registry_ = nullptr;
 _runtimeAttributes*			_system::_rtA_;
+const string				_system::_emptyStringSignature_ = "[]";
 _direntry*					_system::_debugFile_ = nullptr;
 _gadget*					_system::_currentFocus_ = nullptr;
 _gadget*					_system::_lastClickedGadget_ = nullptr;

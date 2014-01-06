@@ -11,7 +11,7 @@
 namespace LunarHelper
 {
 	template <typename T>
-	class hasStaticMethods{
+	class HasStaticMethods{
 		template<class C> static std::true_type test( decltype(&C::staticmethods) );
 		template<class C> static std::false_type test(...);
 	public:
@@ -19,7 +19,7 @@ namespace LunarHelper
 	};
 	
 	template <typename T>
-	class hasBaseClasses{
+	class HasBaseClasses{
 		template<class C> static std::true_type test( typename C::baseclasses* );
 		template<class C> static std::false_type test(...);
 	public:
@@ -31,6 +31,58 @@ namespace LunarHelper
 	constexpr int func2index( int index ){ return index & (~( 1 << 8 )); }
 	
 	extern std::map<std::string,bool(*)(const char*)> className2checkIfBaseFunction;
+	
+	template<class Class>
+	using MemFuncPtr	= int (Class::*)( lua_State* );
+	using FuncPtr		= int (*)( lua_State* );
+	
+	template<class Class>
+	struct PropertyType{
+		const char*	name;
+		MemFuncPtr<Class>	getter;
+		MemFuncPtr<Class>	setter;
+	};
+	
+	template<class Class>
+	struct FunctionType{
+		const char*			name;
+		MemFuncPtr<Class>	func;
+	};
+	
+	struct StaticType{
+		const char*			name;
+		FuncPtr				func;
+	};
+	
+	static unused void registerConstructorHelper( lua_State* state , const char* className , StaticType* staticmethods , lua_CFunction constructor )
+	{
+		// Create table that will hold all static methods
+		lua_newtable( state );
+		int tableIndex = lua_gettop( state );
+		
+		for( int i = 0 ; staticmethods[i].name ; i++ )
+		{
+			lua_pushstring( state , staticmethods[i].name ); // Push Key
+			lua_pushcfunction( state , staticmethods[i].func ); // Push Value
+			lua_rawset( state , tableIndex ); // Push into table
+		}
+		
+		// Create table that will become our metatable
+			lua_newtable( state );
+			int metatableIndex = lua_gettop( state );
+			
+			// Push constructor
+			lua_pushliteral( state , "__call" );
+			lua_pushcfunction( state , constructor );
+			lua_settable( state , metatableIndex );
+		//
+		
+		// Set metatable of table and pop it from stack
+		lua_setmetatable( state , tableIndex );
+		
+		// Adds the currently created table to the global namespace and pops it from stack
+		lua_setglobal( state , className );
+	}
 }
 
 template<class Class>
@@ -41,10 +93,10 @@ class Lunar
 	private:
 		
 		// Short typdefs
-		template<typename C,typename R = int> using requireBaseClasses = typename std::enable_if<LunarHelper::hasBaseClasses<C>::value,R>::type;
-		template<typename C,typename R = int> using requireNoBaseClasses = typename std::enable_if<!LunarHelper::hasBaseClasses<C>::value,R>::type;
-		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::hasStaticMethods<C>::value,R>::type;
-		template<typename C,typename R = void> using requireNoStatics = typename std::enable_if<!LunarHelper::hasStaticMethods<C>::value,R>::type;
+		template<typename C,typename R = int> using requireBaseClasses = typename std::enable_if<LunarHelper::HasBaseClasses<C>::value,R>::type;
+		template<typename C,typename R = int> using requireNoBaseClasses = typename std::enable_if<!LunarHelper::HasBaseClasses<C>::value,R>::type;
+		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::HasStaticMethods<C>::value,R>::type;
+		template<typename C,typename R = void> using requireNoStatics = typename std::enable_if<!LunarHelper::HasStaticMethods<C>::value,R>::type;
 		
 		//
 		// PROPERTY - GETTERS
@@ -373,34 +425,14 @@ class Lunar
 		}
 		
 		template<typename TempClass>
-		static inline requireStatics<TempClass> registerConstructor( lua_State* state )
-		{
-			// Create table that will hold all static methods
-			lua_newtable( state );
-			int tableIndex = lua_gettop( state );
-			
-			for( int i = 0 ; Class::staticmethods[i].name ; i++ )
-			{
-				lua_pushstring( state , Class::staticmethods[i].name ); // Push Key
-				lua_pushcfunction( state , Class::staticmethods[i].func ); // Push Value
-				lua_rawset( state , tableIndex ); // Push into table
-			}
-			
-			// Create table that will become our metatable
-				lua_newtable( state );
-				int metatableIndex = lua_gettop( state );
-				
-				// Push constructor
-				lua_pushliteral( state , "__call" );
-				lua_pushcfunction( state , &Lunar<Class>::constructorDeleteSelfReference );
-				lua_settable( state , metatableIndex );
-			//
-			
-			// Set metatable of table and pop it from stack
-			lua_setmetatable( state , tableIndex );
-			
-			// Adds the currently created table to the global namespace and pops it from stack
-			lua_setglobal( state , Class::className );
+		static inline requireStatics<TempClass> registerConstructor( lua_State* state ){
+			// This call was outsourced
+			LunarHelper::registerConstructorHelper(
+				state
+				, Class::className
+				, Class::staticmethods
+				, &Lunar<Class>::constructorDeleteSelfReference
+			);
 		}
 		
 		template<typename TempClass>
@@ -416,26 +448,11 @@ class Lunar
 		// FRONT END //
 		///////////////
 		
-		typedef int (Class::*MemFuncPtr)( lua_State* );
-		typedef int (*FuncPtr)( lua_State* );
-		template<typename...Bases>
-		using BaseClassType = std::tuple<Bases...>;
-		
-		struct PropertyType{
-			const char*	name;
-			MemFuncPtr	getter;
-			MemFuncPtr	setter;
-		};
-		
-		struct FunctionType{
-			const char*	name;
-			MemFuncPtr	func;
-		};
-		
-		struct StaticType{
-			const char*	name;
-			FuncPtr		func;
-		};
+		template<typename...Bases> using			BaseClassType
+			= std::tuple<Bases...>;
+		typedef LunarHelper::PropertyType<Class>	PropertyType;
+		typedef LunarHelper::FunctionType<Class>	FunctionType;
+		typedef typename LunarHelper::StaticType	StaticType;
 		
 		// Push objects on the lua stack
 		static void push( lua_State* state , Class* instance )
@@ -456,8 +473,7 @@ class Lunar
 		static Class* check( lua_State* state , int narg )
 		{
 			Class* instance = lightcheck( state , narg );
-			if( !instance )
-			{
+			if( !instance ){
 				lua_typeerror( state , narg , Class::className );
 				return nullptr;
 			}

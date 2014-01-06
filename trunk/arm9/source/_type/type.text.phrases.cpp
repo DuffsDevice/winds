@@ -4,9 +4,9 @@
 
 bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _font*& font )
 {
-	switch( *str )
+	switch( (_escapeChar)*str )
 	{
-		case DSWindows::STR_CHANGEFONT:
+		case _escapeChar::changeFont:
 		{
 			const _font* ft = stringExtractor::fontChangePhrase( str );
 			if( ft && ft->isValid() )
@@ -14,10 +14,10 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 			for( int i = 5 ; str[1] != 0 && i-- ; str++ );
 			break;
 		}
-		case DSWindows::STR_CHANGEFONTCOLOR:
+		case _escapeChar::changeFontColor:
 			for( int i = 2 ; str[1] != 0 && i-- ; str++ );
 			break;
-		case DSWindows::STR_CHANGEFONTSIZE:
+		case _escapeChar::changeFontSize:
 			fontSize = stringExtractor::sizeChangePhrase( str );
 			if( str[1] )
 				str++;
@@ -31,9 +31,9 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 
 bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _font*& font , _pixel& color )
 {
-	switch( *str )
+	switch( (_escapeChar)*str )
 	{
-		case DSWindows::STR_CHANGEFONT:
+		case _escapeChar::changeFont:
 		{
 			const _font* ft = stringExtractor::fontChangePhrase( str );
 			if( ft && ft->isValid() )
@@ -41,12 +41,12 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 			for( int i = 5 ; str[1] != 0 && i-- ; str++ );
 			break;
 		}
-		case DSWindows::STR_CHANGEFONTCOLOR:
+		case _escapeChar::changeFontColor:
 			color = stringExtractor::colorChangePhrase( str );
 			RGB_SETA( color , true );
 			for( int i = 2 ; str[1] != 0 && i-- ; str++ );
 			break;
-		case DSWindows::STR_CHANGEFONTSIZE:
+		case _escapeChar::changeFontSize:
 			fontSize = stringExtractor::sizeChangePhrase( str );
 			if( str[1] )
 				str++;
@@ -60,15 +60,15 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 
 bool stringExtractor::processChar( const _char*& str )
 {
-	switch( *str )
+	switch( (_escapeChar)*str )
 	{
-		case DSWindows::STR_CHANGEFONT:
+		case _escapeChar::changeFont:
 			for( int i = 5 ; str[1] != 0 && i-- ; str++ );
 			break;
-		case DSWindows::STR_CHANGEFONTCOLOR:
+		case _escapeChar::changeFontColor:
 			for( int i = 2 ; str[1] != 0 && i-- ; str++ );
 			break;
-		case DSWindows::STR_CHANGEFONTSIZE:
+		case _escapeChar::changeFontSize:
 			str[1] && str++;
 			break;
 		default:
@@ -128,7 +128,7 @@ string stringIntegrator::fontChangePhrase( const _font* ft )
 	b.notNull = 1;
 	
 	_char ret[7] = {	
-		DSWindows::STR_CHANGEFONT
+		(_char) _escapeChar::changeFont
 		, _char( b.value ) // pack all four least significant bits into one 'char'
 		, _char( i1 | 1 ) , _char( i2 | 1 )	, _char( i3 | 1 ) , _char( i4 | 1 ) // Or with 1 to prevent the the terminating '\0' char
 		, 0

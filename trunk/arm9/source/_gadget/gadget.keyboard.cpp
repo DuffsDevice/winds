@@ -83,29 +83,31 @@ _rect _keyboard::buttonDimensions[]{
 
 void _keyboard::vbl()
 {
+	_gadget* active = _system::getCurrentFocus();
+	
 	#ifdef KEYBOARD_TOP_SCREEN
 		// Copy Screen
 		memCpy( this->topScreen->getMemoryPtr() , this->gHScreen->getMemoryPtr() , SCREEN_WIDTH*SCREEN_HEIGHT );
-		if( _system::_currentFocus_ ){
+		if( active ){
 			_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
-			_rect dim = _system::_currentFocus_->getAbsoluteDimensions();
+			_rect dim = _system::getCurrentFocus()->getAbsoluteDimensions();
 			b.drawRect( dim.x , dim.y , dim.width , dim.height , COLOR_RED );
 		}
 	#endif
 	
 	if(
-		this->lastCurrentFocus != _system::_currentFocus_ // If the focused gadgets changed
+		this->lastCurrentFocus != active // If the focused gadgets changed
 		|| (
 			!this->manuallyOpened
 			&& this->mode !=
 			(
-				_system::_currentFocus_
-				&& _system::_currentFocus_->requestsKeyboard() // or if a gadgets settings were changed
+				active
+				&& active->requestsKeyboard() // or if a gadgets settings were changed
 			)
 		)
 	) 
 	{
-		this->lastCurrentFocus = _system::_currentFocus_;
+		this->lastCurrentFocus = active;
 		
 		if( this->ignoreNextVBL )
 		{
@@ -113,7 +115,7 @@ void _keyboard::vbl()
 			return;
 		}
 		
-		if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
+		if( active && active->requestsKeyboard() )
 		{
 			bool wasManuallyOpened = this->manuallyOpened; // if the keyboard was previously opened by hand we only zoom to the currently focused gadget
 			this->open();
@@ -183,9 +185,11 @@ void _keyboard::resetZoom( bool useAnim )
 	this->toFactor = 1;
 	this->toKeyboardExpansion = sEnd;
 	
+	_gadget* active = _system::getCurrentFocus();
+	
 	// Altem Ziel den Fokus wieder nehmen
-	if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
-		_system::_currentFocus_->blur();
+	if( active != nullptr && active->requestsKeyboard() )
+		active->blur();
 	
 	// Reset Zoom
 	if( useAnim )
@@ -207,14 +211,16 @@ void _keyboard::close( bool useAnim )
 	this->toFactor = 1;
 	this->toKeyboardExpansion = sStart;
 	
+	_gadget* active = _system::getCurrentFocus();
+	
 	// Altem Ziel den Fokus wieder nehmen
-	if( _system::_currentFocus_ && _system::_currentFocus_->requestsKeyboard() )
+	if( active && active->requestsKeyboard() )
 	{
 		// Set 'ignoreNextVBL' to true to prevent that the keyboardVBL closes the keyboard a second time
 		// since the currentFocus changes probably to some gadget that doesn't require keyboard
 		// This would ruin the whole keyboard animation
 		this->ignoreNextVBL = true;
-		_system::_currentFocus_->blur();
+		active->blur();
 	}
 	
 	this->manuallyOpened = false;
@@ -250,7 +256,7 @@ void _keyboard::open( bool useAnim )
 		float ratio = 1;
 		
 		// If magnification requested
-		if( _system::getUser().mKF && _system::_rtA_->isKeyboardMagnifEnabled() )
+		if( _system::getUser().mKF && _system::getRTA().isKeyboardMagnifEnabled() )
 		{
 			// "higher" than me
 			if( itsRatio < myRatio )
@@ -352,21 +358,21 @@ _callbackReturn _keyboard::updateHandler( _event event )
 	
 	bool useShiftMap = that->shift != that->caps;
 	
-	auto textmap = _system::_rtA_->getKeyboardTexts( useShiftMap );
-	auto charmap = _system::_rtA_->getKeyboardChars( useShiftMap );
+	auto textmap = _system::getRTA().getKeyboardTexts( useShiftMap );
+	auto charmap = _system::getRTA().getKeyboardChars( useShiftMap );
 	
 	int i = 0;
 	
 	for( _gadget* btn : that->children )
 	{
 		if( i == 30 /* Caps Lock */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( that->caps )[ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::getRTA().getKeyboardTexts( that->caps )[ i ] );
 		else if( i == 45 || i == 40 /* Shift */ )
-			((_keyboardButton*)btn)->setStrValue( _system::_rtA_->getKeyboardTexts( that->shift )[ i ] );
+			((_keyboardButton*)btn)->setStrValue( _system::getRTA().getKeyboardTexts( that->shift )[ i ] );
 		else
 		{
 			((_keyboardButton*)btn)->setStrValue( textmap[i] );
-			((_keyboardButton*)btn)->setKey( charmap[i] );
+			((_keyboardButton*)btn)->setKey( (_key) charmap[i] );
 		}
 		i++;
 	}
@@ -383,15 +389,15 @@ _callbackReturn _keyboard::keyHandler( _event event )
 	{
 		switch( event.getKeyCode() )
 		{
-			case DSWindows::KEY_SHIFT:
+			case _key::shift:
 				that->shift = !that->shift;
 				that->update();
 				return handled;
-			case DSWindows::KEY_CAPS:
+			case _key::caps:
 				that->caps = !that->caps;
 				that->update();
 				return handled;
-			case DSWindows::KEY_WINDOWS:
+			case _key::windows:
 				if( _system::_gadgetHost_ && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows ){
 					_windows* win = (_windows*)_system::_gadgetHost_;
 					
@@ -527,7 +533,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	//! Create the buttons
 	for( _s8 i = 45 ; i >= 0 ; i-- )
 	{
-		_keyboardButton* btn = new _keyboardButton( this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , this->buttonDimensions[i].width , this->buttonDimensions[i].height , _system::_rtA_->getKeyboardChars(0)[i] , _system::_rtA_->getKeyboardTexts(0)[i] );
+		_keyboardButton* btn = new _keyboardButton( this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , this->buttonDimensions[i].width , this->buttonDimensions[i].height , (_key) _system::getRTA().getKeyboardChars(0)[i] , _system::getRTA().getKeyboardTexts(0)[i] );
 		
 		switch( i )
 		{

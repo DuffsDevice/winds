@@ -17,7 +17,6 @@
 
 //! Predefines
 class _gadget;
-class _gadgetScreen;
 
 //! Typedef
 typedef _list<_gadget*> 									_gadgetList;
@@ -95,9 +94,11 @@ class _gadget
 			_gadget( type , posX , posY , width , height , _bitmap( width , height ) , (_style&&)style )
 		{} // Delegating contructor! C++11 I love you!
 		
-		/**
-		 * Destructor
-		 */
+		//! Forbit copying or moving a _gadget
+		_gadget( const _gadget& ) = delete;
+		_gadget( _gadget&& ) = delete;
+		
+		//! Destructor
 		virtual ~_gadget();
 		
 		
@@ -611,17 +612,7 @@ class _gadget
 		void setParent( _gadget* val );
 		
 		//! Set the Gadgets Parent and enhance the gadget
-		void enhanceToParent( _gadget* val );
-		
-		//! Returns the Toppest Parent, which is usually the Screen/Windows itself
-		noinline _gadgetScreen* getScreen() const {
-			if( this->parent != nullptr )
-				return this->parent->getScreen();
-			if( this->type == _gadgetType::screen )
-				return (_gadgetScreen*)this;
-			return nullptr;
-		}
-		
+		void enhanceToParent( _gadget* val );		
 		
 		//! Remove a specific child (no matter whether it is enhanced)
 		void removeChild( _gadget* child );

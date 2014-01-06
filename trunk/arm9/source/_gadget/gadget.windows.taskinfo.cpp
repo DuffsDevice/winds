@@ -9,8 +9,6 @@
 
 _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 {
-	static string sBT = _system::getLocalizedString("lbl_startButtonText");
-	
 	// Receive Gadget
 	_windowsTaskInfo* that = event.getGadget<_windowsTaskInfo>();
 	
@@ -28,8 +26,8 @@ _callbackReturn _windowsTaskInfo::refreshHandler( _event event )
 
 
 _windowsTaskInfo::_windowsTaskInfo( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
-	_gadget( _gadgetType::imagegadget , x - 25 , y , 25 , 10 , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
-	, time( new _label( 0 , 0 , 24 , 10 , "00:00" ) )
+	_gadget( _gadgetType::imagegadget , x - 27 , y , 27 , 10 , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
+	, time( new _label( 1 , 0 , 25 , 10 , "" ) )
 	, timer( make_inline_callback<void()>( [this]{ this->redraw(); } ) , 10000 , true ) // Make the clock update itself
 {
 	// Adjust Label

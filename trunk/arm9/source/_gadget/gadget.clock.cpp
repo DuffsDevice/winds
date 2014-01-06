@@ -83,7 +83,7 @@ _callbackReturn _clockGadget::refreshHandler( _event event )
 	return use_default;
 }
 
-void _clockGadget::timerCallback()
+void _clockGadget::increase()
 {
 	this->seconds++;
 	if( this->seconds > 59 ) // Check seconds overflow
@@ -106,8 +106,31 @@ void _clockGadget::timerCallback()
 	this->redraw();
 }
 
+void _clockGadget::decrease()
+{
+	this->seconds--;
+	if( this->seconds < 0 ) // Check seconds overflow
+	{
+		this->minutes--;
+		if( this->minutes < 0 ) // Check minutes overflow
+		{
+			this->hours--;
+			if( this->hours < 0 )
+				this->hours += 24;
+			this->minutes += 60;
+		}
+		this->seconds += 60;
+	}
+	
+	// Show that something changed!
+	this->triggerEvent( onEdit );
+	
+	// Update image
+	this->redraw();
+}
+
 _clockGadget::_clockGadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease , _style&& style ) :
-	_gadget( _gadgetType::clockimage , x , y , width , height , style | _styleAttr::notClickable )
+	_gadget( _gadgetType::clockgadget , x , y , width , height , style | _styleAttr::notClickable )
 	, outerBgColor( COLOR_TRANSPARENT )
 	, innerBgColor( COLOR_WHITE )
 	, secondsColor( COLOR_RED )
@@ -117,7 +140,7 @@ _clockGadget::_clockGadget( _optValue<_coord> x , _optValue<_coord> y , _optValu
 	, seconds( seconds )
 	, minutes( minutes )
 	, hours( hours )
-	, timer( make_callback( this , &_clockGadget::timerCallback ) , 1000 , true )
+	, timer( make_callback( this , &_clockGadget::increase ) , 1000 , true )
 {
 	if( autoIncrease )
 		this->timer.start();

@@ -3,8 +3,8 @@
 
 #include "_type/type.h"
 
-typedef enum{
-	plain = 0 ,
+enum class _mime : _u8{
+	plain,
 	directory,
 	image_jpeg ,
 	image_png ,
@@ -31,7 +31,7 @@ typedef enum{
 	application_x_nintendo_ds_rom,
 	application_x_nintendo_gba_rom,
 	application_x_bat
-}_mime;
+};
 
 extern _fromStr<_mime>	string2mimeType;
 extern _fromStr<_mime>	extension2mimeType;
@@ -42,7 +42,7 @@ class _mimeType{
 	
 	private:
 	
-		_mime type : 5;
+		_mime type;
 		
 	public:
 	
@@ -65,5 +65,5 @@ class _mimeType{
 		operator _mime(){
 			return this->type;
 		}
-} __attribute__(( packed ));
+};
 #endif

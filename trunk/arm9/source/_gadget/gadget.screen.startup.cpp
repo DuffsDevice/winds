@@ -49,13 +49,13 @@ _callbackReturn _startupScreen::refreshHandler( _event event )
 
 _startupScreen::_startupScreen( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::startUp , (_style&&)style )
-	, winLogoGadget( new _imageGadget( 4 , 3 , *_startupScreen::winLogo , _styleAttr() | _styleAttr::canNotReceiveFocus ) )
+	, winLogoGadget( new _imageGadget( 4 , 3 , _startupScreen::winLogo , _styleAttr() | _styleAttr::canNotReceiveFocus ) )
 {	
 	this->setInternalEventHandler( onDraw , make_callback( &_startupScreen::refreshHandler ) );
 	this->addChild( winLogoGadget );
 	
-	//! Refresh me
+	// Refresh me
 	this->redraw();
 }
 
-_bitmap* _startupScreen::winLogo = new BMP_WindowsBootLogoSmall();
+_constBitmap _startupScreen::winLogo = BMP_WindowsBootLogoSmall();

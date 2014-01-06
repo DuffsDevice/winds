@@ -409,7 +409,7 @@ string MD5::hexdigest() const
 
 //////////////////////////////
 
-string md5(const string str)
+string md5(const string& str)
 {
 	MD5 md5 = MD5(str);
 

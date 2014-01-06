@@ -8,12 +8,13 @@
 #include "_gadget/gadget.image.h"
 #include "_gadget/gadget.window.button.h"
 
+class _window;
+
+using _windowTaskHandler = _callback<void(_window*)>;
 
 class _window : public _gadget {
 	
 	private:
-		
-		friend class PROG_Explorer;
 		
 		_label*			label;
 		_imageGadget*	icon;
@@ -28,11 +29,26 @@ class _window : public _gadget {
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn focusHandler( _event );
 		static _callbackReturn dragHandler( _event );
+		static _callbackReturn maximizeHandler( _event );
+		static _callbackReturn parentSetHandler( _event );
+		static _callbackReturn restyleHandler( _event ); // Will be called when something like "style.resizeable" is changed
+		static _callbackReturn doubleClickHandler( _event );
 		_callbackReturn buttonHandler( _event ); // Handler for _window-Buttons
 		
 		//! Will be called if the window is resized ->label will also be resized
-		static _callbackReturn updateHandler( _event ); // Will be called when something like "style.resizeable" is changed
-		static _callbackReturn mouseClickHandler( _event );
+		static _callbackReturn updateHandler( _event );
+		
+		//! List that holds all window's that show up in the taskbar
+		static _list<_window*>				taskWindows;
+		static _list<_windowTaskHandler*>	taskHandlers;
+		
+		//! Notifys all listeners that want to be informed if the window maximizes, focuses
+		void notifyTaskHandlers( bool onlyIfWindowIsTask = true );
+		
+		//! Checks wether this window meets the requirements of a task
+		//! If it does, it pushes this window onto the list of 'taskWIndows'
+		//! If not, removes it from the list
+		void checkIfTask();
 		
 	public:
 		
@@ -84,16 +100,38 @@ class _window : public _gadget {
 		//! Get the window's icon
 		_constBitmap& getIcon() const { return this->icon->getImage(); }
 		
+		//! Checks wether this window meets the requirements of a task
+		bool isTask(){ return this->isMinimizeable() && this->getParent(); }
+		
 		//! Ctor
 		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable ) :
 			_window( x , y , width , height , title , _bitmap() , minimizeable , closeable , (_style&&)style ) // C++0x! Yay!
-		{ }
+		{}
 		
 		//! Ctor with icon
 		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _styleAttr::draggable );
 		
 		//! Dtor
 		~_window();
+		
+		
+		//! Retrieve the list of minimizeable window's
+		static const _list<_window*>& getTaskWindows(){
+			return _window::taskWindows;
+		}
+		
+		//! Unregister a handler from the 'notify on minimize'-list
+		static void removeTaskHandler( const _windowTaskHandler& cb ){
+			remove_if(
+				_window::taskHandlers.begin()
+				, _window::taskHandlers.end()
+				, [&cb]( _windowTaskHandler* val )->bool{ return (cb == *val) == 1; }
+			);
+		}
+		
+		static void addTaskHandler( _paramAlloc<_windowTaskHandler> cb ){
+			taskHandlers.push_back( cb.get() );
+		}
 		
 } PACKED ;
 

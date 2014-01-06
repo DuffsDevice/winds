@@ -16,9 +16,6 @@ class _lua_imagefile : public _imageFile {
 		//! Constructor
 		_lua_imagefile( lua_State* L );
 		
-		//! getBitmap
-		int getBitmap(lua_State* L);
-		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_imagefile>::FunctionType methods[];

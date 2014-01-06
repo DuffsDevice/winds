@@ -165,26 +165,29 @@ template<class T1, class T2 = T1> struct comparable {
 	comparable() { void(*)(T1,T2) = constraints; }
 };
 
-//! Convert red, green, blue to 15bit Triplette
-static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b ){
-	return r | ( g << 5 ) | ( b << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
+//! Convert red, green, blue to 16bit Triplette including an alpha-channel
+static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b , bool alpha = true ){
+	return r | ( g << 5 ) | ( b << 10 ) | ( alpha << 15 ); // alpha=1 means opaque, alpha=0 means transparent
 }
-static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b ){
-	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
+static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b , _u8 alpha ){
+	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( ( alpha > 127 ) << 15 ); // alpha>127 means opaque, alpha<128 means transparent
 }
-static constexpr inline _pixel RGBHEX( _u32 hex ){
-	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( 1 << 15 ); // a=1 means opaque, a=0 means transparent
+static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b , bool alpha = true ){
+	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( alpha << 15 ); // alpha=true means opaque, alpha=false means transparent
+}
+static constexpr inline _pixel RGBHEX( _u32 hex , bool alpha = true ){
+	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
 }
 
-//! Convert " " " to 16bit Triplette including an alpha-channel
-static constexpr inline _pixel RGBA( _u8 r , _u8 g , _u8 b , bool a ){
-	return r | ( g << 5 ) | ( b << 10 ) | ( a << 15 ); // a=1 means opaque, a=0 means transparent
+//! Converts a brightness value to 16bit Tripplette
+static constexpr inline _pixel BW( _u8 brightness , bool alpha = true ){
+	return _u32( brightness ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( alpha << 15 );
 }
-static constexpr inline _pixel RGBA255( _u8 r , _u8 g , _u8 b , bool a ){
-	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 2 ) << 10 ) | ( ( a >> 3 ) << 15 ); // a=1 means opaque, a=0 means transparent
+static constexpr inline _pixel BW255( _u8 brightness , _u8 alpha ){
+	return _u32( brightness >> 3 ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( ( alpha > 127 )<< 15 );
 }
-static constexpr inline _pixel RGBAHEX( _u32 hex , bool alpha ){
-	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
+static constexpr inline _pixel BW255( _u8 brightness , bool alpha = true ){
+	return _u32( brightness >> 3 ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( alpha << 15 );
 }
 
 //! Gets the specific component value from a color
@@ -221,47 +224,6 @@ extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
 #define COLOR_BLACK 		(_pixel(1<<15))
 #define COLOR_WHITE 		(_pixel((1<<16)-1))
 #define NO_COLOR 			(_pixel(0))
-
-// Useful things
-namespace DSWindows
-{
-	// The Numbers used here are 
-	// ASCII-Values that are not being used
-	const _char KEY_A = 1,
-	KEY_B = 2,
-	KEY_SELECT = 3,
-	KEY_START = 4,
-	KEY_RIGHT = 5,
-	KEY_LEFT	= 6,
-	KEY_UP = 7,
-
-	KEY_BACKSPACE = 8,
-	KEY_CARRIAGE_RETURN = 10,
-
-	KEY_DOWN	= 14,
-	KEY_R = 15,
-	KEY_L = 16,
-	KEY_X = 17,
-	KEY_Y = 18,
-
-	KEY_CAPS	= 19,
-	KEY_SHIFT = 20,
-	KEY_WINDOWS = 21,
-	
-	// Excape characters used in fonts to prepare special actions
-	STR_CHANGEFONT = 22,
-	STR_CHANGEFONTCOLOR = 23,
-	STR_CHANGEFONTSIZE = 24;
-	
-	extern bool isHardwareKey( _char );
-	
-	//! Displayed as replacemanet if language-specific term
-	//! is not available in the currently selected language
-	static const char* const emptyStringSignature = "[]";
-	
-	//! Maps a Libnds Key to a DSWindows-Key
-	extern _char libnds2key[12];
-};
 
 //! Alignment enumeration
 enum class _align : _u8 {
@@ -396,7 +358,7 @@ class _paramAlloc
 		
 		//! Dtor
 		~_paramAlloc(){
-			if( !this->passed )
+			if( !this->passed && this->ptr )
 				delete this->ptr;
 		}
 		

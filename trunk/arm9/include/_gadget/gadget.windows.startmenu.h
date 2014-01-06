@@ -12,7 +12,11 @@ class _startMenu : public _popup{
 	
 	public:
 	
+		//! Ctor
 		_startMenu( _style&& style = _style() );
+		
+		//! Dtor
+		~_startMenu();
 
 };	
 

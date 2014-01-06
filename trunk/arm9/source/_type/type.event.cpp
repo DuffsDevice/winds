@@ -9,7 +9,7 @@ void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 	this->currentKeyCodes = 0;
 	this->deltaX = 0;
 	this->deltaY = 0;
-	this->keyCode = 0;
+	this->keyCode = _key::none;
 	this->heldTime = 0;
 	this->damagedRects = nullptr;
 }
@@ -31,7 +31,7 @@ bool _event::mergeWith( _event& event )
 			this->effectiveX = event.effectiveX;
 			this->effectiveY = event.effectiveY;
 			this->pressure = event.pressure;
-			this->currentKeyCodes |= event.currentKeyCodes;
+			this->currentKeyCodes.add( event.currentKeyCodes );
 			break;
 		case onDraw:
 			return ( !this->damagedRects || this->damagedRects->isEmpty() ) && ( !event.damagedRects || event.damagedRects->isEmpty() );

@@ -1,9 +1,10 @@
 #include "_gadget/gadget.windows.startmenu.h"
 #include "_gadget/gadget.image.h"
 #include "_gadget/gadget.fileview.h"
+#include "_gadget/gadget.button.action.h"
 #include "_type/type.system.h"
 
-#define CONST_BOTTOM_BAR_HEIGHT 11
+#define CONST_BOTTOM_BAR_HEIGHT 12
 #define CONST_TOP_BAR_HEIGHT 16
 
  _callbackReturn _startMenu::refreshHandler( _event event ){
@@ -48,11 +49,13 @@
 _startMenu::_startMenu( _style&& style ) :
 	_popup( 110 , 110 , nullptr , (_style&&)style )
 {
+	_length halfWidth = this->getWidth() >> 1;
+	
 	// Left Side
 	this->addChild(
 		new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
 			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
-			, "%WINDIR%/jumplist/" , _fileViewType::list , _scrollType::prevent , _scrollType::prevent , true
+			, "%WINDIR%/jumplist/" , _fileViewType::list , { "exe" , "lua" , "lnk" } , _scrollType::prevent , _scrollType::prevent , true
 		)
 	);
 	
@@ -61,6 +64,23 @@ _startMenu::_startMenu( _style&& style ) :
 	
 	// User-Image
 	this->addChild( new _imageGadget( 3 , 2 , _system::getUser().getLogo() ) );
+	
+	// Y-Coordinate for all information that goes in the bottom layer
+	_coord buttonY = this->getHeight() - 11;
+	
+	// Shutdown button & label
+	_label* shutdownLabel = new _label( halfWidth + 13 , buttonY , ignore , 10 , "Turn off" );
+	shutdownLabel->setColor( COLOR_WHITE );
+	shutdownLabel->setVAlign( _valign::middle );
+	this->addChild( new _actionButton( halfWidth + 2 , buttonY , _actionButtonType::shutdown ) );
+	this->addChild( shutdownLabel );
+	
+	// Log Off button & label
+	_label* logOffLabel = new _label( 14 , buttonY , ignore , 10 , "Log off" );
+	logOffLabel->setColor( COLOR_WHITE );
+	logOffLabel->setVAlign( _valign::middle );
+	this->addChild( new _actionButton( 3 , buttonY , _actionButtonType::logoff ) );
+	this->addChild( logOffLabel );
 	
 	// Username
 	_label* usrName = new _label( 20 , 2 , this->getWidth() - 20 - 2 , 14 , _system::getUser().getUsername() );
@@ -74,4 +94,8 @@ _startMenu::_startMenu( _style&& style ) :
 	
 	// Refresh...
 	this->redraw();
+}
+
+_startMenu::~_startMenu(){
+	this->removeChildren( true );
 }

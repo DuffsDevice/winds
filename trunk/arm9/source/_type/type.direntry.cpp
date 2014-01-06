@@ -339,7 +339,7 @@ bool _direntry::read( void* dest , _u32 size )
 }
 
 
-bool _direntry::readChild( string& child )
+bool _direntry::readChild( _literal& child , _vector<_literal>* allowedExtensions )
 {
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
@@ -351,20 +351,86 @@ bool _direntry::readChild( string& child )
 		
 		struct dirent *dir;
 		
-		if( ( dir = readdir( this->dHandle ) ) == nullptr )
-			return false;
-		
-		if( dir->d_name[0] == '.' && dir->d_name[1] == 0 )
-			return this->readChild( child );
-		else if( dir->d_name[0] == '.' && dir->d_name[1] == '.' && dir->d_name[2] == 0 )
-			return this->readChild( child );
-		
-		// Write Name to destination
-		child = dir->d_name;
-		
-		return true;
+		while( ( dir = readdir( this->dHandle ) ) != nullptr )
+		{
+			if( dir->d_name[0] == '.' 
+				&& (
+					dir->d_name[1] == 0
+					|| ( dir->d_name[1] == '.' && dir->d_name[2] == 0 )
+				)
+			)
+				continue;
+			
+			// Check whether we have to check for a specific file extension
+			if( allowedExtensions ) 
+			{
+				_u32 nameLen = strlen( dir->d_name );
+				_literal nameEnd = dir->d_name + nameLen - 1;
+				
+				for( _literal ext : *allowedExtensions ) // Iterate over valid extensions
+				{
+					_u32 extLen = strlen( ext );
+					_literal extEnd = ext + extLen - 1;
+					_u32 i = 0;
+					while( i < extLen && i < nameLen )
+					{
+						if( *(extEnd-i) != *(nameEnd-i) ) // Extension of the entry is not what we need, check the next extension
+							goto _continue;
+						i++;
+					}
+					if( i == extLen ) // We found an extension that fits the current file!
+						break;
+					_continue:;
+				}
+				continue; // File does not match any extension
+			}
+			
+			// Write Name to destination and return, that we have found a valid next directory entry
+			child = dir->d_name;
+			return true;
+		}
 	}
 	
+	// We have not found any entry!
+	child = nullptr;
+	return false;
+}
+
+bool _direntry::readChildFolderOnly( _literal& child )
+{
+	if( this->fatInited && this->exists && this->isDirectory() )
+	{
+		// Open the Directory if necesary
+		if( this->mode == _direntryMode::closed && this->openread() == false )
+			return false;
+		if( !this->dHandle )
+			return false;
+		
+		struct dirent *dir;
+		
+		while( ( dir = readdir( this->dHandle ) ) != nullptr )
+		{
+			if(
+				dir->d_type != DT_DIR
+				||
+				(
+					dir->d_name[0] == '.' 
+					&& (
+						dir->d_name[1] == 0
+						|| ( dir->d_name[1] == '.' && dir->d_name[2] == 0 )
+					)
+				)
+			)
+				continue;
+			
+			// Write Name to destination and return, that we have found the next directory
+			child = dir->d_name;
+			return true;
+		}
+	}
+	
+	// We have not found any entry!
+	child = nullptr;
 	return false;
 }
 
@@ -618,6 +684,9 @@ bool _direntry::rename( string newName )
 	}
 	return false;
 }
+
+_ini _direntry::filetypeMappers;
+_ini _direntry::filetypeIcons;
 
 /// Root Directory
 _direntry _diskRoot_ = _direntry("/");

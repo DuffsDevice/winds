@@ -9,7 +9,7 @@ _time _time::now()
 	return _time( std::time( NULL ) );
 }
 
-_time::_time( _int rawTime ) :
+_time::_time( _unixTime rawTime ) :
 	dirty( false )
 {
 	std::time_t rawtime = rawTime;
@@ -25,7 +25,7 @@ _time::_time( _int rawTime ) :
 	this->dayOfWeek = timeinfo->tm_wday;
 }
 
-_time::operator _int() const 
+_unixTime _time::toUnixTime() const 
 {
 	struct std::tm timeinfo;
 	timeinfo.tm_year	= this->year - 1900;
@@ -38,20 +38,18 @@ _time::operator _int() const
 	return std::mktime( &timeinfo ); 
 }
 
-_time::operator string()
+string _time::toString( _optValue<_literal> format )
 {
 	// Check this time structure is valid
 	validate();
 	
-	std::time_t rawtime = (_int)*this;
-	
-	return std::ctime( &rawtime ); // Convert to UTC
-}
-
-string _time::toString( string format )
-{
-	// Check this time structure is valid
-	validate();
+	// Return UTC-formatted time string
+	if( !format.isValid() )
+	{
+		std::time_t rawtime = this->toUnixTime();
+		
+		return std::ctime( &rawtime ); // Convert to UTC
+	}
 	
 	_char str[127];
 	
@@ -63,7 +61,7 @@ string _time::toString( string format )
 	timeinfo.tm_min		= minute;
 	timeinfo.tm_sec		= second;
 	
-	strftime( str , 127 , format.c_str() , &timeinfo );
+	strftime( str , 127 , format , &timeinfo );
 	
 	return string(str);
 }
@@ -129,5 +127,25 @@ void _time::set( _timeAttr attr , _int value )
 
 void _time::validate(){
 	if( dirty )
-		*this = _time( _int( *this ) );
+		*this = _time( this->toUnixTime() );
 }
+
+_fromStr<_timeAttr> string2timeAttr = {
+	{ "year"		, _timeAttr::year },
+	{ "month"		, _timeAttr::month },
+	{ "day"			, _timeAttr::day },
+	{ "dayOfWeek"	, _timeAttr::dayOfWeek },
+	{ "hour"		, _timeAttr::hour },
+	{ "minute"		, _timeAttr::minute },
+	{ "second"		, _timeAttr::second },
+};
+
+_toStr<_timeAttr> timeAttr2string = {
+	{ _timeAttr::year		, "year" },
+	{ _timeAttr::month		, "month" },
+	{ _timeAttr::day		, "day" },
+	{ _timeAttr::dayOfWeek	, "dayOfWeek" },
+	{ _timeAttr::hour		, "hour" },
+	{ _timeAttr::minute		, "minute" },
+	{ _timeAttr::second		, "second" }
+};

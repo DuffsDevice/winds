@@ -37,8 +37,6 @@ class _progLua : public _program
 		static int	lua_sizeChangePhrase( lua_State* L );
 		static int	lua_RGB( lua_State* L );
 		static int	lua_RGB255( lua_State* L );
-		static int	lua_RGBA( lua_State* L );
-		static int	lua_RGBA255( lua_State* L );
 		static int	lua_RGB_GETR( lua_State* L );
 		static int	lua_RGB_GETG( lua_State* L );
 		static int	lua_RGB_GETB( lua_State* L );

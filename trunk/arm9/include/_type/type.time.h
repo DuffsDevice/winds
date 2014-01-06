@@ -14,6 +14,9 @@ enum class _timeAttr : _u8
 	second
 };
 
+extern _fromStr<_timeAttr> string2timeAttr;
+extern _toStr<_timeAttr> timeAttr2string;
+
 class _time
 {
 	private:
@@ -25,7 +28,7 @@ class _time
 		_int dayOfWeek;
 		_int month;
 		_int year;
-		bool dirty : 1; // Indicates that the given attributes are not validated
+		bool dirty; // Indicates that the given attributes are not validated
 		
 		// Validates this _time structure if it's neccesary
 		void validate();
@@ -67,19 +70,23 @@ class _time
 		{}
 		
 		//! Ctor using UNIX Time
-		_time( _int );
+		_time( _unixTime rawTime );
 		
 		//! Convert the _time structure to UNIX time
-		operator _int() const ;
+		inline operator _unixTime() const {
+			return this->toUnixTime();
+		}
 		
 		//! Convert the _time to string
-		operator string();
+		inline operator string(){
+			return this->toString( ignore );
+		}
 		
 		//! Adds the specified (signed) amount of time to the given _time field, based on the calendar's rules
 		void add( _timeAttr attr , _int diff ){ this->set( attr , this->get( attr ) + diff ); }
 		
 		//! Returns the given _time field
-		_int get( _timeAttr attr );
+		_unixTime get( _timeAttr attr );
 		
 		//! Applies the specified amount of time to the given _time field
 		//! @note you cannot set the weekday!
@@ -87,8 +94,10 @@ class _time
 		
 		//! Convert the _time to string using a specific format
 		//! @see http://www.cplusplus.com/reference/ctime/strftime/#parameters
-		string toString( string format );
+		string toString( _optValue<_literal> format = ignore );
 		
-} PACKED ;
+		//! Convert this time struct to a number (Unix-Time)
+		_unixTime toUnixTime() const ;
+};
 
 #endif

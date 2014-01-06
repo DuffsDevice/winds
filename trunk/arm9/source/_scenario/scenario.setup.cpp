@@ -87,9 +87,9 @@ void _scSetup::placeButtonsAndLabels()
 
 _callbackReturn _scSetup::keyHandler( _event event )
 {
-	if( event.getKeyCode() == DSWindows::KEY_R )
+	if( event.getKeyCode() == _key::r )
 		this->nextButtonClickHandler( (_event&&)event );
-	else if( event.getKeyCode() == DSWindows::KEY_L )
+	else if( event.getKeyCode() == _key::l )
 		this->prevButtonClickHandler( (_event&&)event );
 	
 	return handled;
