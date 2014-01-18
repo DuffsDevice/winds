@@ -22,8 +22,6 @@ class _dialog{
 		
 		CallbackType*	callback; // Will be called right after Exit
 		
-		_s32			intResult;
-		string			strResult;
 		bool			runs;
 		
 		virtual void executeInternal() = 0;
@@ -47,7 +45,6 @@ class _dialog{
 		//! Ctor
 		_dialog() : 
 			callback( nullptr )
-			, intResult( 0 )
 			, runs( false )
 		{ }		
 		
@@ -57,12 +54,6 @@ class _dialog{
 		//! terminate the dialog
 		//! This equals clicking the 'cancel'-button or closing the window
 		void terminate();
-		
-		//! getIntResult
-		_int getIntResult(){ return this->intResult; }
-		
-		//! getStrResult
-		string getStrResult(){ return this->strResult; }
 		
 		//! Set the onExit Func
 		void setCallback( _paramAlloc<CallbackType> cb )

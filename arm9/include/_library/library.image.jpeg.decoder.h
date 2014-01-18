@@ -34,12 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _MSC_VER
-    #pragma warning(push)
-    #pragma warning(disable: 4127) // conditional expression is constant
-    #pragma warning(disable: 4706) // assignment within conditional
-#endif
-
 
 namespace Jpeg
 {
@@ -236,7 +230,7 @@ namespace Jpeg
             *out = _Clip(((x7 - x1) >> 14) + 128);
         }
 
-        #define JPEG_DECODER_THROW(e) do { ctx.error = e; return; } while (0)
+        #define JPEG_DECODER_THROW(e) { ctx.error = e; return; }
 
         inline int _ShowBits(int bits) {
             unsigned char newbyte;
@@ -681,9 +675,6 @@ inline Decoder::~Decoder()
 }
 
 }
-#ifdef _MSC_VER
-    #pragma warning(pop)
-#endif
 
 #undef JPEG_DECODER_THROW
 

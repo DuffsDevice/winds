@@ -5,6 +5,7 @@
 #include "_type/type.sound.h"
 #include "_type/type.sound.stream.h"
 #include "_type/type.time.h"
+#include "_type/type.user.guest.h"
 #include "_gadget/gadget.windows.h"
 #include "func.memory.h"
 #include <nds/timers.h>
@@ -323,14 +324,9 @@ void _system::processInput()
 		}
 	}
 	
-	if( keysDown() & KEY_START && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows )
-	{
+	if( keysDown() & KEY_START && _system::_gadgetHost_->getScreenType() == _gadgetScreenType::windows ){
 		_windows* win = (_windows*)_system::_gadgetHost_;
-		
-		if( win->isStartMenuOpened() )
-			win->closeStartMenu();
-		else
-			win->openStartMenu();
+		win->toggleStartMenu();
 	}
 
 	if( !_system::_currentFocus_ && !_system::_gadgetHost_ )
@@ -439,7 +435,7 @@ void _system::start()
 	// ------------------------------------------------------------------------
 	
 		//! Set the VBLANK Interrupt handler
-		SetYtrigger( 192 );
+		SetYtrigger(0); // Number of the scanline that generates a Vcount IRQ
 		irqSet( IRQ_VBLANK , _system::vblHandler );
 		//irqSet( IRQ_HBLANK , _system::hblHandler );
 		irqEnable( IRQ_VBLANK | IRQ_VCOUNT );
@@ -486,7 +482,7 @@ void _system::start()
 	//	RTA - Runtime Attributes
 	// -----------------------------------------------
 	
-		_system::_rtA_ = new _runtimeAttributes( _user("Guest") );
+		_system::_rtA_ = new _runtimeAttributes( new _guestUser() );
 	
 	// -----------------------------------------------
 	//	Open necesary Files
@@ -517,6 +513,7 @@ void _system::start()
 		_system::_fonts_["CourierNew10"]	= _font::fromFile( "%SYSTEM%/couriernew10.ttf");
 		_system::_fonts_["System7"]			= _font::fromFile( "%SYSTEM%/system7.ttf");
 		_system::_fonts_["SystemSymbols8"]	= _font::fromFile( "%SYSTEM%/systemsymbols8.ttf");
+	
 }
 
 _language _system::getLanguage()

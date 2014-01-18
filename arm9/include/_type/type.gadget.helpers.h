@@ -97,17 +97,18 @@ namespace _gadgetHelpers
 	{
 		private:
 			struct{
-				_u8		dimension : 1;
-				bool	breakLine : 1;
-				_length	spaceX;
-				_length	spaceY;
-				_length	offsetX;
-				_length	offsetY;
+				_length		spaceX;
+				_length		spaceY;
+				_length		offsetX;
+				_length		offsetY;
+				_direction	direction;
+				bool		breakLine : 1;
+				bool		respectAutoPosition : 1;
 			} PACKED ; 
 			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
-			moveBesidePrecedent( _dimension dim = _dimension::vertical , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 );
+			moveBesidePrecedent( _direction dim = _direction::down , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 , bool respectAutoPosition = true );
 	};
 }
 

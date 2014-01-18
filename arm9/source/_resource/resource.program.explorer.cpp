@@ -3,6 +3,7 @@
 #include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.window.bar.h"
 #include "_gadget/gadget.window.menu.h"
+#include "_gadget/gadget.windows.taskinfo.h"
 
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )
@@ -14,7 +15,7 @@ void PROG_Explorer::main( _cmdArgs args )
 		this->path = args[0];
 	
 	this->window = new _window( 40 , 40 , 120 , 90 , "Explorer" , true , true , _styleAttr() | _styleAttr::draggable );
-	this->fileview = new _fileView( 0 , 21 , ignore , ignore , this->path );
+	this->fileview = new _fileView( 0 , 21 , ignore , ignore , this->path , _fileViewType::list );
 	this->addressbar = new _textBox( 1 , 10 , ignore , 10 , this->path );
 	this->submitbutton = new _actionButton( ignore , 10 , _actionButtonType::next , _style() | _styleAttr::canNotTakeFocus );
 	

@@ -10,6 +10,7 @@ enum class _mime : _u8{
 	image_png ,
 	image_gif ,
 	image_bmp ,
+	image_ico ,
 	text_plain ,
 	text_html ,
 	text_xml ,
@@ -46,24 +47,34 @@ class _mimeType{
 		
 	public:
 	
+		//! Mime-Type from string
 		_mimeType( string str ) :
-			type( string2mimeType[ str ] )
+			type( string2mimeType[str] )
 		{ }
 		
+		//! Ctor
 		_mimeType( _mime type = _mime::plain ) :
 			type( type )
 		{ }
 		
+		//! Create Mime Type from extension
 		static _mimeType fromExtension( string ext ){
 			return extension2mimeType[ext];
 		}
 		
+		//! Convert to string
 		operator _literal(){
 			return mimeType2string[ this->type ];
 		}
 		
+		//! Convert to raw type
 		operator _mime(){
 			return this->type;
+		}
+		
+		//! Comparison operator
+		bool operator==( _mime other ){
+			return other == type;
 		}
 };
 #endif

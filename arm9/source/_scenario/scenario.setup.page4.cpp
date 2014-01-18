@@ -83,6 +83,8 @@ void _scSetupPage4::create( _gadget* viewParent )
 			22 + i * 20
 			, 102
 			, icon
+			, ignore 
+			, ignore
 			, _style::storeInt( iconNumbers[i] )
 		);
 		

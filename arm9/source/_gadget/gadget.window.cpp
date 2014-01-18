@@ -1,5 +1,4 @@
 #include "_gadget/gadget.window.h"
-#include "_gadget/gadget.windows.h"
 #include "_type/type.system.h"
 #include "_type/type.runtimeAttributes.h"
 
@@ -368,7 +367,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6
-	this->icon = new _imageGadget( 2 , 2 , move(bmp) , _style() | _styleAttr::notResizeable );
+	this->icon = new _imageGadget( 2 , 2 , move(bmp) , ignore , ignore , _style() | _styleAttr::notResizeable );
 	
 	// Append it to this button
 	this->addEnhancedChild( this->label );

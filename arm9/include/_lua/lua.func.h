@@ -15,6 +15,7 @@
 #include "_type/type.mime.h"
 #include "_type/type.time.h"
 #include "_type/type.key.h"
+#include "_type/type.shortstring.h"
 #include <type_traits>
 
 enum class _eventCallType : _u8;

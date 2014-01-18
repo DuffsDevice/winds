@@ -74,19 +74,33 @@ enum class _dimension : _u8{
 };
 
 enum class _direction : _u8{
-	left = 0,
-	leftup = 4,
-	leftdown = 12,
-	up = 5,
+	center = 0,
+	middle = center,
+	left = 4,
+	leftup = 5,
+	leftdown = 6,
+	up = 1,
 	upleft = leftup,
-	upright = 6,
-	down = 13,
-	downright = 14,
+	upright = 9,
+	down = 2,
+	downright = 10,
 	downleft = leftdown,
-	right = 10,
+	right = 8,
 	rightup = upright,
-	rightdown = downright
+	rightdown = downright,
+	
+	// Masks to filter
+	horizontalMask = 12,
+	verticalMask = 3
 };
+
+//! Filter a horizontal/vertical part out of a given direction
+static unused constexpr _direction getHorizontalPart( _direction dir ){
+	return _direction( _u8(dir) & _u8(_direction::horizontalMask) );
+}
+static unused constexpr _direction getVerticalPart( _direction dir ){
+	return _direction( _u8(dir) & _u8(_direction::verticalMask) );
+}
 
 //! Convert _dimension to string and back
 extern _toStr<_dimension>	dimension2string;
@@ -289,23 +303,35 @@ class _optValue
 {
 	private:
 		T		val;
-		_u8		isGiven;
+		bool	isGiven;
 		template<class> friend class _optValue; // Grants all _optValue instantiations to each other
+		
+		
 	public:
 		
+		//! Constructors
 		template<class T2>
-		_optValue( _optValue<T2>&& opt ) : val( (T&&)opt.val ) , isGiven( opt.isGiven ) {}
+		_optValue( _optValue<T2>&& opt ) : val( (T&&)opt.val ) , isGiven( opt.isGiven ){}
 		template<class T2>
-		_optValue( const _optValue<T2>& opt ) : val( (T)opt.val ) , isGiven( opt.isGiven ) {}
-		_optValue( T&& val ) : val( move( val ) ) , isGiven( true ) { }
-		_optValue( const T& val ) : val( val ) , isGiven( true ) { }
-		_optValue( decltype(std::ignore) = std::ignore ) : val() , isGiven( false ) { }
+		_optValue( const _optValue<T2>& opt ) : val( (T)opt.val ) , isGiven( opt.isGiven ){}
+		_optValue( T&& val ) : val( move( val ) ) , isGiven( true ){}
+		_optValue( const T& val ) : val( val ) , isGiven( true ){}
+		_optValue( decltype(std::ignore) = std::ignore ) : val() , isGiven( false ){}
+		_optValue() : val() , isGiven( false ){}
 		
+		//! Check for validity
 		bool isValid() const { return isGiven; }
-		_optValue<T>& operator =( T&& val ){ this->val = move(val); isGiven = true; return *this; }
-		_optValue<T>& operator =( const T& val ){ this->val = val; isGiven = true; return *this; }
-		_optValue<T>& operator =( decltype(std::ignore) ){ this->val = T(); isGiven = false; return *this; }
 		
+		//! Assign operators
+		_optValue<T>& operator=( T&& val ){ this->val = move(val); isGiven = true; return *this; }
+		_optValue<T>& operator=( const T& val ){ this->val = val; isGiven = true; return *this; }
+		_optValue<T>& operator=( decltype(std::ignore) ){ this->val = T(); isGiven = false; return *this; }
+		template<typename T2>
+		_optValue<T>& operator=( _optValue<T2>&& opt ){ val = move(opt.val); isGiven = opt.isGiven; return *this; }
+		template<typename T2>
+		_optValue<T>& operator=( const _optValue<T2>& opt ){ val = opt.val; isGiven = opt.isGiven; return *this; }
+		
+		//! Cast operators
 		operator T&&(){ return (T&&)val; }
 		operator const T&() const { return (T)val; }
 };

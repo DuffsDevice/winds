@@ -37,21 +37,14 @@ void _fileObject::execute( _cmdArgs args , bool openInNewWindow )
 			_system::executeCommand("%SYSTEM%/explorer.exe -" + this->file->getFileName() );
 		else if( this->parent->getType() == _gadgetType::fileview )
 		{
-			((_fileView*)this->parent)->setPath( this->file->getFileName() );
-			
 			// Trigger 'onEdit'-Event
 			this->parent->triggerEvent( onEdit );
+			
+			((_fileView*)this->parent)->setPath( this->file->getFileName() );
 		}
 	}
 	else
 		this->file->execute( move(args) );
-}
-
-_callbackReturn _fileObject::clickHandler( _event event )
-{
-	event.getGadget<_fileObject>()->execute();
-	
-	return handled;
 }
 
 _callbackReturn _fileObject::refreshHandler( _event event )
@@ -133,14 +126,14 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& fl , _fileViewType viewtype , bool singleClickToExecute , _style&& style ) :
+_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& fl , _fileViewType viewtype , _style&& style ) :
 	_gadget( _gadgetType::fileobject , x , y , width , height , (_style&&)style )
 	, file( new _direntry(fl) )
 	, viewType( viewtype )
 	, pressed( false )
 {
-	if( file->getMimeType() == _mime::application_x_ms_shortcut )
-	{
+	// Replace _direntry with the more specialized class '_shortcut'
+	if( file->getMimeType() == _mime::application_x_ms_shortcut ){
 		delete this->file;
 		this->file = new _shortcut( fl );
 	}
@@ -155,7 +148,6 @@ _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	this->setInternalEventHandler( onDraw , make_callback( &_fileObject::refreshHandler ) );
 	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
-	this->setInternalEventHandler( singleClickToExecute ? onMouseClick : onMouseDblClick , make_callback( &_fileObject::clickHandler ) );
 	
 	// Refresh...
 	this->redraw();

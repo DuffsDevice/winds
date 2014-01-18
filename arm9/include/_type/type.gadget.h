@@ -403,9 +403,9 @@ class _gadget
 		//! Internal call, that does not violate the state of auto-computed values
 		void moveRelativeIfAuto( _s16 deltaX , _s16 deltaY )
 		{
-			if( !this->autoValues.posX ) // Set to null if this value isn't auto-generated
+			if( !this->autoValues.posX ) // Set to 0 if this value is auto-generated
 				deltaX = 0;
-			if( !this->autoValues.posY )
+			if( !this->autoValues.posY ) // ..both here
 				deltaY = 0;
 			moveRelativeInternal( deltaX , deltaY );
 		}

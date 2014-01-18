@@ -12,12 +12,19 @@ class _fileView : public _scrollArea {
 	
 	private:
 	
-		_direntry					directory;
-		_fileViewType				viewType;
-		flex_ptr<_vector<_literal>>	filemask;
-		bool						singleClickToExecute;
+		_direntry							directory;
+		_fileViewType						viewType;
+		flex_ptr<_fileExtensionList>		filemask;
+		flex_ptr<_callback<_eventHandler>>	eventHandler;
+		bool								singleClickToExecute;
+		
+		// Member function to forward all events to the 'eventHandler'
+		static _callbackReturn eventForwarder( _event );
 		
 		void generateChildren();
+		
+		//! Full Ctor
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _fileExtensionList allowedExtensions , _callback<_eventHandler>* eventHandler , bool singleClickToExecute , _style&& style );
 		
 	public:
 	
@@ -28,18 +35,41 @@ class _fileView : public _scrollArea {
 		string getPath(){ return this->directory.getFileName(); }
 		
 		//! Tell the _fileview to reduce 
-		void setFileMask( _vector<_literal> allowedExtensions ){
-			filemask = new _vector<_literal>( move(allowedExtensions) );
+		void setFileMask( _paramAlloc<_fileExtensionList> allowedExtensions ){
+			filemask = allowedExtensions.get();
 			this->generateChildren();
 		}
 		
-		//! Full Ctor
-		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewtype , _vector<_literal> allowedExtensions = {} , _scrollType scrollTypeX = _scrollType::meta , _scrollType scrollTypeY = _scrollType::meta , bool singleClickToExecute = false , _style&& style = _style() );
+		//! Allow all extensions
+		void removeFileMask(){
+			filemask = nullptr;
+			this->generateChildren();
+		}
+		
+		//! Set eventHandler to handle onMouseClick, onMouseDblClick
+		void setEventHandler( _paramAlloc<_callback<_eventHandler>> eventHandler ){
+			this->eventHandler = eventHandler.get();
+		}
+		
+		//! Remove the currently assigned eventHandler
+		void removeEventHandler(){
+			this->eventHandler = nullptr;
+		}
+		
+		//! Ctor with singleClickToExecute flag
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , nullptr , false , (_style&&)style )
+		{}
+		
+		//! Ctor with eventHandler
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _paramAlloc<_callback<_eventHandler>> eventHandler , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , eventHandler.get() , false , (_style&&)style )
+		{}
 		
 		//! Simple Ctor
-		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _vector<_literal> allowedExtensions = {} , bool singleClickToExecute = false , _style&& style = _style() ) :
-			_fileView( x , y , width , height , path , _fileViewType::list , move(allowedExtensions) , _scrollType::meta , _scrollType::meta , singleClickToExecute , (_style&&)style )
-		{ }
+		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , bool singleClickToExecute , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , nullptr , singleClickToExecute , (_style&&)style )
+		{}
 		
 		//! Dtor
 		~_fileView();

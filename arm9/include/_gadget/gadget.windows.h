@@ -10,7 +10,7 @@
 #include "_gadget/gadget.desktop.h"
 #include "_gadget/gadget.windows.startbutton.h"
 #include "_gadget/gadget.windows.taskbutton.h"
-#include "_gadget/gadget.windows.taskinfo.h"
+#include "_gadget/gadget.windows.taskinfo.controller.h"
 #include "_gadget/gadget.windows.programswitcher.h"
 
 class _windows : public _gadgetScreen
@@ -19,7 +19,7 @@ class _windows : public _gadgetScreen
 		
 		//! Start-Button
 		_windowsStartButton*		startButton;
-		_windowsTaskInfo*			taskInfo;
+		_windowsTaskInfoController*	taskInfo;
 		
 		_list<_windowsTaskButton*>	tasks;
 		
@@ -32,6 +32,7 @@ class _windows : public _gadgetScreen
 		//! Standard Function to be executed on refresh
 		static _callbackReturn	refreshHandler( _event );
 		static _callbackReturn	keyHandler( _event );
+		_callbackReturn			taskInfoMoveHandler( _event );
 		
 		//! Update all Task-Buttons
 		void refreshTaskWidths();
@@ -51,6 +52,9 @@ class _windows : public _gadgetScreen
 		
 		//! Open the startMenu
 		void closeStartMenu(){ this->startButton->closeStartMenu(); }
+		
+		//! Toggle the startMenu
+		void toggleStartMenu(){ this->startButton->triggerEvent( onMouseClick ); }
 		
 		//! Constructor with style
 		_windows( _u8 bgId , _style&& style = _style() );

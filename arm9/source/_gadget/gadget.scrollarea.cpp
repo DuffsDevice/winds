@@ -185,7 +185,12 @@ _callbackReturn _scrollArea::childHandler( _event event )
 		// Get the child that was added
 		_gadget* child = event.getGadgetParam();
 		
-		if( child )
+		// child == nullptr implicitly checks whether 'removeChildren' was called
+		if( child == nullptr ){
+			that->scrollBarX->setValue(0,false);
+			that->scrollBarY->setValue(0,false);
+		}
+		else
 			child->moveRelative( - that->scrollBarX->getValue() , - that->scrollBarY->getValue() );
 	}
 	

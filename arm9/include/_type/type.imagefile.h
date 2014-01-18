@@ -5,26 +5,62 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.direntry.h"
 
+class gif_animation;
+
 enum class _imageFileCompression : _u8{
-	low = 1,
-	middle = 2,
-	high = 3,
-	veryHigh = 4,
+	low = 30,
+	medium = 55,
+	high = 70,
+	veryHigh = 80,
+	none = 100
 };
 
-class _imageFile : public _direntry
+typedef const _direntry _constDirentry;
+
+class _imageFile : public _constDirentry
 {
+	private:
+		
+		bool buffer;
+		union{
+			_bitmap*		bufferedImage;
+			_byte*			bufferedData;
+			gif_animation*	bufferedGif;
+		};
+		_bitmap*			bufferedGifBitmap;
+		
+		//! Helper function for errors in the gif decoder
+		static void outputGifWarning( _literal context , int code );
+		
 	public:
 		
 		//! Ctor
-		_imageFile( string filename ) :
+		_imageFile( string filename , bool buffer = false ) :
 			_direntry( filename )
+			, buffer( buffer )
+			, bufferedImage( nullptr )
+			, bufferedGifBitmap( nullptr )
 		{}
 		
 		//! Get the underlying bitmap Format
-		_bitmap readBitmap();
+		_bitmap readBitmap( _optValue<_u32> page = ignore );
 		
-		//! Write to the image
-		void writeBitmap( _optValue<_imageFileCompression> compression );
+		//! Check if the image file supports pages
+		bool supportsPages(){
+			_mimeType type = this->getMimeType();
+			return type == _mime::image_ico || type == _mime::image_gif;
+		}
+		
+		//! Provided, supportsPages() returns true, this method return the number of pages in this file
+		_u32 getNumPages();
+		
+		//! If the image is a .gif animation this returns the delay of the supplied frame
+		_u32 getPageDelay( _u32 page );
+		
+		//! Write to the image file
+		bool writeBitmap( const _bitmap& source , _optValue<_imageFileCompression> compression );
+		
+		//! Dtor
+		~_imageFile();
 };
 #endif

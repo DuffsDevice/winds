@@ -29,6 +29,8 @@ namespace _luafunc
 		}
 		static unused inline string					check( lua_State* state , int index , string* dummy ){ return luaL_checkstring( state , index ); }
 		static unused inline const char*			check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
+		template<int mB,typename dT = char>
+		static unused inline shortString<mB,dT>		check( lua_State* state , int index , shortString<mB,dT>* dummy ){ return luaL_checkstring( state , index ); }
 		static unused inline _key					check( lua_State* state , int index , _key* dummy ){
 			return lua_isstring( state , index ) ? (_key)lua_tostring( state , index )[0] : (_key)lua_tonumber( state , index );
 		}

@@ -52,12 +52,14 @@ _startMenu::_startMenu( _style&& style ) :
 	_length halfWidth = this->getWidth() >> 1;
 	
 	// Left Side
-	this->addChild(
-		new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
+	_fileView* view = new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
 			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
-			, "%WINDIR%/jumplist/" , _fileViewType::list , { "exe" , "lua" , "lnk" } , _scrollType::prevent , _scrollType::prevent , true
-		)
-	);
+			, "%WINDIR%/jumplist/" , _fileViewType::list , true , { "exe" , "lua" , "lnk" }
+		);
+	
+	view->setScrollTypeX( _scrollType::prevent );
+	view->setScrollTypeY( _scrollType::prevent );
+	this->addChild( view );
 	
 	// Right Side
 	//this->addChild( new _fileView( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->getWidth() + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileViewType::liste , _scrollType::prevent , _scrollType::prevent ) );

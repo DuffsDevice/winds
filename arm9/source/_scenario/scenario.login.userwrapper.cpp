@@ -137,7 +137,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	this->setInternalEventHandler( onBlur , make_callback( _userWrapper::focusHandler ) );
 	
 	// Click on the image to login a user without password
-	_imageGadget* img = new _imageGadget( 3 , 3 , this->user->getLogo() , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
+	_imageGadget* img = new _imageGadget( 3 , 3 , this->user->getLogo() , ignore , ignore , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
 	img->setInternalEventHandler( onMouseClick , make_callback( _userWrapper::submitHandler ) );
 	
 	// Add the logo

@@ -49,9 +49,10 @@ union _direntryAttributes
 	}
 };
 
+typedef _vector<ssstring> _fileExtensionList;
 
-class _direntry{
-	
+class _direntry
+{
 	protected:
 	
 		//! Handle to File/Directory
@@ -159,7 +160,7 @@ class _direntry{
 		bool unsetSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = false; return attr; } ); }*/
 		
 		//! If the _direntry is an directory, iterate through its children
-		virtual bool readChild( _literal& child , _vector<_literal>* allowedExtensions = nullptr );
+		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr );
 		virtual bool readChildFolderOnly( _literal& child );
 		virtual bool rewindChildren();
 		
@@ -188,7 +189,7 @@ class _direntry{
 		virtual const string& getName() const { return this->name; }
 		
 		
-		//! get the string that should be displayed if the direntry-name should be drawn
+		//! Get the string that should be displayed if the direntry-name should be drawn
 		string getDisplayName() const ;
 		
 		

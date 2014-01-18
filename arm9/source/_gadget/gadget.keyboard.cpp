@@ -91,7 +91,7 @@ void _keyboard::vbl()
 		if( active ){
 			_bitmap b = _bitmap( this->topScreen->getMemoryPtr() , SCREEN_WIDTH , SCREEN_HEIGHT );
 			_rect dim = _system::getCurrentFocus()->getAbsoluteDimensions();
-			b.drawRect( dim.x , dim.y , dim.width , dim.height , COLOR_RED );
+			b.drawDottedRect( dim.x , dim.y , dim.width , dim.height , _system::getRTA().getItemBackground( true ) );
 		}
 	#endif
 	
@@ -332,7 +332,7 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
 	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
 	
-	if( that->handlePosition >= 0 )
+	if( that->handlePosition.isValid() )
 	{
 		bP.copyTransparent( that->handlePosition , 0 , BMP_Grip() );
 		bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
@@ -506,7 +506,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 	return handled;
 }
 
-_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord position , _style&& style ) :
+_keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _optValue<_coord> position , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
@@ -519,7 +519,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, toFactor( 1 )
 	, toKeyboardExpansion( 0 )
 	, curState( -1 )
-	, handlePosition( position )
+	, handlePosition( move(position) )
 	, manuallyOpened( false )
 	, ignoreNextVBL( false )
 	, shift( false )

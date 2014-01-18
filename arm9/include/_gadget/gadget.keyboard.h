@@ -13,22 +13,22 @@ class _keyboard : public _gadgetScreen {
 		// Click Sound Object
 		static _staticSound clickSound;
 		
-		_screen*		topScreen; // Sub-Scrern
-		_gadgetScreen*	gHScreen; // GadgetHost-Screen
+		_screen*			topScreen; // Sub-Scrern
+		_gadgetScreen*		gHScreen; // GadgetHost-Screen
 		
 		//! Things'n'Stuff
-		int				fromX;
-		int				fromY;
-		float			fromFactor;
-		_s8				fromKeyboardExpansion;
-		int				toX;
-		int				toY;
-		float			toFactor;
-		_s8				toKeyboardExpansion;
-		_s8				curState; // Variable to get the current state of the keyboard
-		_coord			handlePosition;
-		bool			manuallyOpened;
-		bool			ignoreNextVBL;
+		int					fromX;
+		int					fromY;
+		float				fromFactor;
+		_s8					fromKeyboardExpansion;
+		int					toX;
+		int					toY;
+		float				toFactor;
+		_s8					toKeyboardExpansion;
+		_s8					curState; // Variable to get the current state of the keyboard
+		_optValue<_coord>	handlePosition;
+		bool				manuallyOpened;
+		bool				ignoreNextVBL;
 		
 		//! Internal Array for Keyboard-Layout
 		static _rect 	buttonDimensions[];
@@ -97,7 +97,7 @@ class _keyboard : public _gadgetScreen {
 		static void playClickSound();
 		
 		//! Ctor
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _coord handlePosition = ( SCREEN_WIDTH - 40 ) , _style&& style = _style() | _styleAttr::canNotTakeFocus );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _optValue<_coord> handlePosition = ignore , _style&& style = _style() | _styleAttr::canNotTakeFocus );
 		
 		//! Dtor
 		~_keyboard();

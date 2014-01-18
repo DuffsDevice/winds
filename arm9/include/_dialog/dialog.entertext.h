@@ -29,6 +29,16 @@ class _enterTextDialog : public _dialog
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
 		_enterTextDialog( string message , string windowLabel , string initialValue = "" , _optValue<string> okLabel = ignore , _optValue<string> cancelLabel = ignore );
 		
+		//! Get the Entered string
+		string getResult(){
+			return this->textBox->getStrValue();
+		}
+		
+		//! Set value to be displayed on default
+		void setInitialValue( string initialValue ){
+			this->initialValue = move(initialValue);
+		}
+		
 		//! Dtor
 		~_enterTextDialog(){
 			delete this->okButton;
