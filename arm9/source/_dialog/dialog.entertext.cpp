@@ -50,10 +50,8 @@ _callbackReturn _enterTextDialog::eventHandler( _event event )
 	_gadget* that = event.getGadget();
 	
 	// OK-Button
-	if( that == this->okButton ){
-		this->strResult = this->textBox->getStrValue();
+	if( that == this->okButton )
 		this->callCallback( _dialogResult::yes );
-	}
 	// Cancel-Button or Window-Close-Button
 	else if( that == this->cancelButton || that == this->window )
 		this->callCallback( _dialogResult::no );
