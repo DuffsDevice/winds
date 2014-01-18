@@ -1,7 +1,6 @@
 #include "parser.h"
-#include <stdio.h>
 
-const char* syllableParser::findFirstOf( const char* text , const char* match )
+const char* SyllableParser::findFirstOf( const char* text , const char* match )
 {
 	if( !*text )
 		return nullptr;
@@ -19,10 +18,103 @@ const char* syllableParser::findFirstOf( const char* text , const char* match )
 	return nullptr;
 }
 
-std::list<int> syllableParser::parseTextInternal( const char* txt , const char* end )
+unsigned char SyllableParser::getNumCharsBeforeSyllableEnd( const char* start )
+{
+	unsigned char numConsonants = 0;
+	const char* curChar = start;
+	while( *curChar && isConsonant( curChar ) )
+	{
+		curChar++;
+		numConsonants++;
+	}
+	
+	// If there is no next vocal in the word, there will be no additional syllable
+	if( !*curChar )
+	{
+		// If we return the number of consonants,
+		// the syllable would be behind the word and would be ignored
+		return numConsonants;
+	}
+	
+	// Simple case: If we have less than two consonants, we definitely
+	// need the ones that are there to start the next syllable
+	if( numConsonants < 2 )
+		return 0;
+	
+	// Check, whether and how long any possible indivisible element is
+	bool indivisible = isIndivisible( start );
+	
+	// Standard case with two consonants
+	if( numConsonants == 2 )
+	{
+		if( indivisible )
+			return isSyllableStart( start ) ? 0 : 2;
+		return 1;
+	}
+	
+	// Allocate temporary memory
+	char* temp = new char[numConsonants+1];
+	
+	// Search all adjacent consonants for a starting letter combination
+	// The longest combination found wins,
+	// if there is no shorter start-combination where the
+	// left over characters make up an ending-combination
+	int found = -1;
+	int indivisibleStart = isIndivisible( start );
+	
+	for( int findOffset = 0 ; findOffset < numConsonants ; findOffset++ )
+	{
+		// A combination at the very end was found
+		if( (numConsonants - findOffset) == isSyllableStart( &start[findOffset] ) )
+		{
+			if( found < 0 && findOffset >= indivisibleStart )
+				found = findOffset;
+			else if( findOffset > found + 1 ) // Check if it does fit better
+			{
+				// Copy to destination array
+				strncpy( temp , start , findOffset );
+				
+				// Are the left over chars a syllable-end?
+				if( isSyllableEnd( temp ) )
+					found = findOffset;
+			}
+		}
+	}
+	
+	// If there was no start-combination, look
+	// how long the end-combination is (if there is one)
+	if( found < 0 )
+	{
+		// Limit the characters to look in to numConsonants minus one,
+		// because we definitely need one consonant, to start the next syllable
+		int maxLen = numConsonants - 1;
+		
+		// Ignore the required starting-consonant, if the consonants cant be split up
+		if( maxLen < indivisibleStart )
+			maxLen = indivisibleStart;
+		
+		strncpy( temp , start , maxLen );
+		
+		// Check, whether and if yes, how long the ending-combination is
+		if( !(found = isSyllableEnd( temp ) ) )
+		{
+			// If we could not fand any combination, we take all
+			// but the last char to form the end of the current syllable
+			found = numConsonants - 1;
+		}
+	}
+	
+	// Delete the newly allocated buffer
+	delete[] temp;
+	
+	return found;
+}
+
+std::list<int> SyllableParser::parseTextInternal( const char* txt , const char* end )
 {
 	const char* startPos;
 	const char* endPos;
+	
 	// Current poition of iteration
 	const char* curPos = txt;
 	
@@ -30,7 +122,7 @@ std::list<int> syllableParser::parseTextInternal( const char* txt , const char* 
 	
 	do
 	{
-		const char* nextEnd = findFirstOf( curPos , " ,\n(){}[]-#*+?!/&$" );
+		const char* nextEnd = SyllableParser::findFirstOf( curPos , " ,:\n.(){}[]-#*+?!/&$" );
 		
 		if( nextEnd && nextEnd <= end ) // Fond something
 		{
@@ -46,9 +138,14 @@ std::list<int> syllableParser::parseTextInternal( const char* txt , const char* 
 		
 		if( startPos < endPos )
 		{
-			std::list<int> lst = parseWordInternal( startPos , endPos );
-			for( int i : lst )
-				ret.push_back( startPos - txt + i );
+			std::list<int> lst = SyllableParser::parseWordInternal( startPos , endPos );
+			
+			std::ptrdiff_t delta = startPos - txt;
+			
+			for( int& i : lst )
+				i+= delta;
+			
+			ret.splice(ret.end(), lst);
 		}
 		
 		curPos = nextEnd;
@@ -61,12 +158,12 @@ std::list<int> syllableParser::parseTextInternal( const char* txt , const char* 
 enum parserState
 {
 	Pstart
-	, PvocaleOcc
+	, PvowelOcc
 	, PconsonantOcc
 	, Pend
 };
 
-std::list<int> syllableParser::parseWordInternal( const char* startPos , const char* endPos )
+std::list<int> SyllableParser::parseWordInternal( const char* startPos , const char* endPos )
 {
 	parserState state = Pstart;
 	
@@ -77,6 +174,8 @@ std::list<int> syllableParser::parseWordInternal( const char* startPos , const c
 	int syllablePos = -1;
 	
 	const char* curPos = startPos;
+	unsigned int size = 0;
+	int index = 0;
 	
 	while( true )
 	{
@@ -84,104 +183,56 @@ std::list<int> syllableParser::parseWordInternal( const char* startPos , const c
 		if( curPos >= endPos )
 			state = Pend;
 		
-		if( syllablePos != -1 )
-		{
-			positions.push_back( syllablePos );
+		if( syllablePos != -1 ){
+			if( syllablePos < endPos - startPos - 2 )
+				positions.push_back( syllablePos );
 			syllablePos = -1;
 		}
-		//printf("%c ->%d\n",*curPos,state);
 		
 		switch( state )
 		{
 			case Pstart:
-			{
-				unsigned int size;
-				if( ( size = isCombinStart( curPos ) ) )
+				// Set the state dependent of what type of char there is
+				if( ( size = isSyllableStart( curPos ) ) || ( size = isConsonant( curPos ) ) )
 					state = PconsonantOcc;
-				else if( ( size = isDiphtong( curPos ) ) )
-					state = PvocaleOcc;
-				else if( ( size = isVocale( *curPos ) ) )
-					state = PvocaleOcc;
+				else if( ( size = isDiphtong( curPos ) ) || ( size = isVowel( curPos ) ) )
+					state = PvowelOcc;
 				else
-				{
-					state = PconsonantOcc;
-					size = 1;
-				}
-				curPos += size;
-				break;
-			}
-			case PvocaleOcc: // vocal was last: find consonant!
-			{
-				unsigned short size;
-				if(
-					( size = isCombinVocalBefore( curPos ) )
-					&& !( // Check if this is not the start of the next syllable
-						isVocale( *(curPos + size) )
-						&& isCombinStart( curPos )
-						)
-				)
-				{
 					state = Pstart;
-					if( curPos + size + 1 < endPos )
-						syllablePos = curPos - startPos + size - 1;
-					
-				}
-				else if( ( size = isCombinStart( curPos ) ) && !isConsonant( *(curPos + size) ) )
-				{
-					state = PconsonantOcc;
-					if( curPos + size + 1 < endPos )
-						syllablePos = curPos - startPos - 1;
-				}
-				else if( ( size = isConsonant( *curPos ) ) )
-				{
-					if( isConsonant( *(curPos+1) ) ) // 1 Lookup to maybe separate between two consonants (e.g. 'karten')
-						state = PvocaleOcc;
-					else
-					{
-						state = Pstart;
-						if( curPos + 1 < endPos )
-							syllablePos = curPos - startPos - 1;
-					}
-				}
-				else if( ( size = isVocale( *curPos ) ) )
-				{
-					if( *curPos != *(curPos-1) ) // same vocal
-						syllablePos = curPos - startPos - 1;
-					state = PvocaleOcc;
-				}
-				else
-				{
-					//const char* c2 = "ß";
-					//printf("/// %d",*c2 == 'ß');
-					size = 1;
-				}
-				curPos += size;
 				break;
-			}
-			case PconsonantOcc: // consonant was last
-			{
-				unsigned short size;
-				if( ( size = isCombinStart( curPos ) ) )
+			case PvowelOcc:
+				if( ( size = isDiphtong( curPos ) ) || ( size = isVowel( curPos ) ) )
+				// We have a second vocal after the last character -> break between them
+					syllablePos = index - 1;
+				else if( ( size = isConsonant( curPos ) ) )
 				{
-					syllablePos = curPos - startPos;
-					state = PconsonantOcc;
-				}
-				else if( ( size = isDiphtong( curPos ) ) )
-					state = PvocaleOcc;
-				else if( ( size = isVocale( *curPos ) ) )
-					state = PvocaleOcc;
-				else
-				{
+					// We have an unknown number of consonants ahead
+					// -> determine the start of the next syllable
+					size = getNumCharsBeforeSyllableEnd( curPos );
+					syllablePos = index + size - 1;
 					state = Pstart;
-					//printf("Error: %d\n",curPos - startPos);
-					size = 1;
 				}
-				curPos += size;
+				else
+					state = Pstart;
 				break;
-			}
+			case PconsonantOcc:
+				// The only thing that could possibly appear after a/some consonant(s) is a vocal!
+				if( ( size = isDiphtong( curPos ) ) || ( size = isVowel( curPos ) ) )
+					state = PvowelOcc;
+				else
+					state = Pstart;
+				break;
 			default:
 			case Pend:
 				return positions;
 		}
+		
+		// Initialize next iteration cycle
+		
+		if( !size )// Step at least one char ahead
+			size = 1;
+		index += size;
+		curPos += size;
+		size = 0;
 	}
 }
