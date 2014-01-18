@@ -1,8 +1,11 @@
-#include "_library/library.image.bmp.h"
+#include "_library/library.image.bmp.decoder.h"
 #include "_type/type.h"
 
-unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned int& width , unsigned int& height )
+unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const unsigned int size , unsigned int& width , unsigned int& height )
 {
+	if( size < sizeof(BMP_Headers) + 14 )
+		return nullptr;
+	
 	BMPHeader0 *Bmpinfo0 = (BMPHeader0 *)(data);
 	BMP_Headers *Bmpinfo = (BMP_Headers*)(data + 14);
 	
@@ -30,34 +33,35 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned 
 	
 	// Allocate Space
 	unsigned short* dest = new unsigned short[lx*ly];
-	
 	unsigned short Bits = Bmpinfo->BitsperPixel;
-	
-	//Buffer = (unsigned short*)(Buffer + ((x + (y*SWidth)) << 1)); // Position de départ
 	
 	unsigned int i = 0;
 	
-	//printf("Bits: %d\n", Bits);
-	
 	if( Bits > 16 ) // Pour 24 et 32 bits
 	{
+		if( int(size - start) < ly * lx * 3 )
+			return nullptr;
+		
 		for( tempy = ly - 1 ; tempy >= 0 ; tempy-- )
 		{
 			for( tempx = 0 ; tempx < lx ; tempx++ )
 			{
-				b = ( gfx[i++] >> 3 ) & 31;
-				g = ( gfx[i++] >> 3 ) & 31;
-				r = ( gfx[i++] >> 3 ) & 31;
+				b = gfx[i++];
+				g = gfx[i++];
+				r = gfx[i++];
 				
 				if( Bits == 32 ) i++; // On passe le bit alpha
 				
-				dest[ tempx + ( tempy * lx ) ] = RGB( r , g , b );
+				dest[ tempx + ( tempy * lx ) ] = RGB255( r , g , b );
 			}
 			while( i & 3 ) i++; // Padding....
 		}
 	}
 	else if( Bits == 16 )
 	{
+		if( int(size - start) < ly * lx * 2 )
+			return nullptr;
+		
 		for( tempy = ly - 1 ; tempy >= 0 ; tempy-- )
 		{
 			for( tempx = 0 ; tempx < lx ; tempx++ )
@@ -77,7 +81,7 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned 
 			gfx2 = (unsigned short*) temp;
 		}
 	}
-	else if ( Bits <= 8 )
+	else
 	{
 		// look for palette data if present //
 		const unsigned char *colormap = data + 14 + Bmpinfo->SizeofHeader;
@@ -104,6 +108,9 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned 
 		{
 			case 8:
 			{
+				if( int(size - start) < ly * lx )
+					return nullptr;
+				
 				for( tempy = ly - 1 ; tempy >= 0 ; tempy-- )
 				{
 					for(tempx = 0 ; tempx != lx ; tempx++ )
@@ -113,6 +120,9 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned 
 			}
 			case 4:
 			{
+				if( int( size - start ) * 2 < ly * lx )
+					return nullptr;
+				
 				for( tempy = ly - 1 ; tempy >= 0 ; tempy-- )
 				{
 					unsigned char shift = 4;
@@ -132,6 +142,26 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , unsigned 
 						i++;
 				}
 				break;
+			}
+			case 2:
+			{
+				if( int( size - start ) * 8 < ly * lx )
+					return nullptr;
+				
+				unsigned char mask = 1 << 7;
+				
+				for( tempy = ly - 1 ; tempy >= 0 ; tempy-- )
+				{
+					for(tempx = 0 ; tempx != lx ; tempx++ )
+					{
+						if( !mask ){
+							mask = 1 << 7;
+							i++;
+						}
+						dest[ tempx + ( tempy * lx ) ] = palette[ gfx[i] & mask ];
+						mask >>= 1;
+					}
+				}
 			}
 			default:
 				delete[] dest;

@@ -3,7 +3,6 @@
 #define _WIN_L_DIALOGS_
 
 #include "_lua/lua.lunar.h"
-#include "_lua/lua.class.dialog.interface.h"
 #include "_dialog/dialog.yesno.h"
 #include "_dialog/dialog.entertext.h"
 #include "_dialog/dialog.errorwarninginfo.h"
@@ -12,7 +11,7 @@
 /**
  * Proxy Classes
  */
-class _lua_yesnodialog : public _lua_interface_dialog<_yesNoDialog>
+class _lua_yesnodialog : public _yesNoDialog
 {
 	public:
 		
@@ -21,10 +20,11 @@ class _lua_yesnodialog : public _lua_interface_dialog<_yesNoDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_yesnodialog>::FunctionType methods[];
+		static Lunar<_lua_yesnodialog>::PropertyType properties[];
 };
 
-class _lua_entertextdialog : public _lua_interface_dialog<_enterTextDialog>
+class _lua_entertextdialog : public _enterTextDialog
 {
 	public:
 		
@@ -33,10 +33,11 @@ class _lua_entertextdialog : public _lua_interface_dialog<_enterTextDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_entertextdialog>::FunctionType methods[];
+		static Lunar<_lua_entertextdialog>::PropertyType properties[];
 };
 
-class _lua_imagedialog : public _lua_interface_dialog<_imageDialog>
+class _lua_imagedialog : public _imageDialog
 {
 	public:
 		
@@ -45,10 +46,11 @@ class _lua_imagedialog : public _lua_interface_dialog<_imageDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_imagedialog>::FunctionType methods[];
+		static Lunar<_lua_imagedialog>::PropertyType properties[];
 };
 
-class _lua_errordialog : public _lua_interface_dialog<_errorDialog>
+class _lua_errordialog : public _errorDialog
 {
 	public:
 		
@@ -57,10 +59,11 @@ class _lua_errordialog : public _lua_interface_dialog<_errorDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_errordialog>::FunctionType methods[];
+		static Lunar<_lua_errordialog>::PropertyType properties[];
 };
 
-class _lua_infodialog : public _lua_interface_dialog<_infoDialog>
+class _lua_infodialog : public _infoDialog
 {
 	public:
 		
@@ -69,10 +72,11 @@ class _lua_infodialog : public _lua_interface_dialog<_infoDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_infodialog>::FunctionType methods[];
+		static Lunar<_lua_infodialog>::PropertyType properties[];
 };
 
-class _lua_warningdialog : public _lua_interface_dialog<_warningDialog>
+class _lua_warningdialog : public _warningDialog
 {
 	public:
 		
@@ -81,7 +85,8 @@ class _lua_warningdialog : public _lua_interface_dialog<_warningDialog>
 		
 		//! Lunar !//
 		static const char className[];
-	
+		static Lunar<_lua_warningdialog>::FunctionType methods[];
+		static Lunar<_lua_warningdialog>::PropertyType properties[];
 };
 
 #endif

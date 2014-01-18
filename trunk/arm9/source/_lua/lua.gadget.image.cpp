@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_imagegadget::_lua_imagegadget( lua_State* L ) : 
-	_lua_gadget( new _imageGadget( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , check<_bitmap>( L , 3 ) , lightcheck<_style>( L , 4 , _style() ) ) )
+	_lua_gadget( new _imageGadget( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , check<_bitmap>( L , 3 ) , optcheck<_length>( L , 4 ) , optcheck<_length>( L , 5 ) , lightcheck<_style>( L , 4 , _style() ) ) )
 {}
 
 //! Lua-window

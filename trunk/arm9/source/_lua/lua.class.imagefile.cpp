@@ -9,13 +9,16 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_imagefile::_lua_imagefile( lua_State* L ) : 
-	_imageFile( check<string>( L , 1 ) )
+	_imageFile( check<string>( L , 1 ) , lightcheck<bool>( L , 2 , false ) )
 { }
 
 //! Lua-ImageFile
 const char _lua_imagefile::className[] = "ImageFile";
 Lunar<_lua_imagefile>::FunctionType _lua_imagefile::methods[] = {
 	{ "readBitmap" , wrap( _lua_imagefile , &_imageFile::readBitmap ) },
+	{ "supportsPages" , wrap( _lua_imagefile , &_imageFile::supportsPages ) },
+	{ "getNumPages" , wrap( _lua_imagefile , &_imageFile::getNumPages ) },
+	{ "getPageDelay" , wrap( _lua_imagefile , &_imageFile::getPageDelay ) },
 	LUA_CLASS_FUNC_END
 };
 

@@ -19,7 +19,6 @@ SOURCES		:=	../common/source/_type ../common/source source source/_resource sour
 INCLUDES	:=	../common/include include
 DATA		:=	data
 
-
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------

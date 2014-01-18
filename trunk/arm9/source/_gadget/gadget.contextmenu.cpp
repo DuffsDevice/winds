@@ -31,12 +31,14 @@ _contextMenu::_contextMenu( _optValue<_length> width , const _menuEntryList& lis
 			}
 		);
 		
+		if( entry == this->children.end() || !*entry )
+			return;
+		
 		// Write new entry in attribute
 		this->activeEntry = this->selectedEntry = (_contextMenuEntry*)(*entry);
 		
 		// Redraw the new one since it should be highlighted
-		if( this->activeEntry )
-			this->activeEntry->redraw();
+		this->activeEntry->redraw();
 	}
 }
 
@@ -234,7 +236,7 @@ void _contextMenu::generateChildren( const _menuEntryList& list )
 		else
 			cM = new _contextMenuEntryDivider();
 		
-		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _dimension::vertical , 0 , 0 , false , 0 , 0 ) );
+		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _direction::down , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }

@@ -1,6 +1,6 @@
 #include "_lua/lua.class.dialogs.h"
-#include "_type/type.system.h"
 #include "_lua/lua.func.h"
+#include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
 /*##################################
@@ -9,7 +9,7 @@ using namespace _luafunc;
 
 //! yesNoDialog
 _lua_yesnodialog::_lua_yesnodialog(lua_State* L) :
-	_lua_interface_dialog(
+	_yesNoDialog(
 		check<string>( L , 1 )
 		, check<string>( L , 2 )
 		, optcheck<string>( L , 3 )
@@ -19,11 +19,22 @@ _lua_yesnodialog::_lua_yesnodialog(lua_State* L) :
 
 //! yesNoDialog
 const char _lua_yesnodialog::className[] = "YesNoDialog";
+Lunar<_lua_yesnodialog>::FunctionType _lua_yesnodialog::methods[] = {
+	{ "execute"			, wrap( _lua_yesnodialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_yesnodialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_yesnodialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_yesnodialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_yesnodialog>::PropertyType _lua_yesnodialog::properties[] = {
+	{ "running"	, wrap( _lua_yesnodialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
 
 
 //! enterTextDialog
 _lua_entertextdialog::_lua_entertextdialog(lua_State* L) :
-	_lua_interface_dialog(
+	_enterTextDialog(
 		check<string>( L , 1 )
 		, check<string>( L , 2 )
 		, optcheck<string>( L , 3 )
@@ -33,11 +44,22 @@ _lua_entertextdialog::_lua_entertextdialog(lua_State* L) :
 
 //! enterTextDialog - Name
 const char _lua_entertextdialog::className[] = "EnterTextDialog";
+Lunar<_lua_entertextdialog>::FunctionType _lua_entertextdialog::methods[] = {
+	{ "execute"			, wrap( _lua_entertextdialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_entertextdialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_entertextdialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_entertextdialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_entertextdialog>::PropertyType _lua_entertextdialog::properties[] = {
+	{ "running"	, wrap( _lua_entertextdialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
 
 
 //! imageDialog
 _lua_imagedialog::_lua_imagedialog(lua_State* L) :
-	_lua_interface_dialog(
+	_imageDialog(
 		check<string>( L , 1 )
 		, check<string>( L , 2 )
 		, lightcheck<_bitmap>( L , 3 , _bitmap() )
@@ -48,11 +70,22 @@ _lua_imagedialog::_lua_imagedialog(lua_State* L) :
 
 //! imageDialog - Name
 const char _lua_imagedialog::className[] = "ImageDialog";
+Lunar<_lua_imagedialog>::FunctionType _lua_imagedialog::methods[] = {
+	{ "execute"			, wrap( _lua_imagedialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_imagedialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_imagedialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_imagedialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_imagedialog>::PropertyType _lua_imagedialog::properties[] = {
+	{ "running"	, wrap( _lua_imagedialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
 
 
 //! errorDialog
 _lua_errordialog::_lua_errordialog(lua_State* L) :
-	_lua_interface_dialog(
+	_errorDialog(
 		check<string>( L , 1 )
 		, optcheck<string>( L , 2 )
 		, optcheck<string>( L , 3 )
@@ -61,11 +94,22 @@ _lua_errordialog::_lua_errordialog(lua_State* L) :
 
 //! errorDialog - Name
 const char _lua_errordialog::className[] = "ErrorDialog";
+Lunar<_lua_errordialog>::FunctionType _lua_errordialog::methods[] = {
+	{ "execute"			, wrap( _lua_errordialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_errordialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_errordialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_errordialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_errordialog>::PropertyType _lua_errordialog::properties[] = {
+	{ "running"	, wrap( _lua_errordialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
 
 
 //! infoDialog
 _lua_infodialog::_lua_infodialog(lua_State* L) :
-	_lua_interface_dialog(
+	_infoDialog(
 		check<string>( L , 1 )
 		, optcheck<string>( L , 2 )
 		, optcheck<string>( L , 3 )
@@ -74,11 +118,22 @@ _lua_infodialog::_lua_infodialog(lua_State* L) :
 
 //! infoDialog - Name
 const char _lua_infodialog::className[] = "InfoDialog";
+Lunar<_lua_infodialog>::FunctionType _lua_infodialog::methods[] = {
+	{ "execute"			, wrap( _lua_infodialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_infodialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_infodialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_infodialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_infodialog>::PropertyType _lua_infodialog::properties[] = {
+	{ "running"	, wrap( _lua_infodialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
 
 
 //! warningDialog
 _lua_warningdialog::_lua_warningdialog(lua_State* L) :
-	_lua_interface_dialog(
+	_warningDialog(
 		check<string>( L , 1 )
 		, optcheck<string>( L , 2 )
 		, optcheck<string>( L , 3 )
@@ -87,3 +142,14 @@ _lua_warningdialog::_lua_warningdialog(lua_State* L) :
 
 //! warningDialog - Name
 const char _lua_warningdialog::className[] = "WarningDialog";
+Lunar<_lua_warningdialog>::FunctionType _lua_warningdialog::methods[] = {
+	{ "execute"			, wrap( _lua_warningdialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_warningdialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_warningdialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_warningdialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+typename Lunar<_lua_warningdialog>::PropertyType _lua_warningdialog::properties[] = {
+	{ "running"	, wrap( _lua_warningdialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};

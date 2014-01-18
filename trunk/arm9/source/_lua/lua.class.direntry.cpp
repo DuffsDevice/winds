@@ -21,9 +21,9 @@ _lua_direntry::_lua_direntry( lua_State* L ) :
 int _lua_direntry::readChild( lua_State* L )
 {
 	_literal child;
-	if( is_a<_vector<_literal>>( L , 1 ) )
+	if( is_a<_fileExtensionList>( L , 1 ) )
 	{
-		_vector<_literal> extensions = check<_vector<_literal>>( L , 1 );
+		_fileExtensionList extensions = check<_fileExtensionList>( L , 1 );
 		if( !_direntry::readChild( child , &extensions ) )
 			return 0;
 	}

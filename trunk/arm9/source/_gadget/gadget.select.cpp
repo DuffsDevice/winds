@@ -3,7 +3,7 @@
 
 _select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst , _int initialValue , _style&& style ) :
 	_gadget( _gadgetType::selectbox , x , y , width , _system::getUser().sOH , (_style&&)style )
-	, contextMenu( new _contextMenu( width , move(lst) , this , true , initialValue ) )
+	, contextMenu( new _contextMenu( ignore , move(lst) , this , true , initialValue ) )
 	, arrow( new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonBottom ) )
 {
 	// Refresh on contextMenu change

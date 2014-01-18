@@ -9,11 +9,12 @@ void _windowsProgramSwitcher::taskChangeHandler( _window* ref )
 		if( g->getStyle().data == ref )
 			img = (_imageGadget*)g;
 	
+	// Still need an image connected to the task?
 	if( ref->isTask() )
 	{
 		// Allocate a new imagegadget to hold the new task window icon
 		if( !img ){
-			this->addChild( new _imageGadget( 0 , 0 , ref->getIcon() , _style::storeHandle(ref) ) , true );
+			this->addChild( new _imageGadget( 0 , 0 , ref->getIcon() , ignore , ignore , _style::storeHandle(ref) ) , true );
 			this->update();
 		}
 		// Modify the already existing icon
@@ -23,7 +24,7 @@ void _windowsProgramSwitcher::taskChangeHandler( _window* ref )
 				this->label->setStrValue( ref->getStrValue() );
 		}
 	}
-	else
+	else // Not needed
 		delete img;
 }
 

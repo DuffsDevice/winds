@@ -68,7 +68,7 @@ void _windowMenu::generateChildren()
 	{
 		_windowMenuEntry* cM = new _windowMenuEntry( entry.first , *this );
 		
-		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _dimension::horizontal , 0 , 0 , false , 0 , 0 ) );
+		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _direction::right , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }

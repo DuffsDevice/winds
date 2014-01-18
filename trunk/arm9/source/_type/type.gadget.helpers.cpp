@@ -106,14 +106,15 @@ namespace _gadgetHelpers
 	
 	
 	// moveBesidePrecedent :: ctor
-	moveBesidePrecedent::moveBesidePrecedent( _dimension dim , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY ) :
+	moveBesidePrecedent::moveBesidePrecedent( _direction dir , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY , bool respectAutoPosition ) :
 		_dummyCallback<_eventHandler>( &moveBesidePrecedent::executor )
-		, dimension( (_u8)dim )
-		, breakLine( breakLine )
 		, spaceX( spaceX )
 		, spaceY( spaceY )
 		, offsetX( offsetX )
 		, offsetY( offsetY )
+		, direction( dir )
+		, breakLine( breakLine )
+		, respectAutoPosition( respectAutoPosition )
 	{} // Funny story: http://www.ima.umn.edu/~arnold/disasters/ariane.html
 	
 	// :: handler
@@ -121,38 +122,71 @@ namespace _gadgetHelpers
 	{		
 		_gadget* that = event.getGadget();
 		
-		_dimension	dim = (_dimension) this->dimension;
 		_gadget*	parent = that->getParent();
+		
+		if( !parent )
+			return use_internal;
+		
 		_gadget*	pre = that->getPrecedentChild();
-		_rect		parentRect = parent ? parent->getClientRect() : _rect();
+		_rect		parentRect = parent->getClientRect();
+		
+		// Choose right method
+		auto usedFunc = this->respectAutoPosition ? &_gadget::moveToIfAuto : &_gadget::moveTo;
 		
 		if( pre )
 		{
-			if( dim == _dimension::vertical )
+			_coord newX;
+			_coord newY;
+			switch( this->direction )
 			{
-				_coord newY = pre->getDimensions().getY2() + 1 + this->spaceY;
-				_coord newX = pre->hasAutoX() ? pre->getX() : offsetX;
-				
-				// Check if i we have to break line
-				if( this->breakLine && parentRect.isValid() && parentRect.height < ( newY + that->getHeight() ) )
-					that->moveToIfAuto( newX , this->offsetY );
-				else
-					that->moveToIfAuto( newX , newY );
+				case _direction::down:
+					newX = pre->hasAutoX() ? pre->getX() : this->offsetX;
+					newY = pre->getDimensions().getY2() + 1 + this->spaceY;
+					if( this->breakLine && parentRect.isValid() && parentRect.height < ( newY + that->getHeight() ) ){
+						newY = this->offsetY;
+						newX += this->spaceX + that->getWidth();
+					}
+					break;
+				case _direction::right:
+					newX = pre->getDimensions().getX2() + 1 + this->spaceX;
+					newY = pre->hasAutoY() ? pre->getY() : this->offsetY;
+					if( this->breakLine && parentRect.isValid() && parentRect.width < ( newX + that->getWidth() ) ){
+						newX = this->offsetX;
+						newY += this->spaceY + that->getHeight();
+					}
+					break;
+				case _direction::up:
+					newX = pre->hasAutoX() ? pre->getX() : this->offsetX;
+					newY = pre->getY() - this->spaceY - that->getHeight();
+					if( this->breakLine && parentRect.isValid() && newY < 1 ){
+						newY = parentRect.height - 1 - this->offsetY - that->getHeight();
+						newX += this->spaceX + that->getWidth();
+					}
+					break;
+				case _direction::left:
+					newX = pre->getX() - this->spaceX - that->getWidth();
+					newY = pre->hasAutoY() ? pre->getY() : this->offsetY;
+					if( this->breakLine && parentRect.isValid() && newX < 1 ){
+						newX = parentRect.width - 1 - this->offsetX - that->getWidth();
+						newY += this->spaceY + that->getHeight();
+					}
+					break;
+				default:
+					return use_internal;
 			}
-			else
-			{
-				_coord newX = pre->getDimensions().getX2() + 1 + this->spaceX;
-				_coord newY = pre->hasAutoY() ? pre->getY() : offsetY;
-				
-				// Check if i we have to break line
-				if( this->breakLine && parentRect.isValid() && parentRect.width < ( newX + that->getWidth() ) )
-					that->moveToIfAuto( this->offsetX , newY );
-				else
-					that->moveToIfAuto( newX , newY );
-			}
+			(that->*usedFunc)( newX , newY );
 		}
 		else
-			that->moveToIfAuto( offsetX , offsetY );
+		{
+			if( this->direction == _direction::down || this->direction == _direction::right )
+				(that->*usedFunc)( offsetX , offsetY );
+			else if( this->direction == _direction::left )
+			{
+				(that->*usedFunc)( parentRect.width - 1 - this->offsetX - that->getWidth() , offsetY );
+			}
+			else if( this->direction == _direction::up )
+				(that->*usedFunc)( offsetX , parentRect.height - 1 - this->offsetY - that->getHeight() );
+		}
 		
 		return use_internal;
 	}

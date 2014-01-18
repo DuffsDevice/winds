@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "_library/library.image.png.h"
+#include "_library/library.image.png.decoder.h"
 
 
 

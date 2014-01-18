@@ -64,13 +64,17 @@ void _systemController::checkDirty()
 void _systemController::main()
 {
 	changeState( _systemState::desktop );
-	static int i = 0;
-	//static int s = 0;
 	
+	static int i = 0;
 	while( true )
-	{		
-		//! Change State
+	{
+		i++;
+		
+		// If needed Change State
 		_systemController::checkDirty();
+		
+		// Wait until the Screen Cursor reaches Line 0
+		swiIntrWait( 0 , IRQ_VCOUNT );
 		
 		// Let the Processor do its work!
 		_timer::runTimers();
@@ -78,28 +82,11 @@ void _systemController::main()
 		_program::runPrograms();
 		
 		// Compute System-Usage
-		//_system::_cpuUsageTemp_ = ( _system::_cpuUsageTemp_ + _system::_cpuUsageTemp_ + REG_VCOUNT - 192 ) / 3;
-		
-		// wait until line 0 
-		swiIntrWait( 0, IRQ_VBLANK );
-		//swiIntrWait( 0, IRQ_VCOUNT );
-		//swiIntrWait( 0, IRQ_HBLANK );
+		_system::_cpuUsageTemp_ = _system::_cpuUsageTemp_ * 15 + 100 - (REG_VCOUNT * 100 / 256 );
+		_system::_cpuUsageTemp_ >>= 4;
 		
 		// Wait for VBlank
-		//swiWaitForVBlank();
-		//swiWaitForIRQ();
-		
-		i++;
-		//if( i == 60 )
-		//{
-		//	s++;
-		//	i = 0;
-		//	printf("main: %d\n",s);
-		//}
-		
-		//printf("main");
-		
-		//printf("CF: %s\n",_system::_currentFocus_?gadgetType2string[_system::_currentFocus_->getType()].c_str():"nothing");
+		swiWaitForVBlank();
 		
 		if( i > 200 
 			&& false 

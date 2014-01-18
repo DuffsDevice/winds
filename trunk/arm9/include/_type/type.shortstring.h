@@ -2,6 +2,7 @@
 #define _SHORTSTRING_H_
 
 #include <string.h>
+#include "_type/type.h"
 
 namespace std
 {
@@ -181,6 +182,7 @@ namespace std
 	using ssstring = shortString<6,_char>;
 }
 
+using std::shortString;
 using std::sstring;
 using std::ssstring;
 

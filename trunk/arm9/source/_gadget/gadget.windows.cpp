@@ -58,6 +58,11 @@ _callbackReturn _windows::keyHandler( _event event )
 	return handled;
 }
 
+_callbackReturn _windows::taskInfoMoveHandler( _event event ){
+	this->refreshTaskWidths();
+	return use_internal;
+}
+
 _callbackReturn _windows::refreshHandler( _event event )
 {
 	// Receive Gadget
@@ -88,7 +93,8 @@ _windows::_windows( _u8 bgId , _style&& style ) :
 	this->startButton = new _windowsStartButton( 0 , SCREEN_HEIGHT - 10 );
 	
 	// Add TaskInfo
-	this->taskInfo = new _windowsTaskInfo( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
+	this->taskInfo = new _windowsTaskInfoController( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
+	this->taskInfo->setUserEventHandler( onMove , make_callback( this , &_windows::taskInfoMoveHandler ) );
 	
 	// Add a Task-Switcher
 	this->switcher = new _windowsProgramSwitcher();

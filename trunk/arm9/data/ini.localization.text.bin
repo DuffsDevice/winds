@@ -271,6 +271,34 @@ i = Errore di codice Lua
 s = Error análisis del código Lua
 f = Erreur dans code Lua
 
+[def_filename]
+e = Filename:
+g = Dateiname:
+i = Nome del file
+s = Nombre del fichero
+f = Nom de fichier
+
+[def_filetype]
+e = Filetype:
+g = Dateityp:
+i = Filetype:
+s = Filetype:
+f = Filetype:
+
+[lbl_unnamed]
+e = Unamed
+g = Unbenannt
+i = Senza nome 
+s = Innominado
+f = Anonyme
+
+[lbl_guest]
+e = Guest
+g = Gast
+i = Ospite
+s = Huésped
+f = Invité
+
 ;[]
 ;e = 
 ;g = 

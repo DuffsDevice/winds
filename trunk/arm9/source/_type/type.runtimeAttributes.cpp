@@ -1,16 +1,17 @@
 #include "_type/type.runtimeAttributes.h"
 #include "_type/type.font.glyphs.h"
 #include "_type/type.key.h"
+#include "_type/type.system.h"
 
 // Bitmaps
 #include "_resource/resource.image.window.header.h"
 #include "_resource/resource.image.window.buttons.h"
 #include "_resource/resource.image.checkboxes.h"
 
-_runtimeAttributes::_runtimeAttributes( _paramAlloc<_user> user ) :
+_runtimeAttributes::_runtimeAttributes( flex_ptr<_user> user ) :
 	defaultFont( "System7" )
 	, defaultFontSize( 8 )
-	, user( user.get() )
+	, user( move(user) )
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )
 	, highlightForeground( COLOR_WHITE )
@@ -21,7 +22,6 @@ _runtimeAttributes::_runtimeAttributes( _paramAlloc<_user> user ) :
 	, controlForeground( RGB( 22 , 22 , 20 ) )
 	, magnifyKeyboardFocus( true )
 {
-	
 	this->assocDirectories = {
 		{ "%WINDIR%" , "/windows" }
 		, { "%SYSTEM%" , "/windows/system" }

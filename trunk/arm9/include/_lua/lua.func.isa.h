@@ -25,8 +25,10 @@ namespace _luafunc
 			int type = get_type( state , index );
 			return type == LUA_TBOOLEAN || type == LUA_TNUMBER;
 		}
-		static unused inline bool	is_a( lua_State* state , int index , string* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _literal* dummy ){ return lua_isstring( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , string* dummy ){ return lua_isstring( state , index ); }
+		template<typename... TN, int mB,typename dT>
+		static unused inline bool	is_a( lua_State* state , int index , shortString<mB,dT>* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _key* dummy ){
 			int type = get_type( state , index );
 			return type == LUA_TSTRING || type == LUA_TNUMBER;

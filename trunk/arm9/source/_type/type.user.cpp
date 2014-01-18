@@ -64,7 +64,7 @@ _user::_user( string folderName ) :
 					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
 					{ "keyRepetitionDelay" , "30" } ,
-					{ "keyRepetitionSpeed" , "4" } ,
+					{ "keyRepetitionSpeed" , "6" } ,
 					{ "minDragDistance" , "9" } ,
 					{ "maxClickCycles" , "30" } ,
 					{ "maxDoubleClickCycles" , "60" } , 

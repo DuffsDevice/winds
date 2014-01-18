@@ -156,9 +156,14 @@ public:
 		std::sort(begin(), end(), me);
 	}
 	
+	//_assocVector& operator=(_assocVector&& rhs)
+	//{ 
+	//	rhs.swap(*this);
+	//	return *this;
+	//}
 	_assocVector& operator=(const _assocVector& rhs)
-	{ 
-		_assocVector(rhs).swap(*this); 
+	{
+		_assocVector(rhs).swap(*this);
 		return *this;
 	}
 
@@ -181,6 +186,13 @@ public:
 	// 23.3.1.2 element access:
 	mapped_type& operator[](const key_type& key)
 	{ return insert(value_type(key, mapped_type())).first->second; }
+	const mapped_type& operator[](const key_type& key) const
+	{
+		const_iterator i(lower_bound(key));
+		if (i != end() && this->operator()(key, i->first))
+			i = end();
+		return i->second;
+	}
 
 	// modifiers:
 	std::pair<iterator, bool> insert(const value_type& val)

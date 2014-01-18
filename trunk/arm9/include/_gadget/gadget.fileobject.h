@@ -27,13 +27,12 @@ class _fileObject : public _gadget {
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn dragHandler( _event );
 		static _callbackReturn focusHandler( _event );
-		static _callbackReturn clickHandler( _event );
 		static _callbackReturn updateHandler( _event );
 		
 	public:
 	
 		//! Ctor
-		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileViewType viewtype = _fileViewType::list , bool singleClickToExecute = false , _style&& style = _style() );
+		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileViewType viewtype = _fileViewType::list , _style&& style = _style() );
 		
 		//! Dtor
 		~_fileObject();

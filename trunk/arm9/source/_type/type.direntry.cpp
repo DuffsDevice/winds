@@ -270,7 +270,7 @@ bool _direntry::open( string mode )
 
 string _direntry::getDisplayName() const
 {
-	const ssstring& ext = this->extension;
+	const ssstring& ext = this->getExtension();
 	
 	// Certain Files do not have an .extension
 	if( !_system::getUser().sFE || ext.empty() )
@@ -339,7 +339,7 @@ bool _direntry::read( void* dest , _u32 size )
 }
 
 
-bool _direntry::readChild( _literal& child , _vector<_literal>* allowedExtensions )
+bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensions )
 {
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
@@ -360,9 +360,9 @@ bool _direntry::readChild( _literal& child , _vector<_literal>* allowedExtension
 				)
 			)
 				continue;
-			
-			// Check whether we have to check for a specific file extension
-			if( allowedExtensions ) 
+				
+			// Check whether we have to check for a specific file extension (only if the currently processed file is not a directory)
+			if( allowedExtensions && dir->d_type != DT_DIR )
 			{
 				_u32 nameLen = strlen( dir->d_name );
 				_literal nameEnd = dir->d_name + nameLen - 1;
@@ -370,6 +370,10 @@ bool _direntry::readChild( _literal& child , _vector<_literal>* allowedExtension
 				for( _literal ext : *allowedExtensions ) // Iterate over valid extensions
 				{
 					_u32 extLen = strlen( ext );
+					
+					if( !extLen ) // Skip empty patterns
+						continue;
+					
 					_literal extEnd = ext + extLen - 1;
 					_u32 i = 0;
 					while( i < extLen && i < nameLen )
@@ -378,12 +382,14 @@ bool _direntry::readChild( _literal& child , _vector<_literal>* allowedExtension
 							goto _continue;
 						i++;
 					}
-					if( i == extLen ) // We found an extension that fits the current file!
-						break;
+					if( i == extLen && *(nameEnd-extLen) == '.' ) // We found an extension that fits the current file!
+						goto _found;
 					_continue:;
 				}
 				continue; // File does not match any extension
 			}
+			
+			_found:
 			
 			// Write Name to destination and return, that we have found a valid next directory entry
 			child = dir->d_name;
@@ -528,7 +534,7 @@ string _direntry::readString( _optValue<_u32> size )
 	if( modePrev == _direntryMode::closed )
 		this->close();
 	
-	return out;
+	return move(out);
 }
 
 

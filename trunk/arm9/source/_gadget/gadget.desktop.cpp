@@ -27,9 +27,10 @@ _callbackReturn _desktop::refreshHandler( _event event )
 
 
 _desktop::_desktop( _style&& style ) :
-	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileViewType::symbol_big , {} , _scrollType::prevent , _scrollType::prevent , false , style | _styleAttr::focusNoAction )
+	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%USERS%/" + _system::getUser().getFoldername() + "/desktop/" , _fileViewType::symbol_big , false , {/* Allow All Extensions*/} , style | _styleAttr::focusNoAction )
 {
-	//ft = new _freetypeFont("/font.ttf");
+	_fileView::setScrollTypeX( _scrollType::prevent );
+	_fileView::setScrollTypeY( _scrollType::prevent );
 	
 	this->setInternalEventHandler( onDraw , make_callback( &_desktop::refreshHandler ) );
 	

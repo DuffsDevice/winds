@@ -400,7 +400,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool n
 	
 	_callbackReturn ret;
 	
-	// Check for Normal Event Handlers
+	// Check for User-defined Event Handlers
 	if( ret1 )
 	{
 		event.setGadget( this );
@@ -414,7 +414,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool n
 	
 	useinternal:
 	
-	// Check for Normal Event Handlers
+	// Check for Internal Event Handlers
 	if( ret2 )
 	{
 		event.setGadget( this );
@@ -595,7 +595,10 @@ void _gadget::removeChildren( bool remove )
 	else
 		this->children.remove_if( _gadget::removeCallback );
 	
-	//! Signalize there are no children left!
+	// Inform 'me' that I don't have any children left
+	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(nullptr) );
+	
+	// Erase Childrens area
 	this->redraw();
 }
 
@@ -610,7 +613,10 @@ void _gadget::removeEnhancedChildren( bool remove )
 	else
 		this->enhancedChildren.remove_if( _gadget::removeCallback );
 	
-	//! Signalize there are no children left!
+	// Inform 'me' that I don't have any enhanced children left
+	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(this) );
+	
+	// Erase Childrens area
 	this->redraw();
 }
 

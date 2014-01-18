@@ -32,7 +32,7 @@ class _runtimeAttributes
 	public:
 		
 		//! Default Constructor
-		_runtimeAttributes( _paramAlloc<_user> user );
+		_runtimeAttributes( flex_ptr<_user> user );
 		
 		//! Default Destructor
 		~_runtimeAttributes();
