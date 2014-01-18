@@ -1,8 +1,0 @@
-# 1 "c:/Users/riedle/NDS/Lua/source/main.cpp"
-# 1 "c:\\Users\\riedle\\NDS\\Lua\\build//"
-# 1 "<command-line>"
-# 1 "c:/Users/riedle/NDS/Lua/source/main.cpp"
-int main( int argc , char* argv[] )
-{
- return 0;
-}
