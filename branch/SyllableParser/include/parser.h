@@ -4,6 +4,28 @@
 #include <string.h>
 #include <list>
 
+// Copyright (c) 2012-2014 Jakob Riedle (DuffsDevice)
+// 
+// Version 1.0
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 class SyllableParser
 {
 	private:
@@ -15,35 +37,37 @@ class SyllableParser
 		static constexpr Literal consonants		= "bcdfghjklmnpqrstvwxzﬂ";
 		
 		// Vocals that are spoken as one syllable
-		static constexpr Literal diphthongs		= "eu,ei,ie,au,ai,‰u,ue,ae,oe,io";
+		static constexpr Literal diphthongs		= "‰u,ue,oe,io,ie,eu,ei,au,ai,ae";
 		// consonants that don't exist alone
-		static constexpr Literal indivisibles	= "ngs,ch,ck,qu,rh,ph,th";
-		// means, that a vocal has to go first, and the syllable break is behind the combination
-		static constexpr Literal syllableEnd	= "chts,mpft,hrst,chs,cht,rst,rtz,ngs,fts,pft,sch,mpf,rkt,nkt,ckt,kt,ftl,ft,ns,xt,tz,hr,ng,ts,nt,rm,st,nz,rzt,rz,rk,pf,rt,ch,nd,rn,hn,ht,hl,rl,dt,ck,fl";
+		static constexpr Literal indivisibles	= "th,rh,qu,ph,ngs,ck,ch";
+		// means, that a vowel has to go first, and the syllable break is behind the combination
+		static constexpr Literal syllableEnd	= "xt,tz,ts,st,sch,rzt,rz,rtz,rt,rst,rn,rm,rl,rkt,rk,pft,pf,nz,nt,ns,nkt,ngs,ng,nd,mpft,mpf,kt,ht,hrts,hrst,hr,hn,hl,fts,ftl,ft,fl,dt,ckt,ck,chts,cht,chs,ch";
 		// Any vocal before is considered not to belong to the syllable
-		static constexpr Literal syllableStart	= "schw,schm,schn,schl,schr,str,sch,spr,pfl,ch,qu,kr,kn,bl,br,pf,pt,pr,ps,ph,pl,st,sp,gl,gr,gn,kl,tr,wr,fr,fl,zw,th,rh";
+		static constexpr Literal syllableStart	= "zw,wr,tr,th,str,st,spr,sp,schw,schr,schn,schm,schl,sch,rh,qu,pt,ps,pr,pl,ph,pfl,pf,kr,kn,kl,gr,gn,gl,fr,fl,ch,br,bl";
+		// Sorted List of chars at which words could be separated
+		static constexpr Literal wordSeparators = " !#$&()*,-./:;<=>?@[\\]^`{|}~";
 		
 		// Private Constructor
 		SyllableParser(){}
 		
 		// Functions to check is a character belongs to a certain group
 		// Returns the number of chars ahead matching the mask
-		static unsigned char isConsonant( const char* c ){
+		static unsigned char inline isConsonant( const char* c ){
 			return charIsOf( *c , consonants );
 		}
-		static unsigned char isVowel( const char* c ){
+		static unsigned char inline isVowel( const char* c ){
 			return charIsOf( *c , vowels );
 		}
-		static unsigned char isDiphtong( const char* txt ){
+		static unsigned char inline isDiphtong( const char* txt ){
 			return checkMatchList( txt , diphthongs );
 		}
-		static unsigned char isSyllableStart( const char* txt ){
+		static unsigned char inline isSyllableStart( const char* txt ){
 			return checkMatchList( txt , syllableStart );
 		}
-		static unsigned char isSyllableEnd( const char* txt ){
+		static unsigned char inline isSyllableEnd( const char* txt ){
 			return checkMatchList( txt , syllableEnd );
 		}
-		static unsigned char isIndivisible( const char* txt ){
+		static unsigned char inline isIndivisible( const char* txt ){
 			return checkMatchList( txt , indivisibles );
 		}
 		static constexpr inline char toLower( char c ){ return c|32; }
@@ -58,7 +82,25 @@ class SyllableParser
 		static std::list<int> parseWordInternal( const char* startPos , const char* endPos );
 		
 		// Returns a pointer to the first occourence of any of the by 'match' specified characters
-		static const char* findFirstOf( const char* text , const char* match );
+		static const char* findFirstOf( const char* text , const char* match )
+		{
+			if( !*text )
+				return nullptr;
+			do
+			{
+				const char* curPattern = match;
+				do
+				{
+					if( *text == *curPattern )
+						return text;
+					// Sorting the list helps to accelerate comparisons
+					else if( *text < *curPattern )
+						break;
+				}while( *++curPattern );
+			}while( *++text );
+			
+			return nullptr;
+		}
 	
 	public:
 		
@@ -67,7 +109,10 @@ class SyllableParser
 			do
 			{
 				if( *txt == c )
-					return true;		
+					return true;
+				// As the lists are all sorted, we can predict we won't find it anymore!
+				else if( *txt > c )
+					return false;
 			}while( *++txt );
 			
 			return false;
@@ -86,31 +131,43 @@ class SyllableParser
 				
 				unsigned char exprLen = curChar - curExpr;
 				
-				if( exprLen && strncmp( curExpr , txt , exprLen ) == 0 )
-					return exprLen;
+				// Skip this: "xx,,xxx"
+				if( exprLen )
+				{
+					int result = strncmp( curExpr , txt , exprLen );
+					if( result == 0 )
+						return exprLen;
+					// As the lists are reverse sorted: can what we're looking for still occour?
+					else if( result < 0 )
+						return 0; // Nope..
+				}
 				
-				if( !*curChar ) // If it ends before ->break
+				// If this is the last pattern in the list: break before we increase (!) -> could lead to enless looping
+				if( !*curChar )
 					break;
+				
+				// Step one pattern ahead!
 				curExpr += exprLen+1; // +1 for the comma
 			};
 			return 0;
 		}
 		
-		static std::list<int> parseText( const char* txt , const char* end = nullptr )
+		// Pass the text as chonst char* and get back a list with the indices of possible syllable-breaks
+		static std::list<int> parseText( const char* src , const char* end = nullptr )
 		{
-			int len = std::max( (size_t)1 , strlen(txt) );
+			int len = std::max( (size_t)1 , strlen(src) );
 			
 			char* text = new char[len];
-			char* tmp = text;
+			char* dest = text;
 			
 			if( !end )
 				end = text + len;
 			else
-				end = text + ( end - txt );
+				end = text + ( end - src );
 			
-			// Make lowercase
+			// Convert to lowercase
 			do
-				*tmp++ = toLower( *txt++ );
+				*dest++ = toLower( *src++ );
 			while( --len );
 			
 			std::list<int> lst = parseTextInternal( text , end );

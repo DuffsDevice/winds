@@ -1,23 +1,5 @@
 #include "parser.h"
 
-const char* SyllableParser::findFirstOf( const char* text , const char* match )
-{
-	if( !*text )
-		return nullptr;
-	
-	do
-	{
-		const char* tmp = match;
-		do
-		{
-			if( *text == *tmp )
-				return text;
-		}while( *++tmp );
-	}while( *++text );
-	
-	return nullptr;
-}
-
 unsigned char SyllableParser::getNumCharsBeforeSyllableEnd( const char* start )
 {
 	unsigned char numConsonants = 0;
@@ -122,16 +104,14 @@ std::list<int> SyllableParser::parseTextInternal( const char* txt , const char* 
 	
 	do
 	{
-		const char* nextEnd = SyllableParser::findFirstOf( curPos , " ,:\n.(){}[]-#*+?!/&$" );
+		const char* nextEnd = SyllableParser::findFirstOf( curPos , SyllableParser::wordSeparators );
 		
-		if( nextEnd && nextEnd <= end ) // Fond something
-		{
+		if( nextEnd && nextEnd <= end ){ // Found something
 			startPos = curPos;
 			endPos = nextEnd;
 			nextEnd++;
 		}
-		else
-		{
+		else{
 			startPos = curPos;
 			endPos = end;
 		}
