@@ -38,10 +38,10 @@ _bitmap _shortcut::getFileImage()
 	if( fl.getFileName() != "" )
 	{
 		_constBitmap& icon = fl.getFileImage();
-		this->image.copy( ( 10 - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
+		this->image.copy( 0 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	
-	this->image.copy( 5 , 5 , BMP_ShortcutOverlay() );
+	this->image.copy( 0 , 5 , BMP_ShortcutOverlay() );
 	
 	return this->image;
 }

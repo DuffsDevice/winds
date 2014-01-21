@@ -46,7 +46,7 @@ void _text::wrap()
 		}
 		
 		// Index we have a possible break here
-		if( charisof( *ch , breakChars ) )
+		if( SyllableParser::charIsOf( *ch , breakChars ) )
 		{
 			lastBreakIndex = idx;
 			lastWordWidth = 0;
@@ -56,7 +56,7 @@ void _text::wrap()
 		{
 			const _char* text = iteratorText + lastBreakIndex;
 			const _char* end = text + idx - lastBreakIndex + 1;
-			_list<int> lst = syllableParser::parseText( text , end );
+			_list<int> lst = SyllableParser::parseText( text , end );
 			
 			if( lst.size() )
 			{

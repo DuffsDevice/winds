@@ -54,8 +54,8 @@ class _runtimeAttributes
 		
 		
 		//! Setters
-		void setUser( _paramAlloc<_user> user ){
-			this->user = user.get();
+		void setUser( flex_ptr<_user> user ){
+			this->user = move(user);
 		}
 		void enableKeyboardMagnif(){ this->magnifyKeyboardFocus = true; }
 		void disableKeyboardMagnif(){ this->magnifyKeyboardFocus = false; }

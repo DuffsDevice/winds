@@ -62,6 +62,8 @@ void _program::runPrograms()
 	// Clear buffer
 	_program::globalProgramsToExecute.clear();
 	
+	printf("Programs: %d\n",_program::globalPrograms.size());
+	
 	_program::globalPrograms.erase(
 		remove_if( _program::globalPrograms.begin() , _program::globalPrograms.end() , 
 			[]( _programList::value_type& p )->bool

@@ -1,116 +1,123 @@
-#ifndef _PARSER_H_
-#define _PARSER_H_
+#ifndef _SYLLABLE_PARSER_H_
+#define _SYLLABLE_PARSER_H_
 
 #include <string.h>
-#include <malloc.h>
 #include <list>
 
-static bool charisof( char c , const char* txt )
+class SyllableParser
 {
-	do
-	{
-		if( *txt == c )
-			return true;		
-	}while( *++txt );
-	
-	return false;
-}
-
-static inline char tolower( char c )
-{
-	if( c >= 'A' && c <= 'Z' )
-		return c|32;
-	return c;
-}
-
-static const char vocales[] = "aeiouyöäü";
-static const char consonants[] = "bcdfghjklmnpqrstvwxzß";
-
-// Vocals that are speaken as one syllable
-static const char* diphthongs = "eu\0ei\0ie\0au\0äu\0";
-
-// means, that a vocal has to go first, and the syllable break is behind the combination
-static const char* combinVocalBefore = "chts\0fts\0lbst\0bs\0rb\0lf\0mpf\0rkt\0ngs\0nd\0ck\0ng\0ch\0sch\0ft\0rz\0";
-
-// means, that the break is before the combination
-// Any vocal before is considered not belonging to the syllable
-static const char* combinStart = "ch\0sp\0zw\0gl\0cl\0kr\0br\0sch\0qu\0tr\0pf\0fl\0bs\0bl\0ps\0fr\0wr\0kn\0gr\0kl\0kr\0pr\0";
-
-class syllableParser{
-	
 	private:
 		
+		typedef const char* Literal;
+		
+		// Alphabet
+		static constexpr Literal vowels			= "aeiouyöäü";
+		static constexpr Literal consonants		= "bcdfghjklmnpqrstvwxzß";
+		
+		// Vocals that are spoken as one syllable
+		static constexpr Literal diphthongs		= "eu,ei,ie,au,ai,äu,ue,ae,oe,io";
+		// consonants that don't exist alone
+		static constexpr Literal indivisibles	= "ngs,ch,ck,qu,rh,ph,th";
+		// means, that a vocal has to go first, and the syllable break is behind the combination
+		static constexpr Literal syllableEnd	= "chts,mpft,hrst,chs,cht,rst,rtz,ngs,fts,pft,sch,mpf,rkt,nkt,ckt,kt,ftl,ft,ns,xt,tz,hr,ng,ts,nt,rm,st,nz,rzt,rz,rk,pf,rt,ch,nd,rn,hn,ht,hl,rl,dt,ck,fl";
+		// Any vocal before is considered not to belong to the syllable
+		static constexpr Literal syllableStart	= "schw,schm,schn,schl,schr,str,sch,spr,pfl,ch,qu,kr,kn,bl,br,pf,pt,pr,ps,ph,pl,st,sp,gl,gr,gn,kl,tr,wr,fr,fl,zw,th,rh";
+		
 		// Private Constructor
-		syllableParser();
+		SyllableParser(){}
 		
 		// Functions to check is a character belongs to a certain group
 		// Returns the number of chars ahead matching the mask
-		static unsigned char isConsonant( char c ){
-			return charisof( c , consonants );
+		static unsigned char isConsonant( const char* c ){
+			return charIsOf( *c , consonants );
 		}
-		static unsigned char isVocale( char c ){
-			return charisof( c , vocales );
+		static unsigned char isVowel( const char* c ){
+			return charIsOf( *c , vowels );
 		}
-		static unsigned char isDiphtong( const char* txt )
-		{
+		static unsigned char isDiphtong( const char* txt ){
 			return checkMatchList( txt , diphthongs );
 		}
-		static unsigned char isCombinStart( const char* txt )
-		{
-			return checkMatchList( txt , combinStart );
+		static unsigned char isSyllableStart( const char* txt ){
+			return checkMatchList( txt , syllableStart );
 		}
-		static unsigned char isCombinVocalBefore( const char* txt )
-		{
-			return checkMatchList( txt , combinVocalBefore );
+		static unsigned char isSyllableEnd( const char* txt ){
+			return checkMatchList( txt , syllableEnd );
 		}
+		static unsigned char isIndivisible( const char* txt ){
+			return checkMatchList( txt , indivisibles );
+		}
+		static constexpr inline char toLower( char c ){ return c|32; }
+		
+		// Returns the number of letters before the next syllable
+		static unsigned char getNumCharsBeforeSyllableEnd( const char* start );
 		
 		// Parse all words
 		static std::list<int> parseTextInternal( const char* text , const char* end );
 		
-		
 		// Parse a specific word
 		static std::list<int> parseWordInternal( const char* startPos , const char* endPos );
-	
-	public:
 		
 		// Returns a pointer to the first occourence of any of the by 'match' specified characters
 		static const char* findFirstOf( const char* text , const char* match );
+	
+	public:
 		
-		// Check the 'txt'-string for any phrases in the list 'curExpr'
-		static unsigned char checkMatchList( const char* txt , const char* curExpr )
+		static bool charIsOf( char c , const char* txt )
 		{
 			do
 			{
-				unsigned char i = strlen( curExpr );
-				if( strncmp( curExpr , txt , i ) == 0 )
-					return i;
-				curExpr += i+1;
-			}while( *curExpr );
+				if( *txt == c )
+					return true;		
+			}while( *++txt );
+			
+			return false;
+		}
+		
+		// Check the begin of txt for any phrases in the list 'curExpr'
+		static unsigned char checkMatchList( const char* txt , const char* curExpr )
+		{
+			while( *curExpr )
+			{
+				const char* curChar = curExpr;
+				
+				// Determine the length of the current pattern
+				while( *curChar != ',' && *curChar )
+					curChar++;
+				
+				unsigned char exprLen = curChar - curExpr;
+				
+				if( exprLen && strncmp( curExpr , txt , exprLen ) == 0 )
+					return exprLen;
+				
+				if( !*curChar ) // If it ends before ->break
+					break;
+				curExpr += exprLen+1; // +1 for the comma
+			};
 			return 0;
 		}
 		
 		static std::list<int> parseText( const char* txt , const char* end = nullptr )
 		{
-			int i = std::max( (size_t)1 , strlen( txt ) );
+			int len = std::max( (size_t)1 , strlen(txt) );
 			
-			char* text = (char*) malloc( i );
+			char* text = new char[len];
 			char* tmp = text;
 			
 			if( !end )
-				end = text + i;
+				end = text + len;
 			else
 				end = text + ( end - txt );
 			
 			// Make lowercase
 			do
-				*tmp++ = tolower( *txt++ );
-			while( --i );
+				*tmp++ = toLower( *txt++ );
+			while( --len );
 			
 			std::list<int> lst = parseTextInternal( text , end );
 			
-			free( text );
+			delete[] text;
 			
-			return lst;
+			return move(lst);
 		}
 };
 

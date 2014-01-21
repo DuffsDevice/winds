@@ -479,12 +479,6 @@ void _system::start()
 			_system::debug("Wifi could not be inited! Please note that the default Firmware Settings are used to connect");
 	
 	// -----------------------------------------------
-	//	RTA - Runtime Attributes
-	// -----------------------------------------------
-	
-		_system::_rtA_ = new _runtimeAttributes( new _guestUser() );
-	
-	// -----------------------------------------------
 	//	Open necesary Files
 	// -----------------------------------------------
 	
@@ -493,11 +487,28 @@ void _system::start()
 		
 		_system::_registry_ = new _iniFile("%WINDIR%/windows.reg");
 		
+	
+	// -----------------------------------------------
+	//	RTA - Runtime Attributes
+	// -----------------------------------------------
+	
+		_system::_rtA_ = new _runtimeAttributes(nullptr);
+		
+	// -----------------------------------------------
+	// Localization-System
+	// -----------------------------------------------
+	
 		// Localization of Strings
 		_system::_localizationTextTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
 		
 		// Localization of Months
 		_system::_localizationMonthTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationMonth.ini" ) );
+	
+	// -----------------------------------------------
+	// Add a temporary User
+	// -----------------------------------------------
+	
+		_system::_rtA_->setUser( new _guestUser() );
 	
 	// -----------------------------------------------
 	// Gadget-System
@@ -509,9 +520,10 @@ void _system::start()
 	// Fonts
 	// -----------------------------------------------
 	
+		_system::_fonts_["System7"]			= _font::fromFile( "%SYSTEM%/system7.ttf");
+		_system::_fonts_["System10"]		= _font::fromFile( "%SYSTEM%/system10.ttf");
 		_system::_fonts_["ArialBlack13"]	= _font::fromFile( "%SYSTEM%/arialblack13.ttf");
 		_system::_fonts_["CourierNew10"]	= _font::fromFile( "%SYSTEM%/couriernew10.ttf");
-		_system::_fonts_["System7"]			= _font::fromFile( "%SYSTEM%/system7.ttf");
 		_system::_fonts_["SystemSymbols8"]	= _font::fromFile( "%SYSTEM%/systemsymbols8.ttf");
 	
 }

@@ -65,9 +65,6 @@ _callbackReturn PROG_Explorer::handler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
-	if( event == onClose )
-		this->terminate();
-	
 	if( that->getType() == _gadgetType::button )
 	{
 		string val = this->addressbar->getStrValue();
@@ -80,6 +77,8 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		this->addressbar->setStrValue( this->fileview->getPath() );
 		this->setWindowTitle();
 	}
+	else if( that->getType() == _gadgetType::window )
+		this->terminate();
 	
 	return handled;
 }

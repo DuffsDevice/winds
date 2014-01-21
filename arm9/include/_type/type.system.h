@@ -7,7 +7,7 @@
 #include "_type/type.gadget.screen.h"
 #include "_type/type.event.h"
 #include "_type/type.font.h"
-#include "_type/type.runtimeAttributes.h"
+#include "_type/type.runtimeattributes.h"
 #include "_type/type.key.h"
 
 class _ini;

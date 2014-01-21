@@ -59,13 +59,15 @@ _length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fon
 #include "_resource/resource.font.arialblack.13.h"
 #include "_resource/resource.font.couriernew.10.h"
 #include "_resource/resource.font.system.7.h"
+#include "_resource/resource.font.system.10.h"
 #include "_resource/resource.font.systemsymbols.8.h"
 
-_vector<_memoryFont*> builtInFonts =
+const _vector<_memoryFont*> builtInFonts =
 {
 	new FONT_ArialBlack13()
 	, new FONT_CourierNew10()
 	, new FONT_System7()
+	, new FONT_System10()
 	, new FONT_SystemSymbols8()
 };
 
@@ -88,8 +90,10 @@ const _font* _font::fromFile( string path )
 		return builtInFonts[1];
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/system7.ttf" ) )
 		return builtInFonts[2];
-	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/systemsymbols8.ttf" ) )
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/system10.ttf" ) )
 		return builtInFonts[3];
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/systemsymbols8.ttf" ) )
+		return builtInFonts[4];
 	
 	return nullptr;
 }

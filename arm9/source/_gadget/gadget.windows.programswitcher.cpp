@@ -65,8 +65,10 @@ _callbackReturn _windowsProgramSwitcher::updateHandler( _event event )
 {
 	_windowsProgramSwitcher* that = event.getGadget<_windowsProgramSwitcher>();
 	
-	if( event == onOpen ){
-		that->setOwner( _system::_gadgetHost_->getFocusedChild() );
+	_gadget* focusedChild = _system::_gadgetHost_->getFocusedChild();
+	
+	if( event == onOpen && focusedChild && focusedChild->getType() == _gadgetType::window && focusedChild->hasFocus() ){
+		that->setOwner( focusedChild );
 	}
 	
 	_list<_window*> activeTasks = _window::getTaskWindows();
@@ -88,6 +90,18 @@ _callbackReturn _windowsProgramSwitcher::updateHandler( _event event )
 	
 	that->label->setStrValue( wnd ? wnd->getStrValue() : "----" );
 	that->label->setWidth( width );
+	
+	return handled;
+}
+
+_callbackReturn _windowsProgramSwitcher::closeHandler( _event event )
+{
+	_windowsProgramSwitcher* that = event.getGadget<_windowsProgramSwitcher>();
+	
+	_window* wnd = (_window*)that->getOwner();
+	
+	if( wnd && wnd->isMinimized() )
+		wnd->restore();
 	
 	return handled;
 }
@@ -132,6 +146,7 @@ _windowsProgramSwitcher::_windowsProgramSwitcher( _style&& style ) :
 	this->setPadding( _padding(4,4,4,1) );
 	
 	this->setInternalEventHandler( onOpen , make_callback( &_windowsProgramSwitcher::updateHandler ) );
+	this->setInternalEventHandler( onClose , make_callback( &_windowsProgramSwitcher::closeHandler ) );
 	this->setInternalEventHandler( onDraw , make_callback( &_windowsProgramSwitcher::refreshHandler ) );
 	this->setInternalEventHandler( onKeyDown , make_callback( &_windowsProgramSwitcher::keyHandler ) );
 	this->setInternalEventHandler( onKeyRepeat , make_callback( &_windowsProgramSwitcher::keyHandler ) );
