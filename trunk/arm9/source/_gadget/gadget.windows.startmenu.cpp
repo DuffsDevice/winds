@@ -89,6 +89,7 @@ _startMenu::_startMenu( _style&& style ) :
 	usrName->setVAlign( _valign::middle );
 	usrName->setAlign( _align::left );
 	usrName->setColor( COLOR_WHITE );
+	usrName->setFont( _system::getFont("System10") );
 	this->addChild( usrName );
 	
 	// Registering Event Handlers

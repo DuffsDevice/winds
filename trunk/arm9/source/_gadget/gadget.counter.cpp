@@ -28,11 +28,11 @@ _counter::_counter( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	//
 	
 	// Create buttons for increasing and decreasing
-	this->increaseHandle = new _scrollButton( 8 , 6 , this->getWidth() - 9 , 1 , _scrollButtonType::buttonTop );
-	this->decreaseHandle = new _scrollButton( 8 , 8 , this->getWidth() - 9 , 7 , _scrollButtonType::buttonBottom );
+	this->increaseHandle = new _scrollButton( this->getWidth() - 9 , 1 , 8 , 6 , _scrollButtonType::buttonTop );
+	this->decreaseHandle = new _scrollButton( this->getWidth() - 9 , 7 , 8 , 8 , _scrollButtonType::buttonBottom );
 	
 	// Create Label to hold value
-	this->valueLabel = new _label( this->getWidth() - 10 , this->getHeight() - 2 , 1 , 1 , int2string( value , this->decimals , this->numbersystem ) );
+	this->valueLabel = new _label( 1 , 1 , this->getWidth() - 10 , this->getHeight() - 2 , int2string( value , this->decimals , this->numbersystem ) );
 	this->valueLabel->setAlign( _align::center );
 	this->valueLabel->setVAlign( _valign::middle );
 	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );

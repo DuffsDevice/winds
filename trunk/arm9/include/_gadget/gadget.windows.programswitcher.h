@@ -16,6 +16,7 @@ class _windowsProgramSwitcher : public _popup
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn keyHandler( _event );
 		static _callbackReturn updateHandler( _event );
+		static _callbackReturn closeHandler( _event );
 		
 		void taskChangeHandler( _window* ref );
 		
