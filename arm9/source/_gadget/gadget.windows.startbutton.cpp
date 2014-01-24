@@ -30,7 +30,7 @@ _callbackReturn _windowsStartButton::refreshHandler( _event event )
 		bP.copy( 0 , 0 , BMP_StartButton() );
 	
 	// "Start"-Text
-	bP.drawString( 12 , 1 , _system::getFont() , sBT , _system::getUser().sBTC );
+	bP.drawString( 12 , 0 , _system::getFont() , sBT , _system::getUser().sBTC );
 	
 	return use_default;
 }

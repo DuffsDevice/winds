@@ -5,7 +5,7 @@
 
 void _textBox::setFont( const _font* ft )
 {
-	if( this->font != ft )
+	if( this->font != ft && ft )
 	{ 
 		this->font = ft;
 		if( this->font && this->font->isValid() )
@@ -84,14 +84,7 @@ _2s32 _textBox::getFontPosition( bool noScroll )
 	switch( this->getVAlign() )
 	{
 		case _valign::middle:
-			y = ( ( this->getHeight() + 1 ) >> 1 )
-				- ( 
-					(
-						(
-							( this->font->getAscent() + this->font->getHeight() ) >> 1 // This is the avg height of the font
-						) + 1 
-					) >> 1
-				);
+			y = ( ( this->getHeight() - 1 ) >> 1 ) - ( ( this->font->getAscent( this->fontSize ) + 1 ) >> 1 );
 			break;
 		case _valign::top:
 			y = _textBox::borderY;

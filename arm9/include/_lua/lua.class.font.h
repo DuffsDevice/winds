@@ -22,9 +22,12 @@ class _lua_font
 		//! Lua-Ctor
 		_lua_font( lua_State* L );
 		
-		//! Operator that allows casts to 'const font*'
+		//! Operator that allows casts to _font
 		operator const _font*(){
 			return this->font;
+		}
+		operator _font&(){
+			return const_cast<_font&>(*this->font);
 		}
 		
 		//! getCharacterWidth

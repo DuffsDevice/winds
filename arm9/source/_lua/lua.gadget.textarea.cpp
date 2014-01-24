@@ -26,5 +26,6 @@ Lunar<_lua_textarea>::PropertyType _lua_textarea::properties[] = {
 	{ "cursor"		, wrap( _lua_textarea , &_textArea::getCursor )		, wrap( _lua_textarea , &_textArea::setCursor ) },
 	{ "font"		, wrap( _lua_textarea , &_textArea::getFont )		, wrap( _lua_textarea , &_textArea::setFont ) },
 	{ "fontSize"	, wrap( _lua_textarea , &_textArea::getFontSize )	, wrap( _lua_textarea , &_textArea::setFontSize ) },
+	{ "align"		, wrap( _lua_textarea , &_textArea::getAlign )		, wrap( _lua_textarea , &_textArea::setAlign ) },
 	LUA_CLASS_ATTR_END
 };

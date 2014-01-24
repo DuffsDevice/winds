@@ -47,10 +47,13 @@ class _ini
 		void writeIndex( const string& section , const string& name , const string& value ){ this->array[section][name] = value; }
 		
 		//! Delete a section from the ini structure
-		void deleteSection( const string& section ){ this->array.erase( section ); }
+		void deleteSection( const string& section ){ this->array.erase(section); }
 		
 		//! Delete an index out of the supplied region
 		void deleteIndex( const string& section , const string& name );
+		
+		//! Read whole Section
+		const _assocVector<string,string>& readSection( const string& section ) const ;
 		
 		//! Virtual Dtor
 		virtual ~_ini(){};

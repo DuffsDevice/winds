@@ -18,7 +18,7 @@ void _label::setStrValue( string val )
 
 void _label::setFont( const _font* ft )
 {
-	if( this->font == ft )
+	if( this->font == ft || !ft )
 		return;
 	
 	// Set Font...

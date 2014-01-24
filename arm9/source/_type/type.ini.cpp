@@ -26,6 +26,18 @@ void _ini::deleteIndex( const string& section , const string& name )
 		it1->second.erase(name);
 }
 
+const _assocVector<string,string>& _ini::readSection( const string& section ) const
+{
+	auto it = this->array.find( section );	
+	
+	// Check if section available
+	if( it != this->array.end() )
+		return it->second;
+	
+	static const _assocVector<string,string> output;
+	return output;
+}
+
 _s16 _ini::read( const string& input )
 {
 	this->array.clear();

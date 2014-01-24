@@ -45,6 +45,24 @@ _bitmap _user::getUserImage( string path )
 	return bmp;
 }
 
+void _user::readConstants(){
+	this->mDD		= this->getIntAttr( "minDragDistance" );
+	this->mCC		= this->getIntAttr( "maxClickCycles" );
+	this->mDC		= this->getIntAttr( "maxDoubleClickCycles" );
+	this->mDA		= this->getIntAttr( "maxDoubleClickArea" );
+	this->kRD		= this->getIntAttr( "keyRepetitionDelay" );
+	this->kRS		= this->getIntAttr( "keyRepetitionSpeed" );
+	this->fOH		= this->getIntAttr( "fileObjectHeight" );
+	this->lIH		= this->getIntAttr( "listItemHeight" );
+	this->sFE		= this->getIntAttr( "showFileExtension" );
+	this->sBTC		= this->getIntAttr( "startButtonTextColor" );
+	this->dTC		= this->getIntAttr( "desktopColor" );
+	this->mKF		= this->getIntAttr( "magnifyKeyboardFocus" );
+	this->isAdmin	= this->getIntAttr( "adminRights" );
+	this->cOH		= this->getIntAttr( "counterObjectHeight" );
+	this->sOH		= this->getIntAttr( "selectObjectHeight" );
+}
+
 _user::_user( string folderName ) :
 	_iniFile( "%USERS%/" + folderName + "/user.ini" )
 	, folderName( folderName )
@@ -52,16 +70,16 @@ _user::_user( string folderName ) :
 	if( _iniFile::creation )
 	{
 		this->getMap() = 
-			{ { "_global_" , 
-				{
+			{
+				{ "_global_" , {
 					{ "userName" , this->folderName } ,
 					{ "userCode" , "" } ,
+					{ "adminRights" , "1" } ,
+					{ "userLogo" , "%APPDATA%/usericons/guest.png" } ,
 					{ "wallpaper" , "default" } ,
 					{ "wallpaperView" , "0" } ,
 					{ "desktopColor" , "RGB( 7 , 13 , 20 )" } ,
-					{ "userLogo" , "%APPDATA%/usericons/guest.png" } ,
 					{ "showFileExtension" , "1" } ,
-					{ "startButtonText" , "start" } ,
 					{ "startButtonTextColor" , "RGB( 30 , 30 , 30 )" } ,
 					{ "keyRepetitionDelay" , "30" } ,
 					{ "keyRepetitionSpeed" , "6" } ,
@@ -73,31 +91,27 @@ _user::_user( string folderName ) :
 					{ "listItemHeight" , "9" } ,
 					{ "magnifyKeyboardFocus" , "1" } ,
 					{ "counterObjectHeight" , "16" } ,
-					{ "selectObjectHeight" , "10" } ,
-					{ "adminRights" , "1" }
-				}
-			} };
+					{ "selectObjectHeight" , "10" }
+				} } ,
+				{ "startmenu" , {
+					{ "1" , "%SYSTEM%/paint.exe" } ,
+					{ "2" , "%SYSTEM%/explorer.exe" }
+				} }
+			};
 		
 		// Write to disk!
 		this->flush();
 	}
 	
-	// Initialize
-	this->mDD = this->getIntAttr( "minDragDistance" );
-	this->mCC = this->getIntAttr( "maxClickCycles" );
-	this->mDC = this->getIntAttr( "maxDoubleClickCycles" );
-	this->mDA = this->getIntAttr( "maxDoubleClickArea" );
-	this->kRD = this->getIntAttr( "keyRepetitionDelay" );
-	this->kRS = this->getIntAttr( "keyRepetitionSpeed" );
-	this->fOH = this->getIntAttr( "fileObjectHeight" );
-	this->lIH = this->getIntAttr( "listItemHeight" );
-	this->sFE = this->getIntAttr( "showFileExtension" );	
-	this->sBTC= this->getIntAttr( "startButtonTextColor" );	
-	this->dTC = this->getIntAttr( "desktopColor" );	
-	this->mKF = this->getIntAttr( "magnifyKeyboardFocus" );	
-	this->isAdmin = this->getIntAttr( "adminRights" );
-	this->cOH = this->getIntAttr( "counterObjectHeight" );	
-	this->sOH = this->getIntAttr( "selectObjectHeight" );	
+	//
+	// Read Some constants into fast-accessible variables
+	//
+	this->readConstants();
+	
+	
+	//
+	// Read The User's image
+	//
 	
 	// Set Currently Working directory
 	_cwdChanger cw ( "%USERS%/" + this->folderName );
@@ -115,7 +129,8 @@ _user::_user( string folderName ) :
 	this->wallpaperView = (_wallpaperViewType) this->getIntAttr( "wallpaperView" );
 	
 	switch( this->wallpaperView ){
-		//case WALLPAPER_ORIG:
+		case WALLPAPER_ORIG:
+			break;
 		case WALLPAPER_ADJUST:
 			this->wallpaper = _bitmapResizer( SCREEN_WIDTH , SCREEN_HEIGHT - 10 , this->wallpaper );
 			break;
@@ -125,6 +140,14 @@ _user::_user( string folderName ) :
 		default:
 			break;
 	}
+	
+	
+	//
+	// Read the start menu
+	//
+	
+	for( auto entry : _iniFile::readSection("startmenu") )
+		startMenuEntries.push_back( entry.second );
 }
 
 void _user::createAs( const string& folderName )
@@ -134,8 +157,15 @@ void _user::createAs( const string& folderName )
 	this->getMap() = move( str );
 }
 
-_user::~_user(){
+_user::~_user()
+{
+	// Index last time the user logged in
 	_iniFile::writeIndex( "_global_" , "lastTimeLogIn" , _time::now() );
+	
+	// Write start menu back into .ini
+	int curIdx = 1;
+	for( string& entry : startMenuEntries )
+		_iniFile::writeIndex( "startmenu" , int2string(curIdx) , move(entry) );
 }
 
 bool _user::checkPassword( const string& pw ) const {

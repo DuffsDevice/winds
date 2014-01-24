@@ -173,7 +173,7 @@ class Lunar
 					lua_pushcclosure( state , &Lunar<Class>::functionDispatch , 2 );	// Push a C Closure having 2 upvalues (index and instance)
 					return 1;															// Return a 'function'
 				}
-				else // A normal attribute!
+				else if( Class::properties[index].getter != nullptr ) // A normal attribute!
 				{
 					// Clean up the stack before we call the getter
 					lua_pop( state , 2 );		// Pop metatable and index
@@ -250,7 +250,7 @@ class Lunar
 					luaL_error( state , "Trying to set the method [%s] of class [%s]", Class::methods[ LunarHelper::func2index(index) ].name , Class::className );
 					return 1;
 				}
-				else // A normal attribute!
+				else if( Class::properties[index].setter != nullptr ) // A normal attribute!
 				{
 					// Clean up the stack before we call the setter
 					lua_pop( state , 2 );		// Pop metatable and index
@@ -343,19 +343,23 @@ class Lunar
 		
 		static int propertyGetter( lua_State* state )
 		{
+			const char* attrName = lua_tostring( state , 2 );
+			
 			int result = propertyGetterImpl( state );
 			if( result != -1 )
 				return result;
-			luaL_error( state , "Object has no such attribute!" ); // Throw error
+			luaL_error( state , "Object has no attribute named '%s'!" , attrName ); // Throw error
 			return 0;
 		}
 		
 		static int propertySetter( lua_State* state )
 		{
+			const char* attrName = lua_tostring( state , 2 );
+			
 			int result = propertySetterImpl( state );
 			if( result != -1 )
 				return result;
-			luaL_error( state , "Object has no such attribute!" ); // Throw error
+			luaL_error( state , "Object has no attribute named '%s'!" , attrName ); // Throw error
 			return 0;
 		}
 		

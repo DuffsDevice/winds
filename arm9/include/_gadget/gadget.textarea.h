@@ -65,10 +65,20 @@ class _textArea : public _gadget{
 		_u8 getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( const _font* ft ){ this->text.setFont( ft ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
+		void setFont( const _font* ft ){
+			if( !ft )
+				return;
+			this->text.setFont( ft );
+			this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
+			this->checkRefresh();
+		}
 		
 		//! Set FontSize
-		void setFontSize( _u8 fontSize ){ this->text.setFontSize( fontSize ); this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 ); this->checkRefresh(); }
+		void setFontSize( _u8 fontSize ){
+			this->text.setFontSize( fontSize );
+			this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
+			this->checkRefresh();
+		}
 		
 		//! Set Text Color
 		void setColor( _pixel col ){ this->color = col; this->redraw(); }

@@ -69,8 +69,6 @@ class _direntry
 		
 		//! Flag indicating if the FAT32-System is ready to be used
 		static int			fatInited;
-		static _ini			filetypeMappers;
-		static _ini			filetypeIcons;
 		
 		//! Filename
 		string				filename;
@@ -82,9 +80,6 @@ class _direntry
 		
 		//! The Mode the file was opened by
 		_direntryMode		mode;
-		
-		//! Get PARTITION and DIR_ENTRY
-		bool getEntry( PARTITION* &partition , DIR_ENTRY* &dirEntry );
 		
 		//! Flush a files contents to disk
 		bool flush();
@@ -227,17 +222,11 @@ class _direntry
 		
 		
 		//! Replace associated filename-patterns
-		static string replaceASSOCS( string&& path ){
-			string path2 = move( path );
-			replaceASSOCS( path2 );
-			return path2;
+		static string replaceASSOCS( string path ){
+			replaceASSOCSInternal(path);
+			return move(path);
 		}
-		static string replaceASSOCS( const string& path ){
-			string path2 = path;
-			replaceASSOCS( path2 );
-			return path2;
-		}
-		static void replaceASSOCS( string& path );
+		static void replaceASSOCSInternal( string& path );
 };
 
 extern _direntry _diskRoot_;

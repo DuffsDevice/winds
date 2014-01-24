@@ -22,5 +22,7 @@ Lunar<_lua_button>::PropertyType _lua_button::properties[] = {
 	{ "autoSelect"	, wrap( _lua_button , &_button::isAutoSelect )	, wrap( _lua_button , &_button::setAutoSelect ) },
 	{ "font"		, wrap( _lua_button , &_button::getFont )		, wrap( _lua_button , &_button::setFont ) },
 	{ "fontSize"	, wrap( _lua_button , &_button::getFontSize )	, wrap( _lua_button , &_button::setFontSize ) },
+	{ "align"		, wrap( _lua_button , &_button::getAlign )		, wrap( _lua_button , &_button::setAlign ) },
+	{ "vAlign"		, wrap( _lua_button , &_button::getVAlign )		, wrap( _lua_button , &_button::setVAlign ) },
 	LUA_CLASS_ATTR_END
 };

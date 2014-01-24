@@ -1,0 +1,99 @@
+using "System.Event"
+using "Drawing.Bitmap"
+using "Drawing.Font"
+using "UI.Gadget"
+using "UI.Button"
+using "UI.Label"
+using "UI.Window"
+
+local wnd
+local btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn0
+local btnClear, btnBackspace, btnEqual, btnComma, btnAdd, btnSub, btnMul, btnDiv, btnSqrt
+local label
+
+function main()
+	
+	-- Create Window
+	wnd = Window( 40 , 5 , 59 , 88 , "Calculator" , Bitmap() , false , true , "notResizeable | draggable" )
+	
+	-- Create Label
+	label = Label( 1 , 1 , 55 , 10 , "0" )
+	label.align = "right"
+	label.bgColor = "white"
+	
+	local btnStartX = 1
+	local btnStartY = 12
+	local btnWidth = 13
+	local btnHeight = 12
+	local btnWidthEx = btnWidth + 1;
+	local btnHeightEx = btnHeight + 1;
+	
+	--------------------
+	-- Create Buttons --
+	--------------------
+	
+	-- First row
+	btnClear = Button( btnStartX , btnStartY , btnWidth , btnHeight , "C" )
+	btnBackspace = Button( btnStartX + btnWidthEx * 1 , btnStartY , btnWidth , btnHeight , "¨" )
+	btnAdd = Button( btnStartX + btnWidthEx * 2 , btnStartY , btnWidth , btnHeight , "+" )
+	btnSub = Button( btnStartX + btnWidthEx * 3 , btnStartY , btnWidth , btnHeight , "-" )
+	
+	-- Second
+	btn1 = Button( btnStartX , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "1" )
+	btn2 = Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "2" )
+	btn3 = Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "3" )
+	btnMul = Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "°" )
+	
+	-- Third
+	btn4 = Button( btnStartX , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "4" )
+	btn5 = Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "5" )
+	btn6 = Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "6" )
+	btnDiv = Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "±" )
+	
+	-- Fourth
+	btn7 = Button( btnStartX , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "7" )
+	btn8 = Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "8" )
+	btn9 = Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "9" )
+	btnSqrt = Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "." )
+	
+	-- Fifth
+	btn0 = Button( btnStartX , btnStartY + btnHeightEx * 4 , btnWidth + btnWidthEx , btnHeight , "0" )
+	btnComma = Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "," )
+	btnEqual = Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "=" )
+	
+	local symbolFont = System.getFont("SystemSymbols8")
+	
+	-- Adjust some fonts
+	btnSqrt.font = symbolFont
+	btnMul.font = symbolFont
+	btnDiv.font = symbolFont
+	btnBackspace.font = symbolFont
+	
+	-- Add Buttons
+	wnd.addChild( btn0 )
+	wnd.addChild( btn1 )
+	wnd.addChild( btn2 )
+	wnd.addChild( btn3 )
+	wnd.addChild( btn4 )
+	wnd.addChild( btn5 )
+	wnd.addChild( btn5 )
+	wnd.addChild( btn6 )
+	wnd.addChild( btn7 )
+	wnd.addChild( btn8 )
+	wnd.addChild( btn9 )
+	wnd.addChild( btnComma )
+	wnd.addChild( btnAdd )
+	wnd.addChild( btnSub )
+	wnd.addChild( btnMul )
+	wnd.addChild( btnDiv )
+	wnd.addChild( btnBackspace )
+	wnd.addChild( btnClear )
+	wnd.addChild( btnEqual )
+	wnd.addChild( btnSqrt )
+	
+	-- Add Label
+	wnd.addChild( label )
+	
+	System.addChild( wnd )
+	
+end

@@ -5,6 +5,7 @@
 #include "_type/type.h"
 #include "_type/type.event.h"
 #include "_type/type.rect.h"
+#include "_type/type.language.h"
 #include "_type/type.font.h"
 #include "_type/type.color.h"
 #include "_type/type.style.h"

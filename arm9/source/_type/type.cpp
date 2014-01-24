@@ -105,8 +105,6 @@ int string2int( const _char *p ){
 
 const _char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-#include <stdio.h>
-
 string int2string( _int val , _u8 zeroFill , _u8 numbersystem )
 {
 	_char result[34]; // string which will contain the number
