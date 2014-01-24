@@ -18,6 +18,9 @@ class _user : public _iniFile
 		_bitmap				userLogo;
 		_bitmap				wallpaper;
 		_wallpaperViewType	wallpaperView;
+		_vector<string>		startMenuEntries;
+		
+		void readConstants();
 	
 	public:
 		
@@ -89,6 +92,9 @@ class _user : public _iniFile
 		
 		//! Set the users icon (string)
 		void setUsericon( const string& icon , bool builtIn = false ){ _iniFile::writeIndex( "_global_" , "userLogo" , icon ); }
+		
+		//! Get start menu
+		const _vector<string>& getStartMenuEntries(){ return this->startMenuEntries; }
 };
 
 #endif

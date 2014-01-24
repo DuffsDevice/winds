@@ -244,7 +244,7 @@ namespace _luafunc
 		const _font* check( lua_State* L , int index , const _font** dummy ){
 			_lua_font* ft = Lunar<_lua_font>::lightcheck( L , index );
 			if( ft )
-				return *ft; // You CAN cast _lua_font to _font
+				return (const _font*)*ft; // You CAN cast _lua_font to _font
 			return nullptr;
 		}
 	}

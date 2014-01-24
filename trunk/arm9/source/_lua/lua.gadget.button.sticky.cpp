@@ -19,9 +19,6 @@ Lunar<_lua_stickybutton>::FunctionType _lua_stickybutton::methods[] = {
 };
 
 Lunar<_lua_stickybutton>::PropertyType _lua_stickybutton::properties[] = {
-	{ "checked"		, wrap( _lua_stickybutton , &_stickyButton::getIntValue )	, wrap( _lua_stickybutton , &_stickyButton::setIntValue ) },
-	{ "text"		, wrap( _lua_stickybutton , &_stickyButton::getStrValue )	, wrap( _lua_stickybutton , &_stickyButton::setStrValue ) },
-	{ "autoSelect"	, wrap( _lua_stickybutton , &_stickyButton::isAutoSelect )	, wrap( _lua_stickybutton , &_stickyButton::setAutoSelect ) },
-	{ "font"		, wrap( _lua_stickybutton , &_stickyButton::getFont )		, wrap( _lua_stickybutton , &_stickyButton::setFont ) },
-	{ "fontSize"	, wrap( _lua_stickybutton , &_stickyButton::getFontSize )	, wrap( _lua_stickybutton , &_stickyButton::setFontSize ) }
+	{ "checked"		, wrap( _lua_stickybutton , &_stickyButton::getIntValue )	, wrap( _lua_stickybutton , &_stickyButton::setIntValue ) } ,
+	{ "autoSelect"	, nullptr													, nullptr }
 };

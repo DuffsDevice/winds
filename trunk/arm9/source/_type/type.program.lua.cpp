@@ -113,16 +113,12 @@ int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_even
 int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
 int _progLua::lua_getLocalizedString( lua_State* L ){ push( L , _system::getLocalizedString( check<string>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_addChild( lua_State* L ){ _system::_gadgetHost_->addChild( check<_gadget*>( L , 1 ) ); return 0; }
-int _progLua::lua_readRegistryIndex( lua_State* L ){ return push( L , _system::_registry_->readIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ).c_str() ); }
-int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::_registry_->writeIndex( check<string>( L , 1 ) , check<string>( L , 2 ) , check<string>( L , 3 ) ); return 0; }
-int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::_registry_->deleteIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ); return 0; }
-int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::_registry_->deleteSection( check<string>( L , 1 ) ); return 0; }
+int _progLua::lua_readRegistryIndex( lua_State* L ){ return push( L , _system::getRegistry().readIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ).c_str() ); }
+int _progLua::lua_writeRegistryIndex( lua_State* L ){ _system::getRegistry().writeIndex( check<string>( L , 1 ) , check<string>( L , 2 ) , check<string>( L , 3 ) ); return 0; }
+int _progLua::lua_deleteRegistryIndex( lua_State* L ){ _system::getRegistry().deleteIndex( check<string>( L , 1 ) , check<string>( L , 2 ) ); return 0; }
+int _progLua::lua_deleteRegistrySection( lua_State* L ){ _system::getRegistry().deleteSection( check<string>( L , 1 ) ); return 0; }
 int _progLua::lua_getFont( lua_State* L ){
-	Lunar<_lua_font>::push( L , new _lua_font(
-			lua_isstring( L , 1 ) ? _system::getFont( lua_tostring( L , 1 ) ) : _system::getFont()
-		)
-	);
-	return 1;
+	return push( L , lua_isstring( L , 1 ) ? _system::getFont( lua_tostring( L , 1 ) ) : _system::getFont() );
 }
 int _progLua::lua_sizeChangePhrase( lua_State* L ){ push( L , stringIntegrator::sizeChangePhrase( check<int>( L , 1 ) ).c_str() ); return 1; }
 int _progLua::lua_colorChangePhrase( lua_State* L ){ push( L , stringIntegrator::colorChangePhrase( check<_pixel>( L , 1 ) ).c_str() ); return 1; }

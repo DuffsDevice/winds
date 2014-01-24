@@ -4,6 +4,7 @@
 
 #include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
+#include "_lua/lua.gadget.button.h"
 #include "_gadget/gadget.button.sticky.h"
 
 /**
@@ -24,7 +25,7 @@ class _lua_stickybutton : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_stickybutton>::FunctionType methods[];
 		static Lunar<_lua_stickybutton>::PropertyType properties[];
-		using baseclasses = Lunar<_lua_stickybutton>::BaseClassType<_lua_gadget>;
+		using baseclasses = Lunar<_lua_stickybutton>::BaseClassType<_lua_button>;
 };
 
 #endif

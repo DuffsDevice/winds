@@ -16,7 +16,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 {
 	// Constants
 	_coord firstLineY = 70;
-	_coord secondLineY = 81;
+	_coord secondLineY = 82;
 	_coord fileViewY = 12;
 	
 	// Labels

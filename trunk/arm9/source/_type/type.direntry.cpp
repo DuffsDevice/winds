@@ -52,7 +52,7 @@ string dirname( string path )
 }
 
 
-void _direntry::replaceASSOCS( string& path )
+void _direntry::replaceASSOCSInternal( string& path )
 {
 	for( const _pair<string,string>& assoc : _system::getRTA().getAssociativeDirectories() )
 	{
@@ -75,7 +75,7 @@ bool _direntry::initFat()
 
 _direntry::_direntry( string&& fn ) :
 	fHandle( nullptr ) // same as dHandle
-	, filename( replaceASSOCS( move( fn ) ) )
+	, filename( replaceASSOCS( move(fn) ) )
 	, extension( nullptr )
 	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
@@ -210,17 +210,14 @@ bool _direntry::flush()
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return false;
 	
-	// Defines...
-	PARTITION *partition = NULL;
-
 	// Get Partition
-	partition = _FAT_partition_getPartitionFromPath( this->filename.c_str() );
+	PARTITION *partition = _FAT_partition_getPartitionFromPath( this->filename.c_str() );
 
-	// Check Partition
+	// Check Validity
 	if( !partition )
 		return false;
 	
-	// Flush any sectors in the disc cache
+	// Flush all sectors in teh cache of this specific partition
 	if ( !_FAT_cache_flush( partition->cache ) )
 		return false;
 
@@ -594,7 +591,31 @@ bool _direntry::execute( _cmdArgs args )
 		}
 		case _mime::application_x_bat:
 			return _system::executeCommand( this->readString() );
+		
+		// Choose the right filetype handler
 		default:
+			// Fetch handler expression
+			const string& command = _system::getRegistry().getFileTypeHandler( this->getExtension() );
+			if( command.empty() )
+				break;
+			
+			string commandCopy = command; // Work on copy
+			replaceASSOCS( commandCopy ); // Replace Associative directories
+			
+			size_t pos = 0;
+			// Replace all "$F" with the full file path
+			while( (pos = commandCopy.find( "$F" , pos )) != string::npos )
+				commandCopy.replace( pos , sizeof("$F") , this->getFileName() );
+			
+			pos = 0;
+			// Replace all "$N" with the file name without extension
+			while( (pos = commandCopy.find( "$N" , pos )) != string::npos )
+				commandCopy.replace( pos , sizeof("$N") , this->getName() );
+			
+			printf("Executing '%s'",commandCopy.c_str());
+			
+			// Execute the command
+			_system::executeCommand( move(commandCopy) );
 			break;
 	}
 	return false;
@@ -683,16 +704,12 @@ bool _direntry::rename( string newName )
 	// Replace associative directory names
 	replaceASSOCS( newName );
 	
-	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 )
-	{
+	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 ){
 		*this = _direntry( newName.c_str() );
 		return true;
 	}
 	return false;
 }
-
-_ini _direntry::filetypeMappers;
-_ini _direntry::filetypeIcons;
 
 /// Root Directory
 _direntry _diskRoot_ = _direntry("/");

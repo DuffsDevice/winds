@@ -9,6 +9,8 @@
 #include "_type/type.font.h"
 #include "_type/type.runtimeattributes.h"
 #include "_type/type.key.h"
+#include "_type/type.language.h"
+#include "_type/type.registry.h"
 
 class _ini;
 class _iniFile;
@@ -16,12 +18,12 @@ class _direntry;
 class _keyboard;
 class _user;
 
-typedef _vector<_pair<_event,_eventCallType>>					_eventList;
+typedef _vector<_pair<_event,_eventCallType>> _eventList;
 
-//! For inlining even functions with libnds
+//! Predefines of libnds
 extern "C"{
-extern _u32 cpuGetTiming();
-extern _u32 keysHeld();
+	extern _u32 cpuGetTiming();
+	extern _u32 keysHeld();
 }
 
 class _system{
@@ -34,7 +36,7 @@ class _system{
 		static _gadget*						_currentFocus_;
 		static _gadget*						_lastClickedGadget_;
 		static _screen*						_topScreen_;
-		static _iniFile*					_registry_;
+		static _registry*					_registry_;
 		static _runtimeAttributes*			_rtA_; // _runtimeAttributes_
 		
 		//! Displayed as replacement if a language-specific term
@@ -198,9 +200,9 @@ class _system{
 		static const _user&			getUser(){ return _system::_rtA_->getUser(); }
 		
 		//! And some getters...
-		static _screen*						getTopScreen(){ return _system::_topScreen_; }
-		static const _iniFile& 				getRegistry(){ return *_system::_registry_; }
-		static const _runtimeAttributes&	getRTA(){ return *_system::_rtA_; }
+		static _screen*				getTopScreen(){ return _system::_topScreen_; }
+		static _registry& 			getRegistry(){ return *_system::_registry_; }
+		static _runtimeAttributes&	getRTA(){ return *_system::_rtA_; }
 };
 
 #endif

@@ -56,7 +56,7 @@ namespace _glyph
 	club = '+',
 	spade = '*',
 	root = '.',
-	func = '/',
+	integral = '/',
 	infinity = ':',
 	reset = ';',
 	arrowLeftRight = '<',
@@ -77,7 +77,18 @@ namespace _glyph
 	smallSquareFilled = '¡',
 	resizeHandleXY = '¢',
 	resizeHandleY = '£',
-	resizeHandleX = '¤';
+	resizeHandleX = '€',
+	func = '¤',
+	arrDown = '¥',
+	arrUp = '¦',
+	arrRight = '§',
+	arrLeft = '¨',
+	approximately = 'ª',
+	lessThanEqual = '«',
+	greaterThanEqual = '¬',
+	trademark = '®',
+	dot = '°',
+	divide = '±';
 };
 
 namespace tiles

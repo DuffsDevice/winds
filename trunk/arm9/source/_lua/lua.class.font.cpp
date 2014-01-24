@@ -10,12 +10,12 @@ using namespace _luafunc;
 //! Ctor
 _lua_font::_lua_font( const _font* f ) :
 	font( f )
-{ }
+{}
 
 //! Lua-Ctor
 _lua_font::_lua_font( lua_State* L ) : 
 	font( _font::fromFile( check<string>( L , 1 ) ) )
-{ }
+{}
 
 //! getCharacterWidth
 int _lua_font::getCharacterWidth( lua_State* L ){ lua_pushnumber( L , this->font->getCharacterWidth( check<string>( L , 1 )[0] ) ); return 1; }
@@ -31,7 +31,7 @@ Lunar<_lua_font>::FunctionType _lua_font::methods[] = {
 	{ "isCharSupported"			, &_lua_font::isCharSupported },
 	{ "getStringWidth"			, wrap( _lua_font , (_length (_font::*)(_literal,_u8)const)&_font::getStringWidth ) },
 	{ "getNumCharsUntilWidth"	, wrap( _lua_font , (_length (_font::*)(_length,_literal,_u8)const)&_font::getNumCharsUntilWidth ) },
-	{ "isValid" , wrap( _lua_font , &_font::isValid ) },
+	{ "isValid"					, wrap( _lua_font , &_font::isValid ) },
 	LUA_CLASS_FUNC_END
 };
 

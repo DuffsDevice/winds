@@ -299,6 +299,13 @@ i = Ospite
 s = Huésped
 f = Invité
 
+[lbl_startbutton]
+e = start
+g = start
+i = start
+s = start
+f = start
+
 ;[]
 ;e = 
 ;g = 

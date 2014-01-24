@@ -1,6 +1,6 @@
 #include "_resource/resource.font.systemsymbols.8.h"
 
-static const _u16 FONT_SystemSymbols8_glyphdata[415] = {
+static const _u16 FONT_SystemSymbols8_glyphdata[450] = {
 /* '!' */	0x0028,0x28EF,0x00FF,0x0000,0x0000,
 /* '"' */	0x0000,0x00FF,0x00EF,0x2828,0x2800,
 /* '#' */	0x0080,0x003F,0x202F,0x2828,0x2800,
@@ -15,7 +15,7 @@ static const _u16 FONT_SystemSymbols8_glyphdata[415] = {
 /* ',' */	0x0020,0xE3EF,0xEF8E,0x0800,
 /* '-' */	0x0001,0xB7FF,0xEF8E,0x0800,
 /* '.' */	0x0071,0x04D1,0x430C,0x0000,
-/* '/' */	0x05A4,0x9680,
+/* '/' */	0x6924,0x92C0,
 /* '0' */	0x0000,0x0000,0xFF10,0x1010,0x1000,
 /* '1' */	0x0080,0x0000,0x1F10,0x1010,0x1000,
 /* '2' */	0x0001,0x0000,0xF010,0x1010,0x1000,
@@ -28,8 +28,8 @@ static const _u16 FONT_SystemSymbols8_glyphdata[415] = {
 /* '9' */	0x0028,0x28E8,0x08F8,0x0000,0x0100,
 /* ':' */	0x0000,0x0066,0x9999,0x6600,0x0000,
 /* ';' */	0x0008,0x4AB8,0x9F00,
-/* '<' */	0x0000,0x2442,0xFF42,0x2400,0x0000,
-/* '=' */	0x011D,0x5212,0xAE20,
+/* '<' */	0x0000,0x2442,0xBD42,0x2400,0x0000,
+/* '=' */	0x0115,0x5212,0xAA20,
 /* '>' */	0x0001,0xBE40,0x0000,
 /* '?' */	0x0009,0x6690,0x0000,
 /* '@' */	0x0070,0x8888,0xC87C,0x0E07,0x0300,
@@ -98,10 +98,22 @@ static const _u16 FONT_SystemSymbols8_glyphdata[415] = {
 /* 0xA1 */	0x007F,0xC000,
 /* 0xA2 */	0x0001,0x0204,0x0912,0x2449,0x9200,
 /* 0xA3 */	0x0004,0x0070,0x07C0,0x7F00,
-/* 0xA4 */	0x0000,0x0810,0xA14A,0x95AA,
+/* 0xA4 */	0x053C,0x9280,
+/* 0xA5 */	0x0108,0x4212,0xAA20,
+/* 0xA6 */	0x0115,0x5210,0x8420,
+/* 0xA7 */	0x0000,0x0402,0xFD02,0x0400,0x0000,
+/* 0xA8 */	0x0000,0x2040,0xBF40,0x2000,0x0000,
+/* 0xA9 */	0x002F,0x2F40,0x0000,
+/* 0xAA */	0x005A,0x05A0,0x0000,
+/* 0xAB */	0x01C6,0x3800,
+/* 0xAC */	0x031C,0x3800,
+/* 0xAE */	0x0FB0,0x0000,0x0000,
+/* 0xAF */	0x00A2,0x48B0,0x0000,
+/* 0xB0 */	0x00F0,0x0000,
+/* 0xB1 */	0x0008,0x0F80,0x8000,
 };
 
-static const unsigned short int FONT_SystemSymbols8_offset[132] = {
+static const unsigned short int FONT_SystemSymbols8_offset[145] = {
     0,    5,   10,   15,   20,   25,   30,   33,   36,   40,   44,   48,   52,   56,   60,   62,
    67,   72,   77,   82,   87,   92,   97,  102,  107,  112,  117,  120,  125,  128,  131,  134,
   139,  141,  143,  146,  149,  154,  160,  165,  170,  175,  180,  184,  188,  192,  195,  199,
@@ -110,10 +122,11 @@ static const unsigned short int FONT_SystemSymbols8_offset[132] = {
   340,  343,  348,  353,  358,  363,  368,  373,  378,  383,  388,  391,  394,  397,  400,  400,
   400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,
   400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,  400,
-  400,  402,  407,  411
+  400,  402,  407,  411,  413,  416,  419,  424,  429,  432,  435,  437,  439,  439,  442,  445,
+  447,
 };
 
-static const unsigned char FONT_SystemSymbols8_width[132] = {
+static const unsigned char FONT_SystemSymbols8_width[145] = {
  8, 8, 8, 8, 8, 8, 5, 5, 7, 7, 7, 7, 7, 6, 3, 8,
  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 8, 5, 4, 4, 8,
  3, 3, 5, 5, 8,10, 8, 8, 8, 8, 7, 6, 6, 5, 7, 7,
@@ -122,13 +135,14 @@ static const unsigned char FONT_SystemSymbols8_width[132] = {
  5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 5, 5, 4, 0, 0,
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 8, 7, 7
+ 3, 8, 7, 3, 5, 5, 8, 8, 4, 4, 3, 3, 0, 4, 4, 2,
+ 5
 };
 
 FONT_SystemSymbols8::FONT_SystemSymbols8( unsigned char fixedWidth ) : _memoryFont (
 	"SystemSymbols",
 	33,
-	164,
+	177,
 	9, // Height
 	7, // Main-Height
 	FONT_SystemSymbols8_glyphdata,

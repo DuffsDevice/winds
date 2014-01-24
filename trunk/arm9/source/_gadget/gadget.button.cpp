@@ -18,7 +18,7 @@ void _button::setStrValue( string val )
 
 void _button::setFont( const _font* ft )
 {
-	if( this->font == ft )
+	if( this->font == ft || !ft )
 		return;
 	
 	this->font = ft;

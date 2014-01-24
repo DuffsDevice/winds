@@ -422,18 +422,6 @@ extern _toStr<_valign>	valign2string;
 extern _fromStr<_align>		string2align;
 extern _fromStr<_valign>	string2valign;
 
-//! Enumerates available _languages for WinDS
-enum class _language : _u8
-{
-	japanese = 0,
-	english,
-	french,
-	german,
-	italian,
-	spanish,
-	chinese
-};
-
 //! Trim not-printable characters at both ends of a given string
 void trim( string& , const char* delims = " \n\r\t" , bool front = true , bool back = true );
 

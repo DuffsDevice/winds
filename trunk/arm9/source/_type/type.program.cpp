@@ -7,6 +7,7 @@
 #include "program_example_bin.h"
 #include "program_pong_bin.h"
 #include "program_paint_bin.h"
+#include "program_calculator_bin.h"
 
 _programList	_program::globalPrograms;
 _programList	_program::globalProgramsToExecute;
@@ -62,8 +63,6 @@ void _program::runPrograms()
 	// Clear buffer
 	_program::globalProgramsToExecute.clear();
 	
-	printf("Programs: %d\n",_program::globalPrograms.size());
-	
 	_program::globalPrograms.erase(
 		remove_if( _program::globalPrograms.begin() , _program::globalPrograms.end() , 
 			[]( _programList::value_type& p )->bool
@@ -104,6 +103,11 @@ _program* _program::fromFile( string filename )
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/paint.exe" ) ){
 		string str = (const _char*)program_paint_bin;
 		str.resize( program_paint_bin_size );
+		result = new _progLua( move(str) );
+	}
+	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/calculator.exe" ) ){
+		string str = (const _char*)program_calculator_bin;
+		str.resize( program_calculator_bin_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/pong.exe" ) ){

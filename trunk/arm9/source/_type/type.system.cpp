@@ -465,8 +465,6 @@ void _system::start()
 		
 		//! Set Memory-Alloc-Error-Handler
 		std::set_new_handler( &_system::newHandler );
-		
-		_system::setLanguage( (_language) PersonalData->language );
 	
 	// -----------------------------------------------
 	//	Hardware Init
@@ -485,7 +483,7 @@ void _system::start()
 		_system::_debugFile_ = new _direntry("%WINDIR%/debug.txt");
 		_system::_debugFile_->create();
 		
-		_system::_registry_ = new _iniFile("%WINDIR%/windows.reg");
+		_system::_registry_ = new _registry();
 		
 	
 	// -----------------------------------------------
@@ -498,6 +496,9 @@ void _system::start()
 	// Localization-System
 	// -----------------------------------------------
 	
+		// Set Language
+		_system::setLanguage( _system::_registry_->getLanguage() );
+		
 		// Localization of Strings
 		_system::_localizationTextTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
 		
@@ -576,6 +577,9 @@ void _system::setLanguage( _language lang )
 		default:
 			_system::_curLanguageShortcut_ = "e";
 	}
+	
+	// Apply to registry
+	_system::_registry_->setLanguage( lang );
 }
 
 void _system::newHandler()
@@ -660,7 +664,7 @@ string						_system::_curLanguageShortcut_;
 _gadgetScreen*				_system::_gadgetHost_ = nullptr;
 _screen*					_system::_topScreen_ = nullptr;
 _keyboard*					_system::_keyboard_ = nullptr;
-_iniFile*					_system::_registry_ = nullptr;
+_registry*					_system::_registry_ = nullptr;
 _runtimeAttributes*			_system::_rtA_;
 const string				_system::_emptyStringSignature_ = "[]";
 _direntry*					_system::_debugFile_ = nullptr;

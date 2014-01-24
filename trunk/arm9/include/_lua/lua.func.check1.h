@@ -48,6 +48,9 @@ namespace _luafunc
 		static unused inline _eventCallType			check( lua_State* state , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( state , index ) ]; }
 		static unused inline _eventType				check( lua_State* state , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( state , index ) ]; }
 		static unused inline _dimension				check( lua_State* state , int index , _dimension* dummy ){ return string2dimension[ luaL_checkstring( state , index ) ]; }
+		static unused inline _align					check( lua_State* state , int index , _align* dummy ){ return string2align[ luaL_checkstring( state , index ) ]; }
+		static unused inline _valign				check( lua_State* state , int index , _valign* dummy ){ return string2valign[ luaL_checkstring( state , index ) ]; }
+		static unused inline _language				check( lua_State* state , int index , _language* dummy ){ return string2language[ luaL_checkstring( state , index ) ]; }
 		static unused inline _timeAttr				check( lua_State* state , int index , _timeAttr* dummy ){ return string2timeAttr[ luaL_checkstring( state , index ) ]; }
 		static unused inline _style					check( lua_State* state , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( state , index ) ); return style; }
 		static unused inline _pixel					check( lua_State* state , int index , _pixel* dummy ){
