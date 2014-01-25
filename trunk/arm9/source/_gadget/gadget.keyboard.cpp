@@ -15,7 +15,7 @@
 #include "sound_click_bin.h"
 
 // Click Sound
-_staticSound _keyboard::clickSound = _staticSound( _channelFormat::adpcm , 44100 , sound_click_bin , sound_click_bin_size );
+_staticSound _keyboard::clickSound = _staticSound( _channelFormat::bit8 , 44100 , sound_click_bin , sound_click_bin_size );
 
 void _keyboard::playClickSound(){
 	clickSound.setFrequency( 36600 + rand() % 15000 );
