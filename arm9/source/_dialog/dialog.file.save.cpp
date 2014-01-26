@@ -92,12 +92,8 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
-	// OK-Button
-	if( that == this->saveButton ){
-		this->callCallback( _dialogResult::yes );
-		this->cleanupInternal();
-	}
-	else if( that->getType() == _gadgetType::fileobject )
+	// Single or Double Click on one of the fileobjects
+	if( that->getType() == _gadgetType::fileobject )
 	{
 		_fileObject* fO = (_fileObject*)that;
 		if( event == onMouseClick && !fO->getDirentry().isDirectory() )
@@ -106,23 +102,36 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 			if( fO->getDirentry().isDirectory() )
 				fO->execute();
 			else{
-				this->callCallback( _dialogResult::yes );
 				this->cleanupInternal();
+				this->callCallback( _dialogResult::yes );
 			}
 		}
 		return handled;
 	}
+	
+	// The value in the filetype _select has changed
 	else if( that == this->fileTypeChooser )
 		this->fileView->setFileMask( _fileExtensionList( { std::get<1>(this->fileTypes[this->getFileType()]) } ) );
+	
+	// The fileview has changed its path!
 	else if( that == this->fileView )
 		this->fileViewAddress->setStrValue( this->fileView->getPath() );
+	
+	// The Goto Button was pressed
 	else if( that == this->gotoButton )
 		this->fileView->setPath( this->fileViewAddress->getStrValue() );
+	
 	// Cancel-Button or Window-Close-Button
-	else if( that == this->cancelButton || that == this->window )
+	else
 	{
-		this->callCallback( _dialogResult::no );
 		this->cleanupInternal();
+		
+		// Cancel Button or Window-close
+		if( that == this->cancelButton || that == this->window )
+			this->callCallback( _dialogResult::no );
+		// OK-Button
+		if( that == this->saveButton )
+			this->callCallback( _dialogResult::yes );
 	}
 	
 	

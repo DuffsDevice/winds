@@ -30,8 +30,8 @@ CFLAGS		:=	-g -Wall -O2\
 			$(ARCH)
 
 CFLAGS		+=	$(INCLUDE) -DARM9
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=c++11 -O3 -Wall -Wextra -Wno-unused-parameter -Wno-psabi
-## C++0x:   -std=gnu++0x;
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3 -Wall -Wextra -Wno-unused-parameter -Wno-psabi
+## C++0x:   -std=gnu++0x; -std=c++11
 ## ASM Out:	-save-temps
 
 ASFLAGS		:=	-g $(ARCH) -march=armv5te -mtune=arm946e-s
