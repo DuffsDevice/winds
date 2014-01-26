@@ -245,8 +245,7 @@ void _progLua::internalMain( _cmdArgs args )
 	delete this->content;
 	this->content = nullptr;
 	
-	if( lua_isstring( this->state , -1 ) )
-	{
+	if( lua_isstring( this->state , -1 ) ){
 		_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
 		return;
 	}

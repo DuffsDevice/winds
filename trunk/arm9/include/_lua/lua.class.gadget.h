@@ -73,6 +73,9 @@ class _lua_gadget{
 		//! getType
 		int getType( lua_State* L );
 		
+		//! equals
+		int equals( lua_State* L );
+		
 		
 		//! Lunar !//
 		static const char className[];

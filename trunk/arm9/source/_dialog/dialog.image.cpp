@@ -40,7 +40,7 @@ _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 7 , 30 ) + 11; // + 11 for the window
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move buttons to right position
 	this->okButton->moveTo( winWidth - this->okButton->getWidth() - 3 , winHeight - this->okButton->getHeight() - 12 );
@@ -64,16 +64,15 @@ _callbackReturn _imageDialog::eventHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
+	// In all cases the dialog closes
+	this->cleanupInternal();
+	
 	// Other-Button
-	if( that == this->otherButton ){
+	if( that == this->otherButton )
 		this->callCallback( _dialogResult::yes );
-		this->cleanupInternal();
-	}
 	// Dismiss-Button or Window-Close-Button
-	else{
+	else
 		this->callCallback( _dialogResult::cancel );
-		this->cleanupInternal();
-	}
 	
 	return handled;
 }

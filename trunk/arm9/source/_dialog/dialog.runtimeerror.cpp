@@ -43,7 +43,7 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 	_length winHeight = this->msg->getHeight() + this->closeButton->getHeight() + 7 + 11 + 27; // + 11 for the window, + 22 for the textarea
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_runtime_error") , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_runtime_error") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move buttons to right position
 	this->closeButton->moveTo( winWidth - this->closeButton->getWidth() - 3 , this->msg->getHeight() + 4 );
@@ -53,7 +53,6 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 	this->window->addChild( this->image );
 	this->window->addChild( this->msg );
 	this->window->addChild( this->additionalInfo );
-	
 
 	this->closeButton->setInternalEventHandler( onMouseClick , make_callback( this , &_runtimeErrorDialog::eventHandler ) );
 	this->window->setInternalEventHandler( onClose , make_callback( this , &_runtimeErrorDialog::eventHandler ) );
@@ -62,8 +61,8 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 _callbackReturn _runtimeErrorDialog::eventHandler( _event event )
 {
 	// Dismiss-Button or Window-Close-Button
-	this->callCallback( _dialogResult::cancel );
 	this->cleanupInternal();
+	this->callCallback( _dialogResult::cancel );
 	
 	return handled;
 }

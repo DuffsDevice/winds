@@ -25,6 +25,7 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , long long int arg			, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , unsigned long long int arg	, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _literal arg				, TN... args){ lua_pushstring( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , bool arg					, TN... args){ lua_pushboolean( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , const string& arg			, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN, int mB,typename dT>
 								inline int push( lua_State* state , shortString<mB,dT> arg		, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }

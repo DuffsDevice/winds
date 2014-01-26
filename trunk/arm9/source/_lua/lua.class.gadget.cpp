@@ -144,7 +144,12 @@ int _lua_gadget::setHeight(lua_State* L){
 int _lua_gadget::applyStyle(lua_State* L){ _style s = this->gadget->getStyle(); applyString2style( s , check<string>( L , 1 ) ); this->gadget->setStyle( move(s) ); return 0; }
 
 //! getType
-int _lua_gadget::getType(lua_State* L){ lua_pushstring( L , gadgetType2string[this->gadget->getType()] ); return 1; }
+int _lua_gadget::getType(lua_State* L){ return push( L , gadgetType2string[this->gadget->getType()] ); }
+
+//! equals
+int _lua_gadget::equals(lua_State* L){
+	return push( L , bool(check<_gadget*>( L , 1 ) == this->gadget) );
+}
 
 //! Lua-_gadget
 const char _lua_gadget::className[] = "Gadget";
@@ -229,6 +234,7 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "blur"	, wrap( _lua_gadget , &_gadget::blur ) },
 	{ "focus"	, wrap( _lua_gadget , &_gadget::focus ) },
 	{ "blink"	, wrap( _lua_gadget , &_gadget::blink ) },
+	{ "equals"	, &_lua_gadget::equals  },
 	LUA_CLASS_FUNC_END
 };
 

@@ -22,7 +22,7 @@ _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string
 	_length winHeight = max( this->msg->getHeight() + this->noButton->getHeight() + 8 , 30 ) + 11; // + 11 for the window
 	
 	// Create Window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::canNotLooseFocus | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	// Move Buttons to right position
 	this->yesButton->moveTo( winWidth - this->yesButton->getWidth() - 3 , winHeight - this->yesButton->getHeight() - 12 );
@@ -43,21 +43,15 @@ _callbackReturn _yesNoDialog::eventHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
-	// No-Button
-	if( that == this->noButton ){
+	// In all cases the dialog closes!
+	this->cleanupInternal();
+	
+	if( that == this->noButton )// No-Button
 		this->callCallback( _dialogResult::no );
-		this->cleanupInternal();
-	}
-	// Yes-Button
-	else if( that == this->yesButton ){
+	else if( that == this->yesButton )// Yes-Button
 		this->callCallback( _dialogResult::yes );
-		this->cleanupInternal();
-	}
-	// Window-Close-Button
-	else if( that == this->window ){
+	else if( that == this->window )// Window-Close-Button
 		this->callCallback( _dialogResult::cancel );
-		this->cleanupInternal();
-	}
 	
 	return handled;
 }
