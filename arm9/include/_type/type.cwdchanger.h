@@ -3,6 +3,7 @@
 
 #include "_type/type.h"
 #include "_type/type.direntry.h"
+#include "_type/type.flexptr.h"
 
 namespace unistd{
 #include <unistd.h>
@@ -12,15 +13,15 @@ class _cwdChanger
 {
 	private:
 		
-		string oldCwd;
+		flex_ptr<string> oldCwd;
 		
-		string getCWD(){
-			_char val[PATH_MAX];			
+		static string getCWD(){
+			_char val[PATH_MAX];
 			unistd::getcwd( val , PATH_MAX );
 			return val;
 		}
 		
-		void setCWD( const string& dir ){
+		static void setCWD( const string& dir ){
 			unistd::chdir( dir.c_str() );
 		}
 		
@@ -33,20 +34,18 @@ class _cwdChanger
 		_cwdChanger( const string& newDir ) :
 			oldCwd( getCWD() )
 		{
-			setCWD( _direntry::replaceASSOCS( newDir ) );
+			this->setCWD( _direntry::replaceASSOCS( newDir ) );
 		}
 		
 		//! Move Ctor
 		_cwdChanger( _cwdChanger&& other ) :
 			oldCwd( move( other.oldCwd ) )
-		{
-			other.oldCwd.clear();
-		}
+		{}
 		
 		//! Dtor
 		~_cwdChanger(){
-			if( !oldCwd.empty() )
-				setCWD( oldCwd );
+			if( oldCwd )
+				this->setCWD( *oldCwd );
 		}
 };
 

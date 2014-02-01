@@ -11,13 +11,48 @@
 #include "_library/library.image.gif.decoder.h"
 #include "_library/library.image.gif.encoder.h"
 
+_mimeType _imageFile::getRealMime()
+{
+	// Read first four bytes from stream
+	char head[4];
+	
+	if( !this->isExisting() || !this->read( head , 4 ) )
+		goto end;
+	
+	// Constant headers
+	static const char bmpSignature[]	= "BM";
+	static const char gifSignature[]	= "GIF";
+	static const char pngSignature[]	= { 137, 80, 78, 71 };
+	static const char jpg1Signature[]	= { 255, 216, 255, 224 };
+	static const char jpg2Signature[]	= { 255, 216, 255, 225 };
+	static const char icoSignature[]	= { 0, 0, 1, 0 };
+	
+	// Check BMP
+	if( strncmp( head , bmpSignature , 2 ) == 0 )
+		return _mime::image_bmp;
+	else if( strncmp( head , gifSignature , 3 ) == 0 )
+		return _mime::image_gif;
+	else if( strncmp( head , pngSignature , 4 ) == 0 )
+		return _mime::image_png;
+	else if( strncmp( head , jpg1Signature , 4 ) == 0 || strncmp( head , jpg2Signature , 4 ) == 0 )
+		return _mime::image_jpeg;
+	else if( strncmp( head , icoSignature , 4 ) == 0 )
+		return _mime::image_png;
+	
+	end:
+	
+	return this->getMimeType();
+}
+
 _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 {
 	// Check if not-existing
 	if( !this->isExisting() )
 		return _bitmap();
 	
-	if( this->getMimeType() == _mime::image_png )
+	_mimeType mimeType = this->getRealMime();
+	
+	if( mimeType == _mime::image_png )
 	{
 		if( this->bufferedImage )
 			return *bufferedImage;
@@ -56,7 +91,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		}
 		return move(result);
 	}
-	else if( this->getMimeType() == _mime::image_jpeg )
+	else if( mimeType == _mime::image_jpeg )
 	{
 		if( this->bufferedImage )
 			return *bufferedImage;
@@ -107,7 +142,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		}
 		return move(result);
 	}
-	else if( this->getMimeType() == _mime::image_bmp )
+	else if( mimeType == _mime::image_bmp )
 	{
 		if( this->bufferedImage )
 			return *bufferedImage;
@@ -137,7 +172,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		}
 		return move(result);
 	}
-	else if( this->getMimeType() == _mime::image_ico )
+	else if( mimeType == _mime::image_ico )
 	{
 		_byte* data;
 		if( this->bufferedData )
@@ -183,7 +218,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 			this->bufferedData = data;
 		return result;
 	}
-	else if( this->getMimeType() == _mime::image_gif )
+	else if( mimeType == _mime::image_gif )
 	{
 		gif_animation* gifAnim;
 		gif_result statusCode = GIF_OK;
@@ -263,7 +298,9 @@ _u32 _imageFile::getNumPages()
 	if( !this->isExisting() )
 		return 0;
 	
-	if( this->getMimeType() == _mime::image_ico )
+	_mimeType mimeType = this->getRealMime();
+	
+	if( mimeType == _mime::image_ico )
 	{
 		_byte* data;
 		if( this->bufferedData )
@@ -282,7 +319,7 @@ _u32 _imageFile::getNumPages()
 		
 		return pages;
 	}
-	else if( this->getMimeType() == _mime::image_gif )
+	else if( mimeType == _mime::image_gif )
 	{
 		gif_animation* gifAnim;
 		gif_result statusCode = GIF_OK;
@@ -364,7 +401,7 @@ _u32 _imageFile::getPageDelay( _u32 page )
 	if( !this->isExisting() )
 		return 0;
 	
-	if( this->getMimeType() == _mime::image_gif )
+	if( this->getRealMime() == _mime::image_gif )
 	{
 		gif_animation* gifAnim;
 		gif_result statusCode = GIF_OK;
@@ -419,10 +456,12 @@ _imageFile::~_imageFile()
 {
 	if( !this->buffer )
 		return;
+		
+	_mimeType type = this->getRealMime();
 	
-	if( this->getMimeType() == _mime::image_ico )
+	if( type == _mime::image_ico )
 		delete[] this->bufferedData;
-	if( this->getMimeType() == _mime::image_gif )
+	if( type == _mime::image_gif )
 	{
 		// Delete buffer of file content
 		delete[] bufferedGif->gif_data;
@@ -448,7 +487,7 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompre
 	
 	bool result = false;
 	
-	switch( this->getMimeType() )
+	switch( this->getRealMime() )
 	{
 		case _mime::image_bmp:
 			GenericBMPEncoder::encode( this->getFileName().c_str() , source.getWidth() , source.getHeight() , source.getBitmap() );

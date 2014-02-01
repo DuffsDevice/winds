@@ -1,5 +1,6 @@
 #include "_type/type.ini.h"
 #include "_type/type.system.h"
+#include "_type/type.tokenizer.h"
 
 const string& _ini::readIndex( const string& section , const string& name ) const
 {
@@ -42,45 +43,21 @@ _s16 _ini::read( const string& input )
 {
 	this->array.clear();
 	
-    // Uses a fair bit of stack
-    string 	line, name , value , section = "_global_";
-	_u16 	lineNo = 0;
-	_u16 	errorNo = -1; // Line with error
+	string		line, section = "_global_";
+	_u16 		lineNo = 0;
+	_u16 		errorNo = -1; // Line with error
+	_tokenizer	tok = _tokenizer( input , line , "\n\r" , true );
 	
-	size_t end = 0, start;
-
-    /* Scan through file line by line */
-    while(true)
+	/* Scan through file line by line */
+	while( tok.next() )
 	{
-		start = end;
-		
-		if( start == string::npos )
-			break;
-		
-		// Find Delimiter (end of line)
-		end = input.find_first_of( "\n\r" , start );
-		
-		if( end != string::npos )
-		{
-			// Get text from Start (start) to End (end)
-			line = input.substr( start , end - start );
-			
-			// Move beyond delimiter
-			end++;
-		}
-		else
-			line = input.substr( start );
-		
-		
 		/**
-		 * Choose right Action
+		 * Choose appropriate Action
 		 */
-        if( !line.size() || line[0] == ';' || line[0] == '#' )
+        if( line[0] == ';' || line[0] == '#' )
 		{
             /* Per Python ConfigParser, allow '#' and ';' comments at start of line */
         }
-		else if( line[0] == '\r' || line[0] == '\n' )
-			end++;
         else if( line[0] == '[' )
 		{
             /* A "[section]" line */
@@ -105,8 +82,8 @@ _s16 _ini::read( const string& input )
 				continue;
 			}
 			
-			name = line.substr( 0 , delim );
-			value = line.substr( delim + 1 , line.find_first_of(";#") );
+			string name = line.substr( 0 , delim );
+			string value = line.substr( delim + 1 , line.find_first_of(";#") );
 			
 			trim( name );
 			trim( value );

@@ -92,14 +92,11 @@ _user::_user( string folderName ) :
 					{ "magnifyKeyboardFocus" , "1" } ,
 					{ "counterObjectHeight" , "16" } ,
 					{ "selectObjectHeight" , "10" }
-				} } ,
-				{ "startmenu" , {
-					{ "1" , "%SYSTEM%/paint.exe" } ,
-					{ "2" , "%SYSTEM%/explorer.exe" }
 				} }
 			};
 		
 		// Write to disk!
+		this->create();
 		this->flush();
 	}
 	

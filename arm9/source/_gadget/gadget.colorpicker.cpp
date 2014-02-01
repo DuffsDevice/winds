@@ -6,8 +6,6 @@
 
 #include <math.h>
 
-#define M_PI 3.14159265359f
-
 _colorPicker::_colorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor , _style&& style ) :
 	_gadget( _gadgetType::colorpicker , x , y , width , height , (_style&&)style )
 	, hueSatImage( width - 14 , height - 2 )

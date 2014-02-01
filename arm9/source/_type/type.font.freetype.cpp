@@ -33,12 +33,12 @@ _freetypeFont::_freetypeFont( string path ) :
 	if( !this->isExisting() || !this->cacheSize )
 		return;
 	
-	this->cache = new _u8[ this->cacheSize ];
+	this->cache = new _byte[ this->cacheSize ];
 	
 	if( !this->read( this->cache , this->cacheSize ) )	
 	{
 		delete[] cache;
-		this->cache = 0;
+		this->cache = nullptr;
 		return;
 	}
 	
@@ -49,7 +49,7 @@ _freetypeFont::_freetypeFont( string path ) :
 _freetypeFont::~_freetypeFont()
 {
 	delete[] cache;
-	this->cache = 0;
+	this->cache = nullptr;
 }
 
 _length _freetypeFont::getCharacterWidth( const _char codepoint , _u8 fontSize ) const 
@@ -111,7 +111,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 	switch (letter) {
 		case 10:  // Line feed
 		case 13:  // Carriage return
-			STBTT_free( bitmap , 0 ); // 2nd arg unused
+			STBTT_free( bitmap , 0 );
 			return output;
 		default:
 			break;
@@ -128,10 +128,10 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 		|| x > clip.getX2()
 		|| x + fontWidth < clip.x
 	){
-		STBTT_free( bitmap , 0 ); // 2nd arg unused
+		STBTT_free( bitmap , 0 );
 		return output;
 	}
-
+	
 	// Calculate values for clipping
 	_u16 startX = max( x , clip.x );
 	_u16 endX = min( x , clip.x );
@@ -155,9 +155,8 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 		clipHeight = fontHeight - offsetStartY;
 
 	// Abort if there is no copying to be done
-	if ( !clipWidth || !clipHeight )
-	{
-		STBTT_free( bitmap , 0 ); // 2nd arg unused
+	if ( !clipWidth || !clipHeight ){
+		STBTT_free( bitmap , 0 );
 		return output;
 	}
 
@@ -241,6 +240,9 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 			}
 		}
 	}
+	
+	// Free bitmap
+	STBTT_free( bitmap , 0 ); // 2nd arg unused
 	
 	return output;
 }

@@ -60,6 +60,9 @@ class _imageFile : public _constDirentry
 		//! Write to the image file
 		bool writeBitmap( const _bitmap& source , _optValue<_imageFileCompression> compression );
 		
+		//! Extension independent determination of the underlying image type
+		_mimeType getRealMime();
+		
 		//! Dtor
 		~_imageFile();
 };

@@ -49,7 +49,7 @@ namespace std
 			// Copy operator
 			flex_ptr<Type>& operator=( const flex_ptr<Type>& other ){
 				this->freeData();
-				this->ptr = other.ptr ? makeCopy<Type>(other.ptr) : nullptr ;
+				this->ptr = other.ptr ? makeCopy<Type>(*other.ptr) : nullptr ;
 				return *this;
 			}
 			

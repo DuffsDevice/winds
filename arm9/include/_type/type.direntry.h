@@ -131,7 +131,7 @@ class _direntry
 		
 		
 		//! open the file for writing
-		virtual bool openwrite( bool eraseOldContent = false );
+		virtual bool openwrite( bool eraseOldContent = true );
 		
 		
 		//! Create a file with the specified filename
@@ -143,16 +143,23 @@ class _direntry
 		
 		
 		//! Read the contents of the file into a block of memory
-		virtual bool read( void* dest , _u32 size = -1 );
+		//! and sets 'numBytes' to the number of bytes efficiently read (-1 for an error)
+		virtual bool read( void* dest , _optValue<_u32> size = ignore , _u32* numBytes = nullptr );
+		
+		
+		//! Write 'size' bytes of contents in 'src' to the file
 		virtual bool write( void* src , _u32 size );
+		
 		
 		//! Hide the File
 		/*bool hide(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.hidden = true; return attr; } ); }
 		bool unhide(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.hidden = false; return attr; } ); }*/
 		
+		
 		//! Set The File to Syste-File
 		/*bool setSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = true; return attr; } ); }
 		bool unsetSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = false; return attr; } ); }*/
+		
 		
 		//! If the _direntry is an directory, iterate through its children
 		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr );
