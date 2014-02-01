@@ -16,6 +16,7 @@ class _progLua : public _program
 		//! The lua Interpreter state
 		lua_State* 				state;
 		string*					content;
+		bool					headParsed;
 		
 		//! Array filled with the methods that will be registered
 		static luaL_Reg			windowsLibrary[];
@@ -57,6 +58,9 @@ class _progLua : public _program
 		
 		//! registers system.* namespace
 		void registerSystem();
+		
+		//! Parses the program header
+		bool parseProgramHeader();
 		
 	public:
 		

@@ -4,6 +4,7 @@
 #include "_type/type.callback.derives.h"
 #include "_type/type.text.phrases.h"
 #include "_type/type.tokenizer.h"
+#include "_type/type.cwdchanger.h"
 #include "_gadget/gadget.keyboard.h"
 
 #include "_lua/lua.lunar.h"
@@ -169,6 +170,75 @@ int _progLua::lua_usingClass( lua_State* L )
 	return 1;
 }
 
+bool _progLua::parseProgramHeader()
+{
+	_programHeader header;
+	
+	if( this->content && ! this->headParsed )
+	{
+		string		attribute;
+		_tokenizer	tok = _tokenizer( *this->content , attribute , "\n\r" , true );
+		
+		/* Scan through file line by line */
+		while( tok.next() )
+		{
+			if( attribute[0] != '-' || attribute[1] != '-' )
+				goto end;
+			
+			// Find Position of the '='
+			size_t equalSignPosition = attribute.find( '=' , 2 ); // '2': skip the "--"
+			
+			// Check if the '=' was found
+			if( equalSignPosition != string::npos )
+			{
+				string attrName = attribute.substr( 2 , equalSignPosition - 2 );
+				
+				// Trim whitespaces and tabs etc...
+				trim( attrName );
+				
+				// No Attribute Name: Continue with next line
+				if( attrName.empty() )
+					continue;
+				
+				// Check if the string is long enough to also hold the value
+				if( equalSignPosition + 1 >= attribute.length() )
+					continue;
+				
+				string attrValue = attribute.substr( equalSignPosition + 1 );
+				
+				// Trim whitespaces and tabs etc...
+				trim( attrValue );
+				
+				if( attrName == "IMG" )
+				{
+					// Set Relative Path
+					_cwdChanger changer = _cwdChanger( this->getPath() );
+					
+					_bitmap icon = _imageFile(move(attrValue),false).readBitmap();
+					if( icon.isValid() )
+						header.fileIcon = move(icon);
+				}
+				else if( attrName == "AUTHOR" )
+					header.author = move(attrValue);
+				else if( attrName == "LEGAL" )
+					header.copyright = move(attrValue);
+				else if( attrName == "VER" )
+					header.version = move(attrValue);
+				else if( attrName == "DESC" )
+					header.description = move(attrValue);
+				else if( attrName == "LANG" )
+					header.language = string2language[attrValue];
+			}
+		}
+		end:
+		this->setHeader( move(header) );
+		headParsed = true;
+		
+		return true;
+	}
+	return false;
+}
+
 luaL_Reg _progLua::windowsLibrary[] = {
 	{"rgb",						lua_RGB},
 	{"rgb255",					lua_RGB255},
@@ -203,7 +273,10 @@ luaL_Reg _progLua::windowsLibrary[] = {
 _progLua::_progLua( string prog ) : 
 	_program( _programType::progLua )
 	, content( new string( move(prog) ) )
-{}
+	, headParsed( false )
+{
+	parseProgramHeader();
+}
 
 //! Loads System.*
 void _progLua::registerSystem()

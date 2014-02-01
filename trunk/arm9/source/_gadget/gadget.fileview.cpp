@@ -80,7 +80,7 @@ void _fileView::generateChildren()
 		case _fileViewType::list:
 		default:
 			// Read Children of directory
-			//_vector<string> names = { "Haloo.txt" , "Resize.bmp" , "Halihalo.exe" , "Hallo/"};
+			//_vector<string> names = { "Haloo.lnk" , "Resize.bmp" , "Halihalo.exe" , "Hallo/"};
 			//for( string str : names )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{

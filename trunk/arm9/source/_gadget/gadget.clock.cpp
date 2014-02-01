@@ -1,6 +1,5 @@
 #include "_gadget/gadget.clock.h"
 #include <math.h>
-#define M_PI		3.14159265358979323846f
 
 void _clockGadget::setTime( _u8 hour , _u8 minutes , _u8 seconds )
 {

@@ -73,6 +73,7 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
 	{ "filename"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
 	{ "name"		, wrap( _lua_direntry , &_direntry::getName ) , nullptr },
+	{ "displayName"	, wrap( _lua_direntry , &_direntry::getDisplayName ) , nullptr },
 	{ "extension"	, wrap( _lua_direntry , &_direntry::getExtension ) , nullptr },
 	{ "mimeType"	, wrap( _lua_direntry , &_direntry::getMimeType ) , nullptr },
 	{ "image"		, wrap( _lua_direntry , &_direntry::getFileImage ) , nullptr },

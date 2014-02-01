@@ -1,6 +1,13 @@
+--	IMG = /someurl.bmp
+--	AUTHOR = Jakob Riedle(DuffsDevice)
+--	VERSION = 1.0
+--	DESC = Application to modify Images
+--	COPYRIGHT = (C) 2014
+--	LANG = neutral
 using "System.Color"
 using "System.Event"
 using "System.ImageFile"
+using "System.Direntry"
 using "System.Menu"
 using "Drawing.Font"
 using "Drawing.Bitmap"
@@ -38,12 +45,13 @@ function main( filename )
 	if filename ~= nil then
 		imagefile = ImageFile( filename )
 		
-		local temp = imagefile.getBitmap()
+		local temp = imagefile.readBitmap()
 		
 		if temp ~= nil then
 			canvas = Bitmap( temp.width , temp.height )
 			canvas.copy( 0 , 0 , temp )
-			windowTitle = filename
+			local file = Direntry( filename )
+			windowTitle = file.displayName
 		else
 			canvas = Bitmap( 65 , 55 , "white" )
 		end

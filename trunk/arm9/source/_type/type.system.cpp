@@ -477,21 +477,21 @@ void _system::start()
 			_system::debug("Wifi could not be inited! Please note that the default Firmware Settings are used to connect");
 	
 	// -----------------------------------------------
+	//	RTA - Runtime Attributes
+	// -----------------------------------------------
+	
+		_system::_rtA_ = new _runtimeAttributes(nullptr);
+	
+	// -----------------------------------------------
 	//	Open necesary Files
 	// -----------------------------------------------
 	
 		_system::_debugFile_ = new _direntry("%WINDIR%/debug.txt");
 		_system::_debugFile_->create();
+		_system::_debugFile_->openwrite();
 		
 		_system::_registry_ = new _registry();
-		
 	
-	// -----------------------------------------------
-	//	RTA - Runtime Attributes
-	// -----------------------------------------------
-	
-		_system::_rtA_ = new _runtimeAttributes(nullptr);
-		
 	// -----------------------------------------------
 	// Localization-System
 	// -----------------------------------------------

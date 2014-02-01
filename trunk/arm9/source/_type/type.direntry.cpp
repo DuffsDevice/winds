@@ -11,20 +11,6 @@ namespace unistd{
 #include <unistd.h>
 }
 
-#include "_resource/resource.icon.file.h"
-#include "_resource/resource.icon.exe.h"
-#include "_resource/resource.icon.txt.h"
-#include "_resource/resource.icon.xml.h"
-#include "_resource/resource.icon.nds.h"
-#include "_resource/resource.icon.gba.h"
-#include "_resource/resource.icon.ini.h"
-#include "_resource/resource.icon.lua.h"
-#include "_resource/resource.icon.folder.h"
-#include "_resource/resource.icon.font.h"
-#include "_resource/resource.icon.music.h"
-#include "_resource/resource.icon.jpg.h"
-#include "_resource/resource.icon.image.h"
-
 int _direntry::fatInited = -1;
 
 /* Return a string containing the path name of the parent
@@ -258,7 +244,7 @@ bool _direntry::open( string mode )
 	
 	if( this->dHandle ) // dHandle and fHandle are the same
 	{
-		this->mode = mode[0] == 'r' ? _direntryMode::read : _direntryMode::write;
+		this->mode = mode[0] == 'w' || mode[0] == 'a' ? _direntryMode::write : _direntryMode::read;
 		return true;
 	}
 	
@@ -284,7 +270,7 @@ bool _direntry::openread(){
 
 bool _direntry::openwrite( bool eraseOld )
 {
-	return !this->exists && this->open( eraseOld ? "wb+" : "rb+" ); // Open for read & write, do not create if already existing
+	return this->exists && this->open( eraseOld ? "wb" : "ab" ); // Open for read & write, do not create if already existing
 }
 
 
@@ -297,7 +283,7 @@ bool _direntry::create()
 		return true;
 	
 	// Build everything "upstairs" (recursively!)
-	_direntry parentEntry = _direntry( dirname( this->filename ) );
+	_direntry parentEntry = _direntry( dirname(this->filename) );
 	
 	if( !parentEntry.create() )
 		return false;
@@ -310,11 +296,11 @@ bool _direntry::create()
 }
 
 
-bool _direntry::read( void* dest , _u32 size )
+bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes )
 {	
 	if( this->fatInited && !this->isDirectory() )
 	{
-		if( !size )
+		if( !size.isValid() )
 			size = this->getSize();
 		
 		_direntryMode modePrev = this->mode;
@@ -324,7 +310,11 @@ bool _direntry::read( void* dest , _u32 size )
 		
 		//! Set Iterator to beginning
 		rewind( this->fHandle );
-		fread( dest , 1 , size , this->fHandle );
+		
+		//! Read bytes
+		_u32 numBytesRead = fread( dest , 1 , size , this->fHandle );
+		if( numBytes )
+			*numBytes = numBytesRead;
 		
 		if( modePrev == _direntryMode::closed )
 			this->close();
@@ -459,7 +449,7 @@ bool _direntry::rewindChildren()
 
 bool _direntry::write( void* src , _u32 size )
 {
-	if( !this->fatInited || this->isDirectory())
+	if( !this->fatInited || this->isDirectory() )
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -469,18 +459,18 @@ bool _direntry::write( void* src , _u32 size )
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
 	
-	fwrite( src , size , 1 , this->fHandle );
+	int result = fwrite( src , size , 1 , this->fHandle );
 	
 	if( modePrev == _direntryMode::closed )
 		this->close();
 	
-	return true;
+	return result == 0;
 }
 
 
 bool _direntry::writeString( string str )
 {
-	if( !this->fatInited || !this->exists || this->isDirectory() )
+	if( !this->fatInited || this->isDirectory() )
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -490,12 +480,12 @@ bool _direntry::writeString( string str )
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
 	
-	fputs( str.c_str() , this->fHandle );
+	int result = fputs( str.c_str() , this->fHandle );
 	
 	if( modePrev == _direntryMode::closed )
 		this->close();
 	
-	return true;
+	return result == 0;
 }
 
 
@@ -612,8 +602,6 @@ bool _direntry::execute( _cmdArgs args )
 			while( (pos = commandCopy.find( "$N" , pos )) != string::npos )
 				commandCopy.replace( pos , sizeof("$N") , this->getName() );
 			
-			printf("Executing '%s'",commandCopy.c_str());
-			
 			// Execute the command
 			_system::executeCommand( move(commandCopy) );
 			break;
@@ -624,59 +612,30 @@ bool _direntry::execute( _cmdArgs args )
 
 _bitmap _direntry::getFileImage()
 {
-	switch( this->getMimeType() )
+	ssstring extension = this->getExtension();
+	_mimeType mime = this->getMimeType();
+	
+	switch( mime )
 	{
+		// Give 
 		case _mime::directory:
-			return BMP_FolderIcon();
-			
+			extension = "%dir%";
+			break;
 		case _mime::application_octet_stream:
-			return BMP_ExeIcon();
-			
-		case _mime::application_x_lua_bytecode:
-			return BMP_LuaIcon();
-			
 		case _mime::application_microsoft_installer:
-			return BMP_FileIcon();
-			
-		case _mime::text_plain:
-			return BMP_TxtIcon();
-			
-		case _mime::text_xml:
-			return BMP_XmlIcon();
-			
-		case _mime::text_x_ini:
-			return BMP_IniIcon();
-			
-		case _mime::application_x_nintendo_ds_rom:
-			return BMP_NdsIcon();
-			
-		case _mime::application_x_nintendo_gba_rom:
-			return BMP_GbaIcon();
-		
-		case _mime::font_opentype:
-		case _mime::font_truetype:
-			return BMP_FontIcon();
-		
-		case _mime::audio_mpeg:
-		case _mime::audio_wav:
-		case _mime::audio_x_aiff:
-		case _mime::audio_mid:
-		case _mime::audio_x_mpegurl:
-		case _mime::audio_x_mod:
-			return BMP_MusicIcon();
-		
-		case _mime::image_jpeg:
-			return BMP_JpegIcon();
-			
-		case _mime::image_png:
-		case _mime::image_gif:
-		case _mime::image_bmp:
-			return BMP_ImageIcon();
-			
+		case _mime::application_x_lua_bytecode:
+		{
+			_program* prog = _program::fromFile( this->getFileName() );
+			if( prog ){
+				const _bitmap& bmp = prog->getFileImage();
+				if( bmp.isValid() )
+					return move(bmp);
+			}
+		}
 		default:
 			break;
 	}
-	return BMP_FileIcon();
+	return _system::getRegistry().getFileTypeImage( extension , mime );
 }
 
 bool _direntry::unlink( bool removeContents )

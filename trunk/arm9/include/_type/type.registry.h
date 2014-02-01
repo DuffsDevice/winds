@@ -23,6 +23,9 @@ class _registry : public _iniFile
 		//! Get Execution command for a specific filetype
 		const string& getFileTypeHandler( const string& extension ) const ;
 		
+		//! Get File image connected to a specific file extension
+		_bitmap getFileTypeImage( const string& extensions , _mimeType mimeType ) const ;
+		
 		//! Indicate that the DS Was shut down correctly
 		void indicateSafeShutdown();
 		

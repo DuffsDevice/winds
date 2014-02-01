@@ -12,7 +12,8 @@ enum class _language : _u8
 	german = 3,
 	italian = 4,
 	spanish = 5,
-	chinese = 6
+	chinese = 6,
+	neutral = 100
 };
 
 //! Convert between string and language
