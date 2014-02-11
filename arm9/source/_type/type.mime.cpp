@@ -23,6 +23,7 @@ _fromStr<_mime> string2mimeType = {
 	{ "application/octet-stream" , _mime::application_octet_stream } ,
 	{ "application/x-lua-bytecode" , _mime::application_x_lua_bytecode } ,
 	{ "application/x-ms-shortcut" , _mime::application_x_ms_shortcut } ,
+	{ "application/x-ms-registry" , _mime::application_x_ms_registry } ,
 	{ "application/x-internet-shortcut" , _mime::application_x_internet_shortcut } ,
 	{ "application/x-nintendo-ds-rom" , _mime::application_x_nintendo_ds_rom } ,
 	{ "application/x-nintendo-gba-rom" , _mime::application_x_nintendo_gba_rom } ,
@@ -64,7 +65,8 @@ _fromStr<_mime> extension2mimeType = {
 	{ "nds" , _mime::application_x_nintendo_ds_rom } ,
 	{ "gba" , _mime::application_x_nintendo_gba_rom } ,
 	{ "gbc" , _mime::application_x_nintendo_gba_rom } ,
-	{ "bat" , _mime::application_x_nintendo_gba_rom }
+	{ "bat" , _mime::application_x_nintendo_gba_rom } ,
+	{ "reg" , _mime::application_x_ms_registry }
 };
 
 _toStr<_mime> mimeType2string = {
@@ -92,5 +94,6 @@ _toStr<_mime> mimeType2string = {
 	{ _mime::application_x_internet_shortcut , "application/x-internet-shortcut" } ,
 	{ _mime::application_x_nintendo_ds_rom , "application/x-nintendo-ds-rom" } ,
 	{ _mime::application_x_nintendo_gba_rom , "application/x-nintendo-gba-rom" } ,
-	{ _mime::application_x_bat , "application/x-bat" } 
+	{ _mime::application_x_bat , "application/x-bat" } ,
+	{ _mime::application_x_ms_registry , "application/x-ms-registry" }
 };

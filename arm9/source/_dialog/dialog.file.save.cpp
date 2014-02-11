@@ -1,5 +1,6 @@
 #include "_dialog/dialog.file.save.h"
 #include "_type/type.system.h"
+#include "_resource/resource.icon.folder.up.h"
 
 void _fileSaveDialog::executeInternal(){
 	this->fileNameBox->setStrValue( this->initialName );
@@ -10,10 +11,14 @@ void _fileSaveDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialName , _int initialFileExtension , _optValue<string> saveLabel ) :
-	initialName( initialName.isValid() ? (string&&)initialName : _system::getLocalizedString("lbl_unnamed") )
-	, fileTypes( move(possibleFileExtensions) )
+_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<string> saveLabel ) :
+	fileTypes( move(possibleFileExtensions) )
 {
+	// Build directory and initial name
+	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _system::getLocalizedString("lbl_unnamed");
+	_direntry initialFile = _direntry( move(initialFileName) );
+	this->initialName = initialFile.getDisplayName();
+	
 	// Constants
 	_coord firstLineY = 70;
 	_coord secondLineY = 82;
@@ -59,10 +64,12 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	
 	
 	// FileView & Addressbar & Button
-	this->fileViewAddress = new _textBox( 1 , 1 , winWidth - 14 , ignore , "/moonmemo/" );
+	this->fileViewAddress = new _textBox( 1 , 1 , winWidth - 14 - 11 , ignore , initialFile.getParentDirectory() );
 	this->gotoButton = new _actionButton( winWidth - 12 , 1 , _actionButtonType::next );
 	this->gotoButton->setUserEventHandler( onMouseClick , make_callback( this , &_fileSaveDialog::eventHandler ) );
-	this->fileView = new _fileView( 1 , fileViewY , winWidth - 4 , firstLineY - fileViewY - 1 , "/moonmemo/" , _fileViewType::list );
+	this->folderUpButton = new _imageButton( winWidth - 14 - this->gotoButton->getWidth() , 1 , 10 , 9 , BMP_FolderUpIcon() );
+	this->folderUpButton->setUserEventHandler( onMouseClick , make_callback( this , &_fileSaveDialog::eventHandler ) );
+	this->fileView = new _fileView( 1 , fileViewY , winWidth - 4 , firstLineY - fileViewY - 1 , initialFile.getParentDirectory() , _fileViewType::list );
 	this->fileView->setFileMask( _fileExtensionList( { std::get<1>(this->fileTypes[this->getFileType()]) } ) );
 	this->fileView->setEventHandler( make_callback( this , &_fileSaveDialog::eventHandler ) );
 	this->fileView->setUserEventHandler( onEdit , make_callback( this , &_fileSaveDialog::eventHandler ) );
@@ -86,6 +93,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	this->window->addChild( this->fileView );
 	this->window->addChild( this->fileViewAddress );
 	this->window->addChild( this->gotoButton );
+	this->window->addChild( this->folderUpButton );
 }
 
 _callbackReturn _fileSaveDialog::eventHandler( _event event )
@@ -120,6 +128,13 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 	// The Goto Button was pressed
 	else if( that == this->gotoButton )
 		this->fileView->setPath( this->fileViewAddress->getStrValue() );
+	
+	// The Folder Up Button
+	else if( that == this->folderUpButton ){
+		string path = _direntry( this->fileView->getPath() ).getParentDirectory();
+		this->fileViewAddress->setStrValue( path );
+		this->fileView->setPath( path );
+	}
 	
 	// Cancel-Button or Window-Close-Button
 	else

@@ -26,7 +26,7 @@ Lunar<_lua_yesnodialog>::FunctionType _lua_yesnodialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_yesnodialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_yesnodialog>::PropertyType _lua_yesnodialog::properties[] = {
+Lunar<_lua_yesnodialog>::PropertyType _lua_yesnodialog::properties[] = {
 	{ "running"	, wrap( _lua_yesnodialog , &_dialog::isRunning ) , nullptr },
 	LUA_CLASS_ATTR_END
 };
@@ -51,8 +51,10 @@ Lunar<_lua_entertextdialog>::FunctionType _lua_entertextdialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_entertextdialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_entertextdialog>::PropertyType _lua_entertextdialog::properties[] = {
-	{ "running"	, wrap( _lua_entertextdialog , &_dialog::isRunning ) , nullptr },
+Lunar<_lua_entertextdialog>::PropertyType _lua_entertextdialog::properties[] = {
+	{ "running"			, wrap( _lua_entertextdialog , &_dialog::isRunning )				, nullptr },
+	{ "result"			, wrap( _lua_entertextdialog , &_enterTextDialog::getResult )		, nullptr },
+	{ "initialValue"	, wrap( _lua_entertextdialog , &_enterTextDialog::getInitialValue ) , wrap( _lua_entertextdialog , &_enterTextDialog::setInitialValue ) },
 	LUA_CLASS_ATTR_END
 };
 
@@ -77,7 +79,7 @@ Lunar<_lua_imagedialog>::FunctionType _lua_imagedialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_imagedialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_imagedialog>::PropertyType _lua_imagedialog::properties[] = {
+Lunar<_lua_imagedialog>::PropertyType _lua_imagedialog::properties[] = {
 	{ "running"	, wrap( _lua_imagedialog , &_dialog::isRunning ) , nullptr },
 	LUA_CLASS_ATTR_END
 };
@@ -101,7 +103,7 @@ Lunar<_lua_errordialog>::FunctionType _lua_errordialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_errordialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_errordialog>::PropertyType _lua_errordialog::properties[] = {
+Lunar<_lua_errordialog>::PropertyType _lua_errordialog::properties[] = {
 	{ "running"	, wrap( _lua_errordialog , &_dialog::isRunning ) , nullptr },
 	LUA_CLASS_ATTR_END
 };
@@ -125,7 +127,7 @@ Lunar<_lua_infodialog>::FunctionType _lua_infodialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_infodialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_infodialog>::PropertyType _lua_infodialog::properties[] = {
+Lunar<_lua_infodialog>::PropertyType _lua_infodialog::properties[] = {
 	{ "running"	, wrap( _lua_infodialog , &_dialog::isRunning ) , nullptr },
 	LUA_CLASS_ATTR_END
 };
@@ -149,7 +151,7 @@ Lunar<_lua_warningdialog>::FunctionType _lua_warningdialog::methods[] = {
 	{ "deleteCallback"	, wrap( _lua_warningdialog , &_dialog::deleteCallback ) },
 	LUA_CLASS_FUNC_END
 };
-typename Lunar<_lua_warningdialog>::PropertyType _lua_warningdialog::properties[] = {
+Lunar<_lua_warningdialog>::PropertyType _lua_warningdialog::properties[] = {
 	{ "running"	, wrap( _lua_warningdialog , &_dialog::isRunning ) , nullptr },
 	LUA_CLASS_ATTR_END
 };

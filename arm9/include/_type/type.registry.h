@@ -36,7 +36,7 @@ class _registry : public _iniFile
 		~_registry();
 		
 		//! Ctor
-		_registry();
+		_registry( string path );
 };
 
 #endif

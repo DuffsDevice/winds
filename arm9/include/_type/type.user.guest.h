@@ -10,7 +10,7 @@ class _guestUser : public _user
 		
 		//! Ctor!
 		_guestUser() :
-			_user( "$guest" )
+			_user( "%guest" )
 		{
 			_iniFile::writeIndex( "_global_" , "userName" , _system::getLocalizedString("lbl_guest") );
 			_iniFile::writeIndex( "_global_" , "userCode" , "" );

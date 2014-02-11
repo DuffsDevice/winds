@@ -28,6 +28,7 @@ enum class _mime : _u8{
 	application_microsoft_installer,
 	application_x_lua_bytecode,
 	application_x_ms_shortcut,
+	application_x_ms_registry,
 	application_x_internet_shortcut,
 	application_x_nintendo_ds_rom,
 	application_x_nintendo_gba_rom,

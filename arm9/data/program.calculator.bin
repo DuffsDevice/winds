@@ -1,4 +1,4 @@
---IMG = %WINDIR%/accessories/CalcIcon.bmp
+--IMG = %APPDATA%/CalcIcon.bmp
 --AUTHOR=Jakob Riedle (DuffsDevice)
 --VERSION = 1.0
 --DESC = Application to modify Images

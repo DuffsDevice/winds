@@ -15,14 +15,14 @@ _programList	_program::globalPrograms;
 _programList	_program::globalProgramsToExecute;
 _constBitmap	_program::standardFileImage = BMP_ExeIcon();
 
-void _program::main( _gadget* w , _cmdArgs args  ){
+void _program::main( _gadget* w , _programArgs args  ){
 	this->gadgetHost = w;
 	this->internalMain( move( args ) );
 }
 
 int cnt = 0;
 
-void _program::execute( _cmdArgs args )
+void _program::execute( _programArgs args )
 {
 	// Execute main
 	this->main( _system::_gadgetHost_ , move(args) );

@@ -13,11 +13,14 @@ namespace std
 			
 			//! Char Array to hold the buffer
 			dataType			data[maxBytes];
+			
+			static dataType 	tempBuffer[maxBytes+1];
 		
 		public:
 		
 			//! Ctor
 			shortString(){
+				static_assert( maxBytes != 0 , "maxBytes must be >0" );
 				this->data[0] = 0;
 			}
 			
@@ -30,23 +33,26 @@ namespace std
 			}
 			
 			shortString( shortString&& str ){
+				*this = move(str);
+			}
+			
+			shortString( const std::string& str ){
 				*this = str;
 			}
 			
-			shortString( const std::string str ){
-				*this = str;
-			}
-			
-			shortString& operator=( const std::string str )
+			shortString& operator=( const std::string& str )
 			{
 				int idx = 0;
-				for( const dataType c : str )
-				{
-					if( idx == ( maxBytes - 1 ) )
-						break;
-					this->data[idx++] = c;
+				int maxIdx = min( (size_t)maxBytes , str.length() );
+				
+				// Copy Bytes
+				while( idx < maxIdx ){
+					this->data[idx] = str[idx];
+					idx++;
 				}
-				this->data[idx] = 0;
+				
+				if( idx < maxBytes - 1 ) // Already End of the string
+					this->data[idx] = 0;
 				
 				return *this;
 			}
@@ -54,12 +60,13 @@ namespace std
 			shortString& operator=( const dataType* str )
 			{
 				int idx = 0;
+				
 				// Check if the data is valid
 				if( str )
 					while( *str )
 					{
-						if( idx == ( maxBytes - 1 ) )
-							break;
+						if( idx == maxBytes ) // End of the available bytes is reached
+							return *this;
 						this->data[idx++] = *str++;
 					}
 				
@@ -68,40 +75,17 @@ namespace std
 				return *this;
 			}
 			
-			shortString& operator=( const shortString& sstr )
-			{
-				int idx = 0;
-				const dataType* str = sstr.data;
-				
-				// Check if the data is valid
-				if( str )
-					while( *str )
-					{
-						if( idx == ( maxBytes - 1 ) )
-							break;
-						this->data[idx++] = *str++;
-					}
-				
-				this->data[idx] = 0; // Add delim
-				
-				return *this;
+			shortString& operator=( const shortString& sstr ){
+				return *this = sstr.data;
 			}
 			
 			shortString& operator=( shortString&& sstr )
 			{
-				int idx = 0;
+				int idx = maxBytes;
 				const dataType* str = sstr.data;
 				
-				// Check if the data is valid
-				if( str )
-					while( *str )
-					{
-						if( idx == ( maxBytes - 1 ) )
-							break;
-						this->data[idx++] = *str++;
-					}
-				
-				this->data[idx] = 0; // Add delim
+				while( --idx >= 0 )
+					this->data[idx] = str[idx];
 				
 				return *this;
 			}
@@ -111,72 +95,84 @@ namespace std
 			}
 			
 			operator std::string() const {
-				return std::string( this->data );
+				return this->c_str();
 			}
 			
-			template<int maxBytes2,typename dataType2>
-			bool operator==( const shortString<maxBytes2,dataType2>& sstr ) const
+			bool operator==( const shortString& sstr ) const
 			{
 				const dataType* str = this->data;
 				const dataType* str2 = sstr.data;
+				int idx = 0;
 				
-				while( *str && *str2 )
+				do
 				{
-					if( *str++ != *str2++ )
+					if( *str[idx] != *str2[idx] )
 						return false;
 				}
-				if( *str != *str2 ) // Check if not both reached their ends at once
-					return false;
+				while( *str[idx] != '\0' && ++idx < maxBytes ); // Are we inside the range and do both strings not end (we checked if they were equal)
+				
 				return true;
 			}
 			
-			bool operator==( const std::string& str ) const
-			{
-				if( str.length() > maxBytes - 1 )
-					return false;
-				
-				const dataType* myStr = this->data;
-				
-				for( const std::string::value_type& value : str )
-				{
-					if( *myStr++ != value )
-						return false;
-				}
-				if( *myStr ) // Check if the shortstring is actually longer that the std::string we compare to
-					return false;
-				return true;
+			bool operator==( const std::string& str ) const {
+				return *this == str.data();
 			}
 			
 			bool operator==( const dataType* str2 ) const
 			{
 				const dataType* str = this->data;
+				int idx = 0;
 				
-				while( *str && *str )
+				while(true)
 				{
-					if( *str++ != *str2++ )
+					if( !str[idx] | idx == maxBytes ) // Are we inside the range and does, if not, the other string also end?
+						return str2[idx] == '\0';
+					
+					if( *str[idx] != *str2[idx] )
 						return false;
+					idx++;
 				}
-				if( *str != *str2 ) // Check if the both strings have the same size
-					return false;
+				
 				return true;
 			}
 			
 			dataType operator[]( int idx ) const
 			{
-				return this->data[ std::max( 0 , std::min( maxBytes - 1 , idx ) ) ];
+				if( idx >= maxBytes )
+					return '\0';
+				return this->data[idx];
 			}
 			
 			size_t length() const {
-				return strlen( this->data );
+				int idx = 0;
+				for( ; idx < maxBytes && this->data[idx] != '\0' ; idx++ )
+					return idx;
 			}
 			
 			bool empty() const {
 				return this->data[0] == '\0';
 			}
 			
-			const char* c_str() const { return this->data; }
-		
+			const dataType* c_str() const
+			{
+				if( this->data[maxBytes-1] ) // Check if the contained string has no terminating '\0'
+				{
+					// Copy Characters
+					for( int idx = maxBytes; --idx >= 0 ; shortString::tempBuffer[idx] = this->data[idx] );
+					
+					// Add Terminating Null character
+					shortString::tempBuffer[maxBytes] = '\0';
+					
+					// Return string
+					return shortString::tempBuffer;
+				}
+				return this->data;
+			}
 	};
+	
+	// Static Member Initialization
+	template<int maxBytes,typename dataType>
+	dataType 	shortString<maxBytes,dataType>::tempBuffer[maxBytes+1];
 	
 	using sstring = shortString<20,_char>;
 	using ssstring = shortString<6,_char>;

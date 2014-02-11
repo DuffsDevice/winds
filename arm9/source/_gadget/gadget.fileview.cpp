@@ -1,5 +1,9 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
+#include "sound_navigation_bin.h"
+
+// Click Sound
+_staticSound _fileView::navigationSound = _staticSound( _channelFormat::bit8 , 44100 , sound_navigation_bin , sound_navigation_bin_size );
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _optValue<_length> width , _optValue<_length> height , string path
@@ -11,7 +15,7 @@ _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 	, viewType( viewType )
 	, filemask( allowedExtensions.empty() ? nullptr : new _fileExtensionList( move(allowedExtensions) ) )
 	, eventHandler( move(eventHandler) )
-	, singleClickToExecute( singleClickToExecute ) 
+	, singleClickToExecute( singleClickToExecute )
 {	
 	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
@@ -25,6 +29,8 @@ void _fileView::setPath( const string& path )
 {
 	this->directory = _direntry( path );
 	this->generateChildren();
+	
+	_fileView::navigationSound.play(30);
 }
 
 _callbackReturn _fileView::eventForwarder( _event event )
@@ -66,7 +72,7 @@ void _fileView::generateChildren()
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType );
 				
-				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 28 , 2 , false , 1 , 1 , false );
+				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 28 , 2 , true , 1 , 1 , false );
 				fo->setInternalEventHandler( onParentSet , cb );
 				
 				// Add User-defined Handler
@@ -80,7 +86,7 @@ void _fileView::generateChildren()
 		case _fileViewType::list:
 		default:
 			// Read Children of directory
-			//_vector<string> names = { "Haloo.lnk" , "Resize.bmp" , "Halihalo.exe" , "Hallo/"};
+			//_vector<string> names = { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"};
 			//for( string str : names )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{

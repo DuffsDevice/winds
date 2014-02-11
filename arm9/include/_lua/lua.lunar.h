@@ -410,6 +410,35 @@ class Lunar
 			return 1;
 		}
 		
+		static int dump( lua_State* state )
+		{
+			std::string output = "Dump of ";
+			output += Class::className;
+			
+			if( Class::methods[0].name )
+			{
+				output += ":\nMethods:";
+				for (int i = 0; Class::methods[i].name; i++)
+				{
+					output += "\n - ";
+					output += Class::methods[i].name;
+				}
+			}
+			
+			if( Class::properties[0].name )
+			{
+				output += "\nProperties:";
+				for (int i = 0; Class::properties[i].name; i++){
+					output += "\n - ";
+					output += Class::properties[i].name;
+				}
+			}
+			
+			lua_pushstring( state , output.c_str() );
+			
+			return 1;
+		}
+		
 		static int constructorDeleteSelfReference( lua_State* state )
 		{
 			lua_remove( state , 1 );
@@ -555,6 +584,10 @@ class Lunar
 			// Pass the name of the class as an attribute in the metatable
 			lua_pushliteral( state , "__name" );
 			lua_pushstring( state , Class::className );
+			lua_settable( state , metatable );
+			
+			lua_pushliteral( state , "dump" );
+			lua_pushcfunction( state, &Lunar<Class>::dump );
 			lua_settable( state , metatable );
 			
 			// Register Properties

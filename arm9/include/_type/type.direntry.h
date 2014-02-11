@@ -11,6 +11,7 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.mime.h"
 #include "_type/type.ini.h"
+#include "_type/type.program.args.h"
 
 // Libfat
 extern "C"{
@@ -49,7 +50,7 @@ union _direntryAttributes
 	}
 };
 
-typedef _vector<ssstring> _fileExtensionList;
+typedef _vector<string> _fileExtensionList;
 
 class _direntry
 {
@@ -73,7 +74,7 @@ class _direntry
 		//! Filename
 		string				filename;
 		string				name;
-		ssstring			extension;
+		string				extension;
 		
 		//! MIME-Type
 		_mimeType 			mimeType;
@@ -84,15 +85,13 @@ class _direntry
 		//! Flush a files contents to disk
 		bool flush();
 		
+		//! Set UNIX-Attributes of File
+		bool setAttrs( _direntryAttributes attrs );
+		
+		//! Get UNIX-Attributes of File
+		_direntryAttributes getAttrs() const ;
+		
 	public:
-	
-		//! Manually init Fat
-		static bool initFat();
-		
-		
-		//! Check if File is Direct
-		bool isDirectory() const { return S_ISDIR( this->stat_buf.st_mode ); }
-		
 		
 		//! Ctor...
 		_direntry( string&& path );
@@ -118,115 +117,116 @@ class _direntry
 		virtual ~_direntry(){ this->close(); }
 		
 		
+		/////////////////////////
+		// Direntry Attributes //
+		/////////////////////////
+		
+		//! Set whether the _direntry is hidden, returns 'true' on success
+		bool setHidden( bool hidden );
+		
+		//! Check, whether the file is hidden
+		bool isHidden() const ;
+		
+		//! Set whether the _direntry is a system file, returns 'true' on success
+		bool setSystemFile( bool isSystem );
+		
+		//! Check whether the file is a system file
+		bool isSystem() const ;
+		
+		//! Set whether the _direntry implements read only access, returns 'true' on success
+		bool setReadOnly( bool readOnly );
+		
+		//! Check whether the file is readOnly
+		bool isReadOnly() const ;
+		
+		//! Check if File is a Directory
+		bool isDirectory() const { return S_ISDIR( this->stat_buf.st_mode ); }
+		
+		
+		//////////////////////////
+		// Basic Access Methods //
+		//////////////////////////
+		
 		//! get mode (used to determine if the file is openend)
 		_direntryMode getMode() const { return this->mode; }
-		
 		
 		//! Open a file. The Mode for opening is specified with mode
 		virtual bool open( string mode );
 		
-		
-		//! open the file for reading
+		//! Open the file for reading
 		virtual bool openread();
-		
 		
 		//! open the file for writing
 		virtual bool openwrite( bool eraseOldContent = true );
 		
-		
 		//! Create a file with the specified filename
 		virtual bool create();
 		
-		
 		//! Close the File
 		virtual bool close();
-		
 		
 		//! Read the contents of the file into a block of memory
 		//! and sets 'numBytes' to the number of bytes efficiently read (-1 for an error)
 		virtual bool read( void* dest , _optValue<_u32> size = ignore , _u32* numBytes = nullptr );
 		
-		
 		//! Write 'size' bytes of contents in 'src' to the file
 		virtual bool write( void* src , _u32 size );
-		
-		
-		//! Hide the File
-		/*bool hide(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.hidden = true; return attr; } ); }
-		bool unhide(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.hidden = false; return attr; } ); }*/
-		
-		
-		//! Set The File to Syste-File
-		/*bool setSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = true; return attr; } ); }
-		bool unsetSystem(){ return this->setAttrs( []( _direntryAttributes attr )->_direntryAttributes{ attr.attr.system = false; return attr; } ); }*/
-		
 		
 		//! If the _direntry is an directory, iterate through its children
 		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr );
 		virtual bool readChildFolderOnly( _literal& child );
 		virtual bool rewindChildren();
 		
-		
-		//! Set UNIX-Attributes of File
-		int setAttrs( _direntryAttributes attrs );
-		
-		
-		//! Get UNIX-Attributes of File
-		_direntryAttributes getAttrs() const ;
-		
-		
 		//! Write an std::string to the end of the file
 		bool writeString( string str );
-		
 		
 		//! Read the contents of the file into std::string
 		string readString( _optValue<_u32> size = ignore );
 		
-		
 		//! Get Filename
 		const string& getFileName() const { return this->filename; }
-		
 		
 		//! get Name of the file (not "C:/Hello.txt", but "Hello")
 		virtual const string& getName() const { return this->name; }
 		
-		
 		//! Get the string that should be displayed if the direntry-name should be drawn
 		string getDisplayName() const ;
 		
-		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
-		virtual const ssstring& getExtension() const { return this->extension; }
-		
+		virtual const string& getExtension() const { return this->extension; }
 		
 		//! Get Mime Type
-		virtual _mimeType getMimeType() const { return this->mimeType; }
-		
+		_mimeType getMimeType() const { return this->mimeType; }
 		
 		//! get the size of a file (in bytes)
-		virtual _u32 getSize();
+		_u32 getSize();
 		
+		//! Get the Path of the parent directory
+		string getParentDirectory() const ;
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
-		virtual bool execute( _cmdArgs args = _cmdArgs() );
-		
+		virtual bool execute( _programArgs args = _programArgs() );
 		
 		//! Get File-Image
 		virtual _bitmap getFileImage();
 		
-		
 		//! Check if the File at 'filename' exists
-		virtual bool isExisting() const { return this->exists; }		
-		
+		virtual bool isExisting() const { return this->exists; }
 		
 		//! To remove the file/directory
 		//! Pass 'true' to delete a non-empty directory
-		virtual bool unlink( bool removeContents = false );
-		
+		bool unlink( bool removeContents = false );
 		
 		//! To rename the file
-		virtual bool rename( string newName );
+		bool rename( string newName );
 		
+		
+		//////////////////////
+		// Static Functions //
+		//////////////////////
+		
+		//! Manually init Fat
+		static bool initFat();
 		
 		//! Replace associated filename-patterns
 		static string replaceASSOCS( string path ){

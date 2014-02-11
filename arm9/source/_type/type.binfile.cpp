@@ -4,7 +4,7 @@
 #include "ini_localization_text_bin.h"
 #include "ini_localization_month_bin.h"
 
-_binfile::operator string()
+_binFile::operator string()
 {
 	if( this->isExisting() )
 		return this->readString();

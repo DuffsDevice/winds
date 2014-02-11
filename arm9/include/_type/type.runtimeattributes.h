@@ -27,7 +27,9 @@ class _runtimeAttributes
 		bool			magnifyKeyboardFocus;
 		
 		// Associative Directories: e.g. %WINDIR%
-		_vector<_pair<string,string>> assocDirectories;
+		_assocVector<string,string> assocDirectories;
+		
+		void updateUserDirectory();
 		
 	public:
 		
@@ -50,12 +52,14 @@ class _runtimeAttributes
 		const _vector<string>& 	getKeyboardTexts( _u8 layout ) const { return keyboardText[layout]; }
 		_constBitmap& 			getWindowsDesignActive() const { return this->windowBar; }
 		_constBitmap& 			getWindowsDesignBlurred() const { return this->windowBarBlurred; }
-		const _vector<_pair<string,string>>&	getAssociativeDirectories() const { return this->assocDirectories; }
+		const _assocVector
+			<string,string>&	getAssociativeDirectories() const { return this->assocDirectories; }
 		
 		
 		//! Setters
 		void setUser( flex_ptr<_user> user ){
 			this->user = move(user);
+			this->updateUserDirectory();
 		}
 		void enableKeyboardMagnif(){ this->magnifyKeyboardFocus = true; }
 		void disableKeyboardMagnif(){ this->magnifyKeyboardFocus = false; }

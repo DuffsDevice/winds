@@ -53,7 +53,6 @@ template<typename T>
 	using _initializerList = std::initializer_list<T>;
 
 typedef std::basic_string<_char>	string;
-typedef _vector<string>				_cmdArgs;
 
 //! Minimum and Maximum of two
 using std::min;

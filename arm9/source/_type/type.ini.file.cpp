@@ -2,17 +2,10 @@
 
 _iniFile::_iniFile( const string& filename ) :
 	_direntry( filename )
+	, firstTimeUse( !_direntry::isExisting() )
 {
-	if( _direntry::isExisting() ){
+	if( _direntry::isExisting() )
 		_ini::read( _direntry::readString() );
-		_ini::deleteIndex( "_global_" , ".firstTimeUse" );
-		this->creation = false;
-	}
-	else{
-		_direntry::create();
-		_ini::writeIndex( "_global_" , ".firstTimeUse" , "1" );
-		this->creation = true;
-	}
 }
 
 void _iniFile::flush()

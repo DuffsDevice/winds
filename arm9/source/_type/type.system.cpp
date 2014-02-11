@@ -470,6 +470,7 @@ void _system::start()
 	//	Hardware Init
 	// -----------------------------------------------
 	
+		
 		bool fatInit = _direntry::initFat();
 		bool wifiInit = Wifi_InitDefault(INIT_ONLY);
 		
@@ -490,7 +491,8 @@ void _system::start()
 		_system::_debugFile_->create();
 		_system::_debugFile_->openwrite();
 		
-		_system::_registry_ = new _registry();
+		_system::_registry_ = new _registry("%SYSTEM%/registry.reg");
+		_system::_registry_->create();
 	
 	// -----------------------------------------------
 	// Localization-System
@@ -500,16 +502,18 @@ void _system::start()
 		_system::setLanguage( _system::_registry_->getLanguage() );
 		
 		// Localization of Strings
-		_system::_localizationTextTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationText.ini" ) );
+		_system::_localizationTextTable_ = new _ini( (string) _binFile( "%SYSTEM%/localizationText.ini" ) );
 		
 		// Localization of Months
-		_system::_localizationMonthTable_ = new _ini( (string) _binfile( "%SYSTEM%/localizationMonth.ini" ) );
+		_system::_localizationMonthTable_ = new _ini( (string) _binFile( "%SYSTEM%/localizationMonth.ini" ) );
 	
 	// -----------------------------------------------
 	// Add a temporary User
 	// -----------------------------------------------
-	
-		_system::_rtA_->setUser( new _guestUser() );
+		
+		_guestUser* guest = new _guestUser();
+		guest->create();
+		_system::_rtA_->setUser( move(guest) );
 	
 	// -----------------------------------------------
 	// Gadget-System
@@ -617,38 +621,24 @@ bool _system::isRunningOnEmulator()
 	// http://forum.gbadev.org/viewtopic.php?t=6265
 	_u32 result; 
 	asm volatile("swi 0x0D\n" 
-		"mov r0, %0\n" : "=r"(result) : : "r1", "r2", "r3" 
+		"mov r0, %0\n" : "=r"(result) : : "r1", "r2", "r3"
 	);
 	return result != 0xBAAE1880 /* DS Mode */ && result != 0xBAAE187F;
 }
 
-bool _system::executeCommand( string cmd )
+bool _system::executeCommand( const string& cmd )
 {
-	// Set up tokenizer
-	string destination;
-	_tokenizer tok = _tokenizer( cmd , destination , " \n\r\t" , true );
+	if( cmd.empty() )
+		return false;
 	
-	// If its the first token
-	bool isFirst = true;
+	size_t fileNameEnd = string::npos;
 	
-	_direntry	executedProgram = _direntry("");
-	_cmdArgs	arguments;
+	if( cmd[0] == '"' ) // If it starts with an apostroph
+		fileNameEnd = cmd.find( '"' , 1 );
+	else
+		fileNameEnd = cmd.find( ' ' , 1 );
 	
-	while( tok.next() )
-	{
-		// Trim the line
-		trim( destination , "-" , true , false );
-		
-		if( isFirst )
-		{
-			executedProgram = _direntry( destination );
-			isFirst = false;
-		}
-		else
-			arguments.push_back( destination );
-	}
-	
-	return executedProgram.execute( arguments );
+	return _direntry( cmd.substr( cmd[0] == '"' , fileNameEnd ) ).execute( fileNameEnd != string::npos ? cmd.c_str() + fileNameEnd : _programArgs() );
 }
 
 void _system::shutDown(){

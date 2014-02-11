@@ -6,11 +6,11 @@
 #include "_type/type.h"
 #include "_type/type.direntry.h"
 
-class _binfile : _direntry
+class _binFile : _direntry
 {
 	public:
 		
-		_binfile( string path ) : _direntry( path ) { }
+		_binFile( string path ) : _direntry( path ) { }
 		
 		operator string();
 };

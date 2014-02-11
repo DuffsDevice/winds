@@ -28,10 +28,7 @@ class _progLua : public _program
 		static int	lua_getLocalizedString( lua_State* L );
 		static int	lua_getCurrentFocus( lua_State* L );
 		static int	lua_addChild( lua_State* L );
-		static int	lua_readRegistryIndex( lua_State* L );
-		static int	lua_writeRegistryIndex( lua_State* L );
-		static int	lua_deleteRegistryIndex( lua_State* L );
-		static int	lua_deleteRegistrySection( lua_State* L );
+		static int	lua_getRegistry( lua_State* L );
 		static int	lua_getFont( lua_State* L );
 		static int	lua_fontChangePhrase( lua_State* L );
 		static int	lua_colorChangePhrase( lua_State* L );
@@ -71,7 +68,7 @@ class _progLua : public _program
 		~_progLua();
 		
 		//! Main function that will be called at the start of execution (one shot)
-		void internalMain( _cmdArgs args );
+		void internalMain( _programArgs args );
 };
 
 #endif

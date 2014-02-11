@@ -5,11 +5,12 @@
 #include "_type/type.ini.h"
 #include "_type/type.direntry.h"
 
-class _iniFile : public _ini , protected _direntry
+class _iniFile : public _ini , public _direntry
 {
-	protected:
+	private:
 		
-		bool creation; // Flag whether the registry was created this time
+		//! Flag indicating whether the registry file existed before this _iniFile was allocated
+		const bool firstTimeUse;
 		
 	public:
 		
@@ -18,6 +19,9 @@ class _iniFile : public _ini , protected _direntry
 		
 		//! Flush the content to disk
 		void flush();
+		
+		//! Check whether the registry file existed before this _iniFile was allocated
+		bool isUsedFirstTime(){ return firstTimeUse; }
 		
 		//! Virtual Dtor
 		virtual ~_iniFile(){

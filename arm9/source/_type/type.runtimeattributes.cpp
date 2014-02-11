@@ -8,10 +8,15 @@
 #include "_resource/resource.image.window.buttons.h"
 #include "_resource/resource.image.checkboxes.h"
 
-_runtimeAttributes::_runtimeAttributes( flex_ptr<_user> user ) :
+void _runtimeAttributes::updateUserDirectory(){
+	if( this->user )
+		this->assocDirectories["%CURRENT_USER%"] = string("/windows/users/") + user->getFoldername();
+}
+
+_runtimeAttributes::_runtimeAttributes( flex_ptr<_user> tempUser ) :
 	defaultFont( "System7" )
 	, defaultFontSize( 8 )
-	, user( move(user) )
+	, user( move(tempUser) )
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )
 	, highlightForeground( COLOR_WHITE )
@@ -57,6 +62,8 @@ _runtimeAttributes::_runtimeAttributes( flex_ptr<_user> user ) :
 		string(1,_glyph::capsPressed) , "Y" , "X" , "C" , "V" , "B" , "N" , "M" , "+" , string(1,_glyph::carriageReturn) ,
 		string(1,_glyph::shiftPressed) , string(1,_glyph::windows) , "Space" , ";" , "_" , string(1,_glyph::shiftPressed)
 	};
+	
+	this->updateUserDirectory();
 }
 
 _runtimeAttributes::~_runtimeAttributes()

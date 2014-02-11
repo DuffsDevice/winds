@@ -26,16 +26,16 @@ int _lua_border::setTop(lua_State* L){ _border::top = check<int>( L , 1 ); retur
 int _lua_border::setBottom(lua_State* L){ _border::bottom = check<int>( L , 1 ); return 0; }
 
 //! getLeft
-int _lua_border::getLeft(lua_State* L){ lua_pushnumber( L , _border::left ); return 1; }
+int _lua_border::getLeft(lua_State* L){ return push( L , _border::left );  }
 
 //! getTop
-int _lua_border::getTop(lua_State* L){ lua_pushnumber( L , _border::top ); return 1; }
+int _lua_border::getTop(lua_State* L){ return push( L , _border::top ); }
 
 //! getRight
-int _lua_border::getRight(lua_State* L){ lua_pushnumber( L , _border::right ); return 1; }
+int _lua_border::getRight(lua_State* L){ return push( L , _border::right ); }
 
 //! getBottom
-int _lua_border::getBottom(lua_State* L){ lua_pushnumber( L , _border::bottom ); return 1; }
+int _lua_border::getBottom(lua_State* L){ return push( L , _border::bottom ); }
 
 //! Lua-_rect
 const char _lua_border::className[] = "Border";

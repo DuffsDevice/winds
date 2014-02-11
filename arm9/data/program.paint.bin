@@ -1,5 +1,5 @@
---	IMG = /someurl.bmp
---	AUTHOR = Jakob Riedle(DuffsDevice)
+--	IMG = %APPDATA%/PaintIcon.png
+--	AUTHOR = Jakob Riedle (DuffsDevice)
 --	VERSION = 1.0
 --	DESC = Application to modify Images
 --	COPYRIGHT = (C) 2014
