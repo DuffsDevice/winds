@@ -14,11 +14,11 @@ class _user : public _iniFile
 {
 	private:
 		
-		string				folderName;
-		_bitmap				userLogo;
-		_bitmap				wallpaper;
-		_wallpaperViewType	wallpaperView;
-		_vector<string>		startMenuEntries;
+		string							folderName;
+		_bitmap							userLogo;
+		_bitmap							wallpaper;
+		_wallpaperViewType				wallpaperView;
+		_vector<_pair<string,string>>	startMenuEntries;
 		
 		void readConstants();
 	
@@ -87,14 +87,11 @@ class _user : public _iniFile
 		//! Read a string value from the registry
 		string getStrAttr( const string& idx ) const { return _iniFile::readIndex( "_global_" , idx ); }
 		
-		//! Saves the data of this user class to a folder
-		void createAs( const string& folderName );
-		
 		//! Set the users icon (string)
 		void setUsericon( const string& icon , bool builtIn = false ){ _iniFile::writeIndex( "_global_" , "userLogo" , icon ); }
 		
 		//! Get start menu
-		const _vector<string>& getStartMenuEntries(){ return this->startMenuEntries; }
+		const _vector<_pair<string,string>>& getStartMenuEntries(){ return this->startMenuEntries; }
 };
 
 #endif

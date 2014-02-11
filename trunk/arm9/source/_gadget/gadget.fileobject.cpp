@@ -28,13 +28,13 @@ _callbackReturn _fileObject::updateHandler( _event event )
 	return handled;
 }
 
-void _fileObject::execute( _cmdArgs args , bool openInNewWindow )
+void _fileObject::execute( _programArgs args , bool openInNewWindow )
 {
 	// Execute!
 	if( this->file->isDirectory() )
 	{
 		if( openInNewWindow )
-			_system::executeCommand("%SYSTEM%/explorer.exe -" + this->file->getFileName() );
+			_system::executeCommand("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
 		else if( this->parent->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onEdit'-Event
@@ -67,10 +67,11 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			// Receive Font
 			const _font*	ft = _system::getFont();
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
+			_pixel			ftColor = that->file->isHidden() ? COLOR_GRAY : _system::getRTA().getItemForeground( true );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
-			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , _system::getRTA().getItemForeground( true ) , ftSize );
+			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
 			_constBitmap& fileIcon = that->file->getFileImage();
@@ -91,12 +92,12 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 		default:
 		{
 			// Draw Background
-			bP.fill( that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_TRANSPARENT );
+			bP.fill( _system::getRTA().getItemBackground( that->hasFocus() ) );
 			
 			// Font
 			const _font*	ft = _system::getFont();
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_pixel			ftColor = that->hasFocus() ? COLOR_WHITE : COLOR_BLACK;
+			_pixel			ftColor = that->file->isHidden() ? COLOR_GRAY : _system::getRTA().getItemForeground( that->hasFocus() );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
@@ -107,7 +108,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			
 			bP.copyTransparent(
 				5 - ( fileIcon.getWidth() >> 1 ) // X
-				, ( that->getHeight() >> 1 ) - ( fileIcon.getHeight() >> 1 ) // Y
+				, ( ( that->getHeight() + 1 ) >> 1 ) - ( ( fileIcon.getHeight() + 1 ) >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
 			

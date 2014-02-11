@@ -99,8 +99,8 @@ _color& _color::adjustHSL( int hue , int sat , int lum ){
 	return *this;
 }
 
-_color& _color::adjustRGB( _s8 red , _s8 gre , _s8 blu ){
-	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + gre , 31 ) , mid( 0 , this->getB() + blu , 31 ) );
+_color& _color::adjustRGB( _s8 red , _s8 green , _s8 blu ){
+	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + green , 31 ) , mid( 0 , this->getB() + blu , 31 ) );
 	return *this;
 }
 

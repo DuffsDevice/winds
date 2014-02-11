@@ -1,5 +1,10 @@
-using "Drawing.Bitmap"
+--IMG = /someurl.bmp
+--AUTHOR = Jakob Riedle(DuffsDevice)
+--VERSION = 1.0
+--DESC = Simple Cover of the famous Game 'Pong'
+--COPYRIGHT = (C) 2014
 using "Drawing.Area"
+using "Drawing.Bitmap"
 using "Drawing.BitmapPort"
 using "Drawing.Color"
 using "Drawing.Font"
@@ -7,6 +12,7 @@ using "System.Event"
 using "System.Timer"
 using "UI.Window"
 using "UI.Gadget"
+using "UI.Button"
 using "UI.ImageGadget"
 
 -- Gadgets
@@ -29,6 +35,7 @@ local pLength = 15 -- width of the paddle
 local gameHeight = 60
 local gameWidth = 100
 local timer
+local time
 
 
 -- Parameters that are used when the KI should start the game
@@ -78,9 +85,11 @@ function main()
 	p1 = ( gameHeight - pLength ) / 2
 	p2 = p1
 	
+	local canvas = Bitmap( gameWidth , gameHeight )
+	
 	-- create the image
-	pongBmp = ImageGadget( 0 , 0 , Bitmap( gameWidth , gameHeight ) )
-	pongBmp.base.setUserEventHandler( "onDraw" , refresher )
+	pongBmp = ImageGadget( 0 , 0 , canvas )
+	pongBmp.setUserEventHandler( "onDraw" , refresher )
 	
 	local bmp = Bitmap(6, 6)
 	
@@ -89,23 +98,23 @@ function main()
 	bmp.drawVerticalLine( 5 , 3 , 3 , "green" )
 	bmp.drawFilledRect( 2 , 2 , 2 , 2 , "magenta" )
 	
-	window = Window( 40 , 20 , gameWidth + 2 , gameHeight + 11 , "Pong" , bmp , true , true , "notResizeable" )
+	window = Window( 40 , 20 , gameWidth + 2 , gameHeight + 11 , "Pong" , bmp , true , true , "notResizeable | draggable" )
 	
-	window.base.addChild( pongBmp )
-	window.base.setUserEventHandler( "onKeyDown" , eventHandler )
-	window.base.setUserEventHandler( "onKeyUp" , eventHandler )
-	window.base.setUserEventHandler( "onBlur" , eventHandler )
-	window.base.setUserEventHandler( "onFocus" , eventHandler )
+	window.addChild( pongBmp )
+	window.setUserEventHandler( "onKeyDown" , eventHandler )
+	window.setUserEventHandler( "onKeyUp" , eventHandler )
+	window.setUserEventHandler( "onBlur" , eventHandler )
+	window.setUserEventHandler( "onFocus" , eventHandler )
+	window.setUserEventHandler( "onClose" , System.exit )
 	
 	System.addChild( window )
 	
 	timer = Timer( frame , 1000/60 , true )
-	
 end
 
 function frame()
 	move()
-	pongBmp.base.redraw()
+	pongBmp.redraw()
 end
 
 function move()
@@ -178,7 +187,7 @@ end
 function refresher( event )
 	
 	-- Receive Gadget
-	local port = pongBmp.base.getBitmapPort( event )
+	local port = pongBmp.getBitmapPort( event )
 	
 	-- reset to black
 	port.fill( "black" )
@@ -193,8 +202,8 @@ function refresher( event )
 	
 	-- Paint Scores
 	local font = System.getFont("ArialBlack13")
-	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "green" )
-	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "green" )
+	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "green" , 10 )
+	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "green" , 10 )
 	
 	return "handled"
 end

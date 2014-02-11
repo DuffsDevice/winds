@@ -9,6 +9,7 @@ class _startMenu : public _popup{
 	private:
 	
 		static _callbackReturn refreshHandler( _event );
+		_callbackReturn clickHandler( _event );
 	
 	public:
 	

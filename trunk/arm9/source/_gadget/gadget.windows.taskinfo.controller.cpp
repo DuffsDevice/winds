@@ -69,6 +69,9 @@ _windowsTaskInfoController::_windowsTaskInfoController( _optValue<_coord> x , _o
 	
 	// Update the position
 	this->triggerEvent( onResize );
+	
+	// Start Updating the clock
+	this->timer.start();
 }
 
 _windowsTaskInfoController::~_windowsTaskInfoController(){

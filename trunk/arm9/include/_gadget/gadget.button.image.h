@@ -27,7 +27,7 @@ class _imageButton : public _button {
 		const _bitmap& getImagePressed() const { return this->pressedImage; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _bitmap imagePressed , string title = "" , _style&& style = _style() );
+		_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _optValue<_bitmap> imagePressed = ignore , string title = "" , _style&& style = _style() );
 };
 
 #endif

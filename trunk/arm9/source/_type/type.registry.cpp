@@ -17,23 +17,24 @@
 #include "_resource/resource.icon.music.h"
 #include "_resource/resource.icon.jpg.h"
 #include "_resource/resource.icon.image.h"
+#include "_resource/resource.icon.registry.h"
 
-_registry::_registry() :
-	_iniFile( "%WINDIR%/registry.ini" )
+_registry::_registry( string path ) :
+	_iniFile( path )
 {
-	if( _iniFile::creation )
+	if( _iniFile::isUsedFirstTime() )
 	{
 		this->getMap() = 
 			{
 				{ "filemapper" , {
-					{ "jpg" , "%SYSTEM%/accessories/paint.exe -$F" } ,
-					{ "png" , "%SYSTEM%/accessories/paint.exe -$F" } ,
-					{ "bmp" , "%SYSTEM%/accessories/paint.exe -$F" } ,
-					{ "gif" , "%SYSTEM%/accessories/paint.exe -$F" } ,
-					{ "ico" , "%SYSTEM%/accessories/paint.exe -$F" }
+					{ "jpg" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+					{ "png" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+					{ "bmp" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+					{ "gif" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+					{ "ico" , "%WINDIR%/accessories/paint.exe -\"$F\"" }
 				} } ,
 				{ "fileicon" , {
-					{ "%dir%" , "" }
+					//{ "%dir%" , "" }
 				} } ,
 				{ "internal" , {
 					{ "correctShutdown" , "0" } ,
@@ -43,7 +44,6 @@ _registry::_registry() :
 			};
 		
 		// Write to disk!
-		this->create();
 		this->flush();
 	}
 	
@@ -96,6 +96,9 @@ _bitmap _registry::getFileTypeImage( const string& extension , _mimeType mimeTyp
 				
 			case _mime::text_x_ini:
 				return BMP_IniIcon();
+			
+			case _mime::application_x_ms_registry:
+				return BMP_RegistryIcon();
 				
 			case _mime::application_x_nintendo_ds_rom:
 				return BMP_NdsIcon();

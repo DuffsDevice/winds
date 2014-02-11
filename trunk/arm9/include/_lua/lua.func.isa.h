@@ -52,6 +52,7 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _align* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _valign* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _language* dummy ){ return lua_isstring( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _programArgs* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _pixel* dummy ){
 			int type = get_type( state , index );
 			return type == LUA_TNUMBER || type == LUA_TSTRING;

@@ -5,13 +5,14 @@
 #include "_type/type.shortstring.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.button.action.h"
+#include "_gadget/gadget.button.image.h"
 #include "_gadget/gadget.label.h"
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.fileview.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.select.h"
 
-typedef _assocVector<_int,_tuple<string,ssstring>> _fileTypeList;
+typedef _assocVector<_int,_tuple<string,string>> _fileTypeList;
 
 class _fileSaveDialog : public _dialog
 {
@@ -27,6 +28,7 @@ class _fileSaveDialog : public _dialog
 		_fileView*		fileView;
 		_textBox*		fileViewAddress;
 		_actionButton*	gotoButton;
+		_imageButton*	folderUpButton;
 		string			initialName;
 		_fileTypeList	fileTypes;
 		
@@ -51,7 +53,7 @@ class _fileSaveDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialName = ignore , _int initialFileExtension = 0 , _optValue<string> saveLabel = ignore );
+		_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName = ignore , _int initialFileExtension = 0 , _optValue<string> saveLabel = ignore );
 		
 		
 		//! Get Index of the selected entry in 'possibleFileExtensions'
@@ -82,6 +84,7 @@ class _fileSaveDialog : public _dialog
 			delete this->fileTypeLabel;
 			delete this->fileNameBox;
 			delete this->fileTypeChooser;
+			delete this->folderUpButton;
 			delete this->window;
 		}
 };

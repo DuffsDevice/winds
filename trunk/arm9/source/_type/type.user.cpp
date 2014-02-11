@@ -67,7 +67,7 @@ _user::_user( string folderName ) :
 	_iniFile( "%USERS%/" + folderName + "/user.ini" )
 	, folderName( folderName )
 {
-	if( _iniFile::creation )
+	if( _iniFile::isUsedFirstTime() )
 	{
 		this->getMap() = 
 			{
@@ -96,7 +96,6 @@ _user::_user( string folderName ) :
 			};
 		
 		// Write to disk!
-		this->create();
 		this->flush();
 	}
 	
@@ -144,14 +143,21 @@ _user::_user( string folderName ) :
 	//
 	
 	for( auto entry : _iniFile::readSection("startmenu") )
-		startMenuEntries.push_back( entry.second );
-}
-
-void _user::createAs( const string& folderName )
-{
-	_iniStructure str = move( this->getMap() );
-	*this = _user( folderName );
-	this->getMap() = move( str );
+	{
+		const string& str = entry.second;
+		size_t colonPos = str.find(',');
+		
+		// Split into path and name
+		string path = str.substr( 0 , colonPos );
+		string name = colonPos != string::npos ? str.substr( colonPos + 1 ) : "";
+		
+		// Trim Path and name
+		trim( path );
+		trim( name );
+		
+		// Add
+		startMenuEntries.push_back( make_pair( move(path) , move(name) ) );
+	}
 }
 
 _user::~_user()
@@ -161,8 +167,13 @@ _user::~_user()
 	
 	// Write start menu back into .ini
 	int curIdx = 1;
-	for( string& entry : startMenuEntries )
-		_iniFile::writeIndex( "startmenu" , int2string(curIdx) , move(entry) );
+	for( _pair<string,string>& entry : startMenuEntries )
+	{
+		string value = entry.first;
+		if( !entry.second.empty() )
+			value += "," + entry.second;
+		_iniFile::writeIndex( "startMenu" , int2string(curIdx) , move(value) );
+	}
 }
 
 bool _user::checkPassword( const string& pw ) const {

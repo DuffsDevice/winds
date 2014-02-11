@@ -39,6 +39,11 @@ class _enterTextDialog : public _dialog
 			this->initialValue = move(initialValue);
 		}
 		
+		//! Get initial Value
+		string getInitialValue(){
+			return this->initialValue;
+		}
+		
 		//! Dtor
 		~_enterTextDialog(){
 			delete this->okButton;

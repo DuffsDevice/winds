@@ -11,10 +11,10 @@ _callbackReturn _imageButton::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	bP.copy( 0 , 0 , that->pressed ? that->pressedImage : that->image );
+	bP.copy( 0 , 0 , that->pressed && that->pressedImage.isValid() ? that->pressedImage : that->image );
 	
 	// If there is no font it doesn't make sense to paint
-	if( !that->font || !that->font->isValid() )
+	if( !that->font || !that->font->isValid() || that->getStrValue().empty() )
 		return use_default;
 	
 	_coord x = 0;
@@ -52,7 +52,7 @@ _callbackReturn _imageButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_imageButton::_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _bitmap imagePressed , string value , _style&& style ) :
+_imageButton::_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _optValue<_bitmap> imagePressed , string value , _style&& style ) :
 	_button( x , y , width , height , value , (_style&&)style )
 	, image( (_bitmap&&)image )
 	, pressedImage( (_bitmap&&)imagePressed )
@@ -61,7 +61,7 @@ _imageButton::_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValu
 	this->setType( _gadgetType::imagebutton );
 	
 	// Register modified handler
-	this->setInternalEventHandler( onDraw , make_callback( &_button::refreshHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_imageButton::refreshHandler ) );
 	
 	// Refresh
 	this->redraw();

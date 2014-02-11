@@ -1,0 +1,76 @@
+//! Headers
+#include "_type/type.direntry.shortcut.h"
+#include "_type/type.system.h"
+
+//! Graphics
+#include "_resource/resource.image.shortcutoverlay.h"
+
+_shortcut::_shortcut( string&& fn) :
+	_direntry( move(fn) )
+	, destination( nullptr )
+	, fallbackArgs( nullptr )
+	, standardArgs( nullptr )
+{}
+
+void _shortcut::readAttributes()
+{
+	if( !this->destination ){
+		_ini parser = _ini( this->readString() );
+		
+		// Read Destination
+		this->destination = new string( parser.readIndex( "LocalShortcut" , "URL" ) );
+		
+		// Read Fallback Arguments
+		const string& fallbackArgsString = parser.readIndex( "LocalShortcut" , "FallbackArgs" );
+		if( !fallbackArgsString.empty() )
+			this->fallbackArgs = new _programArgs( fallbackArgsString.c_str() );
+		
+		// Read standard arguments
+		const string& standardArgsString = parser.readIndex( "LocalShortcut" , "StandardArgs" );
+		if( !standardArgsString.empty() )
+			this->standardArgs = new _programArgs( standardArgsString.c_str() );
+	}
+}
+
+_bitmap _shortcut::getFileImage()
+{
+	static _u8 fOH = _system::getUser().fOH;
+	
+	if( this->image.isValid() )
+		return this->image;
+	
+	//! Creaty my icon
+	this->image = _bitmap( fOH , fOH );
+	this->image.reset( NO_COLOR );
+	
+	_direntry fl = this->getDestination();
+	
+	if( fl.getFileName() != "" ){
+		_constBitmap& icon = fl.getFileImage();
+		this->image.copy( 0 , ( fOH - icon.getHeight() ) >> 1 , icon );
+	}
+	
+	this->image.copy( 0 , 5 , BMP_ShortcutOverlay() );
+	
+	return this->image;
+}
+
+bool _shortcut::execute( _programArgs args )
+{
+	const string& dest = this->getDestination();
+	
+	// If args are empty, replace with fallback args
+	if( args.empty() && this->fallbackArgs )
+		args = *this->fallbackArgs;
+	
+	// Prepend standard arguments if they are available
+	if( this->standardArgs )
+		args.insert( args.begin() , this->standardArgs->begin() , this->standardArgs->end() );
+	
+	return _direntry(dest).execute( move(args) );
+}
+
+_shortcut::~_shortcut(){
+	if( this->destination )
+		delete this->destination;
+}

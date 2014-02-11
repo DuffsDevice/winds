@@ -56,11 +56,8 @@ class _lua_rect : public _rect
 		//! isValid
 		int isValid(lua_State* L);
 		
-		//! contains (Coords)
+		//! contains
 		int contains(lua_State* L);
-		
-		//! fromCoords
-		int fromCoords(lua_State* L);
 		
 		//! toRelative
 		int toRelative(lua_State* L);
@@ -80,10 +77,14 @@ class _lua_rect : public _rect
 		//! intersectsWith
 		int intersectsWith(lua_State* L);
 		
+		//! fromCoords
+		static int fromCoords(lua_State* L);
+		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_rect>::FunctionType methods[];
-		static Lunar<_lua_rect>::PropertyType properties[];
+		static Lunar<_lua_rect>::FunctionType	methods[];
+		static Lunar<_lua_rect>::PropertyType	properties[];
+		static Lunar<_lua_rect>::StaticType		staticmethods[];
 	
 };
 

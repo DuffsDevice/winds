@@ -20,8 +20,7 @@ class _ini
 		}
 		
 		//! Default Ctor
-		_ini(){
-		}
+		_ini(){}
 		
 		//! Returns either -1 for success or the line number of error
 		_s16 read( const string& input );

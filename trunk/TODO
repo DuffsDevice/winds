@@ -32,7 +32,7 @@ Features:
 + Switch between programs (✓)
 + Filemask/Wildcard/Regex in _fileview (✓)
 - Right-click
-- Create files/folders
+- Create/Rename/Delete files/folders
 + Database/INI-file: which program opens which filetype (✓)
 + Image-Writes and GIF Support (✓)
 
@@ -46,7 +46,7 @@ Programms:
 - System clock front-end
 - Wallpaper switcher
 - User-account manager
-- Choose by which program to open a file
++ Choose by which program to open a file (✓)
 
 Random Stuff:
 =============

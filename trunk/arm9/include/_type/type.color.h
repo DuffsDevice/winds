@@ -36,12 +36,21 @@ class _color{
 			this->setColor( col );
 		}
 		
-		//! Extract the Color (returns a _pixel)
-		_pixel getColor() const {
-			return this->color;
+		//! Named Ctor: Create Color from 5bit rgb values
+		static _color fromRGB( _u8 red , _u8 green , _u8 blue ){
+			return _color().setRGB( red , green , blue );
 		}
 		
-		//! Set a RGB-Color to be the edited one
+		//! Create color from HSL Values
+		static _color fromHSL( _u16 hue , _u16 sat , _u16 lum ){
+			return _color().setHSL( hue , sat , lum );
+		}
+		
+		//! Extract the raw Color value (convert to _pixel)
+		_pixel getColor() const { return this->color; }
+		operator _pixel() const { return this->color; }
+		
+		//! Set a RGB-Color value
 		_color& setColor( _pixel col ){
 			this->setRGB( RGB_GETR( col ) , RGB_GETG( col ) , RGB_GETB( col ) );
 			return *this;
@@ -124,7 +133,7 @@ class _color{
 		_color& adjustHSL( int hue , int sat , int lum );
 		
 		//! Set the blue part of the Color
-		_color& adjustRGB( _s8 red , _s8 gre , _s8 blu );
+		_color& adjustRGB( _s8 red , _s8 green , _s8 blu );
 };
 
 extern _map<string,_pixel> string2color;

@@ -17,7 +17,7 @@ class PROG_TaskManager : public _progC
 		_timer			timer;
 		_button*		submitbutton;
 		
-		void			main( _cmdArgs args );
+		void			main( _programArgs args );
 		void			destruct();
 		
 		_callbackReturn handler( _event event );

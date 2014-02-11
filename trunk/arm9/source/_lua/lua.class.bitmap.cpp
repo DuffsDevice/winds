@@ -39,10 +39,8 @@ _lua_bitmap::~_lua_bitmap(){ if( this->bm != nullptr && this->wasAllocated ) del
 //! opertor[pos] and operator(x,y)
 int _lua_bitmap::get( lua_State* L ){
 	if( lua_gettop(L) == 1 )
-		lua_pushnumber( L , this->bm->operator[]( check<int>( L , 1 ) ) );
-	else
-		lua_pushnumber( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
-	return 1;
+		return push( L , this->bm->operator[]( check<int>( L , 1 ) ) );
+	return push( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 }
 
 using shortCutType = void (_bitmap::*)(_coord,_coord,const _font*,const _char*,_pixel,_u8);

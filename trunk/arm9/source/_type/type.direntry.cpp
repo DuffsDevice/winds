@@ -44,7 +44,7 @@ void _direntry::replaceASSOCSInternal( string& path )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )
-		   path.replace( pos, assoc.first.size() , assoc.second );
+		   path.replace( pos, assoc.first.length() , assoc.second );
 	}
 }
 
@@ -62,10 +62,9 @@ bool _direntry::initFat()
 _direntry::_direntry( string&& fn ) :
 	fHandle( nullptr ) // same as dHandle
 	, filename( replaceASSOCS( move(fn) ) )
-	, extension( nullptr )
 	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
-{	
+{
 	// Trim the filename
 	trim( filename );
 	
@@ -78,7 +77,7 @@ _direntry::_direntry( string&& fn ) :
 		this->filename.resize( this->filename.length() - 1 );
 	
 	_u64 posLast;
-	if( ( posLast = this->filename.find_last_of("/") ) != string::npos ) // Cut everything before and including the last occouring slash ('/')
+	if( ( posLast = this->filename.rfind('/') ) != string::npos ) // Cut everything before and including the last occouring slash ('/')
 		this->name = this->filename.substr( posLast + 1 );
 	else
 		this->name = this->filename;
@@ -101,18 +100,16 @@ _direntry::_direntry( string&& fn ) :
 	}
 	
 	// Set Mime-Type
-	if( this->isDirectory() )
-	{
-		this->mimeType = _mime::directory;
+	if( this->isDirectory() ){
 		this->filename.push_back('/');
+		this->mimeType = _mime::directory;
 	}
 	else if( this->name.back() != '.' ) // Must be a file
 	{
 		// Set Extension
-		_u64 lastDot = this->name.find_last_of(".");
+		_u64 lastDot = this->name.rfind('.');
 		
-		if( lastDot != string::npos )
-		{
+		if( lastDot != string::npos ){
 			this->extension = this->name.substr( lastDot + 1 );
 			this->name.resize( lastDot );
 		}
@@ -211,11 +208,11 @@ bool _direntry::flush()
 }
 
 
-int _direntry::setAttrs( _direntryAttributes attrs )
+bool _direntry::setAttrs( _direntryAttributes attrs )
 {	
 	if( !this->fatInited )
-		return 0;
-	return FAT_setAttr( this->filename.c_str() , attrs );
+		return false;
+	return FAT_setAttr( this->filename.c_str() , (_u8)attrs ) == 0;
 }
 
 
@@ -237,10 +234,10 @@ bool _direntry::open( string mode )
 		return false;
 	
 	//! Open the File/Directory
-	if( !this->isDirectory() )
-		this->fHandle = fopen( this->filename.c_str() , mode.c_str() );
-	else
+	if( this->isDirectory() )
 		this->dHandle = opendir( this->filename.c_str() );
+	else
+		this->fHandle = fopen( this->filename.c_str() , mode.c_str() );
 	
 	if( this->dHandle ) // dHandle and fHandle are the same
 	{
@@ -253,7 +250,7 @@ bool _direntry::open( string mode )
 
 string _direntry::getDisplayName() const
 {
-	const ssstring& ext = this->getExtension();
+	const string& ext = this->getExtension();
 	
 	// Certain Files do not have an .extension
 	if( !_system::getUser().sFE || ext.empty() )
@@ -274,6 +271,11 @@ bool _direntry::openwrite( bool eraseOld )
 }
 
 
+string _direntry::getParentDirectory() const {
+	return dirname(this->filename);
+}
+
+
 bool _direntry::create()
 {
 	if( !this->fatInited )
@@ -282,15 +284,35 @@ bool _direntry::create()
 	if( this->exists || this->filename.empty() ) // Return if the file does already exist
 		return true;
 	
+	string parent = this->getParentDirectory();
+	
+	// If we cannot make our way 'upstairs' the tree, abort
+	if( parent == this->filename )
+		return false;
+	
 	// Build everything "upstairs" (recursively!)
-	_direntry parentEntry = _direntry( dirname(this->filename) );
+	_direntry parentEntry = _direntry( move(parent) );
 	
 	if( !parentEntry.create() )
 		return false;
 	
 	// Then create the file/directory
 	if( this->isDirectory() )
-		return mkdir( this->filename.c_str() , S_IRWXU | S_IRWXG | S_IRWXO ) == 0 && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
+	{
+		// Remove slash, because mkdir doesn't like a terminating '/'
+		_char* filenameWithoutSlash = const_cast<_char*>(this->filename.data());
+		_u32 length = this->filename.length();
+		_char end = filenameWithoutSlash[length-1]; // Backup
+		filenameWithoutSlash[length-1] = 0; // Shorten the string by one '/'
+		
+		// Create the directory
+		bool result = mkdir( filenameWithoutSlash , S_IRWXU | S_IRWXG | S_IRWXO ) == 0;
+		
+		// Restore the '/'
+		filenameWithoutSlash[length-1] = end;
+		
+		return result && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
+	}
 	else
 		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
 }
@@ -354,18 +376,18 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 				_u32 nameLen = strlen( dir->d_name );
 				_literal nameEnd = dir->d_name + nameLen - 1;
 				
-				for( _literal ext : *allowedExtensions ) // Iterate over valid extensions
+				for( const string& ext : *allowedExtensions ) // Iterate over valid extensions
 				{
-					_u32 extLen = strlen( ext );
+					_u32 extLen = ext.length();
 					
-					if( !extLen ) // Skip empty patterns
+					if( !extLen ) // Skip empty extensions
 						continue;
 					
-					_literal extEnd = ext + extLen - 1;
 					_u32 i = 0;
-					while( i < extLen && i < nameLen )
+					_u32 maxLen = min( extLen , nameLen );
+					while( i < maxLen )
 					{
-						if( *(extEnd-i) != *(nameEnd-i) ) // Extension of the entry is not what we need, check the next extension
+						if( ext[extLen-1-i] != *(nameEnd-i) ) // Extension of the entry is not what we need, check the next extension
 							goto _continue;
 						i++;
 					}
@@ -490,7 +512,7 @@ bool _direntry::writeString( string str )
 
 
 string _direntry::readString( _optValue<_u32> size )
-{	
+{
 	if( !size.isValid() )
 		size = this->getSize();
 	
@@ -526,7 +548,7 @@ string _direntry::readString( _optValue<_u32> size )
 
 
 _u32 _direntry::getSize()
-{	
+{
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return 0;
 	
@@ -561,7 +583,7 @@ _u32 _direntry::getSize()
 }
 
 
-bool _direntry::execute( _cmdArgs args )
+bool _direntry::execute( _programArgs args )
 {
 	if( !_system::isRunningOnEmulator() && !this->fatInited )
 		return false;
@@ -612,7 +634,7 @@ bool _direntry::execute( _cmdArgs args )
 
 _bitmap _direntry::getFileImage()
 {
-	ssstring extension = this->getExtension();
+	string extension = this->getExtension();
 	_mimeType mime = this->getMimeType();
 	
 	switch( mime )
@@ -670,5 +692,35 @@ bool _direntry::rename( string newName )
 	return false;
 }
 
-/// Root Directory
+bool _direntry::setHidden( bool hidden ){
+	_direntryAttributes attrs = this->getAttrs();
+	attrs.hidden = hidden;
+	return this->setAttrs( move(attrs) );
+}
+
+bool _direntry::isHidden() const {
+	return this->getAttrs().hidden;
+}
+
+bool _direntry::setSystemFile( bool isSystem ){
+	_direntryAttributes attrs = this->getAttrs();
+	attrs.system = isSystem;
+	return this->setAttrs( move(attrs) );
+}
+
+bool _direntry::isSystem() const {
+	return this->getAttrs().system;
+}
+
+bool _direntry::setReadOnly( bool readOnly ){
+	_direntryAttributes attrs = this->getAttrs();
+	attrs.readonly = readOnly;
+	return this->setAttrs( move(attrs) );
+}
+
+bool _direntry::isReadOnly() const {
+	return this->getAttrs().readonly;
+}
+
+// Root Directory
 _direntry _diskRoot_ = _direntry("/");

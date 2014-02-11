@@ -128,13 +128,13 @@ class _system{
 		static void					end();
 		
 		//! Execute the supplied command
-		static bool					executeCommand( string cmd );
+		static bool					executeCommand( const string& cmd );
 		
 		//! Get Current Time (milliseconds since system startup)
 		static _tempTime			getHighResTime();
 		
 		//! Get a Font by Name
-		static const _font*			getFont( string font )
+		static const _font*			getFont( const string& font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
 				return _system::getFont();

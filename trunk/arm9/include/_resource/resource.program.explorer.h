@@ -3,22 +3,24 @@
 
 #include "_type/type.program.c.h"
 #include "_type/type.direntry.h"
-#include "_gadget/gadget.fileview.h"
+#include "_gadget/gadget.fileView.h"
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.textbox.h"
+#include "_gadget/gadget.button.image.h"
 
 class PROG_Explorer : public _progC
 {
 	private:
 		
-		string		path;
+		string			path;
 		
-		_window*	window;
-		_fileView*	fileview;
-		_textBox*	addressbar;
-		_button*	submitbutton;
+		_window*		window;
+		_fileView*		fileView;
+		_textBox*		addressBar;
+		_button*		submitButton;
+		_imageButton*	folderUpButton;
 		
-		void		main( _cmdArgs args );
+		void		main( _programArgs args );
 		void		destruct();
 		
 		void setWindowTitle();

@@ -47,7 +47,7 @@ int _lua_direntry::openwrite( lua_State* L ){
 }
 
 int _lua_direntry::execute( lua_State* L ){
-	return push( L , _direntry::execute( lightcheck<_cmdArgs>( L , 1 ) ) );
+	return push( L , _direntry::execute( lightcheck<_programArgs>( L , 1 ) ) );
 }
 
 //! Lua-_gadget
@@ -67,6 +67,7 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 	{ "execute"				, &_lua_direntry::execute },
 	{ "rename"				, wrap( _lua_direntry , &_direntry::rename ) },
 	{ "unlink"				, wrap( _lua_direntry , &_direntry::unlink ) },
+	{ "getParentDirectory"	, wrap( _lua_direntry , &_direntry::getParentDirectory ) },
 	LUA_CLASS_FUNC_END
 };
 

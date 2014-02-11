@@ -7,7 +7,15 @@
 #define CONST_BOTTOM_BAR_HEIGHT 12
 #define CONST_TOP_BAR_HEIGHT 16
 
- _callbackReturn _startMenu::refreshHandler( _event event ){
+_callbackReturn _startMenu::clickHandler( _event event ){
+	if( event == onMouseClick ){
+		event.getGadget<_fileObject>()->execute();
+		this->shelve();
+	}
+	return use_internal;
+}
+
+_callbackReturn _startMenu::refreshHandler( _event event ){
 	
 	_startMenu* that = event.getGadget<_startMenu>();
 	
@@ -43,7 +51,6 @@
 	bP.drawVerticalLine( ( myW >> 1 ) + 1 , CONST_TOP_BAR_HEIGHT + 2 , myH - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , RGB255( 205 , 226 , 249 ) );
 	
 	return use_default;
-
 }
 
 _startMenu::_startMenu( _style&& style ) :
@@ -54,9 +61,10 @@ _startMenu::_startMenu( _style&& style ) :
 	// Left Side
 	_fileView* view = new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
 			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
-			, "%WINDIR%/jumplist/" , _fileViewType::list , true , { "exe" , "lua" , "lnk" }
+			, "%WINDIR%/jumplist/" , _fileViewType::list , false , { "exe" , "lua" , "lnk" }
 		);
 	
+	view->setEventHandler( make_callback( this , &_startMenu::clickHandler ) );
 	view->setScrollTypeX( _scrollType::prevent );
 	view->setScrollTypeY( _scrollType::prevent );
 	this->addChild( view );
