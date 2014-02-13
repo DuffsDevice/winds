@@ -6,10 +6,10 @@
 #include "_resource/resource.program.explorer.h"
 #include "_resource/resource.icon.lua.h"
 #include "_resource/resource.icon.exe.h"
-#include "program_example_bin.h"
-#include "program_pong_bin.h"
-#include "program_paint_bin.h"
-#include "program_calculator_bin.h"
+#include "program_example_lua.h"
+#include "program_pong_lua.h"
+#include "program_paint_lua.h"
+#include "program_calculator_lua.h"
 
 _programList	_program::globalPrograms;
 _programList	_program::globalProgramsToExecute;
@@ -99,23 +99,23 @@ _program* _program::fromFile( string filename )
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/exampleprogram.exe" ) ){
-		string str = (const _char*)program_example_bin;
-		str.resize( program_example_bin_size );
+		string str = (const _char*)program_example_lua;
+		str.resize( program_example_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/paint.exe" ) ){
-		string str = (const _char*)program_paint_bin;
-		str.resize( program_paint_bin_size );
+		string str = (const _char*)program_paint_lua;
+		str.resize( program_paint_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/calculator.exe" ) ){
-		string str = (const _char*)program_calculator_bin;
-		str.resize( program_calculator_bin_size );
+		string str = (const _char*)program_calculator_lua;
+		str.resize( program_calculator_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/games/pong.exe" ) ){
-		string str = (const _char*)program_pong_bin;
-		str.resize( program_pong_bin_size );
+		string str = (const _char*)program_pong_lua;
+		str.resize( program_pong_lua_size );
 		result = new _progLua( move(str) );
 	}
 	

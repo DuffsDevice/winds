@@ -29,30 +29,14 @@ const _menu& _windowMenu::getStandardMenu(){
 	
 	if( !initialized )
 	{
-		ret.setMainList( { { 1 , "File" } , { 2 , "Edit" } , { 3 , "View" } } );
+		ret.setMainList( { { 1 , _system::getLocalizedString("lbl_file") } } );
 		ret.setList( 1 ,
 			{
-				{ 0 , "Open" } ,
-				{ 1 , "Save" } ,
-				{ 2 , "Save As..." } ,
+				{ 0 , _system::getLocalizedString("lbl_open") } ,
+				{ 1 , _system::getLocalizedString("lbl_save") } ,
+				{ 2 , _system::getLocalizedString("lbl_save_as") } ,
 				{ 3 , "----" } ,
-				{ 4 , "Exit" }
-			}
-		);
-		ret.setList( 2 ,
-			{
-				{ 0 , "Undo" } ,
-				{ 1 , "Redo" } ,
-				{ 2 , "----" } ,
-				{ 3 , "Cut" } ,
-				{ 4 , "Copy" } ,
-				{ 5 , "Paste" }
-			}
-		);
-		ret.setList( 3 ,
-			{
-				{ 0 , "Cascade" } ,
-				{ 1 , "Full Screen" }
+				{ 4 , _system::getLocalizedString("lbl_exit") }
 			}
 		);
 		initialized = true;

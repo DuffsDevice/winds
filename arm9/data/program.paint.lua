@@ -4,6 +4,7 @@
 --	DESC = Application to modify Images
 --	COPYRIGHT = (C) 2014
 --	LANG = neutral
+
 using "System.Event"
 using "System.ImageFile"
 using "System.Direntry"
