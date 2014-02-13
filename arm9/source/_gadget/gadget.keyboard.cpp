@@ -327,27 +327,27 @@ _callbackReturn _keyboard::refreshHandler( _event event )
 	
 	//! Unused
 	//bP.copyTransparent( SCREEN_WIDTH - 40 , 0 , BMP_Grip() );
-	//bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , RGB(19,19,19) );
-	//bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , RGB( 3 , 3 , 3 ) );
-	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
-	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , RGB( 3 , 3 , 3 ) );
+	//bP.drawFilledRect( 0 , 9 , SCREEN_WIDTH , 112 , _color::fromRGB(19,19,19) );
+	//bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH - 38 , _color::fromRGB( 3 , 3 , 3 ) );
+	//bP.drawHorizontalLine( SCREEN_WIDTH - 38 , 9+0 , 28 , _color::fromRGB( 12 , 12 , 12 ) );
+	//bP.drawHorizontalLine( SCREEN_WIDTH - 10 , 9+0 , 10 , _color::fromRGB( 3 , 3 , 3 ) );
 	
 	if( that->handlePosition.isValid() )
 	{
 		bP.copyTransparent( that->handlePosition , 0 , BMP_Grip() );
-		bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , RGB(2,2,2) );
-		bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , RGB( 12 , 12 , 12 ) );
-		bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , RGB(2,2,2) );
+		bP.drawHorizontalLine( 0 , 9+0 , that->handlePosition + 2 , _color::fromRGB(2,2,2) );
+		bP.drawHorizontalLine( that->handlePosition + 2 , 9+0 , 28 , _color::fromRGB( 12 , 12 , 12 ) );
+		bP.drawHorizontalLine( that->handlePosition + 30, 9+0 , SCREEN_WIDTH - that->handlePosition - 30 , _color::fromRGB(2,2,2) );
 	}
 	else
-		bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH , RGB(2,2,2) );
+		bP.drawHorizontalLine( 0 , 9+0 , SCREEN_WIDTH , _color::fromRGB( 2 , 2 , 2 ) );
 	
 	// Background
-	bP.drawFilledRect( 0 , 10 , SCREEN_WIDTH , 111 , RGB(19,19,19) );
-	bP.drawHorizontalLine( 0 , 9+1 , SCREEN_WIDTH , RGB( 12 , 12 , 12 ) );
-	bP.drawHorizontalLine( 0 , 9+2 , SCREEN_WIDTH , RGB( 14 , 14 , 14 ) );
-	bP.drawHorizontalLine( 0 , 9+3 , SCREEN_WIDTH , RGB( 16 , 16 , 16 ) );
-	bP.drawHorizontalLine( 0 , 9+4 , SCREEN_WIDTH , RGB( 18 , 18 , 18 ) );
+	bP.drawFilledRect( 0 , 10 , SCREEN_WIDTH , 111 , _color::fromRGB( 19 , 19 , 19 ) );
+	bP.drawHorizontalLine( 0 , 9+1 , SCREEN_WIDTH , _color::fromRGB( 12 , 12 , 12 ) );
+	bP.drawHorizontalLine( 0 , 9+2 , SCREEN_WIDTH , _color::fromRGB( 14 , 14 , 14 ) );
+	bP.drawHorizontalLine( 0 , 9+3 , SCREEN_WIDTH , _color::fromRGB( 16 , 16 , 16 ) );
+	bP.drawHorizontalLine( 0 , 9+4 , SCREEN_WIDTH , _color::fromRGB( 18 , 18 , 18 ) );
 	
 	return use_default;
 }
@@ -581,7 +581,7 @@ _keyboard::~_keyboard()
 	this->removeChildren( true );
 	
 	// Reset Bitmap
-	this->bitmap.reset( NO_COLOR );
+	this->bitmap.reset( _color::transparent );
 }
 
 _gadget*	_keyboard::lastCurrentFocus = nullptr;

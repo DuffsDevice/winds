@@ -10,7 +10,7 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( COLOR_BLACK );
+	bP.fill( _color::black );
 	bP.copy( 78 , 35 , _bootupScreen::bootLogo );
 	
 	return use_default;

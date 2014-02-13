@@ -9,14 +9,14 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	_pixel color[] = { 
-		RGB255( 114 , 154 , 250 ) , RGB255( 5 , 88 , 226 ) , RGB255( 75 , 126 , 245 ) , // Blue Values
-		RGB255( 235 , 65 , 46 ) , RGB255( 248 , 116 , 88 ) , RGB255( 250 , 221 , 211 ) , // Red Values
-		RGB255( 186 , 61 , 239 ) , // Violet (Blue <-> Red)
-		RGB255( 215 , 11 , 0 ) // Dark Red (Pressed)
+	_color color[] = { 
+		_color::fromRGB8( 114 , 154 , 250 ) , _color::fromRGB8( 5 , 88 , 226 ) , _color::fromRGB8( 75 , 126 , 245 ) , // Blue Values
+		_color::fromRGB8( 235 , 65 , 46 ) , _color::fromRGB8( 248 , 116 , 88 ) , _color::fromRGB8( 250 , 221 , 211 ) , // Red Values
+		_color::fromRGB8( 186 , 61 , 239 ) , // Violet (Blue <-> Red)
+		_color::fromRGB8( 215 , 11 , 0 ) // Dark Red (Pressed)
 	};
 	
-	bP.fill( NO_COLOR );
+	bP.fill( _color::transparent );
 	
 	switch( that->buttonType ){
 		case 0:
@@ -35,7 +35,7 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 		}
 		case 1:
 			if( that->isPressed() )
-				bP.fill( RGB255( 24 , 65 , 158 ) );
+				bP.fill( _color::fromRGB8( 24 , 65 , 158 ) );
 			
 			// Maximize/Restore
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] ); // White Border
@@ -44,22 +44,22 @@ _callbackReturn _windowButton::refreshHandler( _event event )
 			{
 				bP.drawRect( 3 , 2 , 3 , 3 , color[0] ); // Semi-White Line
 				bP.drawRect( 2 , 4 , 2 , 2 , color[0] ); // Semi-White Line
-				bP.drawHorizontalLine( 3 , 2 , 3 , COLOR_WHITE ); // White Topper Line
-				bP.drawHorizontalLine( 2 , 4 , 2 , COLOR_WHITE ); // White Topper Line
+				bP.drawHorizontalLine( 3 , 2 , 3 , _color::white ); // White Topper Line
+				bP.drawHorizontalLine( 2 , 4 , 2 , _color::white ); // White Topper Line
 			}
 			else
 			{
 				bP.drawRect( 2 , 2 , 4 , 4 , color[0] ); // Semi-White Line
-				bP.drawHorizontalLine( 2 , 2 , 4 , COLOR_WHITE ); // White Topper Line
+				bP.drawHorizontalLine( 2 , 2 , 4 , _color::white ); // White Topper Line
 			}
 			break;
 		case 2:
 			if( that->isPressed() )
-				bP.fill( RGB255( 24 , 65 , 158 ) );
+				bP.fill( _color::fromRGB8( 24 , 65 , 158 ) );
 			
 			// Minimize
 			bP.drawRect( 0 , 0 , 8 , 8 , color[0] );
-			bP.drawHorizontalLine( 2 , 5 , 3 , RGB( 31 , 31 , 31 ) );
+			bP.drawHorizontalLine( 2 , 5 , 3 , _color::fromRGB( 31 , 31 , 31 ) );
 			break;
 	}
 	
@@ -85,7 +85,7 @@ _windowButton::_windowButton( _optValue<_coord> x , _optValue<_coord> y , _u8 bu
 	, buttonType( buttonType )
 {
 	// Reset Bitmap
-	this->bitmap.reset( COLOR_RED );
+	this->bitmap.reset( _color::red );
 	
 	this->setInternalEventHandler( onDraw , make_callback( &_windowButton::refreshHandler ) );
 	this->redraw();

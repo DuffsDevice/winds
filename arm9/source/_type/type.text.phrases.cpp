@@ -29,7 +29,7 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 	return false;
 }
 
-bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _font*& font , _pixel& color )
+bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _font*& font , _color& color )
 {
 	switch( (_escapeChar)*str )
 	{
@@ -43,7 +43,7 @@ bool stringExtractor::processChar( const _char*& str , _u8& fontSize , const _fo
 		}
 		case _escapeChar::changeFontColor:
 			color = stringExtractor::colorChangePhrase( str );
-			RGB_SETA( color , true );
+			color.setAlpha( true );
 			for( int i = 2 ; str[1] != 0 && i-- ; str++ );
 			break;
 		case _escapeChar::changeFontSize:

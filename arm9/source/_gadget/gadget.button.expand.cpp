@@ -17,10 +17,10 @@ _callbackReturn _expandButton::refreshHandler( _event event )
 	bP.copy( 0 , 0 , that->graphic );
 	
 	// Sign
-	bP.drawHorizontalLine( 2 , 3 , 3 , COLOR_BLACK );
+	bP.drawHorizontalLine( 2 , 3 , 3 , _color::black );
 	
 	if( !that->getIntValue() )
-		bP.drawVerticalLine( 3 , 2 , 3 , COLOR_BLACK );
+		bP.drawVerticalLine( 3 , 2 , 3 , _color::black );
 	
 	
 	return use_default;

@@ -50,7 +50,7 @@ _windowsTaskInfoController::_windowsTaskInfoController( _optValue<_coord> x , _o
 	
 	// Adjust Label
 	this->time->setAlign( _align::right );
-	this->time->setColor( COLOR_WHITE );
+	this->time->setColor( _color::white );
 	this->time->setUserEventHandler( onUpdate , _gadgetHelpers::rightBottomAlign( 1 , ignore ) );
 	this->time->update();
 	

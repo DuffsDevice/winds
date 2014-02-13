@@ -44,7 +44,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 			bP.fill( design[3] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 0 , _system::getFont() , that->reference->getStrValue() , RGB( 27 , 27 , 27 ) );
+		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 0 , _system::getFont() , that->reference->getStrValue() , _color::fromRGB( 27 , 27 , 27 ) );
 		
 		// Topper Line Bright
 		bP.drawHorizontalLine( 1 , 0 , myW - 2 , design[1] );
@@ -67,7 +67,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 		bP.fill( design[1] );
 		
 		// String
-		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 0 , _system::getFont() , that->reference->getStrValue() , RGB( 29  , 29 , 29 ) );
+		bP.drawString( that->reference->hasIcon() ? 11 : 3 , 0 , _system::getFont() , that->reference->getStrValue() , _color::fromRGB( 29  , 29 , 29 ) );
 		
 		// Create brighter blue
 		_color c = design[1];
@@ -96,10 +96,10 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 		bP.copyTransparent( 3 , 2 , that->reference->getIcon() );
 	
 	// Corners!
-	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
-	bP.drawPixel( myW - 1 , 0 , NO_COLOR );
-	bP.drawPixel( 0 , 0 , NO_COLOR );
-	bP.drawPixel( 0 ,  myH - 1 , NO_COLOR );
+	bP.drawPixel( myW - 1 , myH - 1 , _color::transparent );
+	bP.drawPixel( myW - 1 , 0 , _color::transparent );
+	bP.drawPixel( 0 , 0 , _color::transparent );
+	bP.drawPixel( 0 ,  myH - 1 , _color::transparent );
 	
 	return use_default;
 }
@@ -110,7 +110,7 @@ _windowsTaskButton::_windowsTaskButton( _optValue<_coord> x , _optValue<_coord> 
 	_button( x , y , 20 , 10 , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
 	, reference( reference )
 {
-	this->setFontColor( RGB( 27 , 27 , 27 ) );
+	this->setFontColor( _color::fromRGB( 27 , 27 , 27 ) );
 	this->setAlign( _align::left );
 	
 	// Register some event handlers

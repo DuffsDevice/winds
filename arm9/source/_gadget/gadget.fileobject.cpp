@@ -62,12 +62,12 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 	{
 		case _fileViewType::symbol_big:
 		{	
-			bP.fill( COLOR_TRANSPARENT );
+			bP.fill( _color::transparent );
 			
 			// Receive Font
 			const _font*	ft = _system::getFont();
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_pixel			ftColor = that->file->isHidden() ? COLOR_GRAY : _system::getRTA().getItemForeground( true );
+			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( true );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
@@ -97,7 +97,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			// Font
 			const _font*	ft = _system::getFont();
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_pixel			ftColor = that->file->isHidden() ? COLOR_GRAY : _system::getRTA().getItemForeground( that->hasFocus() );
+			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( that->hasFocus() );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned

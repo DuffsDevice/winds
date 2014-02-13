@@ -14,7 +14,7 @@ _callbackReturn _radio::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( NO_COLOR );
+	bP.fill( _color::transparent );
 	
 	// Border
 	bP.copyTransparent( 0 , 0 , that->graphic[ that->isPressed() + 2 ]);

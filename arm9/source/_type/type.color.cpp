@@ -1,13 +1,35 @@
 #include "_type/type.color.h"
 
-_color& _color::setRGB( _u8 red , _u8 green , _u8 blue ){
-	this->color = RGB( red , green , blue );
-	this->minRGB = min( min( red , green ), blue );
-	this->maxRGB = max( max( red , green ), blue );
-	return *this;
+_color::_color( const string& name )
+{
+	static _map<string,_pixel> string2color = {
+		{ "white" , _color::white } ,
+		{ "silver" , _color::silver } ,
+		{ "gray" , _color::gray } ,
+		{ "black" , _color::black } ,
+		{ "red" , _color::red } ,
+		{ "maroon" , _color::maroon } ,
+		{ "orange" , _color::orange } ,
+		{ "yellow" , _color::yellow } ,
+		{ "olive" , _color::olive } ,
+		{ "lime" , _color::lime } ,
+		{ "green" , _color::green } ,
+		{ "aqua" , _color::aqua } ,
+		{ "teal" , _color::teal } ,
+		{ "blue" , _color::blue } ,
+		{ "navy" , _color::navy } ,
+		{ "fuchsia" , _color::fuchsia } ,
+		{ "purple" , _color::purple } ,
+		{ "transparent" , _color::transparent }
+	};
+	this->color = string2color[name];
 }
 
-_color& _color::setHSL( _u16 hue , _u16 sat , _u16 lum )
+void _color::setRGBInternal( _u8 red , _u8 green , _u8 blue , bool alpha ){
+	this->color = red | ( green << 5 ) | ( blue << 10 ) | ( alpha << 15 );
+}
+
+void _color::setHSLInternal( _u16 hue , _u16 sat , _u16 lum , bool alpha )
 {
 	float v;
 	float r,g,b;
@@ -66,13 +88,37 @@ _color& _color::setHSL( _u16 hue , _u16 sat , _u16 lum )
 				  break;
 		}
 	}
-	this->setRGB( r * 31.0f , g * 31.0f , b * 31.0f );
+	this->setRGBInternal( r * 31.0f , g * 31.0f , b * 31.0f , alpha );
+}
+
+_u16 _color::getS() const {
+	_u8 minRGB = min( min( this->getR() , this->getG() ), this->getB() );
+	_u8 maxRGB = max( max( this->getR() , this->getG() ), this->getB() );
+	if( maxRGB != 0 )
+		return ( ( maxRGB - minRGB ) * 100 + ( maxRGB >> 1 ) ) / maxRGB;
+	return 0;
+}
+
+_color& _color::setH( _u16 hue ){
+	_u8 minRGB = min( min( this->getR() , this->getG() ), this->getB() );
+	_u8 maxRGB = max( max( this->getR() , this->getG() ), this->getB() );
+	_u16 sat = maxRGB ? ( ( maxRGB - minRGB ) * 100 + ( maxRGB >> 1 ) ) / maxRGB : 0;
+	_u16 lum = ( ( maxRGB + minRGB ) * 100 + 31 ) / 62;
+	this->setHSL( hue , sat , lum );
 	return *this;
+}
+
+_u16 _color::getL() const {
+	_u8 minRGB = min( min( this->getR() , this->getG() ), this->getB() );
+	_u8 maxRGB = max( max( this->getR() , this->getG() ), this->getB() );
+	return ( ( maxRGB + minRGB ) * 100 + 31 ) / 62;
 }
 
 _u16 _color::getH()
 {
-	_u8 delta  = this->maxRGB - this->minRGB;
+	_u8 minRGB = min( min( this->getR() , this->getG() ), this->getB() );
+	_u8 maxRGB = max( max( this->getR() , this->getG() ), this->getB() );
+	_u8 delta  = maxRGB - minRGB;
 	_u8 deltaHalf  = delta >> 1;
 	
 	_int red = this->getR();
@@ -81,38 +127,43 @@ _u16 _color::getH()
 	
 	if( this->getS() == 0 )
 		return 0;		
-	else if( red == this->maxRGB )
+	else if( red == maxRGB )
 		return ( ( green - blue ) * 60 + deltaHalf ) / delta;
 		
-	else if( green == this->maxRGB )
+	else if( green == maxRGB )
 		return 120 + ( ( blue - red ) * 60 + deltaHalf ) / delta;
 		
-	else if( blue == this->maxRGB )
+	else if( blue == maxRGB )
 		return 240 + ( ( red - green ) * 60 + deltaHalf ) / delta;
 	
 	return 0;
 }
 
-
-_color& _color::adjustHSL( int hue , int sat , int lum ){
-	this->setHSL( mid( 0 , this->getH() + hue , 360 ) , mid( 0 , this->getS() + sat , 100 ) , mid( 0 , this->getL() + lum , 100 ) );
+_color& _color::adjustHSL( int hue , int sat , int lum , _optValue<bool> alpha ){
+	this->setHSL( mid( 0 , this->getH() + hue , 360 ) , mid( 0 , this->getS() + sat , 100 ) , mid( 0 , this->getL() + lum , 100 ) , move(alpha) );
 	return *this;
 }
 
-_color& _color::adjustRGB( _s8 red , _s8 green , _s8 blu ){
-	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + green , 31 ) , mid( 0 , this->getB() + blu , 31 ) );
+_color& _color::adjustRGB( _s8 red , _s8 green , _s8 blu , _optValue<bool> alpha ){
+	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + green , 31 ) , mid( 0 , this->getB() + blu , 31 ) , move(alpha) );
 	return *this;
 }
 
-_map<string,_pixel> string2color = {
-	{ "transparent" , COLOR_TRANSPARENT },
-	{ "yellow" 	, COLOR_YELLOW },
-	{ "green" 	, COLOR_GREEN },
-	{ "cyan" 	, COLOR_CYAN },
-	{ "blue" 	, COLOR_BLUE },
-	{ "magenta" , COLOR_MAGENTA },
-	{ "red" 	, COLOR_RED },
-	{ "gray" 	, COLOR_GRAY },
-	{ "black" 	, COLOR_BLACK },
-	{ "white" 	, COLOR_WHITE }
-};
+const _color _color::white = _color::fromRGB( 31 , 31 , 31 );
+const _color _color::silver = _color::fromRGB( 24 , 24 , 24 );
+const _color _color::gray = _color::fromRGB( 16 , 16 , 16 );
+const _color _color::black = _color::fromRGB( 0 , 0 , 0 );
+const _color _color::red = _color::fromRGB( 31 , 0 , 0 );
+const _color _color::maroon = _color::fromRGB( 16 , 0 , 0 );
+const _color _color::orange = _color::fromRGB( 31 , 21 , 0 );
+const _color _color::yellow = _color::fromRGB( 31 , 31 , 0 );
+const _color _color::olive = _color::fromRGB( 16 , 16 , 0 );
+const _color _color::lime = _color::fromRGB( 0 , 31 , 0 );
+const _color _color::green = _color::fromRGB( 0 , 16 , 0 );
+const _color _color::aqua = _color::fromRGB( 0 , 31 , 31 );
+const _color _color::teal = _color::fromRGB( 0 , 16 , 16 );
+const _color _color::blue = _color::fromRGB( 0 , 0 , 31 );
+const _color _color::navy = _color::fromRGB( 0 , 0 , 16 );
+const _color _color::fuchsia = _color::fromRGB( 31 , 0 , 31 );
+const _color _color::purple = _color::fromRGB( 16 , 0 , 16 );
+const _color _color::transparent = _color::fromRGB( 0 , 0 , 0 , false );

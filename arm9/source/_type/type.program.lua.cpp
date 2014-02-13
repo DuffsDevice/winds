@@ -134,12 +134,6 @@ int _progLua::lua_fontChangePhrase( lua_State* L ){
 		push( L , stringIntegrator::fontChangePhrase( ft ) );
 	return 1;
 }
-int _progLua::lua_RGB( lua_State* L ){ return push( L , RGB( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<bool>( L , 4 , true ) ) ); }
-int _progLua::lua_RGB255( lua_State* L ){ return push( L , RGB255( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<bool>( L , 4 , true ) ) ); }
-int _progLua::lua_RGB_GETR( lua_State* L ){ return push( L , RGB_GETR( check<_pixel>( L , 1 ) ) ); }
-int _progLua::lua_RGB_GETG( lua_State* L ){ return push( L , RGB_GETG( check<_pixel>( L , 1 ) ) ); }
-int _progLua::lua_RGB_GETB( lua_State* L ){ return push( L , RGB_GETB( check<_pixel>( L , 1 ) ) ); }
-int _progLua::lua_RGB_GETA( lua_State* L ){ return push( L , RGB_GETA( check<_pixel>( L , 1 ) ) ); }
 int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0; }
 int _progLua::lua_usingClass( lua_State* L )
 {
@@ -245,12 +239,6 @@ bool _progLua::parseProgramHeader()
 }
 
 luaL_Reg _progLua::windowsLibrary[] = {
-	{"rgb",						lua_RGB},
-	{"rgb255",					lua_RGB255},
-	{"getRed",					lua_RGB_GETR},
-	{"getGreen",				lua_RGB_GETG},
-	{"getBlue",					lua_RGB_GETB},
-	{"getAlpha",				lua_RGB_GETA},
 	{"addChild",				lua_addChild},
 	{"getCurrentFocus",			lua_getCurrentFocus},
 	{"getLocalizedString",		lua_getLocalizedString},

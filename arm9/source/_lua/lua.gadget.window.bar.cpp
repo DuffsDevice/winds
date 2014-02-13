@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_windowbar::_lua_windowbar( lua_State* L ) : 
-	_lua_gadget( new _windowBar( optcheck<_length>( L , 1 ) , optcheck<_pixel>( L , 2 ) , lightcheck<_style>( L , 3 ) ) )
+	_lua_gadget( new _windowBar( optcheck<_length>( L , 1 ) , optcheck<_color>( L , 2 ) , lightcheck<_style>( L , 3 ) ) )
 { }
 
 //! Lua-window

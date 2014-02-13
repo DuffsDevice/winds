@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-_colorPicker::_colorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _pixel initialColor , _style&& style ) :
+_colorPicker::_colorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _color initialColor , _style&& style ) :
 	_gadget( _gadgetType::colorpicker , x , y , width , height , (_style&&)style )
 	, hueSatImage( width - 14 , height - 2 )
 {
@@ -43,14 +43,14 @@ _colorPicker::_colorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValu
 	this->addChild( this->lumTable );
 }
 
-_pixel _colorPicker::getColor() const
+_color _colorPicker::getColor() const
 {
 	return _color()
 		.setHSL( this->hue , this->sat , this->lum )
 		.getColor();
 }
 
-void _colorPicker::setColor( _pixel color )
+void _colorPicker::setColor( _color color )
 {
 	_color c = color;
 	
@@ -89,7 +89,7 @@ _callbackReturn _colorPicker::hueSatRefreshHandler( _event event )
 	// Limit
 	y = mid( 0 , y , this->hueSatTable->getHeight() - 1 );
 	
-	bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , _glyph::circle , COLOR_BLACK );
+	bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , _glyph::circle , _color::black );
 	
 	return handled;
 }
@@ -103,16 +103,16 @@ _callbackReturn _colorPicker::lumRefreshHandler( _event event )
 	_int y = ( 100 - this->lum ) * this->lumTable->getHeight() + 50;
 	y /= 101;
 	
-	bP.fill( COLOR_WHITE );
+	bP.fill( _color::white );
 	
 	// Draw Gradient!
 	_int height = event.getGadget()->getHeight();
-	_pixel col = _color().setHSL( this->hue , this->sat , 50 ).getColor();
-	bP.drawVerticalGradient( 0 , 0 , 7 , height >> 1 , COLOR_WHITE , col );
-	bP.drawVerticalGradient( 0 , height >> 1 , 7 , height >> 1 , col , COLOR_BLACK );
+	_color col = _color().setHSL( this->hue , this->sat , 50 ).getColor();
+	bP.drawVerticalGradient( 0 , 0 , 7 , height >> 1 , _color::white , col );
+	bP.drawVerticalGradient( 0 , height >> 1 , 7 , height >> 1 , col , _color::black );
 	
 	// Draw Arrow
-	bP.drawChar( 8 , y - 4 , _system::getFont("SystemSymbols8") , _glyph::arrowLeft , COLOR_BLACK );
+	bP.drawChar( 8 , y - 4 , _system::getFont("SystemSymbols8") , _glyph::arrowLeft , _color::black );
 	
 	return handled;
 }
@@ -142,7 +142,7 @@ _callbackReturn _colorPicker::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Reset to white
-	bP.fill( COLOR_WHITE );
+	bP.fill( _color::white );
 	
 	return use_default;
 }
@@ -154,7 +154,7 @@ void _colorPicker::refreshBigGradient()
 	_length imgHeight = this->hueSatImage.getHeight();
 	
 	for( int x = 0 ; x < imgWidth ; x++ )
-		this->hueSatImage.drawVerticalGradient( x , 0 , 1 , imgHeight , _color().setHSL( x * 360 / imgWidth , 100 , 50 ).getColor() , COLOR_GRAY );
+		this->hueSatImage.drawVerticalGradient( x , 0 , 1 , imgHeight , _color().setHSL( x * 360 / imgWidth , 100 , 50 ).getColor() , _color::gray );
 	
 	// Paint Color Table
 	//_length imgWidth = this->hueSatImage.getWidth();

@@ -98,9 +98,9 @@ _callbackReturn _select::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	bP.fill(
-		that->hasFocus() ? RGB255( 10 , 36 , 106 ) : COLOR_WHITE
+		that->hasFocus() ? _color::fromRGB8( 10 , 36 , 106 ) : _color::white
 	);
-	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
+	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _color::fromRGB( 9 , 13 , 19 ) );
 	
 	const _font* font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
@@ -109,7 +109,7 @@ _callbackReturn _select::refreshHandler( _event event )
 		2
 		, ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 )
 		, font , that->getStrValue()
-		, that->hasFocus() ? COLOR_WHITE : COLOR_BLACK
+		, that->hasFocus() ? _color::white : _color::black
 		, fontSize
 	);
 	

@@ -93,18 +93,18 @@ _callbackReturn _contextMenu::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	
 	// Fill Bg
-	bP.fill( COLOR_WHITE );
+	bP.fill( _color::white );
 	
 	// Fill Border
-	bP.drawRect( 0 , 0 , myW , myH , RGB( 19 , 19 , 19 ) );
+	bP.drawRect( 0 , 0 , myW , myH , _color::fromRGB( 19 , 19 , 19 ) );
 	
 	//// Draw "Shadow"
-	//bP.drawHorizontalLine( 1 , myH - 1 , myW - 1 , RGB( 9 , 9 , 9 ) );
-	//bP.drawVerticalLine( myW - 1 , 1 , myH - 1 , RGB( 9 , 9 , 9 ) );
+	//bP.drawHorizontalLine( 1 , myH - 1 , myW - 1 , _color::fromRGB( 9 , 9 , 9 ) );
+	//bP.drawVerticalLine( myW - 1 , 1 , myH - 1 , _color::fromRGB( 9 , 9 , 9 ) );
 	//
 	//// Erase corners
-	//bP.drawPixel( myW - 1 , 0 , COLOR_TRANSPARENT );
-	//bP.drawPixel( 0 , myH - 1 , COLOR_TRANSPARENT );
+	//bP.drawPixel( myW - 1 , 0 , _color::transparent );
+	//bP.drawPixel( 0 , myH - 1 , _color::transparent );
 	
 	return use_default;
 }

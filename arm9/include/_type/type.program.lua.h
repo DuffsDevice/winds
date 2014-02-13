@@ -33,12 +33,6 @@ class _progLua : public _program
 		static int	lua_fontChangePhrase( lua_State* L );
 		static int	lua_colorChangePhrase( lua_State* L );
 		static int	lua_sizeChangePhrase( lua_State* L );
-		static int	lua_RGB( lua_State* L );
-		static int	lua_RGB255( lua_State* L );
-		static int	lua_RGB_GETR( lua_State* L );
-		static int	lua_RGB_GETG( lua_State* L );
-		static int	lua_RGB_GETB( lua_State* L );
-		static int	lua_RGB_GETA( lua_State* L );
 		
 		static int	lua_keyboardIsRegistered( lua_State* L );
 		static int	lua_keyboardIsOpened( lua_State* L );

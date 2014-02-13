@@ -1,5 +1,6 @@
 #include "_library/library.image.bmp.decoder.h"
 #include "_type/type.h"
+#include "_type/type.color.h"
 
 unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const unsigned int size , unsigned int& width , unsigned int& height )
 {
@@ -52,7 +53,7 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const uns
 				
 				if( Bits == 32 ) i++; // On passe le bit alpha
 				
-				dest[ tempx + ( tempy * lx ) ] = RGB255( r , g , b );
+				dest[ tempx + ( tempy * lx ) ] = _color::fromRGB8( r , g , b );
 			}
 			while( i & 3 ) i++; // Padding....
 		}
@@ -70,7 +71,7 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const uns
 				g = ( *gfx2 >> 5 ) & 31;
 				r = ( *gfx2 >> 10 ) & 31;
 				
-				dest[ tempx + ( tempy * lx ) ] = RGB( r , g , b );
+				dest[ tempx + ( tempy * lx ) ] = _color::fromRGB( r , g , b );
 				
 				gfx2++; // On passe au pixel suivant
 			}
@@ -99,7 +100,7 @@ unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const uns
 			g = (( colormap[ ( i << 2 ) + 1 ] ) >> 3 ) & 31;
 			r = (( colormap[ ( i << 2 ) + 2 ] ) >> 3 ) & 31;
 			
-			palette[i] = RGB( r , g , b );
+			palette[i] = _color::fromRGB( r , g , b );
 		}
 		
 		i = 0;

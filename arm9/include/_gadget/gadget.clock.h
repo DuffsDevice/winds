@@ -11,12 +11,12 @@ class _clockGadget : public _gadget
 	private:
 		
 		//! String to be displayed
-		_pixel	outerBgColor;
-		_pixel	innerBgColor;
-		_pixel	secondsColor;
-		_pixel	minutesColor;
-		_pixel	hoursColor;
-		_pixel	markingsColor;
+		_color	outerBgColor;
+		_color	innerBgColor;
+		_color	secondsColor;
+		_color	minutesColor;
+		_color	hoursColor;
+		_color	markingsColor;
 		
 		//! Values
 		_s8		seconds;
@@ -46,7 +46,7 @@ class _clockGadget : public _gadget
 		_int getIntValue(){ return getTime(); }
 		
 		//! Set background color of the space around the clock
-		void setOuterBgColor( _pixel outerBgColor ){
+		void setOuterBgColor( _color outerBgColor ){
 			if( this->outerBgColor == outerBgColor )
 				return;
 			this->outerBgColor = outerBgColor;
@@ -54,12 +54,12 @@ class _clockGadget : public _gadget
 		}
 		
 		//! Getter for this...
-		_pixel getOuterBgColor(){
+		_color getOuterBgColor(){
 			return this->outerBgColor;
 		}
 		
 		//! Sets the background of the clock
-		void setInnerBgColor( _pixel innerBgColor ){
+		void setInnerBgColor( _color innerBgColor ){
 			if( this->innerBgColor == innerBgColor )
 				return;
 			this->innerBgColor = innerBgColor;
@@ -67,10 +67,10 @@ class _clockGadget : public _gadget
 		}
 		
 		//! Getter for this...
-		_pixel getInnerBgColor(){ return this->innerBgColor; }
+		_color getInnerBgColor(){ return this->innerBgColor; }
 		
 		//! Sets the color of the seconds hand
-		void setSecondsColor( _pixel secondsColor ){
+		void setSecondsColor( _color secondsColor ){
 			if( this->secondsColor == secondsColor )
 				return;
 			this->secondsColor = secondsColor;
@@ -78,10 +78,10 @@ class _clockGadget : public _gadget
 		}
 		
 		//! Getter for this...
-		_pixel getSecondsColor(){ return this->secondsColor; }
+		_color getSecondsColor(){ return this->secondsColor; }
 		
 		//! Sets the color of the minute hand
-		void setMinutesColor( _pixel minutesColor ){
+		void setMinutesColor( _color minutesColor ){
 			if( this->minutesColor == minutesColor )
 				return;
 			this->minutesColor = minutesColor;
@@ -89,18 +89,18 @@ class _clockGadget : public _gadget
 		}
 		
 		//! Getter for this...
-		_pixel getMinutesColor(){ return this->minutesColor; }
+		_color getMinutesColor(){ return this->minutesColor; }
 		
 		//! Sets the color of the hour hand
-		void setHoursColor(_pixel hoursColor){
+		void setHoursColor(_color hoursColor){
 			this->hoursColor = hoursColor;
 		}
 		
 		//! Getter for this...
-		_pixel getHoursColor(){ return this->hoursColor; }
+		_color getHoursColor(){ return this->hoursColor; }
 		
 		//! Sets the color of the dots that mark every five minutes
-		void setMarkingsColor( _pixel markingsColor ){
+		void setMarkingsColor( _color markingsColor ){
 			if( this->markingsColor == markingsColor )
 				return;
 			this->markingsColor = markingsColor;
@@ -108,7 +108,7 @@ class _clockGadget : public _gadget
 		}
 		
 		//! Getter for this...
-		_pixel getMarkingsColor(){
+		_color getMarkingsColor(){
 			return this->markingsColor;
 		}
 		

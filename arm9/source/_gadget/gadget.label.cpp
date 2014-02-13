@@ -117,8 +117,8 @@ _callbackReturn _label::refreshHandler( _event event )
 
 _label::_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
 	_gadget( _gadgetType::label , x , y , width , height , (_style&&)style )
-	, color( COLOR_BLACK )
-	, bgColor( COLOR_TRANSPARENT )
+	, color( _color::black )
+	, bgColor( _color::transparent )
 	, font( _system::getFont() )
 	, fontSize( _system::getRTA().getDefaultFontSize() )
 	, align( _align::left )

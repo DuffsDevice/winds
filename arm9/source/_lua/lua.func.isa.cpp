@@ -4,6 +4,7 @@
 #include "_lua/lua.class.area.h"
 #include "_lua/lua.class.font.h"
 #include "_lua/lua.class.border.h"
+#include "_lua/lua.class.color.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.time.h"
@@ -47,6 +48,17 @@ namespace _luafunc
 		
 		bool is_a( lua_State* L , int index , _time* dummy ){
 			return _luafunc::is_a( L , index , _lua_time::className );
+		}
+		
+		bool is_a( lua_State* L , int index , _color* dummy ){
+			int type = get_type( L , index );
+			return
+				type == LUA_TSTRING
+				|| type == LUA_TNUMBER
+				|| (
+					type == LUA_TUSERDATA
+					&& _luafunc::is_a( L , index , _lua_color::className )
+				);
 		}
 	}
 }

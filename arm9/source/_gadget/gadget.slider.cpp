@@ -112,7 +112,7 @@ _callbackReturn _slider::refreshHandler( _event event )
 	_length myW = bP.getWidth();
 	_length myH = bP.getHeight();
 	
-	bP.fill( RGB( 30 , 30 , 29 ) );
+	bP.fill( _color::fromRGB( 30 , 30 , 29 ) );
 	
 	// Fetch Font for labels
 	const _font* font = _system::getFont();
@@ -120,32 +120,32 @@ _callbackReturn _slider::refreshHandler( _event event )
 	
 	if( that->dimension == _dimension::horizontal )
 	{
-		bP.drawHorizontalLine( OFFSETX - 2 , 5 , myW - OFFSETX - OFFSETX2 + 4 , RGB255( 170 , 170 , 165 ) );
-		bP.drawHorizontalLine( OFFSETX - 2 , 6 , myW - OFFSETX - OFFSETX2 + 4 , RGB255( 235 , 235 , 235 ) );
-		bP.drawHorizontalLine( OFFSETX - 2 , 7 , myW - OFFSETX - OFFSETX2 + 4 , COLOR_WHITE );
-		bP.drawPixel( OFFSETX - 3 , 6 , RGB255( 157 , 156 , 153 ) );
-		bP.drawPixel( myW - OFFSETX2 + 2 , 6 , COLOR_WHITE );
+		bP.drawHorizontalLine( OFFSETX - 2 , 5 , myW - OFFSETX - OFFSETX2 + 4 , _color::fromRGB8( 170 , 170 , 165 ) );
+		bP.drawHorizontalLine( OFFSETX - 2 , 6 , myW - OFFSETX - OFFSETX2 + 4 , _color::fromRGB8( 235 , 235 , 235 ) );
+		bP.drawHorizontalLine( OFFSETX - 2 , 7 , myW - OFFSETX - OFFSETX2 + 4 , _color::white );
+		bP.drawPixel( OFFSETX - 3 , 6 , _color::fromRGB8( 157 , 156 , 153 ) );
+		bP.drawPixel( myW - OFFSETX2 + 2 , 6 , _color::white );
 		
-		bP.drawString( 1 , H_SLIDER_BASE_HEIGHT(that->snap) + 1 , font , that->lowerBoundText , COLOR_BLACK , fontSize );
+		bP.drawString( 1 , H_SLIDER_BASE_HEIGHT(that->snap) + 1 , font , that->lowerBoundText , _color::black , fontSize );
 		bP.drawString(
 			myW - font->getStringWidth( that->upperBoundText , fontSize )
 			, H_SLIDER_BASE_HEIGHT( that->snap ) + 1
 			, font
 			, that->upperBoundText
-			, COLOR_BLACK
+			, _color::black
 			, fontSize );
 	}
 	else
 	{
 		_coord linePos = that->snap ? 10 : 6;
-		bP.drawVerticalLine( linePos -1 , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , RGB255( 170 , 170 , 165 ) );
-		bP.drawVerticalLine( linePos , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , RGB255( 235 , 235 , 235 ) );
-		bP.drawVerticalLine( linePos + 1 , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , COLOR_WHITE );
-		bP.drawPixel( linePos , OFFSETY - 3 , RGB255( 157 , 156 , 153 ) );
-		bP.drawPixel( linePos , myH - OFFSETY2 + 2 , COLOR_WHITE );
+		bP.drawVerticalLine( linePos -1 , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , _color::fromRGB8( 170 , 170 , 165 ) );
+		bP.drawVerticalLine( linePos , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , _color::fromRGB8( 235 , 235 , 235 ) );
+		bP.drawVerticalLine( linePos + 1 , OFFSETY - 2 , myH - OFFSETY - OFFSETY2 + 4 , _color::white );
+		bP.drawPixel( linePos , OFFSETY - 3 , _color::fromRGB8( 157 , 156 , 153 ) );
+		bP.drawPixel( linePos , myH - OFFSETY2 + 2 , _color::white );
 		
-		bP.drawString( V_SLIDER_BASE_WIDTH( that->snap ) + 2 , 0 , font , that->upperBoundText , COLOR_BLACK , fontSize );
-		bP.drawString( V_SLIDER_BASE_WIDTH( that->snap ) + 2 , myH - font->getHeight( fontSize ) , font , that->lowerBoundText , COLOR_BLACK , fontSize );
+		bP.drawString( V_SLIDER_BASE_WIDTH( that->snap ) + 2 , 0 , font , that->upperBoundText , _color::black , fontSize );
+		bP.drawString( V_SLIDER_BASE_WIDTH( that->snap ) + 2 , myH - font->getHeight( fontSize ) , font , that->lowerBoundText , _color::black , fontSize );
 	}
 	
 	if( !that->snap )
@@ -162,8 +162,8 @@ _callbackReturn _slider::refreshHandler( _event event )
 		{
 			float perc = float( val - that->lowerBound ) / rangeSize;
 			
-			bP.drawVerticalLine( OFFSETX - 1 + perc * pixelLength , 12 , 3 , COLOR_GRAY );
-			bP.drawVerticalLine( OFFSETX + perc * pixelLength , 12 , 3 , COLOR_WHITE );
+			bP.drawVerticalLine( OFFSETX - 1 + perc * pixelLength , 12 , 3 , _color::gray );
+			bP.drawVerticalLine( OFFSETX + perc * pixelLength , 12 , 3 , _color::white );
 		}
 	}
 	else
@@ -175,11 +175,11 @@ _callbackReturn _slider::refreshHandler( _event event )
 		{
 			float perc = float( val - that->lowerBound ) / rangeSize;
 			
-			bP.drawHorizontalLine( 16 , OFFSETY - 1 + perc * pixelLength ,  2 , COLOR_GRAY );
-			bP.drawHorizontalLine( 16 , OFFSETY + perc * pixelLength , 2 , COLOR_WHITE );
+			bP.drawHorizontalLine( 16 , OFFSETY - 1 + perc * pixelLength ,  2 , _color::gray );
+			bP.drawHorizontalLine( 16 , OFFSETY + perc * pixelLength , 2 , _color::white );
 			
-			bP.drawHorizontalLine( 0 , OFFSETY - 1 + perc * pixelLength ,  2 , COLOR_GRAY );
-			bP.drawHorizontalLine( 0 , OFFSETY + perc * pixelLength , 2 , COLOR_WHITE );
+			bP.drawHorizontalLine( 0 , OFFSETY - 1 + perc * pixelLength ,  2 , _color::gray );
+			bP.drawHorizontalLine( 0 , OFFSETY + perc * pixelLength , 2 , _color::white );
 		}
 	}
 	

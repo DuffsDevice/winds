@@ -242,10 +242,10 @@ _callbackReturn _window::refreshHandler( _event event )
 	// Set my Corners to transparent
 	if( !that->isMaximized() )
 	{
-		bP.drawPixel( 0 , 0 , NO_COLOR );
-		bP.drawPixel( that->getWidth() - 1 , 0 , NO_COLOR );
-		bP.drawPixel( bP.getWidth() - 1 , that->getHeight() - 1 , NO_COLOR );
-		bP.drawPixel( 0 , that->getHeight() - 1 , NO_COLOR );
+		bP.drawPixel( 0 , 0 , _color::transparent );
+		bP.drawPixel( that->getWidth() - 1 , 0 , _color::transparent );
+		bP.drawPixel( bP.getWidth() - 1 , that->getHeight() - 1 , _color::transparent );
+		bP.drawPixel( 0 , that->getHeight() - 1 , _color::transparent );
 	}
 	
 	return use_default;
@@ -363,7 +363,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	this->label = new _label( 2 , 1 , this->getWidth() - 2 , 8 , title );
 	this->label->setAlign( _align::left );
 	this->label->setVAlign( _valign::middle );
-	this->label->setColor( COLOR_WHITE );
+	this->label->setColor( _color::white );
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6

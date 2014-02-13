@@ -2,6 +2,7 @@
 #define _WIN_T_TEXTPHRASES_
 
 #include "_type/type.h"
+#include "_type/type.color.h"
 
 // Excape characters used in fonts to prepare special actions
 enum class _escapeChar : _char{
@@ -52,7 +53,7 @@ namespace stringExtractor
 	 **/
 	extern bool processChar( const _char*& str );
 	extern bool processChar( const _char*& str , _u8& fontSize , const _font*& font );
-	extern bool processChar( const _char*& str , _u8& fontSize , const _font*& font , _pixel& color );
+	extern bool processChar( const _char*& str , _u8& fontSize , const _font*& font , _color& color );
 	
 	extern void strResize( _char* str , _length resultLength );
 	extern _length strLen( const _char* str );
@@ -64,8 +65,8 @@ namespace stringExtractor
 	unused static inline constexpr _u8 sizeChangePhrase( const _char* str ){ return str[1]; }
 	
 	//! Generates an excape sequence that will change the displayed font color
-	unused static inline constexpr _pixel colorChangePhrase( const _char* str ){
-		return _pixel( ( str[1] << 8 ) | str[2] );
+	unused static inline constexpr _color colorChangePhrase( const _char* str ){
+		return _color( ( str[1] << 8 ) | str[2] );
 	}
 };
 

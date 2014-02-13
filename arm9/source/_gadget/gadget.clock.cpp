@@ -43,14 +43,14 @@ _callbackReturn _clockGadget::refreshHandler( _event event )
 		int s1 = si * (radius-1);
 		int c2 = co * radius;
 		int s2 = si * radius;
-		bP.drawPixel( centerX - c1 , centerY - s1 , COLOR_WHITE );
-		bP.drawPixel( centerX + c1 , centerY - s1 , COLOR_WHITE );
-		bP.drawPixel( centerX - c1 , centerY + s1 , COLOR_WHITE );
-		bP.drawPixel( centerX + c1 , centerY + s1 , COLOR_WHITE );
-		bP.drawPixel( centerX - c2 , centerY - s2 , COLOR_WHITE );
-		bP.drawPixel( centerX + c2 , centerY - s2 , COLOR_WHITE );
-		bP.drawPixel( centerX - c2 , centerY + s2 , COLOR_WHITE );
-		bP.drawPixel( centerX + c2 , centerY + s2 , COLOR_WHITE );
+		bP.drawPixel( centerX - c1 , centerY - s1 , _color::white );
+		bP.drawPixel( centerX + c1 , centerY - s1 , _color::white );
+		bP.drawPixel( centerX - c1 , centerY + s1 , _color::white );
+		bP.drawPixel( centerX + c1 , centerY + s1 , _color::white );
+		bP.drawPixel( centerX - c2 , centerY - s2 , _color::white );
+		bP.drawPixel( centerX + c2 , centerY - s2 , _color::white );
+		bP.drawPixel( centerX - c2 , centerY + s2 , _color::white );
+		bP.drawPixel( centerX + c2 , centerY + s2 , _color::white );
 	}
 	
 	// Second
@@ -130,12 +130,12 @@ void _clockGadget::decrease()
 
 _clockGadget::_clockGadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease , _style&& style ) :
 	_gadget( _gadgetType::clockgadget , x , y , width , height , style | _styleAttr::notClickable )
-	, outerBgColor( COLOR_TRANSPARENT )
-	, innerBgColor( COLOR_WHITE )
-	, secondsColor( COLOR_RED )
-	, minutesColor( COLOR_BLACK )
-	, hoursColor( COLOR_BLACK )
-	, markingsColor( COLOR_GRAY )
+	, outerBgColor( _color::transparent )
+	, innerBgColor( _color::white )
+	, secondsColor( _color::red )
+	, minutesColor( _color::black )
+	, hoursColor( _color::black )
+	, markingsColor( _color::gray )
 	, seconds( seconds )
 	, minutes( minutes )
 	, hours( hours )

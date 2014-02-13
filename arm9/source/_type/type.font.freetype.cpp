@@ -90,7 +90,7 @@ _u32 transparencyJump[256] =  {
 	0x20, 0x40, 0x80, 0x300, 0xC00, 0x3000, 0x1C000, 0xE0000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xFFFFFFFE
 };
 
-_length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char letter , _pixel color , _rect clip , _u8 fontSize ) const 
+_length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char letter , _color color , _rect clip , _u8 fontSize ) const 
 {	
 	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
 	

@@ -142,7 +142,7 @@ _int _ini::readIndexInt( const string& section , const string& name ) const
 				a = 0;
 		}
 		
-		return RGB( r , g , b , a );
+		return _color::fromRGB( r , g , b , a );
 	}
 	else if( attr == "true" )
 		return 1;

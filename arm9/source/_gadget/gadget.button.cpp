@@ -74,61 +74,61 @@ _callbackReturn _button::refreshHandler( _event event )
 	if( that->pressed )
 	{
 		// Background
-		bP.fill( RGB( 25 , 25 , 25 ) );
+		bP.fill( _color::fromRGB( 25 , 25 , 25 ) );
 		
 		// Inner Shadow
-		bP.drawHorizontalLine( 1 , 1 , myW - 3 , RGB( 20 , 20 , 20 ) );
-		bP.drawHorizontalLine( 2 , myH - 2 , myW - 4 , RGB( 29 , 29 , 28 ) );
-		bP.drawVerticalLine( 1 , 2 , myH - 4 , RGB( 20 , 20 , 20 ) );
+		bP.drawHorizontalLine( 1 , 1 , myW - 3 , _color::fromRGB( 20 , 20 , 20 ) );
+		bP.drawHorizontalLine( 2 , myH - 2 , myW - 4 , _color::fromRGB( 29 , 29 , 28 ) );
+		bP.drawVerticalLine( 1 , 2 , myH - 4 , _color::fromRGB( 20 , 20 , 20 ) );
 	}
 	else
 	{
 		// Background
-		bP.fill( RGB( 31 , 31 , 31 ) );
+		bP.fill( _color::fromRGB( 31 , 31 , 31 ) );
 		
 		if( that->autoSelect )
 		{
 			// Blue Border
-			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , RGB( 18 , 22 , 31 ) );
-			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , RGB( 26 , 29 , 31 ) );
+			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , _color::fromRGB( 18 , 22 , 31 ) );
+			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , _color::fromRGB( 26 , 29 , 31 ) );
 		}
 		else
 		{
 			// Inner Shadow
-			bP.drawHorizontalLine( 2 	, myH - 2 , myW - 4 , RGB( 25 , 25 , 25 ) );
-			bP.drawVerticalLine( myW - 2 	, 2 	  , myH - 4 , RGB( 25 , 25 , 25 ) );
-			bP.drawHorizontalLine( 2 	, 1 , myW - 4 , RGB( 29 , 29 , 29 ) );
-			bP.drawVerticalLine( 1 	, 2 	  , myH - 4 , RGB( 29 , 29 , 29 ) );
+			bP.drawHorizontalLine( 2 	, myH - 2 , myW - 4 , _color::fromRGB( 25 , 25 , 25 ) );
+			bP.drawVerticalLine( myW - 2 	, 2 	  , myH - 4 , _color::fromRGB( 25 , 25 , 25 ) );
+			bP.drawHorizontalLine( 2 	, 1 , myW - 4 , _color::fromRGB( 29 , 29 , 29 ) );
+			bP.drawVerticalLine( 1 	, 2 	  , myH - 4 , _color::fromRGB( 29 , 29 , 29 ) );
 			// Corners
-			bP.drawPixel( myW - 2 	, myH - 2 , RGB( 23 , 23 , 23 ) );
-			bP.drawPixel( myW - 2 	, 1 	   , RGB( 23 , 23 , 23 ) );
-			bP.drawPixel( 1			, 1 	   , RGB( 23 , 23 , 23 ) );
-			bP.drawPixel( 1			, myH - 2 , RGB( 23 , 23 , 23 ) );
+			bP.drawPixel( myW - 2 	, myH - 2 , _color::fromRGB( 23 , 23 , 23 ) );
+			bP.drawPixel( myW - 2 	, 1 	   , _color::fromRGB( 23 , 23 , 23 ) );
+			bP.drawPixel( 1			, 1 	   , _color::fromRGB( 23 , 23 , 23 ) );
+			bP.drawPixel( 1			, myH - 2 , _color::fromRGB( 23 , 23 , 23 ) );
 		}
 		
-		//bP.drawHorizontalLine( 2 , myH - 3 , myW - 4 , RGB( 29 , 29 , 29 ) );		
+		//bP.drawHorizontalLine( 2 , myH - 3 , myW - 4 , _color::fromRGB( 29 , 29 , 29 ) );		
 	}
 	
 	// Border
-	bP.drawVerticalLine( 0 		, 2 	  , myH - 4 , RGB( 0 , 10 , 17 ) );
-	bP.drawVerticalLine( myW - 1 , 2 	  , myH - 4 , RGB( 0 , 10 , 17 ) );
-	bP.drawHorizontalLine( 2 	, 0 	  , myW - 4 , RGB( 0 , 10 , 17 ) );
-	bP.drawHorizontalLine( 2 	, myH - 1 , myW - 4 , RGB( 0 , 10 , 17 ) );
+	bP.drawVerticalLine( 0 		, 2 	  , myH - 4 , _color::fromRGB( 0 , 10 , 17 ) );
+	bP.drawVerticalLine( myW - 1 , 2 	  , myH - 4 , _color::fromRGB( 0 , 10 , 17 ) );
+	bP.drawHorizontalLine( 2 	, 0 	  , myW - 4 , _color::fromRGB( 0 , 10 , 17 ) );
+	bP.drawHorizontalLine( 2 	, myH - 1 , myW - 4 , _color::fromRGB( 0 , 10 , 17 ) );
 	
 	// Corners
-	bP.drawPixel( myW - 1 , myH - 2 , RGB( 6 , 14 , 19 ) ); // Bottom Right
-	bP.drawPixel( myW - 2 , myH - 1 , RGB( 6 , 14 , 19 ) ); // Bottom Right
-	bP.drawPixel( myW - 1 , 1 	   , RGB( 6 , 14 , 19 ) ); // Top Right
-	bP.drawPixel( myW - 2 , 0 	   , RGB( 6 , 14 , 19 ) ); // Top Right
-	bP.drawPixel( 1 		 , myH - 1 , RGB( 6 , 14 , 19 ) ); // Bottom Left
-	bP.drawPixel( 0 		 , myH - 2 , RGB( 6 , 14 , 19 ) ); // Bottom Left
-	bP.drawPixel( 1 		 , 0	   , RGB( 6 , 14 , 19 ) ); // Top Left
-	bP.drawPixel( 0 		 , 1	   , RGB( 6 , 14 , 19 ) ); // Top Left
+	bP.drawPixel( myW - 1 , myH - 2 , _color::fromRGB( 6 , 14 , 19 ) ); // Bottom Right
+	bP.drawPixel( myW - 2 , myH - 1 , _color::fromRGB( 6 , 14 , 19 ) ); // Bottom Right
+	bP.drawPixel( myW - 1 , 1 	   , _color::fromRGB( 6 , 14 , 19 ) ); // Top Right
+	bP.drawPixel( myW - 2 , 0 	   , _color::fromRGB( 6 , 14 , 19 ) ); // Top Right
+	bP.drawPixel( 1 		 , myH - 1 , _color::fromRGB( 6 , 14 , 19 ) ); // Bottom Left
+	bP.drawPixel( 0 		 , myH - 2 , _color::fromRGB( 6 , 14 , 19 ) ); // Bottom Left
+	bP.drawPixel( 1 		 , 0	   , _color::fromRGB( 6 , 14 , 19 ) ); // Top Left
+	bP.drawPixel( 0 		 , 1	   , _color::fromRGB( 6 , 14 , 19 ) ); // Top Left
 	
-	bP.drawPixel( 0 , 0 , NO_COLOR );
-	bP.drawPixel( myW - 1 , 0 , NO_COLOR );
-	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
-	bP.drawPixel( 0 , myH - 1 , NO_COLOR );
+	bP.drawPixel( 0 , 0 , _color::transparent );
+	bP.drawPixel( myW - 1 , 0 , _color::transparent );
+	bP.drawPixel( myW - 1 , myH - 1 , _color::transparent );
+	bP.drawPixel( 0 , myH - 1 , _color::transparent );
 	
 	//
 	// TEXT PAINTING!
@@ -190,7 +190,7 @@ _button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	, autoSelect( false )
 	, strValue( value )
 	, font( _system::getFont() )
-	, fontColor( COLOR_BLACK )
+	, fontColor( _color::black )
 	, fontSize( _system::getRTA().getDefaultFontSize() )
 	, pressed( false )
 	, align( _align::center )

@@ -178,43 +178,6 @@ template<class T1, class T2 = T1> struct comparable {
 	comparable() { void(*)(T1,T2) = constraints; }
 };
 
-//! Convert red, green, blue to 16bit Triplette including an alpha-channel
-static constexpr inline _pixel RGB( _u8 r , _u8 g , _u8 b , bool alpha = true ){
-	return r | ( g << 5 ) | ( b << 10 ) | ( alpha << 15 ); // alpha=1 means opaque, alpha=0 means transparent
-}
-static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b , _u8 alpha ){
-	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( ( alpha > 127 ) << 15 ); // alpha>127 means opaque, alpha<128 means transparent
-}
-static constexpr inline _pixel RGB255( _u8 r , _u8 g , _u8 b , bool alpha = true ){
-	return ( r >> 3 ) | ( ( g >> 3 ) << 5 ) | ( ( b >> 3 ) << 10 ) | ( alpha << 15 ); // alpha=true means opaque, alpha=false means transparent
-}
-static constexpr inline _pixel RGBHEX( _u32 hex , bool alpha = true ){
-	return ( ( hex & 0xff0000 ) >> 19 ) | ( ( ( hex & 0x00ff00 ) >> 11 ) << 5 ) | ( ( ( hex & 0x0000ff ) >> 3 ) << 10 ) | ( alpha << 15 ); // a=1 means opaque, a=0 means transparent
-}
-
-//! Converts a brightness value to 16bit Tripplette
-static constexpr inline _pixel BW( _u8 brightness , bool alpha = true ){
-	return _u32( brightness ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( alpha << 15 );
-}
-static constexpr inline _pixel BW255( _u8 brightness , _u8 alpha ){
-	return _u32( brightness >> 3 ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( ( alpha > 127 )<< 15 );
-}
-static constexpr inline _pixel BW255( _u8 brightness , bool alpha = true ){
-	return _u32( brightness >> 3 ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) ) | ( alpha << 15 );
-}
-
-//! Gets the specific component value from a color
-static constexpr inline _u8 RGB_GETR( _pixel c ){ return c & 0x1F; }
-static constexpr inline _u8 RGB_GETG( _pixel c ){ return ( c >> 5 ) & 0x1F; }
-static constexpr inline _u8 RGB_GETB( _pixel c ){ return ( c >> 10 ) & 0x1F; }
-static constexpr inline _u8 RGB_GETA( _pixel c ){ return c >> 15; }
-
-//! Sets a specific value
-static inline void RGB_SETR( _pixel& c , _u8 red ){ c = ( c & ~0x1F ) | red; }
-static inline void RGB_SETG( _pixel& c , _u8 green ){ c = ( c & ~( 0x1F << 5 ) ) | ( green << 5 ); }
-static inline void RGB_SETB( _pixel& c , _u8 blue ){ c = ( c & ~( 0x1F << 10 ) ) | ( blue << 10 ); }
-static inline void RGB_SETA( _pixel& c , bool alpha ){ c = ( c & ~( 1 << 15 ) ) | ( alpha << 15 ); }
-
 //! Counts, how many digits a number has
 extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
 
@@ -224,19 +187,6 @@ static unused int string2int( string str ){ return string2int( str.c_str() ); }
 
 //! Converts an int to string
 extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
-
-//! Predefined colors
-#define COLOR_TRANSPARENT	(_pixel(0))
-#define COLOR_YELLOW 		(RGB(31,31,0))
-#define COLOR_GREEN 		(RGB(0,31,0))
-#define COLOR_CYAN 			(RGB(0,31,31))
-#define COLOR_BLUE 			(RGB(0,0,31))
-#define COLOR_MAGENTA 		(RGB(31,0,31))
-#define COLOR_RED 			(RGB(31,0,0))
-#define COLOR_GRAY 			(RGB(15,15,15))
-#define COLOR_BLACK 		(_pixel(1<<15))
-#define COLOR_WHITE 		(_pixel((1<<16)-1))
-#define NO_COLOR 			(_pixel(0))
 
 //! Alignment enumeration
 enum class _align : _u8 {

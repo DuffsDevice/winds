@@ -145,7 +145,7 @@ void _bitmap::resize( _length w , _length h )
 	this->resetClippingRect(); 
 }
 
-void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawVerticalLine"};
 	
@@ -171,7 +171,7 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _pixel co
 	}while( --length > 0 );
 }
 
-void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawVerticalDottedLine"};
 	
@@ -195,7 +195,7 @@ void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _pi
 	}while( length > 0 );
 }
 
-void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawHorizontalLine"};
 	
@@ -212,7 +212,7 @@ void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _pixel 
 	memSet( this->bmp + x + y * this->width , color , length );
 }
 
-void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawHorizontalDottedLine"};
 	
@@ -238,7 +238,7 @@ void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _
 	
 }
 
-void _bitmap::drawDottedRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmap::drawDottedRect( _coord x , _coord y , _length w , _length h , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawDottedRect"};
 	
@@ -277,7 +277,7 @@ void _bitmap::drawDottedRect( _coord x , _coord y , _length w , _length h , _pix
 	}
 }
 
-void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawRect"};
 	
@@ -302,7 +302,7 @@ void _bitmap::drawRect( _coord x , _coord y , _length w , _length h , _pixel col
 	}
 }
 
-void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawFilledRect"};
 	
@@ -343,7 +343,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _pix
 	}
 }
 
-void _bitmap::replaceColor( _pixel color , _pixel replace )
+void _bitmap::replaceColor( _color color , _color replace )
 {
 	_codeAnalyzer analyzer {"_bitmap::replaceColor"};
 	
@@ -355,7 +355,7 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 	_pixelArray ptr = this->bmp;
 	
 	// Replace all values with passed color
-	if( RGB_GETA( color ) )
+	if( color.getAlpha() )
 	{
 		do
 		{
@@ -367,7 +367,7 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 	{
 		do
 		{
-			if( !RGB_GETA( *ptr ) )
+			if( !_color(*ptr).getAlpha() )
 				*ptr = replace;
 		}while( --cnt > 0 );
 	}
@@ -425,7 +425,7 @@ void _bitmap::replaceColor( _pixel color , _pixel replace )
 		}while( --h1 > 0 );\
 	}
 
-void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
+void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawVerticalGradient"};
 	
@@ -457,9 +457,9 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		_pixelArray end = gradTable + h;
 		
 		// Difference between color values
-		int dR = RGB_GETR(toColor) - RGB_GETR(fromColor);
-		int dG = RGB_GETG(toColor) - RGB_GETG(fromColor);
-		int dB = RGB_GETB(toColor) - RGB_GETB(fromColor);
+		int dR = toColor.getR() - fromColor.getR();
+		int dG = toColor.getG() - fromColor.getG();
+		int dB = toColor.getB() - fromColor.getB();
 		
 		// Scale them to 2048
 		dR <<= 11; dG <<= 11; dB <<= 11;
@@ -469,16 +469,16 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 		int trigB = div32( dB , gradHeight );
 		
 		// Defines
-		int curR = RGB_GETR(fromColor) << 11;
-		int curG = RGB_GETG(fromColor) << 11;
-		int curB = RGB_GETB(fromColor) << 11;
+		int curR = fromColor.getR() << 11;
+		int curG = fromColor.getG() << 11;
+		int curB = fromColor.getB() << 11;
 		
 		if( dY > 0 )
 			curR += trigR*dY; curG += trigG*dY; curB += trigB*dY;
 		
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
-			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			//*temp++ = _color::fromRGB( curR >> 11 , curG >> 11 , curB >> 11 );
 			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise AND width 31
 					| ( ( curG >> 6  ) & ( 31 << 5  ) )
 					| ( ( curB >> 1  ) & ( 31 << 10 ) )
@@ -544,7 +544,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	}while( --h );\
 }
 
-void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
+void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawHorizontalGradient"};
 	
@@ -576,9 +576,9 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		_pixelArray end = gradTable + w;
 		
 		// Difference between color values
-		int dR = RGB_GETR(toColor) - RGB_GETR(fromColor);
-		int dG = RGB_GETG(toColor) - RGB_GETG(fromColor);
-		int dB = RGB_GETB(toColor) - RGB_GETB(fromColor);
+		int dR = toColor.getR() - fromColor.getR();
+		int dG = toColor.getG() - fromColor.getG();
+		int dB = toColor.getB() - fromColor.getB();
 		
 		// Scale them to 512
 		dR <<= 11; dG <<= 11; dB <<= 11;
@@ -588,9 +588,9 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		int trigB = div32( dB , gradWidth );
 		
 		// Defines
-		unsigned int curR = ( fromColor & 31 ) << 11; // Faster than RGB_GETR... ??
-		unsigned int curG = RGB_GETG(fromColor) << 11;
-		unsigned int curB = RGB_GETB(fromColor) << 11;
+		unsigned int curR = fromColor.getR() << 11;
+		unsigned int curG = fromColor.getG() << 11;
+		unsigned int curB = fromColor.getB() << 11;
 		
 		if( dX > 0 )
 		{
@@ -601,7 +601,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 		
 		// Fill the table
 		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
-			//*temp++ = RGB( curR >> 11 , curG >> 11 , curB >> 11 );
+			//*temp++ = _color::fromRGB( curR >> 11 , curG >> 11 , curB >> 11 );
 			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise and width 31
 					| ( ( curG >> 6  ) & ( 31 << 5  ) )
 					| ( ( curB >> 1  ) & ( 31 << 10 ) )
@@ -646,7 +646,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 
 #undef HORIZONTAL_GRADIENT_FILLER_RAND
 
-void _bitmap::drawCircle( _coord xc, _coord yc, _length radius, _pixel color )
+void _bitmap::drawCircle( _coord xc, _coord yc, _length radius, _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawCircle"};
 	
@@ -681,7 +681,7 @@ void _bitmap::drawCircle( _coord xc, _coord yc, _length radius, _pixel color )
 	}
 }
 
-void _bitmap::drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color )
+void _bitmap::drawFilledCircle( _coord xc, _coord yc, _length radius, _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawFilledCircle"};
 	
@@ -712,7 +712,7 @@ void _bitmap::drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel col
 	}
 }
 
-void _bitmap::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color)
+void _bitmap::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _color color)
 {
 	_codeAnalyzer analyzer {"_bitmap::drawFilledEllipse"};
 	
@@ -752,7 +752,7 @@ void _bitmap::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pi
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color)
+void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color color)
 {
 	_codeAnalyzer analyzer {"_bitmap::drawEllipse"};
 	
@@ -799,7 +799,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _pixel color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _color color , _u8 fontSize )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawString"};
 	
@@ -1146,7 +1146,7 @@ __attribute__((hot)) bool _bitmap::clipCoordinatesY( _coord &left , _coord &top 
 }
 
 // Internal routine
-void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+void _bitmap::drawClippedLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawClippedLine"};
 	
@@ -1264,7 +1264,7 @@ _u8 _bitmap::getClipLineOutCode( _coord x , _coord y , _coord xMin , _coord yMin
 	return code;
 }
 
-void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+void _bitmap::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _color color )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawLine"};
 	

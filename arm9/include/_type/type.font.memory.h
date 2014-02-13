@@ -67,7 +67,7 @@ class _memoryFont : public _font{
 		}
 		
 		//! draw a Character!
-		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const ;
+		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const ;
 		
 };
 

@@ -8,7 +8,7 @@ class _windowBar : public _gadget
 {
 	public:
 		
-		_pixel bgColor;
+		_color bgColor;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn dragHandler( _event );
@@ -17,7 +17,7 @@ class _windowBar : public _gadget
 	public:
 		
 		//! Set background color of the handle
-		void setBgColor( _pixel col )
+		void setBgColor( _color col )
 		{
 			if( this->bgColor == col )
 				return;
@@ -26,10 +26,10 @@ class _windowBar : public _gadget
 		}
 		
 		//! Get the background color
-		_pixel getBgColor(){ return this->bgColor; }
+		_color getBgColor(){ return this->bgColor; }
 		
 		//! Ctor
-		_windowBar( _optValue<_length> height = ignore , _optValue<_pixel> bgColor = ignore , _style&& style = _style() );
+		_windowBar( _optValue<_length> height = ignore , _optValue<_color> bgColor = ignore , _style&& style = _style() );
 };
 
 #endif

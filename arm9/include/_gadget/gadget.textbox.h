@@ -14,8 +14,8 @@ class _textBox : public _gadget
 		};
 		
 		//! Farbe der Schrift
-		_pixel 			color;
-		_pixel 			bgColor;
+		_color 			color;
+		_color 			bgColor;
 		
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
@@ -70,16 +70,16 @@ class _textBox : public _gadget
 		void setFontSize( _u8 fontSize ){ if( this->fontSize == fontSize ) return; this->fontSize = fontSize; this->redraw(); }
 		
 		//! Set Text Color
-		void setColor( _pixel col ){ if( this->color == col ) return; this->color = col; this->redraw(); }
+		void setColor( _color col ){ if( this->color == col ) return; this->color = col; this->redraw(); }
 		
 		//! Get Text Color
-		_pixel getColor(){ return this->color; }
+		_color getColor(){ return this->color; }
 		
 		//! Set Text Color
-		void setBgColor( _pixel col ){ this->bgColor = col; this->redraw(); }
+		void setBgColor( _color col ){ this->bgColor = col; this->redraw(); }
 		
 		//! Get Text Color
-		_pixel getBgColor(){ return this->bgColor; }
+		_color getBgColor(){ return this->bgColor; }
 		
 		//! Align-setting
 		void setAlign( _align align ){ this->align = align; this->redraw(); }

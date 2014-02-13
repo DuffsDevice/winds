@@ -15,11 +15,11 @@ _callbackReturn _windowBar::refreshHandler( _event event )
 	
 	bP.fill( that->bgColor );
 	bP.drawHorizontalLine( 0 , 0 , myW , _system::getRTA().getControlForeground() );
-	bP.drawHorizontalLine( 0 , 1 , myW , COLOR_WHITE );
+	bP.drawHorizontalLine( 0 , 1 , myW , _color::white );
 	
 	if( that->parent )
 	{
-		_pixel col = _system::getRTA().getControlForeground();
+		_color col = _system::getRTA().getControlForeground();
 		
 		if( that->parent->isResizeableX() && that->parent->isResizeableY() )
 			bP.drawChar( myW - 8 , myH - 8 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
@@ -31,7 +31,7 @@ _callbackReturn _windowBar::refreshHandler( _event event )
 			return use_default;
 		
 		bP.drawVerticalLine( myW - 8 , 2 , myH - 2 , _system::getRTA().getControlForeground() );
-		bP.drawVerticalLine( myW - 7 , 2 , myH - 2 , COLOR_WHITE );
+		bP.drawVerticalLine( myW - 7 , 2 , myH - 2 , _color::white );
 	}
 	
 	return use_default;
@@ -73,9 +73,9 @@ _callbackReturn _windowBar::updateHandler( _event event )
 	return handled;
 }
 
-_windowBar::_windowBar( _optValue<_length> height , _optValue<_pixel> bgColor , _style&& style ) :
+_windowBar::_windowBar( _optValue<_length> height , _optValue<_color> bgColor , _style&& style ) :
 	_gadget( _gadgetType::windowbar , ignore , ignore , ignore , height.isValid() ? (_length)height : 8 , style | _styleAttr::draggable )
-	, bgColor( bgColor.isValid() ? (_pixel)bgColor : _system::getRTA().getControlBackground() )
+	, bgColor( bgColor.isValid() ? (_color)bgColor : _system::getRTA().getControlBackground() )
 {
 	this->setMinHeight( 8 );
 	

@@ -30,7 +30,7 @@ _length _memoryFont::getCharacterWidth( _char character , _u8 fontSize ) const
 	return this->charWidths[ character - this->firstChar ];
 }
 
-_length _memoryFont::drawCharacter( _pixelArray dest , _length destWidth , _coord posX , _coord posY , _char ch , _pixel color , _rect clip , _u8 fontSize ) const 
+_length _memoryFont::drawCharacter( _pixelArray dest , _length destWidth , _coord posX , _coord posY , _char ch , _color color , _rect clip , _u8 fontSize ) const 
 {
 	// If it's a Whitespace
 	if( ch == ' ' )

@@ -38,7 +38,7 @@ class _scSetupPage1 : public _view
 		{
 			// Label
 			this->lblChooseLanguage = new _label( 86 , 72 , ignore , ignore , _system::getLocalizedString("lbl_choose_language") );
-			this->lblChooseLanguage->setColor( RGB( 30 , 30 , 30 ) );
+			this->lblChooseLanguage->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 			viewParent->addChild( this->lblChooseLanguage );
 			
 			// Select
@@ -59,7 +59,7 @@ class _scSetupPage1 : public _view
 			
 			// Hint to click continue
 			this->lblClickToContinue = new _label( 71 , 6 , 180 , 9 , _system::getLocalizedString("lbl_to_continue_click_next") );
-			this->lblClickToContinue->setColor( RGB( 17 , 17 , 31 ) );
+			this->lblClickToContinue->setColor( _color::fromRGB( 17 , 17 , 31 ) );
 			this->lblClickToContinue->setAlign( _align::right );
 			viewParent->addChild( this->lblClickToContinue );
 		}

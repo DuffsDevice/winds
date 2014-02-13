@@ -8,7 +8,7 @@ class _resizeHandle : public _gadget
 {
 	private:
 		
-		_pixel bgColor;
+		_color bgColor;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn dragHandler( _event );
@@ -18,7 +18,7 @@ class _resizeHandle : public _gadget
 	public:
 		
 		//! Set background color of the handle
-		void setBgColor( _pixel col )
+		void setBgColor( _color col )
 		{
 			if( this->bgColor == col )
 				return;
@@ -27,10 +27,10 @@ class _resizeHandle : public _gadget
 		}
 		
 		//! Get the background color
-		_pixel getBgColor(){ return this->bgColor; }
+		_color getBgColor(){ return this->bgColor; }
 		
 		//! Ctor
-		_resizeHandle( _optValue<_pixel> bgColor = ignore , _style&& style = _style() );
+		_resizeHandle( _optValue<_color> bgColor = ignore , _style&& style = _style() );
 };
 
 #endif

@@ -24,7 +24,7 @@ _touch _gadgetScreen::adjustTouch( _touch touch )
 bool _gadgetScreen::touchInside( _touch touch )
 {
 	return _rect( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ).contains( touch.x , touch.y ) // Inside my coordinates
-		&& RGB_GETA( _gadget::getBitmap().getPixel( touch.x , touch.y ) ); // Check if this part of the bitmap is non-transparent
+		&& _color( _gadget::getBitmap().getPixel( touch.x , touch.y ) ).getAlpha(); // Check if this part of the bitmap is non-transparent
 }
 
 

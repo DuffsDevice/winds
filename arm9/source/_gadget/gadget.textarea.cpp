@@ -75,7 +75,7 @@ _callbackReturn _textArea::refreshHandler( _event event )
 				_length strWidthUntilCursor = ft->getStringWidth( val );
 				
 				// Draw Cursor
-				bP.drawVerticalLine( strWidthUntilCursor + x - 1 , y - 1 , ft->getAscent() + 2 , RGB( 31 , 0 , 0 ) );
+				bP.drawVerticalLine( strWidthUntilCursor + x - 1 , y - 1 , ft->getAscent() + 2 , _color::fromRGB( 31 , 0 , 0 ) );
 			}
 			
 			y += fontHeight + 1;
@@ -87,9 +87,9 @@ _callbackReturn _textArea::refreshHandler( _event event )
 	if( ret == not_handled || ret == use_default )
 	{
 		if( !that->isPressed() )
-			bP.drawRect( 0 , 0 , myW , myH , RGB( 13 , 16 , 23 ) );
+			bP.drawRect( 0 , 0 , myW , myH , _color::fromRGB( 13 , 16 , 23 ) );
 		else
-			bP.drawRect( 0 , 0 , myW , myH , RGB( 9 , 13 , 19 ) );
+			bP.drawRect( 0 , 0 , myW , myH , _color::fromRGB( 9 , 13 , 19 ) );
 	}
 	
 	return use_default;
@@ -311,8 +311,8 @@ _callbackReturn _textArea::mouseHandler( _event event )
 
 _textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
 	_gadget( _gadgetType::textarea , x , y , width , height , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
-	, color( RGB( 0 , 0 , 0 ) )
-	, bgColor( RGB( 31 , 31 , 31 ) )
+	, color( _color::fromRGB( 0 , 0 , 0 ) )
+	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, text( _system::getFont() , _system::getRTA().getDefaultFontSize() , width - _textArea::borderX * 2 , value )
 	, cursor( 0 )
 	, align( _align::left )

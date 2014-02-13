@@ -13,11 +13,11 @@ _callbackReturn _checkbox::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( NO_COLOR );
+	bP.fill( _color::transparent );
 	
 	//Border
 	if( that->isPressed() )
-		bP.drawRect( 0 	, 0 , 9 , 9 , RGB( 4 , 11 , 15 ) );
+		bP.drawRect( 0 	, 0 , 9 , 9 , _color::fromRGB( 4 , 11 , 15 ) );
 	else
 		bP.drawRect( 0 	, 0 , 9 , 9 , 54829 );
 	

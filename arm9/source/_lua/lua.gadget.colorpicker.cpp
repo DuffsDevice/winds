@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_colorpicker::_lua_colorpicker( lua_State* L ) :
-	_lua_gadget( new _colorPicker( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<_pixel>( L , 5 , COLOR_BLUE ) , lightcheck<_style>( L , 6 , _style() ) ) )
+	_lua_gadget( new _colorPicker( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<_color>( L , 5 , _color::blue ) , lightcheck<_style>( L , 6 , _style() ) ) )
 {}
 
 //! Lua-button

@@ -16,7 +16,7 @@ class _lua_color : public _color {
 		_lua_color( _color rc );
 		
 		//! Constructor
-		_lua_color( lua_State* L );
+		_lua_color(lua_State* L);
 		
 		//! setR
 		int setR(lua_State* L);
@@ -52,11 +52,34 @@ class _lua_color : public _color {
 		int adjustHSL(lua_State* L);
 		
 		
+		//! fromHex
+		static int fromHex(lua_State* L);
+		
+		//! fromRGB
+		static int fromRGB(lua_State* L);
+		
+		//! fromRGB255
+		static int fromRGB8(lua_State* L);
+		
+		//! fromBW
+		static int fromBW(lua_State* L);
+		
+		//! fromBW255
+		static int fromBW8(lua_State* L);
+		
+		//! fromHSL
+		static int fromHSL(lua_State* L);
+		
+		//! mix
+		static int mix(lua_State* L);
+		
+		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_color>::FunctionType methods[];
-		static Lunar<_lua_color>::PropertyType properties[];
-	
+		static Lunar<_lua_color>::FunctionType	methods[];
+		static Lunar<_lua_color>::PropertyType	properties[];
+		static Lunar<_lua_color>::StaticType	staticmethods[];
+		
 };
 
 #endif

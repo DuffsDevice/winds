@@ -4,7 +4,7 @@
 #include "_type/type.color.h"
 #include "func.gridcreator.h"
 
-_calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _pixel bgColor , _style&& style )
+_calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _color bgColor , _style&& style )
 	: _gadget( _gadgetType::button , x , y , width , height , (_style&&)style )
 	, _singleValueGroup<_stickyButton>()
 	, curMonth( month )
@@ -131,7 +131,7 @@ _callbackReturn _calendar::refreshHandler( _event event )
 	bP.fill( that->bgColor );
 	
 	// Draw Month label
-	bP.drawHorizontalLine( 0 , that->getMonthSelectorHeight() - 1 , bP.getWidth() , _color(that->bgColor).getL() > 70 ? COLOR_BLACK : COLOR_WHITE );
+	bP.drawHorizontalLine( 0 , that->getMonthSelectorHeight() - 1 , bP.getWidth() , _color(that->bgColor).getL() > 70 ? _color::black : _color::white );
 	
 	return use_default;
 }
@@ -278,7 +278,7 @@ _callbackReturn _calendar::updateHandler( _event event )
 	this->monthLabel->setStrValue( _system::getLocalizedMonth( this->curMonth - 1 ).substr( 0 , 3 ) + " " + int2string( this->curYear ) );
 	this->monthLabel->setDimensions( _rect( arrowWidth + 2 , 1 , this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 ) );
 	this->monthLabel->setFont( ft );
-	this->monthLabel->setColor( _color(this->bgColor).getL() > 70 ? COLOR_BLACK : COLOR_WHITE );
+	this->monthLabel->setColor( _color(this->bgColor).getL() > 70 ? _color::black : _color::white );
 	
 	
 	// Remove Buttons again

@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_resizehandle::_lua_resizehandle( lua_State* L ) : 
-	_lua_gadget( new _resizeHandle( optcheck<_pixel>( L , 1 ) , lightcheck<_style>( L , 2 ) ) )
+	_lua_gadget( new _resizeHandle( optcheck<_color>( L , 1 ) , lightcheck<_style>( L , 2 ) ) )
 { }
 
 //! Lua-window

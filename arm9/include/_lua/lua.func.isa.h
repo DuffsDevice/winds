@@ -19,6 +19,7 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , char* dummy){ return lua_isnumber( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , unsigned char* dummy){ return lua_isnumber( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , short int* dummy){ return lua_isnumber( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned short int* dummy){ return lua_isnumber( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , long long int* dummy){ return lua_isnumber( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , unsigned long long int* dummy){ return lua_isnumber( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , bool* dummy ){
@@ -53,10 +54,7 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _valign* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _language* dummy ){ return lua_isstring( state , index ); }
 		static unused inline bool	is_a( lua_State* state , int index , _programArgs* dummy ){ return lua_isstring( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , _pixel* dummy ){
-			int type = get_type( state , index );
-			return type == LUA_TNUMBER || type == LUA_TSTRING;
-		}
+		bool						is_a( lua_State* state , int index , _color* dummy );
 		
 		// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T>

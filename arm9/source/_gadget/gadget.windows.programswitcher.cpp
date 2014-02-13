@@ -117,9 +117,9 @@ _callbackReturn _windowsProgramSwitcher::refreshHandler( _event event )
 	
 	bP.fill( _system::getRTA().getControlBackground() );
 	
-	bP.drawHorizontalLine( 0 , 0 , myW , COLOR_WHITE );
+	bP.drawHorizontalLine( 0 , 0 , myW , _color::white );
 	bP.drawHorizontalLine( 0 , myH - 1 , myW , _system::getRTA().getControlForeground() );
-	bP.drawVerticalLine( 0 , 0 , myH , COLOR_WHITE );
+	bP.drawVerticalLine( 0 , 0 , myH , _color::white );
 	bP.drawVerticalLine( myW - 1 , 0 , myH , _system::getRTA().getControlForeground() );
 	
 	_imageGadget* img = nullptr;

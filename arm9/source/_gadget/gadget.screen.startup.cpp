@@ -6,11 +6,11 @@
 
 #include <nds/arm9/console.h>
 
-_pixel SUpalette[] = { 
-	RGB( 0 , 6 , 19 ) , RGB( 0 , 6 , 15 ) , RGB( 21 , 24 , 31 ) , // --- Topper Bar ( Main color , dark Main , bright Accent )
-	RGBHEX( 0x5A7EDC ) , // Bright Background
-	RGBHEX( 0x3733ac ) , RGBHEX( 0x0f319f ) , RGBHEX( 0xd9946b ) , // Bottom Bar ( Main - left side , right side , orange accent )
-	RGBHEX( 0x7193EB )
+_color SUpalette[] = { 
+	_color::fromRGB( 0 , 6 , 19 ) , _color::fromRGB( 0 , 6 , 15 ) , _color::fromRGB( 21 , 24 , 31 ) , // --- Topper Bar ( Main color , dark Main , bright Accent )
+	_color::fromHex( 0x5A7EDC ) , // Bright Background
+	_color::fromHex( 0x3733ac ) , _color::fromHex( 0x0f319f ) , _color::fromHex( 0xd9946b ) , // Bottom Bar ( Main - left side , right side , orange accent )
+	_color::fromHex( 0x7193EB )
 };
 
 _u8 accntPos = 110;
