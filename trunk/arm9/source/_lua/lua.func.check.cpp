@@ -42,9 +42,9 @@ namespace _luafunc
 			int type = get_type( L , index );
 			
 			if(	type == LUA_TSTRING )
-				return _color( _luafunc::detail::check( L , 1 , (string*)nullptr ) );
+				return string( lua_tostring( L , index ) );
 			else if( type == LUA_TNUMBER )
-				return _color( _luafunc::detail::check( L , 1 , (_pixel*)nullptr ) );
+				return _pixel( luaL_checkint( L , index ) );
 			
 			_lua_color* c = Lunar<_lua_color>::lightcheck( L , index );
 			return c ? *c : _color();

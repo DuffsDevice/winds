@@ -1,5 +1,5 @@
 #include "_type/type.color.h"
-
+#include <stdio.h>
 _color::_color( const string& name )
 {
 	static _map<string,_pixel> string2color = {
