@@ -7,6 +7,7 @@
 using "System.Event"
 using "Drawing.Bitmap"
 using "Drawing.Font"
+using "Drawing.Color"
 using "UI.Gadget"
 using "UI.Button"
 using "UI.Label"
@@ -45,7 +46,7 @@ function main()
 	-- Create Label
 	label = Label( 1 , 1 , winWidth - 3 , 10 , CURNUMBER )
 	label.align = "right"
-	label.bgColor = System.rgb( 27 , 29 , 31 )
+	label.bgColor = Color.fromRGB( 27 , 29 , 31 )
 	
 	--------------------
 	-- Create Buttons --
@@ -278,7 +279,7 @@ function solve()
 end
 
 function getLogo()
-	local col = System.rgb( 27 , 27 , 0 )
+	local col = Color.fromRGB( 27 , 27 , 0 )
 	local logo = Bitmap( 6 , 6 , "black" )
 	logo.drawVerticalLine( 1 , 0 , 6 , col )
 	logo.drawHorizontalLine( 2 , 0 , 2 , col )

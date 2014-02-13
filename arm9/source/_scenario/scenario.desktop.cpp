@@ -54,10 +54,10 @@ _scDesktop::_scDesktop()
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
 	_system::executeCommand("%SYSTEM%/explorer.exe");
-	//_system::executeCommand("%SYSTEM%/exampleprogram.exe");
-	//_system::executeCommand("%SYSTEM%/paint.exe");
-	//_system::executeCommand("%SYSTEM%/pong.exe");
-	//_system::executeCommand("%SYSTEM%/calculator.exe");
+	//_system::executeCommand("%WINDIR%/accessories/exampleprogram.exe");
+	//_system::executeCommand("%WINDIR%/accessories/paint.exe");
+	//_system::executeCommand("%WINDIR%/accessories/calculator.exe");
+	//_system::executeCommand("%WINDIR%/games/pong.exe");
 	
 	//(new _fileSaveDialog( {
 	//	{ 0 , make_tuple("Windows-Bitmap" , "bmp") } ,

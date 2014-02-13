@@ -4,7 +4,6 @@
 --	DESC = Application to modify Images
 --	COPYRIGHT = (C) 2014
 --	LANG = neutral
-using "System.Color"
 using "System.Event"
 using "System.ImageFile"
 using "System.Direntry"
@@ -14,6 +13,7 @@ using "Drawing.Bitmap"
 using "Drawing.BitmapPort"
 using "Drawing.Area"
 using "Drawing.Rect"
+using "Drawing.Color"
 using "UI.Gadget"
 using "UI.Window"
 using "UI.ImageGadget"
@@ -31,11 +31,11 @@ local windowTitle = System.getLocalizedString("lbl_unnamed")
 
 function main( filename )
 
-	local wndIcon = Bitmap( 6 , 6 )
-	wndIcon.drawFilledRect( 3 , 0 , 3 , 3 , System.rgb255( 181 , 230 , 29 ) )
-	wndIcon.drawFilledRect( 3 , 3 , 3 , 3 , System.rgb255( 255 , 210 , 14 ) )
-	wndIcon.drawFilledRect( 0 , 0 , 3 , 3 , System.rgb255( 255 , 127 , 39 ) )
-	wndIcon.drawFilledRect( 0 , 3 , 3 , 3 , System.rgb255( 153 , 217 , 255 ) )
+	local wndIcon = Bitmap( 6 , 6 , "red" )
+	wndIcon.drawFilledRect( 3 , 0 , 3 , 3 , Color.fromRGB8( 181 , 230 , 29 ) )
+	wndIcon.drawFilledRect( 3 , 3 , 3 , 3 , Color.fromRGB8( 255 , 210 , 14 ) )
+	wndIcon.drawFilledRect( 0 , 0 , 3 , 3 , Color.fromRGB8( 255 , 127 , 39 ) )
+	wndIcon.drawFilledRect( 0 , 3 , 3 , 3 , Color.fromRGB8( 153 , 217 , 255 ) )
 	
 	windowBar = WindowBar()
 	
