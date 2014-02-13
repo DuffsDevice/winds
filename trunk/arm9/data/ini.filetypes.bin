@@ -1,6 +1,0 @@
-[filetypemapper]
-jpg = %SYSTEM%/paint.exe -$F
-png = %SYSTEM%/paint.exe -$F
-bmp = %SYSTEM%/paint.exe -$F
-
-[filetypeicon]

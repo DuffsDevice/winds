@@ -12,10 +12,10 @@
 
 // Resources
 #include "_resource/resource.image.keyboard.grip.h"
-#include "sound_click_bin.h"
+#include "sound_click_pcm.h"
 
 // Click Sound
-_staticSound _keyboard::clickSound = _staticSound( _channelFormat::bit8 , 44100 , sound_click_bin , sound_click_bin_size );
+_staticSound _keyboard::clickSound = _staticSound( _channelFormat::bit8 , 44100 , sound_click_pcm , sound_click_pcm_size );
 
 void _keyboard::playClickSound(){
 	clickSound.setFrequency( 36600 + rand() % 15000 );

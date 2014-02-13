@@ -1,9 +1,9 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.system.h"
-#include "sound_navigation_bin.h"
+#include "sound_navigation_pcm.h"
 
 // Click Sound
-_staticSound _fileView::navigationSound = _staticSound( _channelFormat::bit8 , 44100 , sound_navigation_bin , sound_navigation_bin_size );
+_staticSound _fileView::navigationSound = _staticSound( _channelFormat::bit8 , 44100 , sound_navigation_pcm , sound_navigation_pcm_size );
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _optValue<_length> width , _optValue<_length> height , string path
