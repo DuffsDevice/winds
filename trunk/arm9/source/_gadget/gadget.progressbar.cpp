@@ -4,8 +4,18 @@
 #include "_type/type.callback.derives.h"
 
 
-_pixel paletteBlue[4] = { RGB255( 94 , 119 , 238 ) , RGB255( 125 , 145 , 210 ) , RGB255( 94 , 119 , 238 ) , RGB255( 44 , 62 , 160 ) };
-_pixel paletteNormal[4] = { RGB255( 154 , 233 , 156 ) , RGB255( 78 , 218 , 80 ) , RGB255( 46 , 211 , 49 ) , RGB255( 121 , 227 , 123 ) };
+_pixel paletteBlue[4] = {
+	_color::fromRGB8( 94 , 119 , 238 )
+	, _color::fromRGB8( 125 , 145 , 210 )
+	, _color::fromRGB8( 94 , 119 , 238 )
+	, _color::fromRGB8( 44 , 62 , 160 )
+};
+_pixel paletteNormal[4] = {
+	_color::fromRGB8( 154 , 233 , 156 )
+	, _color::fromRGB8( 78 , 218 , 80 )
+	, _color::fromRGB8( 46 , 211 , 49 )
+	, _color::fromRGB8( 121 , 227 , 123 )
+};
 
 
 _callbackReturn _progressBar::refreshHandler( _event event ){
@@ -18,13 +28,13 @@ _callbackReturn _progressBar::refreshHandler( _event event ){
 	_coord myW = bP.getWidth();
 	_coord myH = bP.getHeight();
 	
-	bP.drawRect( 0 , 0 , myW , myH , RGB( 16 , 16 , 16 ) );
+	bP.drawRect( 0 , 0 , myW , myH , _color::fromRGB( 16 , 16 , 16 ) );
 	
-	bP.drawPixel( 0 , 0 , COLOR_TRANSPARENT );
-	bP.drawPixel( 0 , myH - 1 , COLOR_TRANSPARENT );
-	bP.drawPixel( myW - 1 , 0 , COLOR_TRANSPARENT );
-	bP.drawPixel( myW - 1 , myH - 1 , COLOR_TRANSPARENT );
-	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->blue ? COLOR_BLACK : COLOR_WHITE );
+	bP.drawPixel( 0 , 0 , _color::transparent );
+	bP.drawPixel( 0 , myH - 1 , _color::transparent );
+	bP.drawPixel( myW - 1 , 0 , _color::transparent );
+	bP.drawPixel( myW - 1 , myH - 1 , _color::transparent );
+	bP.drawFilledRect( 1 , 1 , myW - 2 , myH - 2 , that->blue ? _color::black : _color::white );
 	
 	_pixelArray palette = nullptr;
 	

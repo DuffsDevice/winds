@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_calendar::_lua_calendar( lua_State* L ) :
-	_lua_gadget( new _calendar( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , check<int>( L , 5 ) , check<int>( L , 6 ) , check<int>( L , 7 ) , lightcheck<_pixel>( L , 8 , COLOR_WHITE ) , lightcheck<_style>( L , 8 ) ) )
+	_lua_gadget( new _calendar( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , check<int>( L , 5 ) , check<int>( L , 6 ) , check<int>( L , 7 ) , lightcheck<_color>( L , 8 , _color::white ) , lightcheck<_style>( L , 8 ) ) )
 {}
 
 //! Lua-button

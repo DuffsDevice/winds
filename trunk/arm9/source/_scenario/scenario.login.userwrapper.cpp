@@ -16,12 +16,12 @@ _callbackReturn _userWrapper::textboxRefreshHandler( _event event )
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	bP.drawRect( 0 , 0 , myW , myH , COLOR_WHITE );
+	bP.drawRect( 0 , 0 , myW , myH , _color::white );
 	
-	bP.drawPixel( myW - 1 , myH - 1 , NO_COLOR );
-	bP.drawPixel( myW - 1 , 0 , NO_COLOR );
-	bP.drawPixel( 0 , myH - 1 , NO_COLOR );
-	bP.drawPixel( 0 , 0 , NO_COLOR );
+	bP.drawPixel( myW - 1 , myH - 1 , _color::transparent );
+	bP.drawPixel( myW - 1 , 0 , _color::transparent );
+	bP.drawPixel( 0 , myH - 1 , _color::transparent );
+	bP.drawPixel( 0 , 0 , _color::transparent );
 	
 	return use_default;
 }
@@ -33,31 +33,31 @@ _callbackReturn _userWrapper::refreshHandler( _event event )
 	// Get bitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( RGBHEX( 0x5A7EDC ) );
+	bP.fill( _color::fromHex( 0x5A7EDC ) );
 	
 	if( that->hasFocus() )
 	{
-		bP.drawVerticalLine( 0 , 3 , 14 , RGB255( 165 , 178 , 234 ) );
+		bP.drawVerticalLine( 0 , 3 , 14 , _color::fromRGB8( 165 , 178 , 234 ) );
 		
 		// Background
-		bP.drawFilledRect( 1 , 1 , 16 , 18 , RGB255( 18 , 66 , 166 ) );
-		bP.drawHorizontalGradient( 17 , 1 , 87 - 15 , 18 , RGB255( 18 , 66 , 166 ) , RGBHEX( 0x5A7EDC ) );
+		bP.drawFilledRect( 1 , 1 , 16 , 18 , _color::fromRGB8( 18 , 66 , 166 ) );
+		bP.drawHorizontalGradient( 17 , 1 , 87 - 15 , 18 , _color::fromRGB8( 18 , 66 , 166 ) , _color::fromHex( 0x5A7EDC ) );
 		
 		// LeftTop border
-		bP.drawHorizontalLine( 0 , 2 , 2 , RGB255( 112 , 142 , 215 ) );
-		bP.drawVerticalLine( 2 , 0 , 2 , RGB255( 112 , 142 , 215 ) );
-		bP.drawPixel( 1 , 1 , RGB255( 165 , 178 , 234 ) );
+		bP.drawHorizontalLine( 0 , 2 , 2 , _color::fromRGB8( 112 , 142 , 215 ) );
+		bP.drawVerticalLine( 2 , 0 , 2 , _color::fromRGB8( 112 , 142 , 215 ) );
+		bP.drawPixel( 1 , 1 , _color::fromRGB8( 165 , 178 , 234 ) );
 		
 		// LeftBottom border
-		bP.drawHorizontalLine( 0 , 17 , 2 , RGB255( 112 , 142 , 215 ) );
-		bP.drawVerticalLine( 2 , 18 , 2 , RGB255( 112 , 142 , 215 ) );
-		bP.drawPixel( 1 , 18 , RGB255( 165 , 178 , 234 ) );
+		bP.drawHorizontalLine( 0 , 17 , 2 , _color::fromRGB8( 112 , 142 , 215 ) );
+		bP.drawVerticalLine( 2 , 18 , 2 , _color::fromRGB8( 112 , 142 , 215 ) );
+		bP.drawPixel( 1 , 18 , _color::fromRGB8( 165 , 178 , 234 ) );
 		
 		// Top Line
-		bP.drawHorizontalGradient( 3 , 0 , 87 , 1 , RGB255( 165 , 178 , 234 ) , RGBHEX( 0x5A7EDC ) );
+		bP.drawHorizontalGradient( 3 , 0 , 87 , 1 , _color::fromRGB8( 165 , 178 , 234 ) , _color::fromHex( 0x5A7EDC ) );
 		
 		// Bottom Line
-		bP.drawHorizontalGradient( 3 , 19 , 87 , 1 , RGB255( 165 , 178 , 234 ) , RGBHEX( 0x5A7EDC ) );
+		bP.drawHorizontalGradient( 3 , 19 , 87 , 1 , _color::fromRGB8( 165 , 178 , 234 ) , _color::fromHex( 0x5A7EDC ) );
 	}
 	
 	return use_default;
@@ -144,7 +144,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	this->addChild( img );
 	
 	_label* lbl = new _label( 20 , 4 , ignore , ignore , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
-	lbl->setColor( COLOR_WHITE );
+	lbl->setColor( _color::white );
 	this->addChild( lbl );
 	
 	// Refresh

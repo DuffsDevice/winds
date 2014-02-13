@@ -100,8 +100,8 @@ _callbackReturn _counter::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( COLOR_WHITE ); // reset Color
-	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , RGB( 9 , 13 , 19 ) );
+	bP.fill( _color::white ); // reset Color
+	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _color::fromRGB( 9 , 13 , 19 ) );
 	
 	return use_default;
 }

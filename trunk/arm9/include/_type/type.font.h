@@ -3,6 +3,7 @@
 
 #include "_type/type.h"
 #include "_type/type.rect.h"
+#include "_type/type.color.h"
 
 class _font{
 
@@ -77,7 +78,7 @@ class _font{
 		}
 		
 		//! draw a character!
-		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _pixel color , _rect clip , _u8 fontSize = 0 ) const = 0;
+		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		
 		//! Returns a font, created from a file
 		static const _font* fromFile( string path );

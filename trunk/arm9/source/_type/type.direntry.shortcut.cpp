@@ -41,7 +41,7 @@ _bitmap _shortcut::getFileImage()
 	
 	//! Creaty my icon
 	this->image = _bitmap( fOH , fOH );
-	this->image.reset( NO_COLOR );
+	this->image.reset( _color::transparent );
 	
 	_direntry fl = this->getDestination();
 	

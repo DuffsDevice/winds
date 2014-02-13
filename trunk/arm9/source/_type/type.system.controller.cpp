@@ -97,26 +97,26 @@ void _systemController::main()
 			unsigned int s;
 			for( s = FreeMemSeg ; s < 4096 * 1024 ; s += FreeMemSeg )
 			{
-				void *ptr = malloc( FreeMemSeg );
+				void *ptr = malloc(s);
 				if( !ptr )
 				{
 					printf("\x1b[2J");
 					printf("free: %d\n",s-FreeMemSeg);
 					break;
 				}
+				free( ptr );
 			}
-			while(true);
 		}
 		#ifdef DEBUG_PROFILING
-		if( i > 200 )
+		if( i == 200 )
 		{
 			_codeAnalyzer::printResults();
-			while(true);
+			_system::submit();
 		}
 		#endif
 	}
 }
 
-_systemState 	_systemController::state = _systemState::empty; // I know, that one is quite long ;)
+_systemState 	_systemController::state = _systemState::empty;
 bool 			_systemController::dirty = false;
 _scenario*		_systemController::scenario	= nullptr;

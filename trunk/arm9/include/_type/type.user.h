@@ -38,8 +38,8 @@ class _user : public _iniFile
 		_u8		fOH; // fileObjectHeight
 		_u8		lIH; // listItemHeight
 		_u8		sFE; // showFileExtension
-		_pixel	sBTC;// startButtonTextColor
-		_pixel	dTC; // desktopColor
+		_color	sBTC;// startButtonTextColor
+		_color	dTC; // desktopColor
 		bool	mKF; // magnifyKeyboardFocus
 		_length	cOH; // counterObjectHeight
 		_length	sOH; // selectObjectHeight

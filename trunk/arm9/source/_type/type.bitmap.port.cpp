@@ -1,6 +1,6 @@
 #include "_type/type.bitmap.port.h"
 
-void _bitmapPort::drawPixel( _coord x , _coord y , _pixel color )
+void _bitmapPort::drawPixel( _coord x , _coord y , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -12,7 +12,7 @@ void _bitmapPort::drawPixel( _coord x , _coord y , _pixel color )
 	}
 }
 
-void _bitmapPort::fill( _pixel color )
+void _bitmapPort::fill( _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -24,7 +24,7 @@ void _bitmapPort::fill( _pixel color )
 	}
 }
 
-void _bitmapPort::replaceColor( _pixel color , _pixel replacement )
+void _bitmapPort::replaceColor( _color color , _color replacement )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -36,7 +36,7 @@ void _bitmapPort::replaceColor( _pixel color , _pixel replacement )
 	}
 }
 
-void _bitmapPort::drawVerticalLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmapPort::drawVerticalLine( _coord x , _coord y , _length length , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -48,7 +48,7 @@ void _bitmapPort::drawVerticalLine( _coord x , _coord y , _length length , _pixe
 	}
 }
 
-void _bitmapPort::drawHorizontalLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmapPort::drawHorizontalLine( _coord x , _coord y , _length length , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -60,7 +60,7 @@ void _bitmapPort::drawHorizontalLine( _coord x , _coord y , _length length , _pi
 	}
 }
 
-void _bitmapPort::drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmapPort::drawVerticalDottedLine( _coord x , _coord y , _length length , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -72,7 +72,7 @@ void _bitmapPort::drawVerticalDottedLine( _coord x , _coord y , _length length ,
 	}
 }
 
-void _bitmapPort::drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color )
+void _bitmapPort::drawHorizontalDottedLine( _coord x , _coord y , _length length , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -84,7 +84,7 @@ void _bitmapPort::drawHorizontalDottedLine( _coord x , _coord y , _length length
 	}
 }
 
-void _bitmapPort::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color )
+void _bitmapPort::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -96,7 +96,7 @@ void _bitmapPort::drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pix
 	}
 }
 
-void _bitmapPort::drawRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmapPort::drawRect( _coord x , _coord y , _length w , _length h , _color color )
 {			
 	for( const _rect& rc : clippingRects )
 	{
@@ -108,7 +108,7 @@ void _bitmapPort::drawRect( _coord x , _coord y , _length w , _length h , _pixel
 	}
 }
 
-void _bitmapPort::drawDottedRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmapPort::drawDottedRect( _coord x , _coord y , _length w , _length h , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -120,7 +120,7 @@ void _bitmapPort::drawDottedRect( _coord x , _coord y , _length w , _length h , 
 	}
 }
 
-void _bitmapPort::drawFilledRect( _coord x , _coord y , _length w , _length h , _pixel color )
+void _bitmapPort::drawFilledRect( _coord x , _coord y , _length w , _length h , _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -132,7 +132,7 @@ void _bitmapPort::drawFilledRect( _coord x , _coord y , _length w , _length h , 
 	}
 }
 
-void _bitmapPort::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
+void _bitmapPort::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -144,7 +144,7 @@ void _bitmapPort::drawVerticalGradient( _coord x , _coord y , _length w , _lengt
 	}
 }
 
-void _bitmapPort::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _pixel fromColor , _pixel toColor )
+void _bitmapPort::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -156,7 +156,7 @@ void _bitmapPort::drawHorizontalGradient( _coord x , _coord y , _length w , _len
 	}
 }
 
-void _bitmapPort::drawCircle( _coord xc, _coord yc, _length radius, _pixel color )
+void _bitmapPort::drawCircle( _coord xc, _coord yc, _length radius, _color color )
 {			
 	for( const _rect& rc : clippingRects )
 	{
@@ -168,7 +168,7 @@ void _bitmapPort::drawCircle( _coord xc, _coord yc, _length radius, _pixel color
 	}
 }
 
-void _bitmapPort::drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color )
+void _bitmapPort::drawFilledCircle( _coord xc, _coord yc, _length radius, _color color )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -180,7 +180,7 @@ void _bitmapPort::drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel
 	}
 }
 
-void _bitmapPort::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color)
+void _bitmapPort::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color color)
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -192,7 +192,7 @@ void _bitmapPort::drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixe
 	}
 }
 
-void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color)
+void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _color color)
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -204,7 +204,7 @@ void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b,
 	}
 }
 
-void _bitmapPort::drawString( _coord x0 , _coord y0 , const _font* font , const char* str , _pixel color , _u8 fontSize )
+void _bitmapPort::drawString( _coord x0 , _coord y0 , const _font* font , const char* str , _color color , _u8 fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -216,7 +216,7 @@ void _bitmapPort::drawString( _coord x0 , _coord y0 , const _font* font , const 
 	}
 }
 
-_length _bitmapPort::drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize )
+_length _bitmapPort::drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _color color , _u8 fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{

@@ -240,7 +240,7 @@ _callbackReturn _scrollBar::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( COLOR_WHITE );
+	bP.fill( _color::white );
 	
 	// Show Scrollbar-Backgrounds
 	if( that->dim == _dimension::horizontal )

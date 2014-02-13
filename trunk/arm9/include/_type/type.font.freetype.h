@@ -26,7 +26,7 @@ class _freetypeFont : private _direntry , public _font
 		
 		//! draw a Character!
 		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y
-							, _char character , _pixel color , _rect clip , _u8 fontSize = 8 ) const ITCM_CODE ;
+							, _char character , _color color , _rect clip , _u8 fontSize = 8 ) const ITCM_CODE ;
 		
 		//! Get the CharacterWidth related to a specific character
 		_length getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;

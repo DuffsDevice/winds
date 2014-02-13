@@ -17,7 +17,7 @@ _callbackReturn _windowMenu::refreshHandler( _event event )
 	_length myW = bP.getWidth();
 	
 	bP.fill( _system::getRTA().getControlBackground() );
-	bP.drawHorizontalLine( 0 , myH - 2 , myW , COLOR_WHITE );
+	bP.drawHorizontalLine( 0 , myH - 2 , myW , _color::white );
 	bP.drawHorizontalLine( 0 , myH - 1 , myW , _system::getRTA().getControlForeground() );
 	
 	return use_default;

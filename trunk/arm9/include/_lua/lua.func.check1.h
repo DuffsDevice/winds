@@ -20,6 +20,7 @@ namespace _luafunc
 		static unused inline unsigned int			check( lua_State* state , int index , long long int* dummy ){ return luaL_checknumber( state , index ); }
 		static unused inline unsigned int			check( lua_State* state , int index , unsigned long long int* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline short int				check( lua_State* state , int index , short int* dummy ){ return luaL_checkint( state , index ); }
+		static unused inline unsigned short int		check( lua_State* state , int index , unsigned short int* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline char					check( lua_State* state , int index , char* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline unsigned char			check( lua_State* state , int index , unsigned char* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline bool					check( lua_State* state , int index , bool* dummy ){
@@ -54,11 +55,7 @@ namespace _luafunc
 		static unused inline _language				check( lua_State* state , int index , _language* dummy ){ return string2language[ luaL_checkstring( state , index ) ]; }
 		static unused inline _timeAttr				check( lua_State* state , int index , _timeAttr* dummy ){ return string2timeAttr[ luaL_checkstring( state , index ) ]; }
 		static unused inline _style					check( lua_State* state , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( state , index ) ); return style; }
-		static unused inline _pixel					check( lua_State* state , int index , _pixel* dummy ){
-			if( lua_isnumber( state , index ) )
-				return lua_tointeger( state , index );
-			return string2color[ luaL_checkstring( state , index ) ];
-		}
+		_color										check( lua_State* state , int index , _color* dummy );
 		template<typename T>
 		static unused inline _optValue<T>			check( lua_State* state , int index , _optValue<T>* dummy ){
 			if( is_a( state , index , (T*)nullptr ) )

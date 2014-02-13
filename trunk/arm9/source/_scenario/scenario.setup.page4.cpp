@@ -53,15 +53,15 @@ void _scSetupPage4::create( _gadget* viewParent )
 {
 	// Title
 	this->lblTitle = new _label( 13 , 28 , ignore , ignore , _system::getLocalizedString("lbl_profile") );
-	this->lblTitle->setColor( RGB( 30 , 30 , 30 ) );
+	this->lblTitle->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	this->lblTitle->setFont( _system::getFont( "ArialBlack13" ) );
 	viewParent->addChild( this->lblTitle );
 	
 	// Labels for both the profile name textbox and the profile icon
 	this->lblName = new _label( 20 , 60 , ignore , ignore , _system::getLocalizedString("txt_name") );
 	this->lblIcon = new _label( 20 , 90 , ignore , ignore , _system::getLocalizedString("txt_profile_icon") );
-	this->lblName->setColor( RGB( 30 , 30 , 30 ) );
-	this->lblIcon->setColor( RGB( 30 , 30 , 30 ) );
+	this->lblName->setColor( _color::fromRGB( 30 , 30 , 30 ) );
+	this->lblIcon->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	viewParent->addChild( this->lblName );
 	viewParent->addChild( this->lblIcon );
 	
@@ -146,22 +146,11 @@ _callbackReturn _scSetupPage4::profileIconDrawHandler( _event event )
 		{
 			for (_int j = 0; j != iconBitmap.getHeight() ; j++ )
 			{
-				_pixel color = iconBitmap.getPixel( i , j );
-				
-				// Extract individual components
-				_u8 r = ( color >>  0 ) & 31;
-				_u8 g = ( color >>  5 ) & 31;
-				_u8 b = ( color >> 10 ) & 31;
-				
-				r = ( r + RGB_GETR( RGBHEX( 0x5A7EDC ) ) ) >> 1;
-				g = ( g + RGB_GETG( RGBHEX( 0x5A7EDC ) ) ) >> 1;
-				b = ( b + RGB_GETB( RGBHEX( 0x5A7EDC ) ) ) >> 1;
-				
-				// Transform back to triplette
-				color = RGB( r , g , b );
+				_color color	= iconBitmap.getPixel( i , j );
+				_color bgColor	= _color::fromHex( 0x5A7EDC );
 				
 				// Plot the pixel
-				bP.drawPixel( i , j , color );
+				bP.drawPixel( i , j , _color::mix( color , bgColor , 16 ) );
 			}
 		}
 	}

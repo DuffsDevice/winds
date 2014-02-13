@@ -78,7 +78,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 				_u8 g = *source++;
 				_u8 b = *source++;
 				_u8 a = *source++;
-				*base++ = RGB255(r,g,b,a);
+				*base++ = _color::fromRGB8(r,g,b,a);
 			}while( --size > 0 );
 		}
 		
@@ -118,7 +118,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 					_u8 r = *rgb++;
 					_u8 g = *rgb++;
 					_u8 b = *rgb++;
-					*dest++ = RGB255(r,g,b);
+					*dest++ = _color::fromRGB8(r,g,b);
 					size -= 3;
 				}while( size > 0 );
 			}
@@ -129,7 +129,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 				_pixelArray dest = result.getBitmap();
 				
 				do{
-					*dest++ = BW255( *rgb++ );
+					*dest++ = _color::fromBW8( *rgb++ );
 				}while( --size > 0 );
 			}
 		}
@@ -206,7 +206,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 				_u8 g = *source++;
 				_u8 b = *source++;
 				_u8 a = *source++;
-				*base++ = RGB255(r,g,b,a);
+				*base++ = _color::fromRGB8(r,g,b,a);
 			}while( --size > 0 );
 			
 			delete[] pixeldata;
@@ -250,7 +250,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		}
 		
 		if( !this->bufferedGifBitmap )
-			this->bufferedGifBitmap = new _bitmap( gifAnim->width , gifAnim->height , NO_COLOR );
+			this->bufferedGifBitmap = new _bitmap( gifAnim->width , gifAnim->height , _color::transparent );
 		
 		// Limit Page Number
 		if( gifAnim->frame_count <= page )
@@ -273,7 +273,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		// Copy source bitmap to destination
 		_length numPixels = gifAnim->height * gifAnim->width;
 		do{
-			*dest++ = RGB255( source[0] , source[1] , source[2] , source[3] );
+			*dest++ = _color::fromRGB8( source[0] , source[1] , source[2] , source[3] );
 			source += 4;
 		}while( --numPixels > 0 );
 		
@@ -502,10 +502,11 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompre
 			_u8* tempBuffer = buffer;
 			_pixelArray data = source.getBitmap();
 			do{
-				tempBuffer[0] = RGB_GETR(*data)<<3;
-				tempBuffer[1] = RGB_GETG(*data)<<3;
-				tempBuffer[2] = RGB_GETB(*data)<<3;
-				tempBuffer[3] = RGB_GETA(*data++)<<7; // Expand 1bit Alpha to 8bits
+				_color col = _color(*data++);
+				tempBuffer[0] = col.getR()<<3;
+				tempBuffer[1] = col.getG()<<3;
+				tempBuffer[2] = col.getB()<<3;
+				tempBuffer[3] = col.getAlpha()<<7; // Expand 1bit Alpha to 8bits
 				tempBuffer+=4;
 			}while( --numberPixels > 0 );
 			result = encoder->EncodeToFile( this->getFileName().c_str() , source.getWidth() , source.getHeight() , 8 /*8bit per Channel*/, 6 /*True-Color with Alpha*/ , buffer );
@@ -520,9 +521,10 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompre
 			_u8* tempBuffer = buffer;
 			_pixelArray data = source.getBitmap();
 			do{
-				tempBuffer[0] = RGB_GETR(*data)<<3;
-				tempBuffer[1] = RGB_GETG(*data)<<3;
-				tempBuffer[2] = RGB_GETB(*data++)<<3;
+				_color col = _color(*data++);
+				tempBuffer[0] = col.getR()<<3;
+				tempBuffer[1] = col.getG()<<3;
+				tempBuffer[2] = col.getB()<<3;
 				tempBuffer+=3;
 			}while( --numberPixels > 0 );
 			jpge::params compressionParam;

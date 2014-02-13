@@ -30,7 +30,7 @@ _lua_bitmap::_lua_bitmap( lua_State* L ) : wasAllocated( true ) {
 	if( !lua_gettop(L) )
 		this->bm = new _bitmap();
 	else
-		this->bm = new _bitmap( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<_pixel>( L , 3 , NO_COLOR ) );
+		this->bm = new _bitmap( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<_color>( L , 3 ) );
 }
 
 //! Dtor
@@ -43,7 +43,7 @@ int _lua_bitmap::get( lua_State* L ){
 	return push( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 }
 
-using shortCutType = void (_bitmap::*)(_coord,_coord,const _font*,const _char*,_pixel,_u8);
+using shortCutType = void (_bitmap::*)(_coord,_coord,const _font*,const _char*,_color,_u8);
 
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "Bitmap";

@@ -105,7 +105,7 @@ class _bitmapPort
 		 * Get the Pixel at a specific location
 		 * @param x X-Position to check
 		 * @param y Y-Position to check
-		 * @return _pixel The Pixel at the specified location (if not foound: NO_COLOR)
+		 * @return _pixel The Pixel at the specified location (if not found: 0)
 		 */
 		_pixel getPixel( const _coord x , const _coord y ) const {
 			return this->base.getPixel( x , y );
@@ -118,14 +118,14 @@ class _bitmapPort
 		 * @param color Color of the Pixel to set
 		 * @return void
 		 */
-		void drawPixel( _coord x , _coord y , _pixel color );
+		void drawPixel( _coord x , _coord y , _color color );
 		
 		/**
 		 * Fill the whole bmp
 		 * @param color The Color to fill with
 		 * @return void
 		 */
-		void fill( _pixel color );
+		void fill( _color color );
 		
 		/**
 		 * Replace all pixels of a certain color with another
@@ -133,7 +133,7 @@ class _bitmapPort
 		 * @param replace The Color to replace with
 		 * @return void
 		 */
-		void replaceColor( _pixel color , _pixel replace );
+		void replaceColor( _color color , _color replace );
 		
 		/**
 		 * Draw a vertical Line onto the bmp
@@ -143,7 +143,7 @@ class _bitmapPort
 		 * @param color Color of the Line
 		 * @return void
 		 */
-		void drawVerticalLine( _coord x , _coord y , _length length , _pixel color );
+		void drawVerticalLine( _coord x , _coord y , _length length , _color color );
 		
 		/**
 		 * Draw a horizontal Line onto the bmp
@@ -153,7 +153,7 @@ class _bitmapPort
 		 * @param color Color of the Line
 		 * @return void
 		 */
-		void drawHorizontalLine( _coord x , _coord y , _length length , _pixel color );
+		void drawHorizontalLine( _coord x , _coord y , _length length , _color color );
 		
 		/**
 		 * Draw a vertical dotted Line onto the bmp
@@ -163,7 +163,7 @@ class _bitmapPort
 		 * @param color Color of the Line
 		 * @return void
 		 */
-		void drawVerticalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		void drawVerticalDottedLine( _coord x , _coord y , _length length , _color color );
 		
 		/**
 		 * Draw a horizontal dotted Line onto the bmp
@@ -173,7 +173,7 @@ class _bitmapPort
 		 * @param color Color of the Line
 		 * @return void
 		 */
-		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _pixel color );
+		void drawHorizontalDottedLine( _coord x , _coord y , _length length , _color color );
 		
 		/**
 		 * Draw a horizontal Line onto the bmp
@@ -184,7 +184,7 @@ class _bitmapPort
 		 * @param color Color of the Line
 		 * @return void
 		 */
-		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _pixel color );
+		void drawLine( _coord x1 , _coord y1 , _coord x2 , _coord y2 , _color color );
 		
 		/**
 		 * Draw a Rectangle onto the bmp
@@ -195,7 +195,7 @@ class _bitmapPort
 		 * @param color Color of the Rect
 		 * @return void
 		 */
-		void drawRect( _coord x , _coord y , _length width , _length height , _pixel color );
+		void drawRect( _coord x , _coord y , _length width , _length height , _color color );
 		
 		/**
 		 * Draw a dotted Rectangle onto the bmp
@@ -206,7 +206,7 @@ class _bitmapPort
 		 * @param color Color of the Rect
 		 * @return void
 		 */
-		void drawDottedRect( _coord x , _coord y , _length width , _length height , _pixel color );
+		void drawDottedRect( _coord x , _coord y , _length width , _length height , _color color );
 		
 		/**
 		 * Draw a filled Rectangle onto the bmp
@@ -217,7 +217,7 @@ class _bitmapPort
 		 * @param color Color of the Rect
 		 * @return void
 		 */
-		void drawFilledRect( _coord x , _coord y , _length width , _length height , _pixel color );
+		void drawFilledRect( _coord x , _coord y , _length width , _length height , _color color );
 		
 		/**
 		 * Draw a Gradient onto the bmp
@@ -229,7 +229,7 @@ class _bitmapPort
 		 * @param toColor End Color (bottom)
 		 * @return void
 		 */
-		void drawVerticalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
+		void drawVerticalGradient( _coord x , _coord y , _length width , _length height , _color fromColor , _color toColor );
 		
 		/**
 		 * Draw a Gradient onto the bmp
@@ -241,7 +241,7 @@ class _bitmapPort
 		 * @param toColor End Color (bottom)
 		 * @return void
 		 */
-		void drawHorizontalGradient( _coord x , _coord y , _length width , _length height , _pixel fromColor , _pixel toColor );
+		void drawHorizontalGradient( _coord x , _coord y , _length width , _length height , _color fromColor , _color toColor );
 		
 		/**
 		 * Draw a Circle onto the bmp
@@ -251,7 +251,7 @@ class _bitmapPort
 		 * @param color Color of the Circle
 		 * @return void
 		 */
-		void drawCircle( _coord xc, _coord yc, _length radius, _pixel color );
+		void drawCircle( _coord xc, _coord yc, _length radius, _color color );
 		
 		/**
 		 * Draw a filled Circle onto the bmp
@@ -261,7 +261,7 @@ class _bitmapPort
 		 * @param color Color of the Circle
 		 * @return void
 		 */
-		void drawFilledCircle( _coord xc, _coord yc, _length radius, _pixel color );
+		void drawFilledCircle( _coord xc, _coord yc, _length radius, _color color );
 		
 		/**
 		 * Draw a filled Ellipse onto the bmp
@@ -273,7 +273,7 @@ class _bitmapPort
 		 * @return void
 		 * @see 99392 ticks on dimensions 256*192
 		 */
-		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
+		void drawFilledEllipse( _coord xc, _coord yc, _length a, _length b, _color color );
 		
 		/**
 		 * Draw an Ellipse onto the bmp
@@ -284,7 +284,7 @@ class _bitmapPort
 		 * @param color Color of the Ellipse
 		 * @return void
 		 */
-		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _pixel color );
+		void drawEllipse( _coord xc, _coord yc, _length a, _length b, _color color );
 		
 		/**
 		 * Draw a single _character to a specific Position and returns the width it used
@@ -295,7 +295,7 @@ class _bitmapPort
 		 * @param color Color of the _character
 		 * @return int The Width of the _character it has drawn
 		 */
-		_length drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _pixel color , _u8 fontSize = 0 );
+		_length drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _color color , _u8 fontSize = 0 );
 		
 		/**
 		 * Draw a String to a specific Position
@@ -306,8 +306,8 @@ class _bitmapPort
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _pixel color , _u8 fontSize = 0 );
-		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _pixel color , _u8 fontSize = 0 )
+		void drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _color color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _color color , _u8 fontSize = 0 )
 		{
 			drawString( x0 , y0 , font , str.c_str() , color , fontSize );
 		}

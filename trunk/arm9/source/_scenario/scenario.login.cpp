@@ -28,8 +28,8 @@ _callbackReturn _scLogin::userLoginHandler( _event event )
 	
 	this->welcome->setFont( _system::getFont( "ArialBlack13" ) );
 	this->welcomeBg->setFont( _system::getFont( "ArialBlack13" ) );
-	this->welcome->setColor( RGB( 2 , 5 , 15 ) );
-	this->welcomeBg->setColor( RGB( 30 , 30 , 30 ) );
+	this->welcome->setColor( _color::fromRGB( 2 , 5 , 15 ) );
+	this->welcomeBg->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	this->welcome->setAlign( _align::right );
 	this->welcomeBg->setAlign( _align::right );
 	
@@ -116,8 +116,8 @@ _scLogin::_scLogin() :
 	//! Separator
 	_length sepHeight = 148;
 	_bitmap separator = _bitmap( 1 , 148 );
-	separator.drawVerticalGradient( 0 , 0 			   , 1 , sepHeight >> 1 , RGBHEX( 0x5A7EDC ) , RGB( 21 , 24 , 31 ) );
-	separator.drawVerticalGradient( 0 , sepHeight >> 1 , 1 , sepHeight >> 1 , RGB( 21 , 24 , 31 ) , RGBHEX( 0x5A7EDC ) );
+	separator.drawVerticalGradient( 0 , 0 			   , 1 , sepHeight >> 1 , _color::fromHex( 0x5A7EDC ) , _color::fromRGB( 21 , 24 , 31 ) );
+	separator.drawVerticalGradient( 0 , sepHeight >> 1 , 1 , sepHeight >> 1 , _color::fromRGB( 21 , 24 , 31 ) , _color::fromHex( 0x5A7EDC ) );
 	
 	this->separator = new _imageGadget( 126 , 20 , separator );
 	

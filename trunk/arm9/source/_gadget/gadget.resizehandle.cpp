@@ -14,7 +14,7 @@ _callbackReturn _resizeHandle::refreshHandler( _event event )
 	
 	if( that->parent )
 	{
-		_pixel col = _system::getRTA().getControlForeground();
+		_color col = _system::getRTA().getControlForeground();
 		
 		if( that->parent->isResizeableX() && that->parent->isResizeableY() )
 			bP.drawChar( 0 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
@@ -71,9 +71,9 @@ _callbackReturn _resizeHandle::positionAdjuster( _event event )
 	return handled;
 }
 
-_resizeHandle::_resizeHandle( _optValue<_pixel> bgColor , _style&& style ) :
+_resizeHandle::_resizeHandle( _optValue<_color> bgColor , _style&& style ) :
 	_gadget( _gadgetType::resizehandle , 8 , 8 , 0 , 0 , style | _styleAttr::draggable )
-	, bgColor( bgColor.isValid() ? (_pixel)bgColor : COLOR_TRANSPARENT )
+	, bgColor( bgColor.isValid() ? (_color)bgColor : _color::transparent )
 {
 	this->setInternalEventHandler( onParentResize , make_callback(  &_resizeHandle::positionAdjuster ) );
 	this->setInternalEventHandler( onParentSet , make_callback(  &_resizeHandle::positionAdjuster ) );

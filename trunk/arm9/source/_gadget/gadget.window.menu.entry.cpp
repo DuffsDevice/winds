@@ -53,7 +53,7 @@ _callbackReturn _windowMenuEntry::refreshHandler( _event event )
 	bP.fill( that->menuList->isOpened() ? _system::getRTA().getControlForeground() : _system::getRTA().getControlBackground() );
 	
 	// Draw text
-	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , COLOR_BLACK );
+	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _color::black );
 	
 	return handled;
 }

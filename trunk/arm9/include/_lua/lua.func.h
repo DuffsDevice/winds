@@ -43,6 +43,7 @@ namespace _luafunc
 	void	pushBorder( lua_State* state , _border&& );
 	void	pushTime( lua_State* state , _time&& );
 	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );
+	void	pushColor( lua_State* state , _color&& );
 }
 
 #include "_lua/lua.func.isa.h"

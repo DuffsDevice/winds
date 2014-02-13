@@ -33,14 +33,14 @@ _scSetup::_scSetup()
 	
 	this->prevLabel = new _label( 17 , 176 , 50 , 9 , _system::getLocalizedString("lbl_prev") );
 	this->prevLabel->setInternalEventHandler( onMouseClick , make_callback( this , &_scSetup::prevButtonClickHandler ) );
-	this->prevLabel->setColor( RGB( 30 , 30 , 30 ) );
+	this->prevLabel->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	
 	this->nextButton = new _actionButton( 240 , 176 , _actionButtonType::next );
 	this->nextButton->setInternalEventHandler( onMouseClick , make_callback( this , &_scSetup::nextButtonClickHandler ) );
 	
 	this->nextLabel = new _label( 188 , 176 , 50 , 9 , _system::getLocalizedString("lbl_next") );
 	this->nextLabel->setInternalEventHandler( onMouseClick , make_callback( this , &_scSetup::nextButtonClickHandler ) );
-	this->nextLabel->setColor( RGB( 30 , 30 , 30 ) );
+	this->nextLabel->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	this->nextLabel->setAlign( _align::right );
 	
 	this->viewSwitcher.set( "1" );

@@ -19,12 +19,12 @@ _runtimeAttributes::_runtimeAttributes( flex_ptr<_user> tempUser ) :
 	, user( move(tempUser) )
 	, windowBar( BMP_WindowHeader() )
 	, windowBarBlurred( BMP_WindowHeaderBlurred() )
-	, highlightForeground( COLOR_WHITE )
-	, highlightBackground( RGB255( 10 , 36 , 106 ) /* Dark blue */ )
-	, itemForeground( COLOR_BLACK )
-	, itemBackground( COLOR_WHITE )
-	, controlBackground( RGB( 28 , 28 , 27 ) )
-	, controlForeground( RGB( 22 , 22 , 20 ) )
+	, highlightForeground( _color::white )
+	, highlightBackground( _color::fromRGB8( 10 , 36 , 106 ) /* Dark blue */ )
+	, itemForeground( _color::black )
+	, itemBackground( _color::white )
+	, controlBackground( _color::fromRGB( 28 , 28 , 27 ) )
+	, controlForeground( _color::fromRGB( 22 , 22 , 20 ) )
 	, magnifyKeyboardFocus( true )
 {
 	this->assocDirectories = {

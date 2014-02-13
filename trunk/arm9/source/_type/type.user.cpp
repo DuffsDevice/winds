@@ -20,11 +20,11 @@ _bitmap _user::getUserLogoFromImage( _constBitmap& bmp )
 	
 	logo.copy( 1 , 1 , bmp );
 	
-	logo.drawRect( 0 , 0 , 14 , 14 , RGB( 31 , 29 , 18 ) );
-	logo.drawPixel( 0 , 0 , RGB( 15 , 15 , 24 ) );
-	logo.drawPixel( 13 , 0 , RGB( 15 , 15 , 24 ) );
-	logo.drawPixel( 13 , 13 , RGB( 15 , 15 , 24 ) );
-	logo.drawPixel( 0 , 13 , RGB( 15 , 15 , 24 ) );
+	logo.drawRect( 0 , 0 , 14 , 14 , _color::fromRGB( 31 , 29 , 18 ) );
+	logo.drawPixel( 0 , 0 , _color::fromRGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 13 , 0 , _color::fromRGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 13 , 13 , _color::fromRGB( 15 , 15 , 24 ) );
+	logo.drawPixel( 0 , 13 , _color::fromRGB( 15 , 15 , 24 ) );
 	
 	return logo;
 }

@@ -421,8 +421,8 @@ void _system::start()
 		_system::_bgIdBack_ = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 8, 0);
 		_system::_bgIdSub_ = bgInitSub(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
 		
-		setBackdropColor( COLOR_BLACK );
-		setBackdropColorSub( COLOR_BLACK );
+		setBackdropColor( _color::black );
+		setBackdropColorSub( _color::black );
 		consoleDemoInit();
 		
 		//_system::fadeMainScreen( false , false );
