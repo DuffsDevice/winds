@@ -5,6 +5,7 @@
 
 enum class _menuHandlerRuleType : _u8
 {
+	listIndex,
 	listRange,
 	wholeList,
 	wholeMenu
@@ -26,7 +27,7 @@ class _menuHandlerRule
 		_menuHandlerRule( _int listIndex , _int sI , _int eI ) : listIndex( listIndex ) , startIndex( sI ) , endIndex( eI ) , type( _menuHandlerRuleType::listRange )
 		{}
 		//! Ctor for a rule that applies for the entry with index 'index' in the list 'listIndex'
-		_menuHandlerRule( _int listIndex , _int index ) : listIndex( listIndex ) , startIndex( index ) , endIndex( index ) , type( _menuHandlerRuleType::listRange )
+		_menuHandlerRule( _int listIndex , _int index ) : listIndex( listIndex ) , startIndex( index ) , type( _menuHandlerRuleType::listIndex )
 		{}
 		//! Ctor for a rule that applies for a whole list
 		_menuHandlerRule( _int listIndex ) : listIndex( listIndex ) , type( _menuHandlerRuleType::wholeList )

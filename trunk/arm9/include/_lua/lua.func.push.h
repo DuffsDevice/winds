@@ -10,9 +10,9 @@
 namespace _luafunc
 {
 	// ~~~~~~~~~~~~~~~~~~ Predefines ~~~~~~~~~~~~~~~~~~
-	template<typename... ValueType> void pushTupleElementsInternal( lua_State* , const _tuple<ValueType...>& , int = 0 );
-	template<typename ContainerType> void pushContainer( lua_State* state , ContainerType arg );
-	template<typename ContainerType> void pushAssociativeContainer( lua_State* state , ContainerType arg );
+	template<typename... ValueType>		void pushTupleElementsInternal( lua_State* , const _tuple<ValueType...>& , int = 0 );
+	template<typename ContainerType>	void pushContainer( lua_State* state , ContainerType arg );
+	template<typename ContainerType>	void pushAssociativeContainer( lua_State* state , ContainerType arg );
 	
 	// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
 	inline int push(lua_State*){ return 0; } // Standard fallback
@@ -33,7 +33,7 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , _align arg					, TN... args){ return 1 + push( state , align2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _valign arg					, TN... args){ return 1 + push( state , valign2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _language arg				, TN... args){ return 1 + push( state , language2string[arg] , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push( lua_State* state , _mimeType arg				, TN... args){ return 1 + push( state , (_literal)arg , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _mimeType arg				, TN... args){ pushMimeType( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _event arg					, TN... args){ pushEvent( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _dialogResult arg			, TN... args){ return push( state , dialogResult2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _eventType arg				, TN... args){ return push( state , eventType2string[arg] , forward<TN>(args)... ); }
@@ -97,7 +97,7 @@ namespace _luafunc
 		lua_rawseti( state , -2 , index + 1 );
 		
 		if( index + 1 < sizeof...(ValueType) )
-			pushTupleElements( state , arg , index + 1 );
+			pushTupleElementsInternal( state , arg , index + 1 );
 	}
 	
 	template<typename ContainerType>

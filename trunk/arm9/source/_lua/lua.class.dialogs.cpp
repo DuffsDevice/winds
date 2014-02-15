@@ -1,4 +1,5 @@
 #include "_lua/lua.class.dialogs.h"
+#include "_lua/lua.class.direntry.h"
 #include "_lua/lua.func.h"
 #include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
@@ -42,7 +43,7 @@ _lua_entertextdialog::_lua_entertextdialog(lua_State* L) :
 	)
 {}
 
-//! enterTextDialog - Name
+//! enterTextDialog
 const char _lua_entertextdialog::className[] = "EnterTextDialog";
 Lunar<_lua_entertextdialog>::FunctionType _lua_entertextdialog::methods[] = {
 	{ "execute"			, wrap( _lua_entertextdialog , &_dialog::execute ) },
@@ -70,7 +71,7 @@ _lua_imagedialog::_lua_imagedialog(lua_State* L) :
 	)
 {}
 
-//! imageDialog - Name
+//! imageDialog
 const char _lua_imagedialog::className[] = "ImageDialog";
 Lunar<_lua_imagedialog>::FunctionType _lua_imagedialog::methods[] = {
 	{ "execute"			, wrap( _lua_imagedialog , &_dialog::execute ) },
@@ -94,7 +95,7 @@ _lua_errordialog::_lua_errordialog(lua_State* L) :
 	)
 {}
 
-//! errorDialog - Name
+//! errorDialog
 const char _lua_errordialog::className[] = "ErrorDialog";
 Lunar<_lua_errordialog>::FunctionType _lua_errordialog::methods[] = {
 	{ "execute"			, wrap( _lua_errordialog , &_dialog::execute ) },
@@ -118,7 +119,7 @@ _lua_infodialog::_lua_infodialog(lua_State* L) :
 	)
 {}
 
-//! infoDialog - Name
+//! infoDialog
 const char _lua_infodialog::className[] = "InfoDialog";
 Lunar<_lua_infodialog>::FunctionType _lua_infodialog::methods[] = {
 	{ "execute"			, wrap( _lua_infodialog , &_dialog::execute ) },
@@ -142,7 +143,7 @@ _lua_warningdialog::_lua_warningdialog(lua_State* L) :
 	)
 {}
 
-//! warningDialog - Name
+//! warningDialog
 const char _lua_warningdialog::className[] = "WarningDialog";
 Lunar<_lua_warningdialog>::FunctionType _lua_warningdialog::methods[] = {
 	{ "execute"			, wrap( _lua_warningdialog , &_dialog::execute ) },
@@ -153,5 +154,38 @@ Lunar<_lua_warningdialog>::FunctionType _lua_warningdialog::methods[] = {
 };
 Lunar<_lua_warningdialog>::PropertyType _lua_warningdialog::properties[] = {
 	{ "running"	, wrap( _lua_warningdialog , &_dialog::isRunning ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
+
+//! _lua_filesavedialog
+_lua_filesavedialog::_lua_filesavedialog(lua_State* L) :
+	_fileSaveDialog(
+		check<_fileTypeList>( L , 1 )
+		, optcheck<string>( L , 2 )
+		, lightcheck<int>( L , 3 , 0 )
+		, optcheck<string>( L , 4 )
+	)
+{}
+
+int _lua_filesavedialog::getDirentry( lua_State* L ){
+	Lunar<_lua_direntry>::push( L , new _lua_direntry( _fileSaveDialog::getDirentry() ) );
+	return 1;
+}
+
+//! _lua_filesavedialog
+const char _lua_filesavedialog::className[] = "FileSaveDialog";
+Lunar<_lua_filesavedialog>::FunctionType _lua_filesavedialog::methods[] = {
+	{ "execute"			, wrap( _lua_filesavedialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_filesavedialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_filesavedialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_filesavedialog , &_dialog::deleteCallback ) },
+	{ "getDirentry"		, &_lua_filesavedialog::getDirentry },
+	LUA_CLASS_FUNC_END
+};
+Lunar<_lua_filesavedialog>::PropertyType _lua_filesavedialog::properties[] = {
+	{ "running"	, wrap( _lua_filesavedialog , &_dialog::isRunning ) , nullptr },
+	{ "fileType"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getFileType ) , nullptr },
+	{ "mimeType"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getMimeType ) , nullptr },
+	{ "fileName"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getFileName ) , nullptr },
 	LUA_CLASS_ATTR_END
 };

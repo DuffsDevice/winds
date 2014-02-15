@@ -10,6 +10,7 @@
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.hardwarekeypattern.h"
 #include "_lua/lua.class.time.h"
+#include "_lua/lua.class.mime.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.bar.h"
 #include "_lua/lua.gadget.window.menu.h"
@@ -78,6 +79,10 @@ namespace _luafunc
 	
 	void pushHWKP( lua_State* L , _hardwareKeyPattern&& arg ){
 		Lunar<_lua_hardwarekeypattern>::push( L , new _lua_hardwarekeypattern( move(arg) ) );
+	}
+	
+	void pushMimeType( lua_State* L , _mimeType&& arg ){
+		Lunar<_lua_mimetype>::push( L , new _lua_mimetype( move(arg) ) );
 	}
 	
 	void pushGadget( lua_State* L , _gadget* gadget )

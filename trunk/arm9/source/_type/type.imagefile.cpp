@@ -480,14 +480,18 @@ _imageFile::~_imageFile()
 		delete this->bufferedImage;
 }
 
-bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompression> compression )
+bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeType2Write , _optValue<_imageFileCompression> compression )
 {
-	if( !this->isExisting() || !source.isValid() )
+	if( !source.isValid() )
 		return false;
 	
 	bool result = false;
+	_mimeType mime = mimeType2Write.isValid() ? (_mimeType)mimeType2Write : this->getRealMime();
 	
-	switch( this->getRealMime() )
+	// If file doesn't exist already, create it!
+	this->create();
+	
+	switch( mime )
 	{
 		case _mime::image_bmp:
 			GenericBMPEncoder::encode( this->getFileName().c_str() , source.getWidth() , source.getHeight() , source.getBitmap() );
@@ -525,7 +529,7 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompre
 				tempBuffer[0] = col.getR()<<3;
 				tempBuffer[1] = col.getG()<<3;
 				tempBuffer[2] = col.getB()<<3;
-				tempBuffer+=3;
+				tempBuffer += 3;
 			}while( --numberPixels > 0 );
 			jpge::params compressionParam;
 			compressionParam.m_quality = compression.isValid() ? (int)(_imageFileCompression)compression : 75; // Set Quality
@@ -537,3 +541,11 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_imageFileCompre
 	
 	return result;
 }
+
+_fromStr<_imageFileCompression> string2imageFileCompression = {
+	{ "low" , _imageFileCompression::low } ,
+	{ "medium" , _imageFileCompression::medium } ,
+	{ "high" , _imageFileCompression::high } ,
+	{ "veryHigh" , _imageFileCompression::veryHigh } ,
+	{ "none" , _imageFileCompression::none } ,
+};
