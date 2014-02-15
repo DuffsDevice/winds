@@ -5,18 +5,20 @@
 #include "_type/type.assocvector.h"
 #include "_type/type.callback.h"
 #include "_type/type.menu.rule.h"
+#include <memory>
 
 using _menuEntry = _pair<_int,string>;
 using _menuEntryList = _assocVector<_int,string>;
 using _rawMenuEntryLists = _assocVector<_int,_menuEntryList>;
 using _menuHandler = void( _int listIndex , _int listEntryIndex );
-using HandlerTuple = _tuple<_menuHandlerRule,_callback<_menuHandler>*>;
+using PtrType = std::shared_ptr<_callback<_menuHandler>>;
+using HandlerPair = _pair<_menuHandlerRule,PtrType>;
 
 class _menu : private _rawMenuEntryLists
 {
 	private:
 		
-		_vector<HandlerTuple> handlers;
+		_vector<HandlerPair> handlers;
 		_bool sorted;
 		
 		// Internal getter for one of the stored lists
@@ -43,9 +45,9 @@ class _menu : private _rawMenuEntryLists
 		//! Add a handler for the menu applying for all entries for which the passed 'rule' returns true
 		void addMenuHandler( _menuHandlerRule rule , _paramAlloc<_callback<_menuHandler>> handler ){
 			this->handlers.push_back(
-				make_tuple(
+				make_pair(
 					rule
-					, handler.get()
+					, PtrType( handler.get() )
 				)
 			);
 			this->sorted = false;
@@ -84,13 +86,7 @@ class _menu : private _rawMenuEntryLists
 		
 		//! Clear all registered handlers
 		void clearHandlers(){
-			for( auto entry : this->handlers )
-				delete std::get<1>(entry);
 			this->handlers.clear();
-		}
-		
-		~_menu(){
-			clearHandlers();
 		}
 		
 		//! Call the handler that applies to the passed list number and entry number

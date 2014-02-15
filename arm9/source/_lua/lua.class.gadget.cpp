@@ -151,6 +151,18 @@ int _lua_gadget::equals(lua_State* L){
 	return push( L , bool(check<_gadget*>( L , 1 ) == this->gadget) );
 }
 
+//! addChild
+int _lua_gadget::addChild(lua_State* L){
+	this->gadget->addChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
+	return 0;
+}
+
+//! addEnhancedChild
+int _lua_gadget::addEnhancedChild(lua_State* L){
+	this->gadget->addEnhancedChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
+	return 0;
+}
+
 //! Lua-_gadget
 const char _lua_gadget::className[] = "Gadget";
 Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
@@ -218,8 +230,8 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "removeChild"					, wrap( _lua_gadget , &_gadget::removeChild ) },
 	{ "removeChildren"				, wrap( _lua_gadget , &_gadget::removeChildren ) },
 	{ "removeEnhancedChildren"		, wrap( _lua_gadget , &_gadget::removeEnhancedChildren ) },
-	{ "addChild"					, wrap( _lua_gadget , &_gadget::addChild ) },
-	{ "addEnhancedChild"			, wrap( _lua_gadget , &_gadget::addEnhancedChild ) },
+	{ "addChild"					, &_lua_gadget::addChild },
+	{ "addEnhancedChild"			, &_lua_gadget::addEnhancedChild },
 	{ "getLowestChild"				, wrap( _lua_gadget , &_gadget::getLowestChild ) },
 	{ "getToppestChild"				, wrap( _lua_gadget , &_gadget::getToppestChild ) },
 	{ "getLowestEnhancedChild"		, wrap( _lua_gadget , &_gadget::getLowestEnhancedChild ) },

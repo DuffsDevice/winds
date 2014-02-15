@@ -1,4 +1,3 @@
-#include "_lua/lua.class.menu.h"
 #include "_lua/lua.class.menu.rule.h"
 #include "_lua/lua.func.h"
 using namespace _luafunc;

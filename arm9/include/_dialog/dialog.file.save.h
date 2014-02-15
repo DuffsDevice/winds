@@ -1,5 +1,5 @@
-#ifndef _WIN_D_ENTERTEXT_
-#define _WIN_D_ENTERTEXT_
+#ifndef _WIN_D_FILESAVE_
+#define _WIN_D_FILESAVE_
 
 #include "_type/type.dialog.h"
 #include "_type/type.shortstring.h"
@@ -12,7 +12,7 @@
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.select.h"
 
-typedef _assocVector<_int,_tuple<string,string>> _fileTypeList;
+typedef _assocVector<_int,_pair<string,string>> _fileTypeList;
 
 class _fileSaveDialog : public _dialog
 {

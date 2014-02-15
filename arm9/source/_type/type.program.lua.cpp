@@ -26,6 +26,7 @@ using namespace _luafunc;
 #include "_lua/lua.class.gadget.h"
 #include "_lua/lua.class.event.h"
 #include "_lua/lua.class.radiogroup.h"
+#include "_lua/lua.class.mime.h"
 #include "_lua/lua.class.menu.h"
 #include "_lua/lua.class.menu.rule.h"
 #include "_lua/lua.class.imagefile.h"
@@ -71,6 +72,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "System" , "Ini" , &Lunar<_lua_ini>::install ),
 	make_tuple( "System" , "IniFile" , &Lunar<_lua_inifile>::install ),
 	make_tuple( "System" , "Registry" , &Lunar<_lua_registry>::install ),
+	make_tuple( "System" , "MimeType" , &Lunar<_lua_mimetype>::install ),
 	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::install ),
 	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::install ),
 	make_tuple( "Drawing" , "BitmapPort" , &Lunar<_lua_bitmapport>::install ),
@@ -84,6 +86,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "Dialog" , "ErrorDialog" , &Lunar<_lua_errordialog>::install ),
 	make_tuple( "Dialog" , "WarningDialog" , &Lunar<_lua_warningdialog>::install ),
 	make_tuple( "Dialog" , "InfoDialog" , &Lunar<_lua_infodialog>::install ),
+	make_tuple( "Dialog" , "FileSaveDialog" , &Lunar<_lua_filesavedialog>::install ),
 	make_tuple( "UI" , "RadioGroup" , &Lunar<_lua_radiogroup>::install ),
 	make_tuple( "UI" , "Gadget" , &Lunar<_lua_gadget>::install ),
 	make_tuple( "UI" , "Window" , &Lunar<_lua_window>::install ),

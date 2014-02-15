@@ -16,12 +16,13 @@ _lua_imagefile::_lua_imagefile( lua_State* L ) :
 const char _lua_imagefile::className[] = "ImageFile";
 Lunar<_lua_imagefile>::FunctionType _lua_imagefile::methods[] = {
 	{ "readBitmap" , wrap( _lua_imagefile , &_imageFile::readBitmap ) },
+	{ "writeBitmap" , wrap( _lua_imagefile , &_imageFile::writeBitmap ) },
 	{ "supportsPages" , wrap( _lua_imagefile , &_imageFile::supportsPages ) },
-	{ "getNumPages" , wrap( _lua_imagefile , &_imageFile::getNumPages ) },
 	{ "getPageDelay" , wrap( _lua_imagefile , &_imageFile::getPageDelay ) },
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_imagefile>::PropertyType _lua_imagefile::properties[] = {
+	{ "numPages" , wrap( _lua_imagefile , &_imageFile::getNumPages ) , nullptr },
 	LUA_CLASS_ATTR_END
 };

@@ -8,6 +8,7 @@
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.time.h"
+#include "_lua/lua.class.mime.h"
 #include "_lua/lua.class.hardwarekeypattern.h"
 
 namespace _luafunc
@@ -58,6 +59,17 @@ namespace _luafunc
 				|| (
 					type == LUA_TUSERDATA
 					&& _luafunc::is_a( L , index , _lua_color::className )
+				);
+		}
+		
+		bool is_a( lua_State* L , int index , _mimeType* dummy ){
+			int type = get_type( L , index );
+			return
+				type == LUA_TSTRING
+				|| type == LUA_TNUMBER
+				|| (
+					type == LUA_TUSERDATA
+					&& _luafunc::is_a( L , index , _lua_mimetype::className )
 				);
 		}
 	}

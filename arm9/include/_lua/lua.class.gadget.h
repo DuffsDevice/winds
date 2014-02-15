@@ -76,6 +76,12 @@ class _lua_gadget{
 		//! equals
 		int equals( lua_State* L );
 		
+		//! addChild
+		int addChild( lua_State* L );
+		
+		//! addEnhancedChild
+		int addEnhancedChild( lua_State* L );
+		
 		
 		//! Lunar !//
 		static const char className[];

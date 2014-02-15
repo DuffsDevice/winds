@@ -27,12 +27,6 @@ class _lua_menu : public _menu {
 		//! addMenuHandler
 		int addMenuHandler(lua_State* L);
 		
-		//! setMainList
-		int setMainList(lua_State* L);
-		
-		//! getMainList
-		int getMainList(lua_State* L);
-		
 		//! setList
 		int setList(lua_State* L);
 		

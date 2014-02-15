@@ -13,7 +13,7 @@ class _lua_direntry : public _direntry {
 	public:
 		
 		//! Ctor
-		_lua_direntry( _direntry &f );
+		_lua_direntry( const _direntry &f );
 		
 		//! Lua-Ctor
 		_lua_direntry( lua_State* L );

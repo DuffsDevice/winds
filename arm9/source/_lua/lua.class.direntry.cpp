@@ -9,7 +9,7 @@ using namespace _luafunc;
 ##################################*/
 
 //! Ctor
-_lua_direntry::_lua_direntry( _direntry& f ) :
+_lua_direntry::_lua_direntry( const _direntry& f ) :
 	_direntry( f )
 { }
 
@@ -72,14 +72,16 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 };
 
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
-	{ "filename"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
+	{ "fileName"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
 	{ "name"		, wrap( _lua_direntry , &_direntry::getName ) , nullptr },
 	{ "displayName"	, wrap( _lua_direntry , &_direntry::getDisplayName ) , nullptr },
 	{ "extension"	, wrap( _lua_direntry , &_direntry::getExtension ) , nullptr },
 	{ "mimeType"	, wrap( _lua_direntry , &_direntry::getMimeType ) , nullptr },
 	{ "image"		, wrap( _lua_direntry , &_direntry::getFileImage ) , nullptr },
-//	{ "attributes"	, wrap( _lua_direntry , &_direntry::getAttrs ) , wrap( _lua_direntry , &_direntry::setAttrs ) },
 	{ "size"		, wrap( _lua_direntry , &_direntry::getSize ) , nullptr },
 	{ "isDirectory"	, wrap( _lua_direntry , &_direntry::isDirectory ) , nullptr },
+	{ "hidden"		, wrap( _lua_direntry , &_direntry::isHidden ) , wrap( _lua_direntry , &_direntry::setHidden ) },
+	{ "system"		, wrap( _lua_direntry , &_direntry::isSystem ) , wrap( _lua_direntry , &_direntry::setSystemFile ) },
+	{ "readOnly"	, wrap( _lua_direntry , &_direntry::isReadOnly ) , wrap( _lua_direntry , &_direntry::setReadOnly ) },
 	LUA_CLASS_ATTR_END
 };

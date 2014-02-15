@@ -7,6 +7,7 @@
 #include "_lua/lua.class.font.h"
 #include "_lua/lua.class.color.h"
 #include "_lua/lua.class.border.h"
+#include "_lua/lua.class.mime.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.hardwarekeypattern.h"
@@ -84,8 +85,15 @@ namespace _luafunc
 		const _font* check( lua_State* L , int index , const _font** dummy ){
 			_lua_font* ft = Lunar<_lua_font>::lightcheck( L , index );
 			if( ft )
-				return (const _font*)*ft; // You CAN cast _lua_font to _font
+				return (const _font*)*ft; // You CAN cast _lua_font to _font*
 			return nullptr;
+		}
+		
+		_mimeType check( lua_State* L , int index , _mimeType* dummy ){
+			_lua_mimetype* mt = Lunar<_lua_mimetype>::lightcheck( L , index );
+			if( mt )
+				return *mt;
+			return string( luaL_checkstring( L , index ) );
 		}
 	}
 }

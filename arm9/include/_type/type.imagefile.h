@@ -5,8 +5,6 @@
 #include "_type/type.bitmap.h"
 #include "_type/type.direntry.h"
 
-class gif_animation;
-
 enum class _imageFileCompression : _u8{
 	low = 30,
 	medium = 55,
@@ -15,7 +13,11 @@ enum class _imageFileCompression : _u8{
 	none = 100
 };
 
+extern _fromStr<_imageFileCompression> string2imageFileCompression;
+
+// Predefines
 typedef const _direntry _constDirentry;
+class gif_animation;
 
 class _imageFile : public _constDirentry
 {
@@ -58,7 +60,7 @@ class _imageFile : public _constDirentry
 		_u32 getPageDelay( _u32 page );
 		
 		//! Write to the image file
-		bool writeBitmap( const _bitmap& source , _optValue<_imageFileCompression> compression );
+		bool writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeType2Write = ignore , _optValue<_imageFileCompression> compression = _imageFileCompression::high );
 		
 		//! Extension independent determination of the underlying image type
 		_mimeType getRealMime();

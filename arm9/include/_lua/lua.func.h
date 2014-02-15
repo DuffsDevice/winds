@@ -18,6 +18,7 @@
 #include "_type/type.key.h"
 #include "_type/type.shortstring.h"
 #include "_type/type.program.args.h"
+#include "_type/type.imagefile.h"
 #include <type_traits>
 
 enum class _eventCallType : _u8;
@@ -44,6 +45,7 @@ namespace _luafunc
 	void	pushTime( lua_State* state , _time&& );
 	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );
 	void	pushColor( lua_State* state , _color&& );
+	void	pushMimeType( lua_State* state , _mimeType&& );
 }
 
 #include "_lua/lua.func.isa.h"

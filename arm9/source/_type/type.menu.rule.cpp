@@ -7,12 +7,16 @@ bool _menuHandlerRule::operator()( _int listIndex , _int index ) const
 		case _menuHandlerRuleType::wholeMenu:
 			return true;
 		case _menuHandlerRuleType::listRange:
-			if( this->startIndex > index || this->endIndex < index )
-				return false;
+			if( this->listIndex == listIndex && this->startIndex <= index && this->endIndex >= index )
+				return true;
+			break;
+		case _menuHandlerRuleType::listIndex:
+			if( this->listIndex == listIndex && this->startIndex == index )
+				return true;
+			break;
 		case _menuHandlerRuleType::wholeList:
 			if( this->listIndex == listIndex )
 				return true;
-		default:
 			break;
 	}
 	return false;

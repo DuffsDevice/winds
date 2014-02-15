@@ -10,8 +10,22 @@ namespace _luafunc
 	namespace detail
 	{
 		// ~~~~~~~~~~~~~~~~~~ Predefines ~~~~~~~~~~~~~~~~~~
-		template<typename ContainerType>	static unused ContainerType checkContainerInternal( lua_State* state , int index );
-		template<typename ContainerType>	static unused ContainerType checkAssociativeContainerInternal( lua_State* state , int index );
+		template<
+			typename ContainerType
+			, typename ValueType = typename ContainerType::value_type
+		>	static unused ContainerType checkContainerInternal( lua_State* state , int index );
+		
+		template<
+			typename ContainerType
+			, typename KeyType = typename ContainerType::key_type
+			, typename ValueType = typename ContainerType::mapped_type
+		>	static unused ContainerType checkAssociativeContainerInternal( lua_State* state , int index );
+		
+		template<
+			typename PairType
+			, typename FirstType = typename PairType::first_type
+			, typename SecondType = typename PairType::second_type
+		>	static unused PairType checkPairInternal( lua_State* state , int index );
 		
 		// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
 		static unused inline void					check( lua_State* state , int index , void* dummy ){}
@@ -24,9 +38,9 @@ namespace _luafunc
 		static unused inline char					check( lua_State* state , int index , char* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline unsigned char			check( lua_State* state , int index , unsigned char* dummy ){ return luaL_checkint( state , index ); }
 		static unused inline bool					check( lua_State* state , int index , bool* dummy ){
-			if( lua_isnumber(state,index) )
-				return lua_tonumber(state,index);
-			return lua_toboolean(state, index);
+			if( lua_isboolean( state , index ) )
+				return lua_toboolean(state, index);
+			return luaL_checkint( state , index );
 		}
 		static unused inline string					check( lua_State* state , int index , string* dummy ){ return luaL_checkstring( state , index ); }
 		static unused inline const char*			check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
@@ -34,7 +48,7 @@ namespace _luafunc
 		static unused inline shortString<mB,dT>		check( lua_State* state , int index , shortString<mB,dT>* dummy ){ return luaL_checkstring( state , index ); }
 		static unused inline _programArgs			check( lua_State* state , int index , _programArgs* dummy ){ return _programArgs( luaL_checkstring( state , index ) ); }
 		static unused inline _key					check( lua_State* state , int index , _key* dummy ){
-			return lua_isstring( state , index ) ? (_key)lua_tostring( state , index )[0] : (_key)lua_tonumber( state , index );
+			return is_a( state , index , LUA_TSTRING ) ? (_key)lua_tostring( state , index )[0] : (_key)luaL_checkint( state , index );
 		}
 		_hardwareKeyPattern									check( lua_State* state , int index , _hardwareKeyPattern* dummy );
 		_bitmapPort									check( lua_State* state , int index , _bitmapPort* dummy );
@@ -46,6 +60,8 @@ namespace _luafunc
 		const _font*								check( lua_State* state , int index , const _font** dummy );
 		_border										check( lua_State* state , int index , _border* dummy );
 		_time										check( lua_State* state , int index , _time* dummy );
+		_mimeType									check( lua_State* state , int index , _mimeType* dummy );
+		_color										check( lua_State* state , int index , _color* dummy );
 		static unused inline _callbackReturn		check( lua_State* state , int index , _callbackReturn* dummy ){ return string2callbackReturn[ luaL_checkstring( state , index ) ]; }
 		static unused inline _eventCallType			check( lua_State* state , int index , _eventCallType* dummy ){ return string2eventCallType[ luaL_checkstring( state , index ) ]; }
 		static unused inline _eventType				check( lua_State* state , int index , _eventType* dummy ){ return string2eventType[ luaL_checkstring( state , index ) ]; }
@@ -54,8 +70,8 @@ namespace _luafunc
 		static unused inline _valign				check( lua_State* state , int index , _valign* dummy ){ return string2valign[ luaL_checkstring( state , index ) ]; }
 		static unused inline _language				check( lua_State* state , int index , _language* dummy ){ return string2language[ luaL_checkstring( state , index ) ]; }
 		static unused inline _timeAttr				check( lua_State* state , int index , _timeAttr* dummy ){ return string2timeAttr[ luaL_checkstring( state , index ) ]; }
+		static unused inline _imageFileCompression	check( lua_State* state , int index , _imageFileCompression* dummy ){ return string2imageFileCompression[ luaL_checkstring( state , index ) ]; }
 		static unused inline _style					check( lua_State* state , int index , _style* dummy ){ _style style; applyString2style( style , luaL_checkstring( state , index ) ); return style; }
-		_color										check( lua_State* state , int index , _color* dummy );
 		template<typename T>
 		static unused inline _optValue<T>			check( lua_State* state , int index , _optValue<T>* dummy ){
 			if( is_a( state , index , (T*)nullptr ) )
@@ -71,6 +87,10 @@ namespace _luafunc
 		template<typename T>
 		static unused inline _vector<T>				check( lua_State* state , int index , _vector<T>* dummy ){
 			return checkContainerInternal<_vector<T>>( state , index );
+		}
+		template<typename T1, typename T2>
+		static unused inline _pair<T1,T2>			check( lua_State* state , int index , _pair<T1,T2>* dummy ){
+			return checkPairInternal<_pair<T1,T2>>( state , index );
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
@@ -88,14 +108,15 @@ namespace _luafunc
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~~ Internal Container Checks ~~~~~~~~~~~~~~~~~~~
-		template<typename ContainerType>
+		template<
+			typename ContainerType
+			, typename ValueType = typename ContainerType::value_type
+		>
 		static unused ContainerType checkContainerInternal( lua_State* state , int index )
 		{
 			// Check if table is present
 			if( !lua_istable( state , index ) )
 				lua_tagerror( state , index , LUA_TTABLE );
-			
-			typedef typename ContainerType::value_type ValueType;
 			
 			ContainerType ret;
 			for( int i = 1; ; i++ )
@@ -113,15 +134,16 @@ namespace _luafunc
 			return ret;
 		}
 		
-		template<typename ContainerType>
+		template<
+			typename ContainerType
+			, typename KeyType = typename ContainerType::key_type
+			, typename ValueType = typename ContainerType::mapped_type
+		>
 		static unused ContainerType checkAssociativeContainerInternal( lua_State* state , int index )
 		{
 			// Check if table is present
 			if( !lua_istable( state , index ) )
 				lua_tagerror( state , index , LUA_TTABLE );
-			
-			typedef typename ContainerType::key_type KeyType;
-			typedef typename ContainerType::mapped_type ValueType;
 			
 			ContainerType ret;
 			for( int i = 1; ; i++ )
@@ -133,22 +155,36 @@ namespace _luafunc
 					break;
 				}
 				else if( lua_istable( state , -1 ) )
-				{
-					lua_rawgeti( state , -1 , 1 ); // Get key
-					auto key = check( state , -1 , (KeyType*)nullptr );
-					lua_pop( state , 1 ); // pop key
-					
-					lua_rawgeti( state , -1 , 2 ); // Get value
-					auto value = check( state , -1 , (ValueType*)nullptr );
-					lua_pop( state , 1 ); // pop value
-					
-					ret[key] = value;
-				}
+					ret.insert( check( state , -1 , (_pair<KeyType,ValueType>*)nullptr ) );
 				else
 					ret[ i - 1 ] = check( state , -1 , (ValueType*)nullptr );
 				
 				lua_pop( state , 1 );// Pop Value
 			}
+			
+			return ret;
+		}
+		
+		template<
+			typename PairType
+			, typename FirstType = typename PairType::first_type
+			, typename SecondType = typename PairType::second_type
+		>
+		static unused PairType checkPairInternal( lua_State* state , int index )
+		{
+			// Check if table is present
+			if( !lua_istable( state , index ) )
+				lua_tagerror( state , index , LUA_TTABLE );
+			
+			PairType ret;
+			
+			lua_rawgeti( state , index , 1 );	// Get first value
+			ret.first  = check( state , -1 , (FirstType*)nullptr );
+			lua_pop( state , 1 );				// Pop first value
+			
+			lua_rawgeti( state , index , 2 );	// Get second value
+			ret.second = check( state , -1 , (SecondType*)nullptr );
+			lua_pop( state , 1 );				// Pop second value
 			
 			return ret;
 		}

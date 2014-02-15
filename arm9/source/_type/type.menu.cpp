@@ -1,4 +1,5 @@
 #include "_type/type.menu.h"
+#include "_type/type.system.h"
 
 void _menu::callHandler( _int listIndex , _int entryIndex )
 {
@@ -6,7 +7,7 @@ void _menu::callHandler( _int listIndex , _int entryIndex )
 	if( !this->sorted )
 	{
 		std::sort( this->handlers.begin() , this->handlers.end()
-			, []( const HandlerTuple& val1 , const HandlerTuple& val2 )->bool{ return std::get<0>(val1).type < std::get<0>(val2).type; }
+			, []( const HandlerPair& val1 , const HandlerPair& val2 )->bool{ return val1.first.type < val2.first.type; }
 		);
 		this->sorted = true;
 	}
@@ -14,10 +15,10 @@ void _menu::callHandler( _int listIndex , _int entryIndex )
 	for( auto entry : this->handlers )
 	{
 		// Check if rule evaluates to true
-		if( std::get<0>(entry)( listIndex , entryIndex ) == true )
+		if( entry.first( listIndex , entryIndex ) == true )
 		{
 			// Call handler
-			(*std::get<1>(entry))( listIndex , entryIndex );
+			(*entry.second)( listIndex , entryIndex );
 			return;
 		}
 	}
