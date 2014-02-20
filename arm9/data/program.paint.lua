@@ -24,27 +24,35 @@ using "UI.ImageGadget"
 using "UI.WindowBar"
 using "UI.WindowMenu"
 using "Dialog.FileSaveDialog"
+using "Dialog.FileOpenDialog"
 using "Dialog.YesNoDialog"
+using "Dialog.EnterTextDialog"
 
 -- Supported Filetypes
-local possibleFileTypes = {
+local possibleReadFileTypes = {
+	{ 1 , { "Windows Bitmap" , "bmp" } } ,
+	{ 2 , { "JPEG" , "jpg" } } ,
+	{ 3 , { "Ptl. Ntwrk. Graphics" , "png" } } ,
+	{ 4 , { "GIF" , "gif" } }
+}
+local possibleWriteFileTypes = {
 	{ 1 , { "Windows Bitmap" , "bmp" } } ,
 	{ 2 , { "JPEG" , "jpg" } } ,
 	{ 3 , { "Ptl. Ntwrk. Graphics" , "png" } } ,
 	{ 4 , { "GIF" , "gif" } }
 }
 
-local wnd
-local windowBar
-local windowMenu
-local canvas -- Bitmap for image editing
-local greyBackground -- Holds The Canvas
-local curColor = "red" -- Current Paint color
-local imageFile -- Currently opened File
-local windowTitle = System.getLocalizedString("lbl_unnamed")
-local dialog = nil -- Variable to hold any type of dialog
-local changes = false
-local closeOnSave = false
+local APPDATA = {
+	window = nil ,
+	windowBar = nil ,
+	windowMenu = nil ,
+	canvas = nil , -- Bitmap for image editing
+	greyBackground = nil , -- Holds The Canvas
+	curColor = "red" , -- Current Paint color
+	imageFile = nil , -- Currently opened File
+	dialog = nil , -- Variable to hold any type of dialog
+	changes = false
+}
 
 function main( filename )
 
@@ -63,109 +71,250 @@ function main( filename )
 	windowRawMenu.setList( 2 , { { 1 , System.getLocalizedString("lbl_size") } } ) -- Reference a list
 	
 	-- Add a WindowMenu built from the _menu we constructed
-	windowRawMenu.addMenuHandler( MenuRule( 1 , 0 , 2 ) , menuHandler ) -- Add our Handler for "open", "save" and "save as..."
-	windowMenu = WindowMenu( windowRawMenu )
+	windowRawMenu.addMenuHandler( MenuRule( 1 , 1 , 4 ) , menu1Handler ) -- Add our Handler for "open", "save" and "save as..."
+	windowRawMenu.addMenuHandler( MenuRule( 2 , 1 ) , menu2Handler ) -- Add our Handler for "open", "save" and "save as..."
+	APPDATA.windowMenu = WindowMenu( windowRawMenu )
 
 	
 	if filename ~= nil then
-		imageFile = ImageFile( filename )
-		
-		local temp = imageFile.readBitmap()
-		
-		if temp ~= nil then
-			canvas = Bitmap( temp.width , temp.height )
-			canvas.copy( 0 , 0 , temp )
-			local file = Direntry( filename )
-			windowTitle = file.displayName
-		else
-			imageFile = nil
-			canvas = Bitmap( 65 , 55 , "white" )
-		end
+		APPDATA.imageFile = ImageFile( filename )
+		loadImageFile()
 	else
-		canvas = Bitmap( 100 , 80 , "white" )
+		createEmptyCanvas()
 	end
 	
-	greyBackground = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
-	greyBackground.setInternalEventHandler( "onDraw" , refreshHandler )
-	greyBackground.setUserEventHandler( "onDragging" , dragHandler )
-	greyBackground.setUserEventHandler( "onDragStop" , dragHandler )
-	greyBackground.setUserEventHandler( "onDragStart" , dragHandler )
-	greyBackground.setUserEventHandler( "onMouseDown" , dragHandler )
-	greyBackground.setUserEventHandler( "onMouseUp" , dragHandler )
-	greyBackground.redraw()
+	local bg = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
+	bg.setInternalEventHandler( "onDraw" , refreshHandler )
+	bg.setUserEventHandler( "onDragging" , dragHandler )
+	bg.setUserEventHandler( "onDragStop" , dragHandler )
+	bg.setUserEventHandler( "onDragStart" , dragHandler )
+	bg.setUserEventHandler( "onMouseDown" , dragHandler )
+	bg.setUserEventHandler( "onMouseUp" , dragHandler )
+	APPDATA.greyBackground = bg
+	bg.redraw()
 	
-	windowBar = WindowBar()
-	wnd = Window( 10 , 10 , 100 , 100 , windowTitle .. " - Paint" , wndIcon , true , "minimizeable|draggable" )
-	wnd.addChild( greyBackground )
-	wnd.setUserEventHandler( "onResize" , windowResizeHandler )
-	wnd.setUserEventHandler( "onClose" , windowExitHandler )
-	wnd.addEnhancedChild( windowMenu )
-	wnd.addEnhancedChild( windowBar )
+	APPDATA.windowBar = WindowBar()
+	local frame = Window( 10 , 10 , 100 , 100 , "Paint" , wndIcon , true , "minimizeable|draggable" )
+	frame.addChild( APPDATA.greyBackground )
+	frame.setUserEventHandler( "onResize" , windowResizeHandler )
+	frame.setUserEventHandler( "onClose" , windowExitHandler )
+	frame.addEnhancedChild( APPDATA.windowMenu )
+	frame.addEnhancedChild( APPDATA.windowBar )
+	APPDATA.window = frame
+	updateWindowTitle()
 	
-	System.addChild( wnd )
-
+	System.addChild( APPDATA.window )
 end
 
 
--- Handles Clicks into the window menu!
-function menuHandler( listIndex , entryIndex )
+-- Handles Clicks into the window 'file' menu!
+function menu1Handler( listIndex , entryIndex )
 
 	-- Don't open two dialogs at once
-	if dialog ~= nil then return end
+	if APPDATA.dialog ~= nil and APPDATA.dialog.running then return end
 	
-	print( imageFile )
-	if entryIndex == 2 or ( entryIndex == 1 and imageFile == nil ) then -- 'save as...' or first time 'save'
-		dialog = FileSaveDialog( possibleFileTypes , nil , 1 )
-		dialog.execute()
-		dialog.setCallback( dialogSaveHandler )
-	elseif entryIndex == 1 then -- 'save'
-		imageFile.writeBitmap( canvas )
-		changes = false
-	elseif entryIndex == 0 then -- 'open'
-		--dialog = FileSaveDialog( possibleFileTypes )
-		--dialog.execute()
-		--dialog.setCallback( dialogSaveHandler )
+	if entryIndex == 4 then -- 'save as...'
+		APPDATA.dialog = FileSaveDialog( possibleWriteFileTypes , nil , 1 , nil , System.getLocalizedString("lbl_save_as") )
+		APPDATA.dialog.execute()
+		APPDATA.dialog.setCallback( saveDialogHandler )
+	elseif entryIndex == 3 then -- 'save'
+		if APPDATA.imageFile == nil then
+			APPDATA.dialog = FileSaveDialog( possibleWriteFileTypes , nil , 1 )
+			APPDATA.dialog.execute()
+			APPDATA.dialog.setCallback( saveDialogHandler )
+		else
+			APPDATA.changes = false
+			APPDATA.imageFile.writeBitmap( APPDATA.canvas )
+		end
+	elseif entryIndex == 2 then -- 'open'
+		if APPDATA.changes then
+			runDiscardChangeDialog( saveBeforeOpenDialogHandler )
+		else
+			openFileDialog()
+		end
+	elseif entryIndex == 1 then -- 'new'
+		if APPDATA.changes then
+			runDiscardChangeDialog( saveBeforeNewDialogHandler )
+		else
+			createEmptyCanvas()
+		end
 	end
 end
+
+function menu2Handler( listIndex , entryIndex )
+	
+	-- Don't open two dialogs at once
+	if APPDATA.dialog ~= nil and APPDATA.dialog.running then return end
+	
+	if entryIndex == 1 then
+		--APPDATA.dialog = EnterTextDialog
+		System.debug("Feature Not Available Yet!")
+	end
+end
+
+-- Open File Dialog
+function openFileDialog()
+	APPDATA.dialog = FileOpenDialog( possibleReadFileTypes , nil , 1 )
+	APPDATA.dialog.setCallback(
+		function( result )
+			if result == "yes" then
+				APPDATA.imageFile = ImageFile( APPDATA.dialog.fileName )
+				loadImageFile()
+			end
+		end
+	)
+	APPDATA.dialog.execute()
+end
+
+
+
+-- Will Be invoked when the dialog about discarding changes
+-- is over and all neccesary instructions are done
+function saveBeforeOpenDialogHandler( result )
+	if result ~= "cancel" then -- If the operation was not cancelled: continue opening
+		openFileDialog()
+	end
+end
+function saveBeforeNewDialogHandler( result )
+	if result ~= "cancel" then
+		createEmptyCanvas()
+	end
+end
+
+
+-- Creates a new unsafed empyt canvas
+function createEmptyCanvas()
+	APPDATA.imageFile = nil
+	if APPDATA.canvas ~= nil and APPDATA.canvas.isValid() then
+		APPDATA.canvas.reset( "white" )
+	else
+		APPDATA.canvas = Bitmap( 50 , 50 , "white" )
+	end
+	redrawCanvas()
+	APPDATA.changes = false
+end
+
+
+-- Updates the greyBackground
+function redrawCanvas()
+	if APPDATA.greyBackground ~= nil then
+		APPDATA.greyBackground.redraw()
+	end
+end
+
+
+-- Updates the window's title
+function updateWindowTitle()
+	if APPDATA.window ~= nil then
+		if APPDATA.imageFile ~= nil then
+			APPDATA.window.title = APPDATA.imageFile.displayName .. " - Paint"
+		else
+			APPDATA.window.title = System.getLocalizedString("lbl_unnamed") .. " - Paint"
+		end
+	end
+end
+
+-- Loads a new canvas by using the global 'imageFile'
+function loadImageFile()
+	if APPDATA.imageFile == nil then return end -- Abort if invalid imagefile
+	
+	local temp = APPDATA.imageFile.readBitmap()
+	if temp ~= nil then
+		APPDATA.canvas = temp
+		redrawCanvas()
+	else
+		APPDATA.imageFile = nil
+		createEmptyCanvas()
+	end
+	APPDATA.changes = false
+	updateWindowTitle()
+end
+
+
+
 
 
 -- Handles Actions you can take at an fileSaveDialog
-function dialogSaveHandler( result )
+function saveDialogHandler( result )
 	if result == "yes" then
-		local output = ImageFile( dialog.fileName )
-		output.writeBitmap( canvas , dialog.mimeType )
-		if imageFile == nil then
-			imageFile = output
-			changes = false
-			if closeOnSave then
-				System.exit()
-			end
+		local output = ImageFile( APPDATA.dialog.fileName )
+		output.writeBitmap( APPDATA.canvas , APPDATA.dialog.mimeType )
+		if APPDATA.imageFile == nil then
+			APPDATA.imageFile = output
+			APPDATA.changes = false
 		end
 	end
-	dialog = nil
-	closeOnSave = false
 end
+
+-- Handles Clicks to the window's close button
+function windowExitHandler()
+	if APPDATA.changes == false then
+		System.exit()
+	else
+		runDiscardChangeDialog(
+			function(result)
+				if result ~= "cancel" then System.exit() end
+			end
+		)
+	end
+	return "prevent_default"
+end
+
+
+
+-- Runs A Discard Changes Dialog
+-- Callback will be invoked with either
+-- "yes" => File Saved
+-- "no" => Don't Save File (Discard Changes)
+-- "cancel" => Abort Situation!
+function runDiscardChangeDialog( callback )
+	local func =
+		function( result )
+			if result == "yes" then -- 
+				if APPDATA.imageFile == nil then
+					APPDATA.dialog = FileSaveDialog( possibleWriteFileTypes , nil , 1 )
+					APPDATA.dialog.setCallback(
+						function( result )
+							saveDialogHandler( result ) -- If FileSaveDialog returns "yes" -> save file!
+							callback( result ) -- Inform what happened
+						end
+					)
+					APPDATA.dialog.execute()
+				else
+					APPDATA.changes = false
+					APPDATA.imageFile.writeBitmap( APPDATA.canvas )
+					callback( result ) -- Inform what happened
+				end
+			else
+				callback( result )
+			end
+		end
+	APPDATA.dialog = YesNoDialog( "Discard changes?" , "Save" , "Save" , "Discard" )
+	APPDATA.dialog.setCallback( func )
+	APPDATA.dialog.execute()
+end
+
+
+
 
 
 -- Handles Window Resizes
 function windowResizeHandler()
-	local clientRect = wnd.getClientRect()
-	greyBackground.setSize( clientRect.width , clientRect.height )
+	local clientRect = APPDATA.window.getClientRect()
+	APPDATA.greyBackground.setSize( clientRect.width , clientRect.height )
 	return "use_internal"
 end
 
-
 -- Refresh The Canvas
 function refreshHandler( event )
-	local port = greyBackground.getBitmapPort( event )
+	local port = APPDATA.greyBackground.getBitmapPort( event )
 	
 	port.fill( "gray" )
-	port.copy( 2 , 2 , canvas )
-	port.drawVerticalLine( canvas.width + 2 , 3 , canvas.height - 1 , "black" )
-	port.drawHorizontalLine( 3 , canvas.height + 2 , canvas.width , "black" )
+	port.copy( 2 , 2 , APPDATA.canvas )
+	port.drawVerticalLine( APPDATA.canvas.width + 2 , 3 , APPDATA.canvas.height - 1 , "black" )
+	port.drawHorizontalLine( 3 , APPDATA.canvas.height + 2 , APPDATA.canvas.width , "black" )
 	return "handled"
 end
-
 
 -- Paint Engine!
 local lastX = -1
@@ -175,19 +324,20 @@ local pressed = false
 function dragHandler( event )
 	local curX = event.posX - 2
 	local curY = event.posY - 2
-	if event.type == "onDragging" then
-		curY = curY - greyBackground.y
-		curX = curX - greyBackground.x
+	
+	if event.type == "onDragging" or event.type == "onDragStop" then
+		curY = curY - APPDATA.greyBackground.y
+		curX = curX - APPDATA.greyBackground.x
 	end
 	if pressed then
-		canvas.drawLine( lastX , lastY , curX , curY , curColor )
+		APPDATA.canvas.drawLine( lastX , lastY , curX , curY , APPDATA.curColor )
 	else
-		canvas.drawPixel( curX , curY , curColor )
+		APPDATA.canvas.drawPixel( curX , curY , APPDATA.curColor )
 	end
 	lastX = curX
 	lastY = curY
-	greyBackground.redraw()
-	changes = true
+	redrawCanvas()
+	APPDATA.changes = true
 
 	if event.type == "onDragStop" or event.type == "onMouseUp" then
 		pressed = false
@@ -195,28 +345,4 @@ function dragHandler( event )
 		pressed = true
 	end
 	return "handled"
-end
-
--- Handles the result from the 'Discard Changes'-Dialog
-function windowExitDialogHandler( result )
-	if result == "yes" then -- Try to Save File!
-		dialog = FileSaveDialog( possibleFileTypes , nil , 1 )
-		dialog.setCallback( dialogSaveHandler )
-		closeOnSave = true
-		dialog.execute()
-	else -- Discard Changes!
-		System.exit()
-	end
-end
-
--- Handles Clicks to the window's close button
-function windowExitHandler()
-	if changes == false then
-		System.exit()
-	else
-		dialog = YesNoDialog( "Discard changes?" , "Save" , "Save" , "Discard" )
-		dialog.setCallback( windowExitDialogHandler )
-		dialog.execute()
-	end
-	return "prevent_default"
 end

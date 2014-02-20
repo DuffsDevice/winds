@@ -7,6 +7,8 @@
 #include "_gadget/gadget.window.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.button.image.h"
+#include "_gadget/gadget.window.menu.h"
+#include "_gadget/gadget.window.bar.h"
 
 class PROG_Explorer : public _progC
 {
@@ -19,6 +21,8 @@ class PROG_Explorer : public _progC
 		_textBox*		addressBar;
 		_button*		submitButton;
 		_imageButton*	folderUpButton;
+		_windowMenu*	windowMenu;
+		_windowBar*		windowBar;
 		
 		void		main( _programArgs args );
 		void		destruct();

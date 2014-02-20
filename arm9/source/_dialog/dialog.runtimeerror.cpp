@@ -61,7 +61,7 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 _callbackReturn _runtimeErrorDialog::eventHandler( _event event )
 {
 	// Dismiss-Button or Window-Close-Button
-	this->cleanupInternal();
+	this->cleanup();
 	this->callCallback( _dialogResult::cancel );
 	
 	return handled;

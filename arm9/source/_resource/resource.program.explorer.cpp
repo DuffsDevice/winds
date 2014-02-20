@@ -41,9 +41,13 @@ void PROG_Explorer::main( _programArgs args )
 	// Adjust the window's title
 	this->setWindowTitle();
 	
+	// Create Menu
+	_menu menu = _windowMenu::getStandardMenu();
+	menu.setList( 1 , { { 4 , _system::getLocalizedString("lbl_exit") }	} );
+	
 	this->window->addChild( this->fileView );
-	this->window->addChild( new _windowBar() );
-	this->window->addChild( new _windowMenu( _windowMenu::getStandardMenu() ) );
+	this->window->addChild( this->windowBar = new _windowBar() );
+	this->window->addChild( this->windowMenu = new _windowMenu(menu) );
 	this->window->addChild( this->addressBar );
 	this->window->addChild( this->submitButton );
 	this->window->addChild( this->folderUpButton );
@@ -62,6 +66,10 @@ void PROG_Explorer::destruct()
 		delete this->submitButton;
 	if( this->folderUpButton )
 		delete this->folderUpButton;
+	if( this->windowMenu )
+		delete this->windowMenu;
+	if( this->windowBar )
+		delete this->windowBar;
 }
 
 void PROG_Explorer::setWindowTitle()

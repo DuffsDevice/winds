@@ -32,11 +32,12 @@ const _menu& _windowMenu::getStandardMenu(){
 		ret.setMainList( { { 1 , _system::getLocalizedString("lbl_file") } } );
 		ret.setList( 1 ,
 			{
-				{ 0 , _system::getLocalizedString("lbl_open") } ,
-				{ 1 , _system::getLocalizedString("lbl_save") } ,
-				{ 2 , _system::getLocalizedString("lbl_save_as") } ,
-				{ 3 , "----" } ,
-				{ 4 , _system::getLocalizedString("lbl_exit") }
+				{ 1 , _system::getLocalizedString("lbl_new") } ,
+				{ 2 , _system::getLocalizedString("lbl_open") } ,
+				{ 3 , _system::getLocalizedString("lbl_save") } ,
+				{ 4 , _system::getLocalizedString("lbl_save_as") } ,
+				{ 100 , "----" } ,
+				{ 101 , _system::getLocalizedString("lbl_exit") }
 			}
 		);
 		initialized = true;
@@ -75,7 +76,7 @@ _callbackReturn _windowMenu::updateHandler( _event event )
 
 void _windowMenu::menuHandler( _int list , _int entry )
 {
-	if( list == 1 && entry == 4 ) // Close
+	if( list == 1 && entry == 101 ) // Close
 	{
 		_window* window = (_window*)this->getParent();
 		if( window && window->getType() == _gadgetType::window )

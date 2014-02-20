@@ -6,7 +6,6 @@
 
 class _popup : public _gadget
 {
-	
 	private:
 		
 		static _callbackReturn blurHandler( _event );
@@ -18,9 +17,9 @@ class _popup : public _gadget
 	public:
 		
 		//! Shows the popup at the specified position on the screen
-		void show( _coord x , _coord y );
-		void show( _2s32 pos ){
-			show( pos.first , pos.second );
+		void show( _coord x , _coord y , bool rightDownOnly = true );
+		void show( _2s32 pos , bool rightDownOnly = true ){
+			show( pos.first , pos.second , rightDownOnly );
 		}
 		
 		//! Shows the popup centered at the specified position
@@ -33,9 +32,9 @@ class _popup : public _gadget
 		void shelve( bool focusOwner = false );
 		
 		//! Toggle between hidden and shown
-		void toggle( _coord x , _coord y );
-		void toggle( _2s32 pos ){
-			toggle( pos.first , pos.second );
+		void toggle( _coord x , _coord y , bool rightDownOnly = true );
+		void toggle( _2s32 pos , bool rightDownOnly = true ){
+			toggle( pos.first , pos.second , rightDownOnly );
 		}
 		
 		//! Check if the popup is opened on the screen

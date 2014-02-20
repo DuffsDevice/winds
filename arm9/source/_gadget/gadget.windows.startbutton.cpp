@@ -7,7 +7,7 @@
 
 _callbackReturn _windowsStartButton::mouseHandler( _event event ){
 	
-	this->startMenu->toggle( this->getAbsoluteX() , this->getAbsoluteY() );
+	this->startMenu->toggle( this->getAbsoluteX() , this->getAbsoluteY() , false );
 	
 	// Let the button handle the rest of the mouseDown event
 	return handled;

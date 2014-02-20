@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include "_library/library.image.png.decoder.h"
 #include "_library/library.image.png.encoder.h"
@@ -122,7 +121,7 @@ int YsPngHuffmanTreeManager::MakeTreeFromData(int nData,unsigned int codeData[],
 	{
 		if(maxValue<codeData[i])
 		{
-			printf("%s  Code data out of range.\n",__FUNCTION__);
+			//printf("%s  Code data out of range.\n",__FUNCTION__);
 			return YSERR;
 		}
 		elemFreq[codeData[i]]++;
@@ -131,7 +130,7 @@ int YsPngHuffmanTreeManager::MakeTreeFromData(int nData,unsigned int codeData[],
 	{
 		if(maxValue<codeData2[i])
 		{
-			printf("%s  Code data2 out of range.\n",__FUNCTION__);
+			//printf("%s  Code data2 out of range.\n",__FUNCTION__);
 			return YSERR;
 		}
 		elemFreq[codeData2[i]]++;
@@ -202,8 +201,8 @@ void YsPngHuffmanTreeManager::PrintInfo(void) const
 {
 	if(NULL!=root)
 	{
-		printf("Max depth=%d\n",root->depth);
-		printf("Root Weight=%d\n",root->weight);
+		//printf("Max depth=%d\n",root->depth);
+		//printf("Root Weight=%d\n",root->weight);
 	}
 }
 
@@ -626,7 +625,7 @@ int YsPngCompressor::BeginCompression(unsigned int nByte)
 	}
 	if(FCHECK>=32)
 	{
-		printf("Unable to make legitimate FCHECK value.\n");
+		//printf("Unable to make legitimate FCHECK value.\n");
 		return YSERR;
 	}
 
@@ -707,7 +706,7 @@ int YsPngCompressor::AddCompressionBlock(unsigned int nByte,unsigned char byteDa
 
 	for(i=0; i<codeLengthLen; i++)
 	{
-		printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenCodeLen[i],hLenCode[i]);
+		//printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenCodeLen[i],hLenCode[i]);
 	}
 
 
@@ -778,7 +777,7 @@ int YsPngCompressor::AddCompressionBlock(unsigned int nByte,unsigned char byteDa
 			GetCopyCodeAndExtraBit(copyCode,nExtBit,extBit,copyLength);
 			if(copyCode!=codeArray[i])
 			{
-				printf("!Internal error! Copy code doesn't match the copy length.\n");
+				//printf("!Internal error! Copy code doesn't match the copy length.\n");
 				delete [] codeArray;
 				delete [] copyParamArray;
 				return YSERR;
@@ -1047,8 +1046,8 @@ void YsPngCompressor::EncodeWithDumbestRepetitionReduction(
 		n++;
 	}
 	
-	printf("Max Back Dist=%d\n",maxBackDist);
-	printf("Max Copy Length=%d\n",maxCopyLength);
+	//printf("Max Back Dist=%d\n",maxBackDist);
+	//printf("Max Copy Length=%d\n",maxCopyLength);
 
 	codeArray[n++]=256; // Terminator
 	nCode=n;
@@ -1125,16 +1124,16 @@ int YsPngCompressor::MakeLengthLiteral(int &hLit,unsigned int hLenLit[],int nCod
 	if(litTreeManager.GetTreeDepth()>15)
 	{
 		int i;
-		printf("Code Tree depth exceeds maximum allowed... %d\n",litTreeManager.GetTreeDepth());
+		//printf("Code Tree depth exceeds maximum allowed... %d\n",litTreeManager.GetTreeDepth());
 		for(i=0; i<32 && litTreeManager.GetTreeDepth()>15; i++)
 		{
 			litTreeManager.ReduceTreeDepth();
-			printf("Reducing Code Tree Depth... %d\n",litTreeManager.GetTreeDepth());
+			//printf("Reducing Code Tree Depth... %d\n",litTreeManager.GetTreeDepth());
 		}
 	}
 	if(litTreeManager.GetTreeDepth()>15)
 	{
-		printf("Cannot bring the code tree depth below maximum %d\n",litTreeManager.GetTreeDepth());
+		//printf("Cannot bring the code tree depth below maximum %d\n",litTreeManager.GetTreeDepth());
 		return YSERR;
 	}
 
@@ -1170,16 +1169,16 @@ int YsPngCompressor::MakeLengthCodeLength(
 	if(lenTreeManager.GetTreeDepth()>7)  // 3bit each->Max 7
 	{
 		int i;
-		printf("Code-Length Tree depth exceeds maximum allowed... %d\n",lenTreeManager.GetTreeDepth());
+		//printf("Code-Length Tree depth exceeds maximum allowed... %d\n",lenTreeManager.GetTreeDepth());
 		for(i=0; i<32 && lenTreeManager.GetTreeDepth()>7; i++)
 		{
 			lenTreeManager.ReduceTreeDepth();
-			printf("Reducing Code-Length Tree Depth... %d\n",lenTreeManager.GetTreeDepth());
+			//printf("Reducing Code-Length Tree Depth... %d\n",lenTreeManager.GetTreeDepth());
 		}
 	}
 	if(lenTreeManager.GetTreeDepth()>7)
 	{
-		printf("Cannot bring the Code-Length tree depth below maximum %d\n",lenTreeManager.GetTreeDepth());
+		//printf("Cannot bring the Code-Length tree depth below maximum %d\n",lenTreeManager.GetTreeDepth());
 		return YSERR;
 	}
 
@@ -1235,16 +1234,16 @@ int YsPngCompressor::MakeLengthBackDist(int &hDist,unsigned int hLenDist[],int n
 	if(treeManager.GetTreeDepth()>15)
 	{
 		int i;
-		printf("Backdist Tree depth exceeds maximum allowed... %d\n",treeManager.GetTreeDepth());
+		//printf("Backdist Tree depth exceeds maximum allowed... %d\n",treeManager.GetTreeDepth());
 		for(i=0; i<32 && treeManager.GetTreeDepth()>15; i++)
 		{
 			treeManager.ReduceTreeDepth();
-			printf("Reducing Backdist Tree Depth... %d\n",treeManager.GetTreeDepth());
+			//printf("Reducing Backdist Tree Depth... %d\n",treeManager.GetTreeDepth());
 		}
 	}
 	if(treeManager.GetTreeDepth()>15)
 	{
-		printf("Cannot bring the backdist tree depth below maximum %d\n",treeManager.GetTreeDepth());
+		//printf("Cannot bring the backdist tree depth below maximum %d\n",treeManager.GetTreeDepth());
 		return YSERR;
 	}
 
@@ -1816,7 +1815,7 @@ int YsRawPngEncoder::Encode(int width,int height,int bitDepth,int colorType,cons
 	bytePerLine=CalculateBytePerLine(width,bitDepth,colorType);
 	if(bytePerLine==0)
 	{
-		printf("Unsupported color type and/or bitDepth\n");
+		//printf("Unsupported color type and/or bitDepth\n");
 		return YSERR;
 	}
 	totalByte=bytePerLine*height;

@@ -8,6 +8,7 @@
 #include "_dialog/dialog.errorwarninginfo.h"
 #include "_dialog/dialog.image.h"
 #include "_dialog/dialog.file.save.h"
+#include "_dialog/dialog.file.open.h"
 
 /**
  * Proxy Classes
@@ -97,13 +98,23 @@ class _lua_filesavedialog : public _fileSaveDialog
 		//! Constructor
 		_lua_filesavedialog( lua_State* L );
 		
-		//! getDirentry
-		int getDirentry( lua_State* );
-		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_filesavedialog>::FunctionType methods[];
 		static Lunar<_lua_filesavedialog>::PropertyType properties[];
+};
+
+class _lua_fileopendialog : public _fileOpenDialog
+{
+	public:
+		
+		//! Constructor
+		_lua_fileopendialog( lua_State* L );
+		
+		//! Lunar !//
+		static const char className[];
+		static Lunar<_lua_fileopendialog>::FunctionType methods[];
+		static Lunar<_lua_fileopendialog>::PropertyType properties[];
 };
 
 #endif

@@ -11,7 +11,7 @@ void _fileSaveDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<string> saveLabel ) :
+_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<string> saveLabel , _optValue<string> windowLabel ) :
 	fileTypes( move(possibleFileExtensions) )
 {
 	// Build directory and initial name
@@ -60,7 +60,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Window
 	_length winWidth = labelWidth + buttonWidth + textBoxAndSelectWidth + 7;
 	_length winHeight = secondLineY + this->saveButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_save") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_save") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
 	
 	
 	// FileView & Addressbar & Button
@@ -110,7 +110,7 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 			if( fO->getDirentry().isDirectory() )
 				fO->execute();
 			else{
-				this->cleanupInternal();
+				this->cleanup();
 				this->callCallback( _dialogResult::yes );
 			}
 		}
@@ -139,11 +139,11 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 	// Cancel-Button or Window-Close-Button
 	else
 	{
-		this->cleanupInternal();
+		this->cleanup();
 		
 		// Cancel Button or Window-close
 		if( that == this->cancelButton || that == this->window )
-			this->callCallback( _dialogResult::no );
+			this->callCallback( _dialogResult::cancel );
 		// OK-Button
 		if( that == this->saveButton )
 			this->callCallback( _dialogResult::yes );

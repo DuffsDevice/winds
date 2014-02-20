@@ -480,13 +480,13 @@ _imageFile::~_imageFile()
 		delete this->bufferedImage;
 }
 
-bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeType2Write , _optValue<_imageFileCompression> compression )
+bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeType2write , _optValue<_imageFileCompression> compression )
 {
 	if( !source.isValid() )
 		return false;
 	
 	bool result = false;
-	_mimeType mime = mimeType2Write.isValid() ? (_mimeType)mimeType2Write : this->getRealMime();
+	_mimeType mime = mimeType2write.isValid() ? (_mimeType)mimeType2write : this->getRealMime();
 	
 	// If file doesn't exist already, create it!
 	this->create();
@@ -518,6 +518,12 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeT
 			delete encoder;
 			break;
 		}
+		case _mime::image_gif:
+		{
+			//! TODO: Fix! (Doesn't Work!)
+			_system::debug("Writing GIFs is not available yet!\n");
+			break;
+		}
 		case _mime::image_jpeg:
 		{
 			_u32 numberPixels = source.getWidth()*source.getHeight();
@@ -531,9 +537,9 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeT
 				tempBuffer[2] = col.getB()<<3;
 				tempBuffer += 3;
 			}while( --numberPixels > 0 );
-			jpge::params compressionParam;
-			compressionParam.m_quality = compression.isValid() ? (int)(_imageFileCompression)compression : 75; // Set Quality
-			result = jpge::compress_image_to_jpeg_file( this->getFileName().c_str() , source.getWidth() , source.getHeight() , 3 , buffer , compressionParam );
+			int quality = compression.isValid() ? (int)(_imageFileCompression)compression : 90; // Set Quality
+			result = jo_write_jpg( this->getFileName().c_str() , buffer , source.getWidth() , source.getHeight() , 3 , quality );
+			delete[] buffer;
 		}
 		default:
 			break;
