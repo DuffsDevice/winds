@@ -164,13 +164,9 @@ _lua_filesavedialog::_lua_filesavedialog(lua_State* L) :
 		, optcheck<string>( L , 2 )
 		, lightcheck<int>( L , 3 , 0 )
 		, optcheck<string>( L , 4 )
+		, optcheck<string>( L , 5 )
 	)
 {}
-
-int _lua_filesavedialog::getDirentry( lua_State* L ){
-	Lunar<_lua_direntry>::push( L , new _lua_direntry( _fileSaveDialog::getDirentry() ) );
-	return 1;
-}
 
 //! _lua_filesavedialog
 const char _lua_filesavedialog::className[] = "FileSaveDialog";
@@ -179,7 +175,6 @@ Lunar<_lua_filesavedialog>::FunctionType _lua_filesavedialog::methods[] = {
 	{ "terminate"		, wrap( _lua_filesavedialog , &_dialog::terminate ) },
 	{ "setCallback"		, wrap( _lua_filesavedialog , &_dialog::setCallback ) },
 	{ "deleteCallback"	, wrap( _lua_filesavedialog , &_dialog::deleteCallback ) },
-	{ "getDirentry"		, &_lua_filesavedialog::getDirentry },
 	LUA_CLASS_FUNC_END
 };
 Lunar<_lua_filesavedialog>::PropertyType _lua_filesavedialog::properties[] = {
@@ -187,5 +182,33 @@ Lunar<_lua_filesavedialog>::PropertyType _lua_filesavedialog::properties[] = {
 	{ "fileType"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getFileType ) , nullptr },
 	{ "mimeType"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getMimeType ) , nullptr },
 	{ "fileName"	, wrap( _lua_filesavedialog , &_fileSaveDialog::getFileName ) , nullptr },
+	LUA_CLASS_ATTR_END
+};
+
+//! _lua_fileopendialog
+_lua_fileopendialog::_lua_fileopendialog(lua_State* L) :
+	_fileOpenDialog(
+		check<_fileTypeList>( L , 1 )
+		, lightcheck<string>( L , 2 )
+		, lightcheck<int>( L , 3 )
+		, optcheck<string>( L , 4 )
+		, optcheck<string>( L , 5 )
+	)
+{}
+
+//! _lua_fileopendialog
+const char _lua_fileopendialog::className[] = "FileOpenDialog";
+Lunar<_lua_fileopendialog>::FunctionType _lua_fileopendialog::methods[] = {
+	{ "execute"			, wrap( _lua_fileopendialog , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_fileopendialog , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_fileopendialog , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_fileopendialog , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+Lunar<_lua_fileopendialog>::PropertyType _lua_fileopendialog::properties[] = {
+	{ "running"	, wrap( _lua_fileopendialog , &_dialog::isRunning ) , nullptr },
+	{ "fileType"	, wrap( _lua_fileopendialog , &_fileSaveDialog::getFileType ) , nullptr },
+	{ "mimeType"	, wrap( _lua_fileopendialog , &_fileSaveDialog::getMimeType ) , nullptr },
+	{ "fileName"	, wrap( _lua_fileopendialog , &_fileSaveDialog::getFileName ) , nullptr },
 	LUA_CLASS_ATTR_END
 };

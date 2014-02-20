@@ -1,9 +1,11 @@
-#ifndef _WIN_D_FILESAVE_
-#define _WIN_D_FILESAVE_
+#ifndef _WIN_D_FILEOPEN_
+#define _WIN_D_FILEOPEN_
 
 #include "_type/type.dialog.h"
 #include "_type/type.shortstring.h"
+#include "_type/type.system.h"
 #include "_gadget/gadget.button.h"
+#include "_dialog/dialog.file.save.h"
 #include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.button.image.h"
 #include "_gadget/gadget.label.h"
@@ -12,16 +14,13 @@
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.select.h"
 
-typedef _assocVector<_int,_pair<string,string>> _fileTypeList;
-
-class _fileSaveDialog : public _dialog
+class _fileOpenDialog : public _dialog
 {
 	private:
 		
-		_button*		saveButton;
+		_button*		openButton;
 		_button*		cancelButton;
 		_label*			fileNameLabel;
-		_label*			fileTypeLabel;
 		_textBox*		fileNameBox;
 		_window*		window;
 		_select*		fileTypeChooser;
@@ -29,7 +28,6 @@ class _fileSaveDialog : public _dialog
 		_textBox*		fileViewAddress;
 		_actionButton*	gotoButton;
 		_imageButton*	folderUpButton;
-		string			initialName;
 		_fileTypeList	fileTypes;
 		
 		_callbackReturn eventHandler( _event );
@@ -37,46 +35,35 @@ class _fileSaveDialog : public _dialog
 		void executeInternal();
 		void cleanupInternal();
 		
-		const _menuEntryList generateMenuList(){
-			_menuEntryList menuList;
-			for( auto& value : fileTypes ){
-				string& val = menuList[value.first];
-				val.swap( std::get<0>(value.second) );
-				val += " (*.";
-				val += std::get<1>(value.second).c_str();
-				val += ")";
-			}
-			return move(menuList);
-		}
+		const _menuEntryList generateMenuList();
 	
 	public:
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName = ignore , _int initialFileExtension = 0 , _optValue<string> saveLabel = ignore , _optValue<string> windowLabel = ignore );
+		_fileOpenDialog( _fileTypeList possibleFileExtensions , string initialFilePath = "" , _int initialFileExtension = 0 , _optValue<string> openLabel = ignore , _optValue<string> windowLabel = ignore );
 		
 		
 		//! Get Index of the selected entry in 'possibleFileExtensions'
-		_int getFileType() const {
+		_int getFileType(){
 			return this->fileTypeChooser->getIntValue();
 		}
 		
 		//! Get selected Mime-Type
-		_mimeType getMimeType() const {
+		_mimeType getMimeType(){
 			return _mimeType::fromExtension( std::get<1>(this->fileTypes[this->getFileType()]) );
 		}
 		
 		//! Get Selected filename
-		string getFileName() const {
+		string getFileName(){
 			return _direntry( this->fileView->getPath() ).getFileName() + this->fileNameBox->getStrValue();
 		}
 		
 		//! Dtor
-		~_fileSaveDialog(){
-			delete this->saveButton;
+		~_fileOpenDialog(){
+			delete this->openButton;
 			delete this->cancelButton;
 			delete this->fileNameLabel;
-			delete this->fileTypeLabel;
 			delete this->fileNameBox;
 			delete this->window;
 			delete this->fileTypeChooser;

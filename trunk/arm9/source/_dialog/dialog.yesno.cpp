@@ -44,7 +44,7 @@ _callbackReturn _yesNoDialog::eventHandler( _event event )
 	_gadget* that = event.getGadget();
 	
 	// In all cases the dialog closes!
-	this->cleanupInternal();
+	this->cleanup();
 	
 	if( that == this->noButton )// No-Button
 		this->callCallback( _dialogResult::no );

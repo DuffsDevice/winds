@@ -55,7 +55,7 @@ _scDesktop::_scDesktop()
 	
 	_system::executeCommand("%SYSTEM%/explorer.exe");
 	//_system::executeCommand("%WINDIR%/accessories/exampleprogram.exe");
-	//_system::executeCommand("%WINDIR%/accessories/paint.exe");
+	//_system::executeCommand("%WINDIR%/accessories/paint.exe -filename.bmp");
 	//_system::executeCommand("%WINDIR%/accessories/calculator.exe");
 	//_system::executeCommand("%WINDIR%/games/pong.exe");
 	

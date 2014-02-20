@@ -65,7 +65,7 @@ _callbackReturn _imageDialog::eventHandler( _event event )
 	_gadget* that = event.getGadget();
 	
 	// In all cases the dialog closes
-	this->cleanupInternal();
+	this->cleanup();
 	
 	// Other-Button
 	if( that == this->otherButton )

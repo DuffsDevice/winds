@@ -382,6 +382,8 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 					
 					if( !extLen ) // Skip empty extensions
 						continue;
+					if( extLen == 1 && ext[0] == '*' )
+						goto _found;
 					
 					_u32 i = 0;
 					_u32 maxLen = min( extLen , nameLen );
