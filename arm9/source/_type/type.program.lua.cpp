@@ -42,7 +42,8 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.calendar.h"
 #include "_lua/lua.gadget.clock.h"
 #include "_lua/lua.gadget.counter.h"
-#include "_lua/lua.gadget.colorpicker.h"
+#include "_lua/lua.gadget.colorpicker.gradient.h"
+#include "_lua/lua.gadget.colorpicker.hexagon.h"
 #include "_lua/lua.gadget.button.image.h"
 #include "_lua/lua.gadget.button.sticky.h"
 #include "_lua/lua.gadget.image.h"
@@ -95,7 +96,8 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "WindowMenu" , &Lunar<_lua_windowmenu>::install ),
 	make_tuple( "UI" , "Calendar" , &Lunar<_lua_calendar>::install ),
 	make_tuple( "UI" , "Counter" , &Lunar<_lua_counter>::install ),
-	make_tuple( "UI" , "ColorPicker" , &Lunar<_lua_colorpicker>::install ),
+	make_tuple( "UI" , "HexagonColorPicker" , &Lunar<_lua_hexagoncolorpicker>::install ),
+	make_tuple( "UI" , "GradientColorPicker" , &Lunar<_lua_gradientcolorpicker>::install ),
 	make_tuple( "UI" , "ImageGadget" , &Lunar<_lua_imagegadget>::install ),
 	make_tuple( "UI" , "ImageButton" , &Lunar<_lua_imagebutton>::install ),
 	make_tuple( "UI" , "Button" , &Lunar<_lua_button>::install ),

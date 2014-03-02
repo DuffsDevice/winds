@@ -13,7 +13,7 @@ _wifiSocketClient* client = nullptr;
 #include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.progressbar.h"
 #include "_gadget/gadget.keyboard.h"
-#include "_gadget/gadget.colorpicker.h"
+#include "_gadget/gadget.colorpicker.hexagon.h"
 #include "_gadget/gadget.button.expand.h"
 
 namespace{
@@ -75,7 +75,7 @@ _scDesktop::_scDesktop()
 	//btn->registerEventHandler( mouseClick , new _staticCallback( clickHandler ) );
 	//btn2->registerEventHandler( mouseClick , new _staticCallback( clickHandler2 ) );
 	//_system::_gadgetHost_->addChild( btn );
-	//_system::_gadgetHost_->addChild( btn2 );
+	_system::_gadgetHost_->addChild( new _hexagonColorPicker( 0 , 0 ) );
 }
 
 _scDesktop::~_scDesktop()

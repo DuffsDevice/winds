@@ -32,7 +32,7 @@ void _program::execute( _programArgs args )
 		make_pair(
 			this
 			, _programData(
-				{ false , _system::getHighResTime() }
+				{ false , _system::getMilliTime() }
 			)
 		)
 	);

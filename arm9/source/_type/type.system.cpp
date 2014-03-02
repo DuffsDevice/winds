@@ -32,13 +32,13 @@ void _system::debug( const char* fmt , ... )
     va_list args;
 
     // Initialise the va_list variable with the ... after fmt
-    va_start(args, fmt);
+    va_start( args , fmt );
 
     // Forward the '...' to sprintf
-    vsprintf(output, fmt , args);
+    vsprintf( output , fmt , args );
 
     // Clean up the va_list
-    va_end(args);
+    va_end( args );
 	
 	
 	// Enhance the message!
@@ -62,33 +62,36 @@ void _system::vdebug( const char* fmt , va_list args )
     vsprintf(output, fmt , args);
 	
 	// Enhance the message!
-	string result = ( string( _time::now() ) + ": " + string( output ) + "\r\n" );
-	
-	// Debug to file
-	_system::_debugFile_->writeString( result );
+	string result = string( _time::now() );
+	result += ": ";
+	result += output;
+	result += "\r\n";
 	
 	// Debug to screen
 	printf( "%s" , result.c_str() );
+	
+	// Debug to file
+	_system::_debugFile_->writeString( move(result) );
 }
 
 void _system::fadeMainScreen( bool out , bool anim )
 {
-	_tempTime time = _system::getHighResTime();
+	_tempTime time = _system::getMilliTime();
 	
 	REG_BLDCNT = ( 1 << 3 ) | ( 1 << 2 ) // 3rd and 2nd Screen_Layer
 	| ( 3 << 6 ) ; // Set Blend Mode to fade to black ( 2 << 6 ) would be fading to white
 	
 	if( out )
 	{
-		while( anim && time + 200 > _system::getHighResTime() )
-			REG_BLDY = 31 - float(_system::getHighResTime() - time )/(200)*31;
+		while( anim && time + 200 > _system::getMilliTime() )
+			REG_BLDY = 31 - float(_system::getMilliTime() - time )/(200)*31;
 		
 		REG_BLDY = 0;
 	}
 	else
 	{
-		while( anim && time + 200 > _system::getHighResTime() )
-			REG_BLDY = float(_system::getHighResTime() - time )/(200)*31;
+		while( anim && time + 200 > _system::getMilliTime() )
+			REG_BLDY = float(_system::getMilliTime() - time )/(200)*31;
 		
 		REG_BLDY = 31;
 	}
@@ -99,7 +102,7 @@ void _system::fadeMainScreen( bool out , bool anim )
 //! BUS_CLOCK >> 15 - BUS_CLOCK >> 21 - BUS_CLOCK >> 22 = 1000 * rawTime
 //! There you get milliseconds from rawTime!
 
-_tempTime _system::getHighResTime()
+_tempTime _system::getRawTime()
 {
 	// Check Timers
 	_u64 lo = TIMER_DATA(0);
@@ -110,19 +113,44 @@ _tempTime _system::getHighResTime()
 	_u64 mi2 = TIMER_DATA(1);
 	_u64 hi2 = TIMER_DATA(2);
 
-	if ( lo2 < lo )
-	{
-		lo = lo2;
-		hi = hi2;
-		mi = mi2;
-	}
-	
-	_tempTime time = ( lo | mi<<16 | hi << 32);
+	if( lo2 < lo )
+		return ( lo2 | mi2<<16 | hi2 << 32);
+	return ( lo | mi<<16 | hi << 32);
+}
+
+_tempTime _system::getMilliTime(){
+	_tempTime time = _system::getRawTime();
 	return ( time >> 15 ) - ( time >> 21 ) - ( time >> 22 ); // Equals time/1000
 }
 
-void _system::switchUser( _user&& usr )
-{
+_tempTime _system::getMicroTime(){
+	_tempTime time = _system::getRawTime();
+	return
+		( time >> 5 )
+		- ( time >> 10 )
+		- ( time >> 12 )
+		- ( time >> 13 )
+		- ( time >> 14 )
+		- ( time >> 17 )
+		- ( time >> 22 )
+		- ( time >> 23 )
+		- ( time >> 24 ); // Equals time/1000000
+	/*
+		BUS_CLOCK >> 5 = 1047311
+		- (BUS_CLOCK>>10) = 1014583
+		- (BUS_CLOCK>>12) = 1006401
+		- (BUS_CLOCK>>13) = 1002310
+		- (BUS_CLOCK>>14) = 1000256
+		- (BUS_CLOCK>>17) = 1000011
+		- (BUS_CLOCK>>22) = 1000004
+		- (BUS_CLOCK>>23) = 1000001
+		- (BUS_CLOCK>>24) = 1000000
+		1000000 microseconds = 1 second = 33513982 Ticks
+	*/
+}
+
+
+void _system::switchUser( _user&& usr ){
 	_system::_rtA_->setUser( move(usr) );
 }
 

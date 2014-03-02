@@ -84,6 +84,11 @@ int _lua_color::mix(lua_State* L){
 	return push( L , _color::mix( check<_color>( L , 1 ) , check<_color>( L , 2 ) , check<int>( L , 3 ) ) );
 }
 
+//! distance
+int _lua_color::distance(lua_State* L){
+	return push( L , _color::distance( check<_color>( L , 1 ) , check<_color>( L , 2 ) , lightcheck<bool>( L , 3 , false ) ) );
+}
+
 //! Lua-_rect
 const char _lua_color::className[] = "Color";
 Lunar<_lua_color>::FunctionType _lua_color::methods[] = {
@@ -113,5 +118,6 @@ Lunar<_lua_color>::StaticType	_lua_color::staticmethods[] = {
 	{ "fromBW8"		, &_lua_color::fromBW8 },
 	{ "fromHSL"		, &_lua_color::fromHSL },
 	{ "mix"			, &_lua_color::mix },
+	{ "distance"	, &_lua_color::distance },
 	LUA_CLASS_FUNC_END
 };

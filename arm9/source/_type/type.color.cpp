@@ -1,5 +1,6 @@
 #include "_type/type.color.h"
-#include <stdio.h>
+#include <math.h>
+
 _color::_color( const string& name )
 {
 	static _map<string,_pixel> string2color = {
@@ -147,6 +148,109 @@ _color& _color::adjustHSL( int hue , int sat , int lum , _optValue<bool> alpha )
 _color& _color::adjustRGB( _s8 red , _s8 green , _s8 blu , _optValue<bool> alpha ){
 	this->setRGB( mid( 0 , this->getR() + red , 31 ) , mid( 0 , this->getG() + green , 31 ) , mid( 0 , this->getB() + blu , 31 ) , move(alpha) );
 	return *this;
+}
+
+_color::_colorLab _color::toLab() const 
+{
+	//rgb to xyz
+	float red = this->getR() / 31.0f;
+	float green = this->getG() / 31.0f;
+	float blue = this->getB() / 31.0f;
+	if( red > 0.04045 )
+		red = powf( (red + 0.055 ) / 1.055 , 2.4 );
+	else
+		red /= 12.92;
+
+	if( green > 0.04045 )
+		green = powf( ( green + 0.055 ) / 1.055 , 2.4 );
+	else
+		green /= 12.92;
+
+	if( blue > 0.04045 )
+		blue = powf( ( blue + 0.055 ) / 1.055 , 2.4 );
+	else 
+		blue /= 12.92;
+
+	red *= 100.f;
+	green *= 100.f;
+	blue *= 100.f;
+	float x = red * 0.4124f + green * 0.3576f + blue * 0.1805f;
+	float y = red * 0.2126f + green * 0.7152f + blue * 0.0722f;
+	float z = red * 0.0193f + green * 0.1192f + blue * 0.9505f;
+
+	//xyz to lab
+	x /= 95.047f;
+	y /= 100.000f;
+	z /= 108.883f;
+	if( x > 0.008856f ) 
+		x = powf( x , 0.3333f );
+	else
+		x = ( 7.787f * x ) + 0.1379f;
+
+	if( y > 0.008856 )
+		y = powf( y , 0.3333f );
+	else
+		y = ( 7.787f * y ) + 0.1379f;
+
+	if( z > 0.008856 )
+		z = powf( z , 0.3333f );
+	else
+		z = ( 7.787 * z ) + 0.1379f;
+	
+	return _color::_colorLab{
+		.l = ( 116.0f * y ) - 16.0f
+		, .a = 500.0f * ( x - y )
+		, .b = 200.0f * ( y - z )
+	};
+}
+
+float fastSqrt( float number ){
+	#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+    long i;
+    float x, y;
+    const float f = 1.5F;
+    x = number * 0.5F;
+    y  = number;
+    i  = * ( long * ) &y;
+    i  = 0x5f3759df - ( i >> 1 );
+    y  = * ( float * ) &i;
+    y  = y * ( f - ( x * y * y ) );
+    y  = y * ( f - ( x * y * y ) );
+    return number * y;
+	#pragma GCC diagnostic pop
+}
+
+#define DELTA_E_K_L             2.f
+#define DELTA_E_K_1             0.048f
+#define DELTA_E_K_2             0.014f
+
+_u16 _color::distanceInternalRGB( _color col1 , _color col2 )
+{
+	_u8 deltaR = col1.getR() - col2.getR();
+	_u8 deltaG = col1.getG() - col2.getG();
+	_u8 deltaB = col1.getB() - col2.getB();
+	return deltaR * deltaR + deltaG * deltaG + deltaB * deltaB;
+}
+
+_u16 _color::distanceInternalCIE94( _color::_colorLab col1 , _color::_colorLab col2 )
+{
+	float deltaL = col1.l - col2.l;
+	float c1 = fastSqrt( col1.a * col1.a + col1.b * col1.b );
+	float c2 = fastSqrt( col2.a * col2.a + col2.b * col2.b );
+	float deltaC = c1 - c2;
+	float deltaA = col1.a - col2.a;
+	float deltaB = col1.b - col2.b;
+	float deltaHSquared = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
+	float deltaH;
+	if( deltaHSquared > 0 )
+		deltaH = fastSqrt( deltaHSquared );
+	else
+		deltaH = 0;
+
+	float q1 = deltaL / DELTA_E_K_L;
+	float q2 = deltaC / ( 1 + DELTA_E_K_1 * c1 );
+	float q3 = deltaH / ( 1 + DELTA_E_K_2 * c2 );
+	return ( fastSqrt( q1 * q1 + q2 * q2 + q3 * q3 ) + 0.5f );
 }
 
 const _color _color::white = _color::fromRGB( 31 , 31 , 31 );

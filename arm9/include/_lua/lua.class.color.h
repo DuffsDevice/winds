@@ -73,6 +73,9 @@ class _lua_color : public _color {
 		//! mix
 		static int mix(lua_State* L);
 		
+		//! distance
+		static int distance(lua_State* L);
+		
 		
 		//! Lunar !//
 		static const char className[];

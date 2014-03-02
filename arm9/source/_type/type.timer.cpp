@@ -6,7 +6,7 @@ _timerList _timer::globalTimersToExecute;
 
 void _timer::start()
 {
-	this->startTime = _system::getHighResTime();
+	this->startTime = _system::getMilliTime();
 	this->runs = true;
 	
 	_timer::globalTimersToExecute.push_back( this ); // kotzen
@@ -39,7 +39,7 @@ _timer& _timer::operator=( _timer&& tmr )
 
 void _timer::runTimers()
 {
-	_tempTime curTime = _system::getHighResTime();
+	_tempTime curTime = _system::getMilliTime();
 	
 	// Move timers to execute
 	move( _timer::globalTimersToExecute.begin() , _timer::globalTimersToExecute.end() , std::back_inserter( _timer::globalTimers ) );
