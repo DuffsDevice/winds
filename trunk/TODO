@@ -1,6 +1,6 @@
 Gadgets:
 ========
-- Colorpicker-Hexagon
++ Colorpicker-Hexagon (✓)
 + Image-Button (✓)
 - Treeview
 - Contextmenu for Files
@@ -13,7 +13,7 @@ Types:
 Dialogs:
 ========
 - Color chooser
-- File open
++ File open (✓)
 + File save (✓)
 - Folder choose
 - Security check

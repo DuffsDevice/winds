@@ -18,9 +18,9 @@ void _animation::start()
 	// If it was paused instead of terminated
 	// and if it is not currently running: continue our work!
 	if(	this->startTime && !this->runs )
-		this->startTime = _system::getHighResTime() - this->startTime; // startTime determines the already elapsed milliseconds
+		this->startTime = _system::getMilliTime() - this->startTime; // startTime determines the already elapsed milliseconds
 	else
-		this->startTime = _system::getHighResTime();
+		this->startTime = _system::getMilliTime();
 	
 	this->runs = true;
 	
@@ -62,7 +62,7 @@ void _animation::pause()
 	this->runs = false;
 	
 	// Store elapsed time for using start() again
-	this->startTime = _system::getHighResTime() - this->startTime;
+	this->startTime = _system::getMilliTime() - this->startTime;
 }
 
 void _animation::terminate( bool animToEnd )
@@ -90,7 +90,7 @@ void _animation::step()
 	if( !this->runs )
 		return;
 	
-	_tempTime curTime = _system::getHighResTime();
+	_tempTime curTime = _system::getMilliTime();
 	
 	_u32 tElapsed = curTime - this->startTime;
 	

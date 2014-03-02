@@ -116,10 +116,10 @@ class _system{
 	public:
 		
 		//! More attributes
-		static _gadgetScreen*				_gadgetHost_;
-		static _keyboard*					_keyboard_;
-		static _ini*						_localizationTextTable_;
-		static _ini*						_localizationMonthTable_;
+		static _gadgetScreen*		_gadgetHost_;
+		static _keyboard*			_keyboard_;
+		static _ini*				_localizationTextTable_;
+		static _ini*				_localizationMonthTable_;
 		
 		//! Constructor
 		static void					start();
@@ -130,8 +130,10 @@ class _system{
 		//! Execute the supplied command
 		static bool					executeCommand( const string& cmd );
 		
-		//! Get Current Time (milliseconds since system startup)
-		static _tempTime			getHighResTime();
+		//! Get time since system startup
+		static _tempTime			getMilliTime();	//! in Milliseconds
+		static _tempTime			getMicroTime();	//! in Microseconds since system startup
+		static _tempTime			getRawTime();	//! Clock Ticks at 33.513982 GHz
 		
 		//! Get a Font by Name
 		static const _font*			getFont( const string& font )

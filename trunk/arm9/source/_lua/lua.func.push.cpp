@@ -21,7 +21,8 @@
 #include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.resizehandle.h"
 #include "_lua/lua.gadget.counter.h"
-#include "_lua/lua.gadget.colorpicker.h"
+#include "_lua/lua.gadget.colorpicker.gradient.h"
+#include "_lua/lua.gadget.colorpicker.hexagon.h"
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.clock.h"
 #include "_lua/lua.gadget.button.image.h"
@@ -146,8 +147,11 @@ namespace _luafunc
 			case _gadgetType::scrollbar:
 				Lunar<_lua_scrollbar>::push( L , new _lua_scrollbar( (_scrollBar*)gadget ) );
 				break;
-			case _gadgetType::colorpicker:
-				Lunar<_lua_colorpicker>::push( L , new _lua_colorpicker( (_colorPicker*)gadget ) );
+			case _gadgetType::gradientcolorpicker:
+				Lunar<_lua_gradientcolorpicker>::push( L , new _lua_gradientcolorpicker( (_gradientColorPicker*)gadget ) );
+				break;
+			case _gadgetType::hexagoncolorpicker:
+				Lunar<_lua_hexagoncolorpicker>::push( L , new _lua_hexagoncolorpicker( (_hexagonColorPicker*)gadget ) );
 				break;
 			case _gadgetType::resizehandle:
 				Lunar<_lua_resizehandle>::push( L , new _lua_resizehandle( (_resizeHandle*)gadget ) );

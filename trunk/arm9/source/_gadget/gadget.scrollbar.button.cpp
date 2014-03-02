@@ -54,7 +54,7 @@ void drawArrow( _bitmapPort& bP , _scrollButtonType dir )
 	bP.drawPixel( x[7] , y[7] , _color::fromRGB8( 107 , 129 , 169 ) );
 	bP.drawPixel( x[8] , y[8] , _color::fromRGB8( 107 , 129 , 169 ) );
 	bP.drawPixel( x[9] , y[9] , _color::fromRGB8( 148 , 164 , 192 ) );
-	#pragma GCC diagnostic warning "-Wmaybe-uninitialized"
+	#pragma GCC diagnostic pop
 }
 
 _callbackReturn _scrollButton::refreshHandler( _event event )

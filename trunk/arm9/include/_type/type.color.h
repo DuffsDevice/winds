@@ -7,6 +7,10 @@
 class _color{
 	
 	private:
+	
+		struct _colorLab{
+			float l, a, b;
+		};
 		
 		//! Color as X555-Triplet (A-R-G-B)
 		_pixel	color;
@@ -36,6 +40,15 @@ class _color{
 				, this->getB() + col.getB()
 			);
 		}
+		
+		//! Converts the color into Lab-ColorSpace
+		_colorLab toLab() const ;
+		
+		//! Determines the color-distance between two colors (CIE94)
+		static _u16 distanceInternalCIE94( _colorLab col1 , _colorLab col2 );
+		
+		//! Determines the color-distance between two colors (RGB) (fast but inaccurate)
+		static _u16 distanceInternalRGB( _color col1 , _color col2 );
 		
 	public:
 	
@@ -148,7 +161,14 @@ class _color{
 			return color1.mulDiv32( factor ) + color2.mulDiv32( 32 - factor );
 		}
 		
-		
+		//! Determines the color distance between colors
+		//! If fastInaccurate is true, determines distance in rgb-space
+		//! Else: Computes the very accurate CIE94 color distance algorithm
+		static inline _u16 distance( _color col1 , _color col2 , bool fastInAccurate = false ){
+			if( fastInAccurate )
+				return _color::distanceInternalRGB( col1 , col2 );
+			return _color::distanceInternalCIE94( col1.toLab() , col2.toLab() );
+		}
 		
 		//! Extract the raw Color value (convert to _pixel)
 		_pixel getColor() const { return this->color; }
