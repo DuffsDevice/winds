@@ -1,4 +1,5 @@
 #include "_type/type.color.h"
+#include "_type/type.system.h"
 #include <math.h>
 
 _color::_color( const string& name )
@@ -30,66 +31,42 @@ void _color::setRGBInternal( _u8 red , _u8 green , _u8 blue , bool alpha ){
 	this->color = red | ( green << 5 ) | ( blue << 10 ) | ( alpha << 15 );
 }
 
+
 void _color::setHSLInternal( _u16 hue , _u16 sat , _u16 lum , bool alpha )
 {
-	float v;
-	float r,g,b;
-	float h = float(hue)/360, sl = float(sat)/100, l = float(lum)/100;
-	r = l;   // default to gray
-	g = l;
-	b = l;
-	v = (l <= 0.5) ? (l * (1.0 + sl)) : (l + sl - l * sl);
-	if (v > 0)
-	{
-		float m;
-		float sv;
-		int sextant;
-		float fract, vsf, mid1, mid2;
+	//! Written by David Flanagan.
+	//! Copyright (c) 1992-2001 by David Flanagan
+	//! @see http://arc.liv.ac.uk/repos/darcs/sge/source/3rdparty/qmon/Xmt310/Xmt/HSLtoRGB.c
+	int red, green, blue;
+    int v;
+    int m, sv, fract, vsf, mid1, mid2, sextant;
 
-		m = l + l - v;
-		sv = (v - m ) / v;
-		h *= 6.0;
-		sextant = (int)h;
-		fract = h - sextant;
-		vsf = v * sv * fract;
-		mid1 = m + vsf;
-		mid2 = v - vsf;
-		switch (sextant)
-		{
-			case 6:
-			case 0:
-				  r = v;
-				  g = mid1;
-				  b = m;
-				  break;
-			case 1:
-				  r = mid2;
-				  g = v;
-				  b = m;
-				  break;
-			case 2:
-				  r = m;
-				  g = v;
-				  b = mid1;
-				  break;
-			case 3:
-				  r = m;
-				  g = mid2;
-				  b = v;
-				  break;
-			case 4:
-				  r = mid1;
-				  g = m;
-				  b = v;
-				  break;
-			case 5:
-				  r = v;
-				  g = m;
-				  b = mid2;
-				  break;
-		}
+    v = (lum < 50) ? (lum * (sat + 100) / 100) : (lum + sat - (lum * sat / 100));
+    if (v <= 0){
+		this->setRGBInternal( 0 , 0 , 0 , alpha );
+		return;
 	}
-	this->setRGBInternal( r * 31.0f , g * 31.0f , b * 31.0f , alpha );
+
+    m = lum + lum - v;
+    sv = 100 * (v - m) / v;
+
+    sextant = hue/60;
+    fract = 100 * (hue - (sextant * 60)) / 60;
+    vsf = v * sv * fract / 10000;
+    mid1 = m + vsf;
+    mid2 = v - vsf;
+
+    switch(sextant)
+	{
+		case 0: red = v; green = mid1; blue = m; break;
+		case 1: red = mid2; green = v; blue = m; break;
+		case 2: red = m; green = v; blue = mid1; break;
+		case 3: red = m; green = mid2; blue = v; break;
+		case 4: red = mid1; green = m; blue = v; break;
+		case 5: red = v; green = m; blue = mid2; break;
+    }
+	
+	this->setRGBInternal( red * 31 / 100 , green * 31 / 100 , blue * 31 / 100 , alpha );
 }
 
 _u16 _color::getS() const {
@@ -117,23 +94,22 @@ _u16 _color::getL() const {
 
 _u16 _color::getH()
 {
-	_u8 minRGB = min( min( this->getR() , this->getG() ), this->getB() );
-	_u8 maxRGB = max( max( this->getR() , this->getG() ), this->getB() );
-	_u8 delta  = maxRGB - minRGB;
-	_u8 deltaHalf  = delta >> 1;
-	
 	_int red = this->getR();
 	_int green = this->getG();
 	_int blue = this->getB();
+	_u8 minRGB = min( min( red , green ) , blue );
+	_u8 maxRGB = max( max( red , green ) , blue );
+	_u8 delta  = maxRGB - minRGB;
 	
-	if( this->getS() == 0 )
-		return 0;		
-	else if( red == maxRGB )
+	if( !delta ) // Saturation = 0
+		return 0;
+	
+	_u8 deltaHalf  = delta >> 1;	
+	
+	if( red == maxRGB )
 		return ( ( green - blue ) * 60 + deltaHalf ) / delta;
-		
 	else if( green == maxRGB )
 		return 120 + ( ( blue - red ) * 60 + deltaHalf ) / delta;
-		
 	else if( blue == maxRGB )
 		return 240 + ( ( red - green ) * 60 + deltaHalf ) / delta;
 	

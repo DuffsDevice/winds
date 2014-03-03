@@ -43,13 +43,6 @@ _gradientColorPicker::_gradientColorPicker( _optValue<_coord> x , _optValue<_coo
 	this->addChild( this->lumTable );
 }
 
-_color _gradientColorPicker::getColor() const
-{
-	return _color()
-		.setHSL( this->hue , this->sat , this->lum )
-		.getColor();
-}
-
 void _gradientColorPicker::setColor( _color color )
 {
 	_color c = color;

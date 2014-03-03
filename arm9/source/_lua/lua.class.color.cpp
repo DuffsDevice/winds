@@ -18,6 +18,9 @@ _lua_color::_lua_color( lua_State* L ) :
 //! setR
 int _lua_color::setR(lua_State* L){ _color::setR( check<int>( L , 1 ) ); return 0; }
 
+//! setAlpha
+int _lua_color::setAlpha(lua_State* L){ _color::setAlpha( check<bool>( L , 1 ) ); return 0; }
+
 //! setG
 int _lua_color::setG(lua_State* L){ _color::setG( check<int>( L , 1 ) ); return 0; }
 
@@ -51,32 +54,32 @@ int _lua_color::adjustHSL(lua_State* L){ _color::adjustHSL( check<int>( L , 1 ) 
 
 //! fromHex
 int _lua_color::fromHex(lua_State* L){
-	return push( L , _color::fromHex( check<int>( L , 1 ) , optcheck<bool>( L , 4 ) ) );
+	return push( L , _color::fromHex( check<int>( L , 1 ) , lightcheck<bool>( L , 2 , true ) ) );
 }
 
 //! fromRGB
 int _lua_color::fromRGB(lua_State* L){
-	return push( L , _color::fromRGB( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , optcheck<bool>( L , 4 ) ) );
+	return push( L , _color::fromRGB( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<bool>( L , 4 , true ) ) );
 }
 
 //! fromRGB255
 int _lua_color::fromRGB8(lua_State* L){
-	return push( L , _color::fromRGB8( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , optcheck<bool>( L , 4 ) ) );
+	return push( L , _color::fromRGB8( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<bool>( L , 4 , true ) ) );
 }
 
 //! fromBW
 int _lua_color::fromBW(lua_State* L){
-	return push( L , _color::fromHex( check<int>( L , 1 ) , optcheck<bool>( L , 2 ) ) );
+	return push( L , _color::fromHex( check<int>( L , 1 ) , lightcheck<bool>( L , 2 , true ) ) );
 }
 
 //! fromBW255
 int _lua_color::fromBW8(lua_State* L){
-	return push( L , _color::fromHex( check<int>( L , 1 ) , optcheck<bool>( L , 2 ) ) );
+	return push( L , _color::fromHex( check<int>( L , 1 ) , lightcheck<bool>( L , 2 , true ) ) );
 }
 
 //! fromHSL
 int _lua_color::fromHSL(lua_State* L){
-	return push( L , _color::fromHSL( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , optcheck<bool>( L , 4 ) ) );
+	return push( L , _color::fromHSL( check<int>( L , 1 ) , check<int>( L , 2 ) , check<int>( L , 3 ) , lightcheck<bool>( L , 4 , true ) ) );
 }
 
 //! mix
@@ -100,6 +103,7 @@ Lunar<_lua_color>::FunctionType _lua_color::methods[] = {
 };
 
 Lunar<_lua_color>::PropertyType _lua_color::properties[] = {
+	{ "alpha"	, wrap( _lua_color , &_color::getAlpha )	, &_lua_color::setAlpha },
 	{ "red"		, wrap( _lua_color , &_color::getR )		, &_lua_color::setR },
 	{ "green"	, wrap( _lua_color , &_color::getG )		, &_lua_color::setG },
 	{ "blue"	, wrap( _lua_color , &_color::getB )		, &_lua_color::setB },
