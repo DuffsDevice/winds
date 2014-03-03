@@ -9,12 +9,7 @@
 _wifiSocketClient* client = nullptr;
 
 #include "_gadget/gadget.windows.h"
-#include "_dialog/dialog.file.save.h"
-#include "_gadget/gadget.counter.h"
-#include "_gadget/gadget.progressbar.h"
 #include "_gadget/gadget.keyboard.h"
-#include "_gadget/gadget.colorpicker.hexagon.h"
-#include "_gadget/gadget.button.expand.h"
 
 namespace{
 
@@ -58,24 +53,6 @@ _scDesktop::_scDesktop()
 	//_system::executeCommand("%WINDIR%/accessories/paint.exe -filename.bmp");
 	//_system::executeCommand("%WINDIR%/accessories/calculator.exe");
 	//_system::executeCommand("%WINDIR%/games/pong.exe");
-	
-	//(new _fileSaveDialog( {
-	//	{ 0 , make_tuple("Windows-Bitmap" , "bmp") } ,
-	//	{ 1 , make_tuple("Portable-Network-Graphic" , "png") }
-	//} , string("/moonmemo/jojojo.txt") ))->execute();
-	
-	//for( int i = 0; i < 60 ; i++)
-	//{
-	//	_window* wnd = new _window( 30 , 30 , 30 , 30 , "Hallo" , _style() | _styleAttr::notResizeable | _styleAttr::minimizeable );
-	//	_system::_gadgetHost_->addChild( wnd );
-	//	delete wnd;
-	//}
-	//_button* btn = new _button( 50 , 50 , "Do Request!" );
-	//_button* btn2 = new _button( 50 , 70 , "Connect" );
-	//btn->registerEventHandler( mouseClick , new _staticCallback( clickHandler ) );
-	//btn2->registerEventHandler( mouseClick , new _staticCallback( clickHandler2 ) );
-	//_system::_gadgetHost_->addChild( btn );
-	_system::_gadgetHost_->addChild( new _hexagonColorPicker( 0 , 0 ) );
 }
 
 _scDesktop::~_scDesktop()

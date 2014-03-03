@@ -102,54 +102,54 @@ class _color{
 		/////////////////
 		
 		//! Named Ctor: Create Color from 24bit HEX Value
-		static _color fromHex( _u32 value , _optValue<bool> alpha = ignore ){
+		static _color fromHex( _u32 value , bool alpha = true ){
 			return
 				( ( value & 0xff0000 ) >> 19 )
 				| ( ( ( value & 0x00ff00 ) >> 11 ) << 5 )
 				| ( ( ( value & 0x0000ff ) >> 3 ) << 10 )
-				| ( ( alpha.isValid() ? (bool)alpha : true ) << 15 )
+				| ( alpha << 15 )
 			;
 		}
 		
 		//! Named Ctor: Create Color from 5bit brightness value (0-31)
-		static _color fromBW( _u8 brightness , _optValue<bool> alpha = ignore ){
+		static _color fromBW( _u8 brightness , bool alpha = true ){
 			return
 				_u16( brightness ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) )
-				| ( ( alpha.isValid() ? (bool)alpha : true ) << 15 )
+				| ( alpha << 15 )
 			;
 		}
 		
 		//! Named Ctor: Create Color from 8bit brightness value (0-255)
-		static _color fromBW8( _u8 brightness , _optValue<bool> alpha = ignore ){
+		static _color fromBW8( _u8 brightness , bool alpha = true ){
 			return
 				_u16( ( brightness + ( 1 << 2 ) ) >> 3 ) * ( 1 + ( 1 << 5 ) + ( 1 << 10 ) )
-				| ( (alpha.isValid() ? (bool)alpha : true) << 15 )
+				| ( alpha << 15 )
 			;
 		}
 		
 		//! Named Ctor: Create Color from 5bit rgb values and 1bit alpha channel
-		static _color fromRGB( _u8 red , _u8 green , _u8 blue , _optValue<bool> alpha = ignore ){
+		static _color fromRGB( _u8 red , _u8 green , _u8 blue , bool alpha = true ){
 			return _pixel(
 				red
 				| ( green << 5 )
 				| ( blue << 10 )
-				| ( ( alpha.isValid() ? (bool)alpha : true ) << 15 )
+				| ( alpha << 15 )
 			);
 		}
 		
 		//! Named Ctor: Creat color from 8bit RGB Values and a 1bit alpha channel
-		static _color fromRGB8( _u8 red , _u8 green , _u8 blue , _optValue<bool> alpha = ignore ){
+		static _color fromRGB8( _u8 red , _u8 green , _u8 blue , bool alpha = true ){
 			return _pixel(
 				( red >> 3 )
 				| ( ( green >> 3 ) << 5 )
 				| ( ( blue >> 3 ) << 10 )
-				| ( ( alpha.isValid() ? (bool)alpha : true ) << 15 )
+				| ( alpha << 15 )
 			);
 		}
 		
 		//! Create color from HSL Values and 1bit alpha
-		static _color fromHSL( _u16 hue , _u16 sat , _u16 lum , _optValue<bool> alpha = ignore ){
-			return _color().setHSL( hue , sat , lum , alpha.isValid() ? (bool)alpha : true );
+		static _color fromHSL( _u16 hue , _u16 sat , _u16 lum , bool alpha = true ){
+			return _color().setHSL( hue , sat , lum , alpha );
 		}
 		
 		//! Mix two colors; factor: 0 (only color1) to 32 (only color2)

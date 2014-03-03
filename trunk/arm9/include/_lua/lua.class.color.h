@@ -18,6 +18,9 @@ class _lua_color : public _color {
 		//! Constructor
 		_lua_color(lua_State* L);
 		
+		//! setAlpha
+		int setAlpha(lua_State* L);
+		
 		//! setR
 		int setR(lua_State* L);
 		
