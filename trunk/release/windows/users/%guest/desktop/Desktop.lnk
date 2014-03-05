@@ -1,0 +1,3 @@
+[LocalShortcut]
+URL = %SYSTEM%/explorer.exe
+FallbackArgs = %CURRENT_USER%/desktop
