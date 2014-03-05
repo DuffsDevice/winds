@@ -4,7 +4,7 @@
 #include "_type/type.timer.h"
 #include "_gadget/gadget.button.h"
 
-_array<_staticCallback<_eventHandler>,13> _gadget::defaultEventHandlers = {
+_array<_staticCallback<_eventHandler>,14> _gadget::defaultEventHandlers = {
 	{
 		/* onDraw */ make_callback( &_gadget::gadgetRefreshHandler ),
 		/* onMouseClick */ make_callback( &_gadget::gadgetMouseHandler ),
@@ -18,7 +18,8 @@ _array<_staticCallback<_eventHandler>,13> _gadget::defaultEventHandlers = {
 		/* onKeyRepeat */ make_callback( &_gadget::gadgetKeyHandler ),
 		/* onDragStart */ make_callback( &_gadget::gadgetDragStartHandler ),
 		/* onDragStop */ make_callback( &_gadget::gadgetDragStopHandler ),
-		/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler )
+		/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler ),
+		/* onMouseRightClick */ make_callback( &_gadget::gadgetMouseHandler )
 	}
 };
 
@@ -35,13 +36,13 @@ _gadget::_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> 
 	, bitmap( move( bmp ) )
 	, draggedChild ( nullptr )
 	, type( type )
-	, state( 0 )
+	, stateSum( 0 )
 {
-	bitmap.resize( width , height );
-	autoValues.width = !width.isValid();
-	autoValues.height = !height.isValid();
-	autoValues.posX = !posX.isValid();
-	autoValues.posY = !posY.isValid();
+	this->bitmap.resize( width , height );
+	this->autoValues.width = !width.isValid();
+	this->autoValues.height = !height.isValid();
+	this->autoValues.posX = !posX.isValid();
+	this->autoValues.posY = !posY.isValid();
 }
 
 
@@ -145,7 +146,7 @@ bool _gadget::removeDeleteCallback( _gadget* g )
 	// Remove focus
 	if( g->parent && g->hasFocus() )
 	{
-		g->focused = false;
+		g->state.focused = false;
 		
 		if( g->parent->focusedChild == g )
 			g->parent->focusedChild = nullptr;
@@ -172,7 +173,7 @@ bool _gadget::removeCallback( _gadget* g )
 	// Remove focus
 	if( g->parent && g->hasFocus() )
 	{
-		g->focused = false;
+		g->state.focused = false;
 		
 		if( g->parent->focusedChild == g )
 			g->parent->focusedChild = nullptr;
@@ -197,13 +198,13 @@ namespace{
 
 void _gadget::blinkHandler()
 {
-	if( this->cntBlnk > 5 )
+	if( this->state.cntBlnk > 5 )
 	{
 		blinkTimer.stop();
-		this->cntBlnk = 0;
+		this->state.cntBlnk = 0;
 		return;
 	}
-	if( this->cntBlnk++ % 2 )
+	if( this->state.cntBlnk++ % 2 )
 		this->show();
 	else
 		this->hide();
@@ -220,12 +221,12 @@ void _gadget::blink()
 
 bool _gadget::hasClickRights() const
 {
-	if( this->hasFocus() || !this->style.canTakeFocus || !this->style.canReceiveFocus )
+	if( this->hasFocus() || !this->style.takesFocus || !this->style.isFocusable )
 		return true;
 	
 	for( _gadget* cur = this->parent; cur ; cur = cur->parent )
 	{
-		if( !cur->style.canReceiveFocus || !this->style.canTakeFocus )
+		if( !cur->style.isFocusable || !this->style.takesFocus )
 			return true;
 	}
 	return false;
@@ -236,7 +237,7 @@ bool _gadget::blurChild()
 {
 	if( this->focusedChild )
 	{
-		if( !this->focusedChild->style.canLooseFocus )
+		if( !this->focusedChild->style.isBlurrable )
 		{
 			this->focusedChild->blink();
 			return false;
@@ -245,7 +246,7 @@ bool _gadget::blurChild()
 		if( !this->focusedChild->blurChild() )
 			return false;
 		
-		this->focusedChild->focused = false;
+		this->focusedChild->state.focused = false;
 		
 		// trigger onBlur - event
 		this->focusedChild->triggerEvent( onBlur );
@@ -260,11 +261,14 @@ bool _gadget::blurChild()
 	return true;
 }
 
-bool _gadget::focus(){
+bool _gadget::focus()
+{
 	if( this->parent )
 		return this->parent->focusChild( this );
+	
 	else if( this->type == _gadgetType::screen )
-		return this->style.canReceiveFocus && ( this->style.canTakeFocus || !_system::_currentFocus_ );
+		return this->style.isFocusable && ( this->style.takesFocus || !_system::_currentFocus_ );
+	
 	return false;
 }
 
@@ -287,7 +291,7 @@ bool _gadget::focusChild( _gadget* child )
 	// Return false, if the child cannot take the focus from the currently still focused gadget
 	if( focusedChild )
 	{
-		if( !child->style.canTakeFocus )
+		if( !child->style.takesFocus )
 			return false;
 		
 		if( !this->blurChild() )
@@ -295,7 +299,7 @@ bool _gadget::focusChild( _gadget* child )
 	}
 	
 	// Return false, if the gadget cannot receive focus
-	if( !child->style.canReceiveFocus )
+	if( !child->style.isFocusable )
 		return false;
 	
 	// Check if i can get focus, if not, my child can't too
@@ -306,14 +310,14 @@ bool _gadget::focusChild( _gadget* child )
 	_system::_currentFocus_ = child;
 	
 	// 'focus' the child
-	child->focused = true;
+	child->state.focused = true;
 	focusedChild = child;
 	
 	// Trigger the 'onfocus'-event
 	child->triggerEvent( onFocus );
 	
 	// Move the child to the front of all children that it will be seen
-	if( child->style.focusBringsFront )
+	if( child->style.doesFocusMoveFront )
 	{
 		// Move to front of children
 		if( child->isEnhanced() )
@@ -632,7 +636,7 @@ void _gadget::removeChild( _gadget* child )
 	// Remove focus
 	if( child->hasFocus() )
 	{
-		child->focused = false;
+		child->state.focused = false;
 		
 		if( this->focusedChild == child )
 			this->focusedChild = nullptr;
@@ -708,7 +712,7 @@ void _gadget::addEnhancedChild( _gadget* child , bool pushBack )
 	
 	// Reset style-object
 	child->resetState();
-	child->enhanced = true;
+	child->state.enhanced = true;
 	
 	// Set Parent
 	child->parent = this;
@@ -1046,7 +1050,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			event.posY -= that->padTop;
 		}
 		
-		// Trigger the Event if the gadget is now focused or if it never will have any focus,
+		// Trigger the Event if the gadget is now focused or if it never will have any focus
 		if( mouseContain->isClickable() )
 		{
 			// Check for children of the 'mouseContain'
@@ -1061,16 +1065,16 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				that->focusChild( mouseContain );
 			
 			// Independent of whether the gadget has focus or not
-			if( event == onMouseUp && mouseContain->pressed )
+			if( event == onMouseUp && mouseContain->state.pressed )
 			{
-				mouseContain->pressed = false; // adjust state
+				mouseContain->state.pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
 			}
 			
 			if( mouseContain->hasClickRights() )
 			{
 				if( event == onMouseDown ){
-					mouseContain->pressed = true;
+					mouseContain->state.pressed = true;
 					mouseContain->triggerEvent( onMouseEnter );
 				}
 				
@@ -1113,20 +1117,20 @@ _callbackReturn _gadget::gadgetDraggingHandler( _event event )
 	
 	if( // Check if we have to fire an 'onMouseLeave'-event
 		!draggedChild->isDraggable() // Do not fire if 'draggedChild' is draggable, because it would look strange on some gadgets (e.g. scrollbutton)
-		&& draggedChild->pressed
+		&& draggedChild->state.pressed
 		&& !draggedChild->getDimensions().contains( event.getPosX() , event.getPosY() )
 	){
-		draggedChild->pressed = false;
+		draggedChild->state.pressed = false;
 		draggedChild->triggerEvent( onMouseLeave );
 	}
 	
 	// Forward 'dragging'-event to child
-	if( draggedChild->dragged )
+	if( draggedChild->state.dragged )
 	{
 		// Rewrite Destination and retrigger the Event
 		if( draggedChild->handleEvent( (_event&&)event ) == prevent_default )
 		{
-			draggedChild->dragged = false; // If the dragged gadget no longer wants to be dragged
+			draggedChild->state.dragged = false; // If the dragged gadget no longer wants to be dragged
 			return prevent_default; // Force the upper gadget also to stop dragging
 		}
 	}
@@ -1148,7 +1152,7 @@ _callbackReturn _gadget::gadgetDragStopHandler( _event event )
 		return prevent_default;
 	
 	// Check if the child was actually dragged, if not-> don't fire an 'onDragStop'-Event!
-	if( draggedChild->dragged )
+	if( draggedChild->state.dragged )
 	{
 		// Make touch positions relative to parent
 		event.posX -= that->getX();
@@ -1164,13 +1168,13 @@ _callbackReturn _gadget::gadgetDragStopHandler( _event event )
 		draggedChild->handleEvent( (_event&&)event );
 		
 		// Update _style
-		draggedChild->dragged = false;
+		draggedChild->state.dragged = false;
 	}
 	else
 		draggedChild->handleEventDefault( (_event&&)event ); // Forward the dragStop-event to the children
 	
-	if( draggedChild->pressed ){
-		draggedChild->pressed = false;
+	if( draggedChild->state.pressed ){
+		draggedChild->state.pressed = false;
 		draggedChild->triggerEvent( onMouseLeave );
 	}
 	
@@ -1224,7 +1228,7 @@ _callbackReturn _gadget::gadgetDragStartHandler( _event event )
 			&& mouseContain->isClickable()
 			&& mouseContain->handleEvent( (_event&&)event , true ) != prevent_default
 		)
-			mouseContain->dragged = true;
+			mouseContain->state.dragged = true;
 		else
 			return not_handled;
 	}

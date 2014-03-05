@@ -181,9 +181,7 @@ namespace _gadgetHelpers
 			if( this->direction == _direction::down || this->direction == _direction::right )
 				(that->*usedFunc)( offsetX , offsetY );
 			else if( this->direction == _direction::left )
-			{
 				(that->*usedFunc)( parentRect.width - 1 - this->offsetX - that->getWidth() , offsetY );
-			}
 			else if( this->direction == _direction::up )
 				(that->*usedFunc)( offsetX , parentRect.height - 1 - this->offsetY - that->getHeight() );
 		}

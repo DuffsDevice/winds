@@ -37,12 +37,13 @@ class _user : public _iniFile
 		_u16	kRS; // keyRepetitionSpeed (frames between each click)
 		_u8		fOH; // fileObjectHeight
 		_u8		lIH; // listItemHeight
-		_u8		sFE; // showFileExtension
+		bool	sFE; // showFileExtension
 		_color	sBTC;// startButtonTextColor
 		_color	dTC; // desktopColor
 		bool	mKF; // magnifyKeyboardFocus
 		_length	cOH; // counterObjectHeight
 		_length	sOH; // selectObjectHeight
+		_u16	rCD; // rightClickDelay
 		bool	isAdmin; // whether the user has admin rights
 		
 		//! Ctor

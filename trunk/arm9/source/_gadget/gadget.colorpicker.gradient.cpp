@@ -18,8 +18,8 @@ _gradientColorPicker::_gradientColorPicker( _optValue<_coord> x , _optValue<_coo
 	
 	refreshBigGradient();
 	
-	this->hueSatTable = new _gadget( _gadgetType::none , 1 , 1 , hueSatImage.getWidth() , hueSatImage.getHeight() , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
-	this->lumTable = new _gadget( _gadgetType::none , hueSatImage.getWidth() + 2 , 1 , 11 , hueSatImage.getHeight() , _styleAttr() | _styleAttr::smallDragTrig | _styleAttr::draggable );
+	this->hueSatTable = new _gadget( _gadgetType::none , 1 , 1 , hueSatImage.getWidth() , hueSatImage.getHeight() , _style::smallDragThld | _style::draggable );
+	this->lumTable = new _gadget( _gadgetType::none , hueSatImage.getWidth() + 2 , 1 , 11 , hueSatImage.getHeight() , _style::smallDragThld | _style::draggable );
 	
 	this->setInternalEventHandler( onDraw , make_callback( this , &_gradientColorPicker::refreshHandler ) );
 	this->setInternalEventHandler( onResize , make_callback( this , &_gradientColorPicker::resizeHandler ) );

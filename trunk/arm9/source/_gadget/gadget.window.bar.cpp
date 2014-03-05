@@ -74,7 +74,7 @@ _callbackReturn _windowBar::updateHandler( _event event )
 }
 
 _windowBar::_windowBar( _optValue<_length> height , _optValue<_color> bgColor , _style&& style ) :
-	_gadget( _gadgetType::windowbar , ignore , ignore , ignore , height.isValid() ? (_length)height : 8 , style | _styleAttr::draggable )
+	_gadget( _gadgetType::windowbar , ignore , ignore , ignore , height.isValid() ? (_length)height : 8 , style | _style::draggable )
 	, bgColor( bgColor.isValid() ? (_color)bgColor : _system::getRTA().getControlBackground() )
 {
 	this->setMinHeight( 8 );

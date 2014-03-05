@@ -42,6 +42,13 @@ class _freetypeFont : private _direntry , public _font
 		//! Get the Height of the font
 		_length getHeight( _u8 fontSize = 8 ) const { return fontSize; }
 		
+		//! Get Space between two letters
+		_length getLetterSpace() const {
+			// We return 0, because the letter space is
+			// already included in the width of one character
+			return 0;
+		}
+		
 		//! Check if this font is valid
 		bool isValid() const {
 			return this->fontInfo.numGlyphs != 0;

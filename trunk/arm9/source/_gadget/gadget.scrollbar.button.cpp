@@ -228,9 +228,9 @@ _scrollButton::_scrollButton( _optValue<_coord> x , _optValue<_coord> y , _optVa
 	_gadget::setType( _gadgetType::scrollbutton );
 	
 	if( this->type == _scrollButtonType::buttonHandleX || this->type == _scrollButtonType::buttonHandleY )
-		this->setStyle( this->getStyle() | _styleAttr::draggable | _styleAttr::smallDragTrig );
+		this->setStyle( this->getStyle() | _style::draggable | _style::smallDragThld );
 	else
-		this->setStyle( this->getStyle() | _styleAttr::mouseClickRepeat );
+		this->setStyle( this->getStyle() | _style::clickRepeat );
 	
 	// Set Handler and refresh
 	this->setInternalEventHandler( onDraw , make_callback( _scrollButton::refreshHandler ) );

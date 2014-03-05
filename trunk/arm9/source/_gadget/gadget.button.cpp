@@ -186,7 +186,7 @@ _callbackReturn _button::mouseHandler( _event event )
 }
 
 _button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
-	_gadget( _gadgetType::button , x , y , width , height , style | _styleAttr::notDoubleClickable )
+	_gadget( _gadgetType::button , x , y , width , height , style | _style::notDoubleClickable )
 	, autoSelect( false )
 	, strValue( value )
 	, font( _system::getFont() )

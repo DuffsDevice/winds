@@ -51,7 +51,8 @@ local APPDATA = {
 	curColor = "red" , -- Current Paint color
 	imageFile = nil , -- Currently opened File
 	dialog = nil , -- Variable to hold any type of dialog
-	changes = false
+	changes = false ,
+	colorIndicator = nil
 }
 
 function main( filename )
@@ -83,7 +84,7 @@ function main( filename )
 		createEmptyCanvas()
 	end
 	
-	local bg = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragTrig" )
+	local bg = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragThld" )
 	bg.setInternalEventHandler( "onDraw" , refreshHandler )
 	bg.setUserEventHandler( "onDragging" , dragHandler )
 	bg.setUserEventHandler( "onDragStop" , dragHandler )
@@ -92,8 +93,10 @@ function main( filename )
 	bg.setUserEventHandler( "onMouseUp" , dragHandler )
 	APPDATA.greyBackground = bg
 	bg.redraw()
+	APPDATA.colorIndicator = ImageGadget( 2 , 2 , Bitmap( 6 , 6 , "red" ) )
+	APPDATA.windowBar = WindowBar( 10 )
+	APPDATA.windowBar.addChild( APPDATA.colorIndicator )
 	
-	APPDATA.windowBar = WindowBar()
 	local frame = Window( 10 , 10 , 100 , 100 , "Paint" , wndIcon , true , "minimizeable|draggable" )
 	frame.addChild( APPDATA.greyBackground )
 	frame.setUserEventHandler( "onResize" , windowResizeHandler )

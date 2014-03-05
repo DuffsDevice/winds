@@ -1,136 +1,160 @@
-/*
- *  This is the header file interface to the gif.c file.
- *
- *  Requires that the app.h header be loaded first.
- */
+/* ======================================================================== */
+/*  GIF Encoder routines.                                                   */
+/*                                                                          */
+/*  These are intended to support single-frame and multi-frame GIFs.        */
+/*  Single frame support is for screen shots, multi-frame support is for    */
+/*  converting movies to animated GIFs.                                     */
+/*                                                                          */
+/*  This GIF encoder doesn't trust that the decoder honors the aspect       */
+/*  ratio stored in the GIF.  We just set it to 0.                          */
+/*                                                                          */
+/*  None of this code's thread-safe/reentrant.  BFD.                        */
+/* ======================================================================== */
+#ifndef GIF_ENC_H_
+#define GIF_ENC_H_
 
-#include "_type/type.h"
-/*
- *  Gif structures:
- */
-struct Colour{
-	_u8  alpha;    /* transparency, 0=opaque, 255=transparent */
-	_u8  red;      /* intensity, 0=black, 255=bright red */
-	_u8  green;    /* intensity, 0=black, 255=bright green */
-	_u8  blue;     /* intensity, 0=black, 255=bright blue */
-};
+#include <stdint.h>
+#include <stdio.h>
+#include <_type/type.h>
 
-typedef struct {
-    int      length;
-    Colour * colours;
-  } GifPalette;
+typedef struct gif_t
+{
+    FILE    *f;
+    int     x_dim, y_dim;
+    int     trans, n_cols;
+    uint8_t *vid, *pal;
+} gif_t;
 
-typedef struct {
-    int          width, height;
-    int          has_cmap, color_res, sorted, cmap_depth;
-    int          bgcolour, aspect;
-    GifPalette * cmap;
-  } GifScreen;
+static unused int gif_best_stat[6];
 
-typedef struct {
-    int             byte_count;
-    unsigned char * bytes;
-  } GifData;
+/* ======================================================================== */
+/*  GIF_START -- Starts a single or multi-frame GIF.                        */
+/* ======================================================================== */
+int gif_start
+(
+    gif_t   *gif, 
+    FILE    *f,             /* file to attach to GIF.                       */
+    int     x_dim,          /* source image X dimension                     */
+    int     y_dim,          /* source image Y dimension                     */
+    uint8_t *pal,           /* palette to use for GIF.                      */
+    int     n_cols,         /* number of colors in GIF.                     */
+	int		trans,          /* Index of transparent Color in image          */
+    int     multi           /* 0: Single image, 1: Multiple image           */
+);
 
-typedef struct {
-    int        marker;
-    int        data_count;
-    GifData ** data;
-  } GifExtension;
-
-typedef struct {
-    int              left, top, width, height;
-    int              has_cmap, interlace, sorted, reserved, cmap_depth;
-    GifPalette *     cmap;
-    unsigned char ** data;
-  } GifPicture;
-
-typedef struct {
-    int            intro;
-    GifPicture *   pic;
-    GifExtension * ext;
-  } GifBlock;
-
-typedef struct {
-    char        header[8];
-    GifScreen * screen;
-    int         block_count;
-    GifBlock ** blocks;
-  } Gif;
+/* ======================================================================== */
+/*  GIF_FINISH -- Finishes off a GIF, terminating it and freeing memory.    */
+/* ======================================================================== */
+int gif_finish(gif_t *gif);
 
 
-/*
- *  Gif internal definitions:
- */
+/* ======================================================================== */
+/*  GIF_WR_FRAME_S -- Writes single-frame image to GIF.                     */
+/* ======================================================================== */
+int gif_wr_frame_s
+(
+    gif_t   *gif,
+    uint8_t *vid
+);
 
-#define LZ_MAX_CODE     4095    /* Largest 12 bit code */
-#define LZ_BITS         12
-
-#define FLUSH_OUTPUT    4096    /* Impossible code = flush */
-#define FIRST_CODE      4097    /* Impossible code = first */
-#define NO_SUCH_CODE    4098    /* Impossible code = empty */
-
-#define HT_SIZE         8192    /* 13 bit hash table size */
-#define HT_KEY_MASK     0x1FFF  /* 13 bit key mask */
-
-#define IMAGE_LOADING   0       /* file_state = processing */
-#define IMAGE_SAVING    0       /* file_state = processing */
-#define IMAGE_COMPLETE  1       /* finished reading or writing */
-
-typedef struct {
-    FILE *file;
-    int depth,
-        clear_code, eof_code,
-        running_code, running_bits,
-        max_code_plus_one,
-	prev_code, current_code,
-        stack_ptr,
-        shift_state;
-    unsigned long shift_data;
-    unsigned long pixel_count;
-    int           file_state, position, bufsize;
-    unsigned char buf[256];
-    unsigned long hash_table[HT_SIZE];
-  } GifEncoder;
+/* ======================================================================== */
+/*  GIF_WRITE       -- Wrapper around gif_start/gif_wr_frame_s.             */
+/* ======================================================================== */
+int gif_write
+(
+    FILE    *f,
+    uint8_t *vid,
+    int     x_dim,
+    int     y_dim,
+    uint8_t *pal,
+    int     n_cols,
+	int		trans
+);
 
 
-void * gif_alloc(long bytes);
+/* ======================================================================== */
+/*  GIF_WR_FRAME_M -- Writes next frame to a multi-frame GIF.               */
+/*                    Attempts to optimize image.                           */
+/* ======================================================================== */
+int gif_wr_frame_m
+(
+    gif_t   *gif,
+    uint8_t *vid,
+    int     delay,
+    int     mode
+);
 
-void	write_gif_int(FILE *file, int output);
+#endif
+/* ======================================================================== */
+/*  This program is free software; you can redistribute it and/or modify    */
+/*  it under the terms of the GNU General Public License as published by    */
+/*  the Free Software Foundation; either version 2 of the License, or       */
+/*  (at your option) any later version.                                     */
+/*                                                                          */
+/*  This program is distributed in the hope that it will be useful,         */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       */
+/*  General Public License for more details.                                */
+/*                                                                          */
+/*  You should have received a copy of the GNU General Public License       */
+/*  along with this program; if not, write to the Free Software             */
+/*  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.               */
+/* ======================================================================== */
+/*                   Copyright (c) 2005, Joseph Zbiciak                     */
+/* ======================================================================== */
 
-GifData * new_gif_data(int size);
-void	del_gif_data(GifData *data);
-void	write_gif_data(FILE *file, GifData *data);
 
-GifPalette * new_gif_palette(void);
-void	del_gif_palette(GifPalette *cmap);
-void	write_gif_palette(FILE *file, GifPalette *cmap);
 
-GifScreen * new_gif_screen(void);
-void	del_gif_screen(GifScreen *screen);
-void	write_gif_screen(FILE *file, GifScreen *screen);
 
-GifExtension *new_gif_extension(void);
-void	del_gif_extension(GifExtension *ext);
-void	write_gif_extension(FILE *file, GifExtension *ext);
 
-GifEncoder * new_gif_encoder(void);
-void	del_gif_encoder(GifEncoder *encoder);
-void	write_gif_code(FILE *file, GifEncoder *encoder, int code);
-void	init_gif_encoder(FILE *file, GifEncoder *encoder, int depth);
-void	write_gif_line(FILE *file, GifEncoder *encoder, unsigned char *line, int length);
-void	flush_gif_encoder(FILE *file, GifEncoder *encoder);
 
-GifPicture * new_gif_picture(void);
-void	del_gif_picture(GifPicture *pic);
-void	write_gif_picture(FILE *file, GifPicture *pic);
 
-GifBlock *new_gif_block(void);
-void	del_gif_block(GifBlock *block);
-void	write_gif_block(FILE *file, GifBlock *block);
 
-Gif *	new_gif(void);
-void	del_gif(Gif *gif);
-void	write_gif(FILE *file, Gif *gif);
 
-void	write_gif_file(const char *filename, Gif *gif);
+
+
+
+
+
+
+
+
+
+/* ======================================================================== */
+/*  LZW Encode                                                              */
+/*                                                                          */
+/*  This code compresses an input buffer using LZW compression, as defined  */
+/*  by the GIF standard.  This includes dividing the compressed output      */
+/*  into 256-byte blocks.                                                   */
+/*                                                                          */
+/*  My data structure is entirely uncreative.  I use an N-way tree to       */
+/*  represent the current code table.  It's dirt simple to implement, but   */
+/*  it's a memory pig.  Since the longest code is 12 bits, I use indices    */
+/*  instead of pointers, and use a static table of codes.                   */
+/* ======================================================================== */
+
+#ifndef LZW_ENC_H_
+#define LZW_ENC_H_ 1
+
+int lzw_encode (const uint8_t *i_buf, uint8_t *o_buf, int i_len, int max_o_len);
+int lzw_encode2(const uint8_t *i_buf, const uint8_t *i_buf_alt,
+                      uint8_t *o_buf, int i_len, int max_o_len);
+
+#endif
+/* ======================================================================== */
+/*  This program is free software; you can redistribute it and/or modify    */
+/*  it under the terms of the GNU General Public License as published by    */
+/*  the Free Software Foundation; either version 2 of the License, or       */
+/*  (at your option) any later version.                                     */
+/*                                                                          */
+/*  This program is distributed in the hope that it will be useful,         */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       */
+/*  General Public License for more details.                                */
+/*                                                                          */
+/*  You should have received a copy of the GNU General Public License       */
+/*  along with this program; if not, write to the Free Software             */
+/*  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.               */
+/* ======================================================================== */
+/*                   Copyright (c) 2005, Joseph Zbiciak                     */
+/* ======================================================================== */

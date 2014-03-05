@@ -42,7 +42,7 @@ void _windowsTaskInfoController::taskInfoHandler( _windowsTaskInfo* info )
 }
 
 _windowsTaskInfoController::_windowsTaskInfoController( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
-	_gadget( _gadgetType::imagegadget , ignore , ignore , 27 , 10 , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus )
+	_gadget( _gadgetType::imagegadget , ignore , ignore , 27 , 10 , style | _style::notFocusable | _style::canNotTakeFocus )
 	, time( new _label( ignore , 0 , ignore , 10 , "" ) )
 	, timer( make_callback<void>( (_gadget*)this , &_gadget::redraw ) , 10000 , true ) // Make the clock update itself
 {

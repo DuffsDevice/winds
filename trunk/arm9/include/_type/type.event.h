@@ -51,6 +51,7 @@ enum _eventType : _u16
 	onDragStart,
 	onDragStop,
 	onDragging,
+	onMouseRightClick,
 	
 	onUpdate,
 	onEdit,

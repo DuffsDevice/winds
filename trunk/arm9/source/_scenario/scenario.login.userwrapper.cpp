@@ -103,7 +103,7 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 		if( event == onFocus )
 		{
 			that->passwordbox = new _passcodeBox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
-			that->passwordsubmit = new _actionButton( 77 , 13 , _actionButtonType::next , _style::storeHandle( that , _styleAttr() | _styleAttr::canNotTakeFocus ) );
+			that->passwordsubmit = new _actionButton( 77 , 13 , _actionButtonType::next , _style::storeHandle( that , _style::canNotTakeFocus ) );
 			that->passwordsubmit->setInternalEventHandler( onMouseClick , make_callback( &_userWrapper::submitHandler ) );
 			that->passwordbox->setUserEventHandler( onDraw , make_callback( &_userWrapper::textboxRefreshHandler ) );
 			that->passwordbox->redraw();
@@ -137,13 +137,13 @@ _userWrapper::_userWrapper( _coord x , _coord y , _user* user , _style&& style )
 	this->setInternalEventHandler( onBlur , make_callback( _userWrapper::focusHandler ) );
 	
 	// Click on the image to login a user without password
-	_imageGadget* img = new _imageGadget( 3 , 3 , this->user->getLogo() , ignore , ignore , _style::storeHandle( this , _styleAttr() | _styleAttr::canNotTakeFocus ) );
+	_imageGadget* img = new _imageGadget( 3 , 3 , this->user->getLogo() , ignore , ignore , _style::storeHandle( this , _style::canNotTakeFocus ) );
 	img->setInternalEventHandler( onMouseClick , make_callback( _userWrapper::submitHandler ) );
 	
 	// Add the logo
 	this->addChild( img );
 	
-	_label* lbl = new _label( 20 , 4 , ignore , ignore , this->user->getUsername() , _styleAttr() | _styleAttr::canNotTakeFocus);
+	_label* lbl = new _label( 20 , 4 , ignore , ignore , this->user->getUsername() , _style::canNotTakeFocus);
 	lbl->setColor( _color::white );
 	this->addChild( lbl );
 	

@@ -61,6 +61,7 @@ void _user::readConstants(){
 	this->isAdmin	= this->getIntAttr( "adminRights" );
 	this->cOH		= this->getIntAttr( "counterObjectHeight" );
 	this->sOH		= this->getIntAttr( "selectObjectHeight" );
+	this->rCD		= this->getIntAttr( "rightClickDelay" );
 }
 
 _user::_user( string folderName ) :
@@ -91,7 +92,8 @@ _user::_user( string folderName ) :
 					{ "listItemHeight" , "9" } ,
 					{ "magnifyKeyboardFocus" , "1" } ,
 					{ "counterObjectHeight" , "16" } ,
-					{ "selectObjectHeight" , "10" }
+					{ "selectObjectHeight" , "10" } ,
+					{ "rightClickDelay" , "45" }
 				} }
 			};
 		

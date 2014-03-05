@@ -72,14 +72,14 @@ void _fileView::generateChildren()
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType );
 				
-				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 28 , 2 , true , 1 , 1 , false );
+				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 4 , 4 , true , 1 , 1 , false );
 				fo->setInternalEventHandler( onParentSet , cb );
 				
 				// Add User-defined Handler
 				fo->setUserEventHandler( onMouseClick , make_callback( &_fileView::eventForwarder ) );
 				fo->setUserEventHandler( onMouseDblClick , make_callback( &_fileView::eventForwarder ) );
 				
-				this->addChild( fo );
+				this->addChild( fo , true );
 			}
 			break;
 		}

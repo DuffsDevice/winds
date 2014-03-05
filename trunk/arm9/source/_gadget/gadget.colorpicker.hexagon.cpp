@@ -47,7 +47,7 @@ _color _hexagonColorPicker::getHexagonColor( _s16 number ){
 }
 
 _hexagonColorPicker::_hexagonColorPicker( _optValue<_coord> x , _optValue<_coord> y , _color initialColor , _style&& style ) :
-	_gadget( _gadgetType::hexagoncolorpicker , x , y , 106 , COLORPICKER_BW_START_Y + 16 , style | _styleAttr::notResizeable | _styleAttr::draggable )
+	_gadget( _gadgetType::hexagoncolorpicker , x , y , 106 , COLORPICKER_BW_START_Y + 16 , style | _style::notResizeable | _style::draggable )
 	, bgColor( _system::getRTA().getControlBackground() )
 {
 	// Set Hexagon

@@ -3,140 +3,143 @@
 
 #include "_type/type.h"
 
-
-template<int t> class _nStyleAttr{
-};
-
-template<int t> class _pStyleAttr {
-};
-
-class _styleAttr
-{
-	private:
-		
-		_u16 sum;
-		
-		friend class _style;
-		
-	public:
-		
-		// Casts
-		operator _u16(){ return sum; }
-		
-		// This all works completely at compile-time!
-		template<int t> constexpr _styleAttr operator |( const _pStyleAttr<t> ) const { _u16 s = sum; s |= t; return _styleAttr( s ); }
-		template<int t> constexpr _styleAttr operator |( const _nStyleAttr<t> ) const { _u16 s = sum; s &= ( _u32( 1 << 16 ) - 1 ) ^ t; return _styleAttr( s ); }
-		
-		// This all works completely at compile-time!
-		template<int t> _styleAttr& operator |=( const _pStyleAttr<t> ){ sum |= t; return *this; }
-		template<int t> _styleAttr& operator |=( const _nStyleAttr<t> ){ sum &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
-		
-		// Default ctor
-		_styleAttr();
-		
-		// Ctor with sum
-		_styleAttr( _u16 val ){ sum = val; }
-		
-		static const _pStyleAttr<1> 				resizeableX;
-		static const _nStyleAttr<1> 				notResizeableX;
-		
-		static const _pStyleAttr<2> 				resizeableY;
-		static const _nStyleAttr<2>			 		notResizeableY;
-		
-		static const _pStyleAttr<3>					resizeable;
-		static const _nStyleAttr<3>					notResizeable;
-		
-		static const _pStyleAttr<( 1 << 2 )> 		enabled;
-		static const _nStyleAttr<( 1 << 2 )> 		disabled;
-		
-		static const _pStyleAttr<( 1 << 3 )> 		clickable;
-		static const _nStyleAttr<( 1 << 3 )> 		notClickable;
-		
-		static const _pStyleAttr<( 1 << 4 )> 		canTakeFocus;
-		static const _nStyleAttr<( 1 << 4 )> 		canNotTakeFocus;
-		
-		static const _pStyleAttr<( 1 << 5 )> 		canLooseFocus;
-		static const _nStyleAttr<( 1 << 5 )> 		canNotLooseFocus;
-		
-		static const _pStyleAttr<( 1 << 6 )> 		canReceiveFocus;
-		static const _nStyleAttr<( 1 << 6 )> 		canNotReceiveFocus;
-		
-		static const _nStyleAttr<( 1 << 7 )> 		defaultDragTrig;
-		static const _pStyleAttr<( 1 << 7 )> 		smallDragTrig;
-		
-		static const _nStyleAttr<( 1 << 8 )> 		mouseClickDefault;
-		static const _pStyleAttr<( 1 << 8 )> 		mouseClickRepeat;
-		
-		static const _pStyleAttr<( 1 << 9 )> 		doubleClickable;
-		static const _nStyleAttr<( 1 << 9 )> 		notDoubleClickable;
-		
-		static const _pStyleAttr<( 1 << 10 )> 		keyboardRequest;
-		static const _nStyleAttr<( 1 << 10 )> 		noKeyboardRequest;
-		
-		static const _pStyleAttr<( 1 << 11 )> 		draggable;
-		static const _nStyleAttr<( 1 << 11 )> 		notDraggable;
-		
-		static const _pStyleAttr<( 1 << 12 )> 		focusBringsFront;
-		static const _nStyleAttr<( 1 << 12 )> 		focusNoAction;
-};
-
 //! Predefine class
 class _program;
 
 /**
  * Specifies the appearence of a gadget
  */
-struct _style
+class _style
 {
-	union
-	{
-		_u16 attrs;
-		struct
+	private:
+	
+		// Internal Helper Class
+		template<_u16 bitmask, bool setbits>
+		struct _styleAttr{
+			template<_u16 t, bool set>
+			constexpr _style operator|( _styleAttr<t,set> param ){ return _style() | param; }
+		};
+		
+		//! Cast to _u16
+		operator _u16() const { return attrs; }
+	
+	public:
+	
+		union
 		{
-			bool	resizeableX : 1;		/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
-			bool	resizeableY : 1;
-			bool	enabled : 1;			/** Is editable */
-			bool	clickable : 1;			/** Is clickable?  */
-			bool	canTakeFocus : 1;		/** Can blur the focused gadget */
-			bool	canLooseFocus : 1;		/** Can be blurred */
-			bool	canReceiveFocus : 1;	/** Can receive focus */
-			bool	smallDragTrig : 1; 		/** Wants a small distance after which the gadget will receive a 'dragStart-Event' */
-			bool	mouseClickRepeat : 1;	/** Indexes, whether or not keeping the stylus touched down should be interpreted as many clicks */
-			bool	doubleClickable : 1; 	/** Tells, whether the gadget wants to handle doubleclicks */
-			bool	keyboardRequest : 1; 	/** If this is 'true', the keyboard will pop up and will throw key-events onto this gadget */
-			bool	draggable : 1; 			/** Is this gadget draggable? */
-			bool	focusBringsFront : 1;	/** Whether a focus leads to bringing the gadget to the front of adjacent children **/
-		} __attribute__(( packed )) ;
-	};
-	
-	union
-	{
-		_int 		val;
-		void* 		data;
-		_program* 	host;
-	};
-	
-	//! Pass a host
-	static _style storeHost( _program* owner , _styleAttr attr = _styleAttr() );
-	
-	//! Store an integer in it
-	static _style storeInt( _int data , _styleAttr attr = _styleAttr() );
-	
-	//! Store any type of data in it
-	static _style storeHandle( void* data , _styleAttr attr = _styleAttr() );
-	
-	//! Ctor with attributes
-	_style( _styleAttr sA = _styleAttr() ) :
-		attrs( sA )
-		, data( 0 )
-	{ }
-	
-	// Enable _styleAttr-changes also on this struct
-	template<int t> constexpr _style operator |( const _pStyleAttr<t> ) const { _style s = *this; s.attrs |= t; return s; }
-	template<int t> constexpr _style operator |( const _nStyleAttr<t> ) const { _style s = *this; s.attrs &= ( _u32( 1 << 16 ) - 1 ) ^ t; return s; }
-	template<int t> _style& operator |=( const _pStyleAttr<t> ){ attrs |= t; return *this; }
-	template<int t> _style& operator |=( const _nStyleAttr<t> ){ attrs &= ( _u32( 1 << 16 ) - 1 ) ^ t; return *this; }
-	
+			_u16 attrs;
+			struct
+			{
+				bool	isResizeableX : 1;			/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
+				bool	isResizeableY : 1;
+				bool	isEnabled : 1;				/** Is editable */
+				bool	isRightClickable : 1;		/** Provides it a reaction to onMouseRightClick?  */
+				bool	takesFocus : 1;				/** Can it blur the focused gadget */
+				bool	isBlurrable : 1;			/** Can it be blurred */
+				bool	isFocusable : 1;			/** Can it receive focus */
+				bool	wantsSmallDragThld : 1; 	/** Wants a small distance after which the gadget will receive a 'dragStart-Event' */
+				bool	wantsClickRepeat : 1;		/** Indexes, whether or not keeping the stylus touched down should be interpreted as many clicks */
+				bool	isDoubleClickable : 1; 		/** Tells, whether the gadget wants to handle doubleclicks */
+				bool	requestsKeyboard : 1; 		/** If this is 'true', the keyboard will pop up and will throw key-events onto this gadget */
+				bool	isDraggable : 1; 			/** Is this gadget draggable? */
+				bool	doesFocusMoveFront : 1;		/** Whether a focus leads to moving the gadget to the front of adjacent children **/
+				bool	isClickable : 1;			/** Whether the user can interact with the gadget by the stylus */
+			} __attribute__(( packed )) ;
+		};
+		
+		union{
+			_int 		val;
+			void* 		data;
+			_program* 	host;
+		};
+		
+		//! Pass a host
+		static _style storeHost( _program* owner , _style attr = _style() );
+		
+		//! Store an integer in it
+		static _style storeInt( _int data , _style attr = _style() );
+		
+		//! Store any type of data in it
+		static _style storeHandle( void* data , _style attr = _style() );
+		
+		//! Ctors
+		_style() :
+			attrs( _style(0)
+				| resizeable			| enabled
+				| notRightClickable		| canTakeFocus
+				| blurrable				| focusable
+				| defaultDragThld		| noClickRepeat
+				| doubleClickable		| noKeyboardRequest
+				| notDraggable			| focusNoAction
+				| clickable
+			)
+			, data( 0 )
+		{}
+		
+		//! Ctor from single _styleAttr
+		template<_u16 t, bool set>
+		_style( _styleAttr<t,set> param ) :
+			attrs( _style() | param )
+			, data( 0 )
+		{}
+		
+		//! Ctor by sum
+		_style( _u16 sum ) :
+			attrs( sum )
+			, data( 0 )
+		{}
+		
+		
+		//! To concatenate style attributes
+		template<_u16 t> constexpr _style operator |( const _styleAttr<t,true> ) const { return _style( attrs | t ); }
+		template<_u16 t> constexpr _style operator |( const _styleAttr<t,false> ) const { return _style( attrs & ( _u16(~0) ^ t ) ); }
+		template<_u16 t> _style& operator |=( const _styleAttr<t,true> ){ this->attrs |= t; return *this; }
+		template<_u16 t> _style& operator |=( const _styleAttr<t,false> ){ this->attrs &= _u16(~0) ^ t; return *this; }
+		
+		static const _styleAttr<1,true>				resizeableX;
+		static const _styleAttr<1,false>			notResizeableX;
+		
+		static const _styleAttr<2,true>				resizeableY;
+		static const _styleAttr<2,false>			notResizeableY;
+		
+		static const _styleAttr<3,true>				resizeable;
+		static const _styleAttr<3,false>			notResizeable;
+		
+		static const _styleAttr<(1 << 2),true>		enabled;
+		static const _styleAttr<(1 << 2),false>		disabled;
+		
+		static const _styleAttr<(1 << 3),true>		rightClickable;
+		static const _styleAttr<(1 << 3),false>		notRightClickable;
+		
+		static const _styleAttr<(1 << 4),true>		canTakeFocus;
+		static const _styleAttr<(1 << 4),false>		canNotTakeFocus;
+		
+		static const _styleAttr<(1 << 5),true>		blurrable;
+		static const _styleAttr<(1 << 5),false>		notBlurrable;
+		
+		static const _styleAttr<(1 << 6),true>		focusable;
+		static const _styleAttr<(1 << 6),false>		notFocusable;
+		
+		static const _styleAttr<(1 << 7),true>		smallDragThld;
+		static const _styleAttr<(1 << 7),false>		defaultDragThld;
+		
+		static const _styleAttr<(1 << 8),true>		clickRepeat;
+		static const _styleAttr<(1 << 8),false> 	noClickRepeat;
+		
+		static const _styleAttr<(1 << 9),true>		doubleClickable;
+		static const _styleAttr<(1 << 9),false>		notDoubleClickable;
+		
+		static const _styleAttr<(1 << 10),true> 	keyboardRequest;
+		static const _styleAttr<(1 << 10),false> 	noKeyboardRequest;
+
+		static const _styleAttr<(1 << 11),true> 	draggable;
+		static const _styleAttr<(1 << 11),false>	notDraggable;
+		
+		static const _styleAttr<(1 << 12),true>		focusMovesFront;
+		static const _styleAttr<(1 << 12),false>	focusNoAction;
+		
+		static const _styleAttr<(1 << 13),true>		clickable;
+		static const _styleAttr<(1 << 13),false>	notClickable;
 };
 
 extern void applyString2style( _style& attr , string input );

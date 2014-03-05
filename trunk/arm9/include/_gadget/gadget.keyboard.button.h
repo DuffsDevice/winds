@@ -24,7 +24,7 @@ class _keyboardButton : public _button {
 		
 		//! Ctor
 		_keyboardButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key
-			, string title , _style&& style = _style() | _styleAttr::mouseClickRepeat );
+			, string title , _style&& style = _style() | _style::clickRepeat );
 };
 
 #endif

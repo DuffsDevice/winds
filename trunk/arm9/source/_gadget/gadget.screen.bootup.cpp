@@ -17,7 +17,7 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 }
 
 _bootupScreen::_bootupScreen( _u8 bgId , _style&& style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::bootUp , style | _styleAttr::canNotReceiveFocus)
+	_gadgetScreen( bgId , _gadgetScreenType::bootUp , style | _style::notFocusable )
 	, refresher( new _gadget( _gadgetType::none , 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT ) )
 	, bar( new _progressBar( 102 , 125 , 51 , false ) )
 {	

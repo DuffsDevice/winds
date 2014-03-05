@@ -68,7 +68,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	// Window
 	_length winWidth = labelWidth + this->fileTypeChooser->getWidth() + textBoxWidth + 7;
 	_length winHeight = secondLineY + this->openButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_open") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_open") , false , true , _style::notResizeable | _style::draggable );
 	
 	// Fix Filepath
 	initialFilePath = _direntry( initialFilePath ).getFileName();

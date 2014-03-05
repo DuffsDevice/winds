@@ -37,7 +37,7 @@ void _color::setHSLInternal( _u16 hue , _u16 sat , _u16 lum , bool alpha )
 	//! Written by David Flanagan.
 	//! Copyright (c) 1992-2001 by David Flanagan
 	//! @see http://arc.liv.ac.uk/repos/darcs/sge/source/3rdparty/qmon/Xmt310/Xmt/HSLtoRGB.c
-	int red, green, blue;
+	int red = 0, green = 0, blue = 0;
     int v;
     int m, sv, fract, vsf, mid1, mid2, sextant;
 

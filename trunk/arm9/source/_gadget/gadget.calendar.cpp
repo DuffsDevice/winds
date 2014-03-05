@@ -35,8 +35,8 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
 	this->monthLabel	= new _label( this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 , arrowWidth + 2 , 1 , "" );
-	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRight ) , _styleAttr() | _styleAttr::mouseClickRepeat );
-	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowLeft ) , _styleAttr() | _styleAttr::mouseClickRepeat );
+	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRight ) , _style::clickRepeat );
+	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowLeft ) , _style::clickRepeat );
 	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::reset ) );
 	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRotateLeft ) );
 	

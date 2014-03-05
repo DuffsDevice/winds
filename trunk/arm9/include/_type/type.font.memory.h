@@ -13,6 +13,7 @@ class _memoryFont : public _font{
 		_char		lastChar;
 		_u8			height;
 		_u8			mainHeight;
+		_s8			letterSpace;
 		const _u16*	charData;
 		const _u8*	charWidths;
 		const _u16*	charOffsets;
@@ -41,7 +42,7 @@ class _memoryFont : public _font{
 		 * @param sW The Width of a Space
 		 * @return void
 		 */
-		_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW );
+		_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace = 1 );
 		
 		//! Get the CharacterWidth related to a specific character
 		_length getCharacterWidth( _char ch , _u8 fontSize = 0 ) const ;
@@ -59,6 +60,11 @@ class _memoryFont : public _font{
 		//! Get the Main-Height of the font
 		_length getAscent( _u8 fontSize = 0 ) const {
 			return this->mainHeight;
+		}
+		
+		//! Get Space between two letters
+		_length getLetterSpace() const {
+			return this->letterSpace;
 		}
 		
 		//! Check if this font is valid
