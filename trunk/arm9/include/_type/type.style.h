@@ -17,7 +17,7 @@ class _style
 		template<_u16 bitmask, bool setbits>
 		struct _styleAttr{
 			template<_u16 t, bool set>
-			constexpr _style operator|( _styleAttr<t,set> param ){ return _style() | param; }
+			constexpr _style operator|( _styleAttr<t,set> param ){ return _style() | *this | param; }
 		};
 		
 		//! Cast to _u16
