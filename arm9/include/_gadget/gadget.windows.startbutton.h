@@ -21,7 +21,7 @@ class _windowsStartButton : public _button {
 		bool isMenuOpened(){ return this->startMenu->isOpened(); }
 		
 		//! Open the startMenu
-		void openStartMenu(){ this->startMenu->show( this->getAbsoluteX() , this->getAbsoluteY() ); }
+		void openStartMenu(){ this->startMenu->show( this->getAbsoluteX() , this->getAbsoluteY() , false ); }
 		
 		//! Open the startMenu
 		void closeStartMenu(){ this->startMenu->shelve(); }

@@ -22,7 +22,7 @@ void _window::maximize()
 		
 		// Maximizing
 		this->setDimensions( maxDim );
-		this->setStyle( this->getStyle() | _styleAttr::notResizeable );
+		this->setStyle( this->getStyle() | _style::notResizeable );
 		this->triggerEvent( onMaximize );
 	}
 }
@@ -46,7 +46,7 @@ void _window::unMaximize()
 		this->normalDimensions = nullptr;
 		
 		// Set back the old dimensions
-		this->setStyle( this->getStyle() | _styleAttr::resizeable );
+		this->setStyle( this->getStyle() | _style::resizeable );
 		this->setDimensions( dims );
 		this->triggerEvent( onUnMaximize );
 	}
@@ -347,7 +347,7 @@ _window::~_window(){
 }
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
-	_gadget( _gadgetType::window , x , y , width , height , style | _styleAttr::doubleClickable | _styleAttr::focusBringsFront )
+	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront )
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )
 	, minimized( false )
@@ -367,7 +367,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	
 	// Create Icon
 	bmp.resize( 6 , 6 ); // Crop to 6x6
-	this->icon = new _imageGadget( 2 , 2 , move(bmp) , ignore , ignore , _style() | _styleAttr::notResizeable );
+	this->icon = new _imageGadget( 2 , 2 , move(bmp) , ignore , ignore , _style() | _style::notResizeable );
 	
 	// Append it to this button
 	this->addEnhancedChild( this->label );

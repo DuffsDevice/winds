@@ -26,7 +26,7 @@ class _imageGadget : public _gadget {
 		_constBitmap& getImage() const { return this->getBitmap(); }
 		
 		//! Ctor
-		_imageGadget( _optValue<_coord> x , _optValue<_coord> y , _bitmap bmp , _optValue<_length> width = ignore , _optValue<_length> height = ignore , _style&& style = _style() | _styleAttr::notClickable );
+		_imageGadget( _optValue<_coord> x , _optValue<_coord> y , _bitmap bmp , _optValue<_length> width = ignore , _optValue<_length> height = ignore , _style&& style = _style() );
 };
 
 #endif

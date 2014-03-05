@@ -31,7 +31,7 @@ Features:
 - Credits page
 + Switch between programs (✓)
 + Filemask/Wildcard/Regex in _fileview (✓)
-- Right-click
++ Right-click (✓)
 - Create/Rename/Delete files/folders
 + Database/INI-file: which program opens which filetype (✓)
 + Image-Writes and GIF Support (✓)
@@ -50,4 +50,4 @@ Programms:
 
 Random Stuff:
 =============
-- Test Image Encoders!
++ Test Image Encoders! (✓)

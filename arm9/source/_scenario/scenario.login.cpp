@@ -21,7 +21,7 @@ _callbackReturn _scLogin::userLoginHandler( _event event )
 	that->blur();
 	
 	// Prevent it from receiving focus again
-	that->setStyle( that->getStyle() | _styleAttr::canNotReceiveFocus );
+	that->setStyle( that->getStyle() | _style::notFocusable );
 	
 	this->welcome = new _label( 13 , 79 , 105 , 20 , _system::getLocalizedString("lbl_welcome") );
 	this->welcomeBg = new _label( 12 , 78 , 105 , 20 , _system::getLocalizedString("lbl_welcome") );

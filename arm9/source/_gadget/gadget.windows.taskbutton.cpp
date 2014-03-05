@@ -107,7 +107,7 @@ _callbackReturn _windowsTaskButton::refreshHandler( _event event )
 
 
 _windowsTaskButton::_windowsTaskButton( _optValue<_coord> x , _optValue<_coord> y , _window* reference , _style&& style ) :
-	_button( x , y , 20 , 10 , "" , style | _styleAttr::canNotReceiveFocus | _styleAttr::canNotTakeFocus  )
+	_button( x , y , 20 , 10 , "" , style | _style::notFocusable | _style::canNotTakeFocus  )
 	, reference( reference )
 {
 	this->setFontColor( _color::fromRGB( 27 , 27 , 27 ) );

@@ -1,5 +1,6 @@
 #include "_type/type.imagefile.h"
 #include "_type/type.system.h"
+#include "_type/type.color.palette.h"
 
 #include "_library/library.image.png.decoder.h"
 #include "_library/library.image.png.encoder.h"
@@ -77,7 +78,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 				_u8 r = *source++;
 				_u8 g = *source++;
 				_u8 b = *source++;
-				_u8 a = *source++;
+				bool a = *source++ > 127;
 				*base++ = _color::fromRGB8(r,g,b,a);
 			}while( --size > 0 );
 		}
@@ -205,7 +206,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 				_u8 r = *source++;
 				_u8 g = *source++;
 				_u8 b = *source++;
-				_u8 a = *source++;
+				bool a = *source++ > 127;
 				*base++ = _color::fromRGB8(r,g,b,a);
 			}while( --size > 0 );
 			
@@ -520,8 +521,49 @@ bool _imageFile::writeBitmap( const _bitmap& source , _optValue<_mimeType> mimeT
 		}
 		case _mime::image_gif:
 		{
-			//! TODO: Fix! (Doesn't Work!)
-			_system::debug("Writing GIFs is not available yet!\n");
+			// Create palette with 256 entries
+			_colorPalette palette = _colorPalette::fromBitmap( source );
+			palette.downsample( 256 );
+			
+			// Open File for writing
+			FILE* file = fopen( this->getFileName().c_str() , "wb+" );
+			
+			
+			// Get Colors in the palette
+			_vector<_color> colors = palette.getColors();
+			
+			_s16 transparentIndex = palette.hasTransparentColor() ? colors.size() - 1 : -1;
+			
+			
+			// Predefines...
+			_u16 numColors = colors.size();
+			_u32 numPixels = source.getWidth()*source.getHeight();
+			_u8* paletteBuffer = new _u8[numColors*3];
+			_u8* imageBuffer = new _u8[numPixels];
+			
+			
+			// Convert palette to _u8[3]
+			for( int i = 0 ; i < numColors ; i++ ){
+				_color col = colors[i];
+				paletteBuffer[i*3+0] = col.getR()<<3;
+				paletteBuffer[i*3+1] = col.getG()<<3;
+				paletteBuffer[i*3+2] = col.getB()<<3;
+			}
+			
+			
+			// Convert image to indexed format
+			_pixelArray data = source.getBitmap();
+			for( _u32 i = 0 ; i < numPixels; i++ )
+				imageBuffer[i] = palette.getClosestColor(*data++);
+			
+			
+			// Save gif!
+			result = gif_write( file , imageBuffer , source.getWidth() , source.getHeight() , paletteBuffer , numColors , transparentIndex );
+			
+			delete[] paletteBuffer;
+			delete[] imageBuffer;
+			
+			fclose( file );
 			break;
 		}
 		case _mime::image_jpeg:

@@ -13,7 +13,7 @@ _callbackReturn _fileObject::updateHandler( _event event )
 	switch( that->viewType )
 	{
 		case _fileViewType::symbol_big:
-			that->setSizeIfAuto( 26 , 26 );
+			that->setSizeIfAuto( 27 , 27 );
 			break;
 		case _fileViewType::list:
 			that->setSizeIfAuto(
@@ -77,7 +77,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			_constBitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
-				( 25 - fileIcon.getWidth() ) >> 1 // X
+				( myW - fileIcon.getWidth() ) >> 1 // X
 				, ( myH - ft->getHeight() - fileIcon.getHeight() ) >> 1 // Y
 				, fileIcon // Bitmap
 			);
@@ -128,7 +128,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 //}
 
 _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& fl , _fileViewType viewtype , _style&& style ) :
-	_gadget( _gadgetType::fileobject , x , y , width , height , (_style&&)style )
+	_gadget( _gadgetType::fileobject , x , y , width , height , move(style) )
 	, file( new _direntry(fl) )
 	, viewType( viewtype )
 	, pressed( false )

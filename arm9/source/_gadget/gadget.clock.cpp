@@ -129,7 +129,7 @@ void _clockGadget::decrease()
 }
 
 _clockGadget::_clockGadget( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u8 hours , _u8 minutes , _u8 seconds , bool autoIncrease , _style&& style ) :
-	_gadget( _gadgetType::clockgadget , x , y , width , height , style | _styleAttr::notClickable )
+	_gadget( _gadgetType::clockgadget , x , y , width , height , _style::notClickable )
 	, outerBgColor( _color::transparent )
 	, innerBgColor( _color::white )
 	, secondsColor( _color::red )

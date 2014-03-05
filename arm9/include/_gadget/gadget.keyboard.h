@@ -97,7 +97,7 @@ class _keyboard : public _gadgetScreen {
 		static void playClickSound();
 		
 		//! Ctor
-		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _optValue<_coord> handlePosition = ignore , _style&& style = _style() | _styleAttr::canNotTakeFocus );
+		_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _optValue<_coord> handlePosition = ignore , _style&& style = _style::canNotTakeFocus );
 		
 		//! Dtor
 		~_keyboard();

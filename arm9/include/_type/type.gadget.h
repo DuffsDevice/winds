@@ -24,7 +24,7 @@ typedef _list<_gadget*> 									_gadgetList;
 typedef _callbackReturn 									_eventHandler(_event);
 typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
 
-typedef _array<_staticCallback<_eventHandler>,13>	_defaultEventHandlerMap;
+typedef _array<_staticCallback<_eventHandler>,14>			_defaultEventHandlerMap;
 
 class _gadget
 {
@@ -107,52 +107,55 @@ class _gadget
 		////////////////////////
 		
 		/** Method to check whether the Gadget has Focus */
-		bool hasFocus() const { return this->focused || this->type == _gadgetType::screen; }
+		bool hasFocus() const { return this->state.focused || this->type == _gadgetType::screen; }
 		
 		/** Check whether this Gadget is currently pressed */
-		bool isPressed() const { return this->pressed; }
+		bool isPressed() const { return this->state.pressed; }
 		
 		/** Check whether this Gadget is not dragged but one of its children */
-		bool isChildDragged() const { return this->draggedChild != nullptr && ( this->draggedChild->dragged || this->draggedChild->isChildDragged() ); }
+		bool isChildDragged() const { return this->draggedChild != nullptr && ( this->draggedChild->state.dragged || this->draggedChild->isChildDragged() ); }
 		
 		/** Check whether this Gadget can also be on the reserved area of the parent */
-		bool isEnhanced() const { return this->enhanced; }
+		bool isEnhanced() const { return this->state.enhanced; }
 		
 		/** Check whether this Gadget was hidden by a previous call to hide() */
-		bool isHidden() const { return this->hidden; }
+		bool isHidden() const { return this->state.hidden; }
 		
 		/** Check whether this Gadget is enabled */
-		bool isEnabled() const { return this->style.enabled; }
+		bool isEnabled() const { return this->style.isEnabled; }
 		
-		/** Check whether this Gadget can be clicked (if true, which is default, it receives mouse-events) */
-		bool isClickable() const { return this->style.clickable; }
+		/** Check whether the user can interact with this gadget by touch */
+		bool isClickable() const { return this->style.isClickable; }
+		
+		/** Check whether this Gadget can be right-clicked (if true, which is not the default, it receives onMouseRightClick-events */
+		bool isRightClickable() const { return this->style.isRightClickable; }
 		
 		/** true if resizeable in x-direction */
-		bool isResizeableX() const { return this->style.resizeableX; }
+		bool isResizeableX() const { return this->style.isResizeableX; }
 		
 		/** true if resizeable in y-direction */
-		bool isResizeableY() const { return this->style.resizeableY; }
+		bool isResizeableY() const { return this->style.isResizeableY; }
 		
 		/** true if resizeable in both x and y-direction */
-		bool isResizeable() const { return this->style.resizeableX && this->style.resizeableY; }
+		bool isResizeable() const { return this->style.isResizeableX && this->style.isResizeableY; }
 		
 		/** true if the gadget has a special small drag Triger after which it fires an dragStart-Event */
-		bool hasSmallDragTrig() const { return this->style.smallDragTrig; }
+		bool wantsSmallDragThld() const { return this->style.wantsSmallDragThld; }
 		
 		/** true if the gadget wants to have repeating clicks instead of just one mouseDown event and then nothing... */
-		bool isMouseClickRepeat() const { return this->style.mouseClickRepeat; }
+		bool wantsClickRepeat() const { return this->style.wantsClickRepeat; }
 		
 		/** Check whether this Gadget requests the keyboard to open on focus */
-		bool requestsKeyboard() const { return this->style.keyboardRequest; }
+		bool requestsKeyboard() const { return this->style.requestsKeyboard; }
 		
 		/** Check whether or not this gadget can handle drag-scenarios */
-		bool isDraggable() const { return this->style.draggable; }
+		bool isDraggable() const { return this->style.isDraggable; }
 		
 		/**
 		 * Check whether this Gadget is doubleclickable
 		 * If Not every DoubleClick will be convertetd to a 'mouseClick'-event
 		 */
-		bool isDoubleClickable() const { return this->style.doubleClickable; }
+		bool isDoubleClickable() const { return this->style.isDoubleClickable; }
 		
 		
 		////////////////
@@ -286,7 +289,7 @@ class _gadget
 		
 		
 		/**
-		 * Trigger an Event (its destination will be set automatically and it will be handled as soon as there is cpu-power available)
+		 * Thld an Event (its destination will be set automatically and it will be handled as soon as there is cpu-power available)
 		 */
 		//! Will be handled using the method passed or as default by calling 'handleEvent'
 		void triggerEvent( _event event , _eventCallType callType = _eventCallType::normal );
@@ -668,16 +671,16 @@ class _gadget
 		
 		//! Hide the Gadget
 		void hide(){
-			if( !this->hidden ){
-				this->hidden = true;
+			if( !this->state.hidden ){
+				this->state.hidden = true;
 				this->redraw();
 			}
 		}
 		
 		//! Unhide the Gadget
 		void show(){
-			if( this->hidden ){
-				this->hidden = false;
+			if( this->state.hidden ){
+				this->state.hidden = false;
 				redraw();
 			}
 		}
@@ -794,13 +797,8 @@ class _gadget
 		_gadgetType type;
 		
 		//! Reset a gadgets state-attribute
-		inline void resetState(){
-			//this->hidden = false;
-			//this->pressed = false;
-			//this->enhanced = false;
-			//this->dragged = false;
-			//this->focused = false;
-			this->state = 0; // Does the same
+		void resetState(){
+			this->stateSum = 0; // Does the same
 		}
 		
 		//! Range-bound-refreshes are only private
@@ -814,15 +812,15 @@ class _gadget
 		
 		union 
 		{
-			_u8 state; // used to reset everything quickly
-			struct{
+			_u8 stateSum; // used to reset everything quickly
+			struct PACKED {
 				bool	hidden : 1;
 				bool	pressed : 1;
 				bool	enhanced : 1;
 				bool	dragged : 1;
 				bool	focused : 1;
 				_u8		cntBlnk : 3; // For _gadget::blinkHandler
-			} PACKED ;
+			}state;
 		};
 		
 		

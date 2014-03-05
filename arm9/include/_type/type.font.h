@@ -77,6 +77,9 @@ class _font{
 			return this->name;
 		}
 		
+		//! Get Space between two letters
+		virtual _length getLetterSpace() const = 0;
+		
 		//! draw a character!
 		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		

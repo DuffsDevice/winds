@@ -507,7 +507,7 @@ _callbackReturn _keyboard::dragHandler( _event event )
 }
 
 _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen , _optValue<_coord> position , _style&& style ) :
-	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus )
+	_gadgetScreen( bgId , _gadgetScreenType::keyboard , style | _style::canNotTakeFocus | _style::notFocusable )
 	, topScreen( topScreen )
 	, gHScreen( gadgetHost )
 	, fromX( 0 )
@@ -540,7 +540,7 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 			case 45: // Right Shift
 			case 40: // Left Shift
 				btn->setAutoSelect( true );
-				btn->setStyle( btn->getStyle() | _styleAttr::mouseClickDefault );
+				btn->setStyle( btn->getStyle() | _style::noClickRepeat );
 			case 41: // Windows-Button
 			case 39: // Carriage Return
 			case 30: // Caps

@@ -193,15 +193,15 @@ class _bitmap
 		 *
 		 */
 		_pixel& operator[]( const _u32 pos ) const {
-			return this->bmp[ min( _u32(this->width * this->height - 1 ) , pos ) ];
+			return this->bmp[ min( _u32( this->width * this->height - 1 ) , pos ) ];
 		}
 		
 		/**
 		 * Operator for [x][y] to get a specific pixel (x,y) of the bmp
 		 *
 		 */
-		_pixel& operator()( _coord x , _coord y ) const {
-			
+		_pixel& operator()( _coord x , _coord y ) const
+		{
 			x = min( x , _coord( this->width - 1 ) );
 			y = min( y , _coord( this->height - 1 ) );
 			

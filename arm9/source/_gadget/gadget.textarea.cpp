@@ -310,7 +310,7 @@ _callbackReturn _textArea::mouseHandler( _event event )
 }
 
 _textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
-	_gadget( _gadgetType::textarea , x , y , width , height , style | _styleAttr::keyboardRequest | _styleAttr::draggable | _styleAttr::smallDragTrig )
+	_gadget( _gadgetType::textarea , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld )
 	, color( _color::fromRGB( 0 , 0 , 0 ) )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, text( _system::getFont() , _system::getRTA().getDefaultFontSize() , width - _textArea::borderX * 2 , value )
@@ -326,7 +326,7 @@ _textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 			this->text.getLineCount() * ( this->text.getFont()->getHeight() + 1 ) , /* Height of the inner canvas */
 			_dimension::vertical
 			, 0 /* value */
-			, _styleAttr() | _styleAttr::canNotTakeFocus | _styleAttr::canNotReceiveFocus
+			, _style::canNotTakeFocus | _style::notFocusable
 		)
 	;
 	

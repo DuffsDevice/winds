@@ -60,7 +60,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Window
 	_length winWidth = labelWidth + buttonWidth + textBoxAndSelectWidth + 7;
 	_length winHeight = secondLineY + this->saveButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_save") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_save") , false , true , _style::notResizeable | _style::draggable );
 	
 	
 	// FileView & Addressbar & Button

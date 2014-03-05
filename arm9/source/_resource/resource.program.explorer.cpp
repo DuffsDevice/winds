@@ -13,13 +13,13 @@ PROG_Explorer::PROG_Explorer() :
 void PROG_Explorer::main( _programArgs args )
 {
 	if( !args.empty() && !args[0].empty() )
-		this->path = args[0];
+		this->path = _direntry(args[0]).getFileName();
 	
-	this->window = new _window( 40 , 40 , 120 , 90 , "Explorer" , true , true , _styleAttr() | _styleAttr::draggable );
+	this->window = new _window( 40 , 40 , 120 , 90 , "Explorer" , true , true , _style::draggable );
 	this->fileView = new _fileView( 0 , 21 , ignore , ignore , this->path , _fileViewType::list );
 	this->addressBar = new _textBox( 1 , 10 , ignore , 10 , this->path );
-	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style() | _styleAttr::canNotTakeFocus );
-	this->folderUpButton = new _imageButton( ignore , 10 , 10 , 9 , BMP_FolderUpIcon() , ignore , "" , _style() | _styleAttr::canNotTakeFocus );
+	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style::canNotTakeFocus );
+	this->folderUpButton = new _imageButton( ignore , 10 , 10 , 9 , BMP_FolderUpIcon() , ignore , "" , _style::canNotTakeFocus );
 	
 	this->fileView->setUserEventHandler( onEdit , make_callback( this , &PROG_Explorer::handler ) );
 	this->fileView->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );

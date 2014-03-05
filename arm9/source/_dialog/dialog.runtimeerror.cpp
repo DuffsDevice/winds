@@ -43,7 +43,7 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 	_length winHeight = this->msg->getHeight() + this->closeButton->getHeight() + 7 + 11 + 27; // + 11 for the window, + 22 for the textarea
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_runtime_error") , false , true , _styleAttr() | _styleAttr::notResizeable | _styleAttr::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_runtime_error") , false , true , _style::notResizeable | _style::draggable );
 	
 	// Move buttons to right position
 	this->closeButton->moveTo( winWidth - this->closeButton->getWidth() - 3 , this->msg->getHeight() + 4 );

@@ -28,7 +28,7 @@ bool _gadgetScreen::touchInside( _touch touch )
 }
 
 
-bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
+bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 {
 	// Temp...
 	_event event = _event( _none_ ).setCurrentKeys( _system::getCurrentKeys() );
@@ -37,25 +37,9 @@ bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 	if( this->cyclesLastClick && !( this->cyclesLastClick >> 7 ) )
 		this->cyclesLastClick++;
 	
-	_touch newTouch = origTouch;
-	
+	// Adjust the pen position
 	_touch  newNewTouch = _gadgetScreen::adjustTouch( newTouch );
 	bool newTouchInside = this->touchInside( newNewTouch );
-	
-	//float cPR = 0.45f; // Stands for Cross-Panel-Resistance (á la Pressure)
-	//if( origTouch.z1 && origTouch.z2 )
-	//	float(origTouch.z2) / origTouch.z1;
-	//cPR = 0.45f / cPR;
-	//if( origTouch.z1 && origTouch.z2 )
-	//{		
-	//	cPR *= float( SCREEN_WIDTH - newTouch.x ) / 197.f + 1.f; // X-Correction
-	//	_int sH2 = SCREEN_HEIGHT / 2;
-	//	float xCorr = ( sH2 - abs( newTouch.y - sH2 ) ) / sH2;
-	//	cPR *= 0.9f + xCorr * 0.1f; // Y-Correction
-	//}
-	//if( cPR < 0 )
-	//	cPR = 0;
-	//printf("Pressure: %f\n",cPR);
 	
 	/*!
 	 * Handle the Pen!
@@ -65,7 +49,7 @@ bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 		event.setEffectivePosX( newTouch.x ).setEffectivePosY( newTouch.y ).setPosX( newNewTouch.x ).setPosY( newNewTouch.y );
 		event.setPressure( 400 );
 		
-		//! Check if this is the first Cycle the pen is down
+		//! Check if this is the first Frame the pen is down
 		if( this->touchCycles == 0 )
 		{
 			// Trigger the Event
@@ -103,15 +87,16 @@ bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 			//! Compute the dragged Distance: Pythagoras!
 			_u32 xd = newTouch.x - startTouch.x;
 			_u32 yd = newTouch.y - startTouch.y;
-			_u32 dragDistance = xd * xd + yd * yd; // Actually its square
-			_u8 trigger = _system::getUser().mDD;
+			_u32 dragDistance = xd * xd + yd * yd; // Actually its the square of the distance
+			_u16 minDragThld = _system::getUser().mDD;
+			_u16 keyRepetitionDelay = _system::getUser().kRD;
 			
 			// For gadgets with a small dragging Trigger e.g. scrollBars
-			if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->hasSmallDragTrig() )
-				trigger /= 3;
+			if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->wantsSmallDragThld() )
+				minDragThld /= 4;
 			
 			// Check if Pen has moved the distance already
-			if( dragDistance > trigger * trigger )
+			if( dragDistance > _u16(minDragThld * minDragThld) )
 			{
 				// Modify Event
 				event.setEffectivePosX( startTouch.x ).setEffectivePosY( startTouch.y ).setPosX( newStartTouch.x ).setPosY( newStartTouch.y );
@@ -123,8 +108,16 @@ bool _gadgetScreen::processTouch( bool held , touchPosition origTouch )
 				this->lastTouch = this->startTouch;
 			}
 			// If not dragging and If the current clicked gadget wants to have mouseClicks Repeating
-			else if( _system::_lastClickedGadget_ && _system::_lastClickedGadget_->isMouseClickRepeat() && ( _system::getUser().kRD && this->touchCycles > _system::getUser().kRD && this->touchCycles % _system::getUser().kRS == 0 ) )
-				this->triggerEvent( event.setType( onMouseRepeat ) );
+			else if( _system::_lastClickedGadget_ ) // Do we have a gadget?
+			{
+				if( _system::_lastClickedGadget_->wantsClickRepeat() )
+				{
+					if( keyRepetitionDelay > 0 && this->touchCycles > keyRepetitionDelay && this->touchCycles % _system::getUser().kRS == 0 )
+						this->triggerEvent( event.setType( onMouseRepeat ) );
+				}
+				else if( _system::_lastClickedGadget_->isRightClickable() && this->touchCycles == _system::getUser().rCD )
+					this->triggerEvent( event.setType( onMouseRightClick ) );
+			}
 		}
 		
 		// Increase Cycles

@@ -1,49 +1,28 @@
 #include "_type/type.style.h"
 #include "_type/type.tokenizer.h"
 	
-_style _style::storeHandle( void* data , _styleAttr attr ){
+_style _style::storeHandle( void* data , _style attr ){
 	_style g = _style( attr );
 	g.data = data;
 	return g;
 }
 
-_style _style::storeInt( _int data , _styleAttr attr ){
+_style _style::storeInt( _int data , _style attr ){
 	_style g = _style( attr );
 	g.val = data;
 	return g;
 }
 
-_style _style::storeHost( _program* data , _styleAttr attr ){
+_style _style::storeHost( _program* data , _style attr ){
 	_style g = _style( attr );
 	g.host = data;
 	return g;
-}
-
-// Default
-_styleAttr::_styleAttr()
-{
-	sum = _styleAttr(0)
-		| resizeable
-		| enabled
-		| clickable
-		| canTakeFocus
-		| canLooseFocus
-		| canReceiveFocus
-		| defaultDragTrig
-		| mouseClickDefault
-		| doubleClickable
-		| noKeyboardRequest
-		| notDraggable
-		| focusNoAction
-	;
 }
 
 void applyString2style( _style& style , string input )
 {
 	string line;
 	_tokenizer tok = _tokenizer( input , line , " |" , true );
-	
-	_styleAttr attr = _styleAttr( style.attrs );
 	
 	while( tok.next() )
 	{
@@ -52,84 +31,86 @@ void applyString2style( _style& style , string input )
 		
 		// Resizeable
 		if( line == "resizeable" )
-			attr |= _styleAttr::resizeable;
+			style |= _style::resizeable;
 		else if( line == "notResizeable" )
-			attr |= _styleAttr::notResizeable;
+			style |= _style::notResizeable;
 		
 		// ResizeableX
 		else if( line == "resizeableX" )
-			attr |= _styleAttr::resizeableX;
+			style |= _style::resizeableX;
 		else if( line == "notResizeableX" )
-			attr |= _styleAttr::notResizeableX;
+			style |= _style::notResizeableX;
 		
 		// ResizeableY
 		else if( line == "resizeableY" )
-			attr |= _styleAttr::resizeableY;
+			style |= _style::resizeableY;
 		else if( line == "notResizeableY" )
-			attr |= _styleAttr::notResizeableY;
+			style |= _style::notResizeableY;
 		
 		// Destroyable
 		else if( line == "enabled" )
-			attr |= _styleAttr::enabled;
+			style |= _style::enabled;
 		else if( line == "disabled" )
-			attr |= _styleAttr::disabled;
+			style |= _style::disabled;
 		
 		// Clickable
-		else if( line == "clickable" )
-			attr |= _styleAttr::clickable;
-		else if( line == "notClickable" )
-			attr |= _styleAttr::notClickable;
+		else if( line == "rightClickable" )
+			style |= _style::rightClickable;
+		else if( line == "notRightClickable" )
+			style |= _style::notRightClickable;
 		
-		// CanTakeFocus
+		// canTakeFocus
 		else if( line == "canTakeFocus" )
-			attr |= _styleAttr::canTakeFocus;
+			style |= _style::canTakeFocus;
 		else if( line == "canNotTakeFocus" )
-			attr |= _styleAttr::canNotTakeFocus;
+			style |= _style::canNotTakeFocus;
 		
-		// CanLooseFocus
-		else if( line == "canLooseFocus" )
-			attr |= _styleAttr::canLooseFocus;
-		else if( line == "canNotLooseFocus" )
-			attr |= _styleAttr::canNotLooseFocus;
+		// blurrable
+		else if( line == "blurrable" )
+			style |= _style::blurrable;
+		else if( line == "notBlurrable" )
+			style |= _style::notBlurrable;
 		
-		// canReceiveFocus
-		else if( line == "canReceiveFocus" )
-			attr |= _styleAttr::canReceiveFocus;
-		else if( line == "canNotReceiveFocus" )
-			attr |= _styleAttr::canNotReceiveFocus;
+		// focusable
+		else if( line == "focusable" )
+			style |= _style::focusable;
+		else if( line == "notFocusable" )
+			style |= _style::notFocusable;
 		
-		// DragTrig
-		else if( line == "defaultDragTrig" )
-			attr |= _styleAttr::defaultDragTrig;
-		else if( line == "smallDragTrig" )
-			attr |= _styleAttr::smallDragTrig;
+		// DragTrigger
+		else if( line == "defaultDragThld" )
+			style |= _style::defaultDragThld;
+		else if( line == "smallDragThld" )
+			style |= _style::smallDragThld;
 		
-		// DragTrig
-		else if( line == "mouseClickDefault" )
-			attr |= _styleAttr::mouseClickDefault;
-		else if( line == "mouseClickRepeat" )
-			attr |= _styleAttr::mouseClickRepeat;
+		// DragTrigger
+		else if( line == "noClickRepeat" )
+			style |= _style::noClickRepeat;
+		else if( line == "clickRepeat" )
+			style |= _style::clickRepeat;
 		
 		// doubleClickable
 		else if( line == "doubleClickable" )
-			attr |= _styleAttr::doubleClickable;
+			style |= _style::doubleClickable;
 		else if( line == "notDoubleClickable" )
-			attr |= _styleAttr::notDoubleClickable;
+			style |= _style::notDoubleClickable;
 		
 		// keyboardRequest
 		else if( line == "keyboardRequest" )
-			attr |= _styleAttr::keyboardRequest;
+			style |= _style::keyboardRequest;
 		else if( line == "noKeyboardRequest" )
-			attr |= _styleAttr::noKeyboardRequest;
+			style |= _style::noKeyboardRequest;
 		
 		// keyboardRequest
 		else if( line == "draggable" )
-			attr |= _styleAttr::draggable;
+			style |= _style::draggable;
 		else if( line == "notDraggable" )
-			attr |= _styleAttr::notDraggable;
+			style |= _style::notDraggable;
 		
+		// clickable
+		else if( line == "clickable" )
+			style |= _style::clickable;
+		else if( line == "notClickable" )
+			style |= _style::notClickable;
 	}
-	
-	// Copy attributes back into _style class
-	style.attrs = attr;
 }

@@ -102,6 +102,7 @@ _fromStr<_eventType> string2eventType = {
 	{ "onDragStart" , onDragStart },
 	{ "onDragStop" , onDragStop },
 	{ "onDragging" , onDragging },
+	{ "onMouseRightClick" , onMouseRightClick },
 	
 	{ "onUpdate" , onUpdate },
 	{ "onEdit" , onEdit },
@@ -159,6 +160,7 @@ _toStr<_eventType> eventType2string = {
 	{ onDragStart , "onDragStart" },
 	{ onDragStop , "onDragStop" },
 	{ onDragging , "onDragging" },
+	{ onMouseRightClick , "onMouseRightClick" },
 
 	{ onUpdate , "onUpdate" },
 	{ onEdit , "onEdit" },

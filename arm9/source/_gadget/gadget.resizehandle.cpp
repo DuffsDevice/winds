@@ -72,7 +72,7 @@ _callbackReturn _resizeHandle::positionAdjuster( _event event )
 }
 
 _resizeHandle::_resizeHandle( _optValue<_color> bgColor , _style&& style ) :
-	_gadget( _gadgetType::resizehandle , 8 , 8 , 0 , 0 , style | _styleAttr::draggable )
+	_gadget( _gadgetType::resizehandle , 8 , 8 , 0 , 0 , style | _style::draggable )
 	, bgColor( bgColor.isValid() ? (_color)bgColor : _color::transparent )
 {
 	this->setInternalEventHandler( onParentResize , make_callback(  &_resizeHandle::positionAdjuster ) );
