@@ -61,7 +61,7 @@ _startMenu::_startMenu( _style&& style ) :
 	// Left Side
 	_fileView* view = new _fileView( 1 , CONST_TOP_BAR_HEIGHT + 2
 			, ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4
-			, "%WINDIR%/jumplist/" , _fileViewType::list , false , { "exe" , "lua" , "lnk" }
+			, "%CURRENT_USER%/jumplist/" , _fileViewType::list , false , { "exe" , "lua" , "lnk" }
 		);
 	
 	view->setEventHandler( make_callback( this , &_startMenu::clickHandler ) );

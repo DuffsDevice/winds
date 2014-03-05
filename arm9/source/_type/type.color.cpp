@@ -40,7 +40,10 @@ void _color::setHSLInternal( _u16 hue , _u16 sat , _u16 lum , bool alpha )
 	int red = 0, green = 0, blue = 0;
     int v;
     int m, sv, fract, vsf, mid1, mid2, sextant;
-
+	
+	while( hue >= 360 )
+		hue -= 360;
+	
     v = (lum < 50) ? (lum * (sat + 100) / 100) : (lum + sat - (lum * sat / 100));
     if (v <= 0){
 		this->setRGBInternal( 0 , 0 , 0 , alpha );

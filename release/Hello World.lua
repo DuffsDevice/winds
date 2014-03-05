@@ -1,8 +1,11 @@
---IMG = /someurl.bmp
+--NAME = Pong
+--IMG = %APPDATA%/PongIcon.bmp
 --AUTHOR = Jakob Riedle(DuffsDevice)
 --VERSION = 1.0
 --DESC = Simple Cover of the famous Game 'Pong'
 --COPYRIGHT = (C) 2014
+--LANG = neutral
+
 using "Drawing.Area"
 using "Drawing.Bitmap"
 using "Drawing.BitmapPort"
@@ -94,9 +97,9 @@ function main()
 	local bmp = Bitmap(6, 6)
 	
 	bmp.reset( "black" )
-	bmp.drawVerticalLine( 0 , 1 , 3 , "green" )
-	bmp.drawVerticalLine( 5 , 3 , 3 , "green" )
-	bmp.drawFilledRect( 2 , 2 , 2 , 2 , "magenta" )
+	bmp.drawVerticalLine( 0 , 1 , 3 , "lime" )
+	bmp.drawVerticalLine( 5 , 3 , 3 , "lime" )
+	bmp.drawFilledRect( 2 , 2 , 2 , 2 , "fuchsia" )
 	
 	window = Window( 40 , 20 , gameWidth + 2 , gameHeight + 11 , "Pong" , bmp , true , true , "notResizeable | draggable" )
 	
@@ -193,17 +196,17 @@ function refresher( event )
 	port.fill( "black" )
 	
 	-- Draw Paddles
-	port.drawFilledRect( 1 , p1 + 1 , 3 , pLength , "green" )
-	port.drawFilledRect( gameWidth - 4 , p2 + 1 , 3 , pLength , "green" )
+	port.drawFilledRect( 1 , p1 + 1 , 3 , pLength , "lime" )
+	port.drawFilledRect( gameWidth - 4 , p2 + 1 , 3 , pLength , "lime" )
 	
 	-- Draw middle Line and Ball
-	port.drawVerticalDottedLine( gameWidth/2 , 0 , gameHeight , "green" )
-	port.drawFilledCircle( ballX , ballY , 2 , "magenta" )
+	port.drawVerticalDottedLine( gameWidth/2 , 0 , gameHeight , "lime" )
+	port.drawFilledCircle( ballX , ballY , 2 , "fuchsia" )
 	
 	-- Paint Scores
 	local font = System.getFont("ArialBlack13")
-	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "green" , 10 )
-	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "green" , 10 )
+	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "lime" , 10 )
+	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "lime" , 10 )
 	
 	return "handled"
 end
