@@ -67,6 +67,8 @@ void _fileView::generateChildren()
 		case _fileViewType::symbol_big:
 		{
 			// Read Children of directory
+			//_vector<string> names = { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"};
+			//for( string str : names )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject

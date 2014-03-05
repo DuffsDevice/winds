@@ -24,7 +24,7 @@ void _keyboard::playClickSound(){
 
 //! Define if you want the upper screen to show
 //! the full lower screen when keyboard is expanded
-//#define KEYBOARD_TOP_SCREEN
+#define KEYBOARD_TOP_SCREEN
 
 namespace{
 	const int sStart = 0;

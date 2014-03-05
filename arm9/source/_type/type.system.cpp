@@ -451,7 +451,7 @@ void _system::start()
 		
 		setBackdropColor( _color::black );
 		setBackdropColorSub( _color::black );
-		consoleDemoInit();
+		//consoleDemoInit();
 		
 		//_system::fadeMainScreen( false , false );
 		
