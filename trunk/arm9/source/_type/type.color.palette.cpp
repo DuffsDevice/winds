@@ -24,7 +24,7 @@ _u32 _colorPalette::getClosestColor( _color color ) const
 	
 	_u32 bestIdx = 0;
 	_u32 smallestDistance = ~0;
-	for( _s32 idx = 0 ; idx < numColors ; idx++ )
+	for( _u32 idx = 0 ; idx < numColors ; idx++ )
 	{
 		_u32 newDistance = _color::distance( this->colors[idx] , color , true );
 		if( newDistance < smallestDistance ){
