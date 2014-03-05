@@ -1,0 +1,10 @@
+Usage:
+
+	- Put an "executable" file in the Root of your SD-Card
+	- This can either be a .lua or .exe-file both having the program to execute as content in ASCII-Format
+	- When Started up: Navigate to the directory within the filebrowser
+	- Duoble-Click the file to execute
+
+More Help at:
+	
+	http://palmato.com/WinDS
