@@ -212,3 +212,27 @@ Lunar<_lua_fileopendialog>::PropertyType _lua_fileopendialog::properties[] = {
 	{ "fileName"	, wrap( _lua_fileopendialog , &_fileSaveDialog::getFileName ) , nullptr },
 	LUA_CLASS_ATTR_END
 };
+
+//! _folderChooseDialog
+_lua_folderchoose::_lua_folderchoose(lua_State* L) :
+	_folderChooseDialog(
+		optcheck<string>( L , 1 )
+		, optcheck<string>( L , 2 )
+		, optcheck<string>( L , 3 )
+	)
+{}
+
+//! _lua_folderchoose
+const char _lua_folderchoose::className[] = "FolderChooseDialog";
+Lunar<_lua_folderchoose>::FunctionType _lua_folderchoose::methods[] = {
+	{ "execute"			, wrap( _lua_folderchoose , &_dialog::execute ) },
+	{ "terminate"		, wrap( _lua_folderchoose , &_dialog::terminate ) },
+	{ "setCallback"		, wrap( _lua_folderchoose , &_dialog::setCallback ) },
+	{ "deleteCallback"	, wrap( _lua_folderchoose , &_dialog::deleteCallback ) },
+	LUA_CLASS_FUNC_END
+};
+Lunar<_lua_folderchoose>::PropertyType _lua_folderchoose::properties[] = {
+	{ "running"	, wrap( _lua_folderchoose , &_dialog::isRunning ) , nullptr },
+	{ "path"	, wrap( _lua_folderchoose , &_folderChooseDialog::getPath ) , nullptr },
+	LUA_CLASS_ATTR_END
+};

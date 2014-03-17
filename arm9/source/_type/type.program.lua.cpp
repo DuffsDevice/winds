@@ -89,6 +89,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "Dialog" , "InfoDialog" , &Lunar<_lua_infodialog>::install ),
 	make_tuple( "Dialog" , "FileSaveDialog" , &Lunar<_lua_filesavedialog>::install ),
 	make_tuple( "Dialog" , "FileOpenDialog" , &Lunar<_lua_fileopendialog>::install ),
+	make_tuple( "Dialog" , "FolderChooseDialog" , &Lunar<_lua_fileopendialog>::install ),
 	make_tuple( "UI" , "RadioGroup" , &Lunar<_lua_radiogroup>::install ),
 	make_tuple( "UI" , "Gadget" , &Lunar<_lua_gadget>::install ),
 	make_tuple( "UI" , "Window" , &Lunar<_lua_window>::install ),

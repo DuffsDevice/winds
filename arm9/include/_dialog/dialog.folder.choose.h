@@ -1,5 +1,5 @@
-#ifndef _WIN_D_FILESAVE_
-#define _WIN_D_FILESAVE_
+#ifndef _WIN_D_FOLDERCHOOSE_
+#define _WIN_D_FOLDERCHOOSE_
 
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
