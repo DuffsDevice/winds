@@ -76,6 +76,5 @@ class _counter : public _gadget{
 		
 		//! Dtor
 		~_counter();
-		
 };
 #endif

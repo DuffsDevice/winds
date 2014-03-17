@@ -26,6 +26,14 @@ extern "C"{
 	extern _u32 keysHeld();
 }
 
+//! Enumerates the underlying hardware
+enum class _hardwareType{
+	emulator,
+	ds,
+	dsi
+};
+extern _toStr<_hardwareType> hardwareType2str;
+
 class _system{
 	
 	private:
@@ -191,8 +199,8 @@ class _system{
 		//! Get the name of the user within the DS internal firmware
 		static const string&		getDSUserName();
 		
-		//! Checks if the binary is executed on real hardware or on an emulator
-		static bool					isRunningOnEmulator();
+		//! Check, on which hardware type the executeable is running on
+		static _hardwareType		getHardwareType();
 		
 		//! Debugging
 		static void					debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));

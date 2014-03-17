@@ -23,15 +23,17 @@ _contextMenu::_contextMenu( _optValue<_length> width , const _menuEntryList& lis
 	// Select initial value
 	if( preserveValue )
 	{
-		_gadgetList::iterator entry = find_if(
-			this->children.begin()
-			, this->children.end()
+		const _gadgetList& children = this->getChildren( false );
+		
+		_gadgetList::const_iterator entry = find_if(
+			children.cbegin()
+			, children.cend()
 			, [initialValue]( _gadget* entry )->bool{
 				return ((_contextMenuEntry*)entry)->getIntValue() == initialValue;
 			}
 		);
 		
-		if( entry == this->children.end() || !*entry )
+		if( entry == children.cend() || !*entry )
 			return;
 		
 		// Write new entry in attribute
@@ -189,7 +191,7 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	if( that->hasAutoWidth() )
 	{
 		_length w = 0;
-		for( _gadget* entry : that->children )
+		for( _gadget* entry : that->getChildren( false ) )
 			w = max( entry->getWidth() , w );
 		
 		that->setWidthIfAuto( w + 2 );
@@ -211,14 +213,16 @@ _callbackReturn _contextMenu::openHandler( _event event )
 }
 
 void _contextMenu::setIntValue( _int id ){
-	_gadgetList::iterator entry = find_if(
-		this->children.begin()
-		, this->children.end()
+	const _gadgetList& list = this->getChildren( false );
+	
+	_gadgetList::const_iterator entry = find_if(
+		list.begin()
+		, list.end()
 		, [id]( _gadget* entry )->bool{
 			return ((_contextMenuEntry*)entry)->getIntValue() == id;
 		}
 	);
-	if( entry != this->children.end() )
+	if( entry != this->getChildren( false ).end() )
 		this->selectEntry( ((_contextMenuEntry*)*entry) );
 }
 
@@ -236,7 +240,7 @@ void _contextMenu::generateChildren( const _menuEntryList& list )
 		else
 			cM = new _contextMenuEntryDivider();
 		
-		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _direction::down , 0 , 0 , false , 0 , 0 ) );
+		cM->setInternalEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::down , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }
@@ -245,7 +249,7 @@ _menuEntryList _contextMenu::getList()
 {
 	_menuEntryList list;
 	
-	for( _gadget* g : this->children )
+	for( _gadget* g : this->getChildren( false ) )
 	{
 		_contextMenuEntry* entry = ((_contextMenuEntry*)g);
 		list.insert( make_pair(entry->getIntValue(), entry->getStrValue()) );

@@ -1,4 +1,5 @@
 #include "_gadget/gadget.checkbox.h"
+#include "_type/type.gadget.helpers.h"
 
 // Graphics
 #include "_resource/resource.image.checkboxes.h"

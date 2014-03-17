@@ -55,8 +55,6 @@ enum _eventType : _u16
 	
 	onUpdate,
 	onEdit,
-	onBlur,
-	onFocus,
 	onOpen,
 	onClose,
 	onMouseEnter,
@@ -67,35 +65,62 @@ enum _eventType : _u16
 	onRestore,
 	onScroll,
 	
+	//
+	// Events from various perspectives
+	//
 	onResize,
 	onMove,
 	onRestyle,
-	onVisibility,
-	onSet,
+	onShow,
+	onHide,
+	onFocus,
+	onBlur,
+	onAdd, // Not Used
+	onDelete,
 	
+	// From the perspective of a child
 	onParentResize,
 	onParentMove,
 	onParentRestyle,
-	onParentVisibility,
-	onParentSet,
+	onParentShow,
+	onParentHide,
+	onParentFocus,
+	onParentBlur,
+	onParentAdd,
+	onParentRemove,
 	
+	// From the perspective of a parent
 	onChildResize,
 	onChildMove,
 	onChildRestyle,
-	onChildVisibility,
-	onChildSet,
+	onChildShow,
+	onChildHide,
+	onChildFocus,
+	onChildBlur,
+	onChildAdd,
+	onChildRemove,
 	
+	// From the perspective of a subcedent child
 	onPreResize,
 	onPreMove,
 	onPreRestyle,
-	onPreVisibility,
-	onPreSet,
+	onPreShow,
+	onPreHide,
+	onPreFocus,
+	onPreBlur,
+	onPreAdd,
+	onPreRemove,
 	
+	// From the perspective of a precedent child
 	onPostResize,
 	onPostMove,
 	onPostRestyle,
-	onPostVisibility,
-	onPostSet,
+	onPostShow,
+	onPostHide,
+	onPostFocus,
+	onPostBlur,
+	onPostAdd,
+	onPostRemove
 };
 
 //! Converts a dependency EventType to a more specific type
@@ -103,7 +128,7 @@ unused static inline constexpr _eventType depType2parentType( _eventType et ){ r
 unused static inline constexpr _eventType depType2childType( _eventType et ){ return _eventType( et + ( onChildResize - onResize ) ); }
 unused static inline constexpr _eventType depType2preType( _eventType et ){ return _eventType( et + ( onPreResize - onResize ) ); }
 unused static inline constexpr _eventType depType2postType( _eventType et ){ return _eventType( et + ( onPostResize - onResize ) ); }
-unused static inline constexpr bool isDepType( _eventType et ){ return et >= onParentResize && et <= onPostSet; }
+unused static inline constexpr bool isDepType( _eventType et ){ return et >= onParentResize && et <= onPostRemove; }
 
 
 //! Checks if an eventType is a user-Event-type

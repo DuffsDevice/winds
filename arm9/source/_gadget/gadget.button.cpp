@@ -1,5 +1,6 @@
 #include "_gadget/gadget.button.h"
 #include "_type/type.system.h"
+#include "_type/type.gadget.helpers.h"
 
 void _button::setStrValue( string val )
 {

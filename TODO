@@ -15,7 +15,7 @@ Dialogs:
 - Color chooser
 + File open (✓)
 + File save (✓)
-- Folder choose
++ Folder choose (✓)
 - Security check
 
 Features:

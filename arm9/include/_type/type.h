@@ -8,6 +8,7 @@
 #include <list>
 #define _GLIBCXX_DEBUG // Because vector::operator[] leads to undefined behaviour when undefined
 #include <vector>
+#include <deque>
 #undef _GLIBCXX_DEBUG
 #include <array>
 #include <string>
@@ -39,6 +40,8 @@ template<typename T>
 	using _list = std::list<T>;
 template<typename T>
 	using _vector = std::vector<T>;
+template<typename T>
+	using _deque = std::deque<T>;
 template<typename T,typename T2>
 	using _map = std::map<T,T2>;
 template<typename T,typename T2>

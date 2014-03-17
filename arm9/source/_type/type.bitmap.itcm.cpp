@@ -826,7 +826,7 @@ void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _cha
 		{
 			_length width = font->drawCharacter( dest , this->width , x0 , y0 , *str , color , this->activeClippingRect , fontSize );
 			if( width )
-				width++;
+				width += font->getLetterSpace();
 			x0 += width;
 			dest += width;
 		}

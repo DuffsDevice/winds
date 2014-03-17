@@ -19,7 +19,7 @@
 class _gadget;
 
 //! Typedef
-typedef _list<_gadget*> 									_gadgetList;
+typedef _deque<_gadget*> 									_gadgetList;
 
 typedef _callbackReturn 									_eventHandler(_event);
 typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
@@ -30,7 +30,7 @@ class _gadget
 {
 	friend class _lua_gadget;
 	
-	protected:
+	private:
 	
 		//! Padding
 		union{
@@ -387,8 +387,8 @@ class _gadget
 		}
 		
 		//! Sets a specific position
-		void moveTo( _coord x , _coord y ){
-			moveRelative( x - this->x , y - this->y );
+		void moveTo( _coord x , _coord y , bool ignoreAuto = false ){
+			moveRelative( x - this->x , y - this->y , ignoreAuto );
 		}
 		
 		//! Requests the gadget to auto-compute the required values
@@ -414,9 +414,9 @@ class _gadget
 		}
 		
 		//! Moves by difference
-		void moveRelative( _s16 deltaX , _s16 deltaY ){
-			this->autoValues.posX = false;
-			this->autoValues.posY = false;
+		void moveRelative( _s16 deltaX , _s16 deltaY , bool ignoreAuto = false ){
+			this->autoValues.posX &= ignoreAuto;
+			this->autoValues.posY &= ignoreAuto;
 			moveRelativeInternal( deltaX , deltaY );
 		}
 		
@@ -432,8 +432,8 @@ class _gadget
 			if( this->autoValues.posX )
 				this->setXInternal( val );
 		}
-		void setX( _coord val ){
-			this->autoValues.posX = false;
+		void setX( _coord val , bool ignoreAuto = false ){
+			this->autoValues.posX &= ignoreAuto;
 			setXInternal( val );
 		}
 		void requestAutoX(){
@@ -449,8 +449,8 @@ class _gadget
 			if( this->autoValues.posY )
 				this->setYInternal( val );
 		}
-		void setY( _coord val ){
-			this->autoValues.posY = false;
+		void setY( _coord val , bool ignoreAuto = false ){
+			this->autoValues.posY &= ignoreAuto;
 			setYInternal( val );
 		}
 		void requestAutoY(){
@@ -621,31 +621,42 @@ class _gadget
 		void removeChild( _gadget* child );
 		
 		//! Remove all 'normal' children and optionally 'delete' them
-		void removeChildren( bool remove = false );
+		void removeChildren( bool deleteGadget = false );
 		
 		//! Remove all enhanced children and optionally 'delete' them
-		void removeEnhancedChildren( bool remove = false );
+		void removeEnhancedChildren( bool deleteGadget = false );
 		
 		/**
 		 * Add a child-gadget to this one
-		 * @param pushBack Whether the child should be added to the back of the children instead of the front
+		 * @param newChild	The child to add to this gadget
+		 * @param pushBack	Whether the child should be added after or before a list entry
+		 * @param where		Already added child that should be the next/previous adjacent child-entry
+		 *					If this is 'null', the end/bagin of the list ist used as the inserting point
 		 **/
-		void addChild( _gadget* child , bool pushBack = false );
+		void addChild( _gadget* newChild , bool after = false , _gadget* where = nullptr ){
+			addChildInternal( false , newChild , after , where );
+		}
 		
 		/**
-		 * Add a enhanced child-gadget to this one
-		 * @param pushBack Whether the child should be added to the back of the children instead of the front
+		 * Add an enhanced child-gadget to this one
+		 * @param newChild	The child to add to this gadget
+		 * @param pushBack	Whether the child should be added after or before a list entry
+		 * @param where		Already added child that should be the next/previous adjacent child-entry
+		 *					If this is 'null', the end/bagin of the list ist used as the inserting point
 		 **/
-		void addEnhancedChild( _gadget* child , bool pushBack = false );
+		void addEnhancedChild( _gadget* newChild , bool after = false , _gadget* where = nullptr ){
+			addChildInternal( true , newChild , after , where );
+		}
+		
 		
 		//! Get the toppest child owned by the parent
-		_gadget* getToppestChild() const {	return this->children.front(); }
+		_gadget* getToppestChild() const { return this->children.front(); }
 		
 		//! Get the lowest child owned by the parent
-		_gadget* getLowestChild() const {	return this->children.back(); }
+		_gadget* getLowestChild() const { return this->children.back(); }
 		
 		//! Get the focused gadget inside the parent
-		_gadget* getFocusedChild() const {	return this->focusedChild; }
+		_gadget* getFocusedChild() const { return this->focusedChild; }
 		
 		//! Get the toppest enhanced child owned by the parent
 		_gadget* getToppestEnhancedChild() const {	return this->enhancedChildren.front(); }
@@ -656,6 +667,9 @@ class _gadget
 		//! Helps to find adjacent children
 		_gadget*	getPrecedentChild( bool skipHidden = false );
 		_gadget*	getSubcedentChild( bool skipHidden = false );
+		
+		//! Get a List with the gadget's (enhanced) children
+		const _gadgetList& getChildren( bool enhanced ) const { return enhanced ? this->enhancedChildren : this->children; }
 		
 		//! Tries to focus a child and returns whether this succeded
 		bool focusChild( _gadget* child );
@@ -673,6 +687,7 @@ class _gadget
 		void hide(){
 			if( !this->state.hidden ){
 				this->state.hidden = true;
+				notifyDependentGadgets( onHide );
 				this->redraw();
 			}
 		}
@@ -681,6 +696,7 @@ class _gadget
 		void show(){
 			if( this->state.hidden ){
 				this->state.hidden = false;
+				notifyDependentGadgets( onShow );
 				redraw();
 			}
 		}
@@ -737,12 +753,14 @@ class _gadget
 		void removeDependency( _eventType type ){
 			this->dependencies.set( type , false );
 		}
+		
 	public:
+		
 		//! Check whether a gadget is dependent of another
 		bool isDependentOf( _eventType type ){
 			return this->dependencies.get( type );
 		}
-	private:
+		
 		//! Inform dependent gadgets about something that changed
 		void		notifyDependentGadgets( _eventType change , bool notifySelf = true , _dependencyParam param = _dependencyParam() ){
 			if( notifySelf )
@@ -755,7 +773,8 @@ class _gadget
 		void		notifyDependentChildren( _eventType change , _dependencyParam param = _dependencyParam() );
 		void		notifyDependentParent( _eventType change , _dependencyParam param = _dependencyParam() , _optValue<_gadget*> parent = ignore );
 		void		notifyDependentAdjacents( _eventType change , _dependencyParam param = _dependencyParam() , _optValue<_gadget*> pre = ignore , _optValue<_gadget*> post = ignore );
-		
+	
+	private:
 		
 		//////////////////////////////////////
 		// Internal functions that          //
@@ -769,6 +788,7 @@ class _gadget
 		void setSizeInternal( _length width , _length height );
 		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
 		void setDimensionsInternal( _rect rc );
+		void addChildInternal( bool enhanced , _gadget* newChild , bool after , _gadget* keyElement );
 		
 		
 		//////////////////////////////////
@@ -776,8 +796,8 @@ class _gadget
 		//////////////////////////////////
 		
 		//! Internal callbacks for removeChildren( true/false )
-		static bool	removeDeleteCallback( _gadget* g );
-		static bool	removeCallback( _gadget* g );
+		static void removeDeleteCallback( _gadget* g );
+		static void	removeCallback( _gadget* g );
 		
 		
 		
@@ -798,7 +818,7 @@ class _gadget
 		
 		//! Reset a gadgets state-attribute
 		void resetState(){
-			this->stateSum = 0; // Does the same
+			this->state.sum = 0; // Does the same
 		}
 		
 		//! Range-bound-refreshes are only private
@@ -812,7 +832,6 @@ class _gadget
 		
 		union 
 		{
-			_u8 stateSum; // used to reset everything quickly
 			struct PACKED {
 				bool	hidden : 1;
 				bool	pressed : 1;
@@ -820,8 +839,9 @@ class _gadget
 				bool	dragged : 1;
 				bool	focused : 1;
 				_u8		cntBlnk : 3; // For _gadget::blinkHandler
-			}state;
-		};
+			};
+			_u8 sum; // used to reset everything quickly
+		}state;
 		
 		
 		///////////////////////////////////
@@ -845,8 +865,5 @@ class _gadget
 		
 		_dependency		dependencies;
 };
-
-// Include useful helpers
-#include "_type/type.gadget.helpers.h"
 
 #endif

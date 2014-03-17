@@ -78,6 +78,7 @@ _callbackReturn _window::parentSetHandler( _event event )
 _callbackReturn _window::maximizeHandler( _event event )
 {
 	event.getGadget<_window>()->button[1]->redraw();
+	
 	return handled;
 }
 
@@ -212,7 +213,7 @@ _callbackReturn _window::refreshHandler( _event event )
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( _system::getRTA().getControlBackground() );
+	bP.fill( that->bgColor );
 	
 	if( that->hasFocus() )
 	{
@@ -274,7 +275,10 @@ void _window::close()
 {
 	// Check for permission
 	if( this->handleEvent( onClose , true ) != prevent_default )
+	{
 		this->setParent( nullptr ); // Unbind the window from the DOM-Tree
+		this->notifyTaskHandlers( false );
+	}
 }
 
 _callbackReturn _window::dragHandler( _event event )
@@ -337,17 +341,22 @@ _callbackReturn _window::buttonHandler( _event event )
 	return handled;
 }
 
-_window::~_window(){
+_window::~_window()
+{
+	this->minimizeable = false; // So that this window does not meet the requirements of a task anymore
+	
+	// This informes all dependent handlers that this window will not exist anymore
+	this->notifyTaskHandlers( false );
+	
 	delete this->button[0];
 	delete this->button[1];
 	delete this->button[2];
 	delete this->icon;
-	
-	this->notifyTaskHandlers();
 }
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
 	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront )
+	, bgColor( _system::getRTA().getControlBackground() )
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )
 	, minimized( false )
@@ -402,7 +411,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	this->setInternalEventHandler( onMaximize , make_callback( &_window::maximizeHandler ) );
 	this->setInternalEventHandler( onUnMaximize , make_callback( &_window::maximizeHandler ) );
 	this->setInternalEventHandler( onResize , make_callback( &_window::updateHandler ) );
-	this->setInternalEventHandler( onParentSet , make_callback( &_window::parentSetHandler ) );
+	this->setInternalEventHandler( onParentAdd , make_callback( &_window::parentSetHandler ) );
 	this->setInternalEventHandler( onMouseDblClick , make_callback( &_window::doubleClickHandler ) );
 
 	

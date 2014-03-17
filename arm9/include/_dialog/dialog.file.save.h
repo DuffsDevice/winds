@@ -2,7 +2,6 @@
 #define _WIN_D_FILESAVE_
 
 #include "_type/type.dialog.h"
-#include "_type/type.shortstring.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.button.image.h"

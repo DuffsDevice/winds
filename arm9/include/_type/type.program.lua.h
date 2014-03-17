@@ -58,11 +58,11 @@ class _progLua : public _program
 		//! Ctor
 		_progLua( string prog );
 		
-		//! Dtor
-		~_progLua();
-		
 		//! Main function that will be called at the start of execution (one shot)
 		void internalMain( _programArgs args );
+		
+		//! Cleans up the Lua program and state
+		void internalCleanUp();
 };
 
 #endif

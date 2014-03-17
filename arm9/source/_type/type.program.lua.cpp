@@ -223,6 +223,8 @@ bool _progLua::parseProgramHeader()
 				}
 				else if( attrName == "NAME" )
 					header.name = move(attrValue);
+				else if( attrName == "DISPLAYNAME" )
+					header.displayName = move(attrValue);
 				else if( attrName == "AUTHOR" )
 					header.author = move(attrValue);
 				else if( attrName == "LEGAL" )
@@ -344,18 +346,18 @@ void _progLua::internalMain( _programArgs args )
 		lua_pop( this->state , 2 );
 }
 
-void _progLua::internalVbl()
-{
-	// Collect garbage!
-	// the Lua Garbage collector uses constant 12% cpu, no matter how many programs we have
-	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / int(_program::getRunningPrograms().size()) ) );
-}
-
-_progLua::~_progLua()
+void _progLua::internalCleanUp()
 {
 	if( this->content )
 		delete this->content;
 	
 	// Collect Garbage
 	lua_close( this->state );
+}
+
+void _progLua::internalVbl()
+{
+	// Collect garbage!
+	// the Lua Garbage collector uses constant 12% cpu, no matter how many programs we have
+	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / int(_program::getRunningPrograms().size()) ) );
 }

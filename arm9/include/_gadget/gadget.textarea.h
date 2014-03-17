@@ -109,7 +109,7 @@ class _textArea : public _gadget{
 		_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
 		
 		//! Dtor
-		~_textArea();
+		virtual ~_textArea();
 };
 
 #endif

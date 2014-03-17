@@ -31,7 +31,7 @@ _callbackReturn _contextMenuEntry::refreshHandler( _event event )
 	const _font* font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
-	_contextMenu* parent = ((_contextMenu*)that->parent);
+	_contextMenu* parent = (_contextMenu*) that->getParent();
 	
 	bool drawHighlighted = parent && parent->getType() == _gadgetType::contextmenu ? that == parent->activeEntry : false;
 	
@@ -61,7 +61,7 @@ _callbackReturn _contextMenuEntry::mouseHandler( _event event )
 	_contextMenuEntry* that = event.getGadget<_contextMenuEntry>();
 	
 	// Fetch contextMenu instance
-	_contextMenu* parent = (_contextMenu*)that->parent;
+	_contextMenu* parent = (_contextMenu*) that->getParent();
 	
 	if( parent->getType() != _gadgetType::contextmenu )
 		return not_handled;

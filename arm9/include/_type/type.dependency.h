@@ -5,13 +5,15 @@
 
 enum _eventType : _u16;
 
-struct _dependencyMap
-{
+struct _dependencyMap{
 	bool resize : 1;
 	bool move : 1;
 	bool restyle : 1;
 	bool visibility : 1;
-	bool set : 1;
+	bool add : 1;
+	bool remove : 1;
+	bool focus : 1;
+	bool blur : 1;
 } PACKED ;
 
 struct _dependency

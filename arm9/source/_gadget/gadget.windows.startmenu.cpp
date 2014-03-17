@@ -10,6 +10,7 @@
 _callbackReturn _startMenu::clickHandler( _event event ){
 	if( event == onMouseClick ){
 		event.getGadget<_fileObject>()->execute();
+		event.getGadget()->blur();
 		this->shelve();
 	}
 	return use_internal;
@@ -69,11 +70,16 @@ _startMenu::_startMenu( _style&& style ) :
 	view->setScrollTypeY( _scrollType::prevent );
 	this->addChild( view );
 	
+	// User-Image
+	this->addChild( new _imageGadget( 3 , 2 , _system::getUser().getLogo() ) );
+	
+	
 	// Right Side
 	//this->addChild( new _fileView( ( this->getWidth() - 2 ) >> 1 , this->getHeight() - CONST_TOP_BAR_HEIGHT - CONST_BOTTOM_BAR_HEIGHT - 4 , ( this->getWidth() + 4 ) >> 1 , CONST_TOP_BAR_HEIGHT + 2 , "%WINDIR%/startmenu/" , _fileViewType::liste , _scrollType::prevent , _scrollType::prevent ) );
 	
-	// User-Image
-	this->addChild( new _imageGadget( 3 , 2 , _system::getUser().getLogo() ) );
+	_fileObject* credits = new _fileObject( halfWidth + 1 , CONST_TOP_BAR_HEIGHT + 3 , halfWidth , ignore , "%SYSTEM%/Credits.exe" , _fileViewType::list );
+	credits->setUserEventHandler( onMouseClick , make_callback( this , &_startMenu::clickHandler ) );
+	this->addChild( credits );// Credentials
 	
 	// Y-Coordinate for all information that goes in the bottom layer
 	_coord buttonY = this->getHeight() - 11;

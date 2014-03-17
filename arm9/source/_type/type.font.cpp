@@ -18,7 +18,7 @@ _length _font::getStringWidth( const _char* str , _u8 fontSize ) const
 		{
 			_length width = font->getCharacterWidth( *str , fontSize );
 			if( width )
-				tempX += width + 1;
+				tempX += width + font->getLetterSpace();
 		}
 		
 	}while( *++str );
@@ -42,7 +42,7 @@ _length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fon
 		{
 			_length cWidth = font->getCharacterWidth( *str , fontSize );
 			if( cWidth )
-				tempX += cWidth + 1;
+				tempX += cWidth + font->getLetterSpace();
 			// Check Bounds
 			if( tempX > width )
 				return numChars;
@@ -61,6 +61,7 @@ _length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fon
 #include "_resource/resource.font.system.7.h"
 #include "_resource/resource.font.system.10.h"
 #include "_resource/resource.font.systemsymbols.8.h"
+#include "_resource/resource.font.handwriting.9.h"
 
 const _vector<_memoryFont*> builtInFonts =
 {
@@ -69,6 +70,7 @@ const _vector<_memoryFont*> builtInFonts =
 	, new FONT_System7()
 	, new FONT_System10()
 	, new FONT_SystemSymbols8()
+	, new FONT_Handwriting9()
 };
 
 //! Receive a font, created from file
@@ -94,6 +96,8 @@ const _font* _font::fromFile( string path )
 		return builtInFonts[3];
 	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/systemsymbols8.ttf" ) )
 		return builtInFonts[4];
+	if( fn == _direntry::replaceASSOCS( "%SYSTEM%/handwriting9.ttf" ) )
+		return builtInFonts[5];
 	
 	return nullptr;
 }

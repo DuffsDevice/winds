@@ -11,7 +11,7 @@ _contextMenuEntryDivider::_contextMenuEntryDivider( _style&& style ) :
 	// Register Handler
 	this->setInternalEventHandler( onDraw , make_callback( &_contextMenuEntryDivider::refreshHandler ) );
 	this->setInternalEventHandler( onParentResize , _gadgetHelpers::sizeParent( 2 , 0 ) );
-	this->setInternalEventHandler( onParentSet , _gadgetHelpers::sizeParent( 2 , 0 ) );
+	this->setInternalEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	this->removeInternalEventHandler( onUpdate );
 	this->removeInternalEventHandler( onMouseDown );
 	this->removeInternalEventHandler( onMouseClick );

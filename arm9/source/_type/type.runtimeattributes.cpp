@@ -22,7 +22,7 @@ _runtimeAttributes::_runtimeAttributes( flex_ptr<_user> tempUser ) :
 	, highlightForeground( _color::white )
 	, highlightBackground( _color::fromRGB8( 10 , 36 , 106 ) /* Dark blue */ )
 	, itemForeground( _color::black )
-	, itemBackground( _color::white )
+	, itemBackground( _color::transparent )
 	, controlBackground( _color::fromRGB( 28 , 28 , 27 ) )
 	, controlForeground( _color::fromRGB( 22 , 22 , 20 ) )
 	, magnifyKeyboardFocus( true )

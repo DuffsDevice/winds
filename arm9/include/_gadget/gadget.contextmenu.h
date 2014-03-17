@@ -53,7 +53,7 @@ class _contextMenu : public _popup
 		_contextMenu( _optValue<_length> width , const _menuEntryList& list , _gadget* owner = nullptr , bool preserveValue = false , _int initialValue = -1 , _style&& style = _style() );
 		
 		//! Dtor
-		~_contextMenu();
+		virtual ~_contextMenu();
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "_gadget/gadget.textarea.h"
 #include "_type/type.system.h"
+#include "_type/type.gadget.helpers.h"
 
 _2s32 _textArea::getFontPosition( string str , bool noScroll )
 {

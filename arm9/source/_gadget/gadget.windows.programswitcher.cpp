@@ -5,7 +5,7 @@ void _windowsProgramSwitcher::taskChangeHandler( _window* ref )
 {
 	_imageGadget* img = nullptr;
 	
-	for( _gadget* g : this->children )
+	for( _gadget* g : this->getChildren( false ) )
 		if( g->getStyle().data == ref )
 			img = (_imageGadget*)g;
 	
@@ -79,7 +79,7 @@ _callbackReturn _windowsProgramSwitcher::updateHandler( _event event )
 	that->setSize( width + 8 , 23 );
 	
 	_coord x0 = ( width - activeTasks.size() * 10 ) / 2;
-	for( _gadget* g : that->children ){
+	for( _gadget* g : that->getChildren( false ) ){
 		if( g->getType() == _gadgetType::label )
 			continue;
 		g->setX( x0 + 1 );
@@ -125,7 +125,7 @@ _callbackReturn _windowsProgramSwitcher::refreshHandler( _event event )
 	_imageGadget* img = nullptr;
 	_window* wnd = (_window*)that->getOwner();
 	
-	for( _gadget* g : that->children )
+	for( _gadget* g : that->getChildren( false ) )
 		if( g->getStyle().data == wnd )
 			img = (_imageGadget*)g;
 	

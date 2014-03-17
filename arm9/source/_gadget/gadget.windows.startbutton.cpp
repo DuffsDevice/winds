@@ -1,5 +1,6 @@
 #include "_gadget/gadget.windows.startbutton.h"
 #include "_type/type.system.h"
+#include "_type/type.gadget.helpers.h"
 
 //! Graphics
 #include "_resource/resource.image.windows.startbutton.h"

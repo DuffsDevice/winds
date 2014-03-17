@@ -10,8 +10,7 @@
 enum class _fileViewType : _u8{
 	detail = 0,
 	list = 1,
-	symbol_small = 2,
-	symbol_big = 3
+	symbol = 3
 };
 
 class _fileObject : public _gadget {
@@ -32,7 +31,7 @@ class _fileObject : public _gadget {
 	public:
 	
 		//! Ctor
-		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& dir , _fileViewType viewtype = _fileViewType::list , _style&& style = _style() );
+		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& file , _fileViewType viewtype = _fileViewType::list , _style&& style = _style() );
 		
 		//! Dtor
 		~_fileObject();

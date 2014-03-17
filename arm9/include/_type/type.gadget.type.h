@@ -29,6 +29,7 @@ enum class _gadgetType : _u8
 	keyboard,
 	desktop,
 	fileview,
+	filetree,
 	fileobject,
 	imagegadget,
 	scrollarea,
@@ -46,6 +47,7 @@ enum class _gadgetType : _u8
 	grid,
 	griddescriber,
 	gridbox,
+	treeview,
 	none // No type set (is probably not used)
 };
 

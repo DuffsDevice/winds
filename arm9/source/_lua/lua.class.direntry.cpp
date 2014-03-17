@@ -53,7 +53,6 @@ int _lua_direntry::execute( lua_State* L ){
 //! Lua-_gadget
 const char _lua_direntry::className[] = "Direntry";
 Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
-	{ "open"				, wrap( _lua_direntry , &_direntry::open ) },
 	{ "openwrite"			, &_lua_direntry::openwrite },
 	{ "openread"			, wrap( _lua_direntry , &_direntry::openread ) },
 	{ "create"				, wrap( _lua_direntry , &_direntry::create ) },

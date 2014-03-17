@@ -12,12 +12,12 @@ _callbackReturn _fileObject::updateHandler( _event event )
 	
 	switch( that->viewType )
 	{
-		case _fileViewType::symbol_big:
+		case _fileViewType::symbol:
 			that->setSizeIfAuto( 27 , 27 );
 			break;
 		case _fileViewType::list:
 			that->setSizeIfAuto(
-				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 11
+				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 13
 				, _system::getUser().fOH
 			);
 			break;
@@ -33,14 +33,17 @@ void _fileObject::execute( _programArgs args , bool openInNewWindow )
 	// Execute!
 	if( this->file->isDirectory() )
 	{
+		_fileView* fileView = (_fileView*) this->getParent();
+		
 		if( openInNewWindow )
 			_system::executeCommand("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
-		else if( this->parent->getType() == _gadgetType::fileview )
+		else if( fileView->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onEdit'-Event
-			this->parent->triggerEvent( onEdit );
+			fileView->triggerEvent( onEdit );
 			
-			((_fileView*)this->parent)->setPath( this->file->getFileName() );
+			// Set new path
+			fileView->setPath( this->file->getFileName() );
 		}
 	}
 	else
@@ -60,7 +63,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 	
 	switch( that->viewType )
 	{
-		case _fileViewType::symbol_big:
+		case _fileViewType::symbol:
 		{	
 			bP.fill( _color::transparent );
 			
@@ -84,7 +87,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			
 			// Draw Outer Dotted Line Background
 			if( that->hasFocus() )
-				that->bitmap.drawDottedRect( 0 , 0 , myH , myW , _system::getRTA().getItemBackground( true ) );
+				bP.drawDottedRect( 0 , 0 , myH , myW , _system::getRTA().getItemBackground( true ) );
 			
 			break;
 		}
@@ -101,7 +104,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
-			bP.drawString( 11 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
+			bP.drawString( 13 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
 			_constBitmap& fileIcon = that->file->getFileImage();
@@ -127,16 +130,16 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
-_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& fl , _fileViewType viewtype , _style&& style ) :
+_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& filename , _fileViewType viewtype , _style&& style ) :
 	_gadget( _gadgetType::fileobject , x , y , width , height , move(style) )
-	, file( new _direntry(fl) )
+	, file( new _direntry(filename) )
 	, viewType( viewtype )
 	, pressed( false )
 {
 	// Replace _direntry with the more specialized class '_shortcut'
 	if( file->getMimeType() == _mime::application_x_ms_shortcut ){
 		delete this->file;
-		this->file = new _shortcut( fl );
+		this->file = new _shortcut( filename );
 	}
 	
 	// Register Update Handler..

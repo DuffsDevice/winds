@@ -23,7 +23,7 @@ class _bootupScreen : public _gadgetScreen
 		_bootupScreen( _u8 bgId , _style&& style = _style() );
 		
 		//! Dtor
-		~_bootupScreen();
+		virtual ~_bootupScreen();
 	
 };
 

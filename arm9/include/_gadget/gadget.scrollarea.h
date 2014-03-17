@@ -76,7 +76,7 @@ class _scrollArea : public _gadget {
 		_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style&& style = _style() );
 		
 		//! Destrucor
-		~_scrollArea(){
+		virtual ~_scrollArea(){
 			delete scrollBarX;
 			delete scrollBarY;
 		}

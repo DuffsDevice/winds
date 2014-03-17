@@ -41,10 +41,13 @@ _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	this->setInternalEventHandler( onDraw , make_callback( &_scrollArea::refreshHandler ) );
 	this->setInternalEventHandler( onUpdate , make_callback( &_scrollArea::updateHandler ) );
 	this->setInternalEventHandler( onResize , make_callback( &_scrollArea::updateHandler ) );
-	this->setInternalEventHandler( onChildSet , make_callback( &_scrollArea::childHandler ) );
+	this->setInternalEventHandler( onChildAdd , make_callback( &_scrollArea::childHandler ) );
+	this->setInternalEventHandler( onChildRemove , make_callback( &_scrollArea::childHandler ) );
 	this->setInternalEventHandler( onChildResize , make_callback( &_scrollArea::childHandler ) );
 	this->setInternalEventHandler( onChildMove , make_callback( &_scrollArea::childHandler ) );
-	this->setInternalEventHandler( onChildVisibility , make_callback( &_scrollArea::childHandler ) );
+	this->setInternalEventHandler( onChildShow , make_callback( &_scrollArea::childHandler ) );
+	this->setInternalEventHandler( onChildHide , make_callback( &_scrollArea::childHandler ) );
+	this->setInternalEventHandler( onChildFocus , make_callback( &_scrollArea::childHandler ) );
 	
 	// Refresh Me	
 	this->update();
@@ -155,8 +158,11 @@ _callbackReturn _scrollArea::updateHandler( _event event )
 	_coord maxX = 0;
 	_coord maxY = 0;
 	
-	for( _gadget* child : that->children )
+	for( const _gadget* child : that->getChildren( false ) )
 	{
+		if( child->isHidden() )
+			continue;
+		
 		const _rect& dim = child->getDimensions();
 		maxX = max( dim.getX2() , maxX );
 		maxY = max( dim.getY2() , maxY );
@@ -180,18 +186,38 @@ _callbackReturn _scrollArea::childHandler( _event event )
 	// Fetch Instance
 	_scrollArea* that = event.getGadget<_scrollArea>();
 	
-	if( event == onChildSet )
+	if( event == onChildAdd )
+	{
+		// Get the child that was added
+		_gadget* child = event.getGadgetParam();
+		
+		if( child )
+			child->moveRelative( - that->scrollBarX->getValue() , - that->scrollBarY->getValue() , true );
+	}
+	else if( event == onChildRemove )
 	{
 		// Get the child that was added
 		_gadget* child = event.getGadgetParam();
 		
 		// child == nullptr implicitly checks whether 'removeChildren' was called
-		if( child == nullptr ){
-			that->scrollBarX->setValue(0,false);
-			that->scrollBarY->setValue(0,false);
-		}
-		else
-			child->moveRelative( - that->scrollBarX->getValue() , - that->scrollBarY->getValue() );
+		if( child == nullptr )
+			that->scrollTo( 0 , 0 , false );
+	}
+	else if( event == onChildFocus )
+	{
+		// Get the child that was focused
+		_gadget* child = event.getGadgetParam();
+		
+		// Get the Child's dimensions
+		_rect childRect = child->getDimensions();
+		childRect.toRelative( -that->getScrollX() , -that->getScrollY() );
+		
+		// Scroll, so that the child is visible
+		_s32 scrollX = min<_s32>( childRect.x - 1 , max<_s32>( that->getScrollX() , childRect.getX2() - that->clipWidth + 2 ) );
+		_s32 scrollY = min<_s32>( childRect.y - 1 , max<_s32>( that->getScrollY() , childRect.getY2() - that->clipHeight + 2 ) );
+		that->scrollTo( scrollX , scrollY , false );
+		
+		return handled;
 	}
 	
 	// Force update of canvas size
@@ -217,8 +243,8 @@ _callbackReturn _scrollArea::scrollHandler( _event event )
 	_scrollArea* area = (_scrollArea*)(event.getGadget()->getParent());
 	
 	if( event.getDeltaX() || event.getDeltaY() )
-		for( _gadget* child : area->children )
-			child->moveRelative( - event.getDeltaX() , - event.getDeltaY() );
+		for( _gadget* child : area->getChildren( false ) )
+			child->moveRelative( - event.getDeltaX() , - event.getDeltaY() , true );
 	
 	// Forward onScroll-Event!
 	area->triggerEvent( event );

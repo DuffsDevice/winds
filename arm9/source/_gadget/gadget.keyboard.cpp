@@ -24,7 +24,7 @@ void _keyboard::playClickSound(){
 
 //! Define if you want the upper screen to show
 //! the full lower screen when keyboard is expanded
-#define KEYBOARD_TOP_SCREEN
+//#define KEYBOARD_TOP_SCREEN
 
 namespace{
 	const int sStart = 0;
@@ -363,7 +363,7 @@ _callbackReturn _keyboard::updateHandler( _event event )
 	
 	int i = 0;
 	
-	for( _gadget* btn : that->children )
+	for( _gadget* btn : that->getChildren( false ) )
 	{
 		if( i == 30 /* Caps Lock */ )
 			((_keyboardButton*)btn)->setStrValue( _system::getRTA().getKeyboardTexts( that->caps )[ i ] );
@@ -581,7 +581,7 @@ _keyboard::~_keyboard()
 	this->removeChildren( true );
 	
 	// Reset Bitmap
-	this->bitmap.reset( _color::transparent );
+	this->getBitmap().reset( _color::transparent );
 }
 
 _gadget*	_keyboard::lastCurrentFocus = nullptr;

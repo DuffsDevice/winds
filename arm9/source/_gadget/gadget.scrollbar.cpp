@@ -12,7 +12,7 @@ _scrollBar::_scrollBar( _optValue<_coord> x , _optValue<_coord> y , _length gadg
 		, x , y 
 		, dim == _dimension::horizontal ? gadgetLength : 8
 		,  dim == _dimension::vertical ? gadgetLength : 8 
-		, (_style&&)style
+		, style | _style::canNotTakeFocus | _style::notFocusable
 	)
 	, value( 0 )
 	, length( length )
@@ -97,7 +97,7 @@ void _scrollBar::setDimension( _dimension dim )
 
 void _scrollBar::setValueInternal( int val )
 {
-	val = mid( 0 , val , this->length2 - this->length );
+	val = max<int>( 0 , min<int>( val , this->length2 - this->length ) );
 	if( val != (int)this->value )
 	{
 		_s16 delta = val - this->value;
@@ -286,7 +286,7 @@ void _scrollBar::setLength( _u32 value )
 	
 	this->length = value;
 	refreshHandleWidth();
-	this->setValueInternal( max( _u32(0) , min( this->value , this->length - this->length2 ) ) );
+	this->setValueInternal( max<_s32>( 0 , min<_s32>( this->value , this->length - this->length2 ) ) );
 }
 
 
@@ -297,5 +297,5 @@ void _scrollBar::setLength2( _u32 value )
 	
 	this->length2 = value;
 	refreshHandleWidth();
-	this->setValueInternal( max( _u32(0) , min( this->value , this->length2 - this->length ) ) );
+	this->setValueInternal( max<_s32>( 0 , min<_s32>( this->value , this->length2 - this->length ) ) );
 }

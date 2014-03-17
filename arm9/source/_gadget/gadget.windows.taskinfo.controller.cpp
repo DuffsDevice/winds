@@ -2,6 +2,7 @@
 #include "_gadget/gadget.windows.taskinfo.controller.h"
 #include "_type/type.system.h"
 #include "_type/type.time.h"
+#include "_type/type.gadget.helpers.h"
 
 //! Graphics
 #include "_resource/resource.image.windows.taskinfo.h"
@@ -32,7 +33,7 @@ void _windowsTaskInfoController::taskInfoHandler( _windowsTaskInfo* info )
 		info->setY(2);
 		
 		// Register additional handlers
-		info->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _direction::right , 2 ) );
+		info->setInternalEventHandler( onParentAdd , _gadgetHelpers::eventForward(onPreMove) );
 		info->setInternalEventHandler( onPreMove , _gadgetHelpers::moveBesidePrecedent( _direction::right , 2 ) );
 		
 		// Add it
