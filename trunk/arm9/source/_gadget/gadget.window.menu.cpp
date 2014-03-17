@@ -53,7 +53,7 @@ void _windowMenu::generateChildren()
 	{
 		_windowMenuEntry* cM = new _windowMenuEntry( entry.first , *this );
 		
-		cM->setInternalEventHandler( onParentSet , _gadgetHelpers::moveBesidePrecedent( _direction::right , 0 , 0 , false , 0 , 0 ) );
+		cM->setInternalEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::right , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
 	}
 }
@@ -63,12 +63,14 @@ _callbackReturn _windowMenu::updateHandler( _event event )
 	// Receive Gadget
 	_windowMenu* that = event.getGadget<_windowMenu>();
 	
-	if( !that->parent )
+	_gadget* parent = that->getParent();
+	
+	if( !parent )
 		return not_handled;
 	
-	_padding pad = that->isEnhanced() ? that->parent->getPadding() : _padding(0);
+	_padding pad = that->isEnhanced() ? parent->getPadding() : _padding(0);
 	
-	that->setSizeIfAuto( that->parent->getWidth() - pad.left - pad.right , 0 );
+	that->setSizeIfAuto( parent->getWidth() - pad.left - pad.right , 0 );
 	that->moveToIfAuto( pad.left , pad.top );
 	
 	return handled;
@@ -95,11 +97,9 @@ _windowMenu::_windowMenu( const _menu& menu , _style&& style ) :
 	// Register updatehandler
 	this->setInternalEventHandler( onUpdate , make_callback( &_windowMenu::updateHandler ) );
 	
-	this->updateNow();
-	
 	// Regsiter other handlers
 	this->setInternalEventHandler( onParentResize , make_callback( &_windowMenu::updateHandler ) );
-	this->setInternalEventHandler( onParentSet , make_callback( &_windowMenu::updateHandler ) );
+	this->setInternalEventHandler( onParentAdd , make_callback( &_windowMenu::updateHandler ) );
 	this->setInternalEventHandler( onDraw , make_callback( &_windowMenu::refreshHandler ) );
 	
 	// Generate list

@@ -97,6 +97,5 @@ class _slider : public _gadget{
 		
 		//! Dtor
 		~_slider();
-		
 };
 #endif

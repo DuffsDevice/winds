@@ -7,6 +7,8 @@ extern "C"{
 #include "_library/_fat/file_allocation_table.h"
 }
 
+extern "C" bool sdio_IsInserted(); // libnds method
+
 namespace unistd{
 #include <unistd.h>
 }
@@ -56,6 +58,39 @@ bool _direntry::initFat()
 		_direntry::fatInited = fatInitDefault();
 	
 	return _direntry::fatInited;
+}
+
+_vector<string> _direntry::getDrives()
+{
+	_vector<string> vec = { "fat" };
+	if( sdio_IsInserted()  )
+		vec.push_back("fat2");
+	return vec;
+}
+
+bool _direntry::getDriveStats( string driveName , _driveStats& dest )
+{
+	if( driveName.back() != ':' )
+		driveName += ':';
+	
+	/* Any file on the filesystem in question */
+	struct statvfs buf;
+	if( !statvfs( driveName.c_str() , &buf ) )
+	{
+		_u64 blockSize, blocks, freeBlocks;
+		
+		blockSize = buf.f_bsize;
+		blocks = buf.f_blocks;
+		freeBlocks = buf.f_bfree;
+		
+		// Write to buffer
+		dest.used = ( blocks - freeBlocks ) * blockSize;
+		dest.size = blocks * blockSize;
+		dest.free = freeBlocks * blockSize;
+		dest.blockSize = blockSize;
+		return true;
+	}
+	return false;
 }
 
 
@@ -156,7 +191,7 @@ _direntry& _direntry::operator=( const _direntry& other )
 }
 
 
-bool _direntry::close()
+bool _direntry::close() const
 {
 	if( !this->fatInited || !this->exists )
 		return false;
@@ -188,7 +223,7 @@ bool _direntry::close()
 // Get the definition of libfat
 PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
 
-bool _direntry::flush()
+bool _direntry::flush() const 
 {
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return false;
@@ -224,7 +259,7 @@ _direntryAttributes _direntry::getAttrs() const
 }
 
 
-bool _direntry::open( string mode )
+bool _direntry::open( string mode ) const
 {
 	if( !this->fatInited || !this->exists )
 		return false;
@@ -250,6 +285,34 @@ bool _direntry::open( string mode )
 
 string _direntry::getDisplayName() const
 {
+	_mimeType mime = this->getMimeType();
+	switch( mime )
+	{
+		case _mime::application_octet_stream:
+		case _mime::application_microsoft_installer:
+		case _mime::application_x_lua_bytecode:
+		{
+			_program* prog = _program::fromFile( this->getFileName() );
+			if( prog )
+			{
+				// Get Header of the program
+				_programHeader& header = prog->getHeader();
+				
+				string name = "";
+				if( header.displayName != nullptr )
+					name = move(*header.displayName);
+				
+				// Delete the program again
+				delete prog;
+				
+				if( !name.empty() )	
+					return move(name);
+			}
+		}
+		default:
+			break;
+	}
+	
 	const string& ext = this->getExtension();
 	
 	// Certain Files do not have an .extension
@@ -260,7 +323,7 @@ string _direntry::getDisplayName() const
 }
 
 
-bool _direntry::openread(){
+bool _direntry::openread() const {
 	return this->open( "rb" ); // Open for read, do not create
 }
 
@@ -318,7 +381,7 @@ bool _direntry::create()
 }
 
 
-bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes )
+bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes ) const
 {	
 	if( this->fatInited && !this->isDirectory() )
 	{
@@ -348,7 +411,7 @@ bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes )
 }
 
 
-bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensions )
+bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensions ) const
 {
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
@@ -413,7 +476,7 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 	return false;
 }
 
-bool _direntry::readChildFolderOnly( _literal& child )
+bool _direntry::readChildFolderOnly( _literal& child ) const
 {
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
@@ -452,7 +515,7 @@ bool _direntry::readChildFolderOnly( _literal& child )
 }
 
 
-bool _direntry::rewindChildren()
+bool _direntry::rewindChildren() const
 {
 	if( this->fatInited && this->exists && this->isDirectory() )
 	{
@@ -513,7 +576,7 @@ bool _direntry::writeString( string str )
 }
 
 
-string _direntry::readString( _optValue<_u32> size )
+string _direntry::readString( _optValue<_u32> size ) const
 {
 	if( !size.isValid() )
 		size = this->getSize();
@@ -549,7 +612,7 @@ string _direntry::readString( _optValue<_u32> size )
 }
 
 
-_u32 _direntry::getSize()
+_u32 _direntry::getSize() const
 {
 	if( !this->fatInited || !this->exists || this->isDirectory() )
 		return 0;
@@ -587,7 +650,7 @@ _u32 _direntry::getSize()
 
 bool _direntry::execute( _programArgs args )
 {
-	if( !_system::isRunningOnEmulator() && !this->fatInited )
+	if( _system::getHardwareType() != _hardwareType::emulator && !this->fatInited )
 		return false;
 	
 	if( this->isDirectory() )
@@ -634,7 +697,7 @@ bool _direntry::execute( _programArgs args )
 }
 
 
-_bitmap _direntry::getFileImage()
+_bitmap _direntry::getFileImage() const
 {
 	string extension = this->getExtension();
 	_mimeType mime = this->getMimeType();
@@ -652,6 +715,7 @@ _bitmap _direntry::getFileImage()
 			_program* prog = _program::fromFile( this->getFileName() );
 			if( prog ){
 				const _bitmap& bmp = prog->getFileImage();
+				delete prog;
 				if( bmp.isValid() )
 					return move(bmp);
 			}
@@ -696,32 +760,26 @@ bool _direntry::rename( string newName )
 
 bool _direntry::setHidden( bool hidden ){
 	_direntryAttributes attrs = this->getAttrs();
+	if( attrs.hidden == hidden )
+		return true;
 	attrs.hidden = hidden;
 	return this->setAttrs( move(attrs) );
 }
 
-bool _direntry::isHidden() const {
-	return this->getAttrs().hidden;
-}
-
 bool _direntry::setSystemFile( bool isSystem ){
 	_direntryAttributes attrs = this->getAttrs();
+	if( attrs.system == isSystem )
+		return true;
 	attrs.system = isSystem;
 	return this->setAttrs( move(attrs) );
 }
 
-bool _direntry::isSystem() const {
-	return this->getAttrs().system;
-}
-
 bool _direntry::setReadOnly( bool readOnly ){
 	_direntryAttributes attrs = this->getAttrs();
+	if( attrs.readonly == readOnly )
+		return true;
 	attrs.readonly = readOnly;
 	return this->setAttrs( move(attrs) );
-}
-
-bool _direntry::isReadOnly() const {
-	return this->getAttrs().readonly;
 }
 
 // Root Directory

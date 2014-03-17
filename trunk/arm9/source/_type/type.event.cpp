@@ -16,10 +16,37 @@ void _event::resetParams( _gadget* dest ){ //!<= Reset All Arguments
 
 bool _event::mergeWith( _event& event )
 {
+	if( this->gadget != event.gadget )
+		return false;
+	
 	if( this->type != event.type )
+	{
+		if( this->depParam.gadget != event.depParam.gadget )
+			return false;
+		
+		if( ( this->type == onParentHide && event.type == onParentShow )
+			| ( this->type == onParentShow && event.type == onParentHide )
+		)
+			return true;
+		
+		else if( ( this->type == onChildHide && event.type == onChildShow )
+			| ( this->type == onChildShow && event.type == onChildHide )
+		)
+			return true;
+		
+		else if( ( this->type == onPreHide && event.type == onPreShow )
+			| ( this->type == onPreShow && event.type == onPreHide )
+		)
+			return true;
+		
+		else if( ( this->type == onPostHide && event.type == onPostShow )
+			| ( this->type == onPostShow && event.type == onPostHide )
+		)
+			return true;
+		
 		return false;
-	if( this->gadget != event.gadget || !this->gadget )
-		return false;
+	}
+	
 	switch( this->type )
 	{
 		case onDragging:
@@ -37,34 +64,43 @@ bool _event::mergeWith( _event& event )
 			return ( !this->damagedRects || this->damagedRects->isEmpty() ) && ( !event.damagedRects || event.damagedRects->isEmpty() );
 		case onEdit:
 		case onUpdate:
-			break;
 		case onResize:
 		case onMove:
 		case onRestyle:
-		case onSet:
+			break;
+		
 		case onParentResize:
 		case onParentMove:
 		case onParentRestyle:
-		case onParentSet:
+		case onParentAdd:
+		case onParentRemove:
+		case onParentFocus:
+		case onParentBlur:
+		
 		case onChildResize:
 		case onChildMove:
 		case onChildRestyle:
-		case onChildSet:
+		case onChildAdd:
+		case onChildRemove:
+		case onChildFocus:
+		case onChildBlur:
+		
 		case onPreResize:
 		case onPreMove:
 		case onPreRestyle:
-		case onPreSet:
+		case onPreAdd:
+		case onPreRemove:
+		case onPreFocus:
+		case onPreBlur:
+		
 		case onPostResize:
 		case onPostMove:
 		case onPostRestyle:
-		case onPostSet:
+		case onPostAdd:
+		case onPostRemove:
+		case onPostFocus:
+		case onPostBlur:
 			return this->depParam.gadget == event.depParam.gadget;
-		case onVisibility:
-		case onParentVisibility:
-		case onChildVisibility:
-		case onPreVisibility:
-		case onPostVisibility:
-			return this->depParam.gadget == event.depParam.gadget && this->depParam.flag != event.depParam.flag;
 		default:
 			return false;
 	}
@@ -88,117 +124,164 @@ _toStr<_callbackReturn> callbackReturn2string = {
 };
 
 _fromStr<_eventType> string2eventType = {
-	{ "_none_" , _none_ },
-	{ "onDraw" , onDraw },
-	{ "onMouseClick" , onMouseClick },
-	{ "onMouseDblClick" , onMouseDblClick },
-	{ "onMouseDown" , onMouseDown },
-	{ "onMouseUp" , onMouseUp },
-	{ "onMouseRepeat" , onMouseRepeat },
-	{ "onKeyDown" , onKeyDown },
-	{ "onKeyUp" , onKeyUp },
-	{ "onKeyClick" , onKeyClick },
-	{ "onKeyRepeat" , onKeyRepeat },
-	{ "onDragStart" , onDragStart },
-	{ "onDragStop" , onDragStop },
-	{ "onDragging" , onDragging },
-	{ "onMouseRightClick" , onMouseRightClick },
+	{ "_none_"				, _none_ },
+	{ "onDraw"				, onDraw },
+	{ "onMouseClick"		, onMouseClick },
+	{ "onMouseDblClick"		, onMouseDblClick },
+	{ "onMouseDown"			, onMouseDown },
+	{ "onMouseUp"			, onMouseUp },
+	{ "onMouseRepeat"		, onMouseRepeat },
+	{ "onKeyDown"			, onKeyDown },
+	{ "onKeyUp"				, onKeyUp },
+	{ "onKeyClick"			, onKeyClick },
+	{ "onKeyRepeat"			, onKeyRepeat },
+	{ "onDragStart"			, onDragStart },
+	{ "onDragStop"			, onDragStop },
+	{ "onDragging"			, onDragging },
+	{ "onMouseRightClick"	, onMouseRightClick },
 	
-	{ "onUpdate" , onUpdate },
-	{ "onEdit" , onEdit },
-	{ "onBlur" , onBlur },
-	{ "onFocus" , onFocus },
-	{ "onOpen" , onOpen },
-	{ "onClose" , onClose },
-	{ "onMouseEnter" , onMouseEnter },
-	{ "onMouseLeave" , onMouseLeave },
-	{ "onMaximize" , onMaximize },
-	{ "onUnMaximize" , onUnMaximize },
-	{ "onMinimize" , onMinimize },
-	{ "onRestore" , onRestore },
-	{ "onScroll" , onScroll },
+	{ "onUpdate"			, onUpdate },
+	{ "onEdit"				, onEdit },
 	
-	{ "onResize" , onResize },
-	{ "onMove" , onMove },
-	{ "onRestyle" , onRestyle },
-	{ "onVisibility" , onVisibility },
-	{ "onSet" , onSet },
-	{ "onParentResize" , onParentResize },
-	{ "onParentMove" , onParentMove },
-	{ "onParentRestyle" , onParentRestyle },
-	{ "onParentVisibility" , onParentVisibility },
-	{ "onParentSet" , onParentSet },
-	{ "onChildResize" , onChildResize },
-	{ "onChildMove" , onChildMove },
-	{ "onChildRestyle" , onChildRestyle },
-	{ "onChildVisibility" , onChildVisibility },
-	{ "onChildSet" , onChildSet },
-	{ "onPreResize" , onPreResize },
-	{ "onPreMove" , onPreMove },
-	{ "onPreRestyle" , onPreRestyle },
-	{ "onPreVisibility" , onPreVisibility },
-	{ "onPreSet" , onPreSet },
-	{ "onPostResize" , onPostResize },
-	{ "onPostMove" , onPostMove },
-	{ "onPostRestyle" , onPostRestyle },
-	{ "onPostVisibility" , onPostVisibility },
-	{ "onPostSet" , onPostSet }
+	
+	{ "onOpen"				, onOpen },
+	{ "onClose"				, onClose },
+	{ "onMouseEnter"		, onMouseEnter },
+	{ "onMouseLeave"		, onMouseLeave },
+	{ "onMaximize"			, onMaximize },
+	{ "onUnMaximize"		, onUnMaximize },
+	{ "onMinimize"			, onMinimize },
+	{ "onRestore"			, onRestore },
+	{ "onScroll"			, onScroll },
+	
+	{ "onResize"			, onResize },
+	{ "onMove"				, onMove },
+	{ "onRestyle"			, onRestyle },
+	{ "onShow"				, onShow },
+	{ "onHide"				, onHide },
+	{ "onFocus"				, onFocus },
+	{ "onBlur"				, onBlur },
+	{ "onAdd"				, onAdd },
+	{ "onDelete"			, onDelete },
+	
+	{ "onParentResize"		, onParentResize },
+	{ "onParentMove"		, onParentMove },
+	{ "onParentRestyle"		, onParentRestyle },
+	{ "onParentShow"		, onParentShow },
+	{ "onParentHide"		, onParentHide },
+	{ "onParentFocus"		, onParentFocus },
+	{ "onParentBlur"		, onParentBlur },
+	{ "onParentAdd"			, onParentAdd },
+	{ "onParentRemove"		, onParentRemove },
+	
+	{ "onChildResize"		, onChildResize },
+	{ "onChildMove"			, onChildMove },
+	{ "onChildRestyle"		, onChildRestyle },
+	{ "onChildShow"			, onChildShow },
+	{ "onChildHide"			, onChildHide },
+	{ "onChildFocus"		, onChildFocus },
+	{ "onChildBlur"			, onChildBlur },
+	{ "onChildAdd"			, onChildAdd },
+	{ "onChildRemove"		, onChildRemove },
+	
+	{ "onPreResize"			, onPreResize },
+	{ "onPreMove"			, onPreMove },
+	{ "onPreRestyle"		, onPreRestyle },
+	{ "onPreShow"			, onPreShow },
+	{ "onPreHide"			, onPreHide },
+	{ "onPreFocus"			, onPreFocus },
+	{ "onPreBlur"			, onPreBlur },
+	{ "onPreAdd"			, onPreAdd },
+	{ "onPreRemove"			, onPreRemove },
+	
+	{ "onPostResize"		, onPostResize },
+	{ "onPostMove"			, onPostMove },
+	{ "onPostRestyle"		, onPostRestyle },
+	{ "onPostShow"			, onPostShow },
+	{ "onPostHide"			, onPostHide },
+	{ "onPostFocus"			, onPostFocus },
+	{ "onPostBlur"			, onPostBlur },
+	{ "onPostAdd"			, onPostAdd },
+	{ "onPostRemove"		, onPostRemove }
 };
 
 _toStr<_eventType> eventType2string = {
-	{ _none_ , "_none_" },
-	{ onDraw , "onDraw" },
-	{ onMouseRepeat , "onMouseRepeat" },
-	{ onMouseClick , "onMouseClick" },
-	{ onMouseDblClick , "onMouseDblClick" },
-	{ onMouseDown , "onMouseDown" },
-	{ onMouseUp , "onMouseUp" },
-	{ onKeyDown , "onKeyDown" },
-	{ onKeyUp , "onKeyUp" },
-	{ onKeyClick , "onKeyClick" },
-	{ onKeyRepeat , "onKeyRepeat" },
-	{ onDragStart , "onDragStart" },
-	{ onDragStop , "onDragStop" },
-	{ onDragging , "onDragging" },
-	{ onMouseRightClick , "onMouseRightClick" },
+	{ _none_			, "_none_" },
+	{ onDraw			, "onDraw" },
+	{ onMouseRepeat		, "onMouseRepeat" },
+	{ onMouseClick		, "onMouseClick" },
+	{ onMouseDblClick	, "onMouseDblClick" },
+	{ onMouseDown		, "onMouseDown" },
+	{ onMouseUp			, "onMouseUp" },
+	{ onKeyDown			, "onKeyDown" },
+	{ onKeyUp			, "onKeyUp" },
+	{ onKeyClick		, "onKeyClick" },
+	{ onKeyRepeat		, "onKeyRepeat" },
+	{ onDragStart		, "onDragStart" },
+	{ onDragStop		, "onDragStop" },
+	{ onDragging		, "onDragging" },
+	{ onMouseRightClick	, "onMouseRightClick" },
 
-	{ onUpdate , "onUpdate" },
-	{ onEdit , "onEdit" },
-	{ onBlur , "onBlur" },
-	{ onFocus , "onFocus" },
-	{ onOpen , "onOpen" },
-	{ onClose , "onClose" },
-	{ onMouseEnter , "onMouseEnter" },
-	{ onMouseLeave , "onMouseLeave" },
-	{ onMaximize , "onMaximize" },
-	{ onUnMaximize , "onUnMaximize" },
-	{ onMinimize , "onMinimize" },
-	{ onRestore , "onRestore" },
-	{ onScroll , "onScroll" },
+	{ onUpdate			, "onUpdate" },
+	{ onEdit			, "onEdit" },
 	
-	{ onResize , "onResize" },
-	{ onMove , "onMove" },
-	{ onRestyle , "onRestyle" },
-	{ onVisibility , "onVisibility" },
-	{ onSet , "onSet" },
-	{ onParentResize , "onParentResize" },
-	{ onParentMove , "onParentMove" },
-	{ onParentRestyle , "onParentRestyle" },
-	{ onParentVisibility , "onParentVisibility" },
-	{ onParentSet , "onParentSet" },
-	{ onChildResize , "onChildResize" },
-	{ onChildMove , "onChildMove" },
-	{ onChildRestyle , "onChildRestyle" },
-	{ onChildVisibility , "onChildVisibility" },
-	{ onChildSet , "onChildSet" },
-	{ onPreResize , "onPreResize" },
-	{ onPreMove , "onPreMove" },
-	{ onPreRestyle , "onPreRestyle" },
-	{ onPreVisibility , "onPreVisibility" },
-	{ onPreSet , "onPreSet" },
-	{ onPostResize , "onPostResize" },
-	{ onPostMove , "onPostMove" },
-	{ onPostRestyle , "onPostRestyle" },
-	{ onPostVisibility , "onPostVisibility" },
-	{ onPostSet , "onPostSet" }
+	{ onOpen			, "onOpen" },
+	{ onClose			, "onClose" },
+	{ onMouseEnter		, "onMouseEnter" },
+	{ onMouseLeave		, "onMouseLeave" },
+	{ onMaximize		, "onMaximize" },
+	{ onUnMaximize		, "onUnMaximize" },
+	{ onMinimize		, "onMinimize" },
+	{ onRestore			, "onRestore" },
+	{ onScroll			, "onScroll" },
+	
+	{ onResize			, "onResize" },
+	{ onMove			, "onMove" },
+	{ onRestyle			, "onRestyle" },
+	{ onShow			, "onShow" },
+	{ onHide			, "onHide" },
+	{ onFocus			, "onFocus" },
+	{ onBlur			, "onBlur" },
+	{ onAdd				, "onAdd" },
+	{ onDelete			, "onDelete" },
+	
+	{ onParentResize	, "onParentResize" },
+	{ onParentMove		, "onParentMove" },
+	{ onParentRestyle	, "onParentRestyle" },
+	{ onParentShow		, "onParentShow" },
+	{ onParentHide		, "onParentHide" },
+	{ onParentFocus		, "onParentFocus" },
+	{ onParentBlur		, "onParentBlur" },
+	{ onParentAdd		, "onParentAdd" },
+	{ onParentRemove	, "onParentRemove" },
+	
+	{ onChildResize		, "onChildResize" },
+	{ onChildMove		, "onChildMove" },
+	{ onChildRestyle	, "onChildRestyle" },
+	{ onChildShow		, "onChildShow" },
+	{ onChildHide		, "onChildHide" },
+	{ onChildFocus		, "onChildFocus" },
+	{ onChildBlur		, "onChildBlur" },
+	{ onChildAdd		, "onChildAdd" },
+	{ onChildRemove		, "onChildRemove" },
+	
+	{ onPreResize		, "onPreResize" },
+	{ onPreMove			, "onPreMove" },
+	{ onPreRestyle		, "onPreRestyle" },
+	{ onPreShow			, "onPreShow" },
+	{ onPreHide			, "onPreHide" },
+	{ onPreFocus		, "onPreFocus" },
+	{ onPreBlur			, "onPreBlur" },
+	{ onPreAdd			, "onPreAdd" },
+	{ onPreRemove		, "onPreRemove" },
+	
+	{ onPostResize		, "onPostResize" },
+	{ onPostMove		, "onPostMove" },
+	{ onPostRestyle		, "onPostRestyle" },
+	{ onPostShow		, "onPostShow" },
+	{ onPostHide		, "onPostHide" },
+	{ onPostFocus		, "onPostFocus" },
+	{ onPostBlur		, "onPostBlur" },
+	{ onPostAdd			, "onPostAdd" },
+	{ onPostRemove		, "onPostRemove" },
 };

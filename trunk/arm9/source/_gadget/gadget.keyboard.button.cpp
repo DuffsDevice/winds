@@ -24,8 +24,8 @@ _callbackReturn _keyboardButton::mouseHandler( _event event )
 	ev.setKeyCode( that->key );
 	ev.setCurrentKeys( _system::getCurrentKeys() );
 	
-	if( that->parent )
-		that->parent->handleEvent( ev );
+	if( that->getParent() )
+		that->getParent()->handleEvent( ev );
 	
 	return handled;
 }

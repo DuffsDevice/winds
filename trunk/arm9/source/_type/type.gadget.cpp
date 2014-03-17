@@ -34,9 +34,8 @@ _gadget::_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> 
 	, focusedChild( nullptr )
 	, parent( nullptr )
 	, bitmap( move( bmp ) )
-	, draggedChild ( nullptr )
+	, draggedChild( nullptr )
 	, type( type )
-	, stateSum( 0 )
 {
 	this->bitmap.resize( width , height );
 	this->autoValues.width = !width.isValid();
@@ -54,7 +53,7 @@ _gadget::~_gadget()
 	this->setParent( nullptr );
 	
 	// Handle destructor event
-	this->handleEvent( onSet );
+	this->handleEvent( onDelete );
 	
 	// Delete callbacks
 	for( _pair<_eventType,_callback<_eventHandler>*> cb : this->eventHandlers )
@@ -141,34 +140,14 @@ void _gadget::removeInternalEventHandler( _eventType type ){
 		this->removeDependency( type );
 }
 
-bool _gadget::removeDeleteCallback( _gadget* g )
+void _gadget::removeDeleteCallback( _gadget* g )
 {
-	// Remove focus
-	if( g->parent && g->hasFocus() )
-	{
-		g->state.focused = false;
-		
-		if( g->parent->focusedChild == g )
-			g->parent->focusedChild = nullptr;
-			
-		// Remove current focus
-		_system::_currentFocus_ = g->parent;
-	}
-	
-	// Trigger dependency event
-	g->notifyDependentGadgets( onSet );
-	
-	// Remove parent from child
-	g->parent = nullptr;
-	
-	// Delete
-	delete g;
-	
-	return true;
+	_gadget::removeCallback( g );
+	delete g;// Delete
 }
 
 
-bool _gadget::removeCallback( _gadget* g )
+void _gadget::removeCallback( _gadget* g )
 {
 	// Remove focus
 	if( g->parent && g->hasFocus() )
@@ -183,12 +162,10 @@ bool _gadget::removeCallback( _gadget* g )
 	}
 	
 	// Trigger dependency event
-	g->notifyDependentGadgets( onSet );
+	g->notifyDependentGadgets( onDelete , false );
 	
 	// Remove parent from child
 	g->parent = nullptr;
-	
-	return true;
 }
 
 // All about blinking
@@ -250,6 +227,7 @@ bool _gadget::blurChild()
 		
 		// trigger onBlur - event
 		this->focusedChild->triggerEvent( onBlur );
+		this->focusedChild->notifyDependentGadgets( onBlur , false );
 		
 		// Rest focusedChild
 		this->focusedChild = nullptr;
@@ -315,29 +293,21 @@ bool _gadget::focusChild( _gadget* child )
 	
 	// Trigger the 'onfocus'-event
 	child->triggerEvent( onFocus );
+	child->notifyDependentGadgets( onFocus , false );
 	
 	// Move the child to the front of all children that it will be seen
 	if( child->style.doesFocusMoveFront )
 	{
 		// Move to front of children
-		if( child->isEnhanced() )
-		{
-			// no moving neccesary?
-			if( child == this->enhancedChildren.front() )
-				return true;
-			
-			this->enhancedChildren.remove( child );
-			this->enhancedChildren.push_front( child );
-		}
-		else
-		{
-			// no moving neccesary?
-			if( child == this->children.front() )
-				return true;
-			
-			this->children.remove( child );
-			this->children.push_front( child );
-		}
+		_gadgetList& list = child->isEnhanced() ? this->enhancedChildren : this->children;
+		
+		// no moving neccesary?
+		if( child == list.front() )
+			return true;
+		
+		// The actual move
+		list.erase( find( list.begin() , list.end() , child ) );
+		list.push_front( child );
 		
 		// Refresh the Gadget so that it appears at the front
 		child->redraw();
@@ -475,7 +445,7 @@ void _gadget::setXInternal( _coord val )
 		this->x = val;
 		
 		// Refresh if there is a parent
-		if( this->parent )
+		if( this->parent && !this->isHidden() )
 		{
 			_length width = this->getWidth();
 			_length height = this->getHeight();
@@ -507,7 +477,7 @@ void _gadget::setYInternal( _coord val )
 		this->y = val;
 		
 		// Refresh if there is a parent
-		if( this->parent )
+		if( this->parent && !this->isHidden() )
 		{
 			_length width = this->getWidth();
 			_length height = this->getHeight();
@@ -539,7 +509,7 @@ void _gadget::moveRelativeInternal( _s16 dX , _s16 dY )
 	this->y += dY;
 	
 	// Refresh if there is a parent
-	if( this->parent )
+	if( this->parent && !this->isHidden() )
 	{
 		if( max( (_s16)-dX , dX ) < this->getWidth() && max( (_s16)-dY , dY ) < this->getHeight() )
 			this->redrawParents( _rect( pos.first , pos.second , this->getWidth() , this->getHeight() ).expand( dX , dY ) );
@@ -594,13 +564,15 @@ void _gadget::removeChildren( bool remove )
 	if( this->children.empty() )
 		return;
 	
-	if( remove )
-		this->children.remove_if( _gadget::removeDeleteCallback );
-	else
-		this->children.remove_if( _gadget::removeCallback );
+	// Destruct each gadget
+	auto func = remove ? &_gadget::removeDeleteCallback : &_gadget::removeCallback;
+	for_each( this->children.begin() , this->children.end() , func );
+	
+	// Clear list
+	this->children.clear();
 	
 	// Inform 'me' that I don't have any children left
-	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(nullptr) );
+	this->notifyDependentSelf( onChildRemove , _dependencyParam(0) );
 	
 	// Erase Childrens area
 	this->redraw();
@@ -612,13 +584,15 @@ void _gadget::removeEnhancedChildren( bool remove )
 	if( this->enhancedChildren.empty() )
 		return;
 	
-	if( remove )
-		this->enhancedChildren.remove_if( _gadget::removeDeleteCallback );
-	else
-		this->enhancedChildren.remove_if( _gadget::removeCallback );
+	// Destruct each gadget
+	auto func = remove ? &_gadget::removeDeleteCallback : &_gadget::removeCallback;
+	for_each( this->enhancedChildren.begin() , this->enhancedChildren.end() , func );
+	
+	// Clear list
+	this->enhancedChildren.clear();
 	
 	// Inform 'me' that I don't have any enhanced children left
-	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(this) );
+	this->notifyDependentSelf( onChildRemove , _dependencyParam(1) );
 	
 	// Erase Childrens area
 	this->redraw();
@@ -641,7 +615,7 @@ void _gadget::removeChild( _gadget* child )
 		if( this->focusedChild == child )
 			this->focusedChild = nullptr;
 		
-		// Remove current focus
+		// Remove current focus from the child and set it to this gadget
 		_system::_currentFocus_ = this;
 	}
 	
@@ -650,10 +624,8 @@ void _gadget::removeChild( _gadget* child )
 	_gadget* precedent = child->getPrecedentChild();
 	
 	// Erase the Connection on both sides
-	if( child->isEnhanced() )
-		this->enhancedChildren.remove( child );
-	else
-		this->children.remove( child );
+	_gadgetList& list = child->isEnhanced() ? this->enhancedChildren : this->children;
+	list.erase( find( list.begin() , list.end() , child ) );
 	
 	// Remove parent of child
 	child->parent = nullptr;
@@ -662,26 +634,41 @@ void _gadget::removeChild( _gadget* child )
 	this->redraw( absDim );
 	
 	// Notify dependent adjacents
-	child->notifyDependentAdjacents( onSet , _dependencyParam() , precedent , subcedent );
+	child->notifyDependentAdjacents( onDelete , _dependencyParam() , precedent , subcedent );
+	
 	// Notify itself that it does not have a parent anymore
-	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
+	child->notifyDependentSelf( onParentRemove , _dependencyParam().setSource(this) );
+	
 	// Notify parent (this gadget)
-	this->notifyDependentSelf( onChildSet , _dependencyParam().setSource(child) );
+	this->notifyDependentSelf( onChildRemove , _dependencyParam().setSource(child) );
 }
 
-void _gadget::addChild( _gadget* child , bool pushBack )
+
+void _gadget::addChildInternal( bool enhanced , _gadget* child , bool after , _gadget* keyElement = nullptr )
 {	
 	if( !child || child->parent == this )
 		return;
+	else if( child->parent )
+		child->parent->removeChild( child );
 	
-	// Add it!
-	if( pushBack )
-		this->children.push_back( child );
+	_gadgetList& list = enhanced ? this->enhancedChildren : this->children;
+	
+	// Add it to the list!
+	if( keyElement && keyElement->parent == this && keyElement->isEnhanced() == enhanced )
+	{
+		_gadgetList::iterator iter = find( list.begin() , list.end() , keyElement );
+		if( after && iter != list.end() )
+			iter++;
+		list.insert( iter , child );
+	}
+	else if( after )
+		list.push_back( child );
 	else
-		this->children.push_front( child );
+		list.push_front( child );
 	
-	// Reset style-object
+	// Reset state-attributes
 	child->resetState();
+	child->state.enhanced = enhanced;
 	
 	// Set Parent
 	child->parent = this;
@@ -689,40 +676,13 @@ void _gadget::addChild( _gadget* child , bool pushBack )
 	// Paint it on my bmp
 	child->redraw();
 	
-	// Notify dependent gadgets
-	child->notifyDependentParent( onSet );
-	child->notifyDependentAdjacents( onSet );
+	//// Notify dependent gadgets
+	child->notifyDependentParent( onAdd );
+	child->notifyDependentAdjacents( onAdd );
 	
 	// Notify itself that it has a new parent
-	if( child->isDependentOf( onParentSet ) )
-		child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
-}
-
-
-void _gadget::addEnhancedChild( _gadget* child , bool pushBack )
-{
-	if( !child || child->parent == this )
-		return;
-	
-	// Add it!
-	if( pushBack )
-		this->enhancedChildren.push_back( child );
-	else
-		this->enhancedChildren.push_front( child );
-	
-	// Reset style-object
-	child->resetState();
-	child->state.enhanced = true;
-	
-	// Set Parent
-	child->parent = this;
-	
-	//! Paint it on my bmp
-	child->redraw();
-	
-	// Notify dependent gadgets
-	child->notifyDependentGadgets( onSet , false );
-	child->notifyDependentSelf( onParentSet , _dependencyParam().setSource(this) );
+	if( child->isDependentOf( onParentAdd ) )
+		child->notifyDependentSelf( onParentAdd , _dependencyParam().setSource(this) );
 }
 
 
@@ -782,7 +742,8 @@ void _gadget::setDimensionsInternal( _rect rc )
 	}
 	else if( pos != newPos )
 	{
-		this->redrawParents( _rect( pos , size ).combine( _rect( newPos , size ) ) );
+		if( !this->isHidden() )
+			this->redrawParents( _rect( pos , size ).combine( _rect( newPos , size ) ) );
 		
 		// Notify dependent gadgets
 		this->notifyDependentGadgets( onMove );
@@ -1248,12 +1209,16 @@ _gadget* _gadget::getSubcedentChild( bool skipHidden )
 		if( it == ch.end() )
 			return nullptr;
 		
-		while( ++it != ch.end() )
-		{
-			if( !skipHidden || !(*it)->isHidden() )
-				return *it;
-			it++;
+		if( !skipHidden ){
+			if( ++it != ch.end() )
+				return (*it);
+			return nullptr;
 		}
+		
+		while( ++it != ch.end() ){
+			if( !(*it)->isHidden() )
+				return *it;
+		};
 	}
 	return nullptr;
 }
@@ -1269,9 +1234,14 @@ _gadget* _gadget::getPrecedentChild( bool skipHidden )
 		if( it == ch.rend() )
 			return nullptr;
 		
-		while( ++it != ch.rend() )
-		{
-			if( !skipHidden || !(*it)->isHidden() )
+		if( !skipHidden ){
+			if( ++it != ch.rend() )
+				return (*it);
+			return nullptr;
+		}
+		
+		while( ++it != ch.rend() ){
+			if( !(*it)->isHidden() )
 				return *it;
 		}
 	}
@@ -1317,20 +1287,20 @@ void _gadget::notifyDependentChildren( _eventType type , _dependencyParam param 
 
 void _gadget::notifyDependentAdjacents( _eventType type , _dependencyParam param , _optValue<_gadget*> pre , _optValue<_gadget*> post )
 {
-	_gadget* g1 = post.isValid() ? (_gadget*)post : this->getSubcedentChild();
-	_gadget* g2 = pre.isValid() ? (_gadget*)pre : this->getPrecedentChild();
+	_gadget* g1 = pre.isValid() ? (_gadget*)pre : this->getPrecedentChild();
+	_gadget* g2 = post.isValid() ? (_gadget*)post : this->getSubcedentChild();
 	
-	// Subcedent child
+	// Precedent child
 	if( g1 ){
-		_eventType newType = depType2preType( type );
+		_eventType newType = depType2postType( type );
 		
 		if( g1->isDependentOf( newType ) )
 			g1->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );
 	}
 	
-	// Precedent child
+	// Subcedent child
 	if( g2 ){
-		_eventType newType = depType2postType( type );
+		_eventType newType = depType2preType( type );
 		
 		if( g2->isDependentOf( newType ) )
 			g2->handleEvent( _event::dependencyEvent( newType , param.setSource( this ) ) );

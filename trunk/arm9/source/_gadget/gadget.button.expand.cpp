@@ -1,4 +1,5 @@
 #include "_gadget/gadget.button.expand.h"
+#include "_type/type.gadget.helpers.h"
 
 // Graphics
 #include "_resource/resource.icon.foldunfold.h"

@@ -19,7 +19,7 @@ class _startupScreen : public _gadgetScreen
 		_startupScreen( _u8 bgId , _style&& style = _style() );
 		
 		//! Dtor
-		~_startupScreen(){
+		virtual ~_startupScreen(){
 			delete this->winLogoGadget;
 		}
 	

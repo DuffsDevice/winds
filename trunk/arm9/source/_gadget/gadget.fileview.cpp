@@ -1,8 +1,9 @@
 #include "_gadget/gadget.fileview.h"
-#include "_type/type.system.h"
-#include "sound_navigation_pcm.h"
+#include "_type/type.gadget.helpers.h"
+
 
 // Click Sound
+#include "sound_navigation_pcm.h"
 _staticSound _fileView::navigationSound = _staticSound( _channelFormat::bit8 , 44100 , sound_navigation_pcm , sound_navigation_pcm_size );
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
@@ -16,7 +17,7 @@ _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 	, filemask( allowedExtensions.empty() ? nullptr : new _fileExtensionList( move(allowedExtensions) ) )
 	, eventHandler( move(eventHandler) )
 	, singleClickToExecute( singleClickToExecute )
-{	
+{
 	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
 	
@@ -64,18 +65,18 @@ void _fileView::generateChildren()
 	
 	switch( this->viewType )
 	{
-		case _fileViewType::symbol_big:
+		case _fileViewType::symbol:
 		{
+			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 4 , 4 , true , 1 , 1 , false );
+			
 			// Read Children of directory
-			//_vector<string> names = { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"};
-			//for( string str : names )
+			//for( string str : { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore , this->directory.getFileName() + str , this->viewType );
 				
-				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::right , 4 , 4 , true , 1 , 1 , false );
-				fo->setInternalEventHandler( onParentSet , cb );
+				fo->setInternalEventHandler( onParentAdd , cb );
 				
 				// Add User-defined Handler
 				fo->setUserEventHandler( onMouseClick , make_callback( &_fileView::eventForwarder ) );
@@ -87,16 +88,17 @@ void _fileView::generateChildren()
 		}
 		case _fileViewType::list:
 		default:
+		{
+			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
+			
 			// Read Children of directory
-			//_vector<string> names = { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"};
-			//for( string str : names )
+			//for( string str : { "Haloo.lnk" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType );
 				
-				auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
-				fo->setInternalEventHandler( onParentSet , cb );
+				fo->setInternalEventHandler( onParentAdd , cb );
 				
 				// Add User-defined Handler
 				fo->setUserEventHandler( onMouseClick , make_callback( &_fileView::eventForwarder ) );
@@ -105,6 +107,7 @@ void _fileView::generateChildren()
 				this->addChild( fo , true );
 			}
 			break;
+		}
 	}
 }
 

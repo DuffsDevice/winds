@@ -23,18 +23,18 @@ void PROG_Explorer::main( _programArgs args )
 	
 	this->fileView->setUserEventHandler( onEdit , make_callback( this , &PROG_Explorer::handler ) );
 	this->fileView->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );
-	this->fileView->setUserEventHandler( onParentSet , _gadgetHelpers::sizeParent( 1 , 30 ) );
+	this->fileView->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
 	this->addressBar->setInternalEventHandler( onParentResize , _gadgetHelpers::sizeParent( 23 , ignore ) );
-	this->addressBar->setInternalEventHandler( onParentSet , _gadgetHelpers::sizeParent( 23 , ignore ) );
+	this->addressBar->setInternalEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
 	this->submitButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Explorer::handler ) );
 	this->submitButton->setUserEventHandler( onParentResize , _gadgetHelpers::rightBottomAlign( 1 , ignore ) );
-	this->submitButton->setUserEventHandler( onParentSet , _gadgetHelpers::rightBottomAlign( 1 , ignore ) );
+	this->submitButton->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
 	this->folderUpButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Explorer::handler ) );
 	this->folderUpButton->setUserEventHandler( onParentResize , _gadgetHelpers::rightBottomAlign( 11 , ignore ) );
-	this->folderUpButton->setUserEventHandler( onParentSet , _gadgetHelpers::rightBottomAlign( 11 , ignore ) );
+	this->folderUpButton->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
 	this->window->setUserEventHandler( onClose , make_callback( this , &PROG_Explorer::handler ) );
 	

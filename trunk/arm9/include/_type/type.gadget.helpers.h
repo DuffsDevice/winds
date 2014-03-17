@@ -104,11 +104,12 @@ namespace _gadgetHelpers
 				_direction	direction;
 				bool		breakLine : 1;
 				bool		respectAutoPosition : 1;
+				bool		skipHidden : 1;
 			} PACKED ; 
 			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
-			moveBesidePrecedent( _direction dim = _direction::down , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 , bool respectAutoPosition = true );
+			moveBesidePrecedent( _direction dim = _direction::down , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 , bool respectAutoPosition = true , bool skipHidden = true );
 	};
 }
 

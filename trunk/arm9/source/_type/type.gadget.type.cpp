@@ -18,6 +18,7 @@ _toStr<_gadgetType> gadgetType2string = {
 	{ _gadgetType::keyboard				, "keyboard" },
 	{ _gadgetType::desktop				, "desktop" },
 	{ _gadgetType::fileview				, "fileview" },
+	{ _gadgetType::filetree				, "filetree" },
 	{ _gadgetType::fileobject			, "fileobject" },
 	{ _gadgetType::imagegadget			, "imagegadget" },
 	{ _gadgetType::scrollarea			, "scrollarea" },
@@ -39,6 +40,7 @@ _toStr<_gadgetType> gadgetType2string = {
 	{ _gadgetType::grid					, "grid" },
 	{ _gadgetType::griddescriber		, "griddescriber" },
 	{ _gadgetType::gridbox				, "gridbox" },
+	{ _gadgetType::treeview				, "treeview" },
 	{ _gadgetType::none					, "none" }
 };
 
@@ -59,6 +61,7 @@ _fromStr<_gadgetType> string2gadgetType = {
 	{ "keyboard"			, _gadgetType::keyboard },
 	{ "desktop"				, _gadgetType::desktop },
 	{ "fileview"			, _gadgetType::fileview },
+	{ "filetree"			, _gadgetType::filetree },
 	{ "fileobject"			, _gadgetType::fileobject },
 	{ "imagegadget"			, _gadgetType::imagegadget },
 	{ "scrollarea"			, _gadgetType::scrollarea },
@@ -80,5 +83,6 @@ _fromStr<_gadgetType> string2gadgetType = {
 	{ "grid"				, _gadgetType::grid },
 	{ "griddescriber"		, _gadgetType::griddescriber },
 	{ "gridbox"				, _gadgetType::gridbox },
+	{ "treeview"			, _gadgetType::treeview },
 	{ "none"				, _gadgetType::none }
 };

@@ -18,6 +18,7 @@ class _window : public _gadget {
 		
 		_label*			label;
 		_imageGadget*	icon;
+		_color			bgColor;
 		
 		_windowButton*	button[3];
 		
@@ -103,6 +104,17 @@ class _window : public _gadget {
 		//! Checks wether this window meets the requirements of a task
 		bool isTask(){ return this->isMinimizeable() && this->getParent(); }
 		
+		//! Set Background color of the window
+		void setBgColor( _color value ){
+			if( this->bgColor == value )
+				return;
+			this->bgColor = value;
+			this->redraw();
+		}
+		
+		//! Get background color
+		_color getBgColor(){ return this->bgColor; }
+		
 		//! Ctor
 		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _style::draggable ) :
 			_window( x , y , width , height , title , _bitmap() , minimizeable , closeable , (_style&&)style ) // C++0x! Yay!
@@ -129,10 +141,11 @@ class _window : public _gadget {
 			);
 		}
 		
+		//! Register a handler taht will be notified, when the window changes its appearence
 		static void addTaskHandler( _paramAlloc<_windowTaskHandler> cb ){
 			taskHandlers.push_back( cb.get() );
 		}
 		
-} PACKED ;
+};
 
 #endif

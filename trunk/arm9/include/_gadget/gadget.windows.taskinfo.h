@@ -38,7 +38,7 @@ class _windowsTaskInfo : private _imageGadget
 		_windowsTaskInfo( _bitmap icon , _style&& style = _style() );
 		
 		//! Dtor
-		~_windowsTaskInfo();
+		virtual ~_windowsTaskInfo();
 		
 		//! Set a new bitmap
 		void setImage( _bitmap newOne ){

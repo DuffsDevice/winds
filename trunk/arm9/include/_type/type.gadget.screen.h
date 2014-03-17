@@ -35,6 +35,9 @@ class _gadgetScreen : public _screen , public _gadget
 		
 	public:
 		
+		// Make available _screen::screen instead of the mothod from _gadget
+		using _screen::getBitmap;
+		
 		//! Will be called every frame
 		//! @return bool Whether the supplied touch was inside the range
 		bool processTouch( bool held , _touch touch );

@@ -3,6 +3,7 @@
 #include "_type/type.program.c.h"
 #include "_type/type.system.h"
 
+#include "_resource/resource.program.credits.h"
 #include "_resource/resource.program.explorer.h"
 #include "_resource/resource.icon.lua.h"
 #include "_resource/resource.icon.exe.h"
@@ -74,6 +75,7 @@ void _program::runPrograms()
 					p.first->internalVbl(); // Run it
 					return false;
 				}
+				p.first->internalCleanUp();
 				delete p.first;
 				return true;
 			}
@@ -98,6 +100,8 @@ _program* _program::fromFile( string filename )
 		result = new _progLua( d.readString() );
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
+	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/credits.exe" ) )
+		result = new PROG_Credits();
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/exampleprogram.exe" ) ){
 		string str = (const _char*)program_example_lua;
 		str.resize( program_example_lua_size );

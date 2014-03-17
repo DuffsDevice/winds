@@ -451,7 +451,7 @@ void _system::start()
 		
 		setBackdropColor( _color::black );
 		setBackdropColorSub( _color::black );
-		//consoleDemoInit();
+		consoleDemoInit();
 		
 		//_system::fadeMainScreen( false , false );
 		
@@ -558,6 +558,7 @@ void _system::start()
 		_system::_fonts_["ArialBlack13"]	= _font::fromFile( "%SYSTEM%/arialblack13.ttf");
 		_system::_fonts_["CourierNew10"]	= _font::fromFile( "%SYSTEM%/couriernew10.ttf");
 		_system::_fonts_["SystemSymbols8"]	= _font::fromFile( "%SYSTEM%/systemsymbols8.ttf");
+		_system::_fonts_["Handwriting9"]	= _font::fromFile( "%SYSTEM%/handwriting9.ttf");
 	
 }
 
@@ -643,15 +644,13 @@ void _system::main(){
 	_systemController::main();
 }
 
-bool _system::isRunningOnEmulator()
+_hardwareType _system::getHardwareType()
 {
-	// Figure out what we're running on
-	// http://forum.gbadev.org/viewtopic.php?t=6265
-	_u32 result; 
-	asm volatile("swi 0x0D\n" 
-		"mov r0, %0\n" : "=r"(result) : : "r1", "r2", "r3"
-	);
-	return result != 0xBAAE1880 /* DS Mode */ && result != 0xBAAE187F;
+	if( DSWindows::isEmulator() )
+		return _hardwareType::emulator;
+	else if( REG_DSIMODE )
+		return _hardwareType::dsi;
+	return _hardwareType::ds;
 }
 
 bool _system::executeCommand( const string& cmd )
@@ -672,6 +671,13 @@ bool _system::executeCommand( const string& cmd )
 void _system::shutDown(){
 	end();
 }
+
+//! Conversion from _hardwareType to string
+_toStr<_hardwareType> hardwareType2str = {
+	{ _hardwareType::ds			, "ds" },
+	{ _hardwareType::dsi		, "dsi" },
+	{ _hardwareType::emulator	, "emulator" },
+};
 
 //! Static Attributes...
 bool 						_system::_sleeping_ = false;

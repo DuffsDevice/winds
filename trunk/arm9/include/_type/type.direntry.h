@@ -2,22 +2,21 @@
 #define _WIN_T_DIRENTRY_
 
 #include <stdio.h>
-#include <list>
 #include <sys/dir.h>
 
-#include "fat.h"
 #include "_type/type.h"
-#include "_type/type.shortstring.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.mime.h"
 #include "_type/type.ini.h"
 #include "_type/type.program.args.h"
 
-// Libfat
-extern "C"{
-#include "_library/_fat/partition.h"
-#include "_library/_fat/fatdir.h"
-}
+//! Statistics in bytes of the mounted device
+struct _driveStats{
+	_u64 blockSize;
+	_u64 size;
+	_u64 free;
+	_u64 used;
+};
 
 enum class _direntryMode : _u8{
 	closed = 0,
@@ -57,39 +56,42 @@ class _direntry
 	protected:
 	
 		//! Handle to File/Directory
-		mutable union{
-			FILE* 		fHandle;
-			DIR* 		dHandle;
+		union{
+			mutable FILE* 		fHandle;
+			mutable DIR* 		dHandle;
 		};
 		
 		//! Stat buffer to fill with stat(...)
-		struct stat			stat_buf;
+		struct stat				stat_buf;
 		
 		//! Flag indicating if the file exists
-		bool				exists;
+		bool					exists;
 		
 		//! Flag indicating if the FAT32-System is ready to be used
-		static int			fatInited;
+		static int				fatInited;
 		
 		//! Filename
-		string				filename;
-		string				name;
-		string				extension;
+		string					filename;
+		string					name;
+		string					extension;
 		
 		//! MIME-Type
-		_mimeType 			mimeType;
+		_mimeType 				mimeType;
 		
 		//! The Mode the file was opened by
-		_direntryMode		mode;
+		mutable _direntryMode	mode;
 		
 		//! Flush a files contents to disk
-		bool flush();
+		bool flush() const ;
 		
 		//! Set UNIX-Attributes of File
 		bool setAttrs( _direntryAttributes attrs );
 		
 		//! Get UNIX-Attributes of File
 		_direntryAttributes getAttrs() const ;
+		
+		//! Open a file. The Mode for opening is specified with mode
+		virtual bool open( string mode ) const ;
 		
 	public:
 		
@@ -125,19 +127,19 @@ class _direntry
 		bool setHidden( bool hidden );
 		
 		//! Check, whether the file is hidden
-		bool isHidden() const ;
+		bool isHidden() const { return this->getAttrs().hidden; }
 		
 		//! Set whether the _direntry is a system file, returns 'true' on success
 		bool setSystemFile( bool isSystem );
 		
 		//! Check whether the file is a system file
-		bool isSystem() const ;
+		bool isSystem() const { return this->getAttrs().system; }
 		
 		//! Set whether the _direntry implements read only access, returns 'true' on success
 		bool setReadOnly( bool readOnly );
 		
 		//! Check whether the file is readOnly
-		bool isReadOnly() const ;
+		bool isReadOnly() const { return this->getAttrs().readonly; }
 		
 		//! Check if File is a Directory
 		bool isDirectory() const { return S_ISDIR( this->stat_buf.st_mode ); }
@@ -150,11 +152,8 @@ class _direntry
 		//! get mode (used to determine if the file is openend)
 		_direntryMode getMode() const { return this->mode; }
 		
-		//! Open a file. The Mode for opening is specified with mode
-		virtual bool open( string mode );
-		
 		//! Open the file for reading
-		virtual bool openread();
+		virtual bool openread() const ;
 		
 		//! open the file for writing
 		virtual bool openwrite( bool eraseOldContent = true );
@@ -163,25 +162,25 @@ class _direntry
 		virtual bool create();
 		
 		//! Close the File
-		virtual bool close();
+		virtual bool close() const ;
 		
 		//! Read the contents of the file into a block of memory
 		//! and sets 'numBytes' to the number of bytes efficiently read (-1 for an error)
-		virtual bool read( void* dest , _optValue<_u32> size = ignore , _u32* numBytes = nullptr );
+		virtual bool read( void* dest , _optValue<_u32> size = ignore , _u32* numBytes = nullptr ) const ;
 		
 		//! Write 'size' bytes of contents in 'src' to the file
 		virtual bool write( void* src , _u32 size );
 		
 		//! If the _direntry is an directory, iterate through its children
-		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr );
-		virtual bool readChildFolderOnly( _literal& child );
-		virtual bool rewindChildren();
+		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr ) const ;
+		virtual bool readChildFolderOnly( _literal& child ) const ;
+		virtual bool rewindChildren() const ;
 		
 		//! Write an std::string to the end of the file
 		bool writeString( string str );
 		
 		//! Read the contents of the file into std::string
-		string readString( _optValue<_u32> size = ignore );
+		string readString( _optValue<_u32> size = ignore ) const ;
 		
 		//! Get Filename
 		const string& getFileName() const { return this->filename; }
@@ -199,7 +198,7 @@ class _direntry
 		_mimeType getMimeType() const { return this->mimeType; }
 		
 		//! get the size of a file (in bytes)
-		_u32 getSize();
+		_u32 getSize() const ;
 		
 		//! Get the Path of the parent directory
 		string getParentDirectory() const ;
@@ -208,7 +207,7 @@ class _direntry
 		virtual bool execute( _programArgs args = _programArgs() );
 		
 		//! Get File-Image
-		virtual _bitmap getFileImage();
+		virtual _bitmap getFileImage() const ;
 		
 		//! Check if the File at 'filename' exists
 		virtual bool isExisting() const { return this->exists; }
@@ -227,6 +226,12 @@ class _direntry
 		
 		//! Manually init Fat
 		static bool initFat();
+		
+		//! Get List of connected hard drives
+		static _vector<string> getDrives();
+		
+		//! Get statistics about a connected hard drive
+		static bool getDriveStats( string driveName , _driveStats& dest );
 		
 		//! Replace associated filename-patterns
 		static string replaceASSOCS( string path ){

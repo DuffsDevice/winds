@@ -84,9 +84,9 @@ _windowButton::_windowButton( _optValue<_coord> x , _optValue<_coord> y , _u8 bu
 	_button( x , y , 8 , 8 , "" , (_style&&)style )
 	, buttonType( buttonType )
 {
-	// Reset Bitmap
-	this->bitmap.reset( _color::red );
-	
+	// Set Refresh Handler
 	this->setInternalEventHandler( onDraw , make_callback( &_windowButton::refreshHandler ) );
+	
+	// Redraw bitmap
 	this->redraw();
 }

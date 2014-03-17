@@ -24,8 +24,8 @@ class PROG_Explorer : public _progC
 		_windowMenu*	windowMenu;
 		_windowBar*		windowBar;
 		
-		void		main( _programArgs args );
-		void		destruct();
+		void	main( _programArgs args );
+		void	destruct();
 		
 		void setWindowTitle();
 		

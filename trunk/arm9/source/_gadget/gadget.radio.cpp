@@ -1,5 +1,6 @@
 #include "_gadget/gadget.radio.h"
 #include "_type/type.singlevaluegroup.h"
+#include "_type/type.gadget.helpers.h"
 
 // Graphics
 #include "_resource/resource.image.radiobuttons.h"

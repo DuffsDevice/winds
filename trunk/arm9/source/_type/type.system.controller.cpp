@@ -6,6 +6,7 @@
 // NDS Interrupts
 #include <nds/interrupts.h>
 #include <nds/bios.h>
+#include <nds/system.h>
 
 void _systemController::checkDirty()
 {

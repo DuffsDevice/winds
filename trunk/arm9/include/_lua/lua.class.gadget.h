@@ -55,6 +55,12 @@ class _lua_gadget{
 		//! Set Y
 		int setY(lua_State* L);
 		
+		//! Set Position
+		int moveTo(lua_State* L);
+		
+		//! Move Relatively
+		int moveRelative(lua_State* L);
+		
 		//! setWidth
 		int setWidth(lua_State* L);
 		

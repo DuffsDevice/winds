@@ -1,5 +1,6 @@
 #include "func.memory.h"
 #include <malloc.h>
+#include <stdio.h>
 
 unsigned int getFreeMemory()
 {
@@ -59,6 +60,6 @@ bool DSWindows::isEmulator()
 		: "%r1","%r2"           // clobbered registers
 		);
 	#endif
-
+	
 	return mov_r0_r0 != 0;
 }

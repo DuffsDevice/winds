@@ -91,7 +91,7 @@ int _lua_gadget::setX(lua_State* L){
 	if( lua_isnil( L , 1 ) )
 		this->gadget->requestAutoX();
 	else
-		this->gadget->setX( check<int>( L , 1 ) );
+		this->gadget->setX( check<int>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
 	return 0;
 }
 
@@ -100,7 +100,19 @@ int _lua_gadget::setY(lua_State* L){
 	if( lua_isnil( L , 1 ) )
 		this->gadget->requestAutoY();
 	else
-		this->gadget->setY( check<int>( L , 1 ) );
+		this->gadget->setY( check<int>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
+	return 0;
+}
+
+//! Set Position
+int _lua_gadget::moveTo(lua_State* L){
+	this->gadget->moveTo( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<bool>( L , 3 , false ) );
+	return 0;
+}
+
+//! Move Relatively
+int _lua_gadget::moveRelative(lua_State* L){
+	this->gadget->moveRelative( check<int>( L , 1 ) , check<int>( L , 2 ) , lightcheck<bool>( L , 3 , false ) );
 	return 0;
 }
 
@@ -153,13 +165,13 @@ int _lua_gadget::equals(lua_State* L){
 
 //! addChild
 int _lua_gadget::addChild(lua_State* L){
-	this->gadget->addChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
+	this->gadget->addChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) , lightcheck<_gadget*>( L , 3 , nullptr ) );
 	return 0;
 }
 
 //! addEnhancedChild
 int _lua_gadget::addEnhancedChild(lua_State* L){
-	this->gadget->addEnhancedChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) );
+	this->gadget->addEnhancedChild( check<_gadget*>( L , 1 ) , lightcheck<bool>( L , 2 , false ) , lightcheck<_gadget*>( L , 3 , nullptr ) );
 	return 0;
 }
 
@@ -207,10 +219,10 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "getAbsoluteY"				, wrap( _lua_gadget , &_gadget::getAbsoluteY ) },
 	/*  */
 	{ "moveToIfAuto"				, wrap( _lua_gadget , &_gadget::moveToIfAuto ) },
-	{ "moveTo"						, wrap( _lua_gadget , &_gadget::moveTo ) },
+	{ "moveTo"						, &_lua_gadget::moveTo },
 	{ "requestAutoPosition"			, wrap( _lua_gadget , &_gadget::requestAutoPosition ) },
 	{ "moveRelativeIfAuto"			, wrap( _lua_gadget , &_gadget::moveRelativeIfAuto ) },
-	{ "moveRelative"				, wrap( _lua_gadget , &_gadget::moveRelative ) },
+	{ "moveRelative"				, &_lua_gadget::moveRelative },
 	{ "hasAutoX"					, wrap( _lua_gadget , &_gadget::hasAutoX ) },
 	{ "hasAutoY"					, wrap( _lua_gadget , &_gadget::hasAutoY ) },
 	/*  */

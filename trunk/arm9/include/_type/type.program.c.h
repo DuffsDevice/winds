@@ -12,11 +12,11 @@ class _progC : public _program
 		void internalMain( _programArgs args ){
 			this->main( move(args) );
 		}
-		
-	protected:
-		
+		void internalCleanUp(){
+			this->destruct();
+		}
 		virtual void main( _programArgs args ) = 0;
-		virtual void destruct(){};
+		virtual void destruct();
 		
 	public:
 		
@@ -24,9 +24,7 @@ class _progC : public _program
 		_progC() : _program( _programType::progC ) { }
 		
 		//! Dtor
-		~_progC(){
-			this->destruct();
-		}
+		virtual ~_progC(){};
 };
 
 #endif

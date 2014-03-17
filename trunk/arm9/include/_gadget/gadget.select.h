@@ -47,6 +47,6 @@ class _select : public _gadget
 		_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst = _menuEntryList( { { 0 , "" } } /* Empty List */ ) , _int initialValue = -1 , _style&& style = _style() );
 		
 		//! Dtor
-		~_select(){ delete this->contextMenu; }
+		virtual ~_select(){ delete this->contextMenu; }
 };
 #endif

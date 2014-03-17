@@ -106,7 +106,7 @@ namespace _gadgetHelpers
 	
 	
 	// moveBesidePrecedent :: ctor
-	moveBesidePrecedent::moveBesidePrecedent( _direction dir , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY , bool respectAutoPosition ) :
+	moveBesidePrecedent::moveBesidePrecedent( _direction dir , _length spaceX , _length spaceY , bool breakLine , _length offsetX , _length offsetY , bool respectAutoPosition , bool skipHidden ) :
 		_dummyCallback<_eventHandler>( &moveBesidePrecedent::executor )
 		, spaceX( spaceX )
 		, spaceY( spaceY )
@@ -115,6 +115,7 @@ namespace _gadgetHelpers
 		, direction( dir )
 		, breakLine( breakLine )
 		, respectAutoPosition( respectAutoPosition )
+		, skipHidden( skipHidden )
 	{} // Funny story: http://www.ima.umn.edu/~arnold/disasters/ariane.html
 	
 	// :: handler
@@ -127,16 +128,14 @@ namespace _gadgetHelpers
 		if( !parent )
 			return use_internal;
 		
-		_gadget*	pre = that->getPrecedentChild();
+		// Variables
+		_gadget*	pre = that->getPrecedentChild( this->skipHidden );
 		_rect		parentRect = parent->getClientRect();
-		
-		// Choose right method
-		auto usedFunc = this->respectAutoPosition ? &_gadget::moveToIfAuto : &_gadget::moveTo;
+		_coord		newX;
+		_coord		newY;
 		
 		if( pre )
 		{
-			_coord newX;
-			_coord newY;
 			switch( this->direction )
 			{
 				case _direction::down:
@@ -174,17 +173,26 @@ namespace _gadgetHelpers
 				default:
 					return use_internal;
 			}
-			(that->*usedFunc)( newX , newY );
 		}
 		else
 		{
-			if( this->direction == _direction::down || this->direction == _direction::right )
-				(that->*usedFunc)( offsetX , offsetY );
-			else if( this->direction == _direction::left )
-				(that->*usedFunc)( parentRect.width - 1 - this->offsetX - that->getWidth() , offsetY );
-			else if( this->direction == _direction::up )
-				(that->*usedFunc)( offsetX , parentRect.height - 1 - this->offsetY - that->getHeight() );
+			if( this->direction == _direction::down || this->direction == _direction::right ){
+				newX = offsetX;
+				newY = offsetY;
+			}
+			else if( this->direction == _direction::left ){
+				newX = parentRect.width - 1 - this->offsetX - that->getWidth();
+				newY = offsetY;
+			}
+			else if( this->direction == _direction::up ){
+				newX = offsetX;
+				newY = parentRect.height - 1 - this->offsetY - that->getHeight();
+			}
+			else
+				return use_internal;
 		}
+		
+		this->respectAutoPosition ? that->moveToIfAuto( newX , newY ) : that->moveTo( newX , newY );
 		
 		return use_internal;
 	}

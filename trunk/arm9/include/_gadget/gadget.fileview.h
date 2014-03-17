@@ -6,7 +6,6 @@
 #include "_type/type.flexptr.h"
 #include "_type/type.sound.static.h"
 #include "_gadget/gadget.scrollArea.h"
-#include "_gadget/gadget.label.h"
 #include "_gadget/gadget.fileobject.h"
 
 class _fileView : public _scrollArea {
@@ -60,19 +59,19 @@ class _fileView : public _scrollArea {
 			this->eventHandler = nullptr;
 		}
 		
-		//! Ctor with singleClickToExecute flag
+		//! Simple Ctor
 		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
-			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , nullptr , false , (_style&&)style )
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , viewType , move(allowedExtensions) , nullptr , false , (_style&&)style )
 		{}
 		
 		//! Ctor with eventHandler
 		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _paramAlloc<_callback<_eventHandler>> eventHandler , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
-			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , eventHandler.get() , false , (_style&&)style )
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , viewType , move(allowedExtensions) , eventHandler.get() , false , (_style&&)style )
 		{}
 		
-		//! Simple Ctor
+		//! Ctor with singleClickToExecute flag
 		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , bool singleClickToExecute , _fileExtensionList allowedExtensions = {} , _style&& style = _style() ) :
-			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , move(viewType) , move(allowedExtensions) , nullptr , singleClickToExecute , (_style&&)style )
+			_fileView( move(x) , move(y) , move(width) , move(height) , move(path) , viewType , move(allowedExtensions) , nullptr , singleClickToExecute , (_style&&)style )
 		{}
 		
 		//! Dtor

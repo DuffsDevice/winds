@@ -21,6 +21,7 @@ struct _programData{
 struct _programHeader{
 	flex_ptr<_bitmap>	fileIcon;
 	flex_ptr<string>	name;
+	flex_ptr<string>	displayName;
 	flex_ptr<string>	author;
 	flex_ptr<string>	version;
 	flex_ptr<string>	description;
@@ -63,6 +64,9 @@ class _program
 		
 		//! Main function to be called from _system
 		void			main( _gadget* w , _programArgs args );
+		
+		//! Function to clean up the program (pendant to internalMain)
+		virtual	void	internalCleanUp() = 0;
 		
 	protected:
 		

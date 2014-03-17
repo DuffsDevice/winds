@@ -22,13 +22,11 @@ void _popup::showCentered( _coord x , _coord y )
 	_length width = this->getWidth();
 	_length height = this->getHeight();
 	
-	this->y = y - height / 2;
-	this->x = x - width / 2;
+	this->moveTo( x - width/2 , y - height/2 );
 	this->dir = _direction::downright;
 	
 	// View
-	_gadget* par = parent ? parent : _system::_gadgetHost_;
-	this->setParent( par );
+	this->setParent( _system::_gadgetHost_ );
 	
 	// Focus
 	this->focus();
@@ -47,18 +45,16 @@ void _popup::show( _coord x , _coord y , bool rightDownOnly )
 	_length height = this->getHeight();
 	
 	if( !rightDownOnly && x + width >= SCREEN_WIDTH ){
-		this->x = x - width;
+		x = x - width;
 		sum |= 1;
 	}
-	else
-		this->x = x;
 	
 	if( !rightDownOnly && y + height >= SCREEN_HEIGHT ){
-		this->y = y - height;
+		y = y - height;
 		sum |= 2;
 	}
-	else
-		this->y = y;
+	
+	this->moveTo( x , y );
 	
 	switch( sum ){
 		case 0: // RightDown
@@ -76,8 +72,7 @@ void _popup::show( _coord x , _coord y , bool rightDownOnly )
 	}
 	
 	// View
-	_gadget* par = parent ? parent : _system::_gadgetHost_;
-	this->setParent( par );
+	this->setParent( _system::_gadgetHost_ );
 	
 	// Focus
 	this->focus();
