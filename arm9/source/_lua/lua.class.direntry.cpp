@@ -42,6 +42,10 @@ int _lua_direntry::readChildFolderOnly( lua_State* L )
 	return push( L , child );
 }
 
+int _lua_direntry::getDisplayName( lua_State* L ){
+	return push( L , _direntry::getDisplayName( lightcheck<bool>( L , 1 , false ) ) );
+}
+
 int _lua_direntry::openwrite( lua_State* L ){
 	return push( L , _direntry::openwrite( lightcheck<bool>( L , 1 , false ) ) );
 }
@@ -73,7 +77,7 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
 	{ "fileName"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
 	{ "name"		, wrap( _lua_direntry , &_direntry::getName ) , nullptr },
-	{ "displayName"	, wrap( _lua_direntry , &_direntry::getDisplayName ) , nullptr },
+	{ "displayName"	, &_lua_direntry::getDisplayName , nullptr },
 	{ "extension"	, wrap( _lua_direntry , &_direntry::getExtension ) , nullptr },
 	{ "mimeType"	, wrap( _lua_direntry , &_direntry::getMimeType ) , nullptr },
 	{ "image"		, wrap( _lua_direntry , &_direntry::getFileImage ) , nullptr },

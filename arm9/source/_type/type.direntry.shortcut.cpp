@@ -12,9 +12,10 @@ _shortcut::_shortcut( string&& fn) :
 	, standardArgs( nullptr )
 {}
 
-void _shortcut::readAttributes()
+void _shortcut::readAttributes() const 
 {
-	if( !this->destination ){
+	if( !this->destination )
+	{
 		_ini parser = _ini( this->readString() );
 		
 		// Read Destination
@@ -32,9 +33,9 @@ void _shortcut::readAttributes()
 	}
 }
 
-_bitmap _shortcut::getFileImage()
+_bitmap _shortcut::getFileImage() const 
 {
-	static _u8 fOH = _system::getUser().fOH;
+	_u8 fOH = _system::getUser().fOH;
 	
 	if( this->image.isValid() )
 		return this->image;
@@ -47,7 +48,7 @@ _bitmap _shortcut::getFileImage()
 	
 	if( fl.getFileName() != "" ){
 		_constBitmap& icon = fl.getFileImage();
-		this->image.copy( 0 , ( fOH - icon.getHeight() ) >> 1 , icon );
+		this->image.copy( ( fOH - icon.getWidth() ) >> 1 , ( fOH - icon.getHeight() ) >> 1 , icon );
 	}
 	
 	this->image.copy( 0 , 5 , BMP_ShortcutOverlay() );

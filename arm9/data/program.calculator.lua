@@ -1,5 +1,5 @@
 --IMG = %APPDATA%/CalcIcon.bmp
---AUTHOR=Jakob Riedle (DuffsDevice)
+--AUTHOR=WinDS
 --VERSION = 1.0
 --DESC = Application to modify Images
 --COPYRIGHT = (C) 2014

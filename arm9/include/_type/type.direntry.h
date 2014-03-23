@@ -189,7 +189,7 @@ class _direntry
 		virtual const string& getName() const { return this->name; }
 		
 		//! Get the string that should be displayed if the direntry-name should be drawn
-		string getDisplayName() const ;
+		string getDisplayName( bool forceExtension = false ) const ;
 		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
 		virtual const string& getExtension() const { return this->extension; }

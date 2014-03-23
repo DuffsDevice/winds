@@ -180,6 +180,7 @@ const char _lua_gadget::className[] = "Gadget";
 Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "applyStyle"					, &_lua_gadget::applyStyle },
 	{ "hasFocus"					, wrap( _lua_gadget , &_gadget::hasFocus ) },
+	{ "isSelected"					, wrap( _lua_gadget , &_gadget::isSelected ) },
 	{ "isPressed"					, wrap( _lua_gadget , &_gadget::isPressed ) },
 	{ "isChildDragged"				, wrap( _lua_gadget , &_gadget::isChildDragged ) },
 	{ "isEnhanced"					, wrap( _lua_gadget , &_gadget::isEnhanced ) },
@@ -244,6 +245,8 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "removeEnhancedChildren"		, wrap( _lua_gadget , &_gadget::removeEnhancedChildren ) },
 	{ "addChild"					, &_lua_gadget::addChild },
 	{ "addEnhancedChild"			, &_lua_gadget::addEnhancedChild },
+	{ "getFocusedChild"				, wrap( _lua_gadget , &_gadget::getFocusedChild ) },
+	{ "getSelectedChild"			, wrap( _lua_gadget , &_gadget::getSelectedChild ) },
 	{ "getLowestChild"				, wrap( _lua_gadget , &_gadget::getLowestChild ) },
 	{ "getToppestChild"				, wrap( _lua_gadget , &_gadget::getToppestChild ) },
 	{ "getLowestEnhancedChild"		, wrap( _lua_gadget , &_gadget::getLowestEnhancedChild ) },
@@ -252,11 +255,15 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "getSubcedentChild"			, wrap( _lua_gadget , &_gadget::getSubcedentChild ) },
 	{ "focusChild"					, wrap( _lua_gadget , &_gadget::focusChild ) },
 	{ "blurChild"					, wrap( _lua_gadget , &_gadget::blurChild ) },
+	{ "selectChild"					, wrap( _lua_gadget , &_gadget::selectChild ) },
+	{ "deselectChild"				, wrap( _lua_gadget , &_gadget::deselectChild ) },
 	/*  */
 	{ "hide"						, wrap( _lua_gadget , &_gadget::hide ) },
 	{ "show"						, wrap( _lua_gadget , &_gadget::show ) },
 	{ "blur"						, wrap( _lua_gadget , &_gadget::blur ) },
 	{ "focus"						, wrap( _lua_gadget , &_gadget::focus ) },
+	{ "select"						, wrap( _lua_gadget , &_gadget::select ) },
+	{ "deselect"					, wrap( _lua_gadget , &_gadget::deselect ) },
 	{ "blink"						, wrap( _lua_gadget , &_gadget::blink ) },
 	{ "equals"						, &_lua_gadget::equals  },
 	LUA_CLASS_FUNC_END

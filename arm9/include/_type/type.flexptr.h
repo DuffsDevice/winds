@@ -135,7 +135,7 @@ namespace std
 			Type*&& release(){
 				Type* tmp = this->ptr;
 				this->ptr = nullptr;
-				return tmp;
+				return move(tmp);
 			}
 	};
 }

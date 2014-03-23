@@ -3,6 +3,7 @@
 
 #include "_type/type.h"
 
+//! Class for tokenizing a string iteratively
 class _tokenizer
 {
 	private:
@@ -17,36 +18,40 @@ class _tokenizer
 	public:
 		
 		_tokenizer( const string& src , string& dest , const char* const delim , bool noEmptyValues = false ) :
-			source( src ),
-			destination( dest ),
-			delimiters( delim ),
-			end( 0 ),
-			noEmptyValues( noEmptyValues )
+			source( src )
+			, destination( dest )
+			, delimiters( delim )
+			, end( 0 )
+			, noEmptyValues( noEmptyValues )
 		{}
 		
-		bool next()
-		{
-			do
-			{
-				start = end;
-				if( start == string::npos )
-					return false;
-				
-				// Find Delimiter
-				end = source.find_first_of( delimiters , start );
-				
-				if( end != string::npos ) // Check if new delimiter found
-				{
-					destination = source.substr( start , end - start ); // Get text from Start (start) to End (end)
-					end++; // Move beyond delimiter
-				}
-				else
-					destination = source.substr( start );
-				
-			}while( noEmptyValues && destination.empty() );
-			
-			return true;
-		}
+		//! Get next token, returns false if there is no token left
+		bool next();
 };
+
+
+//! Shortcut method for simple but maybe inefficient string tokenizing
+extern _vector<string> tokenize( const string& input , _literal separators , bool noEmptyElements = false );
+
+
+//! Join a list of elements in a string, each element separated with 'sep'
+template<template<typename> class Container>
+string unTokenize( const Container<string>& container , const string& sep = "," , bool sepAtStart = false , bool sepAtEnd = false )
+{
+	string result;
+	
+	bool addSep = sepAtStart;
+	for( const string& elem : container )
+	{
+		if( addSep )
+			result += sep;
+		else
+			addSep = true;
+		result += elem;
+	}
+	if( sepAtEnd && !container.empty() )
+		result += sep;
+	return result;
+}
 
 #endif

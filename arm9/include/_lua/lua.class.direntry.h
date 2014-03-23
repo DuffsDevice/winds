@@ -36,6 +36,9 @@ class _lua_direntry : public _direntry {
 		//! close
 		int close( lua_State* L );
 		
+		//! getDisplayName
+		int getDisplayName( lua_State* L );
+		
 		//! For Directoryies
 		int readChild( lua_State* L );
 		int readChildFolderOnly( lua_State* L );

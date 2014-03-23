@@ -18,8 +18,10 @@ class _runtimeAttributes
 		flex_ptr<_user>	user;
 		_bitmap			windowBar;
 		_bitmap			windowBarBlurred;
-		_color			highlightForeground;
-		_color			highlightBackground;
+		_color			focusForeground;
+		_color			focusBackground;
+		_color			selectForeground;
+		_color			selectBackground;
 		_color			itemForeground;
 		_color			itemBackground;
 		_color			controlBackground;
@@ -41,8 +43,16 @@ class _runtimeAttributes
 		
 		//! Getters
 		_u8		getDefaultFontSize() const { return defaultFontSize; }
-		_color	getItemForeground( bool highlighted = false ) const { return highlighted ? this->highlightForeground : this->itemForeground; }
-		_color	getItemBackground( bool highlighted = false ) const { return highlighted ? this->highlightBackground : this->itemBackground; }
+		_color	getItemForeground( bool focused = false , bool selected = false ) const {
+			if( focused )
+				return this->focusForeground;
+			return selected ? this->selectForeground : this->itemForeground;
+		}
+		_color	getItemBackground( bool focused = false , bool selected = false ) const {
+			if( focused )
+				return this->focusBackground;
+			return selected ? this->selectBackground : this->itemBackground;
+		}
 		string	getDefaultFontName() const { return defaultFont; }
 		_color	getControlForeground() const { return this->controlForeground; }
 		_color	getControlBackground() const { return this->controlBackground; }

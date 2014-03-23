@@ -10,12 +10,12 @@ class _shortcut : public _direntry {
 	
 	private:
 		
-		mutable _bitmap		image;
-		string*				destination;
-		_programArgs*		fallbackArgs;
-		_programArgs*		standardArgs;
+		mutable _bitmap			image;
+		mutable string*			destination;
+		mutable _programArgs*	fallbackArgs;
+		mutable _programArgs*	standardArgs;
 		
-		void readAttributes();
+		void readAttributes() const ;
 		
 	public:
 		
@@ -26,7 +26,7 @@ class _shortcut : public _direntry {
 		{}
 		
 		//! Get the Destination the shortcut pointes to
-		const string& getDestination(){
+		const string& getDestination() const {
 			this->readAttributes();
 			return *this->destination;
 		}
@@ -41,7 +41,7 @@ class _shortcut : public _direntry {
 		}
 		
 		//! Geth the shortcuts file-image
-		_bitmap getFileImage();
+		_bitmap getFileImage() const ;
 		
 		//! Dtor
 		~_shortcut();

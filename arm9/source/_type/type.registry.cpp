@@ -31,7 +31,8 @@ _registry::_registry( string path ) :
 					{ "png" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 					{ "bmp" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 					{ "gif" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
-					{ "ico" , "%WINDIR%/accessories/paint.exe -\"$F\"" }
+					{ "ico" , "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+					{ "*" , "%SYSTEM%/progmapper.exe -\"$F\"" }
 				} } ,
 				{ "fileicon" , {
 					//{ "%dir%" , "" }
@@ -55,7 +56,10 @@ _registry::_registry( string path ) :
 }
 
 const string& _registry::getFileTypeHandler( const string& extension ) const {
-	return _iniFile::readIndex( "filemapper" , extension );
+	const string& index = _iniFile::readIndex( "filemapper" , extension );
+	if( index.empty() )
+		return _iniFile::readIndex( "filemapper" , "*" );
+	return index;
 }
 
 // Static Map to cache file images

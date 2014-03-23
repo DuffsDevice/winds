@@ -116,12 +116,12 @@ class _window : public _gadget {
 		_color getBgColor(){ return this->bgColor; }
 		
 		//! Ctor
-		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _style::draggable ) :
+		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() ) :
 			_window( x , y , width , height , title , _bitmap() , minimizeable , closeable , (_style&&)style ) // C++0x! Yay!
 		{}
 		
 		//! Ctor with icon
-		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() | _style::draggable );
+		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() );
 		
 		//! Dtor
 		~_window();

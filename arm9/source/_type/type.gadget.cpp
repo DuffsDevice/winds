@@ -16,10 +16,10 @@ _array<_staticCallback<_eventHandler>,14> _gadget::defaultEventHandlers = {
 		/* onKeyUp */ make_callback( &_gadget::gadgetKeyHandler ),
 		/* onKeyClick */ make_callback( &_gadget::gadgetKeyHandler ),
 		/* onKeyRepeat */ make_callback( &_gadget::gadgetKeyHandler ),
+		/* onMouseRightClick */ make_callback( &_gadget::gadgetMouseHandler ),
 		/* onDragStart */ make_callback( &_gadget::gadgetDragStartHandler ),
 		/* onDragStop */ make_callback( &_gadget::gadgetDragStopHandler ),
-		/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler ),
-		/* onMouseRightClick */ make_callback( &_gadget::gadgetMouseHandler )
+		/* onDragging */ make_callback( &_gadget::gadgetDraggingHandler )
 	}
 };
 
@@ -31,7 +31,7 @@ _gadget::_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> 
 	, x( posX )
 	, y( posY )
 	, style( (_style&&)style )
-	, focusedChild( nullptr )
+	, activeChild( nullptr )
 	, parent( nullptr )
 	, bitmap( move( bmp ) )
 	, draggedChild( nullptr )
@@ -154,8 +154,8 @@ void _gadget::removeCallback( _gadget* g )
 	{
 		g->state.focused = false;
 		
-		if( g->parent->focusedChild == g )
-			g->parent->focusedChild = nullptr;
+		if( g->parent->activeChild == g )
+			g->parent->activeChild = nullptr;
 			
 		// Remove current focus
 		_system::_currentFocus_ = g->parent;
@@ -170,18 +170,20 @@ void _gadget::removeCallback( _gadget* g )
 
 // All about blinking
 namespace{
-	_timer blinkTimer = _timer( 70 , true );
+	static _timer blinkTimer = _timer( 70 , true );
 }
 
 void _gadget::blinkHandler()
 {
-	if( this->state.cntBlnk > 5 )
+	static _u32 cntBlnk = 0;
+	
+	if( cntBlnk > 5 )
 	{
 		blinkTimer.stop();
-		this->state.cntBlnk = 0;
+		cntBlnk = 0;
 		return;
 	}
-	if( this->state.cntBlnk++ % 2 )
+	if( cntBlnk++ & 1 )
 		this->show();
 	else
 		this->hide();
@@ -210,27 +212,78 @@ bool _gadget::hasClickRights() const
 }
 
 
+bool _gadget::deselectChild( bool blur )
+{
+	if( this->activeChild )
+	{
+		if( blur && !this->blurChild() )
+			return false;
+		
+		// Adjust state
+		this->activeChild->state.selected = false;
+		
+		// Trigger onBlur - event
+		this->activeChild->triggerEvent( onDeselect );
+		this->activeChild->notifyDependentGadgets( onDeselect , false );
+		
+		// Reset focused Child
+		if( !this->activeChild->state.focused )
+			this->activeChild = nullptr;
+	}
+	
+	return true;
+}
+
+bool _gadget::selectChild( _gadget* child )
+{
+	// If child is not valid, abort
+	if( !child )
+		return false;
+	
+	// Return true if the child already has focus
+	if( child->hasFocus() )
+		return true;
+	
+	// deselect the previously selected gadget (try to)
+	// Return false, if the child cannot take the focus from the currently still focused gadget
+	if( this->activeChild && this->activeChild != child && !this->deselectChild( true ) )
+		return false;
+	
+	// Return false, if the gadget cannot receive focus
+	if( !child->style.isFocusable )
+		return false;
+	
+	// 'select' the child
+	child->state.selected = true;
+	activeChild = child;
+	
+	// Trigger the 'onSelect'-event
+	child->triggerEvent( onSelect );
+	child->notifyDependentGadgets( onSelect , false );
+	
+	return true;
+}
+
+
 bool _gadget::blurChild()
 {
-	if( this->focusedChild )
+	if( this->activeChild && this->activeChild->state.focused )
 	{
-		if( !this->focusedChild->style.isBlurrable )
+		if( !this->activeChild->style.isBlurrable )
 		{
-			this->focusedChild->blink();
+			this->activeChild->blink();
 			return false;
 		}
 		
-		if( !this->focusedChild->blurChild() )
+		if( !this->activeChild->blurChild() )
 			return false;
 		
-		this->focusedChild->state.focused = false;
+		// Adjust state
+		this->activeChild->state.focused = false;
 		
-		// trigger onBlur - event
-		this->focusedChild->triggerEvent( onBlur );
-		this->focusedChild->notifyDependentGadgets( onBlur , false );
-		
-		// Rest focusedChild
-		this->focusedChild = nullptr;
+		// Trigger onBlur - event
+		this->activeChild->triggerEvent( onBlur );
+		this->activeChild->notifyDependentGadgets( onBlur , false );
 		
 		// Remove current focus
 		_system::_currentFocus_ = this;
@@ -253,26 +306,22 @@ bool _gadget::focus()
 
 bool _gadget::focusChild( _gadget* child )
 {
-	// If child
-	// - is not valid or
-	// - the child cannot even receive the focus or 
-	// - the child is unvisible
-	// return false;
-	if( !child || child->isHidden() )
+	// If child is not valid, abort
+	if( !child )
 		return false;
 	
 	// Return true if the child already has focus
 	if( child->hasFocus() )
 		return true;
 	
-	// Blur the Previously focused gadget (try to)
+	// Blur the previously focused gadget (try to)
 	// Return false, if the child cannot take the focus from the currently still focused gadget
-	if( focusedChild )
+	if( this->activeChild && this->activeChild != child )
 	{
 		if( !child->style.takesFocus )
 			return false;
 		
-		if( !this->blurChild() )
+		if( !this->deselectChild( true ) )
 			return false;
 	}
 	
@@ -287,13 +336,24 @@ bool _gadget::focusChild( _gadget* child )
 	// Set _currentFocus_
 	_system::_currentFocus_ = child;
 	
-	// 'focus' the child
+	// 'focus' and 'select' the child
 	child->state.focused = true;
-	focusedChild = child;
+	this->activeChild = child;
 	
 	// Trigger the 'onfocus'-event
 	child->triggerEvent( onFocus );
 	child->notifyDependentGadgets( onFocus , false );
+	
+	// If a child gadget had focus, focus it
+	if( child->activeChild )
+		child->activeChild->focus();
+	
+	// 'Select' the child
+	if( !child->state.selected ){
+		child->state.selected = true;
+		child->triggerEvent( onSelect );
+		child->notifyDependentGadgets( onSelect , false );
+	}
 	
 	// Move the child to the front of all children that it will be seen
 	if( child->style.doesFocusMoveFront )
@@ -612,8 +672,8 @@ void _gadget::removeChild( _gadget* child )
 	{
 		child->state.focused = false;
 		
-		if( this->focusedChild == child )
-			this->focusedChild = nullptr;
+		if( this->activeChild == child )
+			this->activeChild = nullptr;
 		
 		// Remove current focus from the child and set it to this gadget
 		_system::_currentFocus_ = this;
@@ -1017,7 +1077,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 			// Check for children of the 'mouseContain'
 			_callbackReturn ret = mouseContain->handleEventDefault( event );
 			
-			// Abort if there's nothing to do about the 'mouseCoantain' but about its children
+			// Abort, if the event was intercepted by a child gadget
 			if( ret != not_handled )
 				return ret;
 			

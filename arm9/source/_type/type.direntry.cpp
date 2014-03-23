@@ -283,7 +283,7 @@ bool _direntry::open( string mode ) const
 	return false;
 }
 
-string _direntry::getDisplayName() const
+string _direntry::getDisplayName( bool forceExtension ) const
 {
 	_mimeType mime = this->getMimeType();
 	switch( mime )
@@ -313,13 +313,16 @@ string _direntry::getDisplayName() const
 			break;
 	}
 	
-	const string& ext = this->getExtension();
-	
 	// Certain Files do not have an .extension
-	if( !_system::getUser().sFE || ext.empty() )
+	if( !_system::getUser().sFE && !forceExtension )
 		return this->name;
 	
-	return this->name + "." + (string)ext;
+	const string& ext = this->getExtension();
+	
+	if( ext.empty() )
+		return this->name;
+	
+	return this->name + "." + ext;
 }
 
 
@@ -330,7 +333,9 @@ bool _direntry::openread() const {
 
 bool _direntry::openwrite( bool eraseOld )
 {
-	return this->exists && this->open( eraseOld ? "wb" : "ab" ); // Open for read & write, do not create if already existing
+	if( this->exists )
+		return this->open( eraseOld ? "wb" : "ab" ); // Open for read & write, do not create if already existing
+	return false;
 }
 
 
@@ -572,7 +577,7 @@ bool _direntry::writeString( string str )
 	if( modePrev == _direntryMode::closed )
 		this->close();
 	
-	return result == 0;
+	return result >= 0;
 }
 
 
@@ -659,11 +664,14 @@ bool _direntry::execute( _programArgs args )
 	switch( this->mimeType )
 	{
 		case _mime::application_octet_stream:
+		case _mime::application_microsoft_installer:
 		case _mime::application_x_lua_bytecode:
 		{
 			_program* prog = _program::fromFile( this->getFileName() );
 			if( prog )
 				prog->execute( move( args ) );
+			else
+				return false;
 			return true;
 		}
 		case _mime::application_x_bat:
@@ -690,8 +698,7 @@ bool _direntry::execute( _programArgs args )
 				commandCopy.replace( pos , sizeof("$N") , this->getName() );
 			
 			// Execute the command
-			_system::executeCommand( move(commandCopy) );
-			break;
+			return _system::executeCommand( move(commandCopy) );
 	}
 	return false;
 }
@@ -714,7 +721,7 @@ _bitmap _direntry::getFileImage() const
 		{
 			_program* prog = _program::fromFile( this->getFileName() );
 			if( prog ){
-				const _bitmap& bmp = prog->getFileImage();
+				_bitmap bmp = prog->getFileImage();
 				delete prog;
 				if( bmp.isValid() )
 					return move(bmp);

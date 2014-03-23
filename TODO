@@ -2,7 +2,7 @@ Gadgets:
 ========
 + Colorpicker-Hexagon (✓)
 + Image-Button (✓)
-- Treeview
++ Treeview (✓)
 - Contextmenu for Files
 
 Types:
@@ -28,7 +28,7 @@ Features:
 - Copy & Paste
 - File information window
 - Make font glyphs available in Lua
-- Credits page
++ Credits page (✓)
 + Switch between programs (✓)
 + Filemask/Wildcard/Regex in _fileview (✓)
 + Right-click (✓)
