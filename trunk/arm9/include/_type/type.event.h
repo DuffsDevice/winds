@@ -35,7 +35,7 @@ enum _callbackReturn : _s8
 /**
  * Specifies the Type of an Event
  */
-enum _eventType : _u16
+enum _eventType : _u8
 {
 	_none_,
 	onDraw,
@@ -48,10 +48,10 @@ enum _eventType : _u16
 	onKeyUp,
 	onKeyClick,
 	onKeyRepeat, // Fired if a key is kept held down
+	onMouseRightClick,
 	onDragStart,
 	onDragStop,
 	onDragging,
-	onMouseRightClick,
 	
 	onUpdate,
 	onEdit,
@@ -77,6 +77,8 @@ enum _eventType : _u16
 	onBlur,
 	onAdd, // Not Used
 	onDelete,
+	onSelect,
+	onDeselect,
 	
 	// From the perspective of a child
 	onParentResize,
@@ -88,6 +90,8 @@ enum _eventType : _u16
 	onParentBlur,
 	onParentAdd,
 	onParentRemove,
+	onParentSelect,
+	onParentDeselect,
 	
 	// From the perspective of a parent
 	onChildResize,
@@ -99,6 +103,8 @@ enum _eventType : _u16
 	onChildBlur,
 	onChildAdd,
 	onChildRemove,
+	onChildSelect,
+	onChildDeselect,
 	
 	// From the perspective of a subcedent child
 	onPreResize,
@@ -110,6 +116,8 @@ enum _eventType : _u16
 	onPreBlur,
 	onPreAdd,
 	onPreRemove,
+	onPreSelect,
+	onPreDeselect,
 	
 	// From the perspective of a precedent child
 	onPostResize,
@@ -120,7 +128,9 @@ enum _eventType : _u16
 	onPostFocus,
 	onPostBlur,
 	onPostAdd,
-	onPostRemove
+	onPostRemove,
+	onPostSelect,
+	onPostDeselect
 };
 
 //! Converts a dependency EventType to a more specific type
@@ -128,22 +138,26 @@ unused static inline constexpr _eventType depType2parentType( _eventType et ){ r
 unused static inline constexpr _eventType depType2childType( _eventType et ){ return _eventType( et + ( onChildResize - onResize ) ); }
 unused static inline constexpr _eventType depType2preType( _eventType et ){ return _eventType( et + ( onPreResize - onResize ) ); }
 unused static inline constexpr _eventType depType2postType( _eventType et ){ return _eventType( et + ( onPostResize - onResize ) ); }
-unused static inline constexpr bool isDepType( _eventType et ){ return et >= onParentResize && et <= onPostRemove; }
+unused static inline constexpr bool isDepType( _eventType et ){ return et >= onParentResize && et <= onPostDeselect; }
 
+//! Checks if an eventType is a user-Event-type
+unused static inline bool constexpr isEventTypeMergeable( _eventType et ){
+	return et > onMouseRightClick;
+}
 
 //! Checks if an eventType is a user-Event-type
 unused static inline bool constexpr isUserET( _eventType et ){
-	return et >> 8;
+	return et & ( 1 << 7 );
 }
 
 //! Converts an internal event-type to an user-eventType
 unused static inline constexpr _eventType eventType2userET( _eventType et ){
-	return isUserET( et ) ? et :  _eventType( et << 8 );
+	return isUserET( et ) ? et :  _eventType( et | ( 1 << 7 ) );
 }
 
 //! Converts an user-eventType to an internal event-type
 unused static inline constexpr _eventType userET2eventType( _eventType et ){
-	return isUserET( et ) ? _eventType( _u16(et) >> 8 ) : et;
+	return isUserET( et ) ? _eventType( _u16(et) ^ ( 1 << 7 ) ) : et;
 }
 
 //! Uncomment if a string should indicate

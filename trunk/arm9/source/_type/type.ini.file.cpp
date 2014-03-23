@@ -6,6 +6,8 @@ _iniFile::_iniFile( const string& filename ) :
 {
 	if( _direntry::isExisting() )
 		_ini::read( _direntry::readString() );
+	else
+		_direntry::create();
 }
 
 void _iniFile::flush()

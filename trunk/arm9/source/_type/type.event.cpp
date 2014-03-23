@@ -153,6 +153,8 @@ _fromStr<_eventType> string2eventType = {
 	{ "onMinimize"			, onMinimize },
 	{ "onRestore"			, onRestore },
 	{ "onScroll"			, onScroll },
+	{ "onSelect"			, onSelect },
+	{ "onDeselect"			, onDeselect },
 	
 	{ "onResize"			, onResize },
 	{ "onMove"				, onMove },
@@ -234,6 +236,8 @@ _toStr<_eventType> eventType2string = {
 	{ onMinimize		, "onMinimize" },
 	{ onRestore			, "onRestore" },
 	{ onScroll			, "onScroll" },
+	{ onSelect			, "onSelect" },
+	{ onDeselect		, "onDeselect" },
 	
 	{ onResize			, "onResize" },
 	{ onMove			, "onMove" },

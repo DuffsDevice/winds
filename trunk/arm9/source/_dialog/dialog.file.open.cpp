@@ -1,6 +1,12 @@
 #include "_dialog/dialog.file.open.h"
 #include "_type/type.system.h"
+#include "_type/type.tokenizer.h"
 #include "_resource/resource.icon.folder.up.h"
+
+_fileExtensionList _fileOpenDialog::getFileMask( _int value ) const {
+	const string& extensions = std::get<1>( this->fileTypes[value] );
+	return tokenize( extensions , "," , true );
+}
 
 const _menuEntryList _fileOpenDialog::generateMenuList()
 {
@@ -12,7 +18,8 @@ const _menuEntryList _fileOpenDialog::generateMenuList()
 		string& val = menuList[value.first];
 		val.swap( std::get<0>(value.second) );
 		val += " (*.";
-		val += std::get<1>(value.second).c_str();
+		_vector<string> extensions = tokenize( std::get<1>(value.second) , "," , true );
+		val += unTokenize( extensions , ", *." ).c_str();
 		val += ")";
 	}
 	return move(menuList);
@@ -80,7 +87,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	this->folderUpButton = new _imageButton( winWidth - 14 - this->gotoButton->getWidth() , 1 , 10 , 9 , BMP_FolderUpIcon() );
 	this->folderUpButton->setUserEventHandler( onMouseClick , make_callback( this , &_fileOpenDialog::eventHandler ) );
 	this->fileView = new _fileView( 1 , fileViewY , winWidth - 4 , firstLineY - fileViewY - 1 , initialFilePath , _fileViewType::list );
-	this->fileView->setFileMask( _fileExtensionList( { std::get<1>(this->fileTypes[this->getFileType()]) } ) );
+	this->fileView->setFileMask( this->getFileMask( this->getFileType() ) );
 	this->fileView->setEventHandler( make_callback( this , &_fileOpenDialog::eventHandler ) );
 	this->fileView->setUserEventHandler( onEdit , make_callback( this , &_fileOpenDialog::eventHandler ) );
 	
@@ -128,7 +135,7 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 	
 	// The value in the filetype _select has changed
 	else if( that == this->fileTypeChooser )
-		this->fileView->setFileMask( _fileExtensionList( { std::get<1>(this->fileTypes[this->getFileType()]) } ) );
+		this->fileView->setFileMask( this->getFileMask( this->getFileType() ) );
 	
 	// The fileview has changed its path!
 	else if( that == this->fileView )
@@ -160,7 +167,6 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 		if( that == this->cancelButton || that == this->window )
 			this->callCallback( _dialogResult::cancel );
 	}
-	
 	
 	return handled;
 }

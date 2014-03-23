@@ -15,15 +15,13 @@
 
 #include <type_traits>
 
-//! Predefines
+//! Predefine
 class _gadget;
 
-//! Typedef
+//! Typedefs
 typedef _deque<_gadget*> 									_gadgetList;
-
 typedef _callbackReturn 									_eventHandler(_event);
 typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
-
 typedef _array<_staticCallback<_eventHandler>,14>			_defaultEventHandlerMap;
 
 class _gadget
@@ -58,7 +56,7 @@ class _gadget
 		_gadgetList				enhancedChildren;
 		
 		//! Shortcut to the currently focused child (or nullptr if no child is focused)
-		_gadget*				focusedChild;
+		_gadget*				activeChild;
 		
 		//! A Gadgets Parent
 		_gadget*				parent;
@@ -108,6 +106,9 @@ class _gadget
 		
 		/** Method to check whether the Gadget has Focus */
 		bool hasFocus() const { return this->state.focused || this->type == _gadgetType::screen; }
+		
+		/** Method to check whether the Gadget is selected */
+		bool isSelected() const { return this->hasFocus() || this->state.selected ; }
 		
 		/** Check whether this Gadget is currently pressed */
 		bool isPressed() const { return this->state.pressed; }
@@ -655,14 +656,17 @@ class _gadget
 		//! Get the lowest child owned by the parent
 		_gadget* getLowestChild() const { return this->children.back(); }
 		
-		//! Get the focused gadget inside the parent
-		_gadget* getFocusedChild() const { return this->focusedChild; }
+		//! Get the child gadget, that currently has focus
+		_gadget* getFocusedChild() const { return this->activeChild && this->activeChild->state.focused ? this->activeChild : nullptr; }
+		
+		//! Get the selected gadget inside the parent
+		_gadget* getSelectedChild() const { return this->activeChild; }
 		
 		//! Get the toppest enhanced child owned by the parent
-		_gadget* getToppestEnhancedChild() const {	return this->enhancedChildren.front(); }
+		_gadget* getToppestEnhancedChild() const { return this->enhancedChildren.front(); }
 		
 		//! Get the lowest enhanced child owned by the parent
-		_gadget* getLowestEnhancedChild() const {	return this->enhancedChildren.back(); }
+		_gadget* getLowestEnhancedChild() const { return this->enhancedChildren.back(); }
 		
 		//! Helps to find adjacent children
 		_gadget*	getPrecedentChild( bool skipHidden = false );
@@ -674,9 +678,16 @@ class _gadget
 		//! Tries to focus a child and returns whether this succeded
 		bool focusChild( _gadget* child );
 		
+		//! Tries to select the child and returns whether this succeeded
+		bool selectChild( _gadget* child );
+		
 		//! Tries to blur the currently focused child, if there is one
 		//! @return Whether there is no child focused anymore
 		bool blurChild();
+		
+		//! Tries to deselect the current selected child, if there is one
+		//! @return Whether there is no child selected anymore
+		bool deselectChild( bool blur = true );
 		
 		
 		/////////////////
@@ -703,13 +714,27 @@ class _gadget
 		
 		//! Blur the Gadget
 		bool blur(){
-			if( this->parent && this->parent->focusedChild == this )
+			if( this->parent && this->parent->activeChild == this )
 				return this->parent->blurChild();
 			return this->type == _gadgetType::screen; // You can do everything with a screen!
 		}
 		
 		//! Focus the Gadget
 		bool focus();
+		
+		//! Select the Gadget
+		bool select(){
+			if( this->parent )
+				return this->parent->selectChild( this );
+			return false;
+		}
+		
+		//! Deselect the Gadget
+		bool deselect(){
+			if( this->parent && this->parent->activeChild == this )
+				return this->parent->deselectChild();
+			return this->type == _gadgetType::screen; // You can do everything with a screen!
+		}
 		
 		//! Set the Padding of the Gadget
 		void setPadding( const _padding& p ){
@@ -788,7 +813,6 @@ class _gadget
 		void setSizeInternal( _length width , _length height );
 		void moveRelativeInternal( _s16 deltaX , _s16 deltaY );
 		void setDimensionsInternal( _rect rc );
-		void addChildInternal( bool enhanced , _gadget* newChild , bool after , _gadget* keyElement );
 		
 		
 		//////////////////////////////////
@@ -799,6 +823,8 @@ class _gadget
 		static void removeDeleteCallback( _gadget* g );
 		static void	removeCallback( _gadget* g );
 		
+		//! Internal addChild method that handles various scenarios
+		void addChildInternal( bool enhanced , _gadget* newChild , bool after , _gadget* keyElement );
 		
 		
 		//! Used to receive the gadget that a mouse position is in
@@ -837,8 +863,8 @@ class _gadget
 				bool	pressed : 1;
 				bool	enhanced : 1;
 				bool	dragged : 1;
-				bool	focused : 1;
-				_u8		cntBlnk : 3; // For _gadget::blinkHandler
+				bool	focused : 1; // True, if gadget has direct focus
+				bool	selected : 1; // True, if the gadget is the focused one inside the parent
 			};
 			_u8 sum; // used to reset everything quickly
 		}state;

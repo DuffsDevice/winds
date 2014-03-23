@@ -3,7 +3,7 @@
 
 #include "_type/type.h"
 
-enum _eventType : _u16;
+enum _eventType : _u8;
 
 struct _dependencyMap{
 	bool resize : 1;
@@ -13,7 +13,7 @@ struct _dependencyMap{
 	bool add : 1;
 	bool remove : 1;
 	bool focus : 1;
-	bool blur : 1;
+	bool select : 1;
 } PACKED ;
 
 struct _dependency

@@ -5,6 +5,7 @@
 
 #include "_resource/resource.program.credits.h"
 #include "_resource/resource.program.explorer.h"
+#include "_resource/resource.program.mapper.h"
 #include "_resource/resource.icon.lua.h"
 #include "_resource/resource.icon.exe.h"
 #include "program_example_lua.h"
@@ -100,6 +101,8 @@ _program* _program::fromFile( string filename )
 		result = new _progLua( d.readString() );
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
+	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/progmapper.exe" ) )
+		result = new PROG_Mapper();
 	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/credits.exe" ) )
 		result = new PROG_Credits();
 	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/exampleprogram.exe" ) ){

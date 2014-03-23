@@ -27,6 +27,7 @@ class _fileObject : public _gadget {
 		static _callbackReturn dragHandler( _event );
 		static _callbackReturn focusHandler( _event );
 		static _callbackReturn updateHandler( _event );
+		static _callbackReturn keyHandler( _event );
 		
 	public:
 	

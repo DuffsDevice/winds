@@ -9,7 +9,7 @@ PROG_Credits::PROG_Credits()
 	header.fileIcon = BMP_WinDSIcon();
 	header.name = string("WinDS Credentials");
 	header.displayName = string("Credits");
-	header.author = string("DuffsDevice");
+	header.author = string("WinDS");
 	header.description = string("Information about the used Hardware and the current Operation System");
 	this->setHeader( header );
 }

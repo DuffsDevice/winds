@@ -1,5 +1,4 @@
 #include "_gadget/gadget.treeview.h"
-#include "_gadget/gadget.fileobject.h"
 #include "_type/type.gadget.helpers.h"
 #include <math.h>
 
@@ -12,8 +11,8 @@ void _treeViewNode::addTo( _gadget* dest , _u32 curLevel )
 		
 		// Register some handlers
 		this->value->setInternalEventHandler( onMouseClick , make_callback( &_treeView::nodeClickHandler ) );
-		this->value->setInternalEventHandler( onKeyDown , make_callback( &_treeView::nodeClickHandler ) );
-		this->value->setInternalEventHandler( onKeyRepeat , make_callback( &_treeView::nodeClickHandler ) );
+		this->value->setUserEventHandler( onKeyDown , make_callback( &_treeView::nodeClickHandler ) );
+		this->value->setUserEventHandler( onKeyRepeat , make_callback( &_treeView::nodeClickHandler ) );
 		
 		//// Set Hierarchy Level
 		this->value->setStyle( _style::storeInt( this->children.empty() ? -curLevel : curLevel , this->value->getStyle() ) );
@@ -160,8 +159,8 @@ _callbackReturn _treeView::nodeAddRemoveHandler( _event event )
 			
 			// Register some handlers
 			child->setInternalEventHandler( onMouseClick , make_callback( &_treeView::nodeClickHandler ) );
-			child->setInternalEventHandler( onKeyDown , make_callback( &_treeView::nodeClickHandler ) );
-			child->setInternalEventHandler( onKeyRepeat , make_callback( &_treeView::nodeClickHandler ) );
+			child->setUserEventHandler( onKeyDown , make_callback( &_treeView::nodeClickHandler ) );
+			child->setUserEventHandler( onKeyRepeat , make_callback( &_treeView::nodeClickHandler ) );
 			
 			// Move to the right position
 			child->triggerEvent( onEdit );
@@ -246,20 +245,8 @@ _callbackReturn _treeView::nodeClickHandler( _event event )
 					root->focus();
 			}
 		}
-		// Go to the next visible node
-		else if( event.getKeyCode() == _key::down ){
-			_gadget* subVisible = that->getSubcedentChild( true );
-			if( subVisible )
-				subVisible->focus();
-		}
-		// Go to the pervious visible node
-		else if( event.getKeyCode() == _key::up ){
-			_gadget* preVisible = that->getPrecedentChild( true );
-			if( preVisible )
-				preVisible->focus();
-		}
 		else
-			return use_default;
+			return use_internal;
 	}
 	else
 		opened = -opened;

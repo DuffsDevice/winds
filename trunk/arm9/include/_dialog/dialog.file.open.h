@@ -36,6 +36,7 @@ class _fileOpenDialog : public _dialog
 		void cleanupInternal();
 		
 		const _menuEntryList generateMenuList();
+		_fileExtensionList getFileMask( _int value ) const ;
 	
 	public:
 		

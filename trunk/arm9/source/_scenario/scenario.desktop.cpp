@@ -11,7 +11,6 @@ _wifiSocketClient* client = nullptr;
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.filetree.h"
-#include "_dialog/dialog.folder.choose.h"
 
 namespace{
 
@@ -51,6 +50,8 @@ _scDesktop::_scDesktop()
 	_system::_keyboard_ = new _keyboard( _system::_bgIdFront_ , _system::_gadgetHost_ , _system::_topScreen_ );
 	
 	_system::executeCommand("%SYSTEM%/explorer.exe");
+	//_system::executeCommand("\"%SYSTEM%/progmapper.exe\" -\"C:/Windows/Hello.drp\"");
+	//_system::executeCommand("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");
 	//_system::executeCommand("%WINDIR%/accessories/exampleprogram.exe");
 	//_system::executeCommand("%WINDIR%/accessories/paint.exe");
 	//_system::executeCommand("%WINDIR%/accessories/calculator.exe");

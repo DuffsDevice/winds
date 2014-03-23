@@ -6,6 +6,26 @@
 #include "_type/type.direntry.shortcut.h"
 #include "_type/type.gadget.helpers.h"
 
+_callbackReturn _fileObject::keyHandler( _event event )
+{
+	_gadget* that = event.getGadget();
+	
+	// Go to the next visible node
+	if( event.getKeyCode() == _key::down ){
+		_gadget* subVisible = that->getSubcedentChild( true );
+		if( subVisible )
+			subVisible->focus();
+	}
+	// Go to the pervious visible node
+	else if( event.getKeyCode() == _key::up ){
+		_gadget* preVisible = that->getPrecedentChild( true );
+		if( preVisible )
+			preVisible->focus();
+	}
+	
+	return use_default;
+}
+
 _callbackReturn _fileObject::updateHandler( _event event )
 {
 	_fileObject* that = event.getGadget<_fileObject>();
@@ -17,7 +37,7 @@ _callbackReturn _fileObject::updateHandler( _event event )
 			break;
 		case _fileViewType::list:
 			that->setSizeIfAuto(
-				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 13
+				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 12
 				, _system::getUser().fOH
 			);
 			break;
@@ -46,7 +66,7 @@ void _fileObject::execute( _programArgs args , bool openInNewWindow )
 			fileView->setPath( this->file->getFileName() );
 		}
 	}
-	else
+	else	
 		this->file->execute( move(args) );
 }
 
@@ -95,23 +115,24 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 		default:
 		{
 			// Draw Background
-			bP.fill( _system::getRTA().getItemBackground( that->hasFocus() ) );
+			bP.fill( _system::getRTA().getItemBackground( that->hasFocus() , that->isSelected() ) );
 			
 			// Font
 			const _font*	ft = _system::getFont();
+			_u8				fOH = _system::getUser().fOH;
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( that->hasFocus() );
+			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( that->hasFocus() , that->isSelected() );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
-			bP.drawString( 13 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
+			bP.drawString( 12 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
 			_constBitmap& fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
-				5 - ( fileIcon.getWidth() >> 1 ) // X
-				, ( ( that->getHeight() + 1 ) >> 1 ) - ( ( fileIcon.getHeight() + 1 ) >> 1 ) // Y
+				( fOH - fileIcon.getWidth() ) >> 1 // X
+				, ( ( fOH + 1 ) >> 1 ) - ( ( fileIcon.getHeight() + 1 ) >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
 			
@@ -151,7 +172,11 @@ _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	// Register Handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_fileObject::refreshHandler ) );
 	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onSelect , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onKeyDown , make_callback( &_fileObject::keyHandler ) );
+	this->setInternalEventHandler( onKeyRepeat , make_callback( &_fileObject::keyHandler ) );
 	
 	// Refresh...
 	this->redraw();

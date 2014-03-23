@@ -234,14 +234,19 @@ void _system::optimizeEvents()
 	_eventList& events = _system::_eventBuffer_[!_system::_curEventBuffer_];
 	
 	sort( events.begin() , events.end() ,
-		[]( _pair<_event,_eventCallType> e1 , _pair<_event,_eventCallType> e2)->bool{
-			if( e1.first.getType() == e2.first.getType() )
-			{
-				if( e1.first != onDraw ) // Only sort events other than 'onDraw'
-					return e1.first.getDestination() < e2.first.getDestination();
-				else
+		[]( _pair<_event,_eventCallType> e1 , _pair<_event,_eventCallType> e2)->bool
+		{
+			_eventType eT1 = e1.first.getType();
+			_eventType eT2 = e2.first.getType();
+			
+			if( eT1 == eT2 ){
+				if( !isEventTypeMergeable( eT1 ) )
 					return false;
+				return e1.first.getDestination() < e2.first.getDestination();
 			}
+			else if( !isEventTypeMergeable( eT1 ) && !isEventTypeMergeable( eT2 ) )
+				return false;
+			
 			return e1.first.getType() < e2.first.getType();
 		}
 	);
@@ -660,12 +665,20 @@ bool _system::executeCommand( const string& cmd )
 	
 	size_t fileNameEnd = string::npos;
 	
-	if( cmd[0] == '"' ) // If it starts with an apostroph
+	int escaped = cmd[0] == '"' ? 1 : 0;
+	
+	if( escaped ) // If it starts with an apostroph
 		fileNameEnd = cmd.find( '"' , 1 );
 	else
-		fileNameEnd = cmd.find( ' ' , 1 );
+		fileNameEnd = cmd.find( ' ' );
 	
-	return _direntry( cmd.substr( cmd[0] == '"' , fileNameEnd ) ).execute( fileNameEnd != string::npos ? cmd.c_str() + fileNameEnd : _programArgs() );
+	_literal parameterStr =
+		fileNameEnd != string::npos
+			? cmd.c_str() + fileNameEnd + escaped
+			: ""
+	;
+	
+	return _direntry( cmd.substr( escaped , fileNameEnd - escaped ) ).execute(parameterStr);
 }
 
 void _system::shutDown(){

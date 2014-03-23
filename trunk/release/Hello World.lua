@@ -1,6 +1,6 @@
 --NAME = Pong
 --IMG = %APPDATA%/PongIcon.bmp
---AUTHOR = Jakob Riedle(DuffsDevice)
+--AUTHOR = WinDS
 --VERSION = 1.0
 --DESC = Simple Cover of the famous Game 'Pong'
 --COPYRIGHT = (C) 2014

@@ -355,7 +355,7 @@ _window::~_window()
 }
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
-	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront )
+	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront | _style::draggable )
 	, bgColor( _system::getRTA().getControlBackground() )
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )

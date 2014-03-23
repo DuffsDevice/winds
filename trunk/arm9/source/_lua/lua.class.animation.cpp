@@ -19,11 +19,11 @@ _lua_animation::_lua_animation( lua_State* L ) :
 //! setEasing
 int _lua_animation::setEasing(lua_State* L){ _animation::setEasing( string2easingFunc[ check<string>( L , 1 ) ] ); return 1; }
 
-//! getEasing
-int _lua_animation::getEasing(lua_State* L){ lua_pushstring( L , easingFunc2string[ _animation::getEasing() ] ); return 1; }
-
 //! terminate
 int _lua_animation::terminate(lua_State* L){ _animation::terminate( lightcheck<bool>( L , 1 , false ) ); return 0; }
+
+//! getEasing
+int _lua_animation::getEasing(lua_State* L){ lua_pushstring( L , easingFunc2string[ _animation::getEasing() ] ); return 1; }
 
 
 //! Lua-_rect
@@ -34,7 +34,7 @@ Lunar<_lua_animation>::FunctionType _lua_animation::methods[] = {
 	{ "deleteFinisher"	, wrap( _lua_animation , &_animation::deleteFinisher ) },
 	{ "deleteSetter"	, wrap( _lua_animation , &_animation::deleteSetter ) },
 	{ "start"			, wrap( _lua_animation , &_animation::start ) },
-	{ "terminate"		, wrap( _lua_animation , &_animation::terminate ) },
+	{ "terminate"		, &_lua_animation::terminate },
 	{ "pause"			, wrap( _lua_animation , &_animation::pause ) },
 	LUA_CLASS_FUNC_END
 };

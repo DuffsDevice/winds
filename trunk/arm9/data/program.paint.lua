@@ -1,6 +1,7 @@
 --	IMG = %APPDATA%/PaintIcon.png
---	AUTHOR = Jakob Riedle (DuffsDevice)
+--	AUTHOR = WinDS
 --	VERSION = 1.0
+--	NAME = Paint
 --	DESC = Application to modify Images
 --	COPYRIGHT = (C) 2014
 --	LANG = neutral
@@ -88,7 +89,7 @@ function main( filename )
 	APPDATA.greyBackground = bg
 	bg.redraw()
 	--APPDATA.colorIndicator = ImageGadget( 2 , 2 , Bitmap( 6 , 6 , "red" ) )
-	--APPDATA.windowBar = WindowBar( 10 )
+	APPDATA.windowBar = WindowBar( 10 )
 	--APPDATA.windowBar.addChild( APPDATA.colorIndicator )
 	
 	local frame = Window( 10 , 10 , 100 , 100 , "Paint" , wndIcon , true , "minimizeable|draggable" )

@@ -8,7 +8,14 @@
 
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )
-{ }
+{
+	_programHeader header;
+	header.name = string("Explorer");
+	header.displayName = string("Explorer");
+	header.author = string("WinDS");
+	header.description = string("Program to browse the File System");
+	this->setHeader( header );
+}
 
 void PROG_Explorer::main( _programArgs args )
 {
