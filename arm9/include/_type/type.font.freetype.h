@@ -43,7 +43,7 @@ class _freetypeFont : private _direntry , public _font
 		_length getHeight( _u8 fontSize = 8 ) const { return fontSize; }
 		
 		//! Get Space between two letters
-		_length getLetterSpace() const {
+		_length getLetterSpace( _u8 fontSize = 0 ) const {
 			// We return 0, because the letter space is
 			// already included in the width of one character
 			return 0;

@@ -57,7 +57,7 @@ namespace _luafunc
 		_rect										check( lua_State* state , int index , _rect* dummy );
 		_area										check( lua_State* state , int index , _area* dummy );
 		_event										check( lua_State* state , int index , _event* dummy );
-		const _font*								check( lua_State* state , int index , const _font** dummy );
+		_fontPtr									check( lua_State* state , int index , _fontPtr* dummy );
 		_border										check( lua_State* state , int index , _border* dummy );
 		_time										check( lua_State* state , int index , _time* dummy );
 		_mimeType									check( lua_State* state , int index , _mimeType* dummy );

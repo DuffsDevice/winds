@@ -88,7 +88,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			bP.fill( _color::transparent );
 			
 			// Receive Font
-			const _font*	ft = _system::getFont();
+			_fontPtr	ft = _system::getFont();
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( true );
 			string			fullName = that->file->getDisplayName();
@@ -118,7 +118,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			bP.fill( _system::getRTA().getItemBackground( that->hasFocus() , that->isSelected() ) );
 			
 			// Font
-			const _font*	ft = _system::getFont();
+			_fontPtr	ft = _system::getFont();
 			_u8				fOH = _system::getUser().fOH;
 			_u8				ftSize = _system::getRTA().getDefaultFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( that->hasFocus() , that->isSelected() );

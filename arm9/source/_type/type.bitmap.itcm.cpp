@@ -1,5 +1,4 @@
 #include "_type/type.bitmap.h"
-#include "_type/type.text.phrases.h"
 #include "func.memory.h"
 
 #include <nds/arm9/math.h>
@@ -799,7 +798,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _color color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontPtr font , const _char* str , _color color , _u8 fontSize )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawString"};
 	
@@ -822,14 +821,11 @@ void _bitmap::drawString( _coord x0 , _coord y0 , const _font* font , const _cha
 		if( x0 > this->activeClippingRect.getX2() )
 			break;
 		
-		if( stringExtractor::processChar( str , fontSize , font , color ) )
-		{
-			_length width = font->drawCharacter( dest , this->width , x0 , y0 , *str , color , this->activeClippingRect , fontSize );
-			if( width )
-				width += font->getLetterSpace();
-			x0 += width;
-			dest += width;
-		}
+		_length width = font->drawCharacter( dest , this->width , x0 , y0 , *str , color , this->activeClippingRect , fontSize );
+		if( width )
+			width += font->getLetterSpace();
+		x0 += width;
+		dest += width;
 		
 	}while( *++str );
 }

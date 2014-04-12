@@ -63,7 +63,7 @@ class _memoryFont : public _font{
 		}
 		
 		//! Get Space between two letters
-		_length getLetterSpace() const {
+		_length getLetterSpace( _u8 fontSize = 0 ) const {
 			return this->letterSpace;
 		}
 		

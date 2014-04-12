@@ -39,7 +39,7 @@ class _system{
 	private:
 	
 		//! Attributes
-		static _map<string,const _font*>	_fonts_;
+		static _map<string,_fontPtr>		_fonts_;
 		static _direntry*					_debugFile_;
 		static _gadget*						_currentFocus_;
 		static _gadget*						_lastClickedGadget_;
@@ -144,14 +144,14 @@ class _system{
 		static _tempTime			getRawTime();	//! Clock Ticks at 33.513982 GHz
 		
 		//! Get a Font by Name
-		static const _font*			getFont( const string& font )
+		static _fontPtr			getFont( const string& font )
 		{
 			if( font.empty() || !_fonts_.count( font ) )
 				return _system::getFont();
 			
 			return _fonts_[font];
 		}
-		static const _font*			getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
+		static _fontPtr			getFont(){ return _fonts_[ _rtA_->getDefaultFontName() ]; }
 		
 		//! Get current Cpu-usage
 		static _u8					getCpuUsage(){ return _cpuUsageTemp_; }

@@ -40,7 +40,7 @@ namespace _luafunc
 	void	pushBitmapRef( lua_State* state , _bitmap& );
 	void	pushBitmapPort( lua_State* state , _bitmapPort&& );
 	void	pushGadget( lua_State* state , _gadget* );
-	void	pushFont( lua_State* state , const _font* );
+	void	pushFont( lua_State* state , _fontPtr );
 	void	pushBorder( lua_State* state , _border&& );
 	void	pushTime( lua_State* state , _time&& );
 	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );

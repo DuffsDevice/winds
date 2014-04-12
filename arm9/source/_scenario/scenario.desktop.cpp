@@ -2,7 +2,6 @@
 #include "_type/type.system.h"
 #include "_type/type.system.controller.h"
 #include "_type/type.color.h"
-#include "_type/type.text.phrases.h"
 #include "_type/type.font.glyphs.h"
 
 #include "_type/type.connection.h"
@@ -11,6 +10,7 @@ _wifiSocketClient* client = nullptr;
 #include "_gadget/gadget.windows.h"
 #include "_gadget/gadget.keyboard.h"
 #include "_gadget/gadget.filetree.h"
+#include "_gadget/gadget.textarea.h"
 
 namespace{
 
@@ -56,7 +56,7 @@ _scDesktop::_scDesktop()
 	//_system::executeCommand("%WINDIR%/accessories/paint.exe");
 	//_system::executeCommand("%WINDIR%/accessories/calculator.exe");
 	//_system::executeCommand("%WINDIR%/games/pong.exe");
-	//_system::_gadgetHost_->addChild( new _fileTree( 0 , 0 , 110 , 110 , "/" , false ) );
+	_system::_gadgetHost_->addChild( new _textArea( 0 , 0 , 40 , 30 ) );
 }
 
 _scDesktop::~_scDesktop()

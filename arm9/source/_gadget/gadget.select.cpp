@@ -102,7 +102,7 @@ _callbackReturn _select::refreshHandler( _event event )
 	);
 	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _color::fromRGB( 9 , 13 , 19 ) );
 	
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	bP.drawString(

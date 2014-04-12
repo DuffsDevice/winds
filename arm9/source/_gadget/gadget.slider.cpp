@@ -115,7 +115,7 @@ _callbackReturn _slider::refreshHandler( _event event )
 	bP.fill( _color::fromRGB( 30 , 30 , 29 ) );
 	
 	// Fetch Font for labels
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	if( that->dimension == _dimension::horizontal )
@@ -214,7 +214,7 @@ _callbackReturn _slider::updateHandler( _event event )
 		that->sliderHandle->moveTo( (!!that->snap) * 3 , OFFSETX + perc * pixelLength - that->sliderHandle->getHeight()/2 );
 	}
 	
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	// Update Size of the slider, because the labels might have changed

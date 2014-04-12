@@ -35,7 +35,7 @@ namespace _luafunc
 			int type = get_type( state , index );
 			return type == LUA_TSTRING || type == LUA_TNUMBER;
 		}
-		bool						is_a( lua_State* state , int index , const _font** dummy );
+		bool						is_a( lua_State* state , int index , _fontPtr* dummy );
 		bool						is_a( lua_State* state , int index , _event* dummy );
 		bool						is_a( lua_State* state , int index , _rect* dummy );
 		bool						is_a( lua_State* state , int index , _hardwareKeyPattern* dummy );

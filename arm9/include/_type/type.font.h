@@ -41,13 +41,6 @@ class _font{
 			return getStringWidth( str.c_str() , fontSize );
 		}
 		
-		//! Gets the number of displayed characters that fit inside a fixed width
-		_length getNumCharsUntilWidth( _length width , const _char* str , _u8 fontSize = 0 ) const ;
-		_length getNumCharsUntilWidth( _length width , string str , _u8 fontSize = 0 ) const 
-		{
-			return getNumCharsUntilWidth( width , str.c_str() , fontSize );
-		}
-		
 		//! Check whether this font is monospace
 		virtual _length isMonospace() const = 0;
 		
@@ -78,7 +71,7 @@ class _font{
 		}
 		
 		//! Get Space between two letters
-		virtual _length getLetterSpace() const = 0;
+		virtual _length getLetterSpace( _u8 fontSize = 0 ) const = 0;
 		
 		//! draw a character!
 		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const = 0;
@@ -87,5 +80,7 @@ class _font{
 		static const _font* fromFile( string path );
 
 };
+
+typedef const _font* _fontPtr;
 
 #endif
