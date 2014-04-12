@@ -14,7 +14,7 @@ class _label : public _gadget {
 		
 		//! Schriftart/Font
 		//! Default: system-Font inside of _system_->_runtimeAttributes_
-		const _font* 	font;
+		_fontPtr 		font;
 		_u8				fontSize;
 		
 		//! Alignment
@@ -49,7 +49,7 @@ class _label : public _gadget {
 		_color getBgColor(){ return this->bgColor; }
 		
 		//! Get Text Font
-		const _font* getFont(){ return this->font; }
+		_fontPtr getFont(){ return this->font; }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }
@@ -67,7 +67,7 @@ class _label : public _gadget {
 		_valign getVAlign(){ return this->vAlign; }
 		
 		//! Set Text Font
-		void setFont( const _font* ft );
+		void setFont( _fontPtr ft );
 		
 		//! Set FontSize
 		void setFontSize( _u8 fontSize );

@@ -12,7 +12,6 @@ class _passcodeBox : public _textBox
 		
 		//! Char that will be used as replacement
 		_char 			replaceChar;
-		const _font*	replaceFont;
 		
 		//! Internal
 		void refresher();
@@ -30,7 +29,7 @@ class _passcodeBox : public _textBox
 		string getStrValue(){ return this->realText; }
 		
 		//! Ctor
-		_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , const _font* replaceFont = nullptr , _char replaceChar = '+' , _style&& style = _style() );
+		_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _fontPtr replaceFont = nullptr , _optValue<_char> replaceChar = ignore , _style&& style = _style() );
 };
 
 #endif

@@ -46,7 +46,7 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , _bitmap& arg				, TN... args){ pushBitmapRef( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _bitmapPort arg				, TN... args){ pushBitmapPort( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _hardwareKeyPattern arg		, TN... args){ pushHWKP( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push( lua_State* state , const _font* arg			, TN... args){ pushFont( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _fontPtr arg			, TN... args){ pushFont( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _time arg					, TN... args){ pushTime( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _color arg					, TN... args){ pushColor( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _2s32 arg					, TN... args){ return push( state , arg.first ) + push( state , arg.second , forward<TN>(args)... ); }

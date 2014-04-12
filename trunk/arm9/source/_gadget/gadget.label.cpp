@@ -16,7 +16,7 @@ void _label::setStrValue( string val )
 	this->redraw();
 }
 
-void _label::setFont( const _font* ft )
+void _label::setFont( _fontPtr ft )
 {
 	if( this->font == ft || !ft )
 		return;

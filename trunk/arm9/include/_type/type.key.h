@@ -8,7 +8,7 @@
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	1-7, 14-18: Hardware Keys
 	8,10, 19-21: Windows Specific Keys (Caps,Shift,Windows-Key,...)
-	22-24: Initiation of font, font color or font size change (declared in type.text.phrases.h)
+	22-30: Initiation of font, font color or font size change (declared in type.guistring.h)
 */
 
 enum class _key : _char

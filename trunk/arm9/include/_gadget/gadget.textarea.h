@@ -4,7 +4,7 @@
 
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.scrollBar.h"
-#include "_type/type.text.h"
+#include "_type/type.guistring.h"
 
 class _textArea : public _gadget{
 	
@@ -16,75 +16,71 @@ class _textArea : public _gadget{
 			borderY = 1, // Start of text in y-direction
 		};
 		
-		//! Farbe der Schrift
-		_color 		color;
+		//! background color
 		_color 		bgColor;
 		
-		//! _text-object
-		_text 		text;
+		//! _guiString-object
+		_guiString 	text;
 		
 		//! Current cursor position
-		_u32		cursor;
 		_scrollBar*	scrollBar;
-		
-		//! Text-align
-		_align		align;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn generalHandler( _event );
 		static _callbackReturn mouseHandler( _event );
 		static _callbackReturn keyHandler( _event );
 		
-		inline void checkRefresh()
-		{
-			if( this->text.needsRefresh() )
-			{
-				this->handleEvent( onResize );//! Set the right parameters for the Scrollbar
-				this->redraw();
+		// Checks, if the text wants to be refreshed, in case something changed concerning the appearence of the text
+		// in case, that is the case, it refreshes the textarea
+		void checkRefresh(){
+			if( this->text.needsRefresh() ){
+				this->handleEvent( onResize );	// Sets the right parameters for the Scrollbar
+				this->redraw();					// This will redraw the text
 			}
 		}
 		
-		//! Set the Internal Cursor
-		void setInternalCursor( _u32 cursor );
+		// Checks, if the text wants to update its wrapping of lines and does that if needed
+		void checkUpdate(){
+			if( this->text.needsUpdate() )
+				this->text.update();
+		}
+		
+		//! Update the scroll so that the current cursor gets in view
+		void adjustScrollToCursor();
 		
 	public:
 		
-		//! Get the font Position, where the text will be painted at
-		_2s32 getFontPosition( string str , bool noScrollApplied = false );
-		
 		//! Set the Text to be displayed
-		void setStrValue( string val ){ this->text.setText( val ); this->checkRefresh(); }
+		void setStrValue( string val ){ this->text = move(val); this->checkRefresh(); }
 		
 		//! Get the Text of the textbox
-		string getStrValue(){ return this->text.getText(); }
+		string getStrValue(){ return this->text; }
 		
 		//! Get Text Font
-		const _font* getFont(){ return this->text.getFont(); }
+		_fontPtr getFont(){ return this->text.getFont(); }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( const _font* ft ){
+		void setFont( _fontPtr ft ){
 			if( !ft )
 				return;
 			this->text.setFont( ft );
-			this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
 			this->checkRefresh();
 		}
 		
 		//! Set FontSize
 		void setFontSize( _u8 fontSize ){
 			this->text.setFontSize( fontSize );
-			this->scrollBar->setStep( this->text.getFont()->getHeight() + 1 );
 			this->checkRefresh();
 		}
 		
 		//! Set Text Color
-		void setColor( _color col ){ this->color = col; this->redraw(); }
+		void setColor( _color col ){ this->text.setFontColor( col ); this->checkRefresh(); }
 		
 		//! Get Text Color
-		_color getColor(){ return this->color; }
+		_color getColor(){ return this->text.getFontColor(); }
 		
 		//! Set Text Color
 		void setBgColor( _color col ){ this->bgColor = col; this->redraw(); }
@@ -93,16 +89,16 @@ class _textArea : public _gadget{
 		_color getBgColor(){ return this->bgColor; }
 		
 		//! Align-setting
-		void setAlign( _align align ){ if( this->align == align ) return; this->align = align; this->redraw(); }
+		void setAlign( _align align ){ this->text.setAlign( align ); this->checkRefresh(); }
 		
 		//! Get Alignment of the Label
-		_align getAlign(){ return this->align; }
+		_align getAlign(){ return this->text.getAlign(); }
 		
 		//! Set The cursor
-		void setCursor( _s64 cursor = -1 ){	this->setInternalCursor( max( _s64(0) , cursor + 1 ) ); }
+		void setCursor( _optValue<_u32> cursor = ignore );
 		
-		//! Get the current cursor (-1 equals no cursor)
-		_s64 getCursor(){ return _s64(this->cursor) - 1; }
+		//! Get the current cursor
+		_u32 getCursor(){ return this->text.getCursor(); }
 		
 		
 		//! Ctor

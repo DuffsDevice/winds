@@ -66,7 +66,7 @@ namespace _luafunc
 		Lunar<_lua_bitmapport>::push( L , new _lua_bitmapport( move(arg) ) );
 	}
 	
-	void pushFont( lua_State* L , const _font* arg ){
+	void pushFont( lua_State* L , _fontPtr arg ){
 		Lunar<_lua_font>::push( L , new _lua_font(arg) );
 	}
 	

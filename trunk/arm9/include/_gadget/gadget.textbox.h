@@ -3,6 +3,7 @@
 #define _WIN_G_TEXTBOX_
 
 #include "_type/type.gadget.h"
+#include "_type/type.guistring.h"
 
 class _textBox : public _gadget
 {
@@ -13,25 +14,14 @@ class _textBox : public _gadget
 			borderY = 2
 		};
 		
-		//! Farbe der Schrift
-		_color 			color;
+		//! Color of the background
 		_color 			bgColor;
 		
-		//! Schriftart/Font
-		//! Default: system-Font inside of _system_->_runtimeAttributes_
-		const _font* 	font;
-		_u8				fontSize;
+		//! Current scroll position
+		_s32			scroll;
 		
-		//! Alignment
-		_align			align;
-		_valign 		vAlign;
-		
-		//! String to be displayed
-		string 			strValue;
-		
-		//! Current cursor position
-		_u32			cursor;
-		_u32			scroll;
+		//! _guiString object that will display the text
+		_guiString		text;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn focusHandler( _event );
@@ -40,64 +30,83 @@ class _textBox : public _gadget
 		static _callbackReturn updateHandler( _event );
 		
 		//! Set the Internal Cursor
-		void setInternalCursor( _u32 cursor );
-		
-		//! Internal, not private due to _userWrapper-class
-		_2s32 getFontPosition( bool noScrollApplied = false );
+		void			setInternalCursor( _u32 cursor , bool displayCursor );
 		
 		//! Made virtual because of e.g. _passcodeBox
-		virtual void removeStr( _int position , _length numChars = 1 );
-		virtual void insertStr( _int position , string s );
+		virtual void	removeStr( _int position , _length numChars = 1 );
+		virtual void	insertStr( _int position , string s );
+		
+		//! Checks if the textbox should be redrawn
+		void			checkRefresh(){
+			if( this->text.needsRefresh() ){
+				this->handleEvent( onUpdate );
+				this->redraw();
+			}
+		}
 		
 	public:
 		
 		//! Set string-value
-		virtual void setStrValue( string val );
+		virtual void	setStrValue( string val ){ this->text = move(val); this->checkRefresh(); }
 		
 		//! Get string-value
-		virtual string getStrValue(){ return this->strValue; }
+		virtual string	getStrValue() const { return this->text; }
 		
 		//! Get Text Font
-		const _font* getFont(){ return this->font; }
+		_fontPtr		getFont() const { return this->text.getFont(); }
 		
 		//! Get Text FontSize
-		_u8 getFontSize(){ return this->fontSize; }
+		_u8				getFontSize() const { return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( const _font* ft );
+		void			setFont( _fontPtr ft ){
+			if( !ft )
+				return;
+			this->text.setFont( ft );
+			this->checkRefresh();
+		}
 		
 		//! Set FontSize
-		void setFontSize( _u8 fontSize ){ if( this->fontSize == fontSize ) return; this->fontSize = fontSize; this->redraw(); }
+		void			setFontSize( _u8 fontSize ){
+			this->text.setFontSize( fontSize );
+			this->checkRefresh();
+		}
+		
 		
 		//! Set Text Color
-		void setColor( _color col ){ if( this->color == col ) return; this->color = col; this->redraw(); }
+		void			setColor( _color col ){ this->text.setFontColor( col ); this->checkRefresh(); }
 		
 		//! Get Text Color
-		_color getColor(){ return this->color; }
+		_color			getColor() const { return this->text.getFontColor(); }
+		
 		
 		//! Set Text Color
-		void setBgColor( _color col ){ this->bgColor = col; this->redraw(); }
+		void			setBgColor( _color col ){ this->bgColor = col; this->redraw(); }
 		
 		//! Get Text Color
-		_color getBgColor(){ return this->bgColor; }
+		_color			getBgColor() const { return this->bgColor; }
+		
 		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->redraw(); }
-		
-		//! Vertical-Align-setting
-		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->redraw(); }
+		void			setAlign( _align align ){ this->text.setAlign( align ); this->checkRefresh(); }
 		
 		//! Get Alignment of the Label
-		_align getAlign(){ return this->align; }
+		_align			getAlign() const { return this->text.getAlign(); }
+		
+		
+		//! Vertical-Align-setting
+		void			setVAlign( _valign vAlign ){ this->text.setVAlign( vAlign ); this->checkRefresh(); }
 		
 		//! Get Vertical Alignment of the Label
-		_valign getVAlign(){ return this->vAlign; }
+		_valign			getVAlign() const { return this->text.getVAlign(); }
+		
 		
 		//! Set The cursor
-		void setCursor( _s64 cursor = -1 ){	this->setInternalCursor( max( _s64(0) , cursor + 1 ) ); }
+		void			setCursor( _optValue<_u32> cursor = ignore ){ this->setInternalCursor( cursor , cursor.isValid() ); }
 		
-		//! Get the current cursor (-1 equals no cursor)
-		_s64 getCursor(){ return _s64(this->cursor) - 1; }
+		//! Get the current cursor
+		_u32			getCursor(){ return this->text.getCursor(); }
+		
 		
 		//! Ctor
 		_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );

@@ -2,7 +2,6 @@
 #include "_type/type.system.h"
 #include "_type/type.callback.h"
 #include "_type/type.callback.derives.h"
-#include "_type/type.text.phrases.h"
 #include "_type/type.tokenizer.h"
 #include "_type/type.cwdchanger.h"
 #include "_gadget/gadget.keyboard.h"
@@ -131,16 +130,6 @@ int _progLua::lua_getRegistry( lua_State* L ){ Lunar<_lua_registry>::push( L , n
 int _progLua::lua_getFont( lua_State* L ){
 	return push( L , lua_isstring( L , 1 ) ? _system::getFont( lua_tostring( L , 1 ) ) : _system::getFont() );
 }
-int _progLua::lua_sizeChangePhrase( lua_State* L ){ push( L , stringIntegrator::sizeChangePhrase( check<int>( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_colorChangePhrase( lua_State* L ){ push( L , stringIntegrator::colorChangePhrase( check<_pixel>( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_fontChangePhrase( lua_State* L ){
-	const _font* ft = check<const _font*>( L , 1 );
-	if( !ft )
-		push( L , "" );
-	else
-		push( L , stringIntegrator::fontChangePhrase( ft ) );
-	return 1;
-}
 int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0; }
 int _progLua::lua_usingClass( lua_State* L )
 {
@@ -253,9 +242,6 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"getLocalizedString",		lua_getLocalizedString},
 	{"getRegistry",				lua_getRegistry},
 	{"getFont",					lua_getFont},
-	{"sizeChangePhrase",		lua_sizeChangePhrase},
-	{"colorChangePhrase",		lua_colorChangePhrase},
-	{"fontChangePhrase",		lua_fontChangePhrase},
 	{"require",					lua_usingClass},
 	{"keyboardIsRegistered",	lua_keyboardIsRegistered},
 	{"keyboardIsOpened",		lua_keyboardIsOpened},

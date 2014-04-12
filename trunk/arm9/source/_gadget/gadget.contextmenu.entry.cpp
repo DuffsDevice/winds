@@ -28,7 +28,7 @@ _callbackReturn _contextMenuEntry::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Fetch Font data
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	_contextMenu* parent = (_contextMenu*) that->getParent();
@@ -48,7 +48,7 @@ _callbackReturn _contextMenuEntry::updateHandler( _event event )
 {
 	_contextMenuEntry* that = event.getGadget<_contextMenuEntry>();
 	
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );

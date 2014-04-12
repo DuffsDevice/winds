@@ -400,15 +400,20 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool n
 	
 	_eventType eventType1 = event.getType();
 	_eventType eventType2 = eventType2userET( eventType1 );
+	_eventType maxEventType = max( eventType1 , eventType2 );
 	
 	auto begin = eventHandlers.begin();
 	auto end = eventHandlers.end();
 	while( begin != end )
 	{
-		if( begin->first == eventType1 )
+		if( begin->first > maxEventType ) // Only with _assocVector possible since it is ordered
+			break;
+		else if( begin->first == eventType1 )
 		{
 			ret2 = begin->second;
 			while( begin != end ){
+				if( begin->first > eventType2 ) // Same as above
+					break;
 				if( begin->first == eventType2 ){
 					ret1 = begin->second;
 					break;
@@ -421,6 +426,8 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool n
 		{
 			ret1 = begin->second;
 			while( begin != end ){
+				if( begin->first > eventType1 ) // Same as above
+					break;
 				if( begin->first == eventType1 ){
 					ret2 = begin->second;
 					break;

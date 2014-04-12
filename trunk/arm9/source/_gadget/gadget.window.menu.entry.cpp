@@ -46,7 +46,7 @@ _callbackReturn _windowMenuEntry::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Fetch Font data
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	// Fill Background
@@ -62,7 +62,7 @@ _callbackReturn _windowMenuEntry::updateHandler( _event event )
 {
 	_windowMenuEntry* that = event.getGadget<_windowMenuEntry>();
 	
-	const _font* font = _system::getFont();
+	_fontPtr font = _system::getFont();
 	_u8 fontSize = _system::getRTA().getDefaultFontSize();
 	
 	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );

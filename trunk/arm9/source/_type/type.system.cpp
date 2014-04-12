@@ -694,7 +694,7 @@ _toStr<_hardwareType> hardwareType2str = {
 
 //! Static Attributes...
 bool 						_system::_sleeping_ = false;
-_map<string,const _font*>	_system::_fonts_;
+_map<string,_fontPtr>		_system::_fonts_;
 _ini*						_system::_localizationTextTable_;
 _ini*						_system::_localizationMonthTable_;
 string						_system::_curLanguageShortcut_;

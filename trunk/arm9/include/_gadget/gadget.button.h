@@ -12,7 +12,7 @@ class _button : public _gadget {
 		
 		//! String to be displayed
 		string 			strValue;
-		const _font*	font;
+		_fontPtr	font;
 		_color			fontColor;
 		_u8				fontSize;
 		bool			pressed;
@@ -52,10 +52,10 @@ class _button : public _gadget {
 		bool isAutoSelect(){ return this->autoSelect; }
 		
 		//! Set Text Font
-		void setFont( const _font* ft );
+		void setFont( _fontPtr ft );
 		
 		//! Get Text Font
-		const _font* getFont(){ return this->font; }
+		_fontPtr getFont(){ return this->font; }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->fontSize; }

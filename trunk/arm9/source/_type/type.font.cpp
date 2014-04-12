@@ -2,7 +2,6 @@
 #include "_type/type.font.memory.h"
 #include "_type/type.font.freetype.h"
 #include "_type/type.direntry.h"
-#include "_type/type.text.phrases.h"
 
 _length _font::getStringWidth( const _char* str , _u8 fontSize ) const
 {
@@ -10,50 +9,17 @@ _length _font::getStringWidth( const _char* str , _u8 fontSize ) const
 		return 0;
 	
 	_u16 tempX = 0;
-	const _font* font = this;
+	_fontPtr font = this;
 	
 	do
 	{
-		if( stringExtractor::processChar( str , fontSize , font ) )
-		{
-			_length width = font->getCharacterWidth( *str , fontSize );
-			if( width )
-				tempX += width + font->getLetterSpace();
-		}
+		_length width = font->getCharacterWidth( *str , fontSize );
+		if( width )
+			tempX += width + font->getLetterSpace();
 		
 	}while( *++str );
 	
 	return tempX;
-}
-
-_length _font::getNumCharsUntilWidth( _length width , const _char* str , _u8 fontSize ) const
-{
-	if( !str || !*str )
-		return 0;
-	
-	const _font* font = this;
-	
-	_length tempX = 0;
-	_length numChars = 0;
-	
-	while( true )
-	{
-		if( stringExtractor::processChar( str , fontSize , font ) )
-		{
-			_length cWidth = font->getCharacterWidth( *str , fontSize );
-			if( cWidth )
-				tempX += cWidth + font->getLetterSpace();
-			// Check Bounds
-			if( tempX > width )
-				return numChars;
-			numChars++;
-		}
-		
-		if( !*++str )
-			break;
-	}
-	
-	return numChars;
 }
 
 #include "_resource/resource.font.arialblack.13.h"
@@ -74,7 +40,7 @@ const _vector<_memoryFont*> builtInFonts =
 };
 
 //! Receive a font, created from file
-const _font* _font::fromFile( string path ) 
+_fontPtr _font::fromFile( string path ) 
 {
 	_direntry d = _direntry( path );
 	string fn = d.getFileName();

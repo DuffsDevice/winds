@@ -17,7 +17,7 @@ void _button::setStrValue( string val )
 	this->redraw();
 }
 
-void _button::setFont( const _font* ft )
+void _button::setFont( _fontPtr ft )
 {
 	if( this->font == ft || !ft )
 		return;

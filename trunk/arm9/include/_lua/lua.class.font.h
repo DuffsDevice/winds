@@ -12,18 +12,18 @@ class _lua_font
 {
 	private:
 		
-		const _font*	font;
+		_fontPtr	font;
 	
 	public:
 		
 		//! C-Ctor
-		_lua_font( const _font* f );
+		_lua_font( _fontPtr f );
 		
 		//! Lua-Ctor
 		_lua_font( lua_State* L );
 		
 		//! Operator that allows casts to _font
-		operator const _font*(){
+		operator _fontPtr(){
 			return this->font;
 		}
 		operator _font&(){

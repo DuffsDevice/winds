@@ -502,7 +502,7 @@ class _bitmap
 		 * @param color Color of the _character
 		 * @return int The Width of the _character it has drawn
 		 */
-		_u16 drawChar( _coord x0 , _coord y0 , const _font* font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawChar( _coord x0 , _coord y0 , _fontPtr font , _char ch , _color color , _u8 fontSize = 0 )
 		{
 			// Check if everything is valid
 			if( !this->isValid() || !font || !font->isValid() ) 
@@ -511,7 +511,7 @@ class _bitmap
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 		}
 		private:
-		_u16 drawCharUnsafe( _coord x0 , _coord y0 , const _font* font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _fontPtr font , _char ch , _color color , _u8 fontSize = 0 )
 		{
 			// Fetch the destination where to draw To
 			_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
@@ -530,8 +530,8 @@ class _bitmap
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , const _font* font , const _char* str , _color color , _u8 fontSize = 0 );
-		void drawString( _coord x0 , _coord y0 , const _font* font , string str , _color color , _u8 fontSize = 0 )
+		void drawString( _coord x0 , _coord y0 , _fontPtr font , const _char* str , _color color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , _fontPtr font , string str , _color color , _u8 fontSize = 0 )
 		{
 			drawString( x0 , y0 , font , str.c_str() , color , fontSize );
 		}

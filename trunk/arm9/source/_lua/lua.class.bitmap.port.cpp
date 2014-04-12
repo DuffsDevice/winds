@@ -28,7 +28,7 @@ int _lua_bitmapport::addClippingRects( lua_State* L ){
 	return 0;
 }
 
-using shortCutType = void (_bitmapPort::*)(_coord,_coord,const _font*,const _char*,_color,_u8);
+using shortCutType = void (_bitmapPort::*)(_coord,_coord,_fontPtr,const _char*,_color,_u8);
 
 //! Lua-_gadget
 const char _lua_bitmapport::className[] = "BitmapPort";

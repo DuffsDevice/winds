@@ -30,7 +30,7 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	}
 	
 	//! Arrows & month label
-	const _font* symbolFt = _system::getFont( "SystemSymbols8" );
+	_fontPtr symbolFt = _system::getFont( "SystemSymbols8" );
 	_u8 arrowWidth = this->getArrowWidth();
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
@@ -246,7 +246,7 @@ _callbackReturn _calendar::updateHandler( _event event )
 	_vector<int> colWidths = computeGrid( this->getWidth() - 1 , 7 );
 	
 	// Choose font to be used
-	const _font* ft;
+	_fontPtr ft;
 	
 	if( rowHeights[0] > 12 && colWidths[0] > 15 )
 		ft = _system::getFont( "CourierNew10" );

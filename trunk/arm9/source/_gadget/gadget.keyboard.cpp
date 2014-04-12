@@ -220,7 +220,7 @@ void _keyboard::close( bool useAnim )
 		// since the currentFocus changes probably to some gadget that doesn't require keyboard
 		// This would ruin the whole keyboard animation
 		this->ignoreNextVBL = true;
-		active->blur();
+		active->deselect();
 	}
 	
 	this->manuallyOpened = false;
@@ -411,6 +411,17 @@ _callbackReturn _keyboard::keyHandler( _event event )
 				break;
 		}
 	}
+	else{
+		// Don't forward those key-types
+		switch( event.getKeyCode() ){
+			case _key::shift:
+			case _key::caps:
+			case _key::windows:
+				return handled;
+			default:
+				break;
+		}
+	}
 	
 	if( that->lastCurrentFocus )
 		that->lastCurrentFocus->triggerEvent( event );
@@ -527,8 +538,8 @@ _keyboard::_keyboard( _u8 bgId , _gadgetScreen* gadgetHost , _screen* topScreen 
 	, mode( false ) // Means "Hidden"
 	, anim( 0 , 0 , 800 )
 {
-	const _font* fnt 		= _system::getFont( "CourierNew10" );
-	const _font* systemFont = _system::getFont( "SystemSymbols8" );
+	_fontPtr fnt 		= _system::getFont( "CourierNew10" );
+	_fontPtr systemFont = _system::getFont( "SystemSymbols8" );
 	
 	//! Create the buttons
 	for( _s8 i = 45 ; i >= 0 ; i-- )
