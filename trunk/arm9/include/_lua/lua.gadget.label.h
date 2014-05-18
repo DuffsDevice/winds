@@ -18,6 +18,9 @@ class _lua_label : public _lua_gadget
 		_lua_label( _label* c ) : _lua_gadget( c , false )
 		{ }
 		
+		//! setEllipsis
+		int setEllipsis( lua_State* );
+		
 		
 		//! Lunar !//
 		static const char className[];

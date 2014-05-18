@@ -1,20 +1,17 @@
 #ifndef _WIN_PROG_MAPPER_
 #define _WIN_PROG_MAPPER_
 
-#include "_type/type.system.h"
 #include "_type/type.program.c.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.image.h"
 #include "_gadget/gadget.checkbox.h"
 #include "_gadget/gadget.scrollarea.h"
-#include "_gadget/gadget.window.h"
 #include "_dialog/dialog.file.open.h"
 
 class PROG_Mapper : public _progC
 {
 	private:
 		
-		_window*			window;
 		_label*				description;
 		_label*				fileLabel;
 		_button*			okButton;
@@ -30,8 +27,8 @@ class PROG_Mapper : public _progC
 		void				main( _programArgs args );
 		void				destruct();
 		
-		_callbackReturn	handler( _event event );
-		void			dialogHandler( _dialogResult event );
+		_callbackReturn		handler( _event event );
+		void				dialogHandler( _dialogResult event );
 		
 	public:
 		

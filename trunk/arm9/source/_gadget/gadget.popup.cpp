@@ -1,6 +1,5 @@
 #include "_gadget/gadget.contextMenu.h"
-#include "_type/type.system.h"
-
+#include "_controller/controller.gui.h"
 
 _callbackReturn _popup::blurHandler( _event event )
 {
@@ -26,7 +25,7 @@ void _popup::showCentered( _coord x , _coord y )
 	this->dir = _direction::downright;
 	
 	// View
-	this->setParent( _system::_gadgetHost_ );
+	this->setParent( _guiController::getHost() );
 	
 	// Focus
 	this->focus();
@@ -72,7 +71,7 @@ void _popup::show( _coord x , _coord y , bool rightDownOnly )
 	}
 	
 	// View
-	this->setParent( _system::_gadgetHost_ );
+	this->setParent( _guiController::getHost() );
 	
 	// Focus
 	this->focus();

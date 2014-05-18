@@ -1,10 +1,11 @@
 #include "_gadget/gadget.window.menu.entry.h"
 #include "_gadget/gadget.window.menu.h"
 #include "_gadget/gadget.contextmenu.h"
-#include "_type/type.system.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _windowMenuEntry::_windowMenuEntry( _int listIndex , _menu& menu  , _style&& style ) :
-	_gadget( _gadgetType::windowmenuentry , ignore , ignore , ignore , _system::getUser().lIH - 2 , move(style) )
+	_gadget( _gadgetType::windowmenuentry , ignore , ignore , ignore , _guiController::getListItemHeight() - 2 , move(style) )
 	, text( menu.getMainList()[listIndex] )
 	, listReference( listIndex )
 	, menuList( new _contextMenu( ignore , menu.getList( listIndex ) , this ) )
@@ -46,11 +47,11 @@ _callbackReturn _windowMenuEntry::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Fetch Font data
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	// Fill Background
-	bP.fill( that->menuList->isOpened() ? _system::getRTA().getControlForeground() : _system::getRTA().getControlBackground() );
+	bP.fill( that->menuList->isOpened() ? _guiController::getControlFg() : _guiController::getControlBg() );
 	
 	// Draw text
 	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _color::black );
@@ -62,8 +63,8 @@ _callbackReturn _windowMenuEntry::updateHandler( _event event )
 {
 	_windowMenuEntry* that = event.getGadget<_windowMenuEntry>();
 	
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );
 	

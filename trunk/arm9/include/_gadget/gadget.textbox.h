@@ -3,7 +3,7 @@
 #define _WIN_G_TEXTBOX_
 
 #include "_type/type.gadget.h"
-#include "_type/type.guistring.h"
+#include "_type/type.guistring.singleline.h"
 
 class _textBox : public _gadget
 {
@@ -15,13 +15,13 @@ class _textBox : public _gadget
 		};
 		
 		//! Color of the background
-		_color 			bgColor;
+		_color 					bgColor;
 		
 		//! Current scroll position
-		_s32			scroll;
+		_s32					scroll;
 		
 		//! _guiString object that will display the text
-		_guiString		text;
+		_singleLineGuiString	text;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn focusHandler( _event );
@@ -44,6 +44,15 @@ class _textBox : public _gadget
 			}
 		}
 		
+		//! Checks, if the text wants to update its data
+		void checkUpdate(){
+			if( this->text.needsUpdate() )
+				this->text.update( this->getDimensions() );
+		}
+		
+		//! Get the current _rect where the guistring should be
+		_rect getGuiStringDimensions() const ;
+		
 	public:
 		
 		//! Set string-value
@@ -53,13 +62,13 @@ class _textBox : public _gadget
 		virtual string	getStrValue() const { return this->text; }
 		
 		//! Get Text Font
-		_fontPtr		getFont() const { return this->text.getFont(); }
+		_fontHandle		getFont() const { return this->text.getFont(); }
 		
 		//! Get Text FontSize
 		_u8				getFontSize() const { return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void			setFont( _fontPtr ft ){
+		void			setFont( _fontHandle ft ){
 			if( !ft )
 				return;
 			this->text.setFont( ft );

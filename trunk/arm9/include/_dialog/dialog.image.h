@@ -9,7 +9,7 @@
 
 class _imageDialog : public _dialog
 {
-	private:
+	protected:
 		
 		_button*		okButton;
 		_button*		otherButton;
@@ -19,7 +19,7 @@ class _imageDialog : public _dialog
 		
 		_callbackReturn eventHandler( _event );
 		
-		void executeInternal();
+		virtual void executeInternal();
 		void cleanupInternal();
 	
 	public:

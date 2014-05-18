@@ -1,10 +1,11 @@
 #include "_dialog/dialog.file.save.h"
-#include "_type/type.system.h"
 #include "_resource/resource.icon.folder.up.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 void _fileSaveDialog::executeInternal(){
 	this->fileNameBox->setStrValue( this->initialName );
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _fileSaveDialog::cleanupInternal(){
@@ -15,7 +16,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	fileTypes( move(possibleFileExtensions) )
 {
 	// Build directory and initial name
-	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _system::getLocalizedString("lbl_unnamed");
+	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _localizationController::getBuiltInString("lbl_unnamed");
 	_direntry initialFile = _direntry( move(initialFileName) );
 	this->initialName = initialFile.getDisplayName();
 	
@@ -25,8 +26,8 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	_coord fileViewY = 12;
 	
 	// Labels
-	this->fileNameLabel = new _label( 2 , firstLineY , ignore , ignore , _system::getLocalizedString("def_filename") );
-	this->fileTypeLabel = new _label( 2 , secondLineY , ignore , ignore , _system::getLocalizedString("def_filetype") );	
+	this->fileNameLabel = new _label( 2 , firstLineY , ignore , ignore , _localizationController::getBuiltInString("def_filename") );
+	this->fileTypeLabel = new _label( 2 , secondLineY , ignore , ignore , _localizationController::getBuiltInString("def_filetype") );	
 	
 	
 	// Determine some widths
@@ -47,8 +48,8 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	
 	
 	// Buttons
-	this->cancelButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , firstLineY , ignore , ignore , _system::getLocalizedString("lbl_cancel") );
-	this->saveButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , secondLineY , ignore , ignore , saveLabel.isValid() ? (string&&)saveLabel : _system::getLocalizedString("lbl_save") );
+	this->cancelButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , firstLineY , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
+	this->saveButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , secondLineY , ignore , ignore , saveLabel.isValid() ? (string&&)saveLabel : _localizationController::getBuiltInString("lbl_save") );
 	
 	
 	// Button Width
@@ -60,7 +61,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Window
 	_length winWidth = labelWidth + buttonWidth + textBoxAndSelectWidth + 7;
 	_length winHeight = secondLineY + this->saveButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_save") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_save") , false , true , _style::notResizeable | _style::draggable );
 	
 	
 	// FileView & Addressbar & Button

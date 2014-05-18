@@ -67,9 +67,6 @@ class _direntry
 		//! Flag indicating if the file exists
 		bool					exists;
 		
-		//! Flag indicating if the FAT32-System is ready to be used
-		static int				fatInited;
-		
 		//! Filename
 		string					filename;
 		string					name;
@@ -189,7 +186,7 @@ class _direntry
 		virtual const string& getName() const { return this->name; }
 		
 		//! Get the string that should be displayed if the direntry-name should be drawn
-		string getDisplayName( bool forceExtension = false ) const ;
+		string getDisplayName( bool forceRealName = false ) const ;
 		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
 		virtual const string& getExtension() const { return this->extension; }
@@ -218,27 +215,6 @@ class _direntry
 		
 		//! To rename the file
 		bool rename( string newName );
-		
-		
-		//////////////////////
-		// Static Functions //
-		//////////////////////
-		
-		//! Manually init Fat
-		static bool initFat();
-		
-		//! Get List of connected hard drives
-		static _vector<string> getDrives();
-		
-		//! Get statistics about a connected hard drive
-		static bool getDriveStats( string driveName , _driveStats& dest );
-		
-		//! Replace associated filename-patterns
-		static string replaceASSOCS( string path ){
-			replaceASSOCSInternal(path);
-			return move(path);
-		}
-		static void replaceASSOCSInternal( string& path );
 };
 
 extern _direntry _diskRoot_;

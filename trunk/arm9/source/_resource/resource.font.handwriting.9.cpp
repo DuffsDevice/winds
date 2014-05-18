@@ -226,7 +226,7 @@ const unsigned char FONT_Handwriting9_width[222] = {
 
 FONT_Handwriting9::FONT_Handwriting9( unsigned char fixedWidth )
 : _memoryFont (
-	"Handwriting",
+	"Handwriting9",
 	33,
 	254,
 	12, // Height

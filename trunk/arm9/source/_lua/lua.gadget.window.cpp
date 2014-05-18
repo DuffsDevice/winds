@@ -4,8 +4,6 @@
 #include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
 
-#include "_type/type.system.h"
-
 /*##################################
 ##           Lua-Window           ##
 ##################################*/

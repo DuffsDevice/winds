@@ -4,7 +4,6 @@
 #include "_type/type.h"
 #include "_type/type.gadget.h"
 #include "_type/type.view.h"
-#include "_type/type.system.h"
 
 class _viewSwitcher
 {

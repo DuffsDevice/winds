@@ -15,22 +15,34 @@ include $(DEVKITARM)/ds_rules
 # all directories are relative to this makefile
 #---------------------------------------------------------------------------------
 BUILD		:=	build
-SOURCES		:=	../common/source/_type ../common/source source source/_resource source/_gadget source/_lua source/_type source/_library source/_scenario source/_dialog
-INCLUDES	:=	../common/include include
 DATA		:=	data
+INCLUDES	:=	include \
+				../common/include
+SOURCES		:=	source \
+				source/_resource \
+				source/_gadget \
+				source/_lua \
+				source/_type \
+				source/_library \
+				source/_gui \
+				source/_dialog \
+				source/_controller \
+				source/_screen \
+				../common/source/_type \
+				../common/source
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 ARCH		:=	-mthumb -mthumb-interwork
 
-CFLAGS		:=	-g -Wall -O2\
+CFLAGS		:=	-g -Wall -O3\
  			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 			-ffast-math \
 			$(ARCH)
 
 CFLAGS		+=	$(INCLUDE) -DARM9
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++0x -O3 -Wall -Wextra -Wno-unused-parameter -Wno-psabi
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++11 -Wextra -Wno-unused-parameter -Wno-psabi
 ## C++0x:   -std=gnu++0x; -std=c++11
 ## ASM Out:	-save-temps
 

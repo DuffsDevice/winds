@@ -38,6 +38,11 @@ class _ini
 			return this->array;
 		}
 		
+		//! Override the std::map representation
+		void setMap( _iniStructure structure ){
+			this->array = move(structure);
+		}
+		
 		//! Read an index from the registry out of the supplied section
 		const string& readIndex( const string& section , const string& name ) const ;
 		_int readIndexInt( const string& section , const string& name ) const ;

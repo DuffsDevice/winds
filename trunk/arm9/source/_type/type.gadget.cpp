@@ -1,8 +1,9 @@
 #include "_type/type.gadget.h"
-#include "_type/type.gadget.screen.h"
-#include "_type/type.system.h"
+#include "_type/type.screen.gadget.h"
 #include "_type/type.timer.h"
 #include "_gadget/gadget.button.h"
+#include "_controller/controller.event.h"
+#include "_controller/controller.gui.h"
 
 _array<_staticCallback<_eventHandler>,14> _gadget::defaultEventHandlers = {
 	{
@@ -47,7 +48,7 @@ _gadget::_gadget( _gadgetType type , _optValue<_coord> posX , _optValue<_coord> 
 
 _gadget::~_gadget()
 {
-	_system::removeEventsOf( this );
+	_eventController::removeEventsOf( this );
 	
 	// Remove itself from parent
 	this->setParent( nullptr );
@@ -56,27 +57,24 @@ _gadget::~_gadget()
 	this->handleEvent( onDelete );
 	
 	// Delete callbacks
-	for( _pair<_eventType,_callback<_eventHandler>*> cb : this->eventHandlers )
-	{
-		if( cb.second )
-			delete cb.second;
-	}
-	
-	// Clear list and dependencies
 	this->eventHandlers.clear();
+	
+	// Clear dependencies
 	this->dependencies.sum = 0;
 	
 	// Remove Children
-	this->removeChildren();
-	this->removeEnhancedChildren();
+	for_each( this->children.begin() , this->children.end() , &_gadget::removeCallback );
+	for_each( this->enhancedChildren.begin() , this->enhancedChildren.end() , &_gadget::removeCallback );
+	this->children.clear();
+	this->enhancedChildren.clear();
 	
-	if( _system::_lastClickedGadget_ == this )
-		_system::_lastClickedGadget_ = nullptr;
+	if( _guiController::getLastClickedGadget() == this )
+		_guiController::setLastClickedGadget( nullptr );
 }
 
 
 void _gadget::triggerEvent( _event event , _eventCallType callType ){
-	_system::generateEvent( (_event&&)event.setDestination( this ) , callType );
+	_eventController::pushEvent( (_event&&)event.setDestination( this ) , callType );
 }
 
 void _gadget::redrawParents( _area&& areaToRefresh )
@@ -109,14 +107,7 @@ void _gadget::redraw( _area&& areaToRefresh )
 
 void _gadget::setInternalEventHandler( _eventType type , _paramAlloc<_callback<_eventHandler>> handler )
 {
-	// Remove any Current Handler
-	_callback<_eventHandler>* &data = this->eventHandlers[type]; // reference to pointer
-	
-	if( data )
-		delete data; // Delete Current Event-Handler
-	
-	// Insert The Handler
-	data = handler;
+	this->eventHandlers[type] = handler.get();
 	
 	// Check if we have to convert back to 'basic' eventTypes
 	type = userET2eventType( type );
@@ -125,16 +116,15 @@ void _gadget::setInternalEventHandler( _eventType type , _paramAlloc<_callback<_
 		this->addDependency( type );
 }
 
-void _gadget::removeInternalEventHandler( _eventType type ){
+void _gadget::removeInternalEventHandler( _eventType type )
+{
 	// Unbind the Handler
 	_eventHandlerMap::iterator data = this->eventHandlers.find( type );
 	
-	if( data != this->eventHandlers.end() && data->second )
-	{
-		delete data->second;
+	if( data != this->eventHandlers.end() )
 		this->eventHandlers.erase( data );
-	}
 	
+	// Remove Dependency
 	type = userET2eventType( type );
 	if( isDepType( type ) )
 		this->removeDependency( type );
@@ -158,14 +148,14 @@ void _gadget::removeCallback( _gadget* g )
 			g->parent->activeChild = nullptr;
 			
 		// Remove current focus
-		_system::_currentFocus_ = g->parent;
+		_guiController::setCurrentFocus( g->parent );
 	}
-	
-	// Trigger dependency event
-	g->notifyDependentGadgets( onDelete , false );
 	
 	// Remove parent from child
 	g->parent = nullptr;
+	
+	// Trigger dependency event
+	g->notifyDependentChildren( onDelete );
 }
 
 // All about blinking
@@ -286,7 +276,7 @@ bool _gadget::blurChild()
 		this->activeChild->notifyDependentGadgets( onBlur , false );
 		
 		// Remove current focus
-		_system::_currentFocus_ = this;
+		_guiController::setCurrentFocus( this );
 	}
 	
 	return true;
@@ -298,7 +288,7 @@ bool _gadget::focus()
 		return this->parent->focusChild( this );
 	
 	else if( this->type == _gadgetType::screen )
-		return this->style.isFocusable && ( this->style.takesFocus || !_system::_currentFocus_ );
+		return this->style.isFocusable && ( this->style.takesFocus || !_guiController::getCurrentFocus() );
 	
 	return false;
 }
@@ -334,7 +324,7 @@ bool _gadget::focusChild( _gadget* child )
 		return false;
 	
 	// Set _currentFocus_
-	_system::_currentFocus_ = child;
+	_guiController::setCurrentFocus( child );
 	
 	// 'focus' and 'select' the child
 	child->state.focused = true;
@@ -361,7 +351,7 @@ bool _gadget::focusChild( _gadget* child )
 		// Move to front of children
 		_gadgetList& list = child->isEnhanced() ? this->enhancedChildren : this->children;
 		
-		// no moving neccesary?
+		// no moving necessary?
 		if( child == list.front() )
 			return true;
 		
@@ -406,7 +396,7 @@ __attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool n
 	auto end = eventHandlers.end();
 	while( begin != end )
 	{
-		if( begin->first > maxEventType ) // Only with _assocVector possible since it is ordered
+		if( begin->first > maxEventType ) // Only with _map possible since it is ordered
 			break;
 		else if( begin->first == eventType1 )
 		{
@@ -683,7 +673,7 @@ void _gadget::removeChild( _gadget* child )
 			this->activeChild = nullptr;
 		
 		// Remove current focus from the child and set it to this gadget
-		_system::_currentFocus_ = this;
+		_guiController::setCurrentFocus( this );
 	}
 	
 	//! Temp...
@@ -712,7 +702,7 @@ void _gadget::removeChild( _gadget* child )
 
 
 void _gadget::addChildInternal( bool enhanced , _gadget* child , bool after , _gadget* keyElement = nullptr )
-{	
+{
 	if( !child || child->parent == this )
 		return;
 	else if( child->parent )
@@ -748,8 +738,7 @@ void _gadget::addChildInternal( bool enhanced , _gadget* child , bool after , _g
 	child->notifyDependentAdjacents( onAdd );
 	
 	// Notify itself that it has a new parent
-	if( child->isDependentOf( onParentAdd ) )
-		child->notifyDependentSelf( onParentAdd , _dependencyParam().setSource(this) );
+	child->notifyDependentSelf( onParentAdd , _dependencyParam().setSource(this) );
 }
 
 
@@ -1117,7 +1106,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 	else if( event == onMouseDown )
 		that->blurChild();
 	
-	_system::_lastClickedGadget_ = that;
+	_guiController::setLastClickedGadget( that );
 	
 	return not_handled;
 }
@@ -1317,7 +1306,8 @@ _gadget* _gadget::getPrecedentChild( bool skipHidden )
 
 
 void _gadget::notifyDependentSelf( _eventType change , _dependencyParam param ){
-	this->handleEvent( _event::dependencyEvent( change , param ) );
+	if( !isDepType( change ) || this->isDependentOf( change ) )
+		this->handleEvent( _event::dependencyEvent( change , param ) );
 }
 
 

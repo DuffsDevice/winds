@@ -1,4 +1,4 @@
-#include "_type/type.system.h"
+#include "_type/type.windows.h"
 #include "_type/type.sound.h"
 #include "_type/type.sound.channel.h"
 #include "_type/type.sound.msg.h"
@@ -87,7 +87,7 @@ _s8 _soundChannel::fromMsg( _channelSetMsg msg )
 			
 			break;
 		case _channelType::stream:
-			chn->lastCheck = _system::getBUSTime();
+			chn->lastCheck = _windows::getBUSTime();
 			
 			SCHANNEL_SOURCE(newChannel) = (_u32)chn->buffer8;
 			SCHANNEL_REPEAT_POINT(newChannel) = 0;
@@ -122,7 +122,7 @@ void _soundChannel::stop()
 	
 	if( this->type == _channelType::stream )
 	{
-		_tempTime time = _system::getBUSTime();
+		_tempTime time = _windows::getBUSTime();
 		
 		static const _u32 ticksPerSecond = BUS_CLOCK;
 		
@@ -142,7 +142,7 @@ void _soundChannel::play(){
 		return;
 	
 	if( this->type == _channelType::stream )
-		this->lastCheck = _system::getBUSTime() - this->lastCheck;
+		this->lastCheck = _windows::getBUSTime() - this->lastCheck;
 	
 	this->wasExecuted = true;
 	SCHANNEL_CR(this->channelId) |= SCHANNEL_ENABLE;
@@ -152,7 +152,7 @@ void __attribute__((hot)) _soundChannel::process()
 {
 	if( this->type == _channelType::stream )
 	{
-		_tempTime time = _system::getBUSTime();
+		_tempTime time = _windows::getBUSTime();
 		
 		if( time < this->lastCheck ){
 			this->lastCheck = time;
@@ -160,10 +160,10 @@ void __attribute__((hot)) _soundChannel::process()
 		}
 		
 		_u32 elapsedTime = time - this->lastCheck; // Ticks of Timer that have elapsed since the last call to process()
-		_u32 elapsedSamples = elapsedTime * this->frequency / _system::ticksPerSecond;
+		_u32 elapsedSamples = elapsedTime * this->frequency / _windows::ticksPerSecond;
 		
 		// Indicate that we have checked a few samples
-		this->lastCheck += elapsedSamples * _system::ticksPerSecond / this->frequency;
+		this->lastCheck += elapsedSamples * _windows::ticksPerSecond / this->frequency;
 		
 		// disadvance the still Filled buffer with the samples that have elapsed
 		this->bufferFilled -= elapsedSamples;

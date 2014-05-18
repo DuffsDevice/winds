@@ -195,26 +195,26 @@ public:
 	}
 
 	// modifiers:
-	std::pair<iterator, bool> insert(const value_type& val)
+	std::pair<iterator, bool> insert(value_type val)
 	{
 		bool found(true);
 		iterator i(lower_bound(val.first));
 
 		if (i == end() || this->operator()(val.first, i->first))
 		{
-			i = Base::insert(i, val);
+			i = Base::emplace(i, std::move(val));
 			found = false;
 		}
 		return std::make_pair(i, !found);
 	}
 	//Section [23.1.2], Table 69
 	//http://developer.apple.com/documentation/DeveloperTools/gcc-3.3/libstdc++/23_containers/howto.html#4
-	iterator insert(iterator pos, const value_type& val)
+	iterator insert(iterator pos, value_type val)
 	{
 		if( (pos == begin() || this->operator()(*(pos-1),val)) && 
 			(pos == end()    || this->operator()(val, *pos)) )
 		{
-			return Base::insert(pos, val);
+			return Base::emplace(pos, std::move(val));
 		}
 		return insert(val).first;
 	}

@@ -3,8 +3,8 @@
 #define _WIN_T_GADGET_
 
 #include "_type/type.bitmap.h"
-#include "_type/type.style.h"
 #include "_type/type.bitmap.port.h"
+#include "_type/type.style.h"
 #include "_type/type.event.h"
 #include "_type/type.event.calltype.h"
 #include "_type/type.callback.h"
@@ -12,17 +12,16 @@
 #include "_type/type.assocvector.h"
 #include "_type/type.dependency.h"
 #include "_type/type.gadget.type.h"
-
-#include <type_traits>
+#include "_type/type.uniqueptr.h"
 
 //! Predefine
 class _gadget;
 
 //! Typedefs
-typedef _deque<_gadget*> 									_gadgetList;
-typedef _callbackReturn 									_eventHandler(_event);
-typedef _assocVector<_eventType,_callback<_eventHandler>*> 	_eventHandlerMap;
-typedef _array<_staticCallback<_eventHandler>,14>			_defaultEventHandlerMap;
+typedef _deque<_gadget*> 										_gadgetList;
+typedef _callbackReturn 										_eventHandler(_event);
+typedef _map<_eventType,_uniquePtr<_callback<_eventHandler>>> 	_eventHandlerMap;
+typedef _array<_staticCallback<_eventHandler>,14>				_defaultEventHandlerMap;
 
 class _gadget
 {
@@ -206,6 +205,7 @@ class _gadget
 		}
 		
 		//! Get The Bitmap of the Gadget
+		_bitmap& getBitmap(){ return this->bitmap; }
 		_constBitmap& getBitmap() const { return this->bitmap; }
 		
 		/**
@@ -650,23 +650,17 @@ class _gadget
 		}
 		
 		
-		//! Get the toppest child owned by the parent
-		_gadget* getToppestChild() const { return this->children.front(); }
+		//! Get the toppest (enhanced) child owned by the parent
+		_gadget* getToppestChild( bool enhanced ) const { return enhanced ? this->enhancedChildren.front() : this->children.front(); }
 		
-		//! Get the lowest child owned by the parent
-		_gadget* getLowestChild() const { return this->children.back(); }
+		//! Get the lowest (enhanced) child owned by the parent
+		_gadget* getLowestChild( bool enhanced ) const { return enhanced ? this->enhancedChildren.back() : this->children.back(); }
 		
 		//! Get the child gadget, that currently has focus
 		_gadget* getFocusedChild() const { return this->activeChild && this->activeChild->state.focused ? this->activeChild : nullptr; }
 		
 		//! Get the selected gadget inside the parent
 		_gadget* getSelectedChild() const { return this->activeChild; }
-		
-		//! Get the toppest enhanced child owned by the parent
-		_gadget* getToppestEnhancedChild() const { return this->enhancedChildren.front(); }
-		
-		//! Get the lowest enhanced child owned by the parent
-		_gadget* getLowestEnhancedChild() const { return this->enhancedChildren.back(); }
 		
 		//! Helps to find adjacent children
 		_gadget*	getPrecedentChild( bool skipHidden = false );

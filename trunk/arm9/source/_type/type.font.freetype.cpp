@@ -61,10 +61,7 @@ _length _freetypeFont::getCharacterWidth( const _char codepoint , _u8 fontSize )
 
 bool _freetypeFont::isCharSupportedInternal( const _char codepoint ) const 
 {
-	int x1 = x1;// Remove GCC Warning "may be uninitialized in this function"
-	int y1 = y1;
-	int x2 = x2;
-	int y2 = y2;
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 	
 	stbtt_GetGlyphBox( &this->fontInfo , codepoint , &x1 , &y1 , &x2 , &y2 );
 	

@@ -1,9 +1,10 @@
 #include "_dialog/dialog.entertext.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 void _enterTextDialog::executeInternal(){
 	this->textBox->setStrValue( this->initialValue );
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _enterTextDialog::cleanupInternal(){
@@ -11,8 +12,8 @@ void _enterTextDialog::cleanupInternal(){
 }
 
 _enterTextDialog::_enterTextDialog( string message , string windowLbl , string initialValue , _optValue<string> okLbl , _optValue<string> cancelLbl ) : 
-	okButton( new _button( 0 , 0 , ignore , ignore , okLbl.isValid() ? (string&&)okLbl : _system::getLocalizedString("lbl_ok") ) )
-	, cancelButton( new _button( 0 , 0 , ignore , ignore , cancelLbl.isValid() ? (string&&)cancelLbl : _system::getLocalizedString("lbl_cancel") ) )
+	okButton( new _button( 0 , 0 , ignore , ignore , okLbl.isValid() ? (string&&)okLbl : _localizationController::getBuiltInString("lbl_ok") ) )
+	, cancelButton( new _button( 0 , 0 , ignore , ignore , cancelLbl.isValid() ? (string&&)cancelLbl : _localizationController::getBuiltInString("lbl_cancel") ) )
 	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
 	, initialValue( move(initialValue) )
 {	

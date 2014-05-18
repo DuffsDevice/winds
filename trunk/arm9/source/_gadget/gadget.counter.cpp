@@ -1,10 +1,10 @@
 #include "_gadget/gadget.counter.h"
 #include "_gadget/gadget.button.h"
-#include "_type/type.system.h"
-#include "func.memory.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.font.h"
 
 _counter::_counter( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool circular , _s32 value , _optValue<_s32> upperBound , _optValue<_s32> lowerBound  , _optValue<_u8> numbersystem , _style&& style ) :
-	_gadget( _gadgetType::counter , x , y , width , _system::getUser().cOH , (_style&&)style )
+	_gadget( _gadgetType::counter , x , y , width , _guiController::getCounterHeight() , (_style&&)style )
 	, circular( circular )
 	, lowerBound( lowerBound.isValid() ? (_s32)lowerBound : 0 )
 	, upperBound( upperBound.isValid() ? (_s32)upperBound : 99 )
@@ -35,7 +35,7 @@ _counter::_counter( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	this->valueLabel = new _label( 1 , 1 , this->getWidth() - 10 , this->getHeight() - 2 , int2string( value , this->decimals , this->numbersystem ) );
 	this->valueLabel->setAlign( _align::center );
 	this->valueLabel->setVAlign( _valign::middle );
-	this->valueLabel->setFont( _system::getFont( "CourierNew10" ) );
+	this->valueLabel->setFont( _fontController::getFont( "CourierNew10" ) );
 	
 	// Register onClick handlers to buttons
 	this->increaseHandle->setUserEventHandler( onMouseClick , make_callback( this , &_counter::btnClickHandler ) );
@@ -86,8 +86,8 @@ _callbackReturn _counter::focusHandler( _event event )
 	_counter* that = event.getGadget<_counter>();
 	
 	// Blur and Focus changes the style of the label
-	that->valueLabel->setBgColor( _system::getRTA().getItemBackground( event == onFocus ) );
-	that->valueLabel->setColor( _system::getRTA().getItemForeground( event == onFocus ) );
+	that->valueLabel->setBgColor( _guiController::getItemBg( event == onFocus ) );
+	that->valueLabel->setColor( _guiController::getItemFg( event == onFocus ) );
 	
 	return handled;
 }

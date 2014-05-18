@@ -3,7 +3,7 @@
 #include "_resource/resource.image.picker.greyscale.h"
 #include "_resource/resource.image.picker.overlay.h"
 #include "_resource/resource.image.picker.overlay.big.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
 
 #define COLORPICKER_BW_START_Y 95
 #define COLORPICKER_NUM_HEXAGONS 145
@@ -48,7 +48,7 @@ _color _hexagonColorPicker::getHexagonColor( _s16 number ){
 
 _hexagonColorPicker::_hexagonColorPicker( _optValue<_coord> x , _optValue<_coord> y , _color initialColor , _style&& style ) :
 	_gadget( _gadgetType::hexagoncolorpicker , x , y , 106 , COLORPICKER_BW_START_Y + 16 , style | _style::notResizeable | _style::draggable )
-	, bgColor( _system::getRTA().getControlBackground() )
+	, bgColor( _guiController::getControlBg() )
 {
 	// Set Hexagon
 	setColor( _color::fromRGB( 31 , 15 , 24 ) );

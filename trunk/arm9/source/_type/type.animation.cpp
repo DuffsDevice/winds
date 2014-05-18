@@ -1,11 +1,9 @@
 #include "_type/type.animation.h"
-#include "_type/type.system.h"
+#include "_controller/controller.animation.h"
+#include "_controller/controller.timer.h"
 
 #include <cmath>
 #define  M_PI        3.14159265358979323846
-
-_animationList _animation::globalAnimations;
-_animationList _animation::globalAnimationsToExecute;
 
 _animation::_animation( int from , int to , _tempTime dur ) :
 	startTime( 0 ) , duration( dur ) , setterFunc( nullptr ) , finishFunc( nullptr ) , easeFunc( &_animation::_linear::ease ) , fromValue( from ) , toValue( to ) , runs( false )
@@ -18,40 +16,14 @@ void _animation::start()
 	// If it was paused instead of terminated
 	// and if it is not currently running: continue our work!
 	if(	this->startTime && !this->runs )
-		this->startTime = _system::getMilliTime() - this->startTime; // startTime determines the already elapsed milliseconds
+		this->startTime = _timerController::getMilliTime() - this->startTime; // startTime determines the already elapsed milliseconds
 	else
-		this->startTime = _system::getMilliTime();
+		this->startTime = _timerController::getMilliTime();
 	
 	this->runs = true;
 	
-	// Add the animation to the list of running animations
-	if(
-		find( _animation::globalAnimations.begin() , _animation::globalAnimations.end() , this ) == _animation::globalAnimations.end()
-		&& find( _animation::globalAnimationsToExecute.begin() , _animation::globalAnimationsToExecute.end() , this ) == _animation::globalAnimationsToExecute.end()
-	)
-		_animation::globalAnimationsToExecute.push_back( this );
-}
-
-void _animation::runAnimations()
-{
-	// Move timers to execute
-	move( _animation::globalAnimationsToExecute.begin() , _animation::globalAnimationsToExecute.end() , std::back_inserter( _animation::globalAnimations ) );
-	
-	// Clear buffer
-	globalAnimationsToExecute.clear();
-	
-	// Iterate through all running animations
-	_animation::globalAnimations.erase(
-		remove_if(
-			_animation::globalAnimations.begin()
-			, _animation::globalAnimations.end()
-			, []( _animation* anim )->bool
-			{
-				anim->step(); return !anim->isRunning();
-			}
-		)
-		, _animation::globalAnimations.end()
-	);
+	// Add to the animation controller to be executed
+	_animationController::addAnimationToExecute( this );
 }
 
 void _animation::pause()
@@ -62,7 +34,7 @@ void _animation::pause()
 	this->runs = false;
 	
 	// Store elapsed time for using start() again
-	this->startTime = _system::getMilliTime() - this->startTime;
+	this->startTime = _timerController::getMilliTime() - this->startTime;
 }
 
 void _animation::terminate( bool animToEnd )
@@ -90,7 +62,7 @@ void _animation::step()
 	if( !this->runs )
 		return;
 	
-	_tempTime curTime = _system::getMilliTime();
+	_tempTime curTime = _timerController::getMilliTime();
 	
 	_u32 tElapsed = curTime - this->startTime;
 	

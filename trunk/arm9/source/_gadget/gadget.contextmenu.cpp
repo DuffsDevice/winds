@@ -1,6 +1,5 @@
 #include "_gadget/gadget.contextmenu.h"
 #include "_gadget/gadget.contextmenu.entry.divider.h"
-#include "_type/type.system.h"
 
 _contextMenu::_contextMenu( _optValue<_length> width , const _menuEntryList& list , _gadget* owner , bool preserveValue , _int initialValue , _style&& style ) :
 	_popup( width , ignore , owner )
@@ -128,7 +127,7 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 				return handled;
 			}
 		}
-		next = (_contextMenuEntry*) that->getToppestChild();
+		next = (_contextMenuEntry*) that->getToppestChild( false );
 		if( next ){
 			while( next && next->getStrValue() == "----" )
 				next = (_contextMenuEntry*) next->getSubcedentChild();
@@ -148,7 +147,7 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 				return handled;
 			}
 		}
-		next = (_contextMenuEntry*) that->getLowestChild();
+		next = (_contextMenuEntry*) that->getLowestChild( false );
 		if( next ){
 			while( next && next->getStrValue() == "----" )
 				next = (_contextMenuEntry*) next->getPrecedentChild();
@@ -198,7 +197,7 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	}
 	
 	// Adjust height
-	that->setHeight( that->getLowestChild()->getDimensions().getY2() + 3 );
+	that->setHeight( that->getLowestChild( false )->getDimensions().getY2() + 3 );
 	
 	// Possibly unhighlight the old entry
 	if( !that->preserveValue )

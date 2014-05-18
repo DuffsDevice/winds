@@ -1,10 +1,10 @@
---NAME = Pong
---IMG = %APPDATA%/PongIcon.bmp
---AUTHOR = WinDS
---VERSION = 1.0
---DESC = Simple Cover of the famous Game 'Pong'
---COPYRIGHT = (C) 2014
---LANG = neutral
+--NAME		= Pong
+--FILE_ICON	= %APPDATA%/PongIcon.bmp
+--FILE_NAME	= %APPDATA%/PongIcon.bmp
+--AUTHOR	= WinDS
+--VERSION	= 1.0
+--DESC		= Simple Cover of the famous Game 'Pong'
+--COPYRIGHT	= (C) 2014
 
 using "Drawing.Area"
 using "Drawing.Bitmap"
@@ -13,7 +13,7 @@ using "Drawing.Color"
 using "Drawing.Font"
 using "System.Event"
 using "System.Timer"
-using "UI.Window"
+using "UI.MainFrame"
 using "UI.Gadget"
 using "UI.Button"
 using "UI.ImageGadget"
@@ -101,16 +101,14 @@ function main()
 	bmp.drawVerticalLine( 5 , 3 , 3 , "lime" )
 	bmp.drawFilledRect( 2 , 2 , 2 , 2 , "fuchsia" )
 	
-	window = Window( 40 , 20 , gameWidth + 2 , gameHeight + 11 , "Pong" , bmp , true , true , "notResizeable | draggable" )
+	window = System.getMainFrame( gameWidth + 2 , gameHeight + 11 , "notResizeable" )
+	window.icon = bmp
 	
 	window.addChild( pongBmp )
 	window.setUserEventHandler( "onKeyDown" , eventHandler )
 	window.setUserEventHandler( "onKeyUp" , eventHandler )
 	window.setUserEventHandler( "onBlur" , eventHandler )
 	window.setUserEventHandler( "onFocus" , eventHandler )
-	window.setUserEventHandler( "onClose" , System.exit )
-	
-	System.addChild( window )
 	
 	timer = Timer( frame , 1000/60 , true )
 end
@@ -205,8 +203,8 @@ function refresher( event )
 	
 	-- Paint Scores
 	local font = System.getFont("ArialBlack13")
-	port.drawString( gameWidth / 2 - 15 , 3 , font , string.format("%d",scoreUser) , "lime" , 10 )
-	port.drawString( gameWidth / 2 + 10 , 3 , font , string.format("%d",scoreComputer) , "lime" , 10 )
+	port.drawString( gameWidth / 2 - 15 , 3 , font , scoreUser , "lime" , 10 )
+	port.drawString( gameWidth / 2 + 10 , 3 , font , scoreComputer , "lime" , 10 )
 	
 	return "handled"
 end
@@ -237,6 +235,6 @@ function eventHandler( event )
 	end
 	
 	-- Calls the internal gadget-specific eventHandler
-	-- which is neccesary e.g. with onBlur, onFocus
+	-- which is necessary e.g. with onBlur, onFocus
 	return "use_internal"
 end

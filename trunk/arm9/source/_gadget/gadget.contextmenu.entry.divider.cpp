@@ -1,6 +1,6 @@
 #include "_gadget/gadget.contextmenu.entry.divider.h"
 #include "_gadget/gadget.contextmenu.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
 
 _contextMenuEntryDivider::_contextMenuEntryDivider( _style&& style ) :
 	_contextMenuEntry( ignore , -1 , "----" , move(style) )
@@ -28,12 +28,12 @@ _callbackReturn _contextMenuEntryDivider::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Fill Background
-	bP.fill( _system::getRTA().getItemBackground() );
+	bP.fill( _guiController::getItemBg() );
 	
 	_length myW = bP.getWidth();
 	
 	// Draw bevelled line
-	bP.drawHorizontalLine( 0 , 1 , myW , _system::getRTA().getControlForeground() );
+	bP.drawHorizontalLine( 0 , 1 , myW , _guiController::getControlFg() );
 	
 	return handled;
 }

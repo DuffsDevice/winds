@@ -3,28 +3,19 @@
 
 #include "_type/type.h"
 #include "_type/type.callback.h"
-#include "_type/type.flexptr.h"
-
-// List of pointers to timers
-typedef _vector<class _timer*> _timerList;
+#include "_type/type.uniqueptr.h"
 
 class _timer
 {
 	private:
 		
-		_tempTime	startTime;
-		_tempTime	duration;
-		bool 		repeating;
-		bool		runs;
+		_tempTime						startTime;
+		_tempTime						duration;
+		bool 							repeating;
+		bool							runs;
+		_uniquePtr<_callback<void()>>	callback;
 		
-		flex_ptr<_callback<void()>> callback;
-		
-		static _timerList globalTimers;
-		static _timerList globalTimersToExecute;
-		static void runTimers();
-		
-		friend class _system;
-		friend class _systemController;
+		friend class _timerController;
 	
 	public:
 		

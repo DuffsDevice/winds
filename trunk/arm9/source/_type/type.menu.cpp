@@ -1,5 +1,4 @@
 #include "_type/type.menu.h"
-#include "_type/type.system.h"
 
 void _menu::callHandler( _int listIndex , _int entryIndex )
 {

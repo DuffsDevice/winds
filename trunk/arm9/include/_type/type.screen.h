@@ -38,13 +38,14 @@ class _screen{
 		//! get the base Memory
 		_pixelArray	getMemoryPtr() const ;
 		
-		//! get the base Memory
-		_bitmap	getBitmap() const ;
-		
 		//! Get the id returned by bgInit or bgInitSub
 		int getBgId() const ;
 		
+		//! Ctor
 		_screen( int bgId );
+		
+		//! Dtor
+		virtual ~_screen() = default;
 };
 
 #endif

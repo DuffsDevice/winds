@@ -1,16 +1,6 @@
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.button.h"
 
-//_callbackReturn handler( _event e )
-//{
-//	if( e.getGadget()->getStyle().data )
-//		((_scrollArea*)e.getGadget<_button>()->getParent())->scrollTo( 0 , 0 , true );
-//	else
-//		((_scrollArea*)e.getGadget<_button>()->getParent())->scrollTo( 4342 , 23423 , true );
-//	
-//	return handled;
-//}
-
 _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX , _scrollType scrollTypeY , _style&& style ) :
 	_gadget( _gadgetType::scrollarea , x , y , width , height , (_style&&)style )
 	, scrollTypeX( scrollTypeX )
@@ -22,6 +12,7 @@ _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	, canvasHeight( height )
 	, leaveCorner( false )
 {
+	
 	// Set minimum size
 	this->setMinHeight( 14 );
 	this->setMinWidth( 14 );
@@ -49,15 +40,8 @@ _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	this->setInternalEventHandler( onChildHide , make_callback( &_scrollArea::childHandler ) );
 	this->setInternalEventHandler( onChildFocus , make_callback( &_scrollArea::childHandler ) );
 	
-	// Refresh Me	
-	this->update();
-	
-	//auto b = new _button( 20 , 30 , 200 , 210 , "Hallo" , _style::storeInt( 1 ) );
-	//b->setInternalEventHandler( onAction , make_callback( &handler ) );
-	//auto b2 = new _button( 50 , 50 , 1 , 1 , "Hallo" );
-	//b2->setInternalEventHandler( onAction , make_callback( &handler ) );
-	//this->addChild( b );
-	//this->addChild( b2 );
+	// Refresh Me
+	this->updateNow();
 }
 
 void _scrollArea::updateScrollBars()
@@ -186,6 +170,10 @@ _callbackReturn _scrollArea::childHandler( _event event )
 	// Fetch Instance
 	_scrollArea* that = event.getGadget<_scrollArea>();
 	
+	// Abort if one of the scrollbars triggered the event
+	if( event.getGadgetParam() == that->scrollBarX || event.getGadgetParam() == that->scrollBarY )
+		return handled;
+	
 	if( event == onChildAdd )
 	{
 		// Get the child that was added
@@ -247,7 +235,7 @@ _callbackReturn _scrollArea::scrollHandler( _event event )
 			child->moveRelative( - event.getDeltaX() , - event.getDeltaY() , true );
 	
 	// Forward onScroll-Event!
-	area->triggerEvent( event );
+	area->triggerEvent( move(event) );
 	
 	return handled;
 }

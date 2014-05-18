@@ -1,6 +1,6 @@
 #include "_gadget/gadget.button.h"
-#include "_type/type.system.h"
 #include "_type/type.gadget.helpers.h"
+#include "_controller/controller.font.h"
 
 void _button::setStrValue( string val )
 {
@@ -17,7 +17,7 @@ void _button::setStrValue( string val )
 	this->redraw();
 }
 
-void _button::setFont( _fontPtr ft )
+void _button::setFont( _fontHandle ft )
 {
 	if( this->font == ft || !ft )
 		return;
@@ -190,9 +190,9 @@ _button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	_gadget( _gadgetType::button , x , y , width , height , style | _style::notDoubleClickable )
 	, autoSelect( false )
 	, strValue( value )
-	, font( _system::getFont() )
+	, font( _fontController::getStandardFont() )
 	, fontColor( _color::black )
-	, fontSize( _system::getRTA().getDefaultFontSize() )
+	, fontSize( _fontController::getStandardFontSize() )
 	, pressed( false )
 	, align( _align::center )
 	, vAlign( _valign::middle )

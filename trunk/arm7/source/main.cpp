@@ -1,8 +1,8 @@
-#include "_type/type.system.h"
+#include "_type/type.windows.h"
 
 int main()
 {
-	_system::init();
-	_system::main();	
+	_windows::init();
+	_windows::main();
 	return 0;
 }

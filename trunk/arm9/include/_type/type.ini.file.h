@@ -1,5 +1,5 @@
-#ifndef _WIN_T_INIFILE_
-#define _WIN_T_INIFILE_
+#ifndef _WIN_T_INI_FILE_
+#define _WIN_T_INI_FILE_
 
 #include "_type/type.h"
 #include "_type/type.ini.h"

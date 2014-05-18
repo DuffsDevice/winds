@@ -1,22 +1,23 @@
 #include "_dialog/dialog.runtimeerror.h"
-#include "_type/type.system.h"
 #include "_resource/resource.image.alerts.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 _constBitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
 
 void _runtimeErrorDialog::executeInternal(){
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _runtimeErrorDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo ) : 
-	closeButton( new _button( 0 , 0 , ignore , ignore , _system::getLocalizedString("lbl_close") ) )
+_runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfoText ) : 
+	closeButton( new _button( 0 , 0 , ignore , ignore , _localizationController::getBuiltInString("lbl_close") ) )
 	, msg( new _label( errorimage.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
 	, image( new _imageGadget( 3 , 3 , errorimage ) )
-	, additionalInfo( new _textArea( 1 , 1 , 50 , 25 , (string&&)additionalInfo ) )
+	, additionalInfo( new _textArea( 1 , 1 , 50 , 35 , (string&&)additionalInfoText ) )
 {
 	// Buttons
 	this->closeButton->setAutoSelect( true );
@@ -40,10 +41,10 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 	this->additionalInfo->setWidth( winWidth - 4 );
 	
 	// Window-Height
-	_length winHeight = this->msg->getHeight() + this->closeButton->getHeight() + 7 + 11 + 35; // + 11 for the window, + 35 for the textarea
+	_length winHeight = this->msg->getHeight() + this->closeButton->getHeight() + 8 + 11 + additionalInfo->getHeight(); // + 11 for the window
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _system::getLocalizedString("lbl_runtime_error") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _localizationController::getBuiltInString("lbl_runtime_error") , false , true , _style::notResizeable | _style::draggable );
 	
 	// Move buttons to right position
 	this->closeButton->moveTo( winWidth - this->closeButton->getWidth() - 3 , this->msg->getHeight() + 4 );

@@ -4,6 +4,7 @@
 
 #include "_lua/lua.lunar.h"
 #include "_type/type.font.h"
+#include "_type/type.font.handle.h"
 
 /**
  * Proxy Classes
@@ -12,18 +13,18 @@ class _lua_font
 {
 	private:
 		
-		_fontPtr	font;
+		_fontHandle	font;
 	
 	public:
 		
 		//! C-Ctor
-		_lua_font( _fontPtr f );
+		_lua_font( _fontHandle f );
 		
 		//! Lua-Ctor
 		_lua_font( lua_State* L );
 		
-		//! Operator that allows casts to _font
-		operator _fontPtr(){
+		//! Operator that allows casts to _font & _fontHandle
+		operator _fontHandle(){
 			return this->font;
 		}
 		operator _font&(){

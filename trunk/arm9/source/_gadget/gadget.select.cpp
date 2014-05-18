@@ -1,8 +1,9 @@
 #include "_gadget/gadget.select.h"
-#include "_type/type.system.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst , _int initialValue , _style&& style ) :
-	_gadget( _gadgetType::selectbox , x , y , width , _system::getUser().sOH , (_style&&)style )
+	_gadget( _gadgetType::selectbox , x , y , width , _guiController::getSelectHeight() , (_style&&)style )
 	, contextMenu( new _contextMenu( ignore , move(lst) , this , true , initialValue ) )
 	, arrow( new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonBottom ) )
 {
@@ -102,8 +103,8 @@ _callbackReturn _select::refreshHandler( _event event )
 	);
 	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _color::fromRGB( 9 , 13 , 19 ) );
 	
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	bP.drawString(
 		2

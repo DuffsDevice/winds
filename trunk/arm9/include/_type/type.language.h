@@ -2,22 +2,14 @@
 #define _WIN_T_LANGUAGE_
 
 #include "_type/type.h"
+#include "_type/type.shortstring.h"
 
 //! Enumerates available _languages for WinDS
-enum class _language : _u8
-{
-	japanese = 0,
-	english = 1,
-	french = 2,
-	german = 3,
-	italian = 4,
-	spanish = 5,
-	chinese = 6,
-	neutral = 100
-};
+//! Every language is made of two unique characters e.g. "en" for English
+using _language = _shortString<3>;
 
-//! Convert between string and language
-extern _fromStr<_language>	string2language;
-extern _toStr<_language>	language2string;
+//! Converts between the numbers 0-7 and the supported DS built-in languages in ISO Format
+extern _array<_language,8>			id2language;
+extern _converter<_language,_u8>	language2id;
 
 #endif

@@ -16,44 +16,44 @@ class _rect{
 			
 			private:
 				
-				_vector<_rect> t_rects;
+				_vector<_rect> rects;
 				
 			public:
 				
 				//! Ctors
-				_area( _initializerList<_rect> rects ) : t_rects( rects ) {}
-				_area( _vector<_rect>&& rects ) : t_rects( move(rects) ) {}
-				_area( const _vector<_rect>& rects ) : t_rects( rects ) {}
-				_area( _rect&& rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( (_rect&&)rc ); }
-				_area( const _rect& rc ) : t_rects( 1 ) { if( rc.isValid() ) t_rects.push_back( rc ); }
+				_area( _initializerList<_rect> rects ) : rects( rects ) {}
+				_area( _vector<_rect>&& rects ) : rects( move(rects) ) {}
+				_area( const _vector<_rect>& rects ) : rects( rects ) {}
+				_area( _rect&& rc ) : rects( 1 ) { if( rc.isValid() ) rects.push_back( (_rect&&)rc ); }
+				_area( const _rect& rc ) : rects( 1 ) { if( rc.isValid() ) rects.push_back( rc ); }
 				_area(){}
 					
 				//! Push-back Aliases
-				void add( _rect rc ){ if( rc.isValid() ) t_rects.push_back( rc ); }
-				void add( _area&& cR ){ move( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
-				void add( const _area& cR ){ copy( cR.t_rects.begin() , cR.t_rects.end() , back_inserter( t_rects ) ); }
+				void add( _rect rc ){ if( rc.isValid() ) rects.push_back( rc ); }
+				void add( _area&& cR ){ move( cR.rects.begin() , cR.rects.end() , back_inserter( rects ) ); }
+				void add( const _area& cR ){ copy( cR.rects.begin() , cR.rects.end() , back_inserter( rects ) ); }
 				
 				//! Clear
-				void clearRects(){ t_rects.clear(); }
+				void clearRects(){ rects.clear(); }
 				
 				//! Iteration
-				_vector<_rect>::iterator begin(){ return t_rects.begin(); }
-				_vector<_rect>::iterator end(){ return t_rects.end(); }
+				_vector<_rect>::iterator begin(){ return rects.begin(); }
+				_vector<_rect>::iterator end(){ return rects.end(); }
 				
 				//! Cut the supplied Rectangle off
 				_area& reduce( const _rect& dim );
 				
-				//! Relativate all t_rects
+				//! Relativate all rects
 				_area& toRelative( const _coord absX , const _coord absY );
 				_area toRelative( const _coord absX , const _coord absY ) const ;
 				_area& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
 				_area toRelative( const _2s32 position ) const { return this->toRelative( position.first , position.second ); }
 				
-				//! Clip all t_rects to the supplied one
+				//! Clip all rects to the supplied one
 				_area& clipToIntersect( const _rect& limits );
 				
-				//! Check for contained t_rects
-				bool isEmpty() const { return t_rects.empty(); }
+				//! Check for contained rects
+				bool isEmpty() const { return rects.empty(); }
 		};
 		
 		//! Dimensions

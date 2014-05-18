@@ -10,18 +10,13 @@ using namespace _luafunc;
 ##################################*/
 
 // Ctor
-_lua_bitmap::_lua_bitmap( _bitmap* b ) : 
-	bm( b )
+_lua_bitmap::_lua_bitmap( _bitmap& b ) :
+	bm( &b )
 	, wasAllocated( false )
 { }
 
-_lua_bitmap::_lua_bitmap( _constBitmap* b ) :
-	bm( new _bitmap( *b ) ) // Copy bitmap
-	, wasAllocated( true )
-{ }
-
-_lua_bitmap::_lua_bitmap( _bitmap&& b ) :
-	bm( new _bitmap( move(b) ) ) // Copy bitmap
+_lua_bitmap::_lua_bitmap( const _bitmap& b ) :
+	bm( new _bitmap(b) ) // Copy bitmap
 	, wasAllocated( true )
 { }
 
@@ -43,7 +38,7 @@ int _lua_bitmap::get( lua_State* L ){
 	return push( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 }
 
-using shortCutType = void (_bitmap::*)(_coord,_coord,_fontPtr,const _char*,_color,_u8);
+using shortCutType = void (_bitmap::*)(_coord,_coord,_fontHandle,const _char*,_color,_u8);
 
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "Bitmap";

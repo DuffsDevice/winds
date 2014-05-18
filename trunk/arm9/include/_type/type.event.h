@@ -6,7 +6,6 @@
 #include "_type/type.rect.h"
 #include "_type/type.flexptr.h"
 #include "_type/type.dependency.h"
-#include "_type/type.style.h"
 #include "_type/type.key.h"
 
 /**
@@ -202,7 +201,7 @@ class _event
 		_int 					effectiveX;		//! X-Position of the Stylus on the Screen when the Event was triggered
 		_int 					effectiveY;		//! Y-Position of the Stylus on the Screen when the Event was triggered
 		_hardwareKeyPattern		currentKeyCodes;//! Keycode-State of that Moment the Event was triggered
-		flex_ptr<_area>			damagedRects;	//! this Attribute will specify the Area, that is invalid/damaged and has to be repainted
+		_flexPtr<_area>			damagedRects;	//! this Attribute will specify the Area, that is invalid/damaged and has to be repainted
 		_int 					deltaX;			//! Delta-X, used at dragging-events
 		_int 					deltaY;			//! Delta-Y, used at dragging-events
 		union{
@@ -220,19 +219,14 @@ class _event
 	
 	public:
 		
-		//! Default Constructor
-		_event() :
-			type( _none_ ),
-			gadget( nullptr )
-		{ }
-		
-		_event( _eventType type ) :
-			type( type ) , gadget( nullptr )
-			, posX( 0 ) , posY( 0 )
-			, effectiveX( 0 ) , effectiveY( 0 )
-			, currentKeyCodes( 0 )
-			, deltaX( 0 ) , deltaY( 0 )
-			, keyCode( _key::none ) , heldTime( 0 )
+		//! Constructor
+		_event( _eventType type = _none_ ) :
+			type( type )			, gadget( nullptr )
+			, posX( 0 )				, posY( 0 )
+			, effectiveX( 0 )		, effectiveY( 0 )
+			, currentKeyCodes( 0 )	, deltaX( 0 )
+			, deltaY( 0 )			, keyCode( _key::none )
+			, heldTime( 0 )			, pressure( 0 )
 		{ }
 		
 		//! Shortcut to generate specific Events:
@@ -241,14 +235,14 @@ class _event
 			_event evt;
 			evt.type = onDraw;
 			evt.damagedRects = move(damagedRects);
-			return evt;
+			return move(evt);
 		}
 		
 		static _event dependencyEvent( _eventType type , _dependencyParam param ){
 			_event evt;
 			evt.type = type;
 			evt.depParam = param;
-			return evt;
+			return (evt);
 		}
 		
 		//! Get the Type of the Event
@@ -263,8 +257,7 @@ class _event
 		//! Get the (current) Gadget the Handler was called on
 		template<typename T>
 		T* getGadget() const { 
-			// Just Test if the supplied param is a subclass of _gadget!!!!!
-			typedef typename T::_gadget def;
+			unused typedef typename T::_gadget def; // Tests if the supplied param is a subclass of _gadget
 			return static_cast<T*>( this->gadget );
 		}
 		

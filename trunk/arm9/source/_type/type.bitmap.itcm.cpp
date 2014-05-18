@@ -1,5 +1,4 @@
 #include "_type/type.bitmap.h"
-#include "func.memory.h"
 
 #include <nds/arm9/math.h>
 #include <nds/bios.h>
@@ -22,7 +21,7 @@ void _bitmap::setWidth( _length w )
 		if( this->wasAllocated )
 		{
 			newBmp = new _pixel[ w * this->height ];
-			memSet( newBmp , 0 , w * this->height );
+			memset16( newBmp , 0 , w * this->height );
 		}
 		else
 			newBmp = this->bmp;
@@ -208,7 +207,7 @@ void _bitmap::drawHorizontalLine( _coord x , _coord y , _length length , _color 
 	length = x2 - x + 1;
 	
 	// Draw the line
-	memSet( this->bmp + x + y * this->width , color , length );
+	memset16( this->bmp + x + y * this->width , color , length );
 }
 
 void _bitmap::drawHorizontalDottedLine( _coord x , _coord y , _length length , _color color )
@@ -319,7 +318,7 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _col
 	_pixelArray to = this->bmp + y * this->width + x;
 	
 	if( w == this->width )
-		memSet( to , color , w * h ); // optimize Algorithm for drawing on whole bitmap
+		memset16( to , color , w * h ); // optimize Algorithm for drawing on whole bitmap
 	else
 	{
 		// Add 7 to the height since we are dividing by 8
@@ -329,14 +328,14 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _col
 		swiDivMod( h , 8 , &n , &rem );
 		
 		switch( rem ) {
-			case 7: do{ memSet( to , color , w );to += this->width;
-			case 6:		memSet( to , color , w );to += this->width;
-			case 5:		memSet( to , color , w );to += this->width;
-			case 4:		memSet( to , color , w );to += this->width;
-			case 3:		memSet( to , color , w );to += this->width;
-			case 2:		memSet( to , color , w );to += this->width;
-			case 1:		memSet( to , color , w );to += this->width;
-			case 0:		memSet( to , color , w );to += this->width;
+			case 7: do{ memset16( to , color , w );to += this->width;
+			case 6:		memset16( to , color , w );to += this->width;
+			case 5:		memset16( to , color , w );to += this->width;
+			case 4:		memset16( to , color , w );to += this->width;
+			case 3:		memset16( to , color , w );to += this->width;
+			case 2:		memset16( to , color , w );to += this->width;
+			case 1:		memset16( to , color , w );to += this->width;
+			case 0:		memset16( to , color , w );to += this->width;
 				} while( --n > 0 );
 		}
 	}
@@ -394,34 +393,35 @@ void _bitmap::replaceColor( _color color , _color replace )
 		h1 = min( h , _length( (diff2) + 1 ) );\
 		h -= h1;\
 		\
-		if( !h )\
-			return;\
-		\
-		do\
+		if( h )\
 		{\
-			j = w;\
+			\
 			do\
 			{\
-				if( ( val += (rand1) ) > 97 )\
-					val -= 97;\
-				pos[j-1] = *( temp + ( val & (diff1) ) - (diff2) );\
-			}while( --j > 0 );\
-			pos += this->width;\
-			temp++;\
-		}while( --h > 0 );\
-		\
-		do\
-		{\
-			j = w;\
+				j = w;\
+				do\
+				{\
+					if( ( val += (rand1) ) > 97 )\
+						val -= 97;\
+					pos[j-1] = *( temp + ( val & (diff1) ) - (diff2) );\
+				}while( --j > 0 );\
+				pos += this->width;\
+				temp++;\
+			}while( --h > 0 );\
+			\
 			do\
 			{\
-				if( ( val += (rand1) ) > 97 )\
-					val -= 97;\
-				pos[j-1] = *( temp + ( val & (diff2) ) - (diff2) );\
-			}while( --j > 0 );\
-			pos += this->width;\
-			temp++;	\
-		}while( --h1 > 0 );\
+				j = w;\
+				do\
+				{\
+					if( ( val += (rand1) ) > 97 )\
+						val -= 97;\
+					pos[j-1] = *( temp + ( val & (diff2) ) - (diff2) );\
+				}while( --j > 0 );\
+				pos += this->width;\
+				temp++;	\
+			}while( --h1 > 0 );\
+		}\
 	}
 
 void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
@@ -798,7 +798,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , _fontPtr font , const _char* str , _color color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , const _char* str , _color color , _u8 fontSize )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawString"};
 	
@@ -857,7 +857,7 @@ void _bitmap::copy( _coord x , _coord y , _constBitmap& data )
 	
 	do
 	{
-		memCpy( myData , copyData , w );
+		memcpy16( myData , copyData , w );
 		copyData += dataWidth;
 		myData += this->width;
 		
@@ -961,7 +961,7 @@ void _bitmap::copyHorizontalStretch( _coord x , _coord y , _length w , _constBit
 	
 	for( _int i = 0; i < height; i++ )
 	{
-		memSet( myData , copyData[y - origY + i] , width );
+		memset16( myData , copyData[y - origY + i] , width );
 		myData += this->width;
 	}
 }
@@ -990,14 +990,14 @@ void _bitmap::copyVerticalStretch( _coord x , _coord y , _length h , _constBitma
 	_length width = x2 - x + 1;
 	
 	// Draw one line!
-	memCpy( myData , copyData , width );
+	memcpy16( myData , copyData , width );
 	
 	_pixelArray destination = myData;
 	
 	// Copy that line!
 	do{
 		destination += this->width;
-		memCpy( destination , myData , width );
+		memcpy16( destination , myData , width );
 	}while( --height > 0 );
 }
 
@@ -1045,10 +1045,10 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 			for ( _int y = 0; y != height; ++y )
 			{
 				// Copy row to buffer
-				memCpy( buffer , this->bmp + sourceX + dX + this->width * ( sourceY + y ) , width + dX );
+				memcpy16( buffer , this->bmp + sourceX + dX + this->width * ( sourceY + y ) , width + dX );
 				
 				// Copy row back to screen
-				memCpy( this->bmp + destX + dX + this->width * ( destX + y ) , buffer , width + dX );
+				memcpy16( this->bmp + destX + dX + this->width * ( destX + y ) , buffer , width + dX );
 			}
 			
 			delete[] buffer;
@@ -1067,7 +1067,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 		
 		// Copy up
 		for ( _int i = 0 ; i < height ; ++i , src += this->width , dst += this->width )
-			memCpy( dst , src , width );
+			memcpy16( dst , src , width );
 	}
 	else
 	{
@@ -1076,7 +1076,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 		
 		// Copy down
 		for ( _u32 i = height ; i > 0 ; --i , src -= this->width , dst -= this->width )
-			memCpy( dst , src , width );
+			memcpy16( dst , src , width );
 	}
 }
 
@@ -1380,7 +1380,7 @@ _bitmap& _bitmap::operator=( _constBitmap& bmp )
 	if( wasAllocated )
 	{
 		this->bmp = new _pixel[this->width*this->height];
-		memCpy( this->bmp , bmp.bmp , this->width * this->height );
+		memcpy16( this->bmp , bmp.bmp , this->width * this->height );
 	}
 	else
 		this->bmp = bmp.bmp;

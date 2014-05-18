@@ -2,19 +2,17 @@
 #define _WIN_T_USER_GUEST_
 
 #include "_type/type.user.h"
-#include "_type/type.system.h"
 
 class _guestUser : public _user
 {
 	public:
 		
 		//! Ctor!
-		_guestUser() :
-			_user( "%guest" )
-		{
-			_iniFile::writeIndex( "_global_" , "userName" , _system::getLocalizedString("lbl_guest") );
-			_iniFile::writeIndex( "_global_" , "userCode" , "" );
-		}
+		_guestUser();
+		
+		//! These Functions overwrite the ones found in _user
+		_constBitmap&	getLogo() const ;
+		const string&	getName() const ;
 };
 
 #endif

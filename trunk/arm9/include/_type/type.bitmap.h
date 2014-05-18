@@ -3,10 +3,10 @@
 #define _WIN_T_BITMAP_
 
 #include "_type/type.h"
-#include "_type/type.font.h"
+#include "_type/type.font.handle.h"
 #include "_type/type.rect.h"
 #include "_type/type.color.h"
-#include "func.memory.h"
+#include "_controller/controller.memory.h"
 
 class _font;
 
@@ -77,7 +77,7 @@ class _bitmap
 		_bitmap( _length w , _length h , _color col ) :
 			_bitmap( w , h )
 		{
-			memSet( this->bmp , col , this->width * this->height );
+			memset16( this->bmp , col , this->width * this->height );
 		}
 		
 		/**
@@ -92,7 +92,7 @@ class _bitmap
 			, wasAllocated( bm.wasAllocated )
 		{
 			if( wasAllocated )
-				memCpy( bmp , bm.bmp , width * height );
+				memcpy16( bmp , bm.bmp , width * height );
 		}
 		
 		/**
@@ -308,7 +308,7 @@ class _bitmap
 		 */
 		private:
 		void blitFill( _coord x , _coord y , _color color , _length length ){
-			if( this->isValid() ) memSet( &this->bmp[ y * this->width + x ] , color , length );
+			if( this->isValid() ) memset16( &this->bmp[ y * this->width + x ] , color , length );
 		}
 		public:
 		
@@ -502,7 +502,7 @@ class _bitmap
 		 * @param color Color of the _character
 		 * @return int The Width of the _character it has drawn
 		 */
-		_u16 drawChar( _coord x0 , _coord y0 , _fontPtr font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawChar( _coord x0 , _coord y0 , _fontHandle font , _char ch , _color color , _u8 fontSize = 0 )
 		{
 			// Check if everything is valid
 			if( !this->isValid() || !font || !font->isValid() ) 
@@ -511,7 +511,7 @@ class _bitmap
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 		}
 		private:
-		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _fontPtr font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _fontHandle font , _char ch , _color color , _u8 fontSize = 0 )
 		{
 			// Fetch the destination where to draw To
 			_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
@@ -530,8 +530,8 @@ class _bitmap
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , _fontPtr font , const _char* str , _color color , _u8 fontSize = 0 );
-		void drawString( _coord x0 , _coord y0 , _fontPtr font , string str , _color color , _u8 fontSize = 0 )
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , const _char* str , _color color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , string str , _color color , _u8 fontSize = 0 )
 		{
 			drawString( x0 , y0 , font , str.c_str() , color , fontSize );
 		}

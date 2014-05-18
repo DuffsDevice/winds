@@ -1,11 +1,10 @@
 #include "_type/type.screen.h"
+
+// NDS Headers
 #include <nds/arm9/background.h>
-#include "_type/type.system.h"
-#include "func.memory.h"
 #include <nds/arm9/trig_lut.h>
 
 _pixelArray	_screen::getMemoryPtr() const { return bgGetGfxPtr( this->bgId ); }
-_bitmap		_screen::getBitmap() const { return _bitmap( bgGetGfxPtr( this->bgId ) , SCREEN_WIDTH , SCREEN_HEIGHT ); }
 int			_screen::getBgId() const { return this->bgId; }
 
 _coord		_screen::getScrollX() const { return bgState[ this->bgId ].scrollX >> 8; }

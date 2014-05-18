@@ -37,12 +37,40 @@ namespace wrapHelpers
 				return 0;
 			}
 			
-			// Dispatcher for non-void-returns
+			// Dispatcher for non-void-returns that are no references that can/should be moved
 			template<
 				size_t curIndex , size_t maxIndex
 				, class... CollectedArgs
 			>
-			forceinline typename std::enable_if<( curIndex == maxIndex && !std::is_same<Return,void>::value ),int>::type
+			forceinline typename std::enable_if<
+				(
+					curIndex == maxIndex
+					&& !std::is_same<Return,void>::value
+					&& !std::is_lvalue_reference<Return>::value
+				)
+			,int>::type
+				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params)
+			{
+				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class
+				_luafunc::push(
+					state
+					, (Return&&) (dest->*funcToWrap)(std::move(params)...)
+				);
+				return 1;
+			}
+			
+			// Dispatcher for non-void-returns, that are references
+			template<
+				size_t curIndex , size_t maxIndex
+				, class... CollectedArgs
+			>
+			forceinline typename std::enable_if<
+				(
+					curIndex == maxIndex
+					&& !std::is_same<Return,void>::value
+					&& std::is_lvalue_reference<Return>::value
+				)
+			,int>::type
 				call_with_params( lua_State* state , ProxyClass& instance , CollectedArgs... params)
 			{
 				Class* dest = &((Class&)instance); // Converts the proxyclass to the destination class

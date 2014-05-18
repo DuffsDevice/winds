@@ -225,7 +225,7 @@ static const unsigned char FONT_System10_width[222] = {
 };
 
 FONT_System10::FONT_System10( unsigned char fixedWidth ) : _memoryFont (
-	"System",
+	"System10",
 	33,
 	254,
 	14, // Height

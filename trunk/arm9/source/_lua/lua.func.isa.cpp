@@ -39,7 +39,7 @@ namespace _luafunc
 			return _luafunc::is_a( L , index , _lua_event::className );
 		}
 		
-		bool is_a( lua_State* L , int index , _fontPtr* dummy ){
+		bool is_a( lua_State* L , int index , _fontHandle* dummy ){
 			return _luafunc::is_a( L , index , _lua_font::className );
 		}
 		

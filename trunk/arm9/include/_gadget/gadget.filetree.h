@@ -3,7 +3,7 @@
 #define _WIN_G_FILETREE_
 
 #include "_type/type.gadget.h"
-#include "_type/type.flexptr.h"
+#include "_type/type.uniqueptr.h"
 #include "_gadget/gadget.scrollArea.h"
 #include "_gadget/gadget.fileobject.h"
 #include "_gadget/gadget.treeview.h"
@@ -12,11 +12,11 @@ class _fileTree : public _treeView
 {
 	private:
 	
-		_direntry							directory;
-		flex_ptr<_fileExtensionList>		filemask;
-		flex_ptr<_callback<_eventHandler>>	eventHandler;
-		bool								singleClickToExecute : 1;
-		bool								folderOnly : 1;
+		_direntry								directory;
+		_uniquePtr<_fileExtensionList>			filemask;
+		_uniquePtr<_callback<_eventHandler>>	eventHandler;
+		bool									singleClickToExecute : 1;
+		bool									folderOnly : 1;
 		
 		// Member function to forward all events to the 'eventHandler'
 		_callbackReturn folderOpenHandler( _event );

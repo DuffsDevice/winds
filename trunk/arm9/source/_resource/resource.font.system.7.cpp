@@ -225,7 +225,7 @@ static const unsigned char FONT_System7_width[222] = {
 };
 
 FONT_System7::FONT_System7( unsigned char fixedWidth ) : _memoryFont (
-	"System",
+	"System7",
 	33,
 	254,
 	9, // Height

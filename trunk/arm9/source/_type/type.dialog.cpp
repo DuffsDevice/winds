@@ -1,10 +1,4 @@
 #include "_type/type.dialog.h"
-#include "_type/type.system.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
-#include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.image.h"
 
 void _dialog::execute()
 {

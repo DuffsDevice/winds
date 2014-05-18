@@ -7,7 +7,7 @@ __attribute__((hot)) bool _rect::intersectsWith( const _area& other ) const
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
 	
-	for( const _rect& r : other.t_rects )
+	for( const _rect& r : other.rects )
 	{
 		if( this->x > r.getX2() || this_x2 < r.x || this->y > r.getY2() || this_y2 < r.y )
 			continue;

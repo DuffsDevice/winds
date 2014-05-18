@@ -1,5 +1,5 @@
 #include "_gadget/gadget.slider.h"
-#include "_type/type.system.h"
+#include "_controller/controller.font.h"
 
 #define OFFSETX 3
 #define OFFSETX2 3
@@ -115,8 +115,8 @@ _callbackReturn _slider::refreshHandler( _event event )
 	bP.fill( _color::fromRGB( 30 , 30 , 29 ) );
 	
 	// Fetch Font for labels
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	if( that->dimension == _dimension::horizontal )
 	{
@@ -214,8 +214,8 @@ _callbackReturn _slider::updateHandler( _event event )
 		that->sliderHandle->moveTo( (!!that->snap) * 3 , OFFSETX + perc * pixelLength - that->sliderHandle->getHeight()/2 );
 	}
 	
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	// Update Size of the slider, because the labels might have changed
 	if( that->dimension == _dimension::horizontal )

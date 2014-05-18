@@ -1,7 +1,10 @@
 #include "_resource/resource.program.mapper.progobject.h"
 #include "_type/type.gadget.helpers.h"
 #include "_type/type.direntry.h"
-#include "_type/type.system.h"
+#include "_type/type.windows.h"
+#include "_type/type.program.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _callbackReturn PROG_Mapper_Object::refreshHandler( _event event )
 {
@@ -10,21 +13,21 @@ _callbackReturn PROG_Mapper_Object::refreshHandler( _event event )
 	// Fetch BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
 	
-	bP.fill( _system::getRTA().getItemBackground( that->hasFocus() , that->isSelected() ) );
+	bP.fill( _guiController::getItemBg( that->hasFocus() , that->isSelected() ) );
 	
 	// Copy Program Image
 	bP.copyTransparent( 1 , 4 , that->progImage );
 	
-	_color foreground = _system::getRTA().getItemForeground( that->hasFocus() , that->isSelected() );
+	_color foreground = _guiController::getItemFg( that->hasFocus() , that->isSelected() );
 	
 	// Draw Description
 	if( that->progAuthor.empty() ) // Draw Name only
-		bP.drawString( 14 , 4 , _system::getFont() , that->progName , foreground );
+		bP.drawString( 14 , 4 , _fontController::getStandardFont() , that->progName , foreground );
 	else
 	{
 		// Draw Name & Author
-		bP.drawString( 14 , 0 , _system::getFont() , that->progName , foreground );
-		bP.drawString( 14 , 8 , _system::getFont() , that->progAuthor , that->isSelected() ? foreground : _color::gray );
+		bP.drawString( 14 , 0 , _fontController::getStandardFont() , that->progName , foreground );
+		bP.drawString( 14 , 8 , _fontController::getStandardFont() , that->progAuthor , that->isSelected() ? foreground : _color::gray );
 	}
 	
 	return use_default;
@@ -42,7 +45,7 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 	this->setUserEventHandler( onSelect , _gadgetHelpers::eventForwardRefresh() );
 	this->setUserEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
 	
-	// Set Neccesary Information
+	// Set necessary information
 	_program* progObject = _program::fromFile( programFile.getFileName() );
 	if( progObject )
 	{
@@ -52,8 +55,6 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 		// Set Name to display
 		if( header.name && !header.name->empty() )
 			this->progName = move( *header.name );
-		else if( header.displayName && !header.displayName->empty() )
-			this->progName = move( *header.displayName );
 		else
 			this->progName = programFile.getDisplayName();
 		

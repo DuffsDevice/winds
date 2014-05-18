@@ -1,10 +1,6 @@
 #include "_gadget/gadget.fileview.h"
 #include "_type/type.gadget.helpers.h"
-
-
-// Click Sound
-#include "sound_navigation_pcm.h"
-_staticSound _fileView::navigationSound = _staticSound( _channelFormat::bit8 , 44100 , sound_navigation_pcm , sound_navigation_pcm_size );
+#include "_type/type.windows.soundbank.h"
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _optValue<_length> width , _optValue<_length> height , string path
@@ -31,7 +27,7 @@ void _fileView::setPath( const string& path )
 	this->directory = _direntry( path );
 	this->generateChildren();
 	
-	_fileView::navigationSound.play(30);
+	_windowsSoundBank::play( _windowsSound::navigation );
 }
 
 _callbackReturn _fileView::eventForwarder( _event event )
@@ -60,7 +56,7 @@ void _fileView::generateChildren()
 	this->directory.rewindChildren();
 	
 	// Clear the filemask vector if it is empty
-	if( this->filemask && this->filemask.data()->empty() )
+	if( this->filemask && this->filemask->empty() )
 		this->filemask = nullptr;
 	
 	switch( this->viewType )

@@ -12,7 +12,7 @@
 /* ======================================================================== */
 
 #include "_library/library.image.gif.encoder.h"
-#include "_type/type.system.h"
+#include "_controller/controller.debug.h"
 #include <string.h>
 #include <malloc.h>
 #include <assert.h>
@@ -80,7 +80,7 @@ int gif_start
 
     if (!gif_enc_buf || (multi && (!gif->pal || !gif->vid)))
     {
-        _system::debug( "gif_start: out of memory\n");
+        _debugController::debug( "gif_start: out of memory\n");
         return -1;
     }
 
@@ -195,7 +195,7 @@ int gif_start
     wrote = fwrite(gif_enc_buf, 1, enc_ptr - gif_enc_buf, gif->f);
     if (wrote < (unsigned)(enc_ptr - gif_enc_buf))
 	{
-		_system::debug( "gif_start: file write failed!\n");
+		_debugController::debug( "gif_start: file write failed!\n");
         return -1;
 	}
 
@@ -261,7 +261,7 @@ int gif_wr_frame_s
 
     if (lzw_len < 0)
 	{
-		_system::debug( "gif_wr_frame_s: lzw_encode failed!\n");
+		_debugController::debug( "gif_wr_frame_s: lzw_encode failed!\n");
         return -1;
 	}
 
@@ -274,7 +274,7 @@ int gif_wr_frame_s
     wrote = fwrite(gif_enc_buf, 1, enc_ptr - gif_enc_buf, gif->f);
     if (wrote < (unsigned)(enc_ptr - gif_enc_buf))
 	{
-		_system::debug( "gif_wr_frame_s: file write failed!\n");
+		_debugController::debug( "gif_wr_frame_s: file write failed!\n");
         return -1;
 	}
 
@@ -306,7 +306,7 @@ int gif_write
 
     if (ret < 0)
 	{
-		_system::debug( "gif_write: gif_start failed!\n");
+		_debugController::debug( "gif_write: gif_start failed!\n");
         return -1;
 	}
 
@@ -318,7 +318,7 @@ int gif_write
 
     if (ret < 0)
 	{
-		_system::debug( "gif_wr_frame_s: gif_start failed!\n");
+		_debugController::debug( "gif_wr_frame_s: gif_start failed!\n");
         return -1;
 	}
 
@@ -330,7 +330,7 @@ int gif_write
 
     if (ret < 0)
 	{
-		_system::debug( "gif_finish: gif_start failed!\n");
+		_debugController::debug( "gif_finish: gif_start failed!\n");
         return -1;
 	}
 
@@ -377,7 +377,7 @@ int gif_wr_frame_m
 
         if (!gif_img_tr)
         {
-            _system::debug( "gif_wr_frame_m: out of memory\n");
+            _debugController::debug( "gif_wr_frame_m: out of memory\n");
             return -1;
         }
 
@@ -635,7 +635,7 @@ int gif_wr_frame_m
 
     if (best_sz < 0 || best_sz == INT_MAX)
     {
-        _system::debug( "gif_wr_frame_m: Image overflowed compression "
+        _debugController::debug( "gif_wr_frame_m: Image overflowed compression "
                         "buffer.\n");
         return -1;
     }
@@ -709,7 +709,7 @@ int gif_wr_frame_m
     }
     if (lzw_len < 0)
     {
-        _system::debug( "gif_wr_frame_m: Final encode failed?\n");
+        _debugController::debug( "gif_wr_frame_m: Final encode failed?\n");
         return -1;
     }
 
@@ -722,7 +722,7 @@ int gif_wr_frame_m
     wrote = fwrite(gif_enc_buf, 1, enc_ptr - gif_enc_buf, gif->f);
     if (wrote < (unsigned)(enc_ptr - gif_enc_buf))
     {
-        _system::debug( "gif_wr_frame_m: Short write? %ld vs %ld\n", 
+        _debugController::debug( "gif_wr_frame_m: Short write? %ld vs %ld\n", 
                 (long)wrote, (long)(enc_ptr - gif_enc_buf));
         return -1;
     }
@@ -1062,7 +1062,7 @@ int lzw_encode(const uint8_t *i_buf, uint8_t *o_buf, int i_len, int max_o_len)
     return o_ptr - o_buf;
 
 overflow:
-	_system::debug( "lzw_encode: overflowed!\n");
+	_debugController::debug( "lzw_encode: overflowed!\n");
     return -1;
 }
 
@@ -1296,7 +1296,7 @@ int lzw_encode2(const uint8_t *i_buf, const uint8_t *i_buf_alt,
     return o_ptr - o_buf;
 
 overflow:
-	_system::debug( "lzw_encode2: overflowed!\n");
+	_debugController::debug( "lzw_encode2: overflowed!\n");
     return -1;
 }
 

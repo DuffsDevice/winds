@@ -1,6 +1,6 @@
 #include "_type/type.imagefile.h"
-#include "_type/type.system.h"
 #include "_type/type.color.palette.h"
+#include "_controller/controller.debug.h"
 
 #include "_library/library.image.png.decoder.h"
 #include "_library/library.image.png.encoder.h"
@@ -161,7 +161,7 @@ _bitmap _imageFile::readBitmap( _optValue<_u32> page )
 		
 		if ( pixeldata != nullptr ){
 			result = _bitmap( width , height );
-			memCpy( result.getBitmap() , pixeldata , width * height );
+			memcpy16( result.getBitmap() , pixeldata , width * height );
 			delete[] pixeldata;
 		}
 		
@@ -390,10 +390,10 @@ void _imageFile::outputGifWarning( _literal context , int statusCode )
 			statusCodeStr = "insufficient Memory";
 			break;
 		default:
-			_system::debug( "Error in GIF-Decoder (%s): Unknow Status-Code %i" , context , statusCode );
+			_debugController::debug( "Error in GIF-Decoder (%s): Unknow Status-Code %i" , context , statusCode );
 			return;
 	}
-	_system::debug( "Error in GIF-Decoder (in %s): %s" , context , statusCodeStr );
+	_debugController::debug( "Error in GIF-Decoder (in %s): %s" , context , statusCodeStr );
 }
 
 _u32 _imageFile::getPageDelay( _u32 page )

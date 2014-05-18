@@ -1,10 +1,11 @@
 #include "_dialog/dialog.folder.choose.h"
-#include "_type/type.system.h"
 #include "_type/type.gadget.helpers.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 void _folderChooseDialog::executeInternal(){
 	this->folderPath.clear();
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _folderChooseDialog::cleanupInternal(){
@@ -24,7 +25,7 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	_length			winHeight = fileTreeHeight + 43;
 	
 	// Build initial folder path and description label
-	windowLabel = windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_choose_folder");
+	windowLabel = windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_choose_folder");
 	
 	// Description Label
 	if( descriptionLabel.isValid() )
@@ -39,8 +40,8 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	
 	
 	// Buttons
-	this->cancelButton = new _button( ignore , ignore , ignore , ignore , _system::getLocalizedString("lbl_cancel") );
-	this->okButton = new _button( ignore , ignore , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") );
+	this->cancelButton = new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
+	this->okButton = new _button( ignore , ignore , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _localizationController::getBuiltInString("lbl_ok") );
 	this->cancelButton->setUserEventHandler( onParentAdd , _gadgetHelpers::rightBottomAlign( 5 , 3 ) );
 	this->okButton->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::left , 1 ) );
 	

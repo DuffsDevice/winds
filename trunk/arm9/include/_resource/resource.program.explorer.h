@@ -4,9 +4,9 @@
 #include "_type/type.program.c.h"
 #include "_type/type.direntry.h"
 #include "_gadget/gadget.fileView.h"
-#include "_gadget/gadget.window.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.button.image.h"
+#include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.window.menu.h"
 #include "_gadget/gadget.window.bar.h"
 
@@ -16,7 +16,6 @@ class PROG_Explorer : public _progC
 		
 		string			path;
 		
-		_window*		window;
 		_fileView*		fileView;
 		_textBox*		addressBar;
 		_button*		submitButton;

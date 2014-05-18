@@ -29,18 +29,15 @@ extern _toStr<_dialogResult>	dialogResult2string;
 
 namespace _luafunc
 {
-	//! Call this function to indicate a runtime-error that happened inside a lua-function
-	void	errorHandler( lua_State* state , const char* , ... );
-	
 	//! More or less helpers for the following templates
 	void	pushEvent( lua_State* state , _event&& );
 	void	pushRect( lua_State* state , _rect&& );
 	void	pushArea( lua_State* state , _area&& );
-	void	pushBitmap( lua_State* state , _bitmap&& );
+	void	pushBitmap( lua_State* state , const _bitmap& );
 	void	pushBitmapRef( lua_State* state , _bitmap& );
 	void	pushBitmapPort( lua_State* state , _bitmapPort&& );
 	void	pushGadget( lua_State* state , _gadget* );
-	void	pushFont( lua_State* state , _fontPtr );
+	void	pushFont( lua_State* state , _fontHandle );
 	void	pushBorder( lua_State* state , _border&& );
 	void	pushTime( lua_State* state , _time&& );
 	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );
