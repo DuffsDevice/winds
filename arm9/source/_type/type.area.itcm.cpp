@@ -5,16 +5,16 @@ __attribute__((hot)) _area& _area::clipToIntersect( const _rect& limits )
 	_codeAnalyzer analyzer {"_rect::clipToIntersect"};
 	
 	// Fastest way!!!
-	t_rects.erase(
+	this->rects.erase(
 		remove_if(
-			t_rects.begin()
-			, t_rects.end()
+			this->rects.begin()
+			, this->rects.end()
 			, [&limits]( _rect& rc )->bool{
 				rc.clipToIntersect( limits );
 				return !rc.isValid();
 			}
 		)
-		, t_rects.end()
+		, this->rects.end()
 	);
 	
 	return *this;
@@ -25,7 +25,7 @@ __attribute__((hot)) _area& _area::reduce( const _rect& dim )
 	_codeAnalyzer analyzer {"_rect::reduce"};
 	
 	// Temp Rects
-	_vector<_rect> tR = move( t_rects );
+	_vector<_rect> tR = move( this->rects );
 	
 	for( _rect& rc : tR )
 		this->add( rc.reduce( dim ) );
@@ -37,7 +37,7 @@ __attribute__((hot)) _area& _area::toRelative( const _coord absX , const _coord 
 {
 	_codeAnalyzer analyzer {"_rect::toRelative"};
 	
-	for( _rect &rc : t_rects )
+	for( _rect &rc : this->rects )
 		rc.toRelative( absX , absY );
 	return *this;
 }
@@ -48,7 +48,7 @@ __attribute__((hot)) _area _area::toRelative( const _coord absX , const _coord a
 	
 	_vector<_rect> tR;
 	
-	for( const _rect &rc : t_rects )
+	for( const _rect &rc : this->rects )
 		tR.emplace_back( rc.x - absX , rc.y - absY , rc.width , rc.height );
 	
 	return _area( move(tR) );

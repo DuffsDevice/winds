@@ -1,7 +1,7 @@
 #include "_gadget/gadget.passcodebox.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
 #include "_type/type.guistring.h"
+#include "_controller/controller.font.h"
 
 void _passcodeBox::refresher()
 {
@@ -23,10 +23,10 @@ void _passcodeBox::setStrValue( string val ){
 	_textBox::setStrValue( string( this->realText.length() , (char)this->replaceChar ) );
 }
 
-_passcodeBox::_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _fontPtr replaceFont , _optValue<_char> repChar , _style&& style ) :
+_passcodeBox::_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _fontHandle replaceFont , _optValue<_char> repChar , _style&& style ) :
 	_textBox( x , y , width , height , string( value.length() , repChar ) , (_style&&)style )
 	, realText( value )
 	, replaceChar( repChar.isValid() ? (_char)repChar : _glyph::smallCircleFilled )
 {
-	_textBox::setFont( replaceFont ? replaceFont : _system::getFont("SystemSymbols8") );
+	_textBox::setFont( replaceFont ? replaceFont.rawData() : _fontController::getFont("SystemSymbols8") );
 }

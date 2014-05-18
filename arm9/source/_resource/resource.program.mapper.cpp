@@ -1,17 +1,22 @@
 #include "_resource/resource.program.mapper.h"
 #include "_resource/resource.program.mapper.progobject.h"
+#include "_controller/controller.filesystem.h"
+#include "_controller/controller.localization.h"
+#include "_controller/controller.registry.h"
+#include "_controller/controller.gui.h"
 #include "_type/type.gadget.helpers.h"
+#include "_type/type.windows.h"
 
 PROG_Mapper::PROG_Mapper() :
 	chooseButNotOpen( false )
 	, openDialog( nullptr )
 {
 	_programHeader header;
-	//header.fileIcon = BMP_WinDSIcon();
+	header.windowName = _localizationController::getBuiltInString("lbl_open_with");
 	header.name = string("Program Mapper");
 	header.author = string("WinDS");
 	header.description = string("Choose by which Prog. to open a file");
-	this->setHeader( header );
+	this->setHeader( move(header) );
 }
 
 void PROG_Mapper::main( _programArgs args )
@@ -24,21 +29,21 @@ void PROG_Mapper::main( _programArgs args )
 	}
 	
 	// Window
-	this->window		= new _window( 10 , 10 , 155 , 140 , _system::getLocalizedString("lbl_open_with") , false , true , _style::notResizeable );
+	_mainFrame* mainFrame		= _program::getMainFrame( 155 , 140 , _style::notResizeable );
 	
 	// Cancel-button
-	this->cancelButton	= new _button( ignore , ignore , ignore , ignore , _system::getLocalizedString("lbl_cancel") );
+	this->cancelButton	= new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
 	this->cancelButton->setUserEventHandler( onParentAdd , _gadgetHelpers::rightBottomAlign( 5 , 3 ) );
 	this->cancelButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
 	
 	// OK-button
-	this->okButton		= new _button( ignore , ignore , ignore , ignore , _system::getLocalizedString("lbl_ok") );
+	this->okButton		= new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_ok") );
 	this->okButton->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::left , 1 ) );
 	this->okButton->setAutoSelect( true );
 	this->okButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
 	
 	// Browse-button
-	this->browseButton	= new _button( 4 , ignore , ignore , ignore , _system::getLocalizedString("lbl_browse") + "..." );
+	this->browseButton	= new _button( 4 , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_browse") + "..." );
 	this->browseButton->setUserEventHandler( onParentAdd , _gadgetHelpers::rightBottomAlign( ignore , 3 ) );
 	this->browseButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
 	
@@ -51,14 +56,14 @@ void PROG_Mapper::main( _programArgs args )
 	this->saveDescision->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::down , 1 , 2 ) );
 	
 	// .. and its description
-	this->saveDescisionLabel	= new _label( ignore , ignore , ignore , ignore , _system::getLocalizedString("lbl_save_choice") );
+	this->saveDescisionLabel	= new _label( ignore , ignore , ignore , 10 , _localizationController::getBuiltInString("lbl_save_choice") );
 	this->saveDescisionLabel->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::right , 2 , 1 ) );
 	
 	// Label
-	this->description	= new _label( 5 , 2 , ignore , ignore , _system::getLocalizedString("def_choose_program_to_open") );
+	this->description	= new _label( 5 , 2 , ignore , ignore , _localizationController::getBuiltInString("def_choose_program_to_open") );
 	
 	// File Label
-	this->fileLabel = new _label( 5 , 11 , ignore , ignore , _system::getLocalizedString("def_filename") + "  " + _direntry(this->fileToOpen).getDisplayName(true) );
+	this->fileLabel = new _label( 5 , 11 , ignore , ignore , _localizationController::getBuiltInString("def_filename") + "  " + _direntry(this->fileToOpen).getDisplayName(true) );
 	this->fileLabel->setColor( _color::fromBW( 12 ) );
 	
 	// Create List of Programs
@@ -69,7 +74,7 @@ void PROG_Mapper::main( _programArgs args )
 	_assocVector<string,int> handlerList;
 	
 	// Create List of Programs
-	for( const _pair<string,string>& value : _system::getRegistry().readSection("filemapper") )
+	for( const _pair<string,string>& value : _registryController::getSystemRegistry().readSection("fileMapper") )
 	{
 		const string& val = value.second;
 		
@@ -92,7 +97,7 @@ void PROG_Mapper::main( _programArgs args )
 	}
 	
 	// Add Standard Programs
-	handlerList[_direntry::replaceASSOCS("%WINDIR%/accessories/paint.exe")]++;
+	handlerList[_filesystemController::replaceAssocDirs("%WINDIR%/accessories/paint.exe")]++;
 	
 	// Create ProgObjects, once per program
 	for( _pair<string,int>& value : handlerList )
@@ -102,20 +107,18 @@ void PROG_Mapper::main( _programArgs args )
 		this->scrollArea->addChild( ptr , true );
 	}
 	
-	this->window->addChild( this->cancelButton );
-	this->window->addChild( this->browseButton );
-	this->window->addChild( this->okButton , true );
-	this->window->addChild( this->scrollArea , true );
-	this->window->addChild( this->saveDescision , true );
-	this->window->addChild( this->saveDescisionLabel , true );
-	this->window->addChild( this->description );
-	this->window->addChild( this->fileLabel );
-	this->gadgetHost->addChild( this->window );
+	mainFrame->addChild( this->cancelButton );
+	mainFrame->addChild( this->browseButton );
+	mainFrame->addChild( this->okButton , true );
+	mainFrame->addChild( this->scrollArea , true );
+	mainFrame->addChild( this->saveDescision , true );
+	mainFrame->addChild( this->saveDescisionLabel , true );
+	mainFrame->addChild( this->description );
+	mainFrame->addChild( this->fileLabel );
 }
 
 void PROG_Mapper::destruct()
 {
-	if( this->window )				delete this->window;
 	if( this->description )			delete this->description;
 	if( this->cancelButton )		delete this->cancelButton;
 	if( this->browseButton )		delete this->browseButton;
@@ -140,7 +143,7 @@ _callbackReturn PROG_Mapper::handler( _event event )
 		_bitmapPort bP = that->getBitmapPort( event );
 		
 		bP.fill( _color::white );
-		bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _system::getRTA().getControlForeground() );
+		bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _guiController::getControlFg() );
 		
 		return use_default;
 	}
@@ -154,7 +157,7 @@ _callbackReturn PROG_Mapper::handler( _event event )
 		{
 			// Create Dialog
 			if( !this->openDialog ){
-				this->openDialog = new _fileOpenDialog(	{ { 1 , { "Program" , "exe,lua" } } } , "/" , 1 , _system::getLocalizedString("lbl_ok") , _system::getLocalizedString("lbl_open_with") );
+				this->openDialog = new _fileOpenDialog(	{ { 1 , { "Program" , "exe,lua" } } } , "/" , 1 , _localizationController::getBuiltInString("lbl_ok") , _localizationController::getBuiltInString("lbl_open_with") );
 				this->openDialog->setCallback( make_callback( this , &PROG_Mapper::dialogHandler ) );
 			}
 			
@@ -180,8 +183,8 @@ _callbackReturn PROG_Mapper::handler( _event event )
 						command += selection->getPath();
 						command += "\" -\"$F\"";
 						
-						_system::getRegistry().writeIndex(
-							"filemapper"
+						_registryController::getSystemRegistry().writeIndex(
+							"fileMapper"
 							, _direntry(this->fileToOpen).getExtension()
 							, move(command)
 						);
@@ -192,7 +195,7 @@ _callbackReturn PROG_Mapper::handler( _event event )
 						string cmd = "\"" + selection->getPath() + "\" -\"" + this->fileToOpen + "\"";
 						
 						// Execute File
-						_system::executeCommand( move(cmd) );
+						_windows::executeCommand( move(cmd) );
 					}
 				}
 				

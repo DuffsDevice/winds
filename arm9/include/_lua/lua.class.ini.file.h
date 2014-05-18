@@ -5,7 +5,7 @@
 #include "_lua/lua.lunar.h"
 #include "_lua/lua.class.ini.h"
 #include "_lua/lua.class.direntry.h"
-#include "_type/type.registry.h"
+#include "_type/type.ini.file.h"
 
 /**
  * Proxy Classes
@@ -14,8 +14,8 @@ class _lua_inifile : public _lua_ini
 {
 	public:
 		
-		//! Get underlying _gadget instance
-		_iniFile* getRegistry(){ return (_iniFile*)this->ini; }
+		//! Get underlying _ini instance
+		_iniFile* getIni(){ return (_iniFile*)this->ini; }
 		operator _iniFile&(){ return *(_iniFile*)this->ini; }
 		operator _direntry&(){ return *(_direntry*)(_iniFile*)this->ini; }
 		

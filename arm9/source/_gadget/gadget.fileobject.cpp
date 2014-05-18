@@ -2,9 +2,11 @@
 #include "_gadget/gadget.fileview.h"
 #include "_gadget/gadget.image.h"
 #include "_type/type.mime.h"
-#include "_type/type.system.h"
+#include "_type/type.windows.h"
 #include "_type/type.direntry.shortcut.h"
 #include "_type/type.gadget.helpers.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _callbackReturn _fileObject::keyHandler( _event event )
 {
@@ -37,8 +39,8 @@ _callbackReturn _fileObject::updateHandler( _event event )
 			break;
 		case _fileViewType::list:
 			that->setSizeIfAuto(
-				_system::getFont()->getStringWidth( that->file->getDisplayName() , _system::getRTA().getDefaultFontSize() ) + 12
-				, _system::getUser().fOH
+				_fontController::getStandardFont()->getStringWidth( that->file->getDisplayName() , _fontController::getStandardFontSize() ) + 12
+				, _guiController::getFileObjectHeight()
 			);
 			break;
 		default:
@@ -56,7 +58,7 @@ void _fileObject::execute( _programArgs args , bool openInNewWindow )
 		_fileView* fileView = (_fileView*) this->getParent();
 		
 		if( openInNewWindow )
-			_system::executeCommand("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
+			_windows::executeCommand("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
 		else if( fileView->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onEdit'-Event
@@ -88,9 +90,9 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			bP.fill( _color::transparent );
 			
 			// Receive Font
-			_fontPtr	ft = _system::getFont();
-			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( true );
+			_fontHandle		ft = _fontController::getStandardFont();
+			_u8				ftSize = _fontController::getStandardFontSize();
+			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( true );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
@@ -107,7 +109,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			
 			// Draw Outer Dotted Line Background
 			if( that->hasFocus() )
-				bP.drawDottedRect( 0 , 0 , myH , myW , _system::getRTA().getItemBackground( true ) );
+				bP.drawDottedRect( 0 , 0 , myH , myW , _guiController::getItemBg( true ) );
 			
 			break;
 		}
@@ -115,13 +117,13 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 		default:
 		{
 			// Draw Background
-			bP.fill( _system::getRTA().getItemBackground( that->hasFocus() , that->isSelected() ) );
+			bP.fill( _guiController::getItemBg( that->hasFocus() , that->isSelected() ) );
 			
 			// Font
-			_fontPtr	ft = _system::getFont();
-			_u8				fOH = _system::getUser().fOH;
-			_u8				ftSize = _system::getRTA().getDefaultFontSize();
-			_color			ftColor = that->file->isHidden() ? _color::gray : _system::getRTA().getItemForeground( that->hasFocus() , that->isSelected() );
+			_fontHandle		ft = _fontController::getStandardFont();
+			_u8				fOH = _guiController::getFileObjectHeight();
+			_u8				ftSize = _fontController::getStandardFontSize();
+			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( that->hasFocus() , that->isSelected() );
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
@@ -135,7 +137,6 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 				, ( ( fOH + 1 ) >> 1 ) - ( ( fileIcon.getHeight() + 1 ) >> 1 ) // Y
 				, fileIcon // Bitmap
 			);
-			
 			break;
 		}
 	};

@@ -1,7 +1,8 @@
 #include "_gadget/gadget.calendar.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
 #include "_type/type.color.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.localization.h"
 #include "func.gridcreator.h"
 
 _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _color bgColor , _style&& style )
@@ -30,7 +31,7 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	}
 	
 	//! Arrows & month label
-	_fontPtr symbolFt = _system::getFont( "SystemSymbols8" );
+	_fontHandle symbolFt = _fontController::getFont( "SystemSymbols8" );
 	_u8 arrowWidth = this->getArrowWidth();
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
@@ -246,12 +247,12 @@ _callbackReturn _calendar::updateHandler( _event event )
 	_vector<int> colWidths = computeGrid( this->getWidth() - 1 , 7 );
 	
 	// Choose font to be used
-	_fontPtr ft;
+	_fontHandle ft;
 	
 	if( rowHeights[0] > 12 && colWidths[0] > 15 )
-		ft = _system::getFont( "CourierNew10" );
+		ft = _fontController::getFont( "CourierNew10" );
 	else
-		ft = _system::getFont( "System7" );
+		ft = _fontController::getFont( "System7" );
 	
 	
 	// Some counter Variables
@@ -275,7 +276,7 @@ _callbackReturn _calendar::updateHandler( _event event )
 	this->resetButton->setDimensions( _rect( this->getWidth() - 12 - arrowWidth , 1 , 10 , monthSelectorHeight - 3 ) );
 	this->rightArrow->setDimensions( _rect( this->getWidth() - 1 - arrowWidth , 1 , arrowWidth , monthSelectorHeight - 3 ) );
 	
-	this->monthLabel->setStrValue( _system::getLocalizedMonth( this->curMonth - 1 ).substr( 0 , 3 ) + " " + int2string( this->curYear ) );
+	this->monthLabel->setStrValue( _localizationController::getMonth( this->curMonth - 1 ).substr( 0 , 3 ) + " " + int2string( this->curYear ) );
 	this->monthLabel->setDimensions( _rect( arrowWidth + 2 , 1 , this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 ) );
 	this->monthLabel->setFont( ft );
 	this->monthLabel->setColor( _color(this->bgColor).getL() > 70 ? _color::black : _color::white );

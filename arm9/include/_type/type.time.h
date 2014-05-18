@@ -30,7 +30,7 @@ class _time
 		_int year;
 		bool dirty; // Indicates that the given attributes are not validated
 		
-		// Validates this _time structure if it's neccesary
+		// Validates this _time structure if it's necessary
 		void validate();
 		
 	public:

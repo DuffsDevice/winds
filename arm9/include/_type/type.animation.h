@@ -2,11 +2,10 @@
 #define _WIN_T_ANIMATION_
 
 #include "_type/type.h"
-#include "_type/type.flexptr.h"
+#include "_type/type.uniqueptr.h"
 #include "_type/type.callback.h"
 
 typedef _float						(_easingFunction)( _float t , _float b , _float c , _float d );
-typedef _vector<class _animation*>	_animationList;
 
 // t = elapsed Time since Start
 // b = startValue
@@ -14,16 +13,14 @@ typedef _vector<class _animation*>	_animationList;
 // d = duration of the whole effect
 class _animation
 {
-	
 	private:
 	
-		friend class _system;
 		_tempTime					startTime;
 		_tempTime					duration; //! In Milliseconds
 		
 		//! Additionally: call a setter function
-		flex_ptr<_intSetCallback>	setterFunc;
-		flex_ptr<_intSetCallback>	finishFunc;
+		_uniquePtr<_intSetCallback>	setterFunc;
+		_uniquePtr<_intSetCallback>	finishFunc;
 		
 		_easingFunction*			easeFunc;
 		
@@ -33,19 +30,21 @@ class _animation
 		
 		_u8							runs;
 		
-		// performes one frame of the animation
+		//! Performes one frame of the animation
 		void step();
 		
-		static _animationList		globalAnimations;
-		static _animationList		globalAnimationsToExecute;
-		
-		// Processes one frame of each running animation
-		static void	runAnimations();
+		friend class _animationController;
 		
 	public:
 	
 		//! Ctor
 		_animation( _s32 from , _s32 to , _tempTime dur );
+		
+		//! Config
+		_animation( const _animation& ) = delete;
+		_animation( _animation&& ) = default;
+		_animation& operator=( const _animation& ) = delete;
+		_animation& operator=( _animation&& ) = default;
 		
 		//! Dtor
 		~_animation(){ this->terminate(); }

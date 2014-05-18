@@ -1,6 +1,6 @@
 #include "_gadget/gadget.window.h"
-#include "_type/type.system.h"
-#include "_type/type.runtimeAttributes.h"
+#include "_type/type.windows.soundbank.h"
+#include "_controller/controller.gui.h"
 
 void _window::maximize()
 {
@@ -34,6 +34,7 @@ void _window::restore()
 		this->minimized = false;
 		this->show();
 		this->triggerEvent( onRestore );
+		_windowsSoundBank::play( _windowsSound::restore );
 	}
 }
 
@@ -62,6 +63,7 @@ void _window::minimize()
 		this->minimized = true;
 		this->hide();
 		this->triggerEvent( onMinimize );
+		_windowsSoundBank::play( _windowsSound::minimize );
 	}
 }
 
@@ -85,7 +87,7 @@ _callbackReturn _window::maximizeHandler( _event event )
 void _window::notifyTaskHandlers( bool onlyIfWindowIsTask ){
 	if( onlyIfWindowIsTask && !this->isTask() )
 		return;
-	for( auto handler : _window::taskHandlers )
+	for( auto& handler : _window::taskHandlers )
 		(*handler)( this );
 }
 
@@ -215,30 +217,15 @@ _callbackReturn _window::refreshHandler( _event event )
 	
 	bP.fill( that->bgColor );
 	
-	if( that->hasFocus() )
-	{
-		_constBitmap& design = _system::getRTA().getWindowsDesignActive();
-		
-		// Window-Bar
-		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
-		
-		// Bottom Border
-		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , design[0] );
-		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , design[9] );
-		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
-	}
-	else
-	{
-		_constBitmap& design = _system::getRTA().getWindowsDesignBlurred();
-		
-		// Window-Bar
-		bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
-		
-		// Bottom Border
-		bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , design[0] );
-		bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , design[9] );
-		bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
-	}
+	_constBitmap& design = _guiController::getWindowsDesign( that->hasFocus() );
+	
+	// Window-Bar
+	bP.copyHorizontalStretch( 0 , 0 , that->getWidth() , design );
+	
+	// Bottom Border
+	bP.drawVerticalLine( 0 , 1 , that->getHeight() - 1 , design[0] );
+	bP.drawVerticalLine( that->getWidth() - 1 , 1 , that->getHeight() - 1 , design[9] );
+	bP.drawHorizontalLine( 0 , that->getHeight() - 1 , that->getWidth() , design[9] );
 	
 	// Set my Corners to transparent
 	if( !that->isMaximized() )
@@ -274,7 +261,7 @@ _callbackReturn _window::doubleClickHandler( _event event )
 void _window::close()
 {
 	// Check for permission
-	if( this->handleEvent( onClose , true ) != prevent_default )
+	if( this->getParent() && this->handleEvent( onClose , true ) != prevent_default )
 	{
 		this->setParent( nullptr ); // Unbind the window from the DOM-Tree
 		this->notifyTaskHandlers( false );
@@ -356,7 +343,7 @@ _window::~_window()
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
 	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront | _style::draggable )
-	, bgColor( _system::getRTA().getControlBackground() )
+	, bgColor( _guiController::getControlBg() )
 	, normalDimensions( nullptr )
 	, minimizeable( minimizeable )
 	, minimized( false )
@@ -419,5 +406,5 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	this->redraw();
 }
 
-_list<_window*>				_window::taskWindows;
-_list<_windowTaskHandler*>	_window::taskHandlers;
+_list<_window*>							_window::taskWindows;
+_list<_uniquePtr<_windowTaskHandler>>	_window::taskHandlers;

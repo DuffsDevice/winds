@@ -3,7 +3,6 @@
 
 #include "_type/type.dialog.h"
 #include "_type/type.shortstring.h"
-#include "_type/type.system.h"
 #include "_gadget/gadget.button.h"
 #include "_dialog/dialog.file.save.h"
 #include "_gadget/gadget.button.action.h"

@@ -1,8 +1,9 @@
 #include "_dialog/dialog.yesno.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 void _yesNoDialog::executeInternal(){
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _yesNoDialog::cleanupInternal(){
@@ -10,8 +11,8 @@ void _yesNoDialog::cleanupInternal(){
 }
 
 _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string> yesLbl , _optValue<string> noLbl ) :
-	yesButton( new _button( 0 , 0 , ignore , ignore , yesLbl.isValid() ? (string&&)yesLbl : _system::getLocalizedString("lbl_yes") ) )
-	, noButton( new _button( 0 , 0 , ignore , ignore , noLbl.isValid() ? (string&&)noLbl : _system::getLocalizedString("lbl_no") ) )
+	yesButton( new _button( 0 , 0 , ignore , ignore , yesLbl.isValid() ? (string&&)yesLbl : _localizationController::getBuiltInString("lbl_yes") ) )
+	, noButton( new _button( 0 , 0 , ignore , ignore , noLbl.isValid() ? (string&&)noLbl : _localizationController::getBuiltInString("lbl_no") ) )
 	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
 {
 	// Buttons

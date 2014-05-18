@@ -2,124 +2,145 @@
 #ifndef _WIN_T_PROGRAM_
 #define _WIN_T_PROGRAM_
 
-#include "_type/type.gadget.h"
 #include "_type/type.h"
+#include "_type/type.gadget.h"
 #include "_type/type.language.h"
+#include "_type/type.program.args.h"
+#include "_type/type.program.executiondata.h"
+#include "_type/type.uniqueptr.h"
+#include "_gadget/gadget.mainframe.h"
 
-enum class _programType
-{
-	progLua,
-	progC,
-	progFile
+// Describes the type of a program
+enum class _programType{
+	lua,
+	c,
 };
 
-struct _programData{
-	bool		autoDelete;
-	_tempTime	runningSince;
-};
-
+// Struct about a program's details
 struct _programHeader{
-	flex_ptr<_bitmap>	fileIcon;
-	flex_ptr<string>	name;
-	flex_ptr<string>	displayName;
-	flex_ptr<string>	author;
-	flex_ptr<string>	version;
-	flex_ptr<string>	description;
-	flex_ptr<string>	copyright;
+	_uniquePtr<_bitmap>	fileIcon;
+	_uniquePtr<string>	fileName;
+	_uniquePtr<_bitmap>	windowIcon;
+	_uniquePtr<string>	windowName;
+	_uniquePtr<string>	name;
+	_uniquePtr<string>	author;
+	_uniquePtr<string>	version;
+	_uniquePtr<string>	description;
+	_uniquePtr<string>	copyright;
 	_language			language;
+	
+	//! Ctor
+	_programHeader() : language( "--" ) {}
 };
-
-typedef _vector<_pair<_program*,_programData>> _programList;
 
 class _program
 {
-	friend class _system;
-	friend class _systemController;
-	
 	private:
 		
 		//! Type of the program
-		_programType	type;
+		_programType			type;
 		
 		//! Parameters of the program
-		_programHeader	header;
+		_programHeader			header;
+		_programExecutionData	executionData;
 		
-		//! path to the executeable
-		string			path;
+		//! Path to the executeable
+		string					path;
 		
-		// Static List of running programs
-		static _programList globalPrograms;
-		static _programList globalProgramsToExecute;
-		static _constBitmap	standardFileImage;
+		//! _mainFrame-Object
+		_uniquePtr<_mainFrame>	mainFrame;
 		
-		// Processes all programs
-		static void		runPrograms();
-		static void		terminateAllPrograms();
+		//! This method creates a hash that 
+		string					createHash();
 		
-		//! Virtual main function to be overwritten in subclasses
-		virtual void	internalMain( _programArgs args ) = 0;
-		
-		//! Called every 1/60s
-		virtual	void	internalVbl(){}
-		
-		//! Main function to be called from _system
-		void			main( _gadget* w , _programArgs args );
-		
-		//! Function to clean up the program (pendant to internalMain)
-		virtual	void	internalCleanUp() = 0;
+		//! Main function to be called from _programController
+		virtual void			main( _programArgs args ){};
 		
 	protected:
 		
-		//! The current gadgetHost
-		_gadget*		gadgetHost;
-		
 		//! Set Header
-		void			setHeader( _programHeader header ){
-			this->header = header;
-		}
+		void					setHeader( _programHeader header ){ this->header = move(header); }
 		
 	public:
 		
 		//! Ctor
 		_program( _programType type ) :
 			type( type )
+			, mainFrame( nullptr )
 		{}
 		
-		//! Execute it! Means pushing it to _system's list of programs
-		void 			execute( _programArgs args = _programArgs() );
+		//! Dtor (made virtual to work for subclasses)
+		virtual ~_program();
+		
+		/**
+		 * Executes the program, which includes pushing it to _programManager's list of programs to execute
+		 * @return Whether or not the program was executed (true) or is already running (false)
+		 */
+		bool					execute( _programArgs args = _programArgs() );
 		
 		//! Terminate the program
-		void 			terminate();
+		void 					terminate();
 		
-		//! get The gadgetHost
-		_gadget*		getGadgetHost(){ return this->gadgetHost; }
+		
+		//! Returns, whether this program instance is currently running
+		bool					isRunning() const ;
+		
 		
 		//! Get the image of the program
-		const _bitmap&	getFileImage(){ return *this->header.fileIcon; }
+		const _bitmap&			getFileImage(){ return *this->header.fileIcon; }
 		
-		//! Get Header Information of the program
-		_programHeader&	getHeader(){ return this->header; }
 		
-		//! Virtual Dtor
-		virtual 		~_program(){};
+		//! Get a newly allocated _mainFrame-Gadget
+		_mainFrame*				getMainFrame( _length width , _length height , bool forceSize = false , _style&& style = _style() );
+		_mainFrame*				getMainFrame( _length width , _length height , _style&& style ){
+			return getMainFrame( width , height , false , move(style) );
+		}
 		
-		//! Set Path to the executeable that program instance is currently running in
-		_program& setPath( string path ){
+		//! Assume, the mainFrame is already created
+		_mainFrame*				getMainFrame() const { return this->mainFrame; }
+		
+		
+		//! Get header information of the program
+		_programHeader&			getHeader(){ return this->header; }
+		const _programHeader&	getHeader() const { return this->header; }
+		
+		
+		//! Get Details about the execution of a program
+		const _programExecutionData&	getExecutionData() const { return this->executionData; }
+		
+		
+		//! Set the File-Path at which the executeable was started
+		_program&				setPath( string path ){
 			this->path = path;
 			return *this;
 		}
 		
-		//! Get path of the executeable
-		const string& getPath() const { return this->path; }
-		string& getPath(){ return this->path; }
 		
-		//! Get a list of all currently running programs
-		static const _programList& getRunningPrograms(){
-			return _program::globalPrograms;
+		//! Get path of the executeable
+		const string&			getPath() const { return this->path; }
+		string&					getPath(){ return this->path; }
+		
+		//! Main function to be called from _programController
+		void					callMain(){
+			if( this->executionData.mainCalled )
+				return;
+			this->main( move(this->executionData.argumentsForMain) );
+			this->executionData.mainCalled = true;
 		}
 		
+		//! Called every 1/60s
+		virtual	void			frame( _int numRunningPrograms ){}
+		
+		//! Function to clean up the program (pendant to main)
+		virtual	void			cleanUp(){};
+		
+	public:
+		
+		//! Standard file-icon of a program
+		static _constBitmap		standardFileImage;
+		
 		//! Generate a _program instance from file
-		static _program* fromFile( string filename );
+		static _program*		fromFile( string filename );
 };
 
 #endif

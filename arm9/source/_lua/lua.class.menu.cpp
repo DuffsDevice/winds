@@ -2,7 +2,6 @@
 #include "_lua/lua.class.menu.rule.h"
 #include "_lua/lua.func.h"
 #include "_lua/lua.func.wrap.h"
-#include "_type/type.system.h"
 using namespace _luafunc;
 
 /*##################################

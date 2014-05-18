@@ -82,10 +82,10 @@ namespace _luafunc
 			return ev ? *ev : _event();
 		}
 		
-		_fontPtr check( lua_State* L , int index , _fontPtr* dummy ){
+		_fontHandle check( lua_State* L , int index , _fontHandle* dummy ){
 			_lua_font* ft = Lunar<_lua_font>::lightcheck( L , index );
 			if( ft )
-				return (_fontPtr)*ft; // You CAN cast _lua_font to _font*
+				return (_fontHandle)*ft; // You CAN cast _lua_font to _font*
 			return nullptr;
 		}
 		

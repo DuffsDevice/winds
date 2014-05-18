@@ -1,6 +1,10 @@
 #include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.windows.h"
-#include "_type/type.system.h"
+#include "_type/type.windows.soundbank.h"
+#include "_controller/controller.font.h"
+
+_rect _textBox::getGuiStringDimensions() const {
+	return _rect( 2 - this->scroll , 0 , this->text.getPreferredTextWidth() , this->getHeight() );
+}
 
 void _textBox::setInternalCursor( _u32 newCursor , bool enabled )
 {
@@ -65,9 +69,9 @@ _callbackReturn _textBox::refreshHandler( _event event )
 	bP.fill( that->bgColor );
 	
 	// Draw Text
-	that->text.drawTo( bP );
+	that->text.drawTo( that->getGuiStringDimensions() , bP );
 	
-	_callbackReturn ret = that->handleEventUser( event );
+	_callbackReturn ret = that->handleEventUser( move(event) );
 	
 	if( ret == not_handled || ret == use_default )
 	{
@@ -90,7 +94,7 @@ _callbackReturn _textBox::keyHandler( _event event )
 		case _key::backspace:
 		case _key::b:
 			if( that->text.getCursor() < 1 ){
-				//_system::errorTone();
+				_windowsSoundBank::play( _windowsSound::ping );
 				break;
 			}
 			that->removeStr( that->text.getCursor() - 1 );
@@ -126,9 +130,11 @@ _callbackReturn _textBox::keyHandler( _event event )
 
 _callbackReturn _textBox::focusHandler( _event event )
 {
+	_textBox* that = event.getGadget<_textBox>();
+	
 	// Set Cursor
-	_u32 cursor = event.getGadget<_textBox>()->text.getNumLetters();
-	event.getGadget<_textBox>()->setInternalCursor( cursor , event == onFocus );
+	_u32 cursor = event == onFocus ? that->text.getNumLetters() : 0;
+	that->setInternalCursor( cursor , event == onFocus );
 	
 	return use_default;
 }
@@ -137,10 +143,14 @@ _callbackReturn _textBox::updateHandler( _event event )
 {
 	_textBox* that = event.getGadget<_textBox>();
 	
-	_fontPtr font = that->getFont();
+	// Set Height of textbox depending on the text height
+	that->setHeightIfAuto( that->text.getTextHeight() + 2 );
 	
-	if( font && font->isValid() )
-		that->setHeightIfAuto( font->getHeight() + 2 );
+	if( that->hasAutoHeight() )
+		that->text.indicateNewDimensions(); // Request an update
+	
+	// Check, if the _guiString object needs to be updated and do so
+	that->checkUpdate();
 	
 	return handled;
 }
@@ -154,7 +164,7 @@ _callbackReturn _textBox::mouseHandler( _event event )
 	if( event == onDragging )
 		position -= that->getX(); // X-Coordinate of stylus relative to this _textBox
 	
-	that->text.setCursorFromTouch( position , 0 );
+	that->text.setCursorFromTouch( that->getGuiStringDimensions() , position , 0 );
 	that->checkRefresh();
 	
 	return handled;
@@ -164,8 +174,13 @@ _textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	_gadget( _gadgetType::textbox , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, scroll( 0 )
-	, text( move(value) , this->getDimensions().applyPadding({1}) , _system::getFont() , _color::fromRGB( 0 , 0 , 0 ) , _system::getRTA().getDefaultFontSize() )
+	, text( move(value) , _fontController::getStandardFont() , _color::fromRGB( 0 , 0 , 0 ) , _fontController::getStandardFontSize() )
 {
+	// Adjust guiString object
+	this->text.setFontChangeEnabled( false );
+	this->text.setFontColorChangeEnabled( false );
+	this->text.setFontSizeChangeEnabled( false );
+	
 	// Set update Handler
 	this->setInternalEventHandler( onUpdate , make_callback( &_textBox::updateHandler ) );
 	

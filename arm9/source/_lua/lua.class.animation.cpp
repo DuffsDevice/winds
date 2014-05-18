@@ -8,7 +8,8 @@ using namespace _luafunc;
 ##           Lua-Border           ##
 ##################################*/
 
-_lua_animation::_lua_animation( _animation rc ) : _animation( rc )
+_lua_animation::_lua_animation( _animation anim ) :
+	_animation( move(anim) )
 {}
 
 //! Constructor

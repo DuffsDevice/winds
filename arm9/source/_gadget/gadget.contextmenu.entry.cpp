@@ -1,9 +1,10 @@
 #include "_gadget/gadget.contextmenu.entry.h"
 #include "_gadget/gadget.contextmenu.h"
-#include "_type/type.system.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _int id , string value , _style&& style ) :
-	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _system::getUser().lIH , move(style) )
+	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , move(style) )
 	, text( move(value) )
 	, id( id )
 {
@@ -28,18 +29,19 @@ _callbackReturn _contextMenuEntry::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Fetch Font data
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	_contextMenu* parent = (_contextMenu*) that->getParent();
 	
+	//!@todo Manager using _gadget::isSelected()
 	bool drawHighlighted = parent && parent->getType() == _gadgetType::contextmenu ? that == parent->activeEntry : false;
 	
 	// Fill Background
-	bP.fill( _system::getRTA().getItemBackground( drawHighlighted ) );
+	bP.fill( _guiController::getItemBg( drawHighlighted ) );
 	
 	// Draw text
-	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _system::getRTA().getItemForeground( drawHighlighted ) );
+	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _guiController::getItemFg( drawHighlighted ) );
 	
 	return handled;
 }
@@ -48,8 +50,8 @@ _callbackReturn _contextMenuEntry::updateHandler( _event event )
 {
 	_contextMenuEntry* that = event.getGadget<_contextMenuEntry>();
 	
-	_fontPtr font = _system::getFont();
-	_u8 fontSize = _system::getRTA().getDefaultFontSize();
+	_fontHandle font = _fontController::getStandardFont();
+	_u8 fontSize = _fontController::getStandardFontSize();
 	
 	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );
 	

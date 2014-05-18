@@ -14,8 +14,7 @@ _soundChannel*	_sound::globalChannels[16] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
 bool			_sound::soundMuted = false;
 bool			_sound::soundEnabled = false;
 
-void _sound::runSounds()
-{
+void _sound::runSounds(){
 	for( int i = 0 ; i < 16 ; i++ ){
 		_soundChannel* chn = _sound::globalChannels[i];
 		if( !chn )
@@ -166,11 +165,10 @@ void _sound::soundMsgHandler( _u32 command , void* userData )
 
 void _sound::installFIFO(){
 	fifoSetDatamsgHandler( FIFO_SOUND , _sound::soundDataHandler , 0 );
-	fifoSetValue32Handler( FIFO_SOUND , _sound::soundMsgHandler , 0 );
+	fifoSetValue32Handler( FIFO_SOUND , (FifoValue32HandlerFunc) &_sound::soundMsgHandler , 0 );
 }
 
-void _sound::sendInteger( int val )
-{
-	_soundDataMsg msg = _soundDataMsg::integerMsg( val );
+void _sound::sendInteger( int val ){
+	_soundDataMsg msg = _soundDataMsg::debugMsg( val );
 	fifoSendDatamsg( FIFO_SOUND , sizeof(_soundDataMsg) , (_u8*)&msg );
 }

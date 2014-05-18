@@ -1,6 +1,7 @@
 #include "_gadget/gadget.textarea.h"
-#include "_type/type.system.h"
 #include "_type/type.gadget.helpers.h"
+#include "_type/type.windows.soundbank.h"
+#include "_controller/controller.font.h"
 
 _callbackReturn _textArea::refreshHandler( _event event )
 {
@@ -17,9 +18,9 @@ _callbackReturn _textArea::refreshHandler( _event event )
 	bP.fill( that->bgColor );
 	
 	// Draw Text
-	that->text.drawTo( bP );
+	that->text.drawTo( that->getGuiStringDimensions() , bP );
 	
-	_callbackReturn ret = that->handleEventUser( event );
+	_callbackReturn ret = that->handleEventUser( move(event) );
 	
 	if( ret == not_handled || ret == use_default )
 	{
@@ -41,7 +42,7 @@ void _textArea::adjustScrollToCursor()
 	_s32 cursorIndex = this->text.getNumBytesFromNumLetters( this->text.getCursor() );
 	
 	// Get Position and height of cursor
-	_2s32 dimensions = this->text.getYMetricsOfLine( this->text.getLineContainingIndex( cursorIndex ) );
+	_2s32 dimensions = this->text.getYMetricsOfLine( this->getGuiStringDimensions() , this->text.getLineContainingIndex( cursorIndex ) );
 	
 	// Store Current Scroll
 	_int scrollValue = this->scrollBar->getValue();
@@ -95,7 +96,7 @@ _callbackReturn _textArea::keyHandler( _event event )
 		case _key::backspace:
 		case _key::b:
 			if( that->text.getCursor() == 0 ){
-				//_system::errorTone();
+				_windowsSoundBank::play( _windowsSound::ping );
 				break;
 			}
 			// Refresh
@@ -113,7 +114,7 @@ _callbackReturn _textArea::keyHandler( _event event )
 			break;
 		case _key::down:
 		case _key::up:
-			that->text.moveCursorByLine( event.getKeyCode() == _key::down );
+			that->text.moveCursorByLine( that->getGuiStringDimensions() , event.getKeyCode() == _key::down );
 			that->adjustScrollToCursor();
 			break;
 		default:
@@ -156,21 +157,15 @@ _callbackReturn _textArea::generalHandler( _event event )
 			that->redraw(); // refresh
 			break;
 		case onResize:
+			that->text.indicateNewDimensions();
 		case onUpdate: // Adjust scrollbar parameters
 		{
 			reCompute:
 			
-			that->text.setDimensions( _rect(
-				_textArea::borderX
-				, _textArea::borderY - that->scrollBar->getValue()
-				, that->getWidth() - _textArea::borderX * 2 - ( that->scrollBar->isHidden() ? 0 : 9 )
-				, that->getHeight() - _textArea::borderY * 2
-			) );
-			
 			// Check, if the text needs to be update
 			that->checkUpdate();
 			
-			_length neededHeight = that->text.getTextHeight() + that->text.getOffsetY();
+			_length neededHeight = that->text.getTextHeight() + that->text.getOffsetY( that->getGuiStringDimensions() );
 			bool hideScrollBar = neededHeight <= that->getHeight();
 			
 			if( hideScrollBar != that->scrollBar->isHidden() )
@@ -188,12 +183,6 @@ _callbackReturn _textArea::generalHandler( _event event )
 			break;
 		}
 		case onScroll:
-			that->text.setDimensions( _rect(
-				_textArea::borderX
-				, _textArea::borderY - that->scrollBar->getValue()
-				, that->getWidth() - _textArea::borderX * 2 - ( that->scrollBar->isHidden() ? 0 : 9 )
-				, that->getHeight() - _textArea::borderY * 2
-			) );
 			that->checkRefresh();
 			break;
 		default:
@@ -215,7 +204,7 @@ _callbackReturn _textArea::mouseHandler( _event event )
 		posY -= that->getY();
 	}
 	
-	that->text.setCursorFromTouch( posX , posY );
+	that->text.setCursorFromTouch( that->getGuiStringDimensions() , posX , posY );
 	that->checkRefresh();
 	
 	return handled;
@@ -224,12 +213,12 @@ _callbackReturn _textArea::mouseHandler( _event event )
 _textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
 	_gadget( _gadgetType::textarea , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
-	, text( move(value) , this->getDimensions().applyPadding({1}) , _system::getFont() , _color::fromRGB( 0 , 0 , 0 ) , _system::getRTA().getDefaultFontSize() )
+	, text( move(value) , _fontController::getStandardFont() , _color::black , _fontController::getStandardFontSize() )
 {
+	// Adjust guiString object
 	this->text.setFontChangeEnabled( false );
 	this->text.setFontColorChangeEnabled( false );
 	this->text.setFontSizeChangeEnabled( false );
-	this->text.setLineBreaksEnabled( true );
 	
 	this->scrollBar =
 		new _scrollBar(

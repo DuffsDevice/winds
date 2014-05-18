@@ -4,10 +4,10 @@
 #include "_type/type.h"
 #include "_type/type.font.h"
 #include "_type/type.bitmap.port.h"
-#include "_type/type.flexptr.h"
+#include "_type/type.uniqueptr.h"
 #include <stack>
 
-using _fontStack		= std::stack<const _font*>;
+using _fontStack		= std::stack<_fontPtr>;
 using _fontSizeStack	= std::stack<_u8>;
 using _fontColorStack	= std::stack<_color>;
 using _lineNumber		= _u32;
@@ -16,7 +16,7 @@ using _letterNum		= size_t;
 class _guiString : public string
 {
 	public:
-		
+	
 		/////////////////////////
 		// STANDARD C++ THINGS //
 		/////////////////////////
@@ -28,12 +28,11 @@ class _guiString : public string
 		 * @param text A string that this text object should wrap around.
 		 * @param dimensions The Size and Position of the gui string relative to the gadget it is displayed on
 		 */
-		_guiString( string text , _rect dimensions , const _font* font , _color fontColor , _u8 fontSize = 0 ) :
+		_guiString( string text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
 			string( move(text) )		, font( font )				, fontSize( fontSize )		, fontColor( fontColor )
-			, selection( nullptr )		, dimensions( dimensions )	, align( _align::left )		, vAlign( _valign::top )
-			, cursor( 0 )				, tmpCursorX( -1 )			, needsRefreshFlag( false )	, needsUpdateFlag( true )
-			, displaySelection( false )	, displayCursor( false )	, allowLineBreak( true )	, allowFontChange( true )
-			, allowSizeChange( true )	, allowColorChange( true )
+			, selection( nullptr )		, align( _align::left )		, vAlign( _valign::top )	, cursor( 0 )
+			, needsRefreshFlag( false )	, needsUpdateFlag( true )	, displaySelection( false )	, displayCursor( false )
+			, allowFontChange( true )	, allowSizeChange( true )	, allowColorChange( true )
 		{}
 		
 		//! Override the current value of this formatString
@@ -48,94 +47,86 @@ class _guiString : public string
 			return *this;
 		}
 		
-		///////////////////////////////////
-		// METHODS CONCERNING APPEARENCE //
-		///////////////////////////////////
-		
-		/**
-		 * Sets the position and size of the gui string. This will automatically
-		 * update the wrapping of the text, if the width of the gui string changes.
-		 * @param newDimensions Dew dimensions of this gui string
-		 */
-		void		setDimensions( _rect newDimensions ){
-			this->needsUpdateFlag |= this->dimensions != newDimensions;
-			this->dimensions = newDimensions;
-		}
-		
-		//! Get Current Dimensions of the _guiString
-		_rect		getDimensions() const { return this->dimensions; }
+		///////////////////////////
+		// CONCERNING APPEARENCE //
+		///////////////////////////
 		
 		/**
 		 * Print the formatted Text in the nth line to a bitmap at the specified position
 		 * @param bmpPort BitmapPort reference to draw to
 		 */
-		void		drawTo( _bitmapPort& port );
-		
-		//! Get the [Y-Coordinate,height] of the supplied line
-		_2s32		getYMetricsOfLine( _lineNumber lineNumber ) const ;
-		
-		//! Get the [X-Coordinate,width] of the supplied line
-		_2s32		getXMetricsOfLine( _lineNumber lineNumber ) const ;
+		virtual void	drawTo( _rect guiStringDimensions , _bitmapPort& port ) = 0;
 		
 		//! Get the [X-Coordinate,width] of the specific letter
-		_2s32		getXMetricsOfLetter( _letterNum letterNumber ) const ;
+		virtual _2s32	getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const = 0;
 		
+		//! Get over all Text Height
+		virtual _length	getTextHeight() const = 0;
 		
-		//////////////////////////////////////////
-		// METHODS CONCERNING CHARACTER INDICES //
-		//////////////////////////////////////////
+		//! Get the number of pixels the text would need to be displayed best
+		virtual _length	getPreferredTextWidth() const {
+			return 0;
+		}
 		
 		/**
 		 * Parses the whole text and wraps lines if needed, starting at the specified position 
 		 * @param start The position from that on to be updated
 		 */
-		void		update( _u32 start = 0 );
+		virtual void	update( _rect guiStringDimensions , _u32 start = 0 ) = 0;
 		
 		/**
 		 * Get the character index after which to display a cursor,
 		 * when the mouse is pressed at the specified position
 		 */
-		void		setCursorFromTouch( _coord cursorX , _coord cursorY );
+		void			setCursorFromTouch( _rect guiStringDimensions , _coord cursorX , _coord cursorY );
+		
+		/**
+		 * This method should be called, when the dimensions of the guistring change
+		 * It will automatically update the wrapping of the text
+		 */
+		void			indicateNewDimensions(){
+			this->needsUpdateFlag = true;
+		}
+		
+		//! Get the number of pixels from the top of the guistring to the start of the text
+		_length			getOffsetY( _rect guiStringDimensions ) const ;
+		
+		
+		////////////////////////
+		// CONCERNING INDICES //
+		////////////////////////
 		
 		/**
 		 * Get Cursor (number of letters after which to display the cursor)
 		 * @return number of letters
 		 */
-		_letterNum	getCursor() const { return this->cursor; }
+		_letterNum		getCursor() const { return this->cursor; }
 		
 		//! Set the gui string's current cursor
-		void		setCursor( _letterNum letterIndex ){
+		void			setCursor( _letterNum letterIndex ){
 			this->needsRefreshFlag |= this->displayCursor && letterIndex != this->cursor;
 			if( letterIndex > this->cursor )
 				letterIndex = min( letterIndex , this->getNumLetters() );
 			this->cursor = letterIndex;
-			this->tmpCursorX = -1;
 		}
 		
 		/**
 		 * Increase/Decrease the cursor by one letter
 		 * @return The updated cursor
 		 */
-		_letterNum	moveCursor( bool increase ){
+		_letterNum		moveCursor( bool increase ){
 			if( increase || this->cursor > 0 )
 				this->setCursor( this->cursor + ( increase ? 1 : -1 ) );
-			this->tmpCursorX = -1;
 			return this->cursor;
 		}
-		
-		/**
-		 * Increase/Decrease the cursor by one line
-		 * @return The updated cursor
-		 */
-		_lineNumber	moveCursorByLine( bool increase );
 		
 		/**
 		 * Insert text at the specified character index.
 		 * @param text The text to insert.
 		 * @param index The index to insert the character after
 		 */
-		void		insert( _letterNum position , string text );
-		void		insert( _letterNum position , _char ch , _length n = 1 ){
+		void			insert( _letterNum position , string text );
+		void			insert( _letterNum position , _char ch , _length n = 1 ){
 			this->insert( position , string(n,ch) );
 		}
 		
@@ -144,33 +135,10 @@ class _guiString : public string
 		 * @param startIndex The char index to start removing from.
 		 * @param count The number of chars to remove.
 		 */
-		void		remove( _letterNum letterIndex , _letterNum letterCount = 1 );
-		
-		//! Get the total number of lines in the text
-		_u32		getLineCount() const { return max<_u32>( 1 , this->lineStarts.size() ) - 1; } // -1 for the start index that gets pushed onto the list
-		
-		//! Get the line number the supplied byte 'index' is in
-		_u32		getLineContainingIndex( _u32 index ) const ;
-		
-		//! Get the byte index of the first character in a specific line
-		_u32		getLineStart( _lineNumber lineNo ) const { return this->lineStarts[ min( lineNo , getLineCount() ) ].charIndex; }
-		
-		//! Get the byte index of the last character in a specific line
-		_u32		getLineEnd( _lineNumber lineNo ) const { return this->lineStarts[ min( lineNo , getLineCount() ) + 1 ].charIndex - 1; }
-		
-		/**
-		 * Get The text that is in the supplied line number
-		 * @param lineNo The number of the line the content should be retrieved
-		 * @return The text in the upplied line or
-		 * returns "" if that line is either empty or if 'lineNo' is invalid
-		**/
-		string		getLineContent( _lineNumber lineNo ) const ;
-		
-		//! Get over all Text Height
-		_length		getTextHeight() const ;
+		void			remove( _letterNum letterIndex , _letterNum letterCount = 1 );
 		
 		//! Get the number of characters (bytes) needed to display 'letterNum' letters
-		_u32		getNumBytesFromNumLetters( _letterNum letterNum , _letterNum offsetLetter = 0 ) const ;
+		_u32			getNumBytesFromNumLetters( _letterNum letterNum , _letterNum offsetLetter = 0 ) const ;
 		
 		/**
 		 * Get the number of letters displayed after processing
@@ -178,18 +146,15 @@ class _guiString : public string
 		 * @param numBytes the number of bytes of which we want to know the number of letters they build
 		 * @param offset The position where we start counting
 		 */
-		_letterNum	getNumLettersFromNumBytes( _u32 numBytes , _u32 offset = 0 ) const ;
+		_letterNum		getNumLettersFromNumBytes( _u32 numBytes , _u32 offset = 0 ) const ;
 		
 		//! Get Numebr of letters in the string
-		_letterNum	getNumLetters() const ;
+		_letterNum		getNumLetters() const ;
 		
 		
 		///////////////////////
-		// GETTERS & SETTERS //
+		// SETTERS & GETTERS //
 		///////////////////////
-		
-		//! Get the number of pixels from the top of the guistring to the start of the text
-		_length		getOffsetY() const ;
 		
 		//! Set Horizontal Alignment of gui string
 		void		setAlign( _align value ){
@@ -213,7 +178,7 @@ class _guiString : public string
 		bool		isCursorEnabled() const { return this->displayCursor; }
 		
 		//! Set initial font to use
-		void		setFont( const _font* font ){
+		void		setFont( _fontHandle font ){
 			this->needsUpdateFlag |= this->font != font;
 			this->font = font;
 		}
@@ -231,7 +196,7 @@ class _guiString : public string
 		}
 		
 		//! Get the used font
-		_fontPtr	getFont() const { return this->font; }
+		_fontHandle	getFont() const { return this->font; }
 		
 		//! Get the used font size
 		_u8			getFontSize() const { return this->fontSize; }
@@ -254,12 +219,6 @@ class _guiString : public string
 			this->displayCursor = enabled;
 		}
 		
-		//! Enable or disable line breaks
-		void		setLineBreaksEnabled( bool enabled ){
-			this->needsUpdateFlag |= this->allowLineBreak != enabled;
-			this->allowLineBreak = enabled;
-		}
-		
 		//! Enable or disable font changes
 		void		setFontChangeEnabled( bool enabled ){
 			this->needsUpdateFlag |= this->allowFontChange != enabled;
@@ -278,6 +237,7 @@ class _guiString : public string
 			this->allowColorChange = enabled;
 		}
 		
+		
 		/////////////////////////////////////////
 		// METHODS FOR CHANGE ESCAPE SEQUENCES //
 		/////////////////////////////////////////
@@ -289,7 +249,7 @@ class _guiString : public string
 		static string colorChange( _color color );
 		
 		//! Generates an escape sequence that will change the used font
-		static string fontChange( const _font* ft );
+		static string fontChange( _fontPtr ft );
 		
 		
 		//////////////////////////////////////////
@@ -305,57 +265,14 @@ class _guiString : public string
 		//! Generates an escape sequence that will restore the previously used font color
 		static string fontColorRestore(){ _char tmp[2] = { (_char)escapeChar::colorRestore , 0 }; return tmp; }
 		
-	
-	private:
-		
-		struct _strRange{
+		//! The Type of a selection
+		class _strRange{
+			public:
 			_u32 start;
 			_u32 length;
 		};
-		
-		struct _lineStart{
-			_u32	charIndex;
-			_length	lineWidth;
-			_length	lineHeight;
-			bool	isSyllableBreak;
-		};
-		
-		//! Font to be used for output
-		const _font*			font;
-		_u8						fontSize;
-		_color					fontColor;
-		
-		//! Array containing start indexes of each wrapped line
-		_vector<_lineStart>		lineStarts;
-		flex_ptr<_strRange>		selection;
-		
-		//! Area available to the text
-		_rect					dimensions;
-		_align					align;
-		_valign					vAlign;
-		
-		//! Flag indicating whether the rendering of the _text-object would have changed
-		struct{
-			_u32				cursor;
-			_s32				tmpCursorX;
-			bool				needsRefreshFlag : 1;
-			bool				needsUpdateFlag : 1;
-			bool				displaySelection : 1;
-			bool				displayCursor : 1;
-			bool				allowLineBreak : 1;
-			bool				allowFontChange : 1;
-			bool				allowSizeChange : 1;
-			bool				allowColorChange : 1;
-		} PACKED ;
-		
-		/**
-		 * Appends a line break to the list of lineStarts at the specified position
-		 * @param byteIndex			Byte index after which to start a new line
-		 * @param lineWidth			The total width of the line before the line break (including the optional hyphen)
-		 * @param lineHeight		The total height in pixels of the previous line
-		 * @param dueToHyphenation	Whether the line break was added due to splitting a word in two parts
-		 */
-		void		pushBackLineBreak( _u32 byteIndex , _length lineWidth , _length maxLineHeight , bool dueToHyphenation = false );
+	
+	protected:
 		
 		/**
 		 * Checks, if the current character in the supplied string is an escape-char
@@ -370,17 +287,37 @@ class _guiString : public string
 		
 		//! Predefined Escape characters that introduce an escape sequence
 		enum class escapeChar : _char{
-			fontChange		= 22,
-			colorChange		= 23,
-			sizeChange		= 25,
-			fontRestore		= 26,
-			sizeRestore		= 29,
-			colorRestore	= 30
+			fontChange		= 25,
+			colorChange		= 26,
+			sizeChange		= 28,
+			fontRestore		= 29,
+			sizeRestore		= 30,
+			colorRestore	= 31
 		};
 		
-		//! Used between the parts of a compound word or name or between the syllables of a word
-		//! especially when divided at the end of a line of text
-		static constexpr _char breakLineLetter = '-';
+		//! Font to be used for output
+		_fontHandle				font;
+		_u8						fontSize;
+		_color					fontColor;
+		
+		//! Structure holding the selection attributes if some text is selected
+		_uniquePtr<_strRange>	selection;
+		
+		//! Text-Alignment
+		_align					align;
+		_valign					vAlign;
+		
+		//! Flag indicating whether the rendering of the _text-object would have changed
+		struct{
+			_u32				cursor;
+			bool				needsRefreshFlag : 1;
+			bool				needsUpdateFlag : 1;
+			bool				displaySelection : 1;
+			bool				displayCursor : 1;
+			bool				allowFontChange : 1;
+			bool				allowSizeChange : 1;
+			bool				allowColorChange : 1;
+		} PACKED ;
 };
 
 #endif

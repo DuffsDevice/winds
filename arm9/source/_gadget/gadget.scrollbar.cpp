@@ -106,9 +106,9 @@ void _scrollBar::setValueInternal( int val )
 		this->refreshPosition();
 		
 		if( this->dim == _dimension::horizontal )
-			this->handleEvent( _event( onScroll ).setDeltaX( delta ).setPosX( val ) );
+			this->handleEvent( (_event&&) _event( onScroll ).setDeltaX( delta ).setPosX( val ) );
 		else
-			this->handleEvent( _event( onScroll ).setDeltaY( delta ).setPosY( val ) );
+			this->handleEvent( (_event&&) _event( onScroll ).setDeltaY( delta ).setPosY( val ) );
 	}
 }
 

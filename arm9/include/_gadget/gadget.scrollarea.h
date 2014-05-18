@@ -16,23 +16,23 @@ class _scrollArea : public _gadget {
 	
 	private:
 		
-		_scrollType scrollTypeX;
-		_scrollType scrollTypeY;
+		_scrollType				scrollTypeX;
+		_scrollType				scrollTypeY;
 		
-		_scrollBar*	scrollBarX;
-		_scrollBar*	scrollBarY;
+		_uniquePtr<_scrollBar>	scrollBarX;
+		_uniquePtr<_scrollBar>	scrollBarY;
 		
-		_padding	offset;
+		_padding				offset;
 		
 		// Size of scrolling Area
-		_length		clipWidth;
-		_length		clipHeight;
+		_length					clipWidth;
+		_length					clipHeight;
 		
-		_length		canvasWidth;
-		_length		canvasHeight;
-		bool		leaveCorner;
+		_length					canvasWidth;
+		_length					canvasHeight;
+		bool					leaveCorner;
 		
-		_gadgetList	nonEnhancedChildren;
+		_gadgetList				nonEnhancedChildren;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn childHandler( _event );
@@ -40,8 +40,8 @@ class _scrollArea : public _gadget {
 		static _callbackReturn updateHandler( _event );
 		static _callbackReturn resizeHandler( _event );
 		
-		void		computeClipSize();
-		void		updateScrollBars();
+		void	computeClipSize();
+		void	updateScrollBars();
 		
 	public:
 		
@@ -76,10 +76,7 @@ class _scrollArea : public _gadget {
 		_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX = _scrollType::meta, _scrollType scrollTypeY = _scrollType::meta , _style&& style = _style() );
 		
 		//! Destrucor
-		virtual ~_scrollArea(){
-			delete scrollBarX;
-			delete scrollBarY;
-		}
+		virtual ~_scrollArea() = default;
 };
 
 extern _fromStr<_scrollType>	string2scrollType;

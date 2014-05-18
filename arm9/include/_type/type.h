@@ -54,6 +54,7 @@ template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
 template<typename T>
 	using _initializerList = std::initializer_list<T>;
+	
 
 typedef std::basic_string<_char>	string;
 
@@ -65,10 +66,25 @@ using std::max;
 _s32 mid( _s32 a , _s32 b , _s32 c );
 
 //! Templates that specify the conversion between strings and 'T'
+namespace std{
+	template<class E> class hash{
+		using sfinae = typename std::enable_if<std::is_enum<E>::value, E>::type;
+		public:
+		size_t operator()(const E&e) const {
+			return std::hash<
+				typename std::underlying_type<E>::type
+			>()(
+				static_cast<typename std::underlying_type<E>::type>(e)
+			);
+		}
+	};
+};
 template<typename T>
-	using _toStr = _map<T,_literal>;
+	using _toStr = _unorderedMap<T,_literal>;
 template<typename T>
-	using _fromStr = _map<string,T>;
+	using _fromStr = _unorderedMap<string,T>;
+template<typename From, typename To>
+	using _converter = _unorderedMap<From,To>;
 
 enum class _dimension : _u8{
 	horizontal = 0 ,
@@ -310,7 +326,7 @@ class _paramAlloc
 			passed( false )
 		{
 			typedef typename std::remove_reference<T2>::type T3;
-			typedef decltype( std::is_convertible<T3,T>::value ) check; // Check if T2 can be casted to T
+			unused typedef decltype( std::is_convertible<T3,T>::value ) check; // Check if T2 can be casted to T
 			ptr = (T*) new T3( (T2&&)obj );
 		}
 		

@@ -3,44 +3,70 @@
 #define _WIN_G_LABEL_
 
 #include "_type/type.gadget.h"
+#include "_type/type.guistring.singleline.h"
 
 class _label : public _gadget {
 	
 	private:
 		
-		//! Farbe der Schrift
-		_color			color;
-		_color			bgColor;
+		//! Background-color
+		_color					bgColor;
 		
-		//! Schriftart/Font
-		//! Default: system-Font inside of _system_->_runtimeAttributes_
-		_fontPtr 		font;
-		_u8				fontSize;
-		
-		//! Alignment
-		_align			align;
-		_valign 		vAlign;
-		
-		//! String to be displayed
-		string 			strValue;
+		//! Gui-string-object
+		_singleLineGuiString	text;
 		
 		//! Refresh-Handler
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn updateHandler( _event );
 		
+		// Checks, if the text wants to be refreshed, in case something changed concerning the appearence of the text
+		// in case, that is the case, it refreshes the textarea
+		void checkRefresh(){
+			if( this->text.needsRefresh() ){
+				this->handleEvent( onResize );	// Sets the right parameters for the Scrollbar
+				this->redraw();					// This will redraw the text
+			}
+		}
+		
+		// Checks, if the text wants to update its wrapping of lines and does that if needed
+		void checkUpdate(){
+			if( this->text.needsUpdate() )
+				this->text.update( this->getDimensions() );
+		}
+		
 	public:
 		
 		//! Set the Text to be displayed
-		void setStrValue( string val );
+		void setStrValue( string val ){ this->text = move(val); this->checkRefresh(); }
 		
-		//! Get the Text of the label
-		string getStrValue(){ return this->strValue; }
+		//! Get the Text of the textbox
+		string getStrValue(){ return this->text; }
+		
+		//! Get Text Font
+		_fontHandle getFont(){ return this->text.getFont(); }
+		
+		//! Get Text FontSize
+		_u8 getFontSize(){ return this->text.getFontSize(); }
+		
+		//! Set Text Font
+		void setFont( _fontHandle ft ){
+			if( !ft )
+				return;
+			this->text.setFont( ft );
+			this->checkRefresh();
+		}
+		
+		//! Set FontSize
+		void setFontSize( _u8 fontSize ){
+			this->text.setFontSize( fontSize );
+			this->checkRefresh();
+		}
 		
 		//! Set Text Color
-		void setColor( _color col ){ this->color = col; this->redraw(); }
+		void setColor( _color col ){ this->text.setFontColor( col ); this->checkRefresh(); }
 		
 		//! Get Text Color
-		_color getColor(){ return this->color; }
+		_color getColor(){ return this->text.getFontColor(); }
 		
 		//! Set Text Color
 		void setBgColor( _color col ){ this->bgColor = col; this->redraw(); }
@@ -48,29 +74,31 @@ class _label : public _gadget {
 		//! Get Text Color
 		_color getBgColor(){ return this->bgColor; }
 		
-		//! Get Text Font
-		_fontPtr getFont(){ return this->font; }
-		
-		//! Get Text FontSize
-		_u8 getFontSize(){ return this->fontSize; }
-		
 		//! Align-setting
-		void setAlign( _align align ){ this->align = align; this->redraw(); }
-		
-		//! Vertical-Align-setting
-		void setVAlign( _valign vAlign ){ this->vAlign = vAlign; this->redraw(); }
+		void setAlign( _align align ){ this->text.setAlign( align ); this->checkRefresh(); }
 		
 		//! Get Alignment of the Label
-		_align getAlign(){ return this->align; }
+		_align getAlign(){ return this->text.getAlign(); }
 		
-		//! Get Vertical Alignment of the Label
-		_valign getVAlign(){ return this->vAlign; }
+		//! Vertical-Align-setting
+		void setVAlign( _valign vAlign ){ this->text.setVAlign( vAlign ); this->checkRefresh(); }
 		
-		//! Set Text Font
-		void setFont( _fontPtr ft );
+		//! Get vertical Alignment of the Label
+		_valign getVAlign(){ return this->text.getVAlign(); }
 		
-		//! Set FontSize
-		void setFontSize( _u8 fontSize );
+		//! Set ellipsis type
+		void setEllipsis( bool enabled , _letterNum lettersBeforeEnd = 0 ){
+			lettersBeforeEnd = min<_letterNum>( lettersBeforeEnd , 127 ); // Prevent overflows
+			this->text.setEllipsis( enabled ? lettersBeforeEnd : -1 );
+			this->checkRefresh();
+		}
+		
+		//! Get (type,lettersBeforeEnd) of ellipsis
+		_pair<bool,_s8> getEllipsis() const {
+			_s8 ellipsis = this->text.getEllipsis();
+			return { ellipsis >= 0 , max<_s8>( 0 , ellipsis ) };
+		}
+		
 		
 		//! Construcor including dimensions
 		_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style = _style::notClickable );

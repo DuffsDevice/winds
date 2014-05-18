@@ -1,8 +1,4 @@
 #include "_gadget/gadget.progressbar.h"
-#include "func.memory.h"
-#include "_type/type.system.h"
-#include "_type/type.callback.derives.h"
-
 
 _pixel paletteBlue[4] = {
 	_color::fromRGB8( 94 , 119 , 238 )

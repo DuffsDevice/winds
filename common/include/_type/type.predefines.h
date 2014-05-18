@@ -13,8 +13,8 @@ typedef uint8_t 					_u8;
 typedef int8_t 						_s8;
 typedef uint16_t 					_u16;
 typedef int16_t 					_s16;
-typedef uint32_t 					_u32;
-typedef int32_t 					_s32;
+typedef unsigned int				_u32;
+typedef int		 					_s32; // int32_t = long int = int (preserves backwards compatibility)
 typedef uint64_t 					_u64;
 typedef int64_t 					_s64;
 typedef bool						_bool;

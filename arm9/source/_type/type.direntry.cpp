@@ -1,5 +1,9 @@
 #include "_type/type.direntry.h"
-#include "_type/type.system.h"
+#include "_type/type.program.h"
+#include "_type/type.windows.h"
+#include "_controller/controller.filesystem.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.registry.h"
 
 extern "C"{
 #include "_library/_fat/partition.h"
@@ -7,13 +11,9 @@ extern "C"{
 #include "_library/_fat/file_allocation_table.h"
 }
 
-extern "C" bool sdio_IsInserted(); // libnds method
-
 namespace unistd{
 #include <unistd.h>
 }
-
-int _direntry::fatInited = -1;
 
 /* Return a string containing the path name of the parent
  * directory of PATH.  */
@@ -40,71 +40,14 @@ string dirname( string path )
 }
 
 
-void _direntry::replaceASSOCSInternal( string& path )
-{
-	for( const _pair<string,string>& assoc : _system::getRTA().getAssociativeDirectories() )
-	{
-		size_t pos = path.find( assoc.first );
-		if ( pos != string::npos )
-		   path.replace( pos, assoc.first.length() , assoc.second );
-	}
-}
-
-
-bool _direntry::initFat()
-{
-	//! libFat instantiation
-	if( _direntry::fatInited == -1 )
-		_direntry::fatInited = fatInitDefault();
-	
-	return _direntry::fatInited;
-}
-
-_vector<string> _direntry::getDrives()
-{
-	_vector<string> vec = { "fat" };
-	if( sdio_IsInserted()  )
-		vec.push_back("fat2");
-	return vec;
-}
-
-bool _direntry::getDriveStats( string driveName , _driveStats& dest )
-{
-	if( driveName.back() != ':' )
-		driveName += ':';
-	
-	/* Any file on the filesystem in question */
-	struct statvfs buf;
-	if( !statvfs( driveName.c_str() , &buf ) )
-	{
-		_u64 blockSize, blocks, freeBlocks;
-		
-		blockSize = buf.f_bsize;
-		blocks = buf.f_blocks;
-		freeBlocks = buf.f_bfree;
-		
-		// Write to buffer
-		dest.used = ( blocks - freeBlocks ) * blockSize;
-		dest.size = blocks * blockSize;
-		dest.free = freeBlocks * blockSize;
-		dest.blockSize = blockSize;
-		return true;
-	}
-	return false;
-}
-
-
 _direntry::_direntry( string&& fn ) :
 	fHandle( nullptr ) // same as dHandle
-	, filename( replaceASSOCS( move(fn) ) )
+	, filename( _filesystemController::replaceAssocDirs( move(fn) ) )
 	, mimeType( _mime::text_plain )
 	, mode( _direntryMode::closed )
 {
 	// Trim the filename
 	trim( filename );
-	
-	// Make sure fat is inited
-	initFat();
 	
 	// set Name (not filename!)
 	bool hasLastDelim = this->filename.back() == '/';
@@ -151,10 +94,6 @@ _direntry::_direntry( string&& fn ) :
 		
 		this->mimeType = _mimeType::fromExtension( this->getExtension() );
 	}
-	
-	//! Removed, because it makes Working Directories not work :D
-	//if( this->filename.front() != '/' )
-	//	this->filename.insert( 0 , 1 , '/' );
 }
 
 _direntry& _direntry::operator=( _direntry&& other )
@@ -193,7 +132,7 @@ _direntry& _direntry::operator=( const _direntry& other )
 
 bool _direntry::close() const
 {
-	if( !this->fatInited || !this->exists )
+	if( !_filesystemController::isFatReady() || !this->exists )
 		return false;
 	
 	// Returnm, if everything is closed already
@@ -225,7 +164,7 @@ PARTITION* _FAT_partition_getPartitionFromPath (const char* path);
 
 bool _direntry::flush() const 
 {
-	if( !this->fatInited || !this->exists || this->isDirectory() )
+	if( !_filesystemController::isFatReady() || !this->exists || this->isDirectory() )
 		return false;
 	
 	// Get Partition
@@ -245,7 +184,7 @@ bool _direntry::flush() const
 
 bool _direntry::setAttrs( _direntryAttributes attrs )
 {	
-	if( !this->fatInited )
+	if( !_filesystemController::isFatReady() )
 		return false;
 	return FAT_setAttr( this->filename.c_str() , (_u8)attrs ) == 0;
 }
@@ -253,7 +192,7 @@ bool _direntry::setAttrs( _direntryAttributes attrs )
 
 _direntryAttributes _direntry::getAttrs() const
 {	
-	if( !this->fatInited )
+	if( !_filesystemController::isFatReady() )
 		return 0;
 	return FAT_getAttr( this->filename.c_str() );
 }
@@ -261,7 +200,7 @@ _direntryAttributes _direntry::getAttrs() const
 
 bool _direntry::open( string mode ) const
 {
-	if( !this->fatInited || !this->exists )
+	if( !_filesystemController::isFatReady() || !this->exists )
 		return false;
 	
 	//! Close the previous Handle
@@ -283,39 +222,42 @@ bool _direntry::open( string mode ) const
 	return false;
 }
 
-string _direntry::getDisplayName( bool forceExtension ) const
+string _direntry::getDisplayName( bool forceRealName ) const
 {
-	_mimeType mime = this->getMimeType();
-	switch( mime )
+	if( !forceRealName )
 	{
-		case _mime::application_octet_stream:
-		case _mime::application_microsoft_installer:
-		case _mime::application_x_lua_bytecode:
+		_mimeType mime = this->getMimeType();
+		switch( mime )
 		{
-			_program* prog = _program::fromFile( this->getFileName() );
-			if( prog )
+			case _mime::application_octet_stream:
+			case _mime::application_microsoft_installer:
+			case _mime::application_x_lua_bytecode:
 			{
-				// Get Header of the program
-				_programHeader& header = prog->getHeader();
-				
-				string name = "";
-				if( header.displayName != nullptr )
-					name = move(*header.displayName);
-				
-				// Delete the program again
-				delete prog;
-				
-				if( !name.empty() )	
-					return move(name);
+				_program* prog = _program::fromFile( this->getFileName() );
+				if( prog )
+				{
+					// Get Header of the program
+					_programHeader& header = prog->getHeader();
+					
+					string name = "";
+					if( header.fileName != nullptr )
+						name = move(*header.fileName);
+					
+					// Delete the program again
+					delete prog;
+					
+					if( !name.empty() )	
+						return move(name);
+				}
 			}
+			default:
+				break;
 		}
-		default:
-			break;
+		
+		// Certain Files do not have an .extension
+		if( !_guiController::showFileExtension() )
+			return this->name;
 	}
-	
-	// Certain Files do not have an .extension
-	if( !_system::getUser().sFE && !forceExtension )
-		return this->name;
 	
 	const string& ext = this->getExtension();
 	
@@ -346,7 +288,7 @@ string _direntry::getParentDirectory() const {
 
 bool _direntry::create()
 {
-	if( !this->fatInited )
+	if( !_filesystemController::isFatReady() )
 		return false;
 	
 	if( this->exists || this->filename.empty() ) // Return if the file does already exist
@@ -388,7 +330,7 @@ bool _direntry::create()
 
 bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes ) const
 {	
-	if( this->fatInited && !this->isDirectory() )
+	if( _filesystemController::isFatReady() && !this->isDirectory() )
 	{
 		if( !size.isValid() )
 			size = this->getSize();
@@ -418,7 +360,7 @@ bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes ) const
 
 bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensions ) const
 {
-	if( this->fatInited && this->exists && this->isDirectory() )
+	if( _filesystemController::isFatReady() && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
 		if( this->mode == _direntryMode::closed && this->openread() == false )
@@ -483,7 +425,7 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 
 bool _direntry::readChildFolderOnly( _literal& child ) const
 {
-	if( this->fatInited && this->exists && this->isDirectory() )
+	if( _filesystemController::isFatReady() && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
 		if( this->mode == _direntryMode::closed && this->openread() == false )
@@ -522,7 +464,7 @@ bool _direntry::readChildFolderOnly( _literal& child ) const
 
 bool _direntry::rewindChildren() const
 {
-	if( this->fatInited && this->exists && this->isDirectory() )
+	if( _filesystemController::isFatReady() && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
 		if( this->mode == _direntryMode::closed )
@@ -541,7 +483,7 @@ bool _direntry::rewindChildren() const
 
 bool _direntry::write( void* src , _u32 size )
 {
-	if( !this->fatInited || this->isDirectory() )
+	if( !_filesystemController::isFatReady() || this->isDirectory() )
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -562,7 +504,7 @@ bool _direntry::write( void* src , _u32 size )
 
 bool _direntry::writeString( string str )
 {
-	if( !this->fatInited || this->isDirectory() )
+	if( !_filesystemController::isFatReady() || this->isDirectory() )
 		return false;
 	
 	_direntryMode modePrev = this->mode; // Save old state
@@ -619,7 +561,7 @@ string _direntry::readString( _optValue<_u32> size ) const
 
 _u32 _direntry::getSize() const
 {
-	if( !this->fatInited || !this->exists || this->isDirectory() )
+	if( !_filesystemController::isFatReady() || !this->exists || this->isDirectory() )
 		return 0;
 	
 	_u32 size = 0;
@@ -652,11 +594,10 @@ _u32 _direntry::getSize() const
 	return size;
 }
 
-
 bool _direntry::execute( _programArgs args )
 {
-	if( _system::getHardwareType() != _hardwareType::emulator && !this->fatInited )
-		return false;
+	//if( _windows::getHardwareType() != _hardwareType::emulator && !_filesystemController::isFatReady() )
+	//	return false;
 	
 	if( this->isDirectory() )
 		return false;
@@ -675,17 +616,17 @@ bool _direntry::execute( _programArgs args )
 			return true;
 		}
 		case _mime::application_x_bat:
-			return _system::executeCommand( this->readString() );
+			return _windows::executeCommand( this->readString() );
 		
 		// Choose the right filetype handler
 		default:
 			// Fetch handler expression
-			const string& command = _system::getRegistry().getFileTypeHandler( this->getExtension() );
+			const string& command = _registryController::getFileTypeHandler( this->getExtension() );
 			if( command.empty() )
 				break;
 			
 			string commandCopy = command; // Work on copy
-			replaceASSOCS( commandCopy ); // Replace Associative directories
+			_filesystemController::replaceAssocDirs( commandCopy ); // Replace Associative directories
 			
 			size_t pos = 0;
 			// Replace all "$F" with the full file path
@@ -698,7 +639,7 @@ bool _direntry::execute( _programArgs args )
 				commandCopy.replace( pos , sizeof("$N") , this->getName() );
 			
 			// Execute the command
-			return _system::executeCommand( move(commandCopy) );
+			return _windows::executeCommand( move(commandCopy) );
 	}
 	return false;
 }
@@ -730,7 +671,7 @@ _bitmap _direntry::getFileImage() const
 		default:
 			break;
 	}
-	return _system::getRegistry().getFileTypeImage( extension , mime );
+	return _registryController::getFileTypeImage( extension , mime );
 }
 
 bool _direntry::unlink( bool removeContents )
@@ -756,7 +697,7 @@ bool _direntry::rename( string newName )
 		this->close();
 	
 	// Replace associative directory names
-	replaceASSOCS( newName );
+	_filesystemController::replaceAssocDirs( newName );
 	
 	if( std::rename( this->filename.c_str() , newName.c_str() ) == 0 ){
 		*this = _direntry( newName.c_str() );

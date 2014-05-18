@@ -1,8 +1,7 @@
 #include "_gadget/gadget.colorpicker.gradient.h"
-
 #include "_type/type.color.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
+#include "_controller/controller.font.h"
 
 #include <math.h>
 
@@ -82,7 +81,7 @@ _callbackReturn _gradientColorPicker::hueSatRefreshHandler( _event event )
 	// Limit
 	y = mid( 0 , y , this->hueSatTable->getHeight() - 1 );
 	
-	bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _system::getFont("SystemSymbols8") , _glyph::circle , _color::black );
+	bP.drawChar( x - 2 , this->hueSatTable->getHeight() - y - 5 , _fontController::getFont("SystemSymbols8") , _glyph::circle , _color::black );
 	
 	return handled;
 }
@@ -105,7 +104,7 @@ _callbackReturn _gradientColorPicker::lumRefreshHandler( _event event )
 	bP.drawVerticalGradient( 0 , height >> 1 , 7 , height >> 1 , col , _color::black );
 	
 	// Draw Arrow
-	bP.drawChar( 8 , y - 4 , _system::getFont("SystemSymbols8") , _glyph::arrowLeft , _color::black );
+	bP.drawChar( 8 , y - 4 , _fontController::getFont("SystemSymbols8") , _glyph::arrowLeft , _color::black );
 	
 	return handled;
 }

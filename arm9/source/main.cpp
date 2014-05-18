@@ -1,10 +1,10 @@
-#include "_type/type.system.h"
+#include "_type/type.windows.h"
 
 int main( int argc , char* argv[] )
 {
-	_system::start();
-	_system::main();
-	_system::end();
+	_windows::init();
+	_windows::main();
+	_windows::end();
 	
 	return 0;
 }

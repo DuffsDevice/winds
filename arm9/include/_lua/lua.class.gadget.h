@@ -39,7 +39,7 @@ class _lua_gadget{
 		template<typename T>
 		operator T&()
 		{
-			typedef typename T::_gadget def;
+			unused typedef typename T::_gadget def;
 			return * static_cast<T*>(this->gadget);
 		}
 		

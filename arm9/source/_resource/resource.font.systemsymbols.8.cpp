@@ -140,7 +140,7 @@ static const unsigned char FONT_SystemSymbols8_width[145] = {
 };
 
 FONT_SystemSymbols8::FONT_SystemSymbols8( unsigned char fixedWidth ) : _memoryFont (
-	"SystemSymbols",
+	"SystemSymbols8",
 	33,
 	177,
 	9, // Height

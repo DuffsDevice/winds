@@ -10,6 +10,9 @@ class _errorDialog : public _imageDialog
 	private:
 		
 		static _constBitmap image;
+		
+		// First playes a tone and then calls _imageDialog::executeInternal()
+		void executeInternal();
 	
 	public:
 		
@@ -24,6 +27,9 @@ class _warningDialog : public _imageDialog
 	private:
 		
 		static _constBitmap image;
+		
+		// First playes a tone and then calls _imageDialog::executeInternal()
+		void executeInternal();
 	
 	public:
 		
@@ -38,6 +44,9 @@ class _infoDialog : public _imageDialog
 	private:
 		
 		static _constBitmap image;
+		
+		// First playes a tone and then calls _imageDialog::executeInternal()
+		void executeInternal();
 	
 	public:
 		

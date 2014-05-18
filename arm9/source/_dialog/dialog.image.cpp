@@ -1,8 +1,9 @@
 #include "_dialog/dialog.image.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 void _imageDialog::executeInternal(){
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _imageDialog::cleanupInternal(){
@@ -10,7 +11,7 @@ void _imageDialog::cleanupInternal(){
 }
 
 _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap ,  _optValue<string> okLabel , _optValue<string> otherLabel ) : 
-	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _system::getLocalizedString("lbl_ok") ) )
+	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _localizationController::getBuiltInString("lbl_ok") ) )
 	, otherButton( otherLabel.isValid() ? new _button( 0 , 0 , ignore , ignore , otherLabel ) : nullptr )
 	, msg( new _label( bitmap.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
 	, image( new _imageGadget( 3 , 3 , bitmap ) )

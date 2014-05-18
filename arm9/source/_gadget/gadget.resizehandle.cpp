@@ -1,6 +1,7 @@
 #include "_gadget/gadget.resizehandle.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _callbackReturn _resizeHandle::refreshHandler( _event event )
 {
@@ -16,14 +17,14 @@ _callbackReturn _resizeHandle::refreshHandler( _event event )
 	
 	if( parent )
 	{
-		_color col = _system::getRTA().getControlForeground();
+		_color col = _guiController::getControlFg();
 		
 		if( parent->isResizeableX() && parent->isResizeableY() )
-			bP.drawChar( 0 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
+			bP.drawChar( 0 , 0 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
 		else if( parent->isResizeableY() )
-			bP.drawChar( 1 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
+			bP.drawChar( 1 , 0 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
 		else if( parent->isResizeableX() )
-			bP.drawChar( 0 , 0 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
+			bP.drawChar( 0 , 0 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
 	}
 	
 	return use_default;

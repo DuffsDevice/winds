@@ -20,8 +20,6 @@ class _lua_window : public _lua_gadget
 		_lua_window( _window* w ) : _lua_gadget( w , false )
 		{ }
 		
-		int dummy( lua_State* L );
-		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_window>::FunctionType methods[];

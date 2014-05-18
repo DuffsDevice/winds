@@ -2,8 +2,6 @@
 
 #ifdef DEBUG_PROFILING
 
-#include "_type/type.system.h"
-
 #include <nds/timers.h>
 #include <stdio.h>
 #include <nds/arm9/math.h>

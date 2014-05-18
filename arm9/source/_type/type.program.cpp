@@ -1,7 +1,11 @@
 #include "_type/type.program.h"
 #include "_type/type.program.lua.h"
 #include "_type/type.program.c.h"
-#include "_type/type.system.h"
+#include "_type/type.tokenizer.h"
+#include "_controller/controller.program.h"
+#include "_controller/controller.filesystem.h"
+#include "_controller/controller.registry.h"
+#include "_controller/controller.timer.h"
 
 #include "_resource/resource.program.credits.h"
 #include "_resource/resource.program.explorer.h"
@@ -13,114 +17,117 @@
 #include "program_paint_lua.h"
 #include "program_calculator_lua.h"
 
-_programList	_program::globalPrograms;
-_programList	_program::globalProgramsToExecute;
 _constBitmap	_program::standardFileImage = BMP_ExeIcon();
 
-void _program::main( _gadget* w , _programArgs args  ){
-	this->gadgetHost = w;
-	this->internalMain( move( args ) );
-}
-
-int cnt = 0;
-
-void _program::execute( _programArgs args )
+bool _program::execute( _programArgs args )
 {
-	// Execute main
-	this->main( _system::_gadgetHost_ , move(args) );
+	this->executionData.startTime = _timerController::getMilliTime();
+	this->executionData.argumentsForMain = move(args);
 	
-	// Push it in the list of running programs
-	_program::globalProgramsToExecute.push_back(
-		make_pair(
-			this
-			, _programData(
-				{ false , _system::getMilliTime() }
-			)
-		)
-	);
-}
-
-void _program::terminate()
-{
-	for( auto& p : _program::globalPrograms )
-		if( (_program*)p.first == this )
-		{
-			p.second.autoDelete = true;
-			break;
-		}
-}
-
-void _program::terminateAllPrograms()
-{
-	for( auto& val : _program::globalPrograms )
-		delete val.first;
-	for( auto& val : _program::globalProgramsToExecute )
-		delete val.first;
-	_program::globalPrograms.clear();
-	_program::globalProgramsToExecute.clear();
-}
-
-void _program::runPrograms()
-{
-	// Move timers to execute
-	move( _program::globalProgramsToExecute.begin() , _program::globalProgramsToExecute.end() , std::back_inserter( _program::globalPrograms ) );
+	_program* prog = this;
 	
-	// Clear buffer
-	_program::globalProgramsToExecute.clear();
-	
-	_program::globalPrograms.erase(
-		remove_if( _program::globalPrograms.begin() , _program::globalPrograms.end() , 
-			[]( _programList::value_type& p )->bool
-			{
-				if( p.first && !p.second.autoDelete ){
-					p.first->internalVbl(); // Run it
-					return false;
-				}
-				p.first->internalCleanUp();
-				delete p.first;
-				return true;
+	// Add to the program Manager's list of programs to be executed
+	return _programController::executeProgram( move(prog) );
+}
+
+bool _program::isRunning() const {
+	return _programController::isExistent( this );
+}
+
+void _program::terminate(){
+	this->executionData.markedForTermination = true;
+}
+
+_program::~_program()
+{
+	if( this->mainFrame && false )
+	{
+		// Save Dimensions of the mainframe to the registry
+		_mainFrame& frame = *this->mainFrame;
+		
+		string hash = this->createHash();
+		
+		// Abort writing dimensions, because the program has no distinct header attributes
+		if( hash.empty() )
+			return;
+		
+		// Convert current mainFrame-dimensions to a string
+		string dimensionString = unTokenize(
+			(_initializerList<string>){
+				int2string( frame.getX() )
+				, int2string( frame.getY() )
+				, int2string( frame.getWidth() )
+				, int2string( frame.getHeight() )
 			}
-		)
-		, _program::globalPrograms.end()
-	);
+			, ", "
+		);
+		
+		// Write the resulting string to the registry
+		_registryController::getSystemRegistry().writeIndex( "programPreferences" , this->createHash() , move(dimensionString) );
+	}
+}
+
+_mainFrame* _program::getMainFrame( _length width , _length height , bool forceSize , _style&& style )
+{
+	if( !this->mainFrame )
+	{
+		//string hash = this->createHash();
+		//string dimensionString;
+		//
+		//if( !hash.empty() )
+		//	dimensionString = _registryController::getSystemRegistry().readIndex( "programPreferences" , hash );
+		//
+		//if( forceSize || dimensionString.empty() ){
+			// Allocate mainFrame instance using supplied dimensions
+			this->mainFrame = new _mainFrame( ( SCREEN_WIDTH - width ) >> 1 , ( SCREEN_HEIGHT - height ) >> 1 , width , height , this , move(style) );
+		//}
+		//else{
+		//	// Read Dimensions of the mainframe from the registry
+		//	_vector<string> dim = tokenize( dimensionString , "," );
+		//	
+		//	// Allocate mainFrame instance using saved dimensions
+		//	this->mainFrame = new _mainFrame( string2int( dim[0] ) , string2int( dim[1] ) , string2int( dim[2] ) , string2int( dim[3] ) , this , move(style) );
+		//}
+	}
+	return this->mainFrame;
 }
 
 _program* _program::fromFile( string filename )
 {
 	_direntry d = _direntry( filename );
-	
 	string fn = d.getFileName();
 	
 	// Convert to lowerspace
 	transform( fn.begin() , fn.end() , fn.begin() , ::tolower );
 	
+	// Result Variable
 	_program* result = nullptr;
 	
 	// For the case that the program exists
 	if( d.isExisting() )
 		result = new _progLua( d.readString() );
-	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/explorer.exe" ) )
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
-	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/progmapper.exe" ) )
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/progmapper.exe" ) )
 		result = new PROG_Mapper();
-	else if( fn == _direntry::replaceASSOCS( "%SYSTEM%/credits.exe" ) )
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/credits.exe" ) )
 		result = new PROG_Credits();
-	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/exampleprogram.exe" ) ){
+	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/exampleprogram.exe" ) ){
 		string str = (const _char*)program_example_lua;
 		str.resize( program_example_lua_size );
 		result = new _progLua( move(str) );
 	}
-	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/paint.exe" ) ){
+	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/paint.exe" ) ){
 		string str = (const _char*)program_paint_lua;
 		str.resize( program_paint_lua_size );
 		result = new _progLua( move(str) );
 	}
-	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/accessories/calculator.exe" ) ){
+	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/calculator.exe" ) ){
 		string str = (const _char*)program_calculator_lua;
 		str.resize( program_calculator_lua_size );
 		result = new _progLua( move(str) );
 	}
-	else if( fn == _direntry::replaceASSOCS( "%WINDIR%/games/pong.exe" ) ){
+	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/games/pong.exe" ) ){
 		string str = (const _char*)program_pong_lua;
 		str.resize( program_pong_lua_size );
 		result = new _progLua( move(str) );
@@ -130,4 +137,42 @@ _program* _program::fromFile( string filename )
 		result->setPath(fn);
 	
 	return result;
+}
+
+
+string _program::createHash()
+{
+	// Hashing Function: djb2
+		_u32 initialSeed = 5381;
+		_u32 hashVal = initialSeed;
+		_u32 curChar;
+		_literal str;
+		
+		// Process Name
+		if( this->header.name ){
+			str = this->header.name->c_str();
+			while (curChar = *str++)	hashVal = (hashVal * 33) ^ curChar;
+		}
+		
+		// Process Author
+		if( this->header.author ){
+			str = this->header.author->c_str();
+			while (curChar = *str++)	hashVal = (hashVal * 33) ^ curChar;
+		}
+		
+		// Process Version
+		if( this->header.version ){
+			str = this->header.version->c_str();
+			while (curChar = *str++)	hashVal = (hashVal * 33) ^ curChar;
+		}
+		
+		// Fallback on path
+		if( hashVal == initialSeed )
+		{
+			str = this->path.c_str();
+			while (curChar = *str++)	hashVal = (hashVal * 33) ^ curChar;
+		}
+	// Hash end
+	
+	return int2string( hashVal , 0 , 16 );
 }

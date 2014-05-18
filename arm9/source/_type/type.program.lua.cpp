@@ -1,14 +1,19 @@
 #include "_type/type.program.lua.h"
-#include "_type/type.system.h"
 #include "_type/type.callback.h"
 #include "_type/type.callback.derives.h"
 #include "_type/type.tokenizer.h"
 #include "_type/type.cwdchanger.h"
-#include "_gadget/gadget.keyboard.h"
+#include "_screen/screen.keyboard.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.registry.h"
+#include "_controller/controller.localization.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.event.h"
 
 #include "_lua/lua.lunar.h"
 #include "_lua/lua.func.h"
 using namespace _luafunc;
+
 /**
  * Proxy Classes
  */
@@ -34,7 +39,6 @@ using namespace _luafunc;
 #include "_lua/lua.class.timer.h"
 #include "_lua/lua.class.ini.h"
 #include "_lua/lua.class.ini.file.h"
-#include "_lua/lua.class.registry.h"
 
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.checkbox.h"
@@ -47,6 +51,7 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.button.sticky.h"
 #include "_lua/lua.gadget.image.h"
 #include "_lua/lua.gadget.label.h"
+#include "_lua/lua.gadget.mainframe.h"
 #include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.scrollBar.h"
 #include "_lua/lua.gadget.progressbar.h"
@@ -71,7 +76,6 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "System" , "MenuRule" , &Lunar<_lua_menurule>::install ),
 	make_tuple( "System" , "Ini" , &Lunar<_lua_ini>::install ),
 	make_tuple( "System" , "IniFile" , &Lunar<_lua_inifile>::install ),
-	make_tuple( "System" , "Registry" , &Lunar<_lua_registry>::install ),
 	make_tuple( "System" , "MimeType" , &Lunar<_lua_mimetype>::install ),
 	make_tuple( "Drawing" , "Area" , &Lunar<_lua_area>::install ),
 	make_tuple( "Drawing" , "Bitmap" , &Lunar<_lua_bitmap>::install ),
@@ -100,6 +104,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "GradientColorPicker" , &Lunar<_lua_gradientcolorpicker>::install ),
 	make_tuple( "UI" , "ImageGadget" , &Lunar<_lua_imagegadget>::install ),
 	make_tuple( "UI" , "ImageButton" , &Lunar<_lua_imagebutton>::install ),
+	make_tuple( "UI" , "MainFrame" , &Lunar<_lua_mainframe>::install ),
 	make_tuple( "UI" , "Button" , &Lunar<_lua_button>::install ),
 	make_tuple( "UI" , "Select" , &Lunar<_lua_select>::install ),
 	make_tuple( "UI" , "CheckBox" , &Lunar<_lua_checkbox>::install ),
@@ -116,21 +121,35 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "Clock" , &Lunar<_lua_clockgadget>::install )
 };
 
-int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _system::_keyboard_ != nullptr ); return 1; }
-int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_system::_keyboard_ ) return 0; push( L , _system::_keyboard_->isOpened() ); return 1; }
-int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->open(); return 0; }
-int _progLua::lua_keyboardClose( lua_State* L ){ if( !_system::_keyboard_ ) return 0; _system::_keyboard_->close(); return 1; }
+int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _guiController::getKeyboard() != nullptr ); return 1; }
+int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isOpened() ); return 1; }
+int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->open(); return 0; }
+int _progLua::lua_keyboardClose( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->close(); return 1; }
 
-int _progLua::lua_writeDebug( lua_State* L ){ _system::debug( check<string>( L , 1 ).c_str() ); return 1; }
-int _progLua::lua_pushEvent( lua_State* L ){ _lua_event* event = Lunar<_lua_event>::check( L , 1 ); if( event ) _system::generateEvent( _event( *event ) , _eventCallType::normal ); return 0; }
-int _progLua::lua_getCurrentFocus( lua_State* L ){ if( !_system::_currentFocus_ ) return 0; Lunar<_lua_gadget>::push( L , new _lua_gadget( _system::_currentFocus_ ) ); return 1; }
-int _progLua::lua_getLocalizedString( lua_State* L ){ push( L , _system::getLocalizedString( check<string>( L , 1 ) ).c_str() ); return 1; }
-int _progLua::lua_addChild( lua_State* L ){ _system::_gadgetHost_->addChild( check<_gadget*>( L , 1 ) ); return 0; }
-int _progLua::lua_getRegistry( lua_State* L ){ Lunar<_lua_registry>::push( L , new _lua_registry( &_system::getRegistry() ) ); return 1; }
+int _progLua::lua_writeDebug( lua_State* L ){ _debugController::debug( check<_literal>( L , 1 ) ); return 0; }
+int _progLua::lua_pushEvent( lua_State* L ){ _eventController::pushEvent( check<_event>( L , 1 ) , _eventCallType::normal ); return 0; }
+int _progLua::lua_getCurrentFocus( lua_State* L ){ return push( L , _guiController::getCurrentFocus() ); }
+int _progLua::lua_getLocalizedString( lua_State* L ){ return push( L , _localizationController::getBuiltInString( check<_literal>( L , 1 ) ) ); }
+int _progLua::lua_getSystemRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getSystemRegistry() , false ) ); return 1; }
+int _progLua::lua_getUserRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getUserRegistry() , false ) ); return 1; }
 int _progLua::lua_getFont( lua_State* L ){
-	return push( L , lua_isstring( L , 1 ) ? _system::getFont( lua_tostring( L , 1 ) ) : _system::getFont() );
+	return push( L , is_a<_literal>( L , 1 ) ? _fontController::getFont( check<_literal>( L , 1 ) ) : _fontController::getStandardFont() );
 }
-int _progLua::lua_exit( lua_State* L ){ _progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0; }
+int _progLua::lua_exit( lua_State* L ){
+	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0;
+}
+int _progLua::lua_getMainFrame( lua_State* L ){
+	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1)));
+	if( !prog )
+		return 0;
+	if( lua_gettop( L ) != 0 )
+	{
+		if( is_a<bool>( L , 3 ) )
+			return push( L , prog->getMainFrame( check<_length>( L , 1 ) , check<_length>( L , 2 ) , check<bool>( L , 3 ) , lightcheck<_style>( L , 4 ) ) );
+		return push( L , prog->getMainFrame( check<_length>( L , 1 ) , check<_length>( L , 2 ) , lightcheck<_style>( L , 3 ) ) );
+	}
+	return push( L , prog->getMainFrame() );
+}
 int _progLua::lua_usingClass( lua_State* L )
 {
 	string classPath = check<string>( L , 1 );
@@ -202,32 +221,40 @@ bool _progLua::parseProgramHeader()
 				// Trim whitespaces and tabs etc...
 				trim( attrValue );
 				
-				if( attrName == "IMG" )
-				{
-					// Set Relative Path
-					_cwdChanger changer = _cwdChanger( this->getPath() );
-					
+				if( attrName == "FILE_ICON" ){
+					_cwdChanger changer = _cwdChanger( this->getPath() ); // Set Relative Path
 					_bitmap icon = _imageFile(move(attrValue),false).readBitmap();
 					if( icon.isValid() )
 						header.fileIcon = move(icon);
 				}
+				else if( attrName == "WND_ICON" ){
+					_cwdChanger changer = _cwdChanger( this->getPath() ); // Set Relative Path
+					_bitmap icon = _imageFile(move(attrValue),false).readBitmap();
+					if( icon.isValid() )
+						header.windowIcon = move(icon);
+				}
 				else if( attrName == "NAME" )
 					header.name = move(attrValue);
-				else if( attrName == "DISPLAYNAME" )
-					header.displayName = move(attrValue);
+				else if( attrName == "FILE_NAME" )
+					header.fileName = move(attrValue);
+				else if( attrName == "WND_TITLE" )
+					header.windowName = move(attrValue);
 				else if( attrName == "AUTHOR" )
 					header.author = move(attrValue);
-				else if( attrName == "LEGAL" )
+				else if( attrName == "COPYRIGHT" )
 					header.copyright = move(attrValue);
-				else if( attrName == "VER" )
+				else if( attrName == "VERSION" )
 					header.version = move(attrValue);
 				else if( attrName == "DESC" )
 					header.description = move(attrValue);
 				else if( attrName == "LANG" )
-					header.language = string2language[attrValue];
+					header.language = move(attrValue);
 			}
 		}
+		
 		end:
+		
+		// Write to class attribute
 		this->setHeader( move(header) );
 		headParsed = true;
 		
@@ -237,18 +264,17 @@ bool _progLua::parseProgramHeader()
 }
 
 luaL_Reg _progLua::windowsLibrary[] = {
-	{"addChild",				lua_addChild},
-	{"getCurrentFocus",			lua_getCurrentFocus},
-	{"getLocalizedString",		lua_getLocalizedString},
-	{"getRegistry",				lua_getRegistry},
-	{"getFont",					lua_getFont},
-	{"require",					lua_usingClass},
-	{"keyboardIsRegistered",	lua_keyboardIsRegistered},
-	{"keyboardIsOpened",		lua_keyboardIsOpened},
-	{"keyboardOpen",			lua_keyboardOpen},
-	{"keyboardClose",			lua_keyboardClose},
-	{"debug",					lua_writeDebug},
-	{"pushEvent",				lua_pushEvent},
+	{"getCurrentFocus"		, lua_getCurrentFocus },
+	{"getLocalizedString"	, lua_getLocalizedString },
+	{"getSystemRegistry"	, lua_getSystemRegistry },
+	{"getUserRegistry"		, lua_getUserRegistry },
+	{"getFont"				, lua_getFont },
+	{"keyboardIsRegistered"	, lua_keyboardIsRegistered },
+	{"keyboardIsOpened"		, lua_keyboardIsOpened },
+	{"keyboardOpen"			, lua_keyboardOpen },
+	{"keyboardClose"		, lua_keyboardClose },
+	{"debug"				, lua_writeDebug },
+	{"pushEvent"			, lua_pushEvent },
 	{ NULL , NULL }
 };
 
@@ -256,7 +282,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
  * Programm Stuff
  */
 _progLua::_progLua( string prog ) : 
-	_program( _programType::progLua )
+	_program( _programType::lua )
 	, content( new string( move(prog) ) )
 	, headParsed( false )
 {
@@ -280,6 +306,12 @@ void _progLua::registerSystem()
 	lua_pushcclosure( this->state , lua_exit , 1 );
 	lua_settable( this->state , -3 );
 	
+	//! Generate System.getMainFrame function
+	push( this->state , "getMainFrame" );
+	lua_pushlightuserdata( this->state , this );
+	lua_pushcclosure( this->state , lua_getMainFrame , 1 );
+	lua_settable( this->state , -3 );
+	
 	//! Set as global "system"
 	lua_setglobal( this->state , "System" );
 	
@@ -288,7 +320,7 @@ void _progLua::registerSystem()
 	lua_setglobal( this->state , "using" );
 }
 
-void _progLua::internalMain( _programArgs args )
+void _progLua::main( _programArgs args )
 {
 	if( !this->content )
 		return;
@@ -296,15 +328,18 @@ void _progLua::internalMain( _programArgs args )
 	// Create State
 	this->state = luaL_newstate();
 	
+	string luaSrcToken = "=";
+	luaSrcToken += _direntry( this->getPath() ).getDisplayName(true);
+	
 	// Load our lua-piece
-	luaL_loadstring( this->state , this->content->c_str() );
+	luaL_loadbuffer( this->state , this->content->c_str() , this->content->length() , luaSrcToken.c_str() );
 	
 	// _progLua.content is just there for passing the 'content' of the program to the mainFunction
 	delete this->content;
 	this->content = nullptr;
 	
 	if( lua_isstring( this->state , -1 ) ){
-		_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
+		_debugController::luaErrorHandler( this->state , lua_tostring( state , -1 ) );
 		return;
 	}
 	
@@ -316,7 +351,7 @@ void _progLua::internalMain( _programArgs args )
 	
 	// Parse Whole Program
 	if( lua_pcall( this->state , 0 , 0 , 0 ) )
-		_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
+		_debugController::luaErrorHandler( this->state , lua_tostring( state , -1 ) );
 	
 	lua_getglobal( this->state , "main" );
 	
@@ -327,13 +362,13 @@ void _progLua::internalMain( _programArgs args )
 			push( this->state , val );
 		
 		if( lua_pcall( this->state , args.size() /* One Argument */ , 0 , 0 ) )
-			_luafunc::errorHandler( this->state , lua_tostring( state , -1 ) );
+			_debugController::luaErrorHandler( this->state , lua_tostring( state , -1 ) );
 	}
 	else
 		lua_pop( this->state , 2 );
 }
 
-void _progLua::internalCleanUp()
+void _progLua::cleanUp()
 {
 	if( this->content )
 		delete this->content;
@@ -342,9 +377,9 @@ void _progLua::internalCleanUp()
 	lua_close( this->state );
 }
 
-void _progLua::internalVbl()
+void _progLua::frame( _int numRunningPrograms )
 {
 	// Collect garbage!
-	// the Lua Garbage collector uses constant 12% cpu, no matter how many programs we have
-	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / int(_program::getRunningPrograms().size()) ) );
+	// the Lua Garbage collector uses roughly ~ 12% cpu, no matter how many programs we have
+	lua_gc( this->state , LUA_GCSTEP , max( 1 , 100 / numRunningPrograms ) );
 }

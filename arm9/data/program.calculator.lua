@@ -1,9 +1,11 @@
---IMG = %APPDATA%/CalcIcon.bmp
---AUTHOR=WinDS
---VERSION = 1.0
---DESC = Application to modify Images
---COPYRIGHT = (C) 2014
---LANG = neutral
+--FILE_ICON	= %APPDATA%/CalcIcon.bmp
+--AUTHOR	= WinDS
+--FILE_NAME	= Calculator
+--WND_NAME	= Calculator
+--VERSION	= 1.0
+--DESC		= Application to modify Images
+--COPYRIGHT	= (C) 2014
+--LANG		= neutral
 
 using "System.Event"
 using "Drawing.Bitmap"
@@ -12,7 +14,7 @@ using "Drawing.Color"
 using "UI.Gadget"
 using "UI.Button"
 using "UI.Label"
-using "UI.Window"
+using "UI.MainFrame"
 
 local wnd
 local btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn0
@@ -42,7 +44,8 @@ function main()
 	local winHeight = btnStartY + btnHeightEx * 5 + 11
 	
 	-- Create Window
-	wnd = Window( 40 , 5 , winWidth , winHeight , "Calculator" , getLogo() , true , true , "notResizeable | draggable" )
+	wnd = System.getMainFrame( winWidth , winHeight , "notResizeable | draggable" )
+	wnd.icon = getLogo()
 	
 	-- Create Label
 	label = Label( 1 , 1 , winWidth - 3 , 10 , CURNUMBER )
@@ -138,8 +141,6 @@ function main()
 	
 	-- Add Label
 	wnd.addChild( label )
-	
-	System.addChild( wnd )
 end
 
 function numberHandler( event )
@@ -263,7 +264,7 @@ end
 
 function solve()
 
-	-- Check if all neccesary things have been assembled
+	-- Check if all necessary things have been assembled
 	if calcState == 3 then
 		OPERAND_SECOND = tonumber(CURNUMBER) -- Build Seocnd operand from current displayed number
 		OPERAND_FIRST = OPERATOR( OPERAND_FIRST , OPERAND_SECOND ) -- Write result

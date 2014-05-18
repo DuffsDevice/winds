@@ -162,10 +162,10 @@
 
    #ifndef STBTT_assert
    //#include <assert.h>
-   #include <_type/type.system.h>
+   #include "_controller/controller.debug.h"
    #define STBTT_assert(cond)    { \
 		if( !(cond) ) \
-			_system::debug( "Assertion Failed at: %s:%d: inside %s: %s" , __FILE__ , __LINE__ , __FUNCTION__ , #cond ); \
+			_debugController::debug( "Assertion Failed at: %s:%d: inside %s: %s" , __FILE__ , __LINE__ , __FUNCTION__ , #cond ); \
 	}
    #endif
 

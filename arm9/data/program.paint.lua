@@ -1,10 +1,10 @@
---	IMG = %APPDATA%/PaintIcon.png
---	AUTHOR = WinDS
---	VERSION = 1.0
---	NAME = Paint
---	DESC = Application to modify Images
---	COPYRIGHT = (C) 2014
---	LANG = neutral
+--FILE_ICON	= %APPDATA%/PaintIcon.png
+--AUTHOR	= WinDS
+--VERSION	= 1.0
+--FILE_NAME	= Paint
+--NAME		= Paint
+--DESC		= Application to modify Images
+--COPYRIGHT = (C) 2014
 
 using "System.Event"
 using "System.ImageFile"
@@ -20,7 +20,7 @@ using "Drawing.Area"
 using "Drawing.Rect"
 using "Drawing.Color"
 using "UI.Gadget"
-using "UI.Window"
+using "UI.MainFrame"
 using "UI.ImageGadget"
 using "UI.WindowBar"
 using "UI.WindowMenu"
@@ -92,7 +92,9 @@ function main( filename )
 	APPDATA.windowBar = WindowBar( 10 )
 	--APPDATA.windowBar.addChild( APPDATA.colorIndicator )
 	
-	local frame = Window( 10 , 10 , 100 , 100 , "Paint" , wndIcon , true , "minimizeable|draggable" )
+	local frame = System.getMainFrame( 100 , 100 )
+	frame.icon = wndIcon
+	
 	frame.addChild( APPDATA.greyBackground )
 	frame.setUserEventHandler( "onResize" , windowResizeHandler )
 	frame.setUserEventHandler( "onClose" , windowExitHandler )
@@ -100,8 +102,6 @@ function main( filename )
 	frame.addEnhancedChild( APPDATA.windowBar )
 	APPDATA.window = frame
 	updateWindowTitle()
-	
-	System.addChild( APPDATA.window )
 end
 
 
@@ -167,7 +167,7 @@ end
 
 
 -- Will Be invoked when the dialog about discarding changes
--- is over and all neccesary instructions are done
+-- is over and all necessary instructions are done
 function saveBeforeOpenDialogHandler( result )
 	if result ~= "cancel" then -- If the operation was not cancelled: continue opening
 		openFileDialog()
@@ -247,7 +247,7 @@ end
 -- Handles Clicks to the window's close button
 function windowExitHandler()
 	if APPDATA.changes == false then
-		System.exit()
+		return "handled"
 	else
 		runDiscardChangeDialog(
 			function(result)

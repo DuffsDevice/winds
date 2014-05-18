@@ -6,7 +6,6 @@
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.border.h"
 
-#include "_type/type.system.h"
 #include "_lua/lua.func.h"
 #include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
@@ -249,8 +248,6 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "getSelectedChild"			, wrap( _lua_gadget , &_gadget::getSelectedChild ) },
 	{ "getLowestChild"				, wrap( _lua_gadget , &_gadget::getLowestChild ) },
 	{ "getToppestChild"				, wrap( _lua_gadget , &_gadget::getToppestChild ) },
-	{ "getLowestEnhancedChild"		, wrap( _lua_gadget , &_gadget::getLowestEnhancedChild ) },
-	{ "getToppestEnhancedChild"		, wrap( _lua_gadget , &_gadget::getToppestEnhancedChild ) },
 	{ "getPrecedentChild"			, wrap( _lua_gadget , &_gadget::getPrecedentChild ) },
 	{ "getSubcedentChild"			, wrap( _lua_gadget , &_gadget::getSubcedentChild ) },
 	{ "focusChild"					, wrap( _lua_gadget , &_gadget::focusChild ) },
@@ -269,16 +266,18 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	LUA_CLASS_FUNC_END
 };
 
+using helperType = _bitmap& (_gadget::*)();
+
 Lunar<_lua_gadget>::PropertyType _lua_gadget::properties[] = {
-	{ "padding"		, wrap( _lua_gadget , &_gadget::getPadding )	, wrap( _lua_gadget , &_gadget::setPadding ) },
-	{ "x"			, wrap( _lua_gadget , &_gadget::getX )			, &_lua_gadget::setX },
-	{ "y"			, wrap( _lua_gadget , &_gadget::getY )			, &_lua_gadget::setY },
-	{ "parent"		, wrap( _lua_gadget , &_gadget::getParent )		, wrap( _lua_gadget , &_gadget::setParent ) },
-	{ "height"		, wrap( _lua_gadget , &_gadget::getHeight )		, &_lua_gadget::setHeight },
-	{ "width"		, wrap( _lua_gadget , &_gadget::getWidth )		, &_lua_gadget::setWidth },
-	{ "minHeight"	, wrap( _lua_gadget , &_gadget::getMinHeight )	, &_lua_gadget::setMinHeight },
-	{ "minWidth"	, wrap( _lua_gadget , &_gadget::getMinWidth )	, &_lua_gadget::setMinWidth },
-	{ "type"		, &_lua_gadget::getType							, nullptr },
-	{ "bitmap"		, wrap( _lua_gadget , &_gadget::getBitmap )		, wrap( _lua_gadget , &_gadget::setBitmap ) },
+	{ "padding"		, wrap( _lua_gadget , &_gadget::getPadding )				, wrap( _lua_gadget , &_gadget::setPadding ) },
+	{ "x"			, wrap( _lua_gadget , &_gadget::getX )						, &_lua_gadget::setX },
+	{ "y"			, wrap( _lua_gadget , &_gadget::getY )						, &_lua_gadget::setY },
+	{ "parent"		, wrap( _lua_gadget , &_gadget::getParent )					, wrap( _lua_gadget , &_gadget::setParent ) },
+	{ "height"		, wrap( _lua_gadget , &_gadget::getHeight )					, &_lua_gadget::setHeight },
+	{ "width"		, wrap( _lua_gadget , &_gadget::getWidth )					, &_lua_gadget::setWidth },
+	{ "minHeight"	, wrap( _lua_gadget , &_gadget::getMinHeight )				, &_lua_gadget::setMinHeight },
+	{ "minWidth"	, wrap( _lua_gadget , &_gadget::getMinWidth )				, &_lua_gadget::setMinWidth },
+	{ "type"		, &_lua_gadget::getType										, nullptr },
+	{ "bitmap"		, wrap( _lua_gadget , (helperType)&_gadget::getBitmap )		, wrap( _lua_gadget , &_gadget::setBitmap ) },
 	LUA_CLASS_ATTR_END
 };

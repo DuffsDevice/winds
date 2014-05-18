@@ -84,7 +84,7 @@ void _fileTree::generateChildren()
 	this->directory.rewindChildren();
 	
 	// Clear the filemask vector if it is empty
-	if( this->filemask && this->filemask.data()->empty() )
+	if( this->filemask && this->filemask->empty() )
 		this->filemask = nullptr;
 	
 	_vector<_treeViewNode> children;

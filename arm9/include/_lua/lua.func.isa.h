@@ -12,17 +12,23 @@ namespace _luafunc
 		// Get the type of a lua index
 		static unused inline int	get_type( lua_State* state , int index ){ return lua_type( state , index ); }
 		
-		// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
+		// Check if the value at the given index of the lua stack is of the supplied type
 		static unused inline bool	is_a( lua_State* state , int index , int luaType ){ return get_type( state , index ) == luaType; }
+		
+		// Nothing to check for (neccessary for return-values of wrapped c-functions)
 		static unused inline bool	is_a( lua_State* state , int index , void* dummy){ return true; }
-		static unused inline bool	is_a( lua_State* state , int index , int* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , unsigned int* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , char* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , unsigned char* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , short int* dummy){ return is_a( state , index , LUA_TNUMBER ); }
-		static unused inline bool	is_a( lua_State* state , int index , unsigned short int* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , long long int* dummy){ return lua_isnumber( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , unsigned long long int* dummy){ return lua_isnumber( state , index ); }
+		
+		// ~~~~~~~~~~~~~~~~~~ Basic Types ~~~~~~~~~~~~~~~~~~
+		static unused inline bool	is_a( lua_State* state , int index ,					char*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , 					int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , short				int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , long				int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , long long			int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned			char*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned			int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned short		int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned long		int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
+		static unused inline bool	is_a( lua_State* state , int index , unsigned long long	int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
 		static unused inline bool	is_a( lua_State* state , int index , bool* dummy ){
 			int type = get_type( state , index );
 			return type == LUA_TBOOLEAN || type == LUA_TNUMBER;
@@ -30,12 +36,12 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _literal* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , string* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		template<typename... TN, int mB,typename dT>
-		static unused inline bool	is_a( lua_State* state , int index , shortString<mB,dT>* dummy ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _shortString<mB,dT>* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _key* dummy ){
 			int type = get_type( state , index );
 			return type == LUA_TSTRING || type == LUA_TNUMBER;
 		}
-		bool						is_a( lua_State* state , int index , _fontPtr* dummy );
+		bool						is_a( lua_State* state , int index , _fontHandle* dummy );
 		bool						is_a( lua_State* state , int index , _event* dummy );
 		bool						is_a( lua_State* state , int index , _rect* dummy );
 		bool						is_a( lua_State* state , int index , _hardwareKeyPattern* dummy );

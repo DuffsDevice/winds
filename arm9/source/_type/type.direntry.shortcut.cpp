@@ -1,8 +1,7 @@
-//! Headers
 #include "_type/type.direntry.shortcut.h"
-#include "_type/type.system.h"
+#include "_controller/controller.gui.h"
 
-//! Graphics
+// Shortcut-Icon
 #include "_resource/resource.image.shortcutoverlay.h"
 
 _shortcut::_shortcut( string&& fn) :
@@ -35,7 +34,7 @@ void _shortcut::readAttributes() const
 
 _bitmap _shortcut::getFileImage() const 
 {
-	_u8 fOH = _system::getUser().fOH;
+	_u8 fOH = _guiController::getFileObjectHeight();
 	
 	if( this->image.isValid() )
 		return this->image;

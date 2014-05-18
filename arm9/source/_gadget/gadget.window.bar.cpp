@@ -1,6 +1,7 @@
 #include "_gadget/gadget.window.bar.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
+#include "_controller/controller.font.h"
+#include "_controller/controller.gui.h"
 
 _callbackReturn _windowBar::refreshHandler( _event event )
 {
@@ -14,25 +15,25 @@ _callbackReturn _windowBar::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	
 	bP.fill( that->bgColor );
-	bP.drawHorizontalLine( 0 , 0 , myW , _system::getRTA().getControlForeground() );
+	bP.drawHorizontalLine( 0 , 0 , myW , _guiController::getControlFg() );
 	bP.drawHorizontalLine( 0 , 1 , myW , _color::white );
 	
 	_gadget* parent = that->getParent();
 	
 	if( parent )
 	{
-		_color col = _system::getRTA().getControlForeground();
+		_color col = _guiController::getControlFg();
 		
 		if( parent->isResizeableX() && parent->isResizeableY() )
-			bP.drawChar( myW - 8 , myH - 8 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
+			bP.drawChar( myW - 8 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
 		else if( parent->isResizeableY() )
-			bP.drawChar( myW - 7 , myH - 8 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
+			bP.drawChar( myW - 7 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
 		else if( parent->isResizeableX() )
-			bP.drawChar( myW - 8 , myH - 8 , _system::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
+			bP.drawChar( myW - 8 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
 		else
 			return use_default;
 		
-		bP.drawVerticalLine( myW - 8 , 2 , myH - 2 , _system::getRTA().getControlForeground() );
+		bP.drawVerticalLine( myW - 8 , 2 , myH - 2 , _guiController::getControlFg() );
 		bP.drawVerticalLine( myW - 7 , 2 , myH - 2 , _color::white );
 	}
 	
@@ -80,7 +81,7 @@ _callbackReturn _windowBar::updateHandler( _event event )
 
 _windowBar::_windowBar( _optValue<_length> height , _optValue<_color> bgColor , _style&& style ) :
 	_gadget( _gadgetType::windowbar , ignore , ignore , ignore , height.isValid() ? (_length)height : 8 , style | _style::draggable )
-	, bgColor( bgColor.isValid() ? (_color)bgColor : _system::getRTA().getControlBackground() )
+	, bgColor( bgColor.isValid() ? (_color)bgColor : _guiController::getControlBg() )
 {
 	this->setMinHeight( 8 );
 	

@@ -1,6 +1,6 @@
 #include "_type/type.ini.h"
-#include "_type/type.system.h"
 #include "_type/type.tokenizer.h"
+#include "_type/type.color.h"
 
 const string& _ini::readIndex( const string& section , const string& name ) const
 {

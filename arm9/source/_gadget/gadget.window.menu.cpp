@@ -2,8 +2,9 @@
 #include "_gadget/gadget.window.menu.h"
 #include "_gadget/gadget.window.menu.entry.h"
 #include "_gadget/gadget.window.menu.entry.h"
-#include "_type/type.system.h"
 #include "_type/type.font.glyphs.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 _callbackReturn _windowMenu::refreshHandler( _event event )
 {
@@ -16,9 +17,9 @@ _callbackReturn _windowMenu::refreshHandler( _event event )
 	_length myH = bP.getHeight();
 	_length myW = bP.getWidth();
 	
-	bP.fill( _system::getRTA().getControlBackground() );
+	bP.fill( _guiController::getControlBg() );
 	bP.drawHorizontalLine( 0 , myH - 2 , myW , _color::white );
-	bP.drawHorizontalLine( 0 , myH - 1 , myW , _system::getRTA().getControlForeground() );
+	bP.drawHorizontalLine( 0 , myH - 1 , myW , _guiController::getControlFg() );
 	
 	return use_default;
 }
@@ -29,15 +30,15 @@ const _menu& _windowMenu::getStandardMenu(){
 	
 	if( !initialized )
 	{
-		ret.setMainList( { { 1 , _system::getLocalizedString("lbl_file") } } );
+		ret.setMainList( { { 1 , _localizationController::getBuiltInString("lbl_file") } } );
 		ret.setList( 1 ,
 			{
-				{ 1 , _system::getLocalizedString("lbl_new") } ,
-				{ 2 , _system::getLocalizedString("lbl_open") } ,
-				{ 3 , _system::getLocalizedString("lbl_save") } ,
-				{ 4 , _system::getLocalizedString("lbl_save_as") } ,
+				{ 1 , _localizationController::getBuiltInString("lbl_new") } ,
+				{ 2 , _localizationController::getBuiltInString("lbl_open") } ,
+				{ 3 , _localizationController::getBuiltInString("lbl_save") } ,
+				{ 4 , _localizationController::getBuiltInString("lbl_save_as") } ,
 				{ 100 , "----" } ,
-				{ 101 , _system::getLocalizedString("lbl_exit") }
+				{ 101 , _localizationController::getBuiltInString("lbl_exit") }
 			}
 		);
 		initialized = true;
@@ -81,15 +82,15 @@ void _windowMenu::menuHandler( _int list , _int entry )
 	if( list == 1 && entry == 101 ) // Close
 	{
 		_window* window = (_window*)this->getParent();
-		if( window && window->getType() == _gadgetType::window )
+		if( window && ( window->getType() == _gadgetType::window || window->getType() == _gadgetType::mainframe ) )
 			window->close();
 	}
 }
 
 _windowMenu::_windowMenu( const _menu& menu , _style&& style ) :
-	_menu( menu ) , _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _system::getUser().lIH , move(style) )
+	_menu( menu ) , _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _guiController::getListItemHeight() , move(style) )
 {
-	this->setMinHeight( _system::getUser().lIH );
+	this->setMinHeight( _guiController::getListItemHeight() );
 	
 	// Add a handler to the standard Menu
 	this->addMenuHandler( _menuHandlerRule() , make_callback( this , &_windowMenu::menuHandler ) );

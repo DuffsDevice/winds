@@ -1,20 +1,16 @@
 #include "_resource/resource.program.explorer.h"
 #include "_resource/resource.icon.folder.up.h"
-#include "_gadget/gadget.select.h"
-#include "_gadget/gadget.button.action.h"
-#include "_gadget/gadget.window.bar.h"
-#include "_gadget/gadget.window.menu.h"
-#include "_gadget/gadget.windows.taskinfo.h"
+#include "_controller/controller.localization.h"
 
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )
 {
 	_programHeader header;
 	header.name = string("Explorer");
-	header.displayName = string("Explorer");
+	header.fileName = string("Explorer");
 	header.author = string("WinDS");
 	header.description = string("Program to browse the File System");
-	this->setHeader( header );
+	this->setHeader( move(header) );
 }
 
 void PROG_Explorer::main( _programArgs args )
@@ -22,7 +18,7 @@ void PROG_Explorer::main( _programArgs args )
 	if( !args.empty() && !args[0].empty() )
 		this->path = _direntry(args[0]).getFileName();
 	
-	this->window = new _window( 40 , 40 , 120 , 90 , "Explorer" , true , true , _style::draggable );
+	_mainFrame* mainFrame = _program::getMainFrame( 120 , 90 );
 	this->fileView = new _fileView( 0 , 21 , ignore , ignore , this->path , _fileViewType::list );
 	this->addressBar = new _textBox( 1 , 10 , ignore , 10 , this->path );
 	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style::canNotTakeFocus );
@@ -43,28 +39,23 @@ void PROG_Explorer::main( _programArgs args )
 	this->folderUpButton->setUserEventHandler( onParentResize , _gadgetHelpers::rightBottomAlign( 11 , ignore ) );
 	this->folderUpButton->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
-	this->window->setUserEventHandler( onClose , make_callback( this , &PROG_Explorer::handler ) );
-	
 	// Adjust the window's title
 	this->setWindowTitle();
 	
 	// Create Menu
 	_menu menu = _windowMenu::getStandardMenu();
-	menu.setList( 1 , { { 101 , _system::getLocalizedString("lbl_exit") } } );
+	menu.setList( 1 , { { 101 , _localizationController::getBuiltInString("lbl_exit") } } );
 	
-	this->window->addChild( this->fileView );
-	this->window->addChild( this->windowBar = new _windowBar() );
-	this->window->addChild( this->windowMenu = new _windowMenu(menu) );
-	this->window->addChild( this->addressBar );
-	this->window->addChild( this->submitButton );
-	this->window->addChild( this->folderUpButton );
-	this->gadgetHost->addChild( this->window );
+	mainFrame->addChild( this->fileView );
+	mainFrame->addChild( this->windowBar = new _windowBar() );
+	mainFrame->addChild( this->windowMenu = new _windowMenu(menu) );
+	mainFrame->addChild( this->addressBar );
+	mainFrame->addChild( this->submitButton );
+	mainFrame->addChild( this->folderUpButton );
 }
 
 void PROG_Explorer::destruct()
 {
-	if( this->window )
-		delete this->window;
 	if( this->fileView )
 		delete this->fileView;
 	if( this->addressBar )
@@ -82,7 +73,7 @@ void PROG_Explorer::destruct()
 void PROG_Explorer::setWindowTitle()
 {
 	string path = _direntry( this->fileView->getPath() ).getName();
-	this->window->setStrValue( ( path.empty() ? "/" : path ) + " - Explorer");
+	_program::getMainFrame()->setTitle( path.empty() ? "/" : path );
 }
 
 _callbackReturn PROG_Explorer::handler( _event event )
@@ -105,8 +96,6 @@ _callbackReturn PROG_Explorer::handler( _event event )
 		this->addressBar->setStrValue( this->fileView->getPath() );
 		this->setWindowTitle();
 	}
-	else if( that->getType() == _gadgetType::window )
-		this->terminate();
 	
 	return handled;
 }

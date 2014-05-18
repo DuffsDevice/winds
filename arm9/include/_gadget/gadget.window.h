@@ -16,6 +16,8 @@ class _window : public _gadget {
 	
 	private:
 		
+		friend class _mainFrame;
+		
 		_label*			label;
 		_imageGadget*	icon;
 		_color			bgColor;
@@ -40,8 +42,8 @@ class _window : public _gadget {
 		static _callbackReturn updateHandler( _event );
 		
 		//! List that holds all window's that show up in the taskbar
-		static _list<_window*>				taskWindows;
-		static _list<_windowTaskHandler*>	taskHandlers;
+		static _list<_window*>							taskWindows;
+		static _list<_uniquePtr<_windowTaskHandler>>	taskHandlers;
 		
 		//! Notifys all listeners that want to be informed if the window maximizes, focuses
 		void notifyTaskHandlers( bool onlyIfWindowIsTask = true );
@@ -74,7 +76,7 @@ class _window : public _gadget {
 		//! Maximize the window to full screen size
 		void maximize();
 		
-		//! unMaximize the widnwo to its original size
+		//! unMaximize the window to its original size
 		void unMaximize();
 		
 		//! Minimize the window into the taskbar
@@ -134,16 +136,12 @@ class _window : public _gadget {
 		
 		//! Unregister a handler from the 'notify on minimize'-list
 		static void removeTaskHandler( const _windowTaskHandler& cb ){
-			remove_if(
-				_window::taskHandlers.begin()
-				, _window::taskHandlers.end()
-				, [&cb]( _windowTaskHandler* val )->bool{ return (cb == *val) == 1; }
-			);
+			taskHandlers.remove_if( [&cb]( _windowTaskHandler* val )->bool{ return (cb == *val) == 1; } );
 		}
 		
 		//! Register a handler taht will be notified, when the window changes its appearence
 		static void addTaskHandler( _paramAlloc<_windowTaskHandler> cb ){
-			taskHandlers.push_back( cb.get() );
+			taskHandlers.emplace_back( cb.get() );
 		}
 		
 };

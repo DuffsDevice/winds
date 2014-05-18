@@ -1,146 +1,34 @@
 #include "_type/type.sound.h"
-#include <stdio.h>
-#include <nds/fifocommon.h>
+#include "_controller/controller.sound.h"
 
-_sound*	_sound::globalChannels[16] = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
+// Sound Controls
+void _sound::play( _u8 volume , _s8 panning ){ _soundController::playSound( this ); }
+void _sound::stop(){ _soundController::killSound( this ); }
+void _sound::pause(){ _soundController::pauseSound( this ); }
 
-void _sound::play( _u8 volume , _s8 panning )
+// Prepares a channel using the _channelSetMsg and returns the new channel (returns -1 in case of fail)
+_s8 _sound::sendChannelPrepareMessage( _channelSetMsg msg )
 {
-	if( this->playing )
-		return;
-	
-	if( this->channelId < 0 )
-		this->channelId = this->prepareChannel( volume , panning );
-	
-	// Check if we now have a channel
-	if( this->channelId < 0 )
-		return;
-	
-	// Start Playing
-	this->sendChannelCommand( _soundCommand::channelPlay );
-	
-	// Organisatory stuff..
-	this->playing = true;
-	_sound::globalChannels[this->channelId] = this;
-}
-
-void _sound::stop()
-{
-	if( this->channelId < 0 )
-		return;
-	
-	// Destroy the channel through arm7
-	this->sendChannelCommand( _soundCommand::channelKill );
-	
-	// Indicate that this sound isn't running
-	this->playing = false;
-	
-	// Derived classes can do something here...
-	this->cleanupChannel( this->channelId );
-	
-	// Indicate that we don't use any channel
-	_sound::globalChannels[this->channelId] = nullptr;
-	this->channelId = -1;
-}
-
-void _sound::pause()
-{
-	if( !this->playing )
-		return;
-	
-	this->sendChannelCommand( _soundCommand::channelStop );
-	this->playing = false;
-}
-
-_u32 _sound::sendChannelCommand( _soundCommand cmd , _s16 value )
-{
-	// Abort if we don't own a channel
-	if( this->channelId < 0 )
-		return 0;
-	
-	// Generate the message
-	_soundCommandMsg msg = _soundCommandMsg( cmd , this->channelId , value );
-	
-	// Send the command
-	bool success = fifoSendValue32( FIFO_SOUND , msg.sum );
+	// Send message
+	bool success = _soundController::sendDataMessage( _soundDataMsg::channelSetMsg(msg) );
 	
 	if( !success )
-		return 0;
+		return -1;
 	
-	// Wait for the answer to be transfered
-	while( !fifoCheckValue32( FIFO_SOUND ) );
-	
-	// Lossless conversion from _u32 to _s32 (big numbers get turned negative)
-	_soundCommandResult result;
-	result.sum = fifoGetValue32( FIFO_SOUND );
-	
-	return result.value;
+	return _soundController::expectNumber(); // Wait for the channel id to be send from the arm7
 }
 
-_u32 _sound::sendCommand( _soundCommand cmd , _s16 value )
-{
-	// Generate the message
-	_soundCommandMsg msg = _soundCommandMsg( cmd , -1 , value );
-	
-	// Send the command
-	bool success = fifoSendValue32( FIFO_SOUND , msg.sum );
-	
-	if( !success )
-		return 0;
-	
-	// Wait for the answer to be transfered
-	while( !fifoCheckValue32( FIFO_SOUND ) );
-	
-	// Lossless conversion from _u32 to _s32 (big numbers get turned negative)
-	_soundCommandResult result;
-	result.sum = fifoGetValue32( FIFO_SOUND );
-	
-	return result.value;
-}
+// Get Channel ID
+_s8				_sound::getChannel() const { return _soundController::getChannelOf( this ); }
 
-void _sound::soundDataHandler( _int bytes , void* userData )
-{
-	_soundDataMsg msg;
-	
-	// Receive DataMsg
-	fifoGetDatamsg( FIFO_SOUND , bytes , (_u8*)&msg );
+// Getters
+_u16			_sound::getFrequency() const { return _soundController::sendCommand( _soundCommand::getFrequency , this ); }
+_psgDutyCycle	_sound::getDutyCycle() const { return (_psgDutyCycle) _soundController::sendCommand( _soundCommand::getDutyCycle , this ); }
+_s8				_sound::getPanning() const { return _soundController::sendCommand( _soundCommand::getPanning , this ); }
+_u8				_sound::getVolume() const { return _soundController::sendCommand( _soundCommand::getVolume , this ); }
 
-	if( msg.type == _soundDataMsgType::bufferFill )
-	{
-		_callback<_fillingRoutine>* ptr = msg.bufferFill.filler;
-		
-		if( ptr )
-		{
-			_callback<_fillingRoutine>& filler = *ptr;
-			
-			// Call the callback
-			filler( msg.bufferFill.requestedSize , msg.bufferFill.destination , msg.bufferFill.frequency , msg.bufferFill.format );
-		}
-	}
-	else if( msg.type == _soundDataMsgType::channelStopped )
-	{
-		_s8 channel = msg.channelStopped.channelId;
-		
-		if( channel < 0 || channel > 15 )
-			return;
-		
-		_sound*& snd = _sound::globalChannels[channel];
-		if( snd )
-		{
-			snd->channelId = -1;
-			snd->playing = false;
-			snd = nullptr;
-		}
-	}
-	else if( msg.type == _soundDataMsgType::integer )
-	{
-		static int i = 0;
-		printf("Message: %d -    %d\n",msg.integer,i++);
-	}
-}
-
-void _sound::enable(){
-	fifoSetDatamsgHandler( FIFO_SOUND , _sound::soundDataHandler , nullptr );
-	_sound::sendCommand( _soundCommand::soundEnable );
-}
-	
+// Setters
+void			_sound::setFrequency( _u16 freq ){			_soundController::sendCommand( _soundCommand::setFrequency , this , freq ); }
+void			_sound::setDutyCycle( _psgDutyCycle dC ){	_soundController::sendCommand( _soundCommand::setDutyCycle , this , (_u8)dC ); }
+void			_sound::setPanning( _s8 panning ){			_soundController::sendCommand( _soundCommand::setPanning , this , panning ); }
+void			_sound::setVolume( _u8 volume ){			_soundController::sendCommand( _soundCommand::setVolume , this , volume ); }

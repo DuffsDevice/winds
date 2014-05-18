@@ -1,7 +1,8 @@
 #include "_dialog/dialog.file.open.h"
-#include "_type/type.system.h"
 #include "_type/type.tokenizer.h"
 #include "_resource/resource.icon.folder.up.h"
+#include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 _fileExtensionList _fileOpenDialog::getFileMask( _int value ) const {
 	const string& extensions = std::get<1>( this->fileTypes[value] );
@@ -11,7 +12,7 @@ _fileExtensionList _fileOpenDialog::getFileMask( _int value ) const {
 const _menuEntryList _fileOpenDialog::generateMenuList()
 {
 	if( !this->fileTypes.count(0) )
-		this->fileTypes[0] = make_pair( _system::getLocalizedString("lbl_all_types") , "*" );
+		this->fileTypes[0] = make_pair( _localizationController::getBuiltInString("lbl_all_types") , "*" );
 	
 	_menuEntryList menuList;
 	for( auto& value : fileTypes ){
@@ -27,7 +28,7 @@ const _menuEntryList _fileOpenDialog::generateMenuList()
 
 void _fileOpenDialog::executeInternal(){
 	this->fileNameBox->setStrValue("");
-	this->window->setParent( _system::_gadgetHost_ );
+	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
 void _fileOpenDialog::cleanupInternal(){
@@ -43,7 +44,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	_coord fileViewY = 12;
 	
 	// Labels
-	this->fileNameLabel = new _label( 2 , firstLineY , ignore , ignore , _system::getLocalizedString("def_filename") );	
+	this->fileNameLabel = new _label( 2 , firstLineY , ignore , ignore , _localizationController::getBuiltInString("def_filename") );	
 	
 	// Determine some widths
 	const _length textBoxWidth = 60;
@@ -59,8 +60,8 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	
 	
 	// Create the two buttons
-	this->cancelButton = new _button( secondRowX , secondLineY , ignore , ignore , _system::getLocalizedString("lbl_cancel") );
-	this->openButton = new _button( secondRowX + cancelButton->getWidth() + 1 , secondLineY , ignore , ignore , openLabel.isValid() ? (string&&)openLabel : _system::getLocalizedString("lbl_open") );
+	this->cancelButton = new _button( secondRowX , secondLineY , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
+	this->openButton = new _button( secondRowX + cancelButton->getWidth() + 1 , secondLineY , ignore , ignore , openLabel.isValid() ? (string&&)openLabel : _localizationController::getBuiltInString("lbl_open") );
 	
 	
 	// Create file type Selectbox
@@ -75,7 +76,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	// Window
 	_length winWidth = labelWidth + this->fileTypeChooser->getWidth() + textBoxWidth + 7;
 	_length winHeight = secondLineY + this->openButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _system::getLocalizedString("lbl_open") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_open") , false , true , _style::notResizeable | _style::draggable );
 	
 	// Fix Filepath
 	initialFilePath = _direntry( initialFilePath ).getFileName();

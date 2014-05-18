@@ -8,13 +8,13 @@ using namespace _luafunc;
 ##################################*/
 
 //! Ctor
-_lua_font::_lua_font( _fontPtr f ) :
+_lua_font::_lua_font( _fontHandle f ) :
 	font( f )
 {}
 
 //! Lua-Ctor
-_lua_font::_lua_font( lua_State* L ) : 
-	font( _font::fromFile( check<string>( L , 1 ) ) )
+_lua_font::_lua_font( lua_State* L ) :
+	font( nullptr )
 {}
 
 //! getCharacterWidth

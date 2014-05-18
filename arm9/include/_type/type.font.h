@@ -4,12 +4,14 @@
 #include "_type/type.h"
 #include "_type/type.rect.h"
 #include "_type/type.color.h"
+#include "_type/type.uniqueptr.h"
 
 class _font{
 
 	private:
 		
 		string	 	name; //! Name
+		string	 	path; //! Path to the True-type font file
 		
 	protected:
 		
@@ -17,6 +19,8 @@ class _font{
 		void setName( string newName ){
 			this->name = newName;
 		}
+		
+		//! Sets Name
 		
 		//! Check if the supplied character can be displayed by the font
 		virtual bool isCharSupportedInternal( _char ch ) const = 0;
@@ -73,14 +77,13 @@ class _font{
 		//! Get Space between two letters
 		virtual _length getLetterSpace( _u8 fontSize = 0 ) const = 0;
 		
-		//! draw a character!
+		//! Draw a character!
 		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const = 0;
 		
-		//! Returns a font, created from a file
-		static const _font* fromFile( string path );
-
+		//! Load a font from the given path
+		static _uniquePtr<_font> fromFile( const string& path );
 };
 
-typedef const _font* _fontPtr;
+using _fontPtr = const _font*;
 
 #endif

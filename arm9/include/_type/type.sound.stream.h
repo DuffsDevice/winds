@@ -3,26 +3,26 @@
 
 #include "_type/type.h"
 #include "_type/type.sound.h"
-#include "_type/type.flexptr.h"
+#include "_type/type.uniqueptr.h"
 
 class _soundStream : public _sound
 {
 	private:
 		
-		_callback<_fillingRoutine>* filler;
-		_u16 frequency;
-		_channelFormat format;
+		_callback<_fillingRoutine>*	filler;
+		_u16						frequency;
+		_channelFormat				format;
 		union{
-			_u8* buffer8;
-			_u16* buffer16;
+			_u8*					buffer8;
+			_u16*					buffer16;
 		};
-		_u32 length;
+		_u32						length;
 		
 		//! Prepares the channel for use and returns its number
 		_s8 prepareChannel( _u8 volume , _s8 panning ) override;
 		
 		//! Frees the allocated stream buffer
-		void cleanupChannel( _s8 channel ) override;
+		void cleanupChannel( _u8 channel ) override;
 		
 	public:
 		

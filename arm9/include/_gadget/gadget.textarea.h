@@ -4,7 +4,7 @@
 
 #include "_type/type.gadget.h"
 #include "_gadget/gadget.scrollBar.h"
-#include "_type/type.guistring.h"
+#include "_type/type.guistring.multiline.h"
 
 class _textArea : public _gadget{
 	
@@ -17,13 +17,13 @@ class _textArea : public _gadget{
 		};
 		
 		//! background color
-		_color 		bgColor;
+		_color 				bgColor;
 		
 		//! _guiString-object
-		_guiString 	text;
+		_multiLineGuiString text;
 		
 		//! Current cursor position
-		_scrollBar*	scrollBar;
+		_scrollBar*			scrollBar;
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn generalHandler( _event );
@@ -42,7 +42,17 @@ class _textArea : public _gadget{
 		// Checks, if the text wants to update its wrapping of lines and does that if needed
 		void checkUpdate(){
 			if( this->text.needsUpdate() )
-				this->text.update();
+				this->text.update( this->getGuiStringDimensions() );
+		}
+		
+		// Get The current dimensions of the guistring
+		_rect getGuiStringDimensions() const {
+			return _rect(
+				_textArea::borderX
+				, _textArea::borderY - this->scrollBar->getValue()
+				, this->getWidth() - _textArea::borderX * 2 - ( this->scrollBar->isHidden() ? 0 : 9 )
+				, this->getHeight() - _textArea::borderY * 2
+			);
 		}
 		
 		//! Update the scroll so that the current cursor gets in view
@@ -57,13 +67,13 @@ class _textArea : public _gadget{
 		string getStrValue(){ return this->text; }
 		
 		//! Get Text Font
-		_fontPtr getFont(){ return this->text.getFont(); }
+		_fontHandle getFont(){ return this->text.getFont(); }
 		
 		//! Get Text FontSize
 		_u8 getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
-		void setFont( _fontPtr ft ){
+		void setFont( _fontHandle ft ){
 			if( !ft )
 				return;
 			this->text.setFont( ft );

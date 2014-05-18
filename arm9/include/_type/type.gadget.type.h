@@ -39,6 +39,7 @@ enum class _gadgetType : _u8
 	windowbar,
 	windowmenu,
 	windowmenuentry,
+	mainframe,
 	screen,
 	popup,
 	contextmenu,

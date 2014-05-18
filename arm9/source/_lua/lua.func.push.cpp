@@ -11,6 +11,7 @@
 #include "_lua/lua.class.hardwarekeypattern.h"
 #include "_lua/lua.class.time.h"
 #include "_lua/lua.class.mime.h"
+#include "_lua/lua.gadget.mainframe.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.bar.h"
 #include "_lua/lua.gadget.window.menu.h"
@@ -51,22 +52,22 @@ namespace _luafunc
 	}
 	
 	void pushBitmapRef( lua_State* L , _bitmap& arg ){
-		Lunar<_lua_bitmap>::push( L , new _lua_bitmap(&arg) );
+		Lunar<_lua_bitmap>::push( L , new _lua_bitmap(arg) );
 	}
 	
 	void pushBorder( lua_State* L , _border&& arg ){
 		Lunar<_lua_border>::push( L , new _lua_border(arg) );
 	}
 	
-	void pushBitmap( lua_State* L , _bitmap&& arg ){
-		Lunar<_lua_bitmap>::push( L , new _lua_bitmap( move(arg) ) );
+	void pushBitmap( lua_State* L , const _bitmap& arg ){
+		Lunar<_lua_bitmap>::push( L , new _lua_bitmap( arg ) );
 	}
 	
 	void pushBitmapPort( lua_State* L , _bitmapPort&& arg ){
 		Lunar<_lua_bitmapport>::push( L , new _lua_bitmapport( move(arg) ) );
 	}
 	
-	void pushFont( lua_State* L , _fontPtr arg ){
+	void pushFont( lua_State* L , _fontHandle arg ){
 		Lunar<_lua_font>::push( L , new _lua_font(arg) );
 	}
 	
@@ -167,6 +168,9 @@ namespace _luafunc
 				break;
 			case _gadgetType::contextmenu:
 				Lunar<_lua_contextmenu>::push( L , new _lua_contextmenu( (_contextMenu*)gadget ) );
+				break;
+			case _gadgetType::mainframe:
+				Lunar<_lua_mainframe>::push( L , new _lua_mainframe( (_mainFrame*)gadget ) );
 				break;
 			default:
 				Lunar<_lua_gadget>::push( L , new _lua_gadget( gadget , false ) );
