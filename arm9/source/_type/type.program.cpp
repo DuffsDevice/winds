@@ -40,7 +40,7 @@ void _program::terminate(){
 
 _program::~_program()
 {
-	if( this->mainFrame && false )
+	if( this->mainFrame )
 	{
 		// Save Dimensions of the mainframe to the registry
 		_mainFrame& frame = *this->mainFrame;
@@ -63,7 +63,7 @@ _program::~_program()
 		);
 		
 		// Write the resulting string to the registry
-		_registryController::getSystemRegistry().writeIndex( "programPreferences" , this->createHash() , move(dimensionString) );
+		_registryController::getSystemRegistry().writeIndex( "programPreferences" , hash , move(dimensionString) );
 	}
 }
 
@@ -71,23 +71,25 @@ _mainFrame* _program::getMainFrame( _length width , _length height , bool forceS
 {
 	if( !this->mainFrame )
 	{
-		//string hash = this->createHash();
-		//string dimensionString;
-		//
-		//if( !hash.empty() )
-		//	dimensionString = _registryController::getSystemRegistry().readIndex( "programPreferences" , hash );
-		//
-		//if( forceSize || dimensionString.empty() ){
-			// Allocate mainFrame instance using supplied dimensions
+		string hash = this->createHash();
+		string dimensionString;
+		
+		if( !hash.empty() )
+			dimensionString = _registryController::getSystemRegistry().readIndex( "programPreferences" , hash );
+		
+		// Read Dimensions of the mainframe from the registry
+		_vector<string> dim = tokenize( dimensionString , ", " , true );
+		
+		if( dim.size() != 4 ){
+			// Allocate mainFrame instance using supplied dimensions and center of the screen
 			this->mainFrame = new _mainFrame( ( SCREEN_WIDTH - width ) >> 1 , ( SCREEN_HEIGHT - height ) >> 1 , width , height , this , move(style) );
-		//}
-		//else{
-		//	// Read Dimensions of the mainframe from the registry
-		//	_vector<string> dim = tokenize( dimensionString , "," );
-		//	
-		//	// Allocate mainFrame instance using saved dimensions
-		//	this->mainFrame = new _mainFrame( string2int( dim[0] ) , string2int( dim[1] ) , string2int( dim[2] ) , string2int( dim[3] ) , this , move(style) );
-		//}
+		}else if( forceSize ){
+			// Allocate mainFrame instance using supplied dimensions and saved position
+			this->mainFrame = new _mainFrame( string2int( dim[0] ) , string2int( dim[1] ) , width , height , this , move(style) );
+		}else{
+			// Allocate mainFrame instance using saved dimensions/position
+			this->mainFrame = new _mainFrame( string2int( dim[0] ) , string2int( dim[1] ) , string2int( dim[2] ) , string2int( dim[3] ) , this , move(style) );
+		}
 	}
 	return this->mainFrame;
 }
@@ -143,9 +145,9 @@ _program* _program::fromFile( string filename )
 string _program::createHash()
 {
 	// Hashing Function: djb2
-		_u32 initialSeed = 5381;
-		_u32 hashVal = initialSeed;
-		_u32 curChar;
+		_s32 initialSeed = 5381;
+		_s32 hashVal = initialSeed;
+		_s32 curChar;
 		_literal str;
 		
 		// Process Name
@@ -173,6 +175,9 @@ string _program::createHash()
 			while (curChar = *str++)	hashVal = (hashVal * 33) ^ curChar;
 		}
 	// Hash end
+	
+	if( hashVal < 0 ) // Do not allow negative hashes
+		hashVal = -hashVal;
 	
 	return int2string( hashVal , 0 , 16 );
 }
