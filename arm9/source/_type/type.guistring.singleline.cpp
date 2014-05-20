@@ -121,6 +121,7 @@ void _singleLineGuiString::update( _rect dimensions , _u32 )
 		
 		// Since the ellipsis (...) hast to fit into the available width, start with the initial value of the ellipsis-width
 		currentWidth = 3 * ( dotWidth + letterSpaceWidth );
+		this->lineWidth += currentWidth;
 		
 		// Again iterate over all characters that fit before the ellipsis
 		curStr = startStr;
@@ -152,6 +153,20 @@ void _singleLineGuiString::update( _rect dimensions , _u32 )
 			// Abort since we exceeded the width we have available
 			if( currentWidth > ellipsisPartMaxWidth )
 				break;
+		}
+		
+		// Subtract all not-displayed letters from the lineWidth
+		for( curStr++ ; curStr < endStr ; curStr++ )
+		{
+			// Check if the current character is an escape sequence, if yes, skip it
+			if( !_guiString::processChar( curStr , fontStack , fontSizeStack , fontColorStack ) )
+				continue;
+			
+			_length letterWidth	= fontStack.top()->getCharacterWidth( *curStr , fontSizeStack.top() );
+			if( letterWidth )
+				letterWidth += fontStack.top()->getLetterSpace( fontSizeStack.top() );
+			
+			this->lineWidth -= letterWidth;
 		}
 		
 		// Write Attributes

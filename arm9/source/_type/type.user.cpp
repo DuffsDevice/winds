@@ -1,6 +1,6 @@
 #include "_type/type.user.h"
 #include "_type/type.imagefile.h"
-#include "_type/type.bitmap.resizer.h"
+#include "_type/type.bitmap.transform.h"
 #include "_type/type.cwdchanger.h"
 #include "_type/type.time.h"
 #include "func.md5.h"
@@ -27,7 +27,7 @@ _bitmap _user::getImage( string path )
 	_bitmap image = _imageFile( path ).readBitmap();
 	
 	if( image.isValid() )
-		return _bitmapResizer( 12 , 12 , image );
+		return _bitmapTransform( image , (_length)12 , (_length)12 );
 	
 	// Create default image
 	_bitmap bmp = _bitmap( 12 , 12 );
@@ -129,7 +129,7 @@ void _user::setWallpaperViewType( _wallpaperViewType viewType )
 	
 	// Adjust Wallpaper at certain view types
 	if( wallpaperViewType == _wallpaperViewType::stretch )
-		wallpaper = _bitmapResizer( availWidth , availHeight , wallpaper );
+		wallpaper = _bitmapTransform( wallpaper , availWidth , availHeight );
 	else
 	{
 		float wallpaperRatio = float(width) / float(height);
@@ -140,10 +140,10 @@ void _user::setWallpaperViewType( _wallpaperViewType viewType )
 			( wallpaperRatio > screenRatio && wallpaperViewType == _wallpaperViewType::contain ) // Wallpaper is broader than screen
 			|| ( wallpaperRatio < screenRatio && wallpaperViewType == _wallpaperViewType::contain ) // Wallpaper is greater than screen
 		)
-			wallpaper = _bitmapResizer( availWidth , availWidth / wallpaperRatio , wallpaper );
+			wallpaper = _bitmapTransform( wallpaper , availWidth , availWidth / wallpaperRatio );
 		// Width has to be adjusted
 		else
-			wallpaper = _bitmapResizer( availHeight * wallpaperRatio , availHeight , wallpaper );
+			wallpaper = _bitmapTransform( wallpaper , availHeight * wallpaperRatio , availHeight );
 	}
 }
 

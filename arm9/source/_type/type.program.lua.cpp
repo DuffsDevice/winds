@@ -58,6 +58,7 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.radio.h"
 #include "_lua/lua.gadget.select.h"
 #include "_lua/lua.gadget.slider.h"
+#include "_lua/lua.gadget.taskinfo.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.window.h"
@@ -116,6 +117,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "StickyButton" , &Lunar<_lua_stickybutton>::install ),
 	make_tuple( "UI" , "ScrollBar" , &Lunar<_lua_scrollbar>::install ),
 	make_tuple( "UI" , "ProgressBar" , &Lunar<_lua_progressbar>::install ),
+	make_tuple( "UI" , "TaskInfo" , &Lunar<_lua_taskinfo>::install ),
 	make_tuple( "UI" , "TextBox" , &Lunar<_lua_textbox>::install ),
 	make_tuple( "UI" , "TextArea" , &Lunar<_lua_textarea>::install ),
 	make_tuple( "UI" , "Clock" , &Lunar<_lua_clockgadget>::install )

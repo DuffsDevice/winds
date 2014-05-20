@@ -22,6 +22,10 @@ class _singleLineGuiString : public _guiString
 		_singleLineGuiString( string text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
 			_guiString( move(text) , font , fontColor , fontSize )
 			, ellipsis( -1 )
+			, omitStart( -1 )
+			, omitEnd( -1 )
+			, lineHeight( 0 )
+			, lineWidth( 0 )
 		{}
 		
 		//! Override the current value of this formatString

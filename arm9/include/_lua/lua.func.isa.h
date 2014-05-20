@@ -2,8 +2,8 @@
 	#include "_lua/lua.func.h"
 #endif
 
-#ifndef _WIN_T_LUAFUNCS_IS_A_
-#define _WIN_T_LUAFUNCS_IS_A_
+#ifndef _WIN_L_FUNC_IS_A_
+#define _WIN_L_FUNC_IS_A_
 
 namespace _luafunc
 {
@@ -81,7 +81,7 @@ namespace _luafunc
 		template<typename T1, typename T2, typename C, typename A>
 		static unused inline bool	is_a( lua_State* state , int index , _assocVector<T1,T2,C,A>* dummy ){ return lua_istable( state , index ); }
 		
-		// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
+		// ~~~~~~~~~~~~~~~~~~ Lua-Proxy-Classes ~~~~~~~~~~~~~~~~~~
 		template<typename T>
 		static unused inline bool	is_a( lua_State* state , int index , T* dummy){ return T::test( state , index ); }
 	}

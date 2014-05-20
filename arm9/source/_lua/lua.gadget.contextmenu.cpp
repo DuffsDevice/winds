@@ -13,7 +13,7 @@ _lua_contextmenu::_lua_contextmenu( lua_State* L ) :
 
 //! addIndex
 int _lua_contextmenu::addIndex( lua_State* L ){
-	_contextMenu* cM = (_contextMenu*)(_gadget*)(_lua_gadget*)this;
+	_contextMenu* cM = (_contextMenu*)this->getGadget();
 	cM->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
 	cM->update();
 	return 0;
@@ -21,7 +21,7 @@ int _lua_contextmenu::addIndex( lua_State* L ){
 
 //! removeIndex
 int _lua_contextmenu::removeIndex( lua_State* L ){
-	_contextMenu* cM = (_contextMenu*)(_gadget*)(_lua_gadget*)this;
+	_contextMenu* cM = (_contextMenu*)this->getGadget();
 	cM->getList().erase( check<int>( L , 1 ) );
 	cM->update();
 	return 0;

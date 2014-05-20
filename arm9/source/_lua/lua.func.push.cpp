@@ -31,6 +31,7 @@
 #include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.scrollBar.h"
 #include "_lua/lua.gadget.button.sticky.h"
+#include "_lua/lua.gadget.taskinfo.h"
 #include "_lua/lua.gadget.textbox.h"
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.select.h"
@@ -171,6 +172,9 @@ namespace _luafunc
 				break;
 			case _gadgetType::mainframe:
 				Lunar<_lua_mainframe>::push( L , new _lua_mainframe( (_mainFrame*)gadget ) );
+				break;
+			case _gadgetType::taskinfo:
+				Lunar<_lua_taskinfo>::push( L , new _lua_taskinfo( (_taskInfo*)gadget ) );
 				break;
 			default:
 				Lunar<_lua_gadget>::push( L , new _lua_gadget( gadget , false ) );

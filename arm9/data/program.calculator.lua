@@ -1,8 +1,8 @@
 --FILE_ICON	= %APPDATA%/CalcIcon.bmp
 --AUTHOR	= WinDS
 --FILE_NAME	= Calculator
---WND_NAME	= Calculator
---VERSION	= 1.0
+--WND_TITLE	= Calculator
+--VERSION	= 1.1
 --DESC		= Application to modify Images
 --COPYRIGHT	= (C) 2014
 --LANG		= neutral
@@ -48,8 +48,9 @@ function main()
 	wnd.icon = getLogo()
 	
 	-- Create Label
-	label = Label( 1 , 1 , winWidth - 3 , 10 , CURNUMBER )
+	label = Label( 1 , 1 , winWidth - 4 , 10 , CURNUMBER )
 	label.align = "right"
+	label.ellipsis = true
 	label.bgColor = Color.fromRGB( 27 , 29 , 31 )
 	
 	--------------------
@@ -63,26 +64,26 @@ function main()
 	btnSub			= Button( btnStartX + btnWidthEx * 3 , btnStartY , btnWidth , btnHeight , "-" )
 	
 	-- Second
-	btn1		= Button( btnStartX , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "1" )
-	btn2		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "2" )
-	btn3		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "3" )
+	btn1		= Button( btnStartX , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "1" , "clickRepeat" )
+	btn2		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "2" , "clickRepeat" )
+	btn3		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "3" , "clickRepeat" )
 	btnMul		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "°" )
 	
 	-- Third
-	btn4		= Button( btnStartX , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "4" )
-	btn5		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "5" )
-	btn6		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "6" )
+	btn4		= Button( btnStartX , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "4" , "clickRepeat" )
+	btn5		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "5" , "clickRepeat" )
+	btn6		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "6" , "clickRepeat" )
 	btnDiv		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "±" )
 	
 	-- Fourth
-	btn7		= Button( btnStartX , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "7" )
-	btn8		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "8" )
-	btn9		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "9" )
+	btn7		= Button( btnStartX , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "7" , "clickRepeat" )
+	btn8		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "8" , "clickRepeat" )
+	btn9		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "9" , "clickRepeat" )
 	btnSqrt		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "." )
 	
 	-- Fifth
 	btnSign		= Button( btnStartX , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "±" )
-	btn0		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "0" )
+	btn0		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "0" , "clickRepeat" )
 	btnComma	= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "." )
 	btnEqual	= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "=" )
 	

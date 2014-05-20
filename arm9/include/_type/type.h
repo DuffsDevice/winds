@@ -3,6 +3,7 @@
 #define _WIN_T_TYPES_
 
 #include "_type/type.predefines.h"
+#include "_type/type.2t.h"
 
 #include <string.h>
 #include <list>
@@ -54,6 +55,12 @@ template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
 template<typename T>
 	using _initializerList = std::initializer_list<T>;
+using _2s32	= _2T<_s32,_u64>;
+using _2u32	= _2T<_u32,_u32>;
+using _2s16	= _2T<_s16,_u32>;
+using _2u16	= _2T<_u16,_u32>;
+using _2s8	= _2T<_s8,_u16>;
+using _2u8	= _2T<_u8,_u16>;
 	
 
 typedef std::basic_string<_char>	string;
@@ -123,60 +130,6 @@ static unused constexpr _direction getVerticalPart( _direction dir ){
 //! Convert _dimension to string and back
 extern _toStr<_dimension>	dimension2string;
 extern _fromStr<_dimension>	string2dimension;
-
-/**
- * Pack two integers into one
- * The union will hopefully be treated
- * as one single _u64/_s64 (faster)
- */
-union						_2s32
-{
-	_s64	val;
-	struct{ _s32 first; _s32 second; };
-	
-	//Ctors
-	_2s32() {}
-	_2s32( _s64 v ) : val( v ) {}
-	_2s32( _s32 f , _s32 s ) : first( f ) , second( s ) {}
-	
-	operator bool(){ return this->val != 0; }
-	_2s32 operator+( _s32 val ){ return _2s32( first + val , second + val ); }
-	_2s32 operator-( _s32 val ){ return _2s32( first - val , second - val ); }
-	_2s32 operator*( _s32 val ){ return _2s32( first * val , second * val ); }
-	_2s32 operator/( _s32 val ){ return _2s32( first / val , second / val ); }
-	_2s32& operator+=( _s32 val ){ first += val; second += val; return *this; }
-	_2s32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
-	_2s32& operator*=( _s32 val ){ first *= val; second *= val; return *this; }
-	_2s32& operator/=( _s32 val ){ first /= val; second /= val; return *this; }
-	bool operator==( _2s32 val ){ return val.val == this->val; }
-	bool operator!=( _2s32 val ){ return val.val != this->val; }
-};
-
-static unused _2s32 operator-( const _2s32& val ){ return _2s32( -val.first , -val.second ); }
-static unused bool operator!( const _2s32& val ){ return !val.val; }
-
-union 						_2u32
-{
-	_u64	val;
-	struct{ _u32 first; _u32 second; };
-	
-	// Ctors
-	_2u32() {}
-	_2u32( _u64 v ) : val( v ) {}
-	_2u32( _u32 f , _u32 s ) : first( f ) , second( s ) {}
-	
-	operator bool(){ return this->val != 0; }
-	_2u32 operator+( _s32 val ){ return _2u32( first + val , second + val ); }
-	_2u32 operator-( _s32 val ){ return _2u32( first - val , second - val ); }
-	_2u32 operator*( _u32 val ){ return _2u32( first * val , second * val ); }
-	_2u32 operator/( _u32 val ){ return _2u32( first / val , second / val ); }
-	_2u32& operator+=( _s32 val ){ first += val; second += val; return *this; }
-	_2u32& operator-=( _s32 val ){ first -= val; second -= val; return *this; }
-	_2u32& operator*=( _u32 val ){ first *= val; second *= val; return *this; }
-	_2u32& operator/=( _u32 val ){ first /= val; second /= val; return *this; }
-	bool operator==( _2u32 val ){ return val.val == this->val; }
-	bool operator!=( _2u32 val ){ return val.val != this->val; }
-};
 
 static const _length SCREEN_WIDTH = 256;
 static const _length SCREEN_HEIGHT = 192;

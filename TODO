@@ -4,6 +4,7 @@ Gadgets:
 + Image-Button (✓)
 + Treeview (✓)
 - Contextmenu for Files
++ Notification Bubbles (✓)
 
 Types:
 ======
@@ -25,6 +26,7 @@ Features:
 + Sound (✓)
 + Task Infos in bottom right Corner (✓)
 - Mark text
++ Saving of a Programs Window Size/Position (✓)
 - Copy & Paste
 - File information window
 - Make font glyphs available in Lua

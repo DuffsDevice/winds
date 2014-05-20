@@ -13,6 +13,7 @@ class _popup : public _gadget
 		_direction	dir; // Direction to which it opens
 		_gadget*	owner; // The gadget that might receive focus when the popup closes
 		bool		opened; // Flag that indicates whether the popup is currently open
+		_2s8		offset; // The (X|Y)-Number of pixels , that the popup should be moved in the opposite direction it is opened to
 		
 	public:
 		
@@ -21,6 +22,7 @@ class _popup : public _gadget
 		void show( _2s32 pos , bool rightDownOnly = true ){
 			show( pos.first , pos.second , rightDownOnly );
 		}
+		void show( _rect object , bool rightDownOnly = true );
 		
 		//! Shows the popup centered at the specified position
 		void showCentered( _coord x , _coord y );
@@ -36,6 +38,7 @@ class _popup : public _gadget
 		void toggle( _2s32 pos , bool rightDownOnly = true ){
 			toggle( pos.first , pos.second , rightDownOnly );
 		}
+		void toggle( _rect object , bool rightDownOnly = true );
 		
 		//! Check if the popup is opened on the screen
 		bool isOpened(){ return this->opened; }
@@ -45,6 +48,15 @@ class _popup : public _gadget
 		
 		//! ... and a getter for that one, too
 		_gadget* getOwner(){ return this->owner; }
+		
+		//! Get The direction the popup is opened to
+		_direction getDirection() const { return dir; }
+		
+		//! Setter for Attribute @line 16
+		void setOffset( _2s8 offset ){ this->offset = offset; }
+		
+		//! Getter for the Attribute defined @line 16
+		_2s8 getOffset() const { return this->offset; }
 		
 		//! Ctor
 		_popup( _optValue<_length> width = ignore , _optValue<_length> height = ignore , _gadget* owner = nullptr , _style&& style = _style() );

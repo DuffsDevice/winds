@@ -49,6 +49,7 @@ enum class _gadgetType : _u8
 	griddescriber,
 	gridbox,
 	treeview,
+	taskinfo,
 	none // No type set (is probably not used)
 };
 

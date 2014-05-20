@@ -12,7 +12,7 @@ _lua_label::_lua_label( lua_State* L ) :
 { }
 
 int _lua_label::setEllipsis( lua_State* L ){
-	((_label&)*this).setEllipsis( check<bool>( L , 1 ) , lightcheck<_letterNum>( L , 2 ) );
+	((_label*)this->getGadget())->setEllipsis( check<bool>( L , 1 ) , lightcheck<_letterNum>( L , 2 ) );
 	return 0;
 }
 
