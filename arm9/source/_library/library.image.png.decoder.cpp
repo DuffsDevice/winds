@@ -35,6 +35,10 @@ unsigned int YsGenericPngDecoder::verboseMode=YSFALSE;
 //     Based on a bug-report from a viewer.  Thanks for the good catch!
 //   2011/12/28 
 //     Fixed transparent color reading based on the user-report.  Thanks for the good catch!
+//   2012/01/21
+//     Added int Decode(FILE *fp);
+//   2014/03/23
+//     Bug fix: Sliding-window buffer was not populated while processing uncompressed block of data.
 
 
 /* Supported color and depth
@@ -63,7 +67,7 @@ Interlaced
 
 // Memo
 //   PNG Data Format http://www.w3.org/TR/PNG
-
+//   zLib Data Format http://www.gzip.org/zlib/rfc-deflate.html
 
 #define MakeDword(a,b,c,d) ((a)*0x1000000+(b)*0x10000+(c)*0x100+(d))
 
@@ -92,26 +96,26 @@ void YsPngHeader::Decode(unsigned char dat[])
 	filterMethod=dat[11];
 	interlaceMethod=dat[12];
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("Width=%d Height=%d\n",width,height);
-		//printf("bitDepth=%d\n",bitDepth);
-		//printf("colorType=%d\n",colorType);
-		//printf("compressionMethod=%d\n",compressionMethod);
-		//printf("filterMethod=%d\n",filterMethod);
-		//printf("interlaceMethod=%d\n",interlaceMethod);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("Width=%d Height=%d\n",width,height);
+	//	printf("bitDepth=%d\n",bitDepth);
+	//	printf("colorType=%d\n",colorType);
+	//	printf("compressionMethod=%d\n",compressionMethod);
+	//	printf("filterMethod=%d\n",filterMethod);
+	//	printf("interlaceMethod=%d\n",interlaceMethod);
+	//}
 }
 
 YsPngPalette::YsPngPalette()
 {
 	nEntry=0;
-	entry=nullptr;
+	entry=NULL;
 }
 
 YsPngPalette::~YsPngPalette()
 {
-	if(entry!=nullptr)
+	if(entry!=NULL)
 	{
 		delete [] entry;
 	}
@@ -124,25 +128,25 @@ int YsPngPalette::Decode(unsigned length,unsigned char dat[])
 		return YSERR;
 	}
 
-	if(entry!=nullptr)
+	if(entry!=NULL)
 	{
 		delete [] entry;
 		nEntry=0;
-		entry=nullptr;
+		entry=NULL;
 	}
 
 	if(length>0)
 	{
 		entry=new unsigned char [length];
-		if(entry!=nullptr)
+		if(entry!=NULL)
 		{
 			unsigned int i;
 			nEntry=length/3;
 
-			if(YsGenericPngDecoder::verboseMode==YSTRUE)
-			{
-				//printf("%d palette entries\n",nEntry);
-			}
+			//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+			//{
+			//	printf("%d palette entries\n",nEntry);
+			//}
 
 			for(i=0; i<length; i++)
 			{
@@ -189,6 +193,53 @@ int YsPngTransparency::Decode(unsigned int length,unsigned char dat[],unsigned i
 
 ////////////////////////////////////////////////////////////
 
+YsPngBinaryFileStream::YsPngBinaryFileStream(FILE *fp)
+{
+	this->fp=fp;
+}
+
+size_t YsPngBinaryFileStream::GetSize(void) const
+{
+	size_t curPos=ftell(fp);
+    fseek(fp,0,2 /* SEEK_END */);
+    size_t fsize=ftell(fp);
+    fseek(fp,curPos,0 /* SEEK_SET */);
+    return fsize;
+}
+
+size_t YsPngBinaryFileStream::Read(unsigned char buf[],size_t readSize)
+{
+	return fread(buf,1,readSize,fp);
+}
+
+YsPngBinaryMemoryStream::YsPngBinaryMemoryStream(size_t dataSize,const unsigned char binaryData[])
+{
+	this->offset=0;
+	this->dataSize=dataSize;
+	this->binaryData=binaryData;
+}
+
+size_t YsPngBinaryMemoryStream::GetSize(void) const
+{
+	return dataSize;
+}
+
+size_t YsPngBinaryMemoryStream::Read(unsigned char buf[],size_t readSize)
+{
+	size_t byteCopied=0;
+	for(size_t idx=0; idx<readSize && offset<dataSize; ++idx)
+	{
+		buf[idx]=binaryData[offset];
+		++offset;
+		++byteCopied;
+	}
+	return byteCopied;
+}
+
+
+
+////////////////////////////////////////////////////////////
+
 YsGenericPngDecoder::YsGenericPngDecoder()
 {
 	Initialize();
@@ -202,10 +253,10 @@ void YsGenericPngDecoder::Initialize(void)
 	trns.col[2]=0x7fffffff;
 }
 
-int YsGenericPngDecoder::CheckSignature(FILE *fp)
+int YsGenericPngDecoder::CheckSignature(YsPngGenericBinaryStream &binStream)
 {
 	unsigned char buf[8];
-	fread(buf,1,8,fp);
+	binStream.Read(buf,8);
 	if(buf[0]==0x89 && buf[1]==0x50 && buf[2]==0x4e && buf[3]==0x47 && 
 	   buf[4]==0x0d && buf[5]==0x0a && buf[6]==0x1a && buf[7]==0x0a)
 	{
@@ -214,41 +265,41 @@ int YsGenericPngDecoder::CheckSignature(FILE *fp)
 	return YSERR;
 }
 
-int YsGenericPngDecoder::ReadChunk(unsigned &length,unsigned char *&buf,unsigned &chunkType,unsigned &crc,FILE *fp)
+int YsGenericPngDecoder::ReadChunk(unsigned &length,unsigned char *&buf,unsigned &chunkType,unsigned &crc,YsPngGenericBinaryStream &binStream)
 {
 	unsigned char dwBuf[4];
 
-	if(fread(dwBuf,1,4,fp)<4)
+	if(binStream.Read(dwBuf,4)<4)
 	{
 		return YSERR;
 	}
 	length=PngGetUnsignedInt(dwBuf);
 
-	if(fread(dwBuf,1,4,fp)<4)
+	if(binStream.Read(dwBuf,4)<4)
 	{
 		return YSERR;
 	}
 	chunkType=PngGetUnsignedInt(dwBuf);
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("Chunk name=%c%c%c%c\n",dwBuf[0],dwBuf[1],dwBuf[2],dwBuf[3]);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("Chunk name=%c%c%c%c\n",dwBuf[0],dwBuf[1],dwBuf[2],dwBuf[3]);
+	//}
 
 	if(length>0)
 	{
 		buf=new unsigned char [length];
-		if(fread(buf,1,length,fp)<length)
+		if(binStream.Read(buf,length)<length)
 		{
 			return YSERR;
 		}
 	}
 	else
 	{
-		buf=nullptr;
+		buf=NULL;
 	}
 
-	if(fread(dwBuf,1,4,fp)<4)
+	if(binStream.Read(dwBuf,4)<4)
 	{
 		return YSERR;
 	}
@@ -263,8 +314,8 @@ int YsPngHuffmanTree::leakTracker=0;
 
 YsPngHuffmanTree::YsPngHuffmanTree()
 {
-	zero=nullptr;
-	one=nullptr;
+	zero=NULL;
+	one=NULL;
 	dat=0x7fffffff;
 	weight=0;
 	depth=1;
@@ -278,7 +329,7 @@ YsPngHuffmanTree::~YsPngHuffmanTree()
 
 void YsPngHuffmanTree::DeleteHuffmanTree(YsPngHuffmanTree *node)
 {
-	if(node!=nullptr)
+	if(node!=NULL)
 	{
 		DeleteHuffmanTree(node->zero);
 		DeleteHuffmanTree(node->one);
@@ -368,11 +419,11 @@ void YsPngUncompressor::MakeDynamicHuffmanCode(unsigned hLength[],unsigned hCode
 		}
 	}
 
-	if(bl_count!=nullptr)
+	if(bl_count!=NULL)
 	{
 		delete [] bl_count;
 	}
-	if(next_code!=nullptr)
+	if(next_code!=NULL)
 	{
 		delete [] next_code;
 	}
@@ -394,10 +445,10 @@ int YsPngUncompressor::DecodeDynamicHuffmanCode
 	hDist=GetNextMultiBit(dat,bytePtr,bitPtr,5);
 	hCLen=GetNextMultiBit(dat,bytePtr,bitPtr,4);
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("hLit=%d hDist=%d hCLen=%d\n",hLit,hDist,hCLen);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("hLit=%d hDist=%d hCLen=%d\n",hLit,hDist,hCLen);
+	//}
 
 	const unsigned int codeLengthLen=19;
 	unsigned codeLengthOrder[codeLengthLen]=
@@ -419,13 +470,13 @@ int YsPngUncompressor::DecodeDynamicHuffmanCode
 	unsigned hLengthCode[codeLengthLen],hCodeCode[codeLengthLen];
 	MakeDynamicHuffmanCode(hLengthCode,hCodeCode,codeLengthLen,codeLengthCode);
 
-	if(YSTRUE==YsGenericPngDecoder::verboseMode)
-	{
-		for(i=0; i<hCLen+4; i++)
-		{
-			//printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,codeLengthCode[i],hCodeCode[i]);
-		}
-	}
+	//if(YSTRUE==YsGenericPngDecoder::verboseMode)
+	//{
+	//	for(i=0; i<hCLen+4; i++)
+	//	{
+	//		printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,codeLengthCode[i],hCodeCode[i]);
+	//	}
+	//}
 
 	// for(i=0; i<codeLengthLen; i++)
 	// {
@@ -453,7 +504,7 @@ int YsPngUncompressor::DecodeDynamicHuffmanCode
 		{
 			lengthTreePtr=lengthTreePtr->zero;
 		}
-		if(lengthTreePtr->zero==nullptr && lengthTreePtr->one==nullptr)
+		if(lengthTreePtr->zero==NULL && lengthTreePtr->one==NULL)
 		{
 			unsigned value,copyLength;
 			value=lengthTreePtr->dat;
@@ -502,22 +553,22 @@ int YsPngUncompressor::DecodeDynamicHuffmanCode
 		}
 	}
 
-	if(YSTRUE==YsGenericPngDecoder::verboseMode)
-	{
-		for(i=0; i<hLit+257; i++)
-		{
-			//printf("LiteralLength[%3d]=%d\n",i,hLengthLiteral[i]);
-		}
-		for(i=0; i<hDist+1; i++)
-		{
-			//printf("Dist [%d] Length %d\n",i,hLengthDist[i]);
-		}
-	}
+	//if(YSTRUE==YsGenericPngDecoder::verboseMode)
+	//{
+	//	for(i=0; i<hLit+257; i++)
+	//	{
+	//		printf("LiteralLength[%3d]=%d\n",i,hLengthLiteral[i]);
+	//	}
+	//	for(i=0; i<hDist+1; i++)
+	//	{
+	//		printf("Dist [%d] Length %d\n",i,hLengthDist[i]);
+	//	}
+	//}
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("Making Huffman Code from Code Lengths\n");
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("Making Huffman Code from Code Lengths\n");
+	//}
 	MakeDynamicHuffmanCode(hLengthLiteral,hCodeLiteral,hLit+257,hLengthLiteral);
 	MakeDynamicHuffmanCode(hLengthDist,hCodeDist,hDist+1,hLengthDist);
 
@@ -542,7 +593,7 @@ YsPngHuffmanTree *YsPngUncompressor::MakeHuffmanTree(unsigned n,unsigned hLength
 			{
 				if(hCode[i]&mask)
 				{
-					if(ptr->one==nullptr)
+					if(ptr->one==NULL)
 					{
 						ptr->one=new YsPngHuffmanTree;
 					}
@@ -550,7 +601,7 @@ YsPngHuffmanTree *YsPngUncompressor::MakeHuffmanTree(unsigned n,unsigned hLength
 				}
 				else
 				{
-					if(ptr->zero==nullptr)
+					if(ptr->zero==NULL)
 					{
 
 						ptr->zero=new YsPngHuffmanTree;
@@ -627,7 +678,11 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 	unsigned char *windowBuf;
 	unsigned nByteExtracted;
 
-	windowBuf=nullptr;
+	YsPngHuffmanTree *codeTree=NULL;
+	YsPngHuffmanTree *distTree=NULL;
+
+
+	windowBuf=NULL;
 
 	unsigned bytePtr,bitPtr;
 	bytePtr=0;
@@ -635,10 +690,10 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 	nByteExtracted=0;
 
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("Begin zLib block length=%d bytePtr=%d bitPtr=0x%02x\n",length,bytePtr,bitPtr);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("Begin zLib block length=%d bytePtr=%d bitPtr=0x%02x\n",length,bytePtr,bitPtr);
+	//}
 
 	unsigned char cmf,flg;
 	cmf=dat[bytePtr++];
@@ -648,45 +703,45 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 	cm=cmf&0x0f;
 	if(cm!=8)
 	{
-		//printf("Unsupported compression method! (%d)\n",cm);
+		printf("Unsupported compression method! (%d)\n",cm);
 		goto ERREND;
 	}
 
 	cInfo=(cmf&0xf0)>>4;
 	windowSize=1<<(cInfo+8);
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("cInfo=%d, Window Size=%d\n",cInfo,windowSize);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("cInfo=%d, Window Size=%d\n",cInfo,windowSize);
+	//}
 
 	windowBuf=new unsigned char [windowSize];
 	windowUsed=0;
 
 
 
-	unsigned fDict;//,fCheck,fLevel;
-	//fCheck=(flg&15);
+	unsigned fCheck,fDict,fLevel;
+	fCheck=(flg&15);
 	fDict=(flg&32)>>5;
-	//fLevel=(flg&192)>>6;
+	fLevel=(flg&192)>>6;
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("fCheck=%d fDict=%d fLevel=%d\n",fCheck,fDict,fLevel);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("fCheck=%d fDict=%d fLevel=%d\n",fCheck,fDict,fLevel);
+	//}
 
 
 	if(fDict!=0)
 	{
-		//printf("PNG is not supposed to have a preset dictionary.\n");
+		printf("PNG is not supposed to have a preset dictionary.\n");
 		goto ERREND;
 	}
 
-	// Remove GCC Compiler Warning "May be uninitialized in this function"
-	YsPngHuffmanTree *codeTree,*codeTreePtr;
-	YsPngHuffmanTree *distTree,*distTreePtr;
 
-	while(1)
+	YsPngHuffmanTree *codeTreePtr;
+	YsPngHuffmanTree *distTreePtr;
+
+	for(;;)
 	{
 		unsigned bFinal,bType;
 
@@ -695,14 +750,14 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 
 		if(bytePtr>=length)
 		{
-			//printf("Buffer overflow\n");
+			printf("Buffer overflow\n");
 			goto ERREND;
 		}
 
-		if(YsGenericPngDecoder::verboseMode==YSTRUE)
-		{
-			//printf("bFinal=%d bType=%d\n",bFinal,bType);
-		}
+		//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+		//{
+		//	printf("bFinal=%d bType=%d\n",bFinal,bType);
+		//}
 
 		if(bType==0) // No Compression
 		{
@@ -714,7 +769,7 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 			}
 			if(bytePtr>=length)
 			{
-				//printf("Buffer overflow\n");
+				printf("Buffer overflow\n");
 				goto ERREND;
 			}
 
@@ -722,24 +777,26 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 			bytePtr+=4;
 
 			// Feed len bytes
-			unsigned int i;
-			for(i=0; i<len; i++)  // 2010/02/08
+
+			for(int i=0; i<(int)len; i++)  // 2010/02/08
 			{
 				output->Output(dat[bytePtr+i]);
+				windowBuf[windowUsed++]=dat[bytePtr+i];  // 2014/03/22
+				windowUsed&=(windowSize-1);              // 2014/03/22
 			}
 
 			bytePtr+=len;
 		}
 		else if(bType==1 || bType==2)
 		{
-			codeTree=nullptr;
+			codeTree=NULL;
 
 			if(bType==1)
 			{
 				unsigned hLength[288],hCode[288];
 				MakeFixedHuffmanCode(hLength,hCode);
 				codeTree=MakeHuffmanTree(288,hLength,hCode);
-				distTree=nullptr;
+				distTree=NULL;
 			}
 			else
 			{
@@ -753,25 +810,25 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 				    hLengthLiteral,hCodeLiteral,hLengthDist,hCodeDist,hLengthBuf,hCodeBuf,
 				    dat,bytePtr,bitPtr);
 
-				if(YsGenericPngDecoder::verboseMode==YSTRUE)
-				{
-					//printf("Making Huffman Tree\n");
-				}
+				//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+				//{
+				//	printf("Making Huffman Tree\n");
+				//}
 				codeTree=MakeHuffmanTree(hLit+257,hLengthLiteral,hCodeLiteral);
 				distTree=MakeHuffmanTree(hDist+1,hLengthDist,hCodeDist);
 			}
 
 
-			if(YsGenericPngDecoder::verboseMode==YSTRUE)
-			{
-				//printf("Huffman table paprared\n");
-			}
+			//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+			//{
+			//	printf("Huffman table paprared\n");
+			//}
 
 
 			codeTreePtr=codeTree;
-			if(codeTree!=nullptr)
+			if(codeTree!=NULL)
 			{
-				while(1)
+				for(;;)
 				{
 					if(GetNextBit(dat,bytePtr,bitPtr))
 					{
@@ -782,13 +839,13 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 						codeTreePtr=codeTreePtr->zero;
 					}
 
-					if(codeTreePtr==nullptr)
+					if(codeTreePtr==NULL)
 					{
-						//printf("Huffman Decompression: Reached nullptr node.\n");
+						printf("Huffman Decompression: Reached NULL node.\n");
 						goto ERREND;
 					}
 
-					if(codeTreePtr->zero==nullptr && codeTreePtr->one==nullptr)
+					if(codeTreePtr->zero==NULL && codeTreePtr->one==NULL)
 					{
 						// printf("[%d]\n",codeTreePtr->dat);
 
@@ -796,9 +853,9 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 						value=codeTreePtr->dat;
 						if(value<256)
 						{
-							windowBuf[windowUsed++]=value;
+							windowBuf[windowUsed++]=(unsigned char)value;
 							windowUsed&=(windowSize-1);
-							if(output->Output(value)!=YSOK)
+							if(output->Output((unsigned char)value)!=YSOK)
 							{
 								goto ERREND;
 							}
@@ -825,7 +882,7 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 							else
 							{
 								distTreePtr=distTree;
-								while(distTreePtr->zero!=nullptr || distTreePtr->one!=nullptr)
+								while(distTreePtr->zero!=NULL || distTreePtr->one!=NULL)
 								{
 									if(GetNextBit(dat,bytePtr,bitPtr))
 									{
@@ -870,12 +927,12 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 
 			DeleteHuffmanTree(codeTree);
 			DeleteHuffmanTree(distTree);
-			codeTree=nullptr;
-			distTree=nullptr;
+			codeTree=NULL;
+			distTree=NULL;
 		}
 		else
 		{
-			//printf("Unknown compression type (bType=3)\n");
+			printf("Unknown compression type (bType=3)\n");
 			goto ERREND;
 		}
 
@@ -887,29 +944,29 @@ int YsPngUncompressor::Uncompress(unsigned length,unsigned char dat[])
 	}
 
 	delete [] windowBuf;
-	windowBuf=nullptr;
+	windowBuf=NULL;
 
 
 
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("End zLib block length=%d bytePtr=%d bitPtr=0x%02x\n",length,bytePtr,bitPtr);
-		//printf("Huffman Tree Leak Tracker = %d\n",YsPngHuffmanTree::leakTracker);
-		//printf("Output %d bytes.\n",nByteExtracted);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("End zLib block length=%d bytePtr=%d bitPtr=0x%02x\n",length,bytePtr,bitPtr);
+	//	printf("Huffman Tree Leak Tracker = %d\n",YsPngHuffmanTree::leakTracker);
+	//	printf("Output %d bytes.\n",nByteExtracted);
+	//}
 
 	return YSOK;
 
 ERREND:
-	if(windowBuf!=nullptr)
+	if(windowBuf!=NULL)
 	{
 		delete [] windowBuf;
 	}
-	if(codeTree!=nullptr)
+	if(codeTree!=NULL)
 	{
 		DeleteHuffmanTree(codeTree);
 	}
-	if(distTree!=nullptr)
+	if(distTree!=NULL)
 	{
 		DeleteHuffmanTree(distTree);
 	}
@@ -920,119 +977,125 @@ ERREND:
 
 int YsGenericPngDecoder::Decode(const char fn[])
 {
-	FILE *fp;
-	unsigned fileSize;
-
-	fp=fopen(fn,"rb");
-	if(fp!=nullptr)
+	int res=YSERR;
+	FILE *fp=fopen(fn,"rb");
+	if(NULL!=fp)
 	{
-	    fseek(fp,0, SEEK_END );
-	    fileSize=ftell(fp);
-	    fseek(fp,0, SEEK_SET );
+		YsPngBinaryFileStream binStream(fp);
+		res=Decode(binStream);
+		fclose(fp);
+	}
+	return res;
+}
 
-		if(CheckSignature(fp)!=YSOK)
+int YsGenericPngDecoder::Decode(FILE *fp)
+{
+	if(NULL!=fp)
+	{
+		YsPngBinaryFileStream binStream(fp);
+		return Decode(binStream);
+	}
+	return YSERR;
+}
+
+int YsGenericPngDecoder::Decode(YsPngGenericBinaryStream &binStream)
+{
+	const size_t fileSize=binStream.GetSize();
+
+	if(CheckSignature(binStream)!=YSOK)
+	{
+		printf("The file does not have PNG signature.\n");
+		return YSERR;
+	}
+
+	unsigned datBufUsed;
+	unsigned char *datBuf;
+
+
+	datBufUsed=0;
+	datBuf=new unsigned char [fileSize];
+
+
+	unsigned char *buf;
+	unsigned length,chunkType,crc;
+	while(ReadChunk(length,buf,chunkType,crc,binStream)==YSOK && chunkType!=IEND)
+	{
+		switch(chunkType)
 		{
-			//printf("The file does not have PNG signature.\n");
-			goto ERREND;
-		}
-
-		unsigned datBufUsed;
-		unsigned char *datBuf;
-
-
-		datBufUsed=0;
-		datBuf=new unsigned char [fileSize];
-
-
-		unsigned char *buf;
-		unsigned length,chunkType,crc;
-		while(ReadChunk(length,buf,chunkType,crc,fp)==YSOK && chunkType!=IEND)
-		{
-			switch(chunkType)
+		default:
+			if(buf!=NULL)
 			{
-			default:
-				if(buf!=nullptr)
-				{
-					delete [] buf;
-				}
-				break;
-			case IHDR:
-				if(buf!=nullptr)
-				{
-					if(length>=13)
-					{
-						hdr.Decode(buf);
-					}
-					delete [] buf;
-				}
-				break;
-			case PLTE:
-				if(buf!=nullptr)
-				{
-					if(plt.Decode(length,buf)!=YSOK)
-					{
-						//printf("Yet undefined error!");
-						delete [] buf;
-						goto ERREND;
-					}
-					delete [] buf;
-				}
-				break;
-			case tRNS:
-				if(buf!=nullptr)
-				{
-					trns.Decode(length,buf,hdr.colorType);
-					delete [] buf;
-				}
-				break;
-			case gAMA:
-				if(buf!=nullptr && length>=4)
-				{
-					gamma=PngGetUnsignedInt(buf);
-					if(YsGenericPngDecoder::verboseMode==YSTRUE)
-					{
-						//printf("Gamma %d (default=%d)\n",gamma,gamma_default);
-					}
-					delete [] buf;
-				}
-				break;
-			case IDAT:
-				if(buf!=nullptr)
-				{
-					unsigned i;
-					for(i=0; i<length; i++)
-					{
-						datBuf[datBufUsed+i]=buf[i];
-					}
-					datBufUsed+=length;
-					delete [] buf;
-				}
+				delete [] buf;
 			}
+			break;
+		case IHDR:
+			if(buf!=NULL)
+			{
+				if(length>=13)
+				{
+					hdr.Decode(buf);
+				}
+				delete [] buf;
+			}
+			break;
+		case PLTE:
+			if(buf!=NULL)
+			{
+				if(plt.Decode(length,buf)!=YSOK)
+				{
+					delete [] buf;
+					return YSERR;
+				}
+				delete [] buf;
+			}
+			break;
+		case tRNS:
+			if(buf!=NULL)
+			{
+				trns.Decode(length,buf,hdr.colorType);
+				delete [] buf;
+			}
+			break;
+		case gAMA:
+			if(buf!=NULL && length>=4)
+			{
+				gamma=PngGetUnsignedInt(buf);
+				//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+				//{
+				//	printf("Gamma %d (default=%d)\n",gamma,gamma_default);
+				//}
+				delete [] buf;
+			}
+			break;
+		case IDAT:
+			if(buf!=NULL)
+			{
+				unsigned i;
+				for(i=0; i<length; i++)
+				{
+					datBuf[datBufUsed+i]=buf[i];
+				}
+				datBufUsed+=length;
+				delete [] buf;
+			}
+			break;
 		}
-
-
-
-		if(PrepareOutput()==YSOK)
-		{
-			YsPngUncompressor uncompressor;
-			uncompressor.output=this;
-			uncompressor.Uncompress(datBufUsed,datBuf);
-
-			EndOutput();
-		}
-
-
-		delete [] datBuf;
-		fclose(fp);
-		return YSOK;
 	}
 
-ERREND:
-	if(fp!=nullptr)
+
+
+	if(PrepareOutput()==YSOK)
 	{
-		fclose(fp);
+		YsPngUncompressor uncompressor;
+		uncompressor.output=this;
+		uncompressor.Uncompress(datBufUsed,datBuf);
+
+		EndOutput();
 	}
-	return -1;
+
+
+	delete [] datBuf;
+	return YSOK;
 }
 
 int YsGenericPngDecoder::PrepareOutput(void)
@@ -1040,7 +1103,7 @@ int YsGenericPngDecoder::PrepareOutput(void)
 	return YSOK;
 }
 
-int YsGenericPngDecoder::Output(unsigned char dat)
+int YsGenericPngDecoder::Output(unsigned char)
 {
 	return YSOK;
 }
@@ -1069,15 +1132,15 @@ static inline unsigned char Paeth(unsigned int ua,unsigned int ub,unsigned int u
 
 	if(pa<=pb && pa<=pc)
 	{
-		return a;
+		return (unsigned char)a;
 	}
 	else if(pb<=pc)
 	{
-		return b;
+		return (unsigned char)b;
 	}
 	else
 	{
-		return c;
+		return (unsigned char)c;
 	}
 }
 
@@ -1110,7 +1173,7 @@ static inline void Filter8(unsigned char curLine[],unsigned char prvLine[],int x
 			unsigned int a;
 			a=(x>0 ? curLine[x*unitLng+i-unitLng] : 0);
 			a+=(y>0 ? prvLine[x*unitLng+i] : 0);
-			curLine[x*unitLng+i]+=a/2;
+			curLine[x*unitLng+i]+=(unsigned char)(a/2);
 		}
 		break;
 	case 4:
@@ -1130,22 +1193,22 @@ YsRawPngDecoder::YsRawPngDecoder()
 {
 	wid=0;
 	hei=0;
-	rgba=nullptr;
-	twoLineBuf8=nullptr;
+	rgba=NULL;
+	twoLineBuf8=NULL;
 
-	curLine8=nullptr;
-	prvLine8=nullptr;
+	curLine8=NULL;
+	prvLine8=NULL;
 
 	autoDeleteRgbaBuffer=1;
 }
 
 YsRawPngDecoder::~YsRawPngDecoder()
 {
-	if(autoDeleteRgbaBuffer==1 && rgba!=nullptr)
+	if(autoDeleteRgbaBuffer==1 && rgba!=NULL)
 	{
 		delete [] rgba;
 	}
-	if(twoLineBuf8!=nullptr)
+	if(twoLineBuf8!=NULL)
 	{
 		delete [] twoLineBuf8;
 	}
@@ -1153,7 +1216,7 @@ YsRawPngDecoder::~YsRawPngDecoder()
 
 void YsRawPngDecoder::ShiftTwoLineBuf(void)
 {
-	if(twoLineBuf8!=nullptr)
+	if(twoLineBuf8!=NULL)
 	{
 		unsigned char *swap;
 		swap=curLine8;
@@ -1194,11 +1257,11 @@ int YsRawPngDecoder::PrepareOutput(void)
 	case 3:   // Indexed-color
 		switch(hdr.bitDepth)
 		{
+		case 1:
 		case 4:
 		case 8:
 			supported=1;
 			break;
-		case 1:
 		case 2:
 			break;
 		}
@@ -1227,7 +1290,9 @@ int YsRawPngDecoder::PrepareOutput(void)
 
 	if(supported==0)
 	{
-		//printf("Unsupported colorType-bitDepth combination.\n");
+		printf("Unsupported colorType-bitDepth combination.\n");
+		printf("  Color type=%d\n",hdr.colorType);
+		printf("  Bit deptch=%d\n",hdr.bitDepth);
 		return YSERR;
 	}
 
@@ -1235,10 +1300,10 @@ int YsRawPngDecoder::PrepareOutput(void)
 
 	wid=hdr.width;
 	hei=hdr.height;
-	if(autoDeleteRgbaBuffer==1 && rgba!=nullptr)
+	if(autoDeleteRgbaBuffer==1 && rgba!=NULL)
 	{
 		delete [] rgba;
-		rgba=nullptr;
+		rgba=NULL;
 	}
 	rgba=new unsigned char [wid*hei*4];
 	x=-1;
@@ -1250,17 +1315,20 @@ int YsRawPngDecoder::PrepareOutput(void)
 	index=0;
 	interlacePass=1;
 
-	if(twoLineBuf8!=nullptr)
+	if(twoLineBuf8!=NULL)
 	{
 		delete [] twoLineBuf8;
-		twoLineBuf8=nullptr;
+		twoLineBuf8=NULL;
 	}
 
 
 	// See PNG Specification 11.2 for Allowed combinations of color type and bit depth
-	unsigned int twoLineBufLngPerLine = 0;
+	unsigned int twoLineBufLngPerLine=0;
 	switch(hdr.colorType)
 	{
+	default:
+		printf("Internal error!  Color type was supposed to be checked in the previous switch/case statement!\n");
+		return YSERR;
 	case 0:   // Greyscale
 		switch(hdr.bitDepth)
 		{
@@ -1383,9 +1451,9 @@ int YsRawPngDecoder::Output(unsigned char dat)
 						colIdx=(colIdx<<2)+colIdx;
 						colIdx=(colIdx<<4)+colIdx;
 
-						rgba[index  ]=colIdx;
-						rgba[index+1]=colIdx;
-						rgba[index+2]=colIdx;
+						rgba[index  ]=(unsigned char)colIdx;
+						rgba[index+1]=(unsigned char)colIdx;
+						rgba[index+2]=(unsigned char)colIdx;
 						rgba[index+3]=0;
 						x++;
 						index+=4;
@@ -1477,13 +1545,42 @@ int YsRawPngDecoder::Output(unsigned char dat)
 					break;
 				}
 				break;
-				
-				
-				
+
+
+
 			// Indexed color
 			case 3:
 				switch(hdr.bitDepth)
 				{
+				case 1:
+					curLine8[x/8]=dat;
+					Filter8(curLine8,prvLine8,x/8,y,1,filter);
+
+					for(i=0; i<8 && x<wid; i++)
+					{
+						colIdx=(curLine8[x/8]>>(7-i))&1;
+						if(colIdx<plt.nEntry)
+						{
+							rgba[index  ]=plt.entry[colIdx*3  ];
+							rgba[index+1]=plt.entry[colIdx*3+1];
+							rgba[index+2]=plt.entry[colIdx*3+2];
+							if(colIdx==trns.col[0] || colIdx==trns.col[1] || colIdx==trns.col[2])
+							{
+								rgba[index+3]=0;
+							}
+							else
+							{
+								rgba[index+3]=255;
+							}
+						}
+						else
+						{
+							printf("Not enough palette entry! (%d)\n",plt.nEntry);
+						}
+						x++;
+						index+=4;
+					}
+					break;
 				case 4:
 					curLine8[x/2]=dat;
 					Filter8(curLine8,prvLine8,x/2,y,1,filter);
@@ -1844,38 +1941,38 @@ int YsRawPngDecoder::Output(unsigned char dat)
 			break;
 			} // switch(hdr.colorType)
 
-			if(x>=interlaceWid)
+			if(x>=(int)interlaceWid)
 			{
 				y++;
 				x=-1;
 				ShiftTwoLineBuf();
-				if(y>=interlaceHei)
+				if(y>=(int)interlaceHei)
 				{
 					y=0;
 					interlacePass++;
 
-					if(YsGenericPngDecoder::verboseMode==YSTRUE)
-					{
-						//printf("Interlace Pass %d\n",interlacePass);
-					}
+					//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+					//{
+					//	printf("Interlace Pass %d\n",interlacePass);
+					//}
 				}
 			}
 
 			return YSOK;
 		default:
-			//printf("Unsupported interlace method.\n");
+			printf("Unsupported interlace method.\n");
 			return YSERR;
 		}
 	}
-	return YSERR;
+	// return YSERR;
 }
 
 int YsRawPngDecoder::EndOutput(void)
 {
-	if(YsGenericPngDecoder::verboseMode==YSTRUE)
-	{
-		//printf("Final Position (%d,%d)\n",x,y);
-	}
+	//if(YsGenericPngDecoder::verboseMode==YSTRUE)
+	//{
+	//	printf("Final Position (%d,%d)\n",x,y);
+	//}
 	return YSOK;
 }
 
@@ -1890,7 +1987,7 @@ void YsRawPngDecoder::Flip(void)  // For drawing in OpenGL
 		{
 			swp=rgba[y*bytePerLine+x];
 			rgba[y*bytePerLine+x]=rgba[(hei-1-y)*bytePerLine+x];
-			rgba[(hei-1-y)*bytePerLine+x]=swp;
+			rgba[(hei-1-y)*bytePerLine+x]=(unsigned char)swp;
 		}
 	}
 }

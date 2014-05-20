@@ -17,75 +17,75 @@
 
 class YsPngCompressorState
 {
-	friend class YsPngCompressor;
-	protected:
-		unsigned int bufPtr,bufBit;
-		unsigned int lastByte;
-		unsigned int adler32_s1,adler32_s2;
-		unsigned int nByteReceived;
+friend class YsPngCompressor;
+protected:
+	unsigned int bufPtr,bufBit;
+	unsigned int lastByte;
+	unsigned int adler32_s1,adler32_s2;
+	unsigned int nByteReceived;
 };
 
 class YsPngCompressor
 {
-	protected:
-		unsigned int bufSize;
-		unsigned char *buf;
-		unsigned int bufPtr,bufBit;
+protected:
+	unsigned int bufSize;
+	unsigned char *buf;
+	unsigned int bufPtr,bufBit;
 
-		unsigned int windowSize;
+	unsigned int windowSize;
 
-		int verboseMode;
-		unsigned int adler32_s1,adler32_s2;
+	int verboseMode;
+	unsigned int adler32_s1,adler32_s2;
 
-		unsigned int nByteExpect;
-		unsigned int nByteReceived;
+	unsigned int nByteExpect;
+	unsigned int nByteReceived;
 
-	public:
-		YsPngCompressor();
-		~YsPngCompressor();
+public:
+	YsPngCompressor();
+	~YsPngCompressor();
 
-		void SaveState(YsPngCompressorState &state);
-		void RestoreState(const YsPngCompressorState &state);
+	void SaveState(YsPngCompressorState &state);
+	void RestoreState(const YsPngCompressorState &state);
 
-		int BeginCompression(unsigned int nByte);
-		int AddCompressionBlock(unsigned int nByte,unsigned char byteData[],int bFinal);
-		int AddNonCompressionBlock(unsigned int nByte,unsigned char byteData[],int bFinal);
-		int EndCompression(void);
+	int BeginCompression(unsigned int nByte);
+	int AddCompressionBlock(unsigned int nByte,unsigned char byteData[],int bFinal);
+	int AddNonCompressionBlock(unsigned int nByte,unsigned char byteData[],int bFinal);
+	int EndCompression(void);
 
-		unsigned int GetCompressedLength(void) const;
-		const unsigned char *GetCompressedData(void) const;
+	unsigned int GetCompressedLength(void) const;
+	const unsigned char *GetCompressedData(void) const;
 
-	protected:
-		void ClearBuffer(void);
-		void AddCMFandFLG(unsigned int CMF,unsigned int FLG); // This will create first 256 bytes.
-		void TestAndGrowBuffer(void);
+protected:
+	void ClearBuffer(void);
+	void AddCMFandFLG(unsigned int CMF,unsigned int FLG); // This will create first 256 bytes.
+	void TestAndGrowBuffer(void);
 
-		int GetDistCodeAndExtraBit(unsigned int &distCode,unsigned int &nExtraBit,unsigned int &distExtraBit,unsigned int backDist) const;
-		int GetCopyCodeAndExtraBit(unsigned int &copyCode,unsigned int &nExtraBit,unsigned int &extraBit,unsigned int copyLength) const;
-		void EncodeWithNoRepetitionReduction(
-			unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
-			unsigned int nByte,const unsigned char byteData[]) const;
-		void EncodeWithDumbestRepetitionReduction(
-			unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
-			unsigned int nByte,const unsigned char byteData[]) const;
-		void EncodeWithLazyMatchAsDescribedInRFC1951(
-			unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
-			unsigned int nByte,const unsigned char byteData[]) const;
+	int GetDistCodeAndExtraBit(unsigned int &distCode,unsigned int &nExtraBit,unsigned int &distExtraBit,unsigned int backDist) const;
+	int GetCopyCodeAndExtraBit(unsigned int &copyCode,unsigned int &nExtraBit,unsigned int &extraBit,unsigned int copyLength) const;
+	void EncodeWithNoRepetitionReduction(
+	    unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
+	    unsigned int nByte,const unsigned char byteData[]) const;
+	void EncodeWithDumbestRepetitionReduction(
+	    unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
+	    unsigned int nByte,const unsigned char byteData[]) const;
+	void EncodeWithLazyMatchAsDescribedInRFC1951(
+	    unsigned int &nCode,unsigned int codeArray[],unsigned int copyParamArray[],
+	    unsigned int nByte,const unsigned char byteData[]) const;
 
-		int MakeLengthLiteral(int &hLit,unsigned int hLenLit[],int nCode,unsigned int code[]) const;
-		int MakeLengthCodeLength(
-			int &hCLen,unsigned int hLenCodeLen[],
-			int nLenCode,unsigned int lenCode[],int nLenDistCode,unsigned int lenDistCode[]) const;
-		int MakeLengthBackDist(int &hDist,unsigned int hLenDist[],int nCode,unsigned int copyDistArray[]) const;
-		void InvertHuffmanCodeForWriting(int nCode,unsigned int bitLength[],unsigned int code[]) const;
+	int MakeLengthLiteral(int &hLit,unsigned int hLenLit[],int nCode,unsigned int code[]) const;
+	int MakeLengthCodeLength(
+	    int &hCLen,unsigned int hLenCodeLen[],
+	    int nLenCode,unsigned int lenCode[],int nLenDistCode,unsigned int lenDistCode[]) const;
+	int MakeLengthBackDist(int &hDist,unsigned int hLenDist[],int nCode,unsigned int copyDistArray[]) const;
+	void InvertHuffmanCodeForWriting(int nCode,unsigned int bitLength[],unsigned int code[]) const;
 
-		void BeginAdler32(void);
-		void AddAdler32(unsigned char byteData);
-		unsigned int GetAdler32(void);
+	void BeginAdler32(void);
+	void AddAdler32(unsigned char byteData);
+	unsigned int GetAdler32(void);
 
-		inline void WriteMultiBit(int nBit,unsigned int bit);
-		inline void WriteByte(unsigned char byte);
-		inline void FlushByte(void);
+	inline void WriteMultiBit(int nBit,unsigned int bit);
+	inline void WriteByte(unsigned char byte);
+	inline void FlushByte(void);
 };
 
 void YsPngCompressor::WriteMultiBit(int nBit,unsigned int bit)
@@ -134,38 +134,48 @@ void YsPngCompressor::FlushByte(void)
 }
 
 
-class YsRawPngEncoder
+class YsGenericPngEncoder
 {
-	public:
-		YsRawPngEncoder();
-	protected:
-		int dontCompress;
-		FILE *fp;
+public:
+	int verboseMode;
 
-		int StreamOut(int nByte,const unsigned char byteData[]) const;
+	YsGenericPngEncoder();
+	virtual ~YsGenericPngEncoder() = default;
+protected:
+	int dontCompress;
 
-		void WritePngSignature(void);
-		void CalculateChunkCRC(unsigned char chunk[]);
+	virtual int StreamOut(int nByte,const unsigned char byteData[]) const;
 
-		void MakeIHDRChunk(int &nByte,unsigned char chunk[4+4+13+4],int width,int height,int bitDepth,int colorType);
-		int WriteIHDRChunk(int width,int height,int bitDepth,int colorType);
+	void WritePngSignature(void);
+	void CalculateChunkCRC(unsigned char chunk[]);
 
-		void MakeIENDChunk(int &nByte,unsigned char chunk[4+4+4]);
-		int WriteIENDChunk(void);
+	void MakeIHDRChunk(int &nByte,unsigned char chunk[4+4+13+4],int width,int height,int bitDepth,int colorType);
+	int WriteIHDRChunk(int width,int height,int bitDepth,int colorType);
 
-		int WritetEXtChunk(char keyword[],char text[]);
+	void MakeIENDChunk(int &nByte,unsigned char chunk[4+4+4]);
+	int WriteIENDChunk(void);
 
-		int WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,const unsigned char dat[]);
+	int WritetEXtChunk(char keyword[],char text[]);
 
-		unsigned int CalculateBytePerLine(int width,int bitDepth,int colorType);
+	int WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,const unsigned char dat[]);
 
-	public:
-		int Encode(int width,int height,int bitDepth,int colorType,const unsigned char dat[]);
+	unsigned int CalculateBytePerLine(int width,int bitDepth,int colorType);
 
-		void SetDontCompress(int dontCompress);
+public:
+	int Encode(int width,int height,int bitDepth,int colorType,const unsigned char dat[]);
 
-	public:
-		int EncodeToFile(const char fn[],int width,int height,int bitDepth,int colorType,const unsigned char dat[]);
+	void SetDontCompress(int dontCompress);
+};
+
+
+class YsRawPngEncoder : public YsGenericPngEncoder
+{
+protected:
+	FILE *fp;
+	virtual int StreamOut(int nByte,const unsigned char byteData[]) const;
+
+public:
+	int EncodeToFile(const char fn[],int width,int height,int bitDepth,int colorType,const unsigned char dat[]);
 };
 
 /* } */
