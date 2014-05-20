@@ -77,22 +77,6 @@ void _multiLineGuiString::update( _rect dimensions , _u32 startIndex )
 			lineWidthSince += letterWidth;
 		}
 		
-		// Remember that we have a possible break here
-		if( SyllableParser::charIsOf( *curStr , breakChars ) )
-		{
-			lastBreakableIndex = ( curStr - originalStr ); // <= Current Index
-			lineWidthUntil += lineWidthSince;
-			lineWidthSince = 0;
-			
-			// Save font stacks
-			if( stacksInvalidated ){
-				savedFontStack = fontStack;
-				savedColorStack = fontColorStack;
-				savedSizeStack = fontSizeStack;
-				stacksInvalidated = false;
-			}
-		}
-		
 		// If the current line width exceeds the maximum width we have available
 		if( lineWidthUntil + lineWidthSince >= dimensions.width )
 		{
@@ -153,6 +137,22 @@ void _multiLineGuiString::update( _rect dimensions , _u32 startIndex )
 			lineWidthUntil = 0;
 			lineHeight = fontStack.top()->getHeight( fontSizeStack.top() );
 			lastBreakableIndex = -1;
+		}
+		
+		// Remember that we have a possible break here
+		if( SyllableParser::charIsOf( *curStr , breakChars ) )
+		{
+			lastBreakableIndex = ( curStr - originalStr ); // <= Current Index
+			lineWidthUntil += lineWidthSince;
+			lineWidthSince = 0;
+			
+			// Save font stacks
+			if( stacksInvalidated ){
+				savedFontStack = fontStack;
+				savedColorStack = fontColorStack;
+				savedSizeStack = fontSizeStack;
+				stacksInvalidated = false;
+			}
 		}
 	}
 	

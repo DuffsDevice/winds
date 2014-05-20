@@ -50,17 +50,19 @@ _desktopScreenInfoArea::_desktopScreenInfoArea( _optValue<_coord> x , _optValue<
 	, time( new _label( ignore , 0 , ignore , 10 , "--:--" ) )
 	, timer( make_callback<void>( this , &_desktopScreenInfoArea::timerHandler ) , 10000 , true ) // Make the clock update itself
 {
-	this->setPadding(_padding(3,0,22,0));
+	this->setPadding( {3, 0, 22, 0} );
+	
 	
 	// Register Event-Handler
 	this->setInternalEventHandler( onDraw , make_callback( &_desktopScreenInfoArea::refreshHandler ) );
 	this->setInternalEventHandler( onResize , _gadgetHelpers::rightBottomAlign( 0 , 0 ) );
 	
+	
 	// Construct Time Label
 	this->time->setAlign( _align::right );
 	this->time->setColor( _color::white );
-	
-	this->time->setUserEventHandler( onUpdate , _gadgetHelpers::rightBottomAlign( 1 , ignore ) );
+	this->time->setUserEventHandler( onUpdate , _gadgetHelpers::rightBottomAlign( 2 , ignore ) );
+	this->time->setUserEventHandler( onParentResize , _gadgetHelpers::rightBottomAlign( 2 , ignore ) );
 	this->addEnhancedChild( this->time );
 	this->timerHandler();
 	
@@ -68,11 +70,14 @@ _desktopScreenInfoArea::_desktopScreenInfoArea( _optValue<_coord> x , _optValue<
 	// Register inside _taskInfo
 	_taskInfo::addTaskInfoHandler( make_callback( this , &_desktopScreenInfoArea::taskInfoHandler ) );
 	
+	
 	// Update the position
 	this->triggerEvent( onResize );
 	
+	
 	// Start Updating the clock
 	this->timer.start();
+	
 	
 	// Refresh
 	this->redraw();

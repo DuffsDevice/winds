@@ -91,7 +91,7 @@ void _windowsSoundBank::play( _windowsSound snd )
 		case _windowsSound::bubble:{
 			static _staticSound sound{ _channelFormat::bit8 , 22050 , sound_bubble_22_pcm , sound_bubble_22_pcm_size };
 			sound.stop();
-			sound.play();
+			sound.play( 30 );
 		}break;
 	}
 }

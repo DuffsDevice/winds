@@ -5,6 +5,7 @@
 #include "_gadget/gadget.image.h"
 
 class _taskInfo;
+class _bubble;
 using _taskInfoHandler = _callback<void(_taskInfo*)>;
 
 class _taskInfo : public _imageGadget
@@ -13,11 +14,11 @@ class _taskInfo : public _imageGadget
 		
 		friend class _taskInfoController;
 		
-		static _callbackReturn  refreshHandler( _event );
-		
 		// List of active tasks
-		static _list<_taskInfo*>		taskInfos;
-		bool							validTaskInfo;
+		static _list<_taskInfo*>	taskInfos;
+		bool						validTaskInfo;
+		_uniquePtr<_bubble>			notificationBubble;
+		_uniquePtr<_voidCallback>	notificationBubbleHandler;
 		
 		// List of handlers that want to be notified about added or removed taskInfos
 		static _list<_uniquePtr<_taskInfoHandler>>	taskInfoHandlers;
@@ -27,11 +28,11 @@ class _taskInfo : public _imageGadget
 			for( auto& handler : _taskInfo::taskInfoHandlers )
 				(*handler)( this );
 		}
+		
+		//! Handles Click-Events from any notification bubble
+		_callbackReturn notificationClickHandler( _event );
 	
 	public:
-		
-		using _gadget::setUserEventHandler;
-		using _gadget::removeUserEventHandler;
 		
 		//! Ctor
 		_taskInfo( _bitmap icon , _style&& style = _style() );
@@ -70,6 +71,13 @@ class _taskInfo : public _imageGadget
 		//! Get a List of all registered taskInfos
 		static _list<_taskInfo*> getTaskInfos(){
 			return _taskInfo::taskInfos;
+		}
+		
+		//! Displays a text message above the taskInfo
+		void displayNotification( string title , string content , _bitmap icon = _bitmap() );
+		void displayNotification( string title , string content , _paramAlloc<_voidCallback> clickHandler , _bitmap icon = _bitmap() ){
+			this->displayNotification( move(title) , move(content) , move(icon) );
+			this->notificationBubbleHandler = clickHandler.get();
 		}
 };
 

@@ -4,6 +4,7 @@
 #include "_controller/controller.gui.h"
 #include "_controller/controller.memory.h"
 #include "_type/type.windows.h"
+#include "_gadget/gadget.taskinfo.h"
 
 _guiDesktop::_guiDesktop()
 {

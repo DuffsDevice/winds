@@ -1,6 +1,5 @@
 #include "_screen/screen.desktop.view.h"
 #include "_controller/controller.registry.h"
-#include "_type/type.bitmap.resizer.h"
 #include "_type/type.color.h"
 #include "_type/type.font.freetype.h"
 
