@@ -6,24 +6,18 @@
 
 class YsPngCRCCalculator
 {
-	protected:
-		static const unsigned long crcTable[256];
-		unsigned long crc;
+protected:
+	static const unsigned long crcTable[256];
+	unsigned long crc;
 
-		enum
-		{
-			CRCMASK=0xffffffff
-		};
-	public:
-		void Initialize(void){
-			crc=CRCMASK;
-		}
-		void Add(unsigned int byteData){
-			crc=crcTable[(crc^byteData)&0xff]^(crc>>8);
-		}
-		unsigned long GetCRC(void){
-			return (~crc)&CRCMASK;
-		}
+	enum
+	{
+		CRCMASK=0xffffffff
+	};
+public:
+	void Initialize(void);
+	inline void Add(unsigned int byteData);
+	unsigned long GetCRC(void);
 };
 
 const unsigned long YsPngCRCCalculator::crcTable[256]=
@@ -62,34 +56,52 @@ const unsigned long YsPngCRCCalculator::crcTable[256]=
 	0xb3667a2e,0xc4614ab8,0x5d681b02,0x2a6f2b94,0xb40bbe37,0xc30c8ea1,0x5a05df1b,0x2d02ef8d
 };
 
+void YsPngCRCCalculator::Initialize(void)
+{
+	crc=CRCMASK;
+}
+
+inline void YsPngCRCCalculator::Add(unsigned int byteData)
+{
+	crc=crcTable[(crc^byteData)&0xff]^(crc>>8);
+}
+
+unsigned long YsPngCRCCalculator::GetCRC(void)
+{
+	return (~crc)&CRCMASK;
+}
+
+
+
+
 
 class YsPngHuffmanTreeManager
 {
-	public:
-		YsPngHuffmanTree *root;
-		unsigned int nElem;
-		unsigned int *elemFreq;
+public:
+	YsPngHuffmanTree *root;
+	unsigned int nElem;
+	unsigned int *elemFreq;
 
-	public:
-		YsPngHuffmanTreeManager();
-		~YsPngHuffmanTreeManager();
+public:
+	YsPngHuffmanTreeManager();
+	~YsPngHuffmanTreeManager();
 
-		int MakeTreeFromData(int nData,unsigned int byteData[],int nData2,unsigned int byteData2[],unsigned int maxValue);
-		int MakeTreeFromFrequencyTable(unsigned int nElem,unsigned int elemFreq[]);
-		unsigned int GetTreeDepth(void) const;
+	int MakeTreeFromData(int nData,unsigned int byteData[],int nData2,unsigned int byteData2[],unsigned int maxValue);
+	int MakeTreeFromFrequencyTable(unsigned int nElem,unsigned int elemFreq[]);
+	unsigned int GetTreeDepth(void) const;
 
-		int MakeCodeLengthArray(unsigned int hLength[]) const;  // Length must be equal to nElem
+	int MakeCodeLengthArray(unsigned int hLength[]) const;  // Length must be equal to nElem
 
-		void ReduceTreeDepth(void);
+	void ReduceTreeDepth(void);
 
-		void PrintInfo(void) const;
+	void PrintInfo(void) const;
 
-	protected:
-		void ClearFrequencyTable(void);
-		void ClearTree(void);
-		int RebuildHuffmanTree(void);
-		void SortFreeNode(int nFreeNode,YsPngHuffmanTree **freeNode);
-		int MakeCodeLengthArray(unsigned int hLength[],YsPngHuffmanTree *node,int depth) const;
+protected:
+	void ClearFrequencyTable(void);
+	void ClearTree(void);
+	int RebuildHuffmanTree(void);
+	void SortFreeNode(int nFreeNode,YsPngHuffmanTree **freeNode);
+	int MakeCodeLengthArray(unsigned int hLength[],YsPngHuffmanTree *node,int depth) const;
 };
 
 YsPngHuffmanTreeManager::YsPngHuffmanTreeManager()
@@ -121,7 +133,7 @@ int YsPngHuffmanTreeManager::MakeTreeFromData(int nData,unsigned int codeData[],
 	{
 		if(maxValue<codeData[i])
 		{
-			//printf("%s  Code data out of range.\n",__FUNCTION__);
+			printf("%s  Code data out of range.\n",__FUNCTION__);
 			return YSERR;
 		}
 		elemFreq[codeData[i]]++;
@@ -130,7 +142,7 @@ int YsPngHuffmanTreeManager::MakeTreeFromData(int nData,unsigned int codeData[],
 	{
 		if(maxValue<codeData2[i])
 		{
-			//printf("%s  Code data2 out of range.\n",__FUNCTION__);
+			printf("%s  Code data2 out of range.\n",__FUNCTION__);
 			return YSERR;
 		}
 		elemFreq[codeData2[i]]++;
@@ -201,8 +213,8 @@ void YsPngHuffmanTreeManager::PrintInfo(void) const
 {
 	if(NULL!=root)
 	{
-		//printf("Max depth=%d\n",root->depth);
-		//printf("Root Weight=%d\n",root->weight);
+		printf("Max depth=%d\n",root->depth);
+		printf("Root Weight=%d\n",root->weight);
 	}
 }
 
@@ -542,6 +554,7 @@ YsPngCompressor::YsPngCompressor()
 	buf=NULL;
 	bufPtr=0;
 	bufBit=1;
+	//verboseMode=YSTRUE;
 }
 
 YsPngCompressor::~YsPngCompressor()
@@ -606,7 +619,10 @@ int YsPngCompressor::BeginCompression(unsigned int nByte)
 	}
 	windowSize=(1<<windowSizeExp);
 
-	//printf("Compression Window Size=%d\n",windowSize);
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("Compression Window Size=%d\n",windowSize);
+	//}
 
 	unsigned int CMF;
 	CMF=((windowSizeExp-8)<<4)+8;
@@ -625,7 +641,7 @@ int YsPngCompressor::BeginCompression(unsigned int nByte)
 	}
 	if(FCHECK>=32)
 	{
-		//printf("Unable to make legitimate FCHECK value.\n");
+		printf("Unable to make legitimate FCHECK value.\n");
 		return YSERR;
 	}
 
@@ -683,9 +699,12 @@ int YsPngCompressor::AddCompressionBlock(unsigned int nByte,unsigned char byteDa
 	YsPngUncompressor::MakeDynamicHuffmanCode(hLenDist,hCodeDist,hDist,hLenDist);
 	InvertHuffmanCodeForWriting(hDist,hLenDist,hCodeDist);
 
-	//for(i=0; i<distLen; i++)
+	//if(YSTRUE==verboseMode)
 	//{
-	//	printf("DistLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenDist[i],hCodeDist[i]);
+	//	for(i=0; i<distLen; i++)
+	//	{
+	//		printf("DistLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenDist[i],hCodeDist[i]);
+	//	}
 	//}
 
 
@@ -704,10 +723,16 @@ int YsPngCompressor::AddCompressionBlock(unsigned int nByte,unsigned char byteDa
 	YsPngUncompressor::MakeDynamicHuffmanCode(hLenCodeLen,hLenCode,hCLen,hLenCodeLen);
 	InvertHuffmanCodeForWriting(hCLen,hLenCodeLen,hLenCode);
 
-	for(i=0; i<codeLengthLen; i++)
-	{
-		//printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenCodeLen[i],hLenCode[i]);
-	}
+	//if(YSTRUE==verboseMode)
+	//{
+	//	for(i=0; i<codeLengthLen; i++)
+	//	{
+	//		printf("CodeLengthLen[%3d]=%d  HuffmanCode=%08x\n",i,hLenCodeLen[i],hLenCode[i]);
+	//	}
+	//}
+
+
+
 
 
 	// Flags
@@ -777,7 +802,7 @@ int YsPngCompressor::AddCompressionBlock(unsigned int nByte,unsigned char byteDa
 			GetCopyCodeAndExtraBit(copyCode,nExtBit,extBit,copyLength);
 			if(copyCode!=codeArray[i])
 			{
-				//printf("!Internal error! Copy code doesn't match the copy length.\n");
+				printf("!Internal error! Copy code doesn't match the copy length.\n");
 				delete [] codeArray;
 				delete [] copyParamArray;
 				return YSERR;
@@ -1045,9 +1070,12 @@ void YsPngCompressor::EncodeWithDumbestRepetitionReduction(
 		codeArray[n]=byteData[i];
 		n++;
 	}
-	
-	//printf("Max Back Dist=%d\n",maxBackDist);
-	//printf("Max Copy Length=%d\n",maxCopyLength);
+
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("Max Back Dist=%d\n",maxBackDist);
+	//	printf("Max Copy Length=%d\n",maxCopyLength);
+	//}
 
 	codeArray[n++]=256; // Terminator
 	nCode=n;
@@ -1124,28 +1152,36 @@ int YsPngCompressor::MakeLengthLiteral(int &hLit,unsigned int hLenLit[],int nCod
 	if(litTreeManager.GetTreeDepth()>15)
 	{
 		int i;
-		//printf("Code Tree depth exceeds maximum allowed... %d\n",litTreeManager.GetTreeDepth());
+		printf("Code Tree depth exceeds maximum allowed... %d\n",litTreeManager.GetTreeDepth());
 		for(i=0; i<32 && litTreeManager.GetTreeDepth()>15; i++)
 		{
 			litTreeManager.ReduceTreeDepth();
-			//printf("Reducing Code Tree Depth... %d\n",litTreeManager.GetTreeDepth());
+			printf("Reducing Code Tree Depth... %d\n",litTreeManager.GetTreeDepth());
 		}
 	}
 	if(litTreeManager.GetTreeDepth()>15)
 	{
-		//printf("Cannot bring the code tree depth below maximum %d\n",litTreeManager.GetTreeDepth());
+		printf("Cannot bring the code tree depth below maximum %d\n",litTreeManager.GetTreeDepth());
 		return YSERR;
 	}
 
 	litTreeManager.MakeCodeLengthArray(hLenLit);
 
-	//litTreeManager.PrintInfo();
-	//for(i=0; i<286; i++)
-	//	printf("LiteralLength[%3d]=%d\n",i,hLenLit[i]);
-	
+	//if(YSTRUE==verboseMode)
+	//{
+	//	litTreeManager.PrintInfo();
+	//	for(i=0; i<286; i++)
+	//	{
+	//		printf("LiteralLength[%3d]=%d\n",i,hLenLit[i]);
+	//	}
+	//}
 	for(hLit=286; hLit>0; hLit--)
+	{
 		if(hLenLit[hLit-1]!=0)
+		{
 			break;
+		}
+	}
 
 	return YSOK;
 }
@@ -1169,16 +1205,16 @@ int YsPngCompressor::MakeLengthCodeLength(
 	if(lenTreeManager.GetTreeDepth()>7)  // 3bit each->Max 7
 	{
 		int i;
-		//printf("Code-Length Tree depth exceeds maximum allowed... %d\n",lenTreeManager.GetTreeDepth());
+		printf("Code-Length Tree depth exceeds maximum allowed... %d\n",lenTreeManager.GetTreeDepth());
 		for(i=0; i<32 && lenTreeManager.GetTreeDepth()>7; i++)
 		{
 			lenTreeManager.ReduceTreeDepth();
-			//printf("Reducing Code-Length Tree Depth... %d\n",lenTreeManager.GetTreeDepth());
+			printf("Reducing Code-Length Tree Depth... %d\n",lenTreeManager.GetTreeDepth());
 		}
 	}
 	if(lenTreeManager.GetTreeDepth()>7)
 	{
-		//printf("Cannot bring the Code-Length tree depth below maximum %d\n",lenTreeManager.GetTreeDepth());
+		printf("Cannot bring the Code-Length tree depth below maximum %d\n",lenTreeManager.GetTreeDepth());
 		return YSERR;
 	}
 
@@ -1219,9 +1255,11 @@ int YsPngCompressor::MakeLengthBackDist(int &hDist,unsigned int hLenDist[],int n
 
 	if(0==totalOccurence)
 	{
-		//printf("hDistLen cannot be zero.  It needs to be at least one.\n");
-		//printf("Making up a dummy backdist.\n");
-		
+		//if(YSTRUE==verboseMode)
+		//{
+		//	printf("hDistLen cannot be zero.  It needs to be at least one.\n");
+		//	printf("Making up a dummy backdist.\n");
+		//}
 		hDist=1;
 		hLenDist[0]=0;
 		return YSOK;
@@ -1234,32 +1272,41 @@ int YsPngCompressor::MakeLengthBackDist(int &hDist,unsigned int hLenDist[],int n
 	if(treeManager.GetTreeDepth()>15)
 	{
 		int i;
-		//printf("Backdist Tree depth exceeds maximum allowed... %d\n",treeManager.GetTreeDepth());
+		printf("Backdist Tree depth exceeds maximum allowed... %d\n",treeManager.GetTreeDepth());
 		for(i=0; i<32 && treeManager.GetTreeDepth()>15; i++)
 		{
 			treeManager.ReduceTreeDepth();
-			//printf("Reducing Backdist Tree Depth... %d\n",treeManager.GetTreeDepth());
+			printf("Reducing Backdist Tree Depth... %d\n",treeManager.GetTreeDepth());
 		}
 	}
 	if(treeManager.GetTreeDepth()>15)
 	{
-		//printf("Cannot bring the backdist tree depth below maximum %d\n",treeManager.GetTreeDepth());
+		printf("Cannot bring the backdist tree depth below maximum %d\n",treeManager.GetTreeDepth());
 		return YSERR;
 	}
 
 	treeManager.MakeCodeLengthArray(hLenDist);
 
-	//treeManager.PrintInfo();
-	//for(i=0; i<distLen; i++)
+	//if(YSTRUE==verboseMode)
 	//{
-	//	printf("BackdistLength[%3d]=%d\n",i,hLenDist[i]);
+	//	treeManager.PrintInfo();
+	//	for(i=0; i<distLen; i++)
+	//	{
+	//		printf("BackdistLength[%3d]=%d\n",i,hLenDist[i]);
+	//	}
 	//}
-	
 	for(hDist=distLen; hDist>0; hDist--)
+	{
 		if(hLenDist[hDist-1]!=0)
+		{
 			break;
+		}
+	}
 
-	//printf("hDist=%d\n",hDist);
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("hDist=%d\n",hDist);
+	//}
 
 	return YSOK;
 }
@@ -1269,7 +1316,10 @@ int YsPngCompressor::AddNonCompressionBlock(unsigned int nByte,unsigned char byt
 {
 	nByteReceived+=nByte;
 
-	//printf("zLib Block nByte=%d bFinal=%d\n",nByte,bFinal);
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("zLib Block nByte=%d bFinal=%d\n",nByte,bFinal);
+	//}
 
 	// Break the data into blocks and write block by block
 	// First 3 bits of the block:
@@ -1296,7 +1346,10 @@ int YsPngCompressor::AddNonCompressionBlock(unsigned int nByte,unsigned char byt
 	WriteByte(lenByte[2]);
 	WriteByte(lenByte[3]);
 
-	//printf("BufPtr=%d BufBit=%d\n",bufPtr,bufBit);
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("BufPtr=%d BufBit=%d\n",bufPtr,bufBit);
+	//}
 
 	int j;
 	for(j=0; j<nByte; j++)
@@ -1313,8 +1366,11 @@ int YsPngCompressor::EndCompression(void)
 	unsigned int adler32;
 	adler32=GetAdler32();
 
-	//printf("Check Sum=%08x\n",adler32);
-	//printf("Received=%d Expected=%d\n",nByteReceived,nByteExpect);
+	//if(YSTRUE==verboseMode)
+	//{
+	//	printf("Check Sum=%08x\n",adler32);
+	//	printf("Received=%d Expected=%d\n",nByteReceived,nByteExpect);
+	//}
 
 	WriteByte((adler32>>24)&255);
 	WriteByte((adler32>>16)&255);
@@ -1374,9 +1430,12 @@ void YsPngCompressor::TestAndGrowBuffer(void)
 		{
 			newBufSize=bufSize*2;
 		}
-		
-		//printf("Buffer grows from %d to %d\n",bufSize,newBufSize);
-		
+
+		//if(YSTRUE==verboseMode)
+		//{
+		//	printf("Buffer grows from %d to %d\n",bufSize,newBufSize);
+		//}
+
 		unsigned char *newBuf;
 		newBuf=new unsigned char [newBufSize];
 		for(i=0; i<bufSize; i++)
@@ -1456,18 +1515,24 @@ static inline void PngSetUnsignedInt(unsigned char dat[],unsigned int value)
 	dat[3]=value&255;
 }
 
-YsRawPngEncoder::YsRawPngEncoder()
+YsGenericPngEncoder::YsGenericPngEncoder()
 {
+	//verboseMode=YSTRUE;
 	dontCompress=YSFALSE;
 }
 
-void YsRawPngEncoder::WritePngSignature(void)
+int YsGenericPngEncoder::StreamOut(int nByte,const unsigned char byteData[]) const
+{
+	return YSOK;
+}
+
+void YsGenericPngEncoder::WritePngSignature(void)
 {
 	const unsigned char pngSignature[8]={0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a};
 	StreamOut(8,pngSignature);
 }
 
-void YsRawPngEncoder::CalculateChunkCRC(unsigned char chunk[])
+void YsGenericPngEncoder::CalculateChunkCRC(unsigned char chunk[])
 {
 	unsigned long chunkSize;
 	chunkSize=(chunk[0]<<24)+(chunk[1]<<16)+(chunk[2]<<8)+chunk[3];
@@ -1484,7 +1549,7 @@ void YsRawPngEncoder::CalculateChunkCRC(unsigned char chunk[])
 	PngSetUnsignedInt(chunk+8+chunkSize,crcCode);
 }
 
-void YsRawPngEncoder::MakeIHDRChunk(int &nByte,unsigned char chunk[4+4+13+4],int width,int height,int bitDepth,int colorType)
+void YsGenericPngEncoder::MakeIHDRChunk(int &nByte,unsigned char chunk[4+4+13+4],int width,int height,int bitDepth,int colorType)
 {
 	PngSetUnsignedInt(chunk+0,13);
 	chunk[4]='I';
@@ -1511,7 +1576,7 @@ void YsRawPngEncoder::MakeIHDRChunk(int &nByte,unsigned char chunk[4+4+13+4],int
 	CalculateChunkCRC(chunk);
 }
 
-int YsRawPngEncoder::WriteIHDRChunk(int width,int height,int bitDepth,int colorType)
+int YsGenericPngEncoder::WriteIHDRChunk(int width,int height,int bitDepth,int colorType)
 {
 	int nByte;
 	unsigned char chunk[4+4+13+4];
@@ -1519,7 +1584,7 @@ int YsRawPngEncoder::WriteIHDRChunk(int width,int height,int bitDepth,int colorT
 	return StreamOut(nByte,chunk);
 }
 
-void YsRawPngEncoder::MakeIENDChunk(int &nByte,unsigned char chunk[4+4+4])
+void YsGenericPngEncoder::MakeIENDChunk(int &nByte,unsigned char chunk[4+4+4])
 {
 	PngSetUnsignedInt(chunk+0,0);
 	chunk[4]='I';
@@ -1536,7 +1601,7 @@ void YsRawPngEncoder::MakeIENDChunk(int &nByte,unsigned char chunk[4+4+4])
 	CalculateChunkCRC(chunk);
 }
 
-int YsRawPngEncoder::WriteIENDChunk(void)
+int YsGenericPngEncoder::WriteIENDChunk(void)
 {
 	int nByte;
 	unsigned char chunk[4+4+4];
@@ -1544,7 +1609,7 @@ int YsRawPngEncoder::WriteIENDChunk(void)
 	return StreamOut(nByte,chunk);
 }
 
-int YsRawPngEncoder::WritetEXtChunk(char keyword[],char text[])
+int YsGenericPngEncoder::WritetEXtChunk(char keyword[],char text[])
 {
 	unsigned char *chunk;
 
@@ -1596,7 +1661,7 @@ int YsRawPngEncoder::WritetEXtChunk(char keyword[],char text[])
 	return YSERR;
 }
 
-int YsRawPngEncoder::WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,const unsigned char dat[])
+int YsGenericPngEncoder::WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,const unsigned char dat[])
 {
 	YsPngCompressor compressor;
 	unsigned char *chunk;
@@ -1607,16 +1672,22 @@ int YsRawPngEncoder::WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,
 	compressor.BeginCompression(totalRawPixelByte);
 
 	const unsigned int nLinePerUnit=256;
-	
-	//printf("nLinePerUnit=%d\n",nLinePerUnit);
-	
+
+	//if(verboseMode==YSTRUE)
+	//{
+	//	printf("nLinePerUnit=%d\n",nLinePerUnit);
+	//}
+
 	unsigned char *zLibBlock;
 	zLibBlock=new unsigned char [(bytePerLine+1)*nLinePerUnit];
 
 	int y;
 	for(y=0; y<nLine; y+=nLinePerUnit)
 	{
+		//if(verboseMode==YSTRUE)
+		//{
 		//	printf("Y=%d\n",y);
+		//}
 
 		int x,yInBlock,nLineInBlock;
 		unsigned int finalUnit;
@@ -1730,7 +1801,7 @@ int YsRawPngEncoder::WriteIDATChunk(unsigned int nLine,unsigned int bytePerLine,
 	return YSERR;
 }
 
-unsigned int YsRawPngEncoder::CalculateBytePerLine(int width,int bitDepth,int colorType)
+unsigned int YsGenericPngEncoder::CalculateBytePerLine(int width,int bitDepth,int colorType)
 {
 	switch(colorType)
 	{
@@ -1809,13 +1880,13 @@ unsigned int YsRawPngEncoder::CalculateBytePerLine(int width,int bitDepth,int co
 	return 0;
 }
 
-int YsRawPngEncoder::Encode(int width,int height,int bitDepth,int colorType,const unsigned char dat[])
+int YsGenericPngEncoder::Encode(int width,int height,int bitDepth,int colorType,const unsigned char dat[])
 {
 	unsigned int totalByte,bytePerLine;
 	bytePerLine=CalculateBytePerLine(width,bitDepth,colorType);
 	if(bytePerLine==0)
 	{
-		//printf("Unsupported color type and/or bitDepth\n");
+		printf("Unsupported color type and/or bitDepth\n");
 		return YSERR;
 	}
 	totalByte=bytePerLine*height;
@@ -1829,13 +1900,13 @@ int YsRawPngEncoder::Encode(int width,int height,int bitDepth,int colorType,cons
 
 	WriteIDATChunk(height,bytePerLine,dat);
 
-	//WritetEXtChunk("Comment","Created using WinDS");
+	WritetEXtChunk("Comment","Generated using WinDS");
 	WriteIENDChunk();
 
 	return YSOK;
 }
 
-void YsRawPngEncoder::SetDontCompress(int dontCompress)
+void YsGenericPngEncoder::SetDontCompress(int dontCompress)
 {
 	this->dontCompress=dontCompress;
 }

@@ -111,6 +111,35 @@ public:
 	int Decode(unsigned length,unsigned char dat[],unsigned int colorType);
 };
 
+class YsPngGenericBinaryStream
+{
+public:
+	virtual size_t GetSize(void) const=0;
+	virtual size_t Read(unsigned char buf[],size_t readSize)=0;
+};
+
+class YsPngBinaryFileStream : public YsPngGenericBinaryStream
+{
+private:
+	FILE *fp;
+public:
+	explicit YsPngBinaryFileStream(FILE *fp);
+	virtual size_t GetSize(void) const;
+	virtual size_t Read(unsigned char buf[],size_t readSize);
+};
+
+class YsPngBinaryMemoryStream : public YsPngGenericBinaryStream
+{
+private:
+	size_t offset;
+	size_t dataSize;
+	const unsigned char *binaryData;
+public:
+	YsPngBinaryMemoryStream(size_t dataSize,const unsigned char binaryData[]);
+	virtual size_t GetSize(void) const;
+	virtual size_t Read(unsigned char buf[],size_t readSize);
+};
+
 class YsGenericPngDecoder
 {
 public:
@@ -127,11 +156,12 @@ public:
 	static unsigned int verboseMode;
 
 	YsGenericPngDecoder();
-	virtual ~YsGenericPngDecoder(){}
 	void Initialize(void);
-	int CheckSignature(FILE *fp);
-	int ReadChunk(unsigned &length,unsigned char *&buf,unsigned &chunkType,unsigned &crc,FILE *fp);
+	int CheckSignature(YsPngGenericBinaryStream &binStream);
+	int ReadChunk(unsigned &length,unsigned char *&buf,unsigned &chunkType,unsigned &crc,YsPngGenericBinaryStream &binStream);
 	int Decode(const char fn[]);
+	int Decode(FILE *fp);
+	int Decode(YsPngGenericBinaryStream &binStream);
 
 	virtual int PrepareOutput(void);
 	virtual int Output(unsigned char dat);
@@ -142,12 +172,11 @@ public:
 
 ////////////////////////////////////////////////////////////
 
-
 class YsRawPngDecoder : public YsGenericPngDecoder
 {
 public:
 	YsRawPngDecoder();
-	~YsRawPngDecoder();
+	virtual ~YsRawPngDecoder();
 
 
 	int wid,hei;
