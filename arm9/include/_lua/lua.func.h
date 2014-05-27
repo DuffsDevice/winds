@@ -77,7 +77,7 @@ namespace _luafunc
 	}
 	
 	//! Check if a stack object is of a specific class (determined by its class-name)
-	static unused inline bool	is_a( lua_State* state , int index , const char* className )
+	static unused inline bool	is_a( lua_State* state , int index , _literal className )
 	{
 		if( lua_getmetatable( state , index ) )		// Does it have a metatable?
 		{

@@ -10,7 +10,7 @@ extern "C"
 	#include "_library/_lua/lualib.h"
 	#include "_library/_lua/lauxlib.h"
 	
-	static unused int lua_typeerror( lua_State* L , int narg , const char* tname ){
+	static unused int lua_typeerror( lua_State* L , int narg , _literal tname ){
 		const char *msg = lua_pushfstring( L , "%s expected, got %s" , tname , luaL_typename( L , narg ) );
 		return luaL_argerror( L , narg , msg );
 	}

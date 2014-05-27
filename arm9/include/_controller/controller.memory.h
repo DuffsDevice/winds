@@ -11,6 +11,8 @@ class _memoryController : public _controller
 {
 	private:
 		
+		static _u32 availableMemory;
+		
 		//! Handler for an uncought outOfMemory-exception
 		static void newHandler();
 		
@@ -18,6 +20,9 @@ class _memoryController : public _controller
 		
 		//! Inits the interrupt system
 		static bool init();
+		
+		//! Get avaliable memory in bytes
+		static _u32 getAvailableMemory(){ return availableMemory; }
 		
 		//! Get free memory in bytes
 		static _u32 getFreeMemory();

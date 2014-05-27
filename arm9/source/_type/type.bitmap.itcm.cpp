@@ -798,7 +798,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , const _char* str , _color color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _u8 fontSize )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawString"};
 	
@@ -1045,10 +1045,10 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 			for ( _int y = 0; y != height; ++y )
 			{
 				// Copy row to buffer
-				memcpy16( buffer , this->bmp + sourceX + dX + this->width * ( sourceY + y ) , width + dX );
+				memcpy16( buffer , this->bmp + sourceX - dX + this->width * ( sourceY + y ) , width );
 				
 				// Copy row back to screen
-				memcpy16( this->bmp + destX + dX + this->width * ( destX + y ) , buffer , width + dX );
+				memcpy16( this->bmp + destX + this->width * ( sourceY + y ) , buffer , width );
 			}
 			
 			delete[] buffer;

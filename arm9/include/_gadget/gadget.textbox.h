@@ -28,9 +28,14 @@ class _textBox : public _gadget
 		static _callbackReturn mouseHandler( _event );
 		static _callbackReturn keyHandler( _event );
 		static _callbackReturn updateHandler( _event );
+		static _callbackReturn resizeHandler( _event );
 		
 		//! Set the Internal Cursor
 		void			setInternalCursor( _u32 cursor , bool displayCursor );
+		
+		//! Makes sure that the scroll is set to a value where the cursor is in the visible area
+		//! Returns whether the function refreshed the textbox
+		bool			makeSureCursorIsVisible();
 		
 		//! Made virtual because of e.g. _passcodeBox
 		virtual void	removeStr( _int position , _length numChars = 1 );
@@ -47,7 +52,7 @@ class _textBox : public _gadget
 		//! Checks, if the text wants to update its data
 		void checkUpdate(){
 			if( this->text.needsUpdate() )
-				this->text.update( this->getDimensions() );
+				this->text.update( this->getGuiStringDimensions() );
 		}
 		
 		//! Get the current _rect where the guistring should be

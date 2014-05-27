@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <tuple>
 #include <functional>
+#include <stdarg.h>
 
 //! Code-sections
 #include <nds/memory.h>
@@ -151,14 +152,16 @@ template<class T1, class T2 = T1> struct comparable {
 };
 
 //! Counts, how many digits a number has
-extern int countDecimals( _s32 value , _u8 numbersystem = 10 );
+extern int			countDecimals( _s32 value , _u8 numbersystem = 10 );
 
 //! Reads an int from a string
-extern int string2int( const _char* str ) __attribute__(( nonnull (1) ));
-static unused int string2int( string str ){ return string2int( str.c_str() ); }
+extern int			string2int( _literal str ) __attribute__(( nonnull(1) )) ;
+static unused int	string2int( string str ){ return string2int( str.c_str() ); }
 
 //! Converts an int to string
-extern string int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
+extern string		int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
+extern string		fmt2string( _literal format , ... ) __attribute__(( format(gnu_printf, 1 , 2) )) ;
+extern string		vfmt2string( _literal format , va_list );
 
 //! Alignment enumeration
 enum class _align : _u8 {
@@ -314,26 +317,6 @@ class _paramAlloc
 		_paramAlloc& operator=( _paramAlloc&& ) = delete;
 };
 
-//! Holds useful information about the touch of the stylus
-struct _touch
-{
-	_coord x;
-	_coord y;
-	
-	_touch& operator=( touchPosition t )
-	{
-		x = t.px;
-		y = t.py;
-		return *this;
-	}
-	
-	_touch( touchPosition t ){ *this = t; }
-	
-	_touch() :
-		x( 0 )
-		, y ( 0 )
-	{ }
-};
 
 //! Convert _align and _valign to string
 extern _toStr<_align>	align2string;
@@ -344,7 +327,7 @@ extern _fromStr<_align>		string2align;
 extern _fromStr<_valign>	string2valign;
 
 //! Trim not-printable characters at both ends of a given string
-void trim( string& , const char* delims = " \n\r\t" , bool front = true , bool back = true );
+void trim( string& , _literal delims = " \n\r\t" , bool front = true , bool back = true );
 
 //! Tools for analyzing the efficiency of code
 #include "_type/type.analyzer.h"

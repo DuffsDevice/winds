@@ -87,6 +87,8 @@ class _singleLineGuiString : public _guiString
 		
 	private:
 		
+		_length		getLineStart( _rect guiStringDimensions ) const ;
+		
 		_s8			ellipsis; // -1 = No Ellipsis ; Else = Auto Ellipsis N characters before the end
 		_letterNum	omitStart;
 		_letterNum	omitEnd;

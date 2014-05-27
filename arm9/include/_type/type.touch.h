@@ -7,6 +7,7 @@
 #include <nds/touch.h>
 #undef u16
 
+//! Holds useful information about the touch of the stylus
 struct _touch
 {
 	_coord x;

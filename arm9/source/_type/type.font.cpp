@@ -4,7 +4,7 @@
 #include "_type/type.direntry.h"
 #include "_controller/controller.filesystem.h"
 
-_length _font::getStringWidth( const _char* str , _u8 fontSize ) const
+_length _font::getStringWidth( _literal str , _u8 fontSize ) const
 {
 	if( !str || !*str )
 		return 0;

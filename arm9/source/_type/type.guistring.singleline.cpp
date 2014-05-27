@@ -189,13 +189,6 @@ void _singleLineGuiString::drawTo( _rect dimensions , _bitmapPort& port )
 	if( this->needsUpdateFlag )
 		this->update( dimensions );
 	
-
-	// Buffer frequently used variables
-	_coord offsetX		= dimensions.x;
-	_length maxX		= offsetX + dimensions.width;
-	_coord twiceXcenter	= maxX + offsetX;
-	
-	
 	// Iteration variables
 	_literal startPtr		= this->c_str();
 	_literal curPtr			= startPtr;
@@ -215,18 +208,7 @@ void _singleLineGuiString::drawTo( _rect dimensions , _bitmapPort& port )
 	//
 	// Compute drawing coordinates
 	//
-	_length lineWidth = this->lineWidth;
-	
-	// Determine x-coordinate of the string
-	_coord currentX = 0;
-	switch( this->align ){
-		case _align::left:		currentX = offsetX;	break;
-		case _align::center:	currentX = ( twiceXcenter - lineWidth ) >> 1; break;
-		case _align::right:
-		default:				currentX = maxX - lineWidth; break;
-	}
-	
-	// Determine y-coordinate of the string
+	_coord currentX = this->getLineStart( dimensions );
 	_coord currentY	= this->getOffsetY( dimensions ) + dimensions.y;
 	
 	
@@ -284,7 +266,7 @@ void _singleLineGuiString::drawTo( _rect dimensions , _bitmapPort& port )
 			
 			// Display Cursor?
 			if( curLetter == cursor )
-			port.drawVerticalLine( currentX - 1 , currentY , curFont.top()->getHeight( curSize.top() ) , _color::red );
+				port.drawVerticalLine( currentX - 1 , currentY , curFont.top()->getHeight( curSize.top() ) , _color::red );
 			
 			curLetter++;
 			
@@ -305,10 +287,109 @@ void _singleLineGuiString::drawTo( _rect dimensions , _bitmapPort& port )
 	this->needsRefreshFlag = false;
 }
 
-_2s32 _singleLineGuiString::getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letter ) const {
-	return _2s32(0,0);
+_length _singleLineGuiString::getLineStart( _rect dimensions ) const
+{
+	_coord	offsetX = dimensions.x;
+	_length	maxX = offsetX + dimensions.width;
+	_coord 	twiceXcenter = maxX + offsetX;
+	
+	// Determine x-coordinate
+	switch( this->align ){
+		case _align::left:
+			return offsetX;
+		case _align::center:
+			return ( twiceXcenter - this->lineWidth ) >> 1;
+		case _align::right:
+		default:
+			return maxX - this->lineWidth;
+	}
 }
 
-void _singleLineGuiString::setCursorFromTouch( _rect guiStringDimensions , _coord cursorX , _coord cursorY ){
+_2s32 _singleLineGuiString::getXMetricsOfLetter( _rect dimensions , _letterNum letterNumber ) const
+{
+	// Iteration variables
+	_literal startPtr		= this->c_str();
+	_literal curPtr			= startPtr;
+	_literal endPtr			= startPtr + this->length();	
 	
+	// Stacks
+	_fontStack		curFont; // Current font
+	_fontSizeStack	curSize; // Current font size
+	_fontColorStack	curColor; // Current font color
+	
+	// Setup stacks
+	getStacksAt( 0 , curFont , curSize , curColor );
+	
+	
+	// Determine x-coordinate of the string
+	_coord currentX = getLineStart( dimensions );
+	
+	
+	// Iterate to to the letter we are loocking for
+	while( curPtr <= endPtr && letterNumber > 0 )
+	{
+		if( _guiString::processChar( curPtr , curFont , curSize , curColor ) )
+		{
+			// Compute the width of the current character
+			_u32 charWidth = this->font->getCharacterWidth( *curPtr );
+			
+			if( !--letterNumber )
+				return _2s32( currentX + charWidth , charWidth );
+			
+			// Advance current width
+			if( charWidth ){
+				charWidth += this->font->getLetterSpace( this->fontSize );
+				currentX += charWidth;
+			}
+		}
+		
+		// Go to next character
+		curPtr++;
+	}
+	
+	return _2s32( currentX , 0 );
+}
+
+void _singleLineGuiString::setCursorFromTouch( _rect dimensions , _coord cursorX , _coord cursorY )
+{
+	// Setup character positions
+	_literal	textOrigin	= this->c_str();	
+	_literal	curPtr		= textOrigin;
+	_literal	endPtr		= textOrigin + this->length();
+	_letterNum	numLetters	= 0;
+	
+	
+	// Setup Stacks
+	_fontStack		curFont; // Current font
+	_fontSizeStack	curSize; // Current font size
+	_fontColorStack	curColor; // Current font color
+	getStacksAt( 0 , curFont , curSize , curColor );
+	
+	
+	// Determine x-offset of the text
+	_coord currentX = this->getLineStart( dimensions );
+	
+	
+	// Iterate to to the cursor position
+	while( curPtr < endPtr && cursorX > currentX )
+	{
+		if( _guiString::processChar( curPtr , curFont , curSize , curColor ) )
+		{
+			// Compute the width of the current character
+			_u32 charWidth = this->font->getCharacterWidth( *curPtr );
+			
+			// Advance current width
+			if( charWidth ){
+				charWidth += this->font->getLetterSpace( this->fontSize );
+				currentX += charWidth;
+			}
+			
+			numLetters++;
+		}
+		
+		// Go to next character
+		curPtr++;
+	}
+	
+	this->setCursor( numLetters );
 }

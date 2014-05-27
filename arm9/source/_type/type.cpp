@@ -1,5 +1,6 @@
 #include "_type/type.h"
 #include <nds/bios.h>
+#include <stdio.h>
 
 _s32 mid( _s32 a , _s32 b , _s32 c ){
 	_s32 mi = min( a , min( b , c ) );
@@ -72,7 +73,7 @@ namespace DSWindows
 	}
 }
 
-void trim( string& str , const char* delims , bool front , bool back )
+void trim( string& str , _literal delims , bool front , bool back )
 {
 	size_t endpos = back ? str.find_last_not_of(delims) : string::npos;
 	if( string::npos != endpos )
@@ -225,4 +226,31 @@ int countDecimals( _s32 value , _u8 numbersystem )
 	}
 	
 	return i;
+}
+
+string fmt2string( _literal format , ... )
+{
+	if( !format )
+		return "";
+	
+	char output[256];
+	va_list args;								// Declare a va_list type variable
+	va_start( args , format );					// Initialise the va_list variable with the ... after 'format'
+	vsnprintf( output , 256 , format , args );	// Forward the '...' to vsnprintf
+	va_end( args );								// Clean up the va_list
+	
+	return output;
+}
+
+string vfmt2string( _literal format , va_list args )
+{
+	if( !format )
+		return "";
+	
+	char output[256];
+
+    // Forward the '...' to vsnprintf
+    vsnprintf( output , 256 , format , args );
+	
+	return output;
 }

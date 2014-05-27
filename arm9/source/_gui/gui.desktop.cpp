@@ -13,6 +13,8 @@ _guiDesktop::_guiDesktop()
 	_guiController::enableKeyboard();
 	//_debugController::debug("Free Memory: %.6f MB\n",_memoryController::getFreeMemory()/float(1024*1024));
 	
+	_windows::executeCommand("%SYSTEM%/taskmgr.exe");
+	//_windows::executeCommand("%SYSTEM%/explorer.exe");
 	//_windows::executeCommand("%SYSTEM%/credits.exe");
 	//_windows::executeCommand("\"%SYSTEM%/progmapper.exe\" -\"C:/Windows/Hello.drp\"");
 	//_windows::executeCommand("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");

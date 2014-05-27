@@ -389,7 +389,7 @@ MD5& MD5::finalize()
 
 //////////////////////////////
 
-const char* lut = "0123456789abcdef";
+_literal lut = "0123456789abcdef";
 
 // return hex representation of digest as string
 string MD5::hexdigest() const

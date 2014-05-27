@@ -27,6 +27,9 @@ bool _memoryController::init()
 	// Set Memory-Allocation-Error-Handler
 	std::set_new_handler( &_memoryController::newHandler );
 	
+	// Safe the number of bytes free at the startup
+	availableMemory = getFreeMemory();
+	
 	return true;
 }
 
@@ -54,3 +57,5 @@ void _memoryController::newHandler()
 	while(true)
 		swiWaitForVBlank();
 }
+
+_u32 _memoryController::availableMemory;
