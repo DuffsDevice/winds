@@ -10,14 +10,14 @@ class _tokenizer
 		
 		const string&		source;
 		string&				destination;
-		const char* const	delimiters;
+		_literal			delimiters;
 		_u32				start;
 		_u32				end;
 		bool				noEmptyValues;
 	
 	public:
 		
-		_tokenizer( const string& src , string& dest , const char* const delim , bool noEmptyValues = false ) :
+		_tokenizer( const string& src , string& dest , _literal delim , bool noEmptyValues = false ) :
 			source( src )
 			, destination( dest )
 			, delimiters( delim )

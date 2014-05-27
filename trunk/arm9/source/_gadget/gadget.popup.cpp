@@ -193,6 +193,7 @@ _popup::_popup( _optValue<_length> width , _optValue<_length> height , _gadget* 
 	_gadget( _gadgetType::popup , 0 , 0 , width , height , (_style&&)style )
 	, owner( owner )
 	, opened( false )
+	, offset( 0 )
 {
 	this->setInternalEventHandler( onBlur , make_callback( &_popup::blurHandler ) );
 }

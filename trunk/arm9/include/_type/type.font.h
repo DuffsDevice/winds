@@ -39,7 +39,7 @@ class _font{
 		virtual _length getCharacterWidth( _char character , _u8 fontSize = 0 ) const = 0;
 		
 		//! Get the With of a string
-		_length getStringWidth( const char* str , _u8 fontSize = 0 ) const ;
+		_length getStringWidth( _literal str , _u8 fontSize = 0 ) const ;
 		_length getStringWidth( string str , _u8 fontSize = 0 ) const 
 		{
 			return getStringWidth( str.c_str() , fontSize );

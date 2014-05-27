@@ -1,4 +1,4 @@
-_2s16_2s32 _2s8 _2T _2u16 _2u32 _2u8
+_2s16 _2s32 _2s8 _2T _2u16 _2u32 _2u8
 _actionButton _actionButtonType _align _animation _animationController _animationList _area _array _assocDirList _assocVector
 _binFile _bitmap _bitmapPort _bitmapTransform _bool _bootupScreen _border _bubble _button _byte
 _calendar _callback _callbackClassType _callbackData _callbackReturn _callbackType _channelFormat _channelSetMsg _channelStoppedMsg _channelType _char _checkbox _classCallback _clockGadget _color _colorPalette

@@ -18,7 +18,7 @@ void _debugController::end(){
 }
 
 
-void _debugController::luaErrorHandler( lua_State* L , const char* message , ... )
+void _debugController::luaErrorHandler( lua_State* L , _literal message , ... )
 {
 	_uniquePtr<_runtimeErrorDialog>& dialogRef = _debugController::luaErrorDialogs[L];
 	
@@ -26,35 +26,33 @@ void _debugController::luaErrorHandler( lua_State* L , const char* message , ...
 	if( dialogRef )
 		return;
 	
-	char output[521];
+	string messageNew;
 	
 	// Format right
 	va_list args;
-	va_start( args , message);
-	vsnprintf( output , 512 , message , args);
+	va_start( args , message );
+	messageNew = vfmt2string( message , args );
 	va_end( args );
 	
 	// Create error-dialog that will destroy itself once it finished
-	dialogRef = new _runtimeErrorDialog( _localizationController::getBuiltInString( "lbl_lua_parser_error" ) , output );
+	dialogRef = new _runtimeErrorDialog( _localizationController::getBuiltInString( "lbl_lua_parser_error" ) , move(messageNew) );
 	dialogRef->setCallback( make_inline_callback<void(_dialogResult)>( [&dialogRef]( _dialogResult )->void{ dialogRef = nullptr; } ) );
 	dialogRef->execute();
 }
 
-void _debugController::debug( const char* fmt , ... )
+void _debugController::debug( _literal fmt , ... )
 {
 	if( !fmt )
 		return;
 	
-	static char output[256];
-
-	// Declare a va_list type variable
-	va_list args;						// Initialise the va_list variable with the ... after fmt
+	// Format right
+	va_list args;
 	va_start( args , fmt );
-	vsprintf( output , fmt , args );	// Forward the '...' to sprintf
-	va_end( args );						// Clean up the va_list
 	
-	// Enhance the message!
-	string result = string( _time::now() ) + ": " + string( output ) + "\r\n";
+	// Enhance the message
+	string result = string( _time::now() ) + ": " + vfmt2string( fmt , args ) + "\r\n";
+	
+	va_end( args );
 	
 	// Debug to screen
 	printf( "%s" , result.c_str() );
@@ -64,18 +62,10 @@ void _debugController::debug( const char* fmt , ... )
 		debugFile->writeString( result );
 }
 
-void _debugController::vdebug( const char* fmt , va_list args )
+void _debugController::vdebug( _literal fmt , va_list args )
 {
-	if( !fmt )
-		return;
-	
-	static char output[256];
-
-    // Forward the '...' to sprintf
-    vsprintf(output, fmt , args);
-	
 	// Enhance the message!
-	string result = string( _time::now() ) + ": " + string( output ) + "\r\n";
+	string result = string( _time::now() ) + ": " + vfmt2string( fmt , args ) + "\r\n";
 	
 	// Debug to screen
 	printf( "%s" , result.c_str() );

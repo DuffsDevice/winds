@@ -10,6 +10,7 @@
 #include "_resource/resource.program.credits.h"
 #include "_resource/resource.program.explorer.h"
 #include "_resource/resource.program.mapper.h"
+#include "_resource/resource.program.taskmanager.h"
 #include "_resource/resource.icon.lua.h"
 #include "_resource/resource.icon.exe.h"
 #include "program_example_lua.h"
@@ -112,25 +113,27 @@ _program* _program::fromFile( string filename )
 		result = new PROG_Explorer();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/progmapper.exe" ) )
 		result = new PROG_Mapper();
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/taskmgr.exe" ) )
+		result = new PROG_TaskManager();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/credits.exe" ) )
 		result = new PROG_Credits();
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/exampleprogram.exe" ) ){
-		string str = (const _char*)program_example_lua;
+		string str = (_literal)program_example_lua;
 		str.resize( program_example_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/paint.exe" ) ){
-		string str = (const _char*)program_paint_lua;
+		string str = (_literal)program_paint_lua;
 		str.resize( program_paint_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/calculator.exe" ) ){
-		string str = (const _char*)program_calculator_lua;
+		string str = (_literal)program_calculator_lua;
 		str.resize( program_calculator_lua_size );
 		result = new _progLua( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/games/pong.exe" ) ){
-		string str = (const _char*)program_pong_lua;
+		string str = (_literal)program_pong_lua;
 		str.resize( program_pong_lua_size );
 		result = new _progLua( move(str) );
 	}

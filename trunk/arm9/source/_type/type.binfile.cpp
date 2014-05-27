@@ -18,13 +18,13 @@ _binFile::operator string()
 	
 	if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/localizationtext.ini") )
 	{
-		string str = (const _char*)ini_localization_text_ini;
+		string str = (_literal)ini_localization_text_ini;
 		str.resize( ini_localization_text_ini_size );
 		return move( str );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/localizationmonth.ini") )
 	{
-		string str = (const _char*)ini_localization_month_ini;
+		string str = (_literal)ini_localization_month_ini;
 		str.resize( ini_localization_month_ini_size );
 		return move( str );
 	}

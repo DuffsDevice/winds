@@ -1,5 +1,6 @@
 #include "_gadget/gadget.programswitcher.h"
 #include "_controller/controller.gui.h"
+#include "_resource/resource.icon.window.h"
 
 void _programSwitcher::taskChangeHandler( _window* ref )
 {
@@ -12,14 +13,19 @@ void _programSwitcher::taskChangeHandler( _window* ref )
 	// Still need an image connected to the task?
 	if( ref->isTask() )
 	{
+		_bitmap icon = ref->getIcon();
+		
+		if( !icon.isValid() )
+			icon = BMP_WindowIcon();
+		
 		// Allocate a new imagegadget to hold the new task window icon
 		if( !img ){
-			this->addChild( new _imageGadget( 0 , 0 , ref->getIcon() , ignore , ignore , _style::storeHandle(ref) ) , true );
+			this->addChild( new _imageGadget( 0 , 0 , move(icon) , ignore , ignore , _style::storeHandle(ref) ) , true );
 			this->update();
 		}
 		// Modify the already existing icon
 		else{
-			img->setImage( ref->getIcon() );
+			img->setImage( move(icon) );
 			if( ref->hasFocus() ) // if needed adjust the label
 				this->label->setStrValue( ref->getStrValue() );
 		}

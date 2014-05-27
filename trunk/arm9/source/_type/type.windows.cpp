@@ -95,15 +95,19 @@ void _windows::main()
 {
 	while( true )
 	{
-		// Wait until the Screen Cursor reaches Line 0
-		_interruptController::waitForVerticalCount( true );
+		_tempTime milliTime = _timerController::getMilliTime();
 		
 		// Run Main Methods
 		for( _controllerFrame* method : _windows::mainMethods )
 			(*method)();
 		
+		milliTime = _timerController::getMilliTime() - milliTime;
+		milliTime = milliTime * 100 * 60 / 1000; // Time relative to 1/60s
+		if( milliTime > 100 )
+			milliTime = 100;
+		
 		// Compute System-Usage
-		_windows::cpuUsageTemp = _windows::cpuUsageTemp * 15 + 100 - (_interruptController::getCurrentScanline() * 100 / 256 );
+		_windows::cpuUsageTemp = _windows::cpuUsageTemp * 15 + milliTime;
 		_windows::cpuUsageTemp >>= 4;
 		
 		// Wait for VBlank

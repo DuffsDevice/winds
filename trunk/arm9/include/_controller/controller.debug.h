@@ -4,7 +4,6 @@
 #include "_type/type.controller.h"
 #include "_type/type.uniqueptr.h"
 #include "_type/type.direntry.h"
-#include <stdarg.h>
 
 struct lua_State;
 class _runtimeErrorDialog;
@@ -25,11 +24,11 @@ class _debugController : public _controller
 		static void end();
 		
 		//! Call this function to indicate a runtime-error that happened inside a lua-function
-		static void luaErrorHandler( lua_State* state , const char* messageFormat , ... );
+		static void luaErrorHandler( lua_State* state , _literal messageFormat , ... );
 		
 		//! Outputs the supplied message na dthe current date to the global log-file
-		static void debug( const char* fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
-		static void vdebug( const char* fmt , va_list );
+		static void debug( _literal fmt , ... ) __attribute__(( format(gnu_printf, 1 , 2) ));
+		static void vdebug( _literal fmt , va_list );
 		
 		//! Wait for the press of the Button A
 		static void submit();

@@ -306,7 +306,7 @@ class _bitmapPort
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , _fontHandle font , const _char* str , _color color , _u8 fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _u8 fontSize = 0 );
 		void drawString( _coord x0 , _coord y0 , _fontHandle font , string str , _color color , _u8 fontSize = 0 )
 		{
 			drawString( x0 , y0 , font , str.c_str() , color , fontSize );

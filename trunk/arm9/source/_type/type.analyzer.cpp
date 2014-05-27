@@ -7,13 +7,13 @@
 #include <nds/arm9/math.h>
 #include <nds/arm9/console.h>
 
-_map<const _char*,_u32>		_codeAnalyzer::name2Time;
-_map<const _char*,_u32>		_codeAnalyzer::name2CallCount;
+_map<_literal,_u32>		_codeAnalyzer::name2Time;
+_map<_literal,_u32>		_codeAnalyzer::name2CallCount;
 
 void _codeAnalyzer::printResults(){
 	consoleClear();
 	//_u32 time = cpuGetTiming();
-	for( _pair<const _char*,_u32> s : name2Time )
+	for( _pair<_literal,_u32> s : name2Time )
 	{
 		printf("%-22s: %d\n %d: %d\n", s.first /* Name */ , s.second / name2CallCount[s.first] /* Timer per call */, name2CallCount[s.first] /* Number of calls */ , s.second );
 		_system::submit();

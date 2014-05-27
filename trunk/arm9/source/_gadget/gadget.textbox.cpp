@@ -3,7 +3,38 @@
 #include "_controller/controller.font.h"
 
 _rect _textBox::getGuiStringDimensions() const {
-	return _rect( 2 - this->scroll , 0 , this->text.getPreferredTextWidth() , this->getHeight() );
+	_length width = this->hasFocus() ? this->text.getPreferredTextWidth() : ( this->getWidth() - 4 );
+	return _rect( 2 - this->scroll , 0 , width , this->getHeight() );
+}
+
+bool _textBox::makeSureCursorIsVisible()
+{
+	_s32 newScroll = this->scroll;
+	
+	if( this->text.isCursorEnabled() )
+	{
+		// Determine new scroll
+		_u32 cursorPosition = this->text.getXMetricsOfLetter( this->getGuiStringDimensions() , this->text.getCursor() ).first - 1;
+		_s32 minimumScroll = newScroll + ( cursorPosition - this->getWidth() + 4 );
+		_s32 maximumScroll = newScroll + cursorPosition - 1;
+		
+		// This value controlles, that if the text is longer than the textbox, the text fills the textbox
+		_s32 maximumScroll2 = this->text.getPreferredTextWidth() - this->getWidth() + 4;
+		
+		newScroll = min( max( 0 , maximumScroll2 ) , newScroll );
+		newScroll = max( minimumScroll , newScroll );
+		newScroll = min( maximumScroll , newScroll );
+	}
+	else
+		newScroll = 0;
+	
+	if( newScroll != this->scroll ){
+		this->scroll = newScroll;
+		this->redraw();
+		return true;
+	}
+	
+	return false;
 }
 
 void _textBox::setInternalCursor( _u32 newCursor , bool enabled )
@@ -11,36 +42,11 @@ void _textBox::setInternalCursor( _u32 newCursor , bool enabled )
 	this->text.setCursorEnabled( enabled );
 	
 	// Check if needed to update things
-	if( newCursor != this->text.getCursor() )
-	{
-		// Set Cursor
-		this->text.setCursor( newCursor );
-		
-		//if( this->align == _align::left ) // Only available
-		//{
-		//	// Copy the string and..
-		//	string str = this->text;
-		//	char* cstr = new char[str.length() + 1];
-		//	strcpy( cstr , str.c_str() );
-		//	
-		//	_coord fontPosition = this->getFontPosition( true ).first;
-		//	_length fontWidth = this->font->getStringWidth( cstr ); // Get whole Length of the string
-		//	
-		//	_s32 minValueScroll = max( fontPosition + fontWidth - this->getWidth() + _textBox::borderX - 1 , 0 );
-		//	
-		//	// Resize string!
-		//	stringExtractor::strResize( cstr , newCursor - 1 );
-		//	fontWidth = this->font->getStringWidth( cstr );
-		//	
-		//	delete[] cstr;
-		//	
-		//	_s32 minScroll = fontPosition + fontWidth - _textBox::borderX;
-		//	_s32 maxCursorScroll = fontPosition + fontWidth - this->getWidth() + _textBox::borderX - 1;
-		//	
-		//	this->scroll = min( min( minScroll , minValueScroll ) , _s32(this->scroll) );
-		//	this->scroll = max( maxCursorScroll , _s32(this->scroll) );
-		//}
-	}
+	if( enabled && newCursor != this->text.getCursor() )
+		this->text.setCursor( newCursor ); // Set Cursor
+	
+	if( this->makeSureCursorIsVisible() )
+		return;
 	
 	this->redraw();
 }
@@ -108,7 +114,14 @@ _callbackReturn _textBox::keyHandler( _event event )
 		case _key::left:
 		case _key::right:
 			that->text.moveCursor( event.getKeyCode() == _key::right );
-			that->checkRefresh();
+			if( !that->makeSureCursorIsVisible() )
+				that->checkRefresh();
+			break;
+		case _key::up:
+			that->setInternalCursor( 0 , true );
+			break;
+		case _key::down:
+			that->setInternalCursor( that->text.getNumLetters() , true );
 			break;
 		default:
 			if(
@@ -118,7 +131,9 @@ _callbackReturn _textBox::keyHandler( _event event )
 				break;
 			
 			that->insertStr( that->text.getCursor() , string( 1 , (_char)event.getKeyCode() ) );
-			that->setCursor( that->text.getCursor() + 1 );
+			that->text.moveCursor( true );
+			if( !that->makeSureCursorIsVisible() )
+				that->redraw();
 			
 			// Trigger Handler
 			that->triggerEvent( onEdit );
@@ -134,9 +149,17 @@ _callbackReturn _textBox::focusHandler( _event event )
 	
 	// Set Cursor
 	_u32 cursor = event == onFocus ? that->text.getNumLetters() : 0;
+	that->handleEvent( onResize );
 	that->setInternalCursor( cursor , event == onFocus );
+	that->checkRefresh();
 	
 	return use_default;
+}
+
+_callbackReturn _textBox::resizeHandler( _event event )
+{
+	event.getGadget<_textBox>()->text.indicateNewDimensions();
+	return handled;
 }
 
 _callbackReturn _textBox::updateHandler( _event event )
@@ -165,7 +188,8 @@ _callbackReturn _textBox::mouseHandler( _event event )
 		position -= that->getX(); // X-Coordinate of stylus relative to this _textBox
 	
 	that->text.setCursorFromTouch( that->getGuiStringDimensions() , position , 0 );
-	that->checkRefresh();
+	if( !that->makeSureCursorIsVisible() )
+		that->checkRefresh();
 	
 	return handled;
 }
@@ -180,13 +204,15 @@ _textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	this->text.setFontChangeEnabled( false );
 	this->text.setFontColorChangeEnabled( false );
 	this->text.setFontSizeChangeEnabled( false );
+	this->text.setEllipsis( 0 );
 	
 	// Set update Handler
 	this->setInternalEventHandler( onUpdate , make_callback( &_textBox::updateHandler ) );
 	
-	this->updateNow();
+	this->handleEvent( onResize );
 	
 	// Regsiter Handling Functions for events
+	this->setInternalEventHandler( onResize , make_callback( &_textBox::resizeHandler ) );
 	this->setInternalEventHandler( onFocus , make_callback( &_textBox::focusHandler ) );
 	this->setInternalEventHandler( onBlur , make_callback( &_textBox::focusHandler ) );
 	this->setInternalEventHandler( onDraw , make_callback( &_textBox::refreshHandler ) );

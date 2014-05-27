@@ -38,7 +38,7 @@ int _lua_bitmap::get( lua_State* L ){
 	return push( L , this->bm->operator()( check<int>( L , 1 ) , check<int>( L , 2 ) ) );
 }
 
-using shortCutType = void (_bitmap::*)(_coord,_coord,_fontHandle,const _char*,_color,_u8);
+using shortCutType = void (_bitmap::*)(_coord,_coord,_fontHandle,_literal,_color,_u8);
 
 //! Lua-_gadget
 const char _lua_bitmap::className[] = "Bitmap";

@@ -93,9 +93,9 @@ class _menu : private _rawMenuEntryLists
 		void callHandler( _int listIndex ,_int entryIndex );
 		
 		//static _int getLinkFromText( const string& entry ){
-		//	const char* str = entry.c_str();
-		//	const char* strEnd = str + entry.length();
-		//	const char* strCur = strEnd;
+		//	_literal str = entry.c_str();
+		//	_literal strEnd = str + entry.length();
+		//	_literal strCur = strEnd;
 		//	while( strCur < strEnd && *strCur != "$" );
 		//	if( strCur != strEnd )
 		//		return string2int( strCur );
