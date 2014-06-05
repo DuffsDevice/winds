@@ -77,7 +77,7 @@ class _codeAnalyzer{
 };
 class _memoryAnalyzer{
 	public:
-		inline static void printResults();
+		inline static void printResults(){}
 };
 
 #endif // #ifdef DEBUG_PROFILING
