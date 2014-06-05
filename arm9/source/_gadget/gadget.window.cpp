@@ -339,6 +339,7 @@ _window::~_window()
 	delete this->button[1];
 	delete this->button[2];
 	delete this->icon;
+	delete this->label;
 }
 
 _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :

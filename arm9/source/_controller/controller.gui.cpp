@@ -129,8 +129,12 @@ void _guiController::disableKeyboard(){
 
 void _guiController::end()
 {
-	deleteHost();
-	disableKeyboard();
+	// Delete Top Screen
+	_guiController::top = nullptr;
+	
+	// Clean up the current gui state
+	_guiController::changeState( _guiState::empty );
+	_guiController::frame(); // Makes sure this state-change gets processed
 	
 	// Write Some Attributes
 	_ini& registry = _registryController::getSystemRegistry();

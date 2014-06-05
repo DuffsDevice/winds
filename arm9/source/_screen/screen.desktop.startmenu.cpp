@@ -86,17 +86,19 @@ _desktopScreenStartMenu::_desktopScreenStartMenu( _style&& style ) :
 	_coord buttonY = this->getHeight() - 11;
 	
 	// Shutdown button & label
-	_label* shutdownLabel = new _label( halfWidth + 13 , buttonY , ignore , 10 , _localizationController::getBuiltInString("lbl_turn_off") );
+	_label* shutdownLabel = new _label( halfWidth + 12 , buttonY , halfWidth - 12 , 10 , _localizationController::getBuiltInString("lbl_turn_off") );
 	shutdownLabel->setColor( _color::white );
 	shutdownLabel->setVAlign( _valign::middle );
-	this->addChild( new _actionButton( halfWidth + 2 , buttonY , _actionButtonType::shutdown ) );
+	shutdownLabel->setAlign( _align::left );
+	this->addChild( new _actionButton( halfWidth + 1 , buttonY , _actionButtonType::shutdown ) );
 	this->addChild( shutdownLabel );
 	
 	
 	// Log Off button & label
-	_label* logOffLabel = new _label( 14 , buttonY , ignore , 10 , _localizationController::getBuiltInString("lbl_log_off") );
+	_label* logOffLabel = new _label( 14 , buttonY , halfWidth - 14 , 10 , _localizationController::getBuiltInString("lbl_log_off") );
 	logOffLabel->setColor( _color::white );
 	logOffLabel->setVAlign( _valign::middle );
+	logOffLabel->setAlign( _align::left );
 	this->addChild( new _actionButton( 3 , buttonY , _actionButtonType::logoff ) );
 	this->addChild( logOffLabel );
 	

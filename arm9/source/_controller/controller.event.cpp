@@ -89,6 +89,8 @@ void _eventController::frame()
 		// Make the Gadget ( if one is specified ) react on the event
 		if( gadget != nullptr )
 		{
+			//printf("Calling %s",gadgetType2string[gadget->getType()]);
+			
 			// Choose the right call-method
 			switch( data.second )
 			{
@@ -110,6 +112,7 @@ void _eventController::frame()
 				default:
 					break;
 			}
+			//printf(" ;D\n");
 		}
 	}
 	

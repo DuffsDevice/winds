@@ -42,7 +42,7 @@ void _fontController::end()
 
 void _fontController::deleteFont( _fontPtr font )
 {
-	if( !font )
+	if( !font || font == _fontController::getStandardFont() )
 		return;
 	
 	auto iter = std::find( _fontController::registeredFonts.begin() , _fontController::registeredFonts.end() , font );

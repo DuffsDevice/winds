@@ -542,10 +542,10 @@ _keyboardScreen::_keyboardScreen( _u8 bgId , _optValue<_coord> position , _style
 {
 	_fontHandle fnt			= _fontController::getFont( "CourierNew10" );
 	_fontHandle systemFont	= _fontController::getFont( "SystemSymbols8" );
+	const auto& textmap		= _localizationController::getKeyboardTexts( false );
+	const auto& charmap		= _localizationController::getKeyboardKeys( false );
 	
 	// Create the buttons
-	const auto& textmap = _localizationController::getKeyboardTexts( false );
-	const auto& charmap = _localizationController::getKeyboardKeys( false );
 	for( _s8 i = 45 ; i >= 0 ; i-- )
 	{
 		_keyboardScreenButton* btn = new _keyboardScreenButton( this->buttonDimensions[i].x , this->buttonDimensions[i].y + 14 , this->buttonDimensions[i].width , this->buttonDimensions[i].height , (_key)charmap[i] , textmap[i] );

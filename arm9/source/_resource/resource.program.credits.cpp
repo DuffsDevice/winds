@@ -5,6 +5,7 @@
 #include "_controller/controller.font.h"
 #include "_controller/controller.localization.h"
 #include "_controller/controller.debug.h"
+#include "_type/type.windows.h"
 
 PROG_Credits::PROG_Credits()
 {

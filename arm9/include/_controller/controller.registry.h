@@ -73,7 +73,7 @@ class _registryController : public _controller
 		 * Get File image connected to the specified filetype extensions
 		 * @note the mimeType-parameter is a hint that safes comuting time
 		 */
-		static _constBitmap&	getFileTypeImage( const string& extensions , _mimeType mimeType );
+		static _bitmap	getFileTypeImage( const string& extensions , _mimeType mimeType );
 		
 		//! Makes the specified command the default handler to open files of the specified file type
 		static void		setFileTypeHandler( const string& extension , const string& command );

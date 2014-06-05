@@ -12,7 +12,6 @@ _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	, canvasHeight( height )
 	, leaveCorner( false )
 {
-	
 	// Set minimum size
 	this->setMinHeight( 14 );
 	this->setMinWidth( 14 );

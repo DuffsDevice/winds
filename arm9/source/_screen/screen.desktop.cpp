@@ -72,7 +72,7 @@ _callbackReturn _desktopScreen::refreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 
 	// Taskbar
-	bP.copyHorizontalStretch( 33 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH - 33 , _guiController::getWindowsDesign() );
+	bP.copyHorizontalStretch( 0 , SCREEN_HEIGHT - 10 , SCREEN_WIDTH , _guiController::getWindowsDesign() );
 	
 	return use_default;
 }
@@ -90,23 +90,18 @@ _desktopScreen::_desktopScreen( _u8 bgId , _style&& style ) :
 	this->setPadding( _padding( 0 , 0 , 0 , 10 ) );
 	
 	
-	// Add startButton
-	this->startButton = new _desktopScreenStartButton( 0 , SCREEN_HEIGHT - 10 );
-	
+	// Add FileView and Wallpaper
+	this->addChild( this->desktop = new _desktopScreenView() );
 	
 	// Add TaskInfo
-	this->taskInfo = new _desktopScreenInfoArea( SCREEN_WIDTH , SCREEN_HEIGHT - 10 );
+	this->addEnhancedChild( this->taskInfo = new _desktopScreenInfoArea( SCREEN_WIDTH , SCREEN_HEIGHT - 10 ) );
 	this->taskInfo->setUserEventHandler( onMove , make_callback( this , &_desktopScreen::taskInfoMoveHandler ) );
 	
+	// Add startButton
+	this->addEnhancedChild( this->startButton = new _desktopScreenStartButton( 0 , SCREEN_HEIGHT - 10 ) );
 	
 	// Add a Task-Switcher
 	this->switcher = new _programSwitcher();
-	
-	
-	// Allocate new _desktop and bind the _startButton
-	this->addChild( this->desktop = new _desktopScreenView() );
-	this->addEnhancedChild( this->startButton );
-	this->addEnhancedChild( this->taskInfo );
 	
 	
 	// Refresh Me

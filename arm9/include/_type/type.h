@@ -29,7 +29,7 @@
 #define DEPRECATED __attribute__((deprecated))
 
 //! Define if you want speed profiling
-//#define DEBUG_PROFILING
+#define DEBUG_PROFILING
 
 using std::make_pair;
 using std::make_tuple;

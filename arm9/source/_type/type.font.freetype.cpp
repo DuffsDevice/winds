@@ -88,7 +88,7 @@ _u32 transparencyJump[256] =  {
 };
 
 _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char letter , _color color , _rect clip , _u8 fontSize ) const 
-{	
+{
 	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
 	
 	// Get Scale
@@ -103,16 +103,6 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 	// In case of error
 	if( !bitmap )
 		return output;
-	
-	// No need to draw blank or glyphs missing a bitmap
-	switch (letter) {
-		case 10:  // Line feed
-		case 13:  // Carriage return
-			STBTT_free( bitmap , 0 );
-			return output;
-		default:
-			break;
-	}
 
 	// offsets for the glyph
 	x += xOffset;
@@ -125,7 +115,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 		|| x > clip.getX2()
 		|| x + fontWidth < clip.x
 	){
-		STBTT_free( bitmap , 0 );
+		stbtt_FreeBitmap( bitmap , 0 );
 		return output;
 	}
 	
@@ -153,7 +143,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 
 	// Abort if there is no copying to be done
 	if ( !clipWidth || !clipHeight ){
-		STBTT_free( bitmap , 0 );
+		stbtt_FreeBitmap( bitmap , 0 );
 		return output;
 	}
 
@@ -239,7 +229,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 	}
 	
 	// Free bitmap
-	STBTT_free( bitmap , 0 ); // 2nd arg unused
+	stbtt_FreeBitmap( bitmap , 0 ); // 2nd arg unused
 	
 	return output;
 }
