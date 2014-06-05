@@ -15,7 +15,7 @@ void _filesystemController::replaceAssocDirsInternal( string& path )
 	{
 		size_t pos = path.find( assoc.first );
 		if ( pos != string::npos )
-			path.replace( pos, assoc.first.length() , assoc.second );
+			path.replace( pos , assoc.first.length() , assoc.second );
 	}
 }
 
@@ -44,7 +44,11 @@ _vector<string> _filesystemController::getDrives()
 
 void _filesystemController::setCurrentUserDir( string path ){
 	if( path.empty() )
-		assocDirs.erase( assocDirs.find("%CURRENT_USER%") );
+	{
+		auto iter = assocDirs.find("%CURRENT_USER%");
+		if( iter != assocDirs.end() )
+			assocDirs.erase( iter );
+	}
 	else
 		assocDirs["%CURRENT_USER%"] = path;
 }

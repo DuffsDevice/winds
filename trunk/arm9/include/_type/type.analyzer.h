@@ -5,7 +5,7 @@
 
 #ifdef DEBUG_PROFILING
 
-extern "C" _u32 cpuGetTiming();
+#include <memory>
 
 class _codeAnalyzer
 {
@@ -21,33 +21,64 @@ class _codeAnalyzer
 	public:
 		
 		//! Generic constructor!
-		noinline _codeAnalyzer( _literal name ) :
-			name( name )
-			, startTime( cpuGetTiming() )
-		{
-			name2CallCount[name]++;
-		}
+		_codeAnalyzer( _literal name );
 		
 		//! Destructor (submits execution times!)
-		noinline ~_codeAnalyzer(){
-			name2Time[this->name] += cpuGetTiming() - this->startTime;
-		}
+		~_codeAnalyzer();
 		
+		//! Print results of the speed analyzer
 		static void printResults();
 };
 
-#else
-
-class _codeAnalyzer{
+class _memoryAnalyzer
+{
+	private:
+		
+		_literal location;
+		
 	public:
 		
-		//! Dummy Ctor
-		inline constexpr _codeAnalyzer( _literal ){}
+		//! Table to track all allocations and deallocations
+		static _map<void*,_literal>	ptr2location;
 		
-		//! Dummy function
-		inline static void printResults( _literal ){}
+		//! Ctor
+		constexpr _memoryAnalyzer( _literal location ) : location( location ) {}
+		
+		//! @see https://groups.google.com/forum/#!topic/comp.lang.c++.moderated/cIk4LjvBxIk
+		template<typename T>
+		T* operator <<( T* ptr ){
+			ptr2location[ptr] = this->location;
+			return ptr;
+		}
+		
+		//! Print results of the memory leak detector
+		static void printResults();
 };
 
-#endif
+//! New overloads
+void* operator new( size_t size );
 
-#endif
+//! Corresponding Delete overloads
+void operator delete( void* ptr ) noexcept ;
+
+//! New & Delete Macros that allow nice leak detections
+#define S1(x) #x
+#define S2(x) S1(x)
+#define __LOCATION__ __FILE__ " : " S2(__LINE__)
+#define new _memoryAnalyzer(__LOCATION__) << new
+
+#else
+
+//! Dummy Classes
+class _codeAnalyzer{
+	public:
+		inline constexpr _codeAnalyzer( _literal ){}
+		inline static void printResults( _literal ){}
+};
+class _memoryAnalyzer{
+	public:
+		inline static void printResults();
+};
+
+#endif // #ifdef DEBUG_PROFILING
+#endif // Include once

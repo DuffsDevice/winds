@@ -166,6 +166,9 @@ _callbackReturn _textBox::updateHandler( _event event )
 {
 	_textBox* that = event.getGadget<_textBox>();
 	
+	// Check, if the _guiString object needs to be updated and do so
+	that->checkUpdate();
+	
 	// Set Height of textbox depending on the text height
 	that->setHeightIfAuto( that->text.getTextHeight() + 2 );
 	
@@ -206,10 +209,9 @@ _textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_lengt
 	this->text.setFontSizeChangeEnabled( false );
 	this->text.setEllipsis( 0 );
 	
-	// Set update Handler
+	// Set update Handler & update
 	this->setInternalEventHandler( onUpdate , make_callback( &_textBox::updateHandler ) );
-	
-	this->handleEvent( onResize );
+	this->updateNow();
 	
 	// Regsiter Handling Functions for events
 	this->setInternalEventHandler( onResize , make_callback( &_textBox::resizeHandler ) );

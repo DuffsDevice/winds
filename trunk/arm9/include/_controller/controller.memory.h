@@ -4,8 +4,12 @@
 #include "_type/type.h"
 #include "_type/type.controller.h"
 
-void memset16( void* dst , _u16 val , _u32 hwn );
-void memcpy16( void* dst , const void* src , _u32 hwn );
+void memset32( void* dest , _u32 val , _u32 wordCount );
+void memcpy32( void* dest , const void* src , _u32 wordCount );
+void memset16( void* dest , _u16 val , _u32 halfWordCount );
+void memcpy16( void* dest , const void* src , _u32 halfWordCount );
+void memset8( void* dest , _u8 val , _u32 byteCount );
+void memcpy8( void* dest , const void* src , _u32 byteCount );
 
 class _memoryController : public _controller
 {

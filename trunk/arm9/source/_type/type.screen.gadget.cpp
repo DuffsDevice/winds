@@ -183,4 +183,7 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 }
 
 _gadgetScreen::~_gadgetScreen(){
+	_bitmap& bmp = _gadget::getBitmap();
+	bmp.resetClippingRect();
+	bmp.fill( _color::transparent );
 }

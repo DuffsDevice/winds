@@ -5,6 +5,7 @@ _guestUser::_guestUser() :
 	_user( "" )
 {
 	_iniFile::writeIndex( "_global_" , "userCode" , "" );
+	_iniFile::writeIndex( "_global_" , "homeFolder" , "%USERS%/%guest" );
 }
 
 const string&	_guestUser::getName() const {

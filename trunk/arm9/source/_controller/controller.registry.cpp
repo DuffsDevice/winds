@@ -28,7 +28,7 @@ bool _registryController::init()
 	// Open registries
 	fileTypeRegistry	= new _iniFile("%SYSTEM%/filetypes.reg");
 	systemRegistry		= new _iniFile("%SYSTEM%/registry.reg");
-	userRegistry		= new _guestUser();
+	setUserRegistry( new _guestUser() );
 	
 	// Prepare them for the first use (if needed)
 	if( fileTypeRegistry->isUsedFirstTime() )
@@ -134,7 +134,7 @@ const string& _registryController::getFileTypeHandler( const string& extension )
 	return index;
 }
 
-_constBitmap& _registryController::getFileTypeImage( const string& extension , _mimeType mimeType )
+_bitmap _registryController::getFileTypeImage( const string& extension , _mimeType mimeType )
 {
 	// Fetch Url of the Icon
 	const string& iconUrl = fileTypeRegistry->readIndex( "fileIcon" , extension );

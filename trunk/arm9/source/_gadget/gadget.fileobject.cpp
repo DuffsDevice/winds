@@ -99,12 +99,12 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
-			_constBitmap& fileIcon = that->file->getFileImage();
+			_bitmap fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				( myW - fileIcon.getWidth() ) >> 1 // X
 				, ( myH - ft->getHeight() - fileIcon.getHeight() ) >> 1 // Y
-				, fileIcon // Bitmap
+				, move(fileIcon) // Bitmap
 			);
 			
 			// Draw Outer Dotted Line Background
@@ -130,12 +130,12 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			bP.drawString( 12 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
-			_constBitmap& fileIcon = that->file->getFileImage();
+			_bitmap fileIcon = that->file->getFileImage();
 			
 			bP.copyTransparent(
 				( fOH - fileIcon.getWidth() ) >> 1 // X
 				, ( ( fOH + 1 ) >> 1 ) - ( ( fileIcon.getHeight() + 1 ) >> 1 ) // Y
-				, fileIcon // Bitmap
+				, move(fileIcon) // Bitmap
 			);
 			break;
 		}

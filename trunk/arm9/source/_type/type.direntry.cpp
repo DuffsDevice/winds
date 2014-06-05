@@ -644,11 +644,10 @@ bool _direntry::execute( _programArgs args )
 	return false;
 }
 
-
 _bitmap _direntry::getFileImage() const
 {
-	string extension = this->getExtension();
-	_mimeType mime = this->getMimeType();
+	string		extension = this->getExtension();
+	_mimeType	mime = this->getMimeType();
 	
 	switch( mime )
 	{
@@ -671,6 +670,7 @@ _bitmap _direntry::getFileImage() const
 		default:
 			break;
 	}
+	
 	return _registryController::getFileTypeImage( extension , mime );
 }
 

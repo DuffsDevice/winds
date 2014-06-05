@@ -26,6 +26,9 @@ extern "C"{
 
 void _windows::init()
 {
+	if( _windows::active )
+		_windows::end();
+	
 	//! Set initial Seed for the pseudo random number generator
 	srand( time(NULL) );
 	
@@ -49,7 +52,8 @@ void _windows::init()
 	};
 	
 	_windows::mainMethods = {
-		&_timerController::frame
+		&_guiController::frame
+		, &_timerController::frame
 		, &_eventController::frame
 		, &_programController::frame
 	};
@@ -57,7 +61,6 @@ void _windows::init()
 	_windows::interruptMethods = {
 		&_animationController::frame
 		, &_inputController::frame
-		, &_guiController::frame
 	};
 	
 	// These get executed in reverse order
@@ -89,11 +92,18 @@ void _windows::init()
 			return;
 		}
 	}
+	
+	_windows::active = true;
+	_windows::terminateMain = false;
+}
+
+void _windows::stop(){
+	_windows::terminateMain = true;
 }
 
 void _windows::main()
 {
-	while( true )
+	while( !_windows::terminateMain )
 	{
 		_tempTime milliTime = _timerController::getMilliTime();
 		
@@ -122,10 +132,16 @@ void _windows::interrupt()
 		(*method)();
 }
 
-void _windows::end(){
+void _windows::end()
+{
+	if( !_windows::active )
+		return;
+	
 	// Run all end()-methods, beginning at the end of the list
-	for( auto iter = _windows::interruptMethods.rbegin() ; iter != _windows::interruptMethods.rend() ; iter++ )
+	for( auto iter = _windows::endMethods.rbegin() ; iter != _windows::endMethods.rend() ; iter++ )
 		(**iter)();
+	
+	_windows::active = true;
 }
 
 const string& _windows::getDSUserName()
@@ -187,3 +203,5 @@ _vector<_controllerFrame*>				_windows::mainMethods;
 _vector<_controllerFrame*>				_windows::interruptMethods;
 _vector<_controllerEnd*>				_windows::endMethods;
 _int									_windows::cpuUsageTemp;
+bool									_windows::active = false;
+bool									_windows::terminateMain = false;

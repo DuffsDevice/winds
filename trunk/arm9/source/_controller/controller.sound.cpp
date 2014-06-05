@@ -82,7 +82,7 @@ void _soundController::enable(){
 
 void _soundController::playSound( _sound* snd , _u8 volume , _s8 panning )
 {
-	if( snd->playing )
+	if( !snd || snd->playing )
 		return;
 	
 	_s8 channelId = _soundController::getChannelOf( snd );
@@ -108,6 +108,9 @@ void _soundController::playSound( _sound* snd , _u8 volume , _s8 panning )
 
 void _soundController::killSound( _sound* snd )
 {
+	if( !snd )
+		return;
+	
 	_s8 channelId = _soundController::getChannelOf( snd );
 	
 	if( channelId < 0 )

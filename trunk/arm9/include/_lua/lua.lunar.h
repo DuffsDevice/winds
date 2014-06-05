@@ -19,6 +19,9 @@ namespace LunarHelper
 	};
 	
 	template <typename T>
+	class HasConstructor : public std::is_constructible<T,lua_State*>{};
+	
+	template <typename T>
 	class HasBaseClasses{
 		template<class C> static std::true_type test( typename C::baseclasses* );
 		template<class C> static std::false_type test(...);
@@ -54,7 +57,27 @@ namespace LunarHelper
 		FuncPtr				func;
 	};
 	
-	static unused void registerConstructorHelper( lua_State* state , const char* className , StaticType* staticmethods , lua_CFunction constructor )
+	static unused void registerStaticClassHelper( lua_State* state , const char* className , StaticType* staticmethods )
+	{
+		// Create table that will hold all static methods
+		lua_newtable( state );
+		int tableIndex = lua_gettop( state );
+		
+		for( int i = 0 ; staticmethods[i].name ; i++ )
+		{
+			lua_pushstring( state , staticmethods[i].name ); // Push Key
+			lua_pushcfunction( state , staticmethods[i].func ); // Push Value
+			lua_rawset( state , tableIndex ); // Push into table
+		}
+		
+		// Set metatable of table and pop it from stack
+		lua_setmetatable( state , tableIndex );
+		
+		// Adds the currently created table to the global namespace and pops it from stack
+		lua_setglobal( state , className );
+	}
+	
+	static unused void registerClassNameHelper( lua_State* state , const char* className , StaticType* staticmethods , lua_CFunction constructor )
 	{
 		// Create table that will hold all static methods
 		lua_newtable( state );
@@ -95,7 +118,8 @@ class Lunar
 		// Short typdefs
 		template<typename C,typename R = int> using requireBaseClasses = typename std::enable_if<LunarHelper::HasBaseClasses<C>::value,R>::type;
 		template<typename C,typename R = int> using requireNoBaseClasses = typename std::enable_if<!LunarHelper::HasBaseClasses<C>::value,R>::type;
-		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::HasStaticMethods<C>::value,R>::type;
+		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::HasStaticMethods<C>::value && LunarHelper::HasConstructor<C>::value,R>::type;
+		template<typename C,typename R = void> using requirePureStatics = typename std::enable_if<LunarHelper::HasStaticMethods<C>::value && !LunarHelper::HasConstructor<C>::value,R>::type;
 		template<typename C,typename R = void> using requireNoStatics = typename std::enable_if<!LunarHelper::HasStaticMethods<C>::value,R>::type;
 		
 		//
@@ -458,9 +482,19 @@ class Lunar
 		}
 		
 		template<typename TempClass>
-		static inline requireStatics<TempClass> registerConstructor( lua_State* state ){
+		static inline requirePureStatics<TempClass> registerClassName( lua_State* state ){
 			// This call was outsourced
-			LunarHelper::registerConstructorHelper(
+			LunarHelper::registerStaticClassHelper(
+				state
+				, Class::className
+				, Class::staticmethods
+			);
+		}
+		
+		template<typename TempClass>
+		static inline requireStatics<TempClass> registerClassName( lua_State* state ){
+			// This call was outsourced
+			LunarHelper::registerClassNameHelper(
 				state
 				, Class::className
 				, Class::staticmethods
@@ -469,7 +503,7 @@ class Lunar
 		}
 		
 		template<typename TempClass>
-		static inline requireNoStatics<TempClass> registerConstructor( lua_State* state )
+		static inline requireNoStatics<TempClass> registerClassName( lua_State* state )
 		{
 			lua_pushcfunction( state , &Lunar<Class>::constructor );
 			lua_setglobal( state , Class::className );
@@ -553,7 +587,7 @@ class Lunar
 		static void install( lua_State* state )
 		{	
 			// Register the constructor
-			Lunar<Class>::registerConstructor<Class>( state );
+			Lunar<Class>::registerClassName<Class>( state );
 			
 			// Create a metatable
 			luaL_newmetatable( state , Class::className );

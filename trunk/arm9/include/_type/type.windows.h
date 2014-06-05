@@ -26,6 +26,12 @@ class _windows
 		//! Allows tracking of the processor usage
 		static int 					cpuUsageTemp;
 		
+		//! Flag indicating whether end() was not called after an initial call to init()
+		static bool					active;
+		
+		//! Flag that idicates whether the main() routine should stop looping
+		static bool					terminateMain;
+		
 		//! For debug purposes only
 		static void					displayMemoryUsage();
 		
@@ -57,6 +63,9 @@ class _windows
 		
 		//! Check, on which hardware type the executeable is running on
 		static _hardwareType		getHardwareType();
+		
+		//! Stops the execution of main() if main() was already called
+		static void					stop();
 };
 
 #endif

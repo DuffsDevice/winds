@@ -7,19 +7,50 @@
 #include <nds/interrupts.h>
 #include <malloc.h>
 
-void memset16( void* dst , _u16 val , _u32 hwn )
-{
-	hwn <<= 1;
-	DC_FlushRange( dst , hwn );
-	dmaFillHalfWords( val , dst , hwn );
+void memset32( void* dst , _u32 val , _u32 wordCount ){
+	wordCount <<= 2;
+	DC_FlushRange( dst , wordCount );
+	dmaFillWords( val , dst , wordCount );
 }
 
-void memcpy16( void* dst , const void* src , _u32 hwn )
-{
-	hwn <<= 1;
-	DC_FlushRange( src , hwn );
-	DC_FlushRange( dst , hwn );
-	dmaCopyHalfWords( 0 , src , dst , hwn );
+void memcpy32( void* dst , const void* src , _u32 wordCount ){
+	wordCount <<= 2;
+	DC_FlushRange( src , wordCount );
+	DC_FlushRange( dst , wordCount );
+	dmaCopyHalfWords( 0 , src , dst , wordCount );
+}
+
+void memset16( void* dst , _u16 val , _u32 halfWordCount ){
+	halfWordCount <<= 1;
+	DC_FlushRange( dst , halfWordCount );
+	dmaFillHalfWords( val , dst , halfWordCount );
+}
+
+void memcpy16( void* dst , const void* src , _u32 halfWordCount ){
+	halfWordCount <<= 1;
+	DC_FlushRange( src , halfWordCount );
+	DC_FlushRange( dst , halfWordCount );
+	dmaCopyHalfWords( 0 , src , dst , halfWordCount );
+}
+
+void memset8( void* dst , _u8 val , _u32 byteCount ){
+	DC_FlushRange( dst , byteCount );
+	if( byteCount & 1 ){
+		((_u8*)dst)[0] = val;
+		((_u8*&)dst)++;
+	}
+	dmaFillHalfWords( val , dst , byteCount );
+}
+
+void memcpy8( void* dst , const void* src , _u32 byteCount ){
+	if( byteCount & 1 ){
+		((_u8*)dst)[0] = ((_u8*)src)[0];
+		((_u8*&)dst)++;
+		byteCount--;
+	}
+	DC_FlushRange( src , byteCount );
+	DC_FlushRange( dst , byteCount );
+	dmaCopyHalfWords( 0 , src , dst , byteCount );
 }
 
 bool _memoryController::init()
@@ -29,6 +60,9 @@ bool _memoryController::init()
 	
 	// Safe the number of bytes free at the startup
 	availableMemory = getFreeMemory();
+	
+	// Display Memory Results at end of program
+	std::atexit( &_memoryAnalyzer::printResults );
 	
 	return true;
 }

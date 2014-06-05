@@ -25,7 +25,7 @@ _callbackReturn _desktopScreenView::refreshHandler( _event event )
 
 
 _desktopScreenView::_desktopScreenView( _style&& style ) :
-	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , _registryController::getUserRegistry().getHomeFolder() + "/desktop/" , _fileViewType::symbol , false , {/* Allow All Extensions*/} , style | _style::focusNoAction )
+	_fileView( 0 , 0 , SCREEN_WIDTH , SCREEN_HEIGHT - 10 , "%CURRENT_USER%/desktop/" , _fileViewType::symbol , false , {/* Allow All Extensions*/} , style | _style::focusNoAction )
 {
 	_fileView::setScrollTypeX( _scrollType::prevent );
 	_fileView::setScrollTypeY( _scrollType::prevent );
