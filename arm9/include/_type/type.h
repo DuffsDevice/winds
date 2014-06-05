@@ -28,8 +28,8 @@
 #define forceinline __attribute__((always_inline)) inline
 #define DEPRECATED __attribute__((deprecated))
 
-//! Define if you want speed profiling
-#define DEBUG_PROFILING
+//! Define if you want speed & memory profiling
+//#define DEBUG_PROFILING
 
 using std::make_pair;
 using std::make_tuple;
