@@ -153,7 +153,7 @@ class _color{
 		}
 		
 		//! Mix two colors; factor: 0 (only color1) to 32 (only color2)
-		static _color mix( _color color1 , _color color2 , _u8 factor ){
+		static _color mix( _color color1 , _color color2 , _u8 factor = 16 ){
 			if( factor == 0 )
 				return color1;
 			else if( factor == 32 )
@@ -246,6 +246,7 @@ class _color{
 			return *this;
 		}
 		
+		//! Sets the alpha channel to either true (opaque) or false (transparent)
 		_color& setAlpha( bool alpha ){
 			this->color = ( this->color & ~( 1 << 15 ) ) | ( alpha << 15 );
 			return *this;
@@ -256,6 +257,17 @@ class _color{
 		
 		//! Set the blue part of the Color
 		_color& adjustRGB( _s8 red , _s8 green , _s8 blu , _optValue<bool> alpha = ignore );
+		
+		//! Inverts the color
+		_color& invert(){
+			this->color ^= 0x7FFF;
+			return *this;
+		}
 };
+
+//! Allows inversion by simply doing '!color'
+static unused _color operator!(_color color){
+	return color.invert();
+}
 
 #endif

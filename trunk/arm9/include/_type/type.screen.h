@@ -1,16 +1,12 @@
 #ifndef _WIN_T_SCREEN_
 #define _WIN_T_SCREEN_
 
-//! NDS-Headers
-#include <nds/ndstypes.h>
-#include <nds/arm9/input.h>
-
 //! Types
 #include "_type/type.h"
 #include "_type/type.bitmap.h"
 
-class _screen{
-	
+class _screen
+{
 	private:
 		
 		//! Background-id returned by bgInit or bgInitSub

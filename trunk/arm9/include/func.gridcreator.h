@@ -1,5 +1,5 @@
-#ifndef _WIN_FUNC_GRID_CREATOR_
-#define _WIN_FUNC_GRID_CREATOR_
+#ifndef _WIN_F_GRID_CREATOR_
+#define _WIN_F_GRID_CREATOR_
 
 #include "_type/type.h"
 #include <nds/arm9/math.h>

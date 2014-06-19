@@ -1,6 +1,5 @@
 #include "_type/type.screen.gadget.h"
 #include "_controller/controller.gui.h"
-#include <nds/arm9/background.h>
 
 _gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _length width , _length height , _style&& style ) :
 	_screen( bgId )
@@ -9,9 +8,7 @@ _gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _length width
 	, touchCycles( 0 )
 	, framesSinceLastClick( 0 )
 	, isDragging( false )
-{
-}
-
+{}
 
 _touch _gadgetScreen::adjustTouch( _touch touch )
 {

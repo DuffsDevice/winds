@@ -121,8 +121,8 @@ class _gadget
 		/** Check whether this Gadget was hidden by a previous call to hide() */
 		bool isHidden() const { return this->state.hidden; }
 		
-		/** Check whether this Gadget is enabled */
-		bool isEnabled() const { return this->style.isEnabled; }
+		/** Check whether this Gadget is editable */
+		bool isEnabled() const ;
 		
 		/** Check whether the user can interact with this gadget by touch */
 		bool isClickable() const { return this->style.isClickable; }
@@ -150,6 +150,10 @@ class _gadget
 		
 		/** Check whether or not this gadget can handle drag-scenarios */
 		bool isDraggable() const { return this->style.isDraggable; }
+		
+		/** Check whether or not this gadget wants to be automatically drawn greyscale if it is uneditable */
+		bool isDrawnGreyIfDisabled() const { return this->style.isDrawnGreyIfDisabled; }
+		
 		
 		/**
 		 * Check whether this Gadget is doubleclickable
@@ -852,14 +856,14 @@ class _gadget
 		
 		union 
 		{
-			struct PACKED {
+			struct{
 				bool	hidden : 1;
 				bool	pressed : 1;
 				bool	enhanced : 1;
 				bool	dragged : 1;
 				bool	focused : 1; // True, if gadget has direct focus
 				bool	selected : 1; // True, if the gadget is the focused one inside the parent
-			};
+			}PACKED;
 			_u8 sum; // used to reset everything quickly
 		}state;
 		
@@ -875,7 +879,7 @@ class _gadget
 				bool	height : 1;
 				bool	posX : 1;
 				bool	posY : 1;
-			} PACKED ;
+			}PACKED;
 			_u8			sum;
 		}				autoValues;
 		

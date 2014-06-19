@@ -36,7 +36,9 @@ class _lua_fontcontroller
 		
 		//! Lunar !//
 		static const char className[];
-		static Lunar<_lua_fontcontroller>::StaticType		staticmethods[];
+		static Lunar<_lua_fontcontroller>::StaticType	staticmethods[];
+		static Lunar<_lua_fontcontroller>::FunctionType	methods[];
+		static Lunar<_lua_fontcontroller>::PropertyType	properties[];
 	
 };
 

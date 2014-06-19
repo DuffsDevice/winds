@@ -40,6 +40,9 @@ using namespace _luafunc;
 #include "_lua/lua.class.ini.h"
 #include "_lua/lua.class.ini.file.h"
 
+#include "_lua/lua.controller.font.h"
+#include "_lua/lua.controller.gui.h"
+
 #include "_lua/lua.gadget.button.h"
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.calendar.h"
@@ -67,6 +70,8 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.resizehandle.h"
 
 _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
+	make_tuple( "Controller" , "Font" , &Lunar<_lua_fontcontroller>::install ),
+	make_tuple( "Controller" , "Gui" , &Lunar<_lua_guicontroller>::install ),
 	make_tuple( "System" , "Animation" , &Lunar<_lua_animation>::install ),
 	make_tuple( "System" , "Direntry" , &Lunar<_lua_direntry>::install ),
 	make_tuple( "System" , "Event" , &Lunar<_lua_event>::install ),

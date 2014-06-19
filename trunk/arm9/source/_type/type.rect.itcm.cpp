@@ -1,6 +1,6 @@
 #include "_type/type.rect.h"
 
-__attribute__((hot)) bool _rect::intersectsWith( const _area& other ) const
+optimized bool _rect::intersectsWith( const _area& other ) const
 {
 	_codeAnalyzer analyzer {"_rect::intersectsWith"};
 	
@@ -18,7 +18,7 @@ __attribute__((hot)) bool _rect::intersectsWith( const _area& other ) const
 	return false;
 }
 
-__attribute__((hot)) _area _rect::reduce( const _rect& r2 ) const 
+optimized _area _rect::reduce( const _rect& r2 ) const 
 {
 	_codeAnalyzer analyzer {"_rect::reduce"};
 	
@@ -118,14 +118,14 @@ _area _rect::combine( const _rect& r2 ) const
 	return out;
 }
 
-__attribute__((hot)) _rect& _rect::clipToIntersect( const _rect& rect )
+optimized _rect& _rect::clipToIntersect( const _rect& rect )
 {
 	_codeAnalyzer analyzer {"_rect::clipToIntersect"};
 	
 	return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 }
 
-__attribute__((hot)) _rect& _rect::expandToInclude( const _rect& rect )
+optimized _rect& _rect::expandToInclude( const _rect& rect )
 {
 	_codeAnalyzer analyzer {"_rect::expandToInclude"};
 	

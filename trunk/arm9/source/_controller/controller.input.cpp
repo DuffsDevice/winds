@@ -8,6 +8,7 @@
 
 extern "C"{
 	#include <nds/touch.h>
+	#include <nds/arm9/input.h>
 }
 
 bool _inputController::init(){

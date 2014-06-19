@@ -54,7 +54,8 @@ class _fontController : public _controller
 		static void				deleteFont( _fontPtr font );
 		
 		//! Get a list of all currently registered fonts
-		static const _fontList&	getRegisteredFonts(){ return registeredFonts; }
+		static const _fontList&		getRegisteredFonts(){ return registeredFonts; }
+		static _list<_fontHandle>	getRegisteredFontsAsHandles();
 };
 
 #endif

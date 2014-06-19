@@ -39,7 +39,6 @@ Lunar<_lua_bitmapport>::FunctionType _lua_bitmapport::methods[] = {
 	{ "getPixel"					, wrap( _lua_bitmapport , &_bitmapPort::getPixel ) },
 	{ "drawPixel"					, wrap( _lua_bitmapport , &_bitmapPort::drawPixel ) },
 	{ "fill"						, wrap( _lua_bitmapport , &_bitmapPort::fill ) },
-	{ "replaceColor"				, wrap( _lua_bitmapport , &_bitmapPort::replaceColor ) },
 	{ "drawLine"					, wrap( _lua_bitmapport , &_bitmapPort::drawLine ) },
 	{ "drawVerticalLine"			, wrap( _lua_bitmapport , &_bitmapPort::drawVerticalLine ) },
 	{ "drawHorizontalLine"			, wrap( _lua_bitmapport , &_bitmapPort::drawHorizontalLine ) },

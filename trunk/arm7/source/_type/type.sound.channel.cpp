@@ -148,7 +148,7 @@ void _soundChannel::play(){
 	SCHANNEL_CR(this->channelId) |= SCHANNEL_ENABLE;
 }
 
-void __attribute__((hot)) _soundChannel::process()
+optimized void _soundChannel::process()
 {
 	if( this->type == _channelType::stream )
 	{

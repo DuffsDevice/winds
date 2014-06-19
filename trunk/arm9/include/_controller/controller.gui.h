@@ -2,9 +2,11 @@
 #define _WIN_C_SCENARIO_
 
 #include "_type/type.h"
+#include "_type/type.bitmap.h"
 #include "_type/type.gui.h"
 #include "_type/type.controller.h"
 #include "_type/type.screen.gadget.h"
+#include "_type/type.color.palette.h"
 #include "_screen/screen.keyboard.h"
 #include "_controller/controller.video.h"
 
@@ -15,6 +17,9 @@ enum class _guiState : _u8{
 	setup,
 	desktop
 };
+
+extern _fromStr<_guiState>	string2guiState;
+extern _toStr<_guiState>	guiState2string;
 
 class _guiController : public _controller
 {
@@ -42,6 +47,7 @@ class _guiController : public _controller
 		
 		static _bitmap						windowBar;
 		static _bitmap						windowBarBlurred;
+		static _colorPalette				disabledPalette;
 		static _color						itemFg;
 		static _color						itemBg;
 		static _color						focusFg;
@@ -71,6 +77,9 @@ class _guiController : public _controller
 		
 		static _color						startButtonTextColor;
 		static bool							fileExtensionVisible;
+		
+		//! Internal routine that creates the palette with which disabled gadgets are drawn disabled
+		static void createDisabledPalette();
 	
 	public:
 		
@@ -127,6 +136,9 @@ class _guiController : public _controller
 		//! Returns true, if the _textbox, _textarea or whatever shall be magnified when clicked
 		static bool				isKeyboardMagnifEnabled(){ return _guiController::magnifyKeyboardFocus; }
 		
+		//! Enables and Disables the magnification of e.e. a _textbox when it gets focus
+		static void				enableKeyboardMagnif(){ _guiController::magnifyKeyboardFocus = true; }
+		static void				disableKeyboardMagnif(){ _guiController::magnifyKeyboardFocus = false; }
 		
 		//////////////////////
 		// Graphical Things //
@@ -155,9 +167,8 @@ class _guiController : public _controller
 		//! Get the bitmap that makes up the upper bar of a window
 		static _constBitmap&	getWindowsDesign( bool active = true ){ return active ? _guiController::windowBar : _guiController::windowBarBlurred; }
 		
-		//! Enables and Disables the magnification of e.e. a _textbox when it gets focus
-		static void				enableKeyboardMagnif(){ _guiController::magnifyKeyboardFocus = true; }
-		static void				disableKeyboardMagnif(){ _guiController::magnifyKeyboardFocus = false; }
+		//! Get the palette that helps to draw disabled gadgets
+		static const _colorPalette&		getDisabledPalette(){ return _guiController::disabledPalette; }
 		
 		
 		////////////////////////////////////

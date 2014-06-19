@@ -53,6 +53,13 @@ void _fontController::deleteFont( _fontPtr font )
 	_fontController::registeredFonts.erase( iter );
 }
 
+_list<_fontHandle> _fontController::getRegisteredFontsAsHandles(){
+	_list<_fontHandle> fonts;
+	for( const _uniquePtr<_font>& ptr : _fontController::registeredFonts )
+		fonts.emplace_back( ptr.get() );
+	return fonts;
+}
+
 void _fontController::registerFont( _uniquePtr<_font> font ){
 	if( font && !_fontController::isExistent( font->getName() ) ){ // Ensure font is valid and not already in list
 		registeredFonts.push_back( {} );

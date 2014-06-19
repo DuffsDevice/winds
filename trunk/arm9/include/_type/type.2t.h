@@ -34,8 +34,8 @@ union _2T
 };
 
 template<typename SingleType,typename DoubleType>
-static __attribute__(( unused )) _2T<SingleType,DoubleType> operator-( const _2T<SingleType,DoubleType>& val ){ return _2T<SingleType,DoubleType>( -val.first , -val.second ); }
+static unused _2T<SingleType,DoubleType> operator-( const _2T<SingleType,DoubleType>& val ){ return _2T<SingleType,DoubleType>( -val.first , -val.second ); }
 template<typename SingleType,typename DoubleType>
-static __attribute__(( unused )) bool operator!( const _2T<SingleType,DoubleType>& val ){ return !val.val; }
+static unused bool operator!( const _2T<SingleType,DoubleType>& val ){ return !val.val; }
 
 #endif

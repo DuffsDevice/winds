@@ -7,9 +7,12 @@
 #include "_controller/controller.memory.h"
 
 // NDS Includes
-#include <nds/interrupts.h>
-#include <nds/arm9/background.h>
-#include <nds/arm9/video.h>
+extern "C"{
+	#undef unused
+	#include <nds/interrupts.h>
+	#include <nds/arm9/background.h>
+	#include <nds/arm9/video.h>
+}
 
 // Resources
 #include "_resource/resource.image.keyboard.grip.h"

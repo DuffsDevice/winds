@@ -50,6 +50,34 @@ class _colorPalette
 		bool hasTransparentColor() const {
 			return this->hasTransparent;
 		}
+		
+		//! Get the supplied index in the color palette, the last color eventually is the transparent color
+		_color getColor( _u32 index ) const {
+			if( this->hasTransparent && index == this->colors.size() )
+				return _color::transparent;
+			return this->colors[index];
+		}
+		
+		//! Get the supplied index in the color palette (you can not get the transparent color index using this way!)
+		_color operator[]( _u32 index ){
+			return this->colors[index];
+		}
+		
+		//! Delete all colors from the Palette
+		void clear(){ this->colors.clear(); }
+		
+		//! Add a color to the palette
+		void addColor( _color col , bool noDuplicates = true );
+		
+		//! Add a bunch of colors to the palette using an array of colors
+		void addColors( _color* colors , _u32 numColors , bool noDuplicates = true ){
+			while( numColors-- > 0 )
+				this->addColor( *colors++ , noDuplicates );
+		}
+		void addColors( _pixel* colors , _u32 numColors , bool noDuplicates = true ){
+			while( numColors-- > 0 )
+				this->addColor( *colors++ , noDuplicates );
+		}
 };
 
 #endif

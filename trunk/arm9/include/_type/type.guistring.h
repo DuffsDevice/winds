@@ -317,7 +317,7 @@ class _guiString : public string
 			bool				allowFontChange : 1;
 			bool				allowSizeChange : 1;
 			bool				allowColorChange : 1;
-		} PACKED ;
+		}PACKED;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "_type/type.gadget.h"
 #include "_type/type.screen.gadget.h"
 #include "_type/type.timer.h"
+#include "_type/type.bitmap.toner.h"
 #include "_gadget/gadget.button.h"
 #include "_controller/controller.event.h"
 #include "_controller/controller.gui.h"
@@ -185,6 +186,19 @@ void _gadget::blink()
 	blinkTimer.stop();
 	blinkTimer.setCallback( make_callback( this , &_gadget::blinkHandler ) );
 	blinkTimer.start();
+}
+
+bool _gadget::isEnabled() const
+{
+	const _gadget* current = this;
+	
+	do{
+		if( !current->style.isEnabled )
+			return false;
+		current = current->parent;
+	}while( current );
+	
+	return true;
 }
 
 
@@ -383,7 +397,7 @@ _callbackReturn _gadget::handleEventDefault( _event event )
 }
 
 
-__attribute__((hot)) _callbackReturn _gadget::handleEvent( _event event , bool noDefault )
+optimized _callbackReturn _gadget::handleEvent( _event event , bool noDefault )
 {
 	const _callback<_eventHandler>* ret1 = nullptr;
 	const _callback<_eventHandler>* ret2 = nullptr;
@@ -931,7 +945,7 @@ void _gadget::setSizeInternal( _length width , _length height )
 }
 
 
-_callbackReturn _gadget::gadgetRefreshHandler( _event event )
+optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 {
 	_codeAnalyzer analyzer {"_gadget::gadgetRefreshHandler"};
 	
@@ -955,6 +969,12 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			continue;
 		
 		_rect dim = gadget->getDimensions();
+		
+		// Convert the bitmap of the child to greyscale if it is not editable
+		if( !gadget->isEnabled() && gadget->isDrawnGreyIfDisabled() ){
+			_bitmapToner toner = _bitmapToner( gadget->getBitmap() );
+			toner.convertBrightnessToPalette( _guiController::getDisabledPalette() );
+		}
 		
 		// Copy...
 		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
@@ -990,8 +1010,19 @@ _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 		
 		_rect dim = gadget->getDimensions().toRelative( -padLeft , -padTop );
 		
-		// Copy...
-		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		// Copy child bitmap onto parent bitmap...
+		if( !gadget->style.isEnabled && gadget->isDrawnGreyIfDisabled() )
+		{
+			_bitmap tempBitmap = gadget->getBitmap();
+			
+			// Convert the bitmap of the child to greyscale if it is not editable
+			_bitmapToner toner = _bitmapToner( tempBitmap );
+			toner.convertBrightnessToPalette( _guiController::getDisabledPalette() );
+			
+			bP.copyTransparent( dim.x , dim.y , tempBitmap );
+		}
+		else
+			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
 		
 		if( ++cnt2 == numChildren )
 			break;
@@ -1052,7 +1083,7 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 	// Temp...
 	_gadget* mouseContain = that->getGadgetOfMouseDown( event.getPosX() , event.getPosY() );
 	
-	if( mouseContain )
+	if( mouseContain && mouseContain->isEnabled() )
 	{
 		// Rewrite Destination
 		event.setDestination( mouseContain );
@@ -1214,7 +1245,7 @@ _callbackReturn _gadget::gadgetDragStartHandler( _event event )
 	// Start Dragging
 	_gadget* mouseContain = that->getGadgetOfMouseDown( posX , posY );
 	
-	if( !mouseContain )
+	if( !mouseContain || !mouseContain->isEnabled() )
 		return not_handled;
 	
 	// Rewrite Destination

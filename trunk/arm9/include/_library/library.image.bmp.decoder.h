@@ -1,6 +1,8 @@
 #ifndef _WIN_L_BMPDECODER_
 #define _WIN_L_BMPDECODER_
 
+#include "_type/type.h"
+
 class GenericBMPDecoder
 {
 	private:
@@ -10,7 +12,7 @@ class GenericBMPDecoder
 			unsigned int Length;
 			unsigned short Nothing1, Nothing2; // ?
 			unsigned short ImageStart1, ImageStart2; // Offset of start of image, start at position 0x0A, which can only be 2-byte aligined
-		} __attribute__((packed));
+		}PACKED;
 		
 		struct BMP_Headers{
 			unsigned int SizeofHeader; // 40
@@ -21,7 +23,7 @@ class GenericBMPDecoder
 			unsigned int SizeofData; // Not reliable
 			unsigned int WidthperMeter, HeightperMeter; // Don't care
 			unsigned int NColors, ImportantColors; // Number of colors used, important colors ?
-		} __attribute__((packed));
+		}PACKED;
 	
 	public:
 		

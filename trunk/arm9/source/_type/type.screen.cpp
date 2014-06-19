@@ -1,5 +1,7 @@
 #include "_type/type.screen.h"
 
+#undef unused
+
 // NDS Headers
 #include <nds/arm9/background.h>
 #include <nds/arm9/trig_lut.h>

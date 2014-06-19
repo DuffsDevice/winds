@@ -21,8 +21,6 @@ class _lua_bitmapport : public _bitmapPort
 		//! addClippingRects
 		int addClippingRects( lua_State* L );
 		
-		int dummy( lua_State* L );
-		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_bitmapport>::FunctionType methods[];
