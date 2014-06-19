@@ -64,11 +64,11 @@ namespace _gadgetHelpers
 	class sizeParent : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_length smallerX;
-			_length smallerY;
+			_length		smallerX;
+			_length		smallerY;
 			struct{
-			_u8 proceedX : 1;
-			_u8 proceedY : 1;
+				_u8		proceedX : 1;
+				_u8		proceedY : 1;
 			}PACKED;
 			_callbackReturn executor( _event event ) const ;
 		public:
@@ -80,11 +80,11 @@ namespace _gadgetHelpers
 	class rightBottomAlign : public _dummyCallback<_eventHandler>
 	{
 		private:
-			_length distanceX;
-			_length distanceY;
+			_length		distanceX;
+			_length		distanceY;
 			struct{
-			_u8 proceedX : 1;
-			_u8 proceedY : 1;
+				_u8		proceedX : 1;
+				_u8		proceedY : 1;
 			}PACKED;
 			_callbackReturn executor( _event event ) const ;
 		public:
@@ -105,7 +105,7 @@ namespace _gadgetHelpers
 				bool		breakLine : 1;
 				bool		respectAutoPosition : 1;
 				bool		skipHidden : 1;
-			} PACKED ; 
+			}PACKED; 
 			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor

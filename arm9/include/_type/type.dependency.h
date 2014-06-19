@@ -14,7 +14,7 @@ struct _dependencyMap{
 	bool remove : 1;
 	bool focus : 1;
 	bool select : 1;
-} PACKED ;
+}PACKED;
 
 struct _dependency
 {

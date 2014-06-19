@@ -6,8 +6,14 @@
 #define _WIN_VER_MINOR_ 98
 #define _WIN_VER_STATE_ "beta"
 
+#include <nds/ndstypes.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+//! Additional CV-Like Qualifiers
+#define noinline __attribute__(( noinline ))
+#define forceinline __attribute__(( always_inline )) inline
+#define optimized __attribute__(( hot ))
 
 typedef uint8_t 					_u8;
 typedef int8_t 						_s8;

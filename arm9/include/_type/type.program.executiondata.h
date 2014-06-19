@@ -13,7 +13,7 @@ struct _programExecutionData
 	struct{
 		bool		markedForTermination : 1;
 		bool		mainCalled : 1;
-	} PACKED ;
+	}PACKED;
 	
 	//! Ctor
 	_programExecutionData( _tempTime startTime , _programArgs arguments ) :

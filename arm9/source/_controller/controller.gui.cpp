@@ -2,6 +2,7 @@
 #include "_controller/controller.interrupt.h"
 #include "_controller/controller.registry.h"
 #include "_screen/screen.keyboard.h"
+#include "func.gradientcreator.h"
 
 // NDS Interrupts
 #include <nds/interrupts.h>
@@ -33,6 +34,8 @@ bool _guiController::init()
 	itemBg		= _color::transparent;
 	controlBg	= _color::fromRGB( 28 , 28 , 27 );
 	controlFg	= _color::fromRGB( 22 , 22 , 20 );
+	
+	_guiController::createDisabledPalette();
 	
 	// Load Some Attributes
 	const _ini& registry = _registryController::getSystemRegistry();
@@ -155,6 +158,25 @@ void _guiController::end()
 	registry.writeIndex( "gui" , "fileExtensionVisible" , int2string(fileExtensionVisible) );
 }
 
+void _guiController::createDisabledPalette()
+{
+	// Define limits
+	_color mainColor = _guiController::controlBg;
+	_color darkColor = _color::mix( mainColor , darkColor , 14 );
+	_color lightColor = _color::white;
+	
+	_colorPalette palette;
+	
+	// Compute Colors
+	_uniquePtr<_pixel[]> darkGradientColors = computeGradient( darkColor , mainColor , 16 );
+	_uniquePtr<_pixel[]> brightGradientColors = computeGradient( mainColor , lightColor , 16 , 1 );
+	
+	palette.addColors( darkGradientColors , 16 , false ); // 0..15
+	palette.addColors( brightGradientColors , 16 , false ); // 16..31
+	
+	_guiController::disabledPalette = move(palette);
+}
+
 _guiState					_guiController::state = _guiState::empty;
 bool						_guiController::dirty = false;
 _uniquePtr<_gui>			_guiController::activeGui;
@@ -165,6 +187,7 @@ _gadget*					_guiController::currentFocus;
 _gadget*					_guiController::lastClickedGadget;
 _bitmap						_guiController::windowBar;
 _bitmap						_guiController::windowBarBlurred;
+_colorPalette				_guiController::disabledPalette;
 _color						_guiController::itemFg;
 _color						_guiController::itemBg;
 _color						_guiController::focusFg;
@@ -187,3 +210,18 @@ _length						_guiController::counterHeight;
 _length						_guiController::selectHeight;
 _color						_guiController::startButtonTextColor;
 bool						_guiController::fileExtensionVisible;
+
+_fromStr<_guiState>	string2guiState = {
+	{ "empty" , _guiState::empty }
+	, { "login" , _guiState::login }
+	, { "bootup" , _guiState::bootup }
+	, { "setup" , _guiState::setup }
+	, { "desktop" , _guiState::desktop }
+};
+_toStr<_guiState>	guiState2string = {
+	{ _guiState::empty , "empty" }
+	, { _guiState::login , "login" }
+	, { _guiState::bootup , "bootup" }
+	, { _guiState::setup , "setup" }
+	, { _guiState::desktop , "desktop" }
+};

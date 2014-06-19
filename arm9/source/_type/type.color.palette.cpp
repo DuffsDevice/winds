@@ -89,3 +89,9 @@ void _colorPalette::downsample( _u32 numberOfColors )
 	for( Point pt : result )
 		this->colors[idx] = _color::fromRGB8( pt.x[0] , pt.x[1] , pt.x[2] );
 }
+
+void _colorPalette::addColor( _color col , bool noDuplicates ){
+	if( noDuplicates && find( this->colors.begin() , this->colors.end() , col ) != this->colors.end() )
+		return;
+	this->colors.push_back( col );
+}

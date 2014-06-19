@@ -32,7 +32,7 @@ class _style
 			{
 				bool	isResizeableX : 1;			/** Is resizable? 1st bit: X-Direction; 2nd bit: Y-Direction  */
 				bool	isResizeableY : 1;
-				bool	isEnabled : 1;				/** Is editable */
+				bool	isEnabled : 1;				/** Is enabled? 0 = disabled; 1 = enabled if all parents are also */
 				bool	isRightClickable : 1;		/** Provides it a reaction to onMouseRightClick?  */
 				bool	takesFocus : 1;				/** Can it blur the focused gadget */
 				bool	isBlurrable : 1;			/** Can it be blurred */
@@ -44,7 +44,8 @@ class _style
 				bool	isDraggable : 1; 			/** Is this gadget draggable? */
 				bool	doesFocusMoveFront : 1;		/** Whether a focus leads to moving the gadget to the front of adjacent children **/
 				bool	isClickable : 1;			/** Whether the user can interact with the gadget by the stylus */
-			} __attribute__(( packed )) ;
+				bool	isDrawnGreyIfDisabled : 1;	/** If set to true, the gadget class will automatically paint the gadget greyscale if it is uneditable */
+			}PACKED;
 		};
 		
 		union{
@@ -71,7 +72,7 @@ class _style
 				| defaultDragThld		| noClickRepeat
 				| doubleClickable		| noKeyboardRequest
 				| notDraggable			| focusNoAction
-				| clickable
+				| clickable				| drawGreyIfDisabled
 			)
 			, data( 0 )
 		{}
@@ -140,6 +141,9 @@ class _style
 		
 		static const _styleAttr<(1 << 13),true>		clickable;
 		static const _styleAttr<(1 << 13),false>	notClickable;
+		
+		static const _styleAttr<(1 << 14),true>		drawGreyIfDisabled;
+		static const _styleAttr<(1 << 14),false>	customDrawIfDisabled;
 };
 
 extern void applyString2style( _style& attr , string input );

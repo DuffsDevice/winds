@@ -3,8 +3,7 @@
 
 #include "_type/type.h"
 
-enum class _menuHandlerRuleType : _u8
-{
+enum class _menuHandlerRuleType : _u8{
 	listIndex,
 	listRange,
 	wholeList,
@@ -49,6 +48,6 @@ class _menuHandlerRule
 		 * in the list with index 'listIndex' against this rule
 		 */
 		bool operator()( _int listIndex , _int index ) const ;
-} PACKED ;
+}PACKED;
 
 #endif

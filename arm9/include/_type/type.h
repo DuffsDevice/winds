@@ -3,7 +3,6 @@
 #define _WIN_T_TYPES_
 
 #include "_type/type.predefines.h"
-#include "_type/type.2t.h"
 
 #include <string.h>
 #include <list>
@@ -19,17 +18,15 @@
 #include <functional>
 #include <stdarg.h>
 
-//! Code-sections
-#include <nds/memory.h>
-
-//! CV-Like Qualifiers
-#define unused __attribute__(( unused ))
-#define noinline __attribute__((noinline))
-#define forceinline __attribute__((always_inline)) inline
-#define DEPRECATED __attribute__((deprecated))
+//! Code section
+#define ITCM_CODE	__attribute__((section(".itcm"), long_call))
 
 //! Define if you want speed & memory profiling
 //#define DEBUG_PROFILING
+
+//! Additional CV-Like Qualifiers
+#define DEPRECATED __attribute__(( deprecated ))
+#define unused __attribute__(( unused ))
 
 using std::make_pair;
 using std::make_tuple;
@@ -56,6 +53,10 @@ template<typename T,unsigned int T2>
 	using _array = std::array<T,T2>;
 template<typename T>
 	using _initializerList = std::initializer_list<T>;
+
+//! Two values packed in one variable
+#include "_type/type.2t.h"
+
 using _2s32	= _2T<_s32,_u64>;
 using _2u32	= _2T<_u32,_u32>;
 using _2s16	= _2T<_s16,_u32>;

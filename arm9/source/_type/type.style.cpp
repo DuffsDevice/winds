@@ -112,5 +112,11 @@ void applyString2style( _style& style , string input )
 			style |= _style::clickable;
 		else if( line == "notClickable" )
 			style |= _style::notClickable;
+		
+		// drawGreyscaleIfStatic
+		else if( line == "drawGreyIfDisabled" )
+			style |= _style::drawGreyIfDisabled;
+		else if( line == "customDrawIfDisabled" )
+			style |= _style::customDrawIfDisabled;
 	}
 }

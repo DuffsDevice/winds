@@ -1,4 +1,5 @@
 #include "_type/type.bitmap.h"
+#include "func.gradientcreator.h"
 
 #include <nds/arm9/math.h>
 #include <nds/bios.h>
@@ -341,36 +342,6 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _col
 	}
 }
 
-void _bitmap::replaceColor( _color color , _color replace )
-{
-	_codeAnalyzer analyzer {"_bitmap::replaceColor"};
-	
-	if( !this->height || !this->width )
-		return;
-	
-	_u32 cnt = this->height * this->width;
-	
-	_pixelArray ptr = this->bmp;
-	
-	// Replace all values with passed color
-	if( color.getAlpha() )
-	{
-		do
-		{
-			if( *ptr == color )
-				*ptr = replace;
-		}while( --cnt > 0 );
-	}
-	else
-	{
-		do
-		{
-			if( !_color(*ptr).getAlpha() )
-				*ptr = replace;
-		}while( --cnt > 0 );
-	}
-}
-
 #define VERTICAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 , initialSeed ) \
 	{\
 		_u16 val = initialSeed;\
@@ -525,22 +496,31 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 
 #undef VERTICAL_GRADIENT_FILLER_RAND
 
-#define HORIZONTAL_GRADIENT_FILLER_RAND( rand1 , diff1 , diff2 , initialSeed ) \
-{\
-	_u16 val = initialSeed;\
-	do\
-	{\
-		temp = end;\
-		j = w;\
-		do\
-		{\
-			val += (rand1);\
-			if( val > 97 )\
-				val -= 97;\
-			pos[j-1] = * min( max( gradTable , (temp--) + ( val & (diff1) ) - (diff2) ) , end );\
-		}while( --j );\
-		pos += this->width;\
-	}while( --h );\
+template<int rand1, int diff1, int diff2>
+void horizontalGradientFillerHelper(
+	_pixelArray		colorData
+	, _length		gradientWidth
+	, _length		gradientHeight
+	, _pixelArray	drawDestination
+	, _length		bitmapWidth
+	, _int			initialSeed
+)
+{
+	_u16 val = initialSeed;
+	_pixelArray colorDataEnd = colorData + gradientWidth - 1;
+	do
+	{
+		_length curX = gradientWidth;
+		_pixelArray colorDataCur = colorDataEnd;
+		do
+		{
+			val += (rand1);
+			if( val > 97 )
+				val -= 97;
+			drawDestination[curX-1] = * min( max( colorData , (colorDataCur--) + ( val & (diff1) ) - (diff2) ) , colorDataEnd );
+		}while( --curX );
+		drawDestination += bitmapWidth;
+	}while( --gradientHeight );
 }
 
 void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length h , _color fromColor , _color toColor )
@@ -567,80 +547,37 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	h = y2 - y + 1;
 	int dX = x - origX;
 	
-	//! Gradient Computations
-		
-		_pixelArray gradTable = new _pixel[w];
-		_pixelArray start = gradTable;
-		_pixelArray temp = start;
-		_pixelArray end = gradTable + w;
-		
-		// Difference between color values
-		int dR = toColor.getR() - fromColor.getR();
-		int dG = toColor.getG() - fromColor.getG();
-		int dB = toColor.getB() - fromColor.getB();
-		
-		// Scale them to 512
-		dR <<= 11; dG <<= 11; dB <<= 11;
-		
-		int trigR = div32( dR , gradWidth );
-		int trigG = div32( dG , gradWidth );
-		int trigB = div32( dB , gradWidth );
-		
-		// Defines
-		unsigned int curR = fromColor.getR() << 11;
-		unsigned int curG = fromColor.getG() << 11;
-		unsigned int curB = fromColor.getB() << 11;
-		
-		if( dX > 0 )
-		{
-			curR += trigR * dX;
-			curG += trigG * dX;
-			curB += trigB * dX;
-		}
-		
-		// Fill the table
-		for( ; temp != end ; curR += trigR, curG += trigG, curB += trigB )
-			//*temp++ = _color::fromRGB( curR >> 11 , curG >> 11 , curB >> 11 );
-			*temp++ = ( ( curR >> 11 ) & ( 31 << 0  ) ) // Adjust and bitwise and width 31
-					| ( ( curG >> 6  ) & ( 31 << 5  ) )
-					| ( ( curB >> 1  ) & ( 31 << 10 ) )
-					| ( ( 1 << 15 ) );
-			// Faster because of less bitshifts
-		
+	_u32 numConsecutivePixels = 0; // Number of pixels above each other having the same color
+	_uniquePtr<_pixel[]> gradientTable = computeGradient( fromColor , toColor , gradWidth , dX , &numConsecutivePixels );
+	
 	// Draw Set Bitmap-starting-ptr
 	_pixelArray pos = this->bmp + y * this->width + x;
 	
-	// Number of pixels above each other having the same color
-	_u32 difference = div32( 1 << 12 , abs( trigR ) + abs( trigG ) + abs( trigB ) );
-	
-	// Adjust end
-	end--;
-	
-	_u32 j = w;
-	
-	if( difference >= 8 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 23 , 15 , 7 , y )
-	else if( difference >= 4 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 11 , 7 , 3 , y )
-	else if( difference >= 2 )
-		HORIZONTAL_GRADIENT_FILLER_RAND( 6 , 3 , 1 , y )
+	if( numConsecutivePixels >= 8 )
+		horizontalGradientFillerHelper< 23 , 15 , 7 >( gradientTable , w , h , pos , this->width , y );
+	else if( numConsecutivePixels >= 4 )
+		horizontalGradientFillerHelper< 11 , 7 , 3 >( gradientTable , w , h , pos , this->width , y );
+	else if( numConsecutivePixels >= 2 )
+		horizontalGradientFillerHelper< 6 , 3 , 1 >( gradientTable , w , h , pos , this->width , y );
 	else
 	{
+		// Set end
+		_pixelArray gradientTableEnd = _pixelArray( gradientTable ) + gradWidth - 1;
+		
 		// Loop Unwinding
 		do
 		{
-			j = w;
-			temp = end;
+			_u32 j = w;
+			_pixelArray gradientTableCur = gradientTableEnd;
+			
 			do
 			{
-				pos[j-1] = *temp--;
+				pos[j-1] = *gradientTableCur--;
 			}while( --j > 0 );
 			
 			pos += this->width;
 		}while( --h > 0 );
 	}
-	
-	delete[] gradTable;
 }
 
 #undef HORIZONTAL_GRADIENT_FILLER_RAND
@@ -1081,7 +1018,7 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 }
 
 
-__attribute__((hot)) bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
+optimized bool _bitmap::clipCoordinates( _coord &left , _coord &top , _coord &right , _coord &bottom ) const 
 {
 	_codeAnalyzer analyzer {"_bitmap::clipCoordinates"};
 	
@@ -1109,7 +1046,7 @@ __attribute__((hot)) bool _bitmap::clipCoordinates( _coord &left , _coord &top ,
 	return bottom >= top;
 }
 
-__attribute__((hot)) bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) const 
+optimized bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &right ) const 
 {
 	_codeAnalyzer analyzer {"_bitmap::clipCoordinatesX"};
 	
@@ -1125,7 +1062,7 @@ __attribute__((hot)) bool _bitmap::clipCoordinatesX( _coord &left , _coord &top 
 	return right >= left && top >= activeClippingRect.y && top <= activeClippingRect.getY2();
 }
 
-__attribute__((hot)) bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &bottom ) const 
+optimized bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &bottom ) const 
 {
 	_codeAnalyzer analyzer {"_bitmap::clipCoordinatesY"};
 	

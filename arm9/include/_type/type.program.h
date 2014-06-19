@@ -31,6 +31,14 @@ struct _programHeader{
 	
 	//! Ctor
 	_programHeader() : language( "--" ) {}
+	
+	//! Move/Copy Ctor
+	_programHeader( _programHeader&& ) = default;
+	_programHeader( const _programHeader& ) = delete;
+	
+	//! Move/Copy Assignment operator
+	_programHeader& operator=( _programHeader&& ) = default;
+	_programHeader& operator=( const _programHeader& ) = delete;
 };
 
 class _program

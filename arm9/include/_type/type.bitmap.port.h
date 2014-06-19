@@ -128,14 +128,6 @@ class _bitmapPort
 		void fill( _color color );
 		
 		/**
-		 * Replace all pixels of a certain color with another
-		 * @param color The Color to replace
-		 * @param replace The Color to replace with
-		 * @return void
-		 */
-		void replaceColor( _color color , _color replace );
-		
-		/**
 		 * Draw a vertical Line onto the bmp
 		 * @param x X-Position
 		 * @param y Y-Position Start (top)

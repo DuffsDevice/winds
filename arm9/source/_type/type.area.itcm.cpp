@@ -1,6 +1,6 @@
 #include "_type/type.rect.h"
 
-__attribute__((hot)) _area& _area::clipToIntersect( const _rect& limits )
+optimized _area& _area::clipToIntersect( const _rect& limits )
 {
 	_codeAnalyzer analyzer {"_rect::clipToIntersect"};
 	
@@ -20,7 +20,7 @@ __attribute__((hot)) _area& _area::clipToIntersect( const _rect& limits )
 	return *this;
 }
 
-__attribute__((hot)) _area& _area::reduce( const _rect& dim )
+optimized _area& _area::reduce( const _rect& dim )
 {
 	_codeAnalyzer analyzer {"_rect::reduce"};
 	
@@ -33,7 +33,7 @@ __attribute__((hot)) _area& _area::reduce( const _rect& dim )
 	return *this;
 }
 
-__attribute__((hot)) _area& _area::toRelative( const _coord absX , const _coord absY )
+optimized _area& _area::toRelative( const _coord absX , const _coord absY )
 {
 	_codeAnalyzer analyzer {"_rect::toRelative"};
 	
@@ -42,7 +42,7 @@ __attribute__((hot)) _area& _area::toRelative( const _coord absX , const _coord 
 	return *this;
 }
 
-__attribute__((hot)) _area _area::toRelative( const _coord absX , const _coord absY ) const
+optimized _area _area::toRelative( const _coord absX , const _coord absY ) const
 {
 	_codeAnalyzer analyzer {"_rect::toRelative (const)"};
 	

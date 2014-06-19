@@ -49,7 +49,6 @@ Lunar<_lua_bitmap>::FunctionType _lua_bitmap::methods[] = {
 	{ "drawPixel"					, wrap( _lua_bitmap , &_bitmap::drawPixel ) },
 	{ "reset"						, wrap( _lua_bitmap , &_bitmap::reset ) },
 	{ "fill"						, wrap( _lua_bitmap , &_bitmap::fill ) },
-	{ "replaceColor"				, wrap( _lua_bitmap , &_bitmap::replaceColor ) },
 	{ "drawLine"					, wrap( _lua_bitmap , &_bitmap::drawLine ) },
 	{ "drawVerticalLine"			, wrap( _lua_bitmap , &_bitmap::drawVerticalLine ) },
 	{ "drawHorizontalLine"			, wrap( _lua_bitmap , &_bitmap::drawHorizontalLine ) },

@@ -192,6 +192,7 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "requestsKeyboard"			, wrap( _lua_gadget , &_gadget::requestsKeyboard ) },
 	{ "isDraggable"					, wrap( _lua_gadget , &_gadget::isDraggable ) },
 	{ "isDoubleClickable"			, wrap( _lua_gadget , &_gadget::isDoubleClickable ) },
+	{ "isDrawnGreyIfDisabled"		, wrap( _lua_gadget , &_gadget::isDrawnGreyIfDisabled ) },
 	/*  */
 	{ "redraw"						, wrap( _lua_gadget , (void(_gadget::*)())&_gadget::redraw ) },
 	{ "redrawParents"				, wrap( _lua_gadget , (void(_gadget::*)())&_gadget::redrawParents ) },

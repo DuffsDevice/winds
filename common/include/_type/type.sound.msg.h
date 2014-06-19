@@ -117,7 +117,7 @@ struct _soundCommandMsg
 			_soundCommand	cmd;
 			_s8				channel;
 			_s16			value;
-		} PACKED ;
+		}PACKED;
 		_u32				sum;
 	};
 	

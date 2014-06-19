@@ -36,7 +36,7 @@ union _direntryAttributes
 		_u8 volume		:1;
 		_u8 directory	:1; // Do not change this value!
 		_u8 archive		:1;
-	} __attribute__(( packed ));
+	}PACKED;
 	
 	//! Ctor
 	_direntryAttributes( _u8 val = 0 ) :

@@ -24,18 +24,6 @@ void _bitmapPort::fill( _color color )
 	}
 }
 
-void _bitmapPort::replaceColor( _color color , _color replacement )
-{
-	for( const _rect& rc : clippingRects )
-	{
-		this->base.setClippingRectUnsafe( rc );
-		
-		//! Standard Bitmap Routine
-		this->base.replaceColor( color , replacement );
-		//! Standard Bitmap Routine
-	}
-}
-
 void _bitmapPort::drawVerticalLine( _coord x , _coord y , _length length , _color color )
 {
 	for( const _rect& rc : clippingRects )
