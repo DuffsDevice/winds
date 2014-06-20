@@ -8,7 +8,7 @@
 #include "_type/type.program.args.h"
 #include "_type/type.program.executiondata.h"
 #include "_type/type.uniqueptr.h"
-#include "_gadget/gadget.mainframe.h"
+#include "_gadget/gadget.window.mainframe.h"
 
 // Describes the type of a program
 enum class _programType{

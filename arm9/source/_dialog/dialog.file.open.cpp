@@ -76,7 +76,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	// Window
 	_length winWidth = labelWidth + this->fileTypeChooser->getWidth() + textBoxWidth + 7;
 	_length winHeight = secondLineY + this->openButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_open") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_open") , _style::notResizeable );
 	
 	// Fix Filepath
 	initialFilePath = _direntry( initialFilePath ).getFileName();
@@ -99,6 +99,8 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	this->cancelButton->setInternalEventHandler( onMouseClick , make_callback( this , &_fileOpenDialog::eventHandler ) );
 	this->fileTypeChooser->setInternalEventHandler( onEdit , make_callback( this , &_fileOpenDialog::eventHandler ) );
 	this->window->setInternalEventHandler( onClose , make_callback( this , &_fileOpenDialog::eventHandler ) );
+	this->fileNameBox->setUserEventHandler( onEdit , make_callback( this , &_fileOpenDialog::eventHandler ) );
+	this->fileNameBox->handleEvent( onEdit ); // Update
 	
 	
 	// Add Gadgets
@@ -121,8 +123,10 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 	if( that->getType() == _gadgetType::fileobject )
 	{
 		_fileObject* fO = (_fileObject*)that;
-		if( event == onMouseClick && !fO->getDirentry().isDirectory() )
+		if( event == onMouseClick && !fO->getDirentry().isDirectory() ){
 			this->fileNameBox->setStrValue( fO->getDirentry().getDisplayName() );
+			this->fileNameBox->triggerEvent( onEdit );
+		}
 		else if( event == onMouseDblClick ){
 			if( fO->getDirentry().isDirectory() )
 				fO->execute();
@@ -159,6 +163,9 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 			this->callCallback( _dialogResult::yes );
 		}
 	}
+	// Text-Box
+	else if( that == this->fileNameBox )
+		this->openButton->setEnabled( !this->fileNameBox->getStrValue().empty() );
 	// Cancel-Button or Window-Close-Button
 	else
 	{

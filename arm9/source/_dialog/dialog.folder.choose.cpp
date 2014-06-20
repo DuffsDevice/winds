@@ -47,7 +47,7 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	
 	
 	// Window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLabel , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLabel , _style::notResizeable );
 	
 	
 	// FileTree
@@ -58,6 +58,7 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	// Stuff...
 	this->okButton->setAutoSelect( true );
 	this->okButton->setInternalEventHandler( onMouseClick , make_callback( this , &_folderChooseDialog::eventHandler ) );
+	this->okButton->setInternalEventHandler( onEdit , make_callback( this , &_folderChooseDialog::eventHandler ) );
 	this->cancelButton->setInternalEventHandler( onMouseClick , make_callback( this , &_folderChooseDialog::eventHandler ) );
 	this->window->setInternalEventHandler( onClose , make_callback( this , &_folderChooseDialog::eventHandler ) );
 	
@@ -79,7 +80,8 @@ _callbackReturn _folderChooseDialog::eventHandler( _event event )
 	{
 		_fileObject* fO = (_fileObject*)that;
 		if( event == onMouseClick ){
-			this->folderPath = fO->getDirentry().getFileName();	
+			this->folderPath = fO->getDirentry().getFileName();
+			this->okButton->triggerEvent( onEdit );
 			return use_internal;
 		}
 		else if( event == onMouseDblClick ){
@@ -89,11 +91,9 @@ _callbackReturn _folderChooseDialog::eventHandler( _event event )
 		return handled;
 	}
 	
-	// okButton pressed, but no folder was chosen
-	else if( that == this->okButton && this->folderPath.empty() )
-	{
-		// <Play Error Tone Here!>
-	}
+	// okButton should be updated
+	else if( that == this->okButton && event == onEdit )
+		this->okButton->setEnabled( !this->folderPath.empty() );
 	
 	// Cancel-Button or Window-Close-Button
 	else

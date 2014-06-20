@@ -4,7 +4,7 @@
 
 #include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.mainframe.h"
+#include "_gadget/gadget.window.mainframe.h"
 
 /**
  * Proxy Classes

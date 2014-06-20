@@ -4,20 +4,21 @@
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 #include "_gadget/gadget.filetree.h"
 
 class _folderChooseDialog : public _dialog
 {
 	private:
 		
-		_button*	okButton;
-		_button*	cancelButton;
-		_label*		descriptionLabel;
-		_window*	window;
-		_fileTree*	fileTree;
+		_button*		okButton;
+		_button*		cancelButton;
+		_label*			descriptionLabel;
+		_dialogWindow*	window;
+		_fileTree*		fileTree;
 		
-		string		folderPath;
+		// Path to currently selected folder
+		string			folderPath;
 		
 		_callbackReturn eventHandler( _event );
 		

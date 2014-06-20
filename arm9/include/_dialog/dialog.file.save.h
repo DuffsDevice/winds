@@ -6,7 +6,7 @@
 #include "_gadget/gadget.button.action.h"
 #include "_gadget/gadget.button.image.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 #include "_gadget/gadget.fileview.h"
 #include "_gadget/gadget.textbox.h"
 #include "_gadget/gadget.select.h"
@@ -22,7 +22,7 @@ class _fileSaveDialog : public _dialog
 		_label*			fileNameLabel;
 		_label*			fileTypeLabel;
 		_textBox*		fileNameBox;
-		_window*		window;
+		_dialogWindow*	window;
 		_select*		fileTypeChooser;
 		_fileView*		fileView;
 		_textBox*		fileViewAddress;

@@ -12,6 +12,11 @@ class _program;
 class _style
 {
 	private:
+		
+		//! Cast to _u16
+		operator _u16() const { return attrs; }
+	
+	public:
 	
 		// Internal Helper Class
 		template<_u16 bitmask, bool setbits>
@@ -20,11 +25,6 @@ class _style
 			constexpr _style operator|( _styleAttr<t,set> param ){ return _style() | *this | param; }
 		};
 		
-		//! Cast to _u16
-		operator _u16() const { return attrs; }
-	
-	public:
-	
 		union
 		{
 			_u16 attrs;

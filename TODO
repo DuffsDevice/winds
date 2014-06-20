@@ -38,6 +38,7 @@ Features:
 + Database/INI-file: which program opens which filetype (✓)
 + Image-Writes and GIF Support (✓)
 - Transmit arm7 usage to the arm9 and show it in the task manager
+- Focus next/previous adjacent children by clicking L/R-Keys
 
 Programms:
 ==========

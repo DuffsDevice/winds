@@ -1,6 +1,6 @@
 // Check if already included
-#ifndef _WIN_G_MAINFRAME_
-#define _WIN_G_MAINFRAME_
+#ifndef _WIN_G_WINDOW_MAINFRAME_
+#define _WIN_G_WINDOW_MAINFRAME_
 
 #include "_gadget/gadget.window.h"
 #include "_type/type.program.handle.h"

@@ -37,10 +37,10 @@ void PROG_Mapper::main( _programArgs args )
 	this->cancelButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
 	
 	// OK-button
-	this->okButton		= new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_ok") );
+	this->okButton		= new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_ok") , _style::disabled );
 	this->okButton->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::left , 1 ) );
-	this->okButton->setAutoSelect( true );
 	this->okButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
+	this->okButton->setAutoSelect( true );
 	
 	// Browse-button
 	this->browseButton	= new _button( 4 , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_browse") + "..." );
@@ -70,6 +70,7 @@ void PROG_Mapper::main( _programArgs args )
 	this->scrollArea = new _scrollArea( 4 , 22 , 145 , 75 );
 	this->scrollArea->setPaddingOffset( _padding(1) );
 	this->scrollArea->setInternalEventHandler( onDraw , make_callback( this , &PROG_Mapper::handler ) );
+	this->scrollArea->setInternalEventHandler( onChildSelect , make_callback( this , &PROG_Mapper::handler ) );
 	
 	_assocVector<string,int> handlerList;
 	
@@ -147,6 +148,8 @@ _callbackReturn PROG_Mapper::handler( _event event )
 		
 		return use_default;
 	}
+	else if( event == onChildSelect )
+		this->okButton->setEnabled( true );
 	else if( event == onClose )
 		this->terminate();
 	else if( event == onMouseClick )

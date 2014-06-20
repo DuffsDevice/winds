@@ -4,7 +4,7 @@
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 #include "_gadget/gadget.image.h"
 
 class _imageDialog : public _dialog
@@ -14,7 +14,7 @@ class _imageDialog : public _dialog
 		_button*		okButton;
 		_button*		otherButton;
 		_label*			msg;
-		_window*		window;
+		_dialogWindow*	window;
 		_imageGadget*	image;
 		
 		_callbackReturn eventHandler( _event );

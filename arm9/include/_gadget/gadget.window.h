@@ -12,8 +12,8 @@ class _window;
 
 using _windowTaskHandler = _callback<void(_window*)>;
 
-class _window : public _gadget {
-	
+class _window : public _gadget
+{
 	private:
 		
 		friend class _mainFrame;
@@ -126,7 +126,7 @@ class _window : public _gadget {
 		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() );
 		
 		//! Dtor
-		~_window();
+		virtual ~_window();
 		
 		
 		//! Retrieve the list of minimizeable window's

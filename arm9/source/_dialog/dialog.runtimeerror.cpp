@@ -44,7 +44,7 @@ _runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfo
 	_length winHeight = this->msg->getHeight() + this->closeButton->getHeight() + 8 + 11 + additionalInfo->getHeight(); // + 11 for the window
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _localizationController::getBuiltInString("lbl_runtime_error") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , _localizationController::getBuiltInString("lbl_runtime_error") , _style::notResizeable );
 	
 	// Move buttons to right position
 	this->closeButton->moveTo( winWidth - this->closeButton->getWidth() - 3 , this->msg->getHeight() + 4 );

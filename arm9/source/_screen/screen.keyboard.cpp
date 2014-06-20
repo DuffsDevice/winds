@@ -558,7 +558,7 @@ _keyboardScreen::_keyboardScreen( _u8 bgId , _optValue<_coord> position , _style
 			case 45: // Right Shift
 			case 40: // Left Shift
 				btn->setAutoSelect( true );
-				btn->setStyle( btn->getStyle() | _style::noClickRepeat );
+				btn->applyStyle( _style::noClickRepeat );
 			case 41: // Windows-Button
 			case 39: // Carriage Return
 			case 30: // Caps

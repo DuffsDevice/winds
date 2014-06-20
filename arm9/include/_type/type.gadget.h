@@ -229,6 +229,30 @@ class _gadget
 		//! Set the style of that Gadget
 		void setStyle( _style style ){ this->style = (_style&&)style; notifyDependentGadgets( onRestyle ); }
 		
+		//! Applies a style attribute to the current style object
+		template<_u16 bitmask, bool setbits>
+		void applyStyle( const _style::_styleAttr<bitmask,setbits> attr ){
+			this->style |= attr;
+			notifyDependentGadgets( onRestyle );
+		}
+		
+		//! Applies a style-string to the current style object
+		void applyStyle( string str ){
+			applyString2style( this->style , move(str) );
+			notifyDependentGadgets( onRestyle );
+		}
+		
+		//! Set whether the Gadget is enabled or not
+		void setEnabled( bool enabled ){
+			if( enabled == this->isEnabled() )
+				return;
+			if( enabled )
+				this->applyStyle( _style::enabled );
+			else
+				this->applyStyle( _style::disabled );
+			this->redraw();
+		}
+		
 		
 		////////////////////
 		// Event-Handlers //
