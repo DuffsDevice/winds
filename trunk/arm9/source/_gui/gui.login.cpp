@@ -20,7 +20,7 @@ _callbackReturn _guiLogin::userLoginHandler( _event event )
 	that->blur();
 	
 	// Prevent it from receiving focus again
-	that->setStyle( that->getStyle() | _style::notFocusable );
+	that->applyStyle( _style::notFocusable );
 	
 	this->welcome = new _label( 13 , 79 , 105 , 20 , _localizationController::getBuiltInString("lbl_welcome") );
 	this->welcomeBg = new _label( 12 , 78 , 105 , 20 , _localizationController::getBuiltInString("lbl_welcome") );

@@ -4,19 +4,19 @@
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 #include "_gadget/gadget.textbox.h"
 
 class _enterTextDialog : public _dialog
 {
 	private:
 		
-		_button*	okButton;
-		_button*	cancelButton;
-		_label*		msg;
-		_textBox*	textBox;
-		_window*	window;
-		string		initialValue;
+		_button*		okButton;
+		_button*		cancelButton;
+		_label*			msg;
+		_textBox*		textBox;
+		_dialogWindow*	window;
+		string			initialValue;
 		
 		_callbackReturn eventHandler( _event );
 		

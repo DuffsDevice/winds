@@ -1,4 +1,4 @@
-#include "_lua/lua.gadget.mainframe.h"
+#include "_lua/lua.gadget.window.mainframe.h"
 #include "_lua/lua.func.h"
 #include "_lua/lua.func.wrap.h"
 using namespace _luafunc;
@@ -24,9 +24,9 @@ Lunar<_lua_mainframe>::FunctionType _lua_mainframe::methods[] = {
 };
 
 Lunar<_lua_mainframe>::PropertyType _lua_mainframe::properties[] = {
-	{ "title"			, wrap( _lua_mainframe , &_window::getStrValue )		, wrap( _lua_mainframe , &_window::setStrValue ) },
-	{ "icon"			, wrap( _lua_mainframe , &_window::getIcon )			, wrap( _lua_mainframe , &_window::setIcon ) },
-	{ "minimized"		, wrap( _lua_mainframe , &_window::isMinimized )		, nullptr },
-	{ "maximized"		, wrap( _lua_mainframe , &_window::isMaximized )		, nullptr },
+	{ "title"			, wrap( _lua_mainframe , &_window::getStrValue )	, wrap( _lua_mainframe , &_window::setStrValue ) },
+	{ "icon"			, wrap( _lua_mainframe , &_window::getIcon )		, wrap( _lua_mainframe , &_window::setIcon ) },
+	{ "minimized"		, wrap( _lua_mainframe , &_window::isMinimized )	, nullptr },
+	{ "maximized"		, wrap( _lua_mainframe , &_window::isMaximized )	, nullptr },
 	LUA_CLASS_ATTR_END
 };

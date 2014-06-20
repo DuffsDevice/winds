@@ -4,7 +4,7 @@
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 #include "_gadget/gadget.image.h"
 #include "_gadget/gadget.textarea.h"
 
@@ -14,7 +14,7 @@ class _runtimeErrorDialog : public _dialog
 		
 		_button*		closeButton;
 		_label*			msg;
-		_window*		window;
+		_dialogWindow*	window;
 		_imageGadget*	image;
 		_textArea*		additionalInfo;
 		

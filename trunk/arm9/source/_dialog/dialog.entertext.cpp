@@ -29,29 +29,37 @@ _enterTextDialog::_enterTextDialog( string message , string windowLbl , string i
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 10 + this->textBox->getHeight() , 30 ) + 11; // + 11 for the window
 	
 	// Window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLbl , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLbl , _style::notResizeable );
 	
 	// Move Buttons
 	this->cancelButton->moveTo( winWidth - this->okButton->getWidth() - this->cancelButton->getWidth() - 4 , winHeight - this->cancelButton->getHeight() - 12 );
 	this->okButton->moveTo( winWidth - this->okButton->getWidth() - 3 , winHeight - this->cancelButton->getHeight() - 12 );
+	
+	// Stuff...
+	this->okButton->setInternalEventHandler( onMouseClick , make_callback( this , &_enterTextDialog::eventHandler ) );
+	this->textBox->setInternalEventHandler( onEdit , make_callback( this , &_enterTextDialog::eventHandler ) );
+	this->cancelButton->setInternalEventHandler( onMouseClick , make_callback( this , &_enterTextDialog::eventHandler ) );
+	this->window->setInternalEventHandler( onClose , make_callback( this , &_enterTextDialog::eventHandler ) );
+	this->textBox->triggerEvent( onEdit );
 	
 	// Add Gadgets
 	this->window->addChild( this->okButton );
 	this->window->addChild( this->cancelButton );
 	this->window->addChild( this->msg );
 	this->window->addChild( this->textBox );
-	
-	this->okButton->setInternalEventHandler( onMouseClick , make_callback( this , &_enterTextDialog::eventHandler ) );
-	this->cancelButton->setInternalEventHandler( onMouseClick , make_callback( this , &_enterTextDialog::eventHandler ) );
-	this->window->setInternalEventHandler( onClose , make_callback( this , &_enterTextDialog::eventHandler ) );
 }
 
 _callbackReturn _enterTextDialog::eventHandler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
+	// Text Box
+	if( that == this->textBox ){
+		this->okButton->setEnabled( !this->textBox->getStrValue().empty() );
+		return handled;
+	}
 	// OK-Button
-	if( that == this->okButton )
+	else if( that == this->okButton )
 		this->callCallback( _dialogResult::yes );
 	// Cancel-Button or Window-Close-Button
 	else if( that == this->cancelButton || that == this->window )

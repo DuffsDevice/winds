@@ -23,7 +23,7 @@ _yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string
 	_length winHeight = max( this->msg->getHeight() + this->noButton->getHeight() + 8 , 30 ) + 11; // + 11 for the window
 	
 	// Create Window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , _style::notResizeable );
 	
 	// Move Buttons to right position
 	this->yesButton->moveTo( winWidth - this->yesButton->getWidth() - 3 , winHeight - this->yesButton->getHeight() - 12 );

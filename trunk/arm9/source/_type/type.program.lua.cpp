@@ -54,7 +54,6 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.button.sticky.h"
 #include "_lua/lua.gadget.image.h"
 #include "_lua/lua.gadget.label.h"
-#include "_lua/lua.gadget.mainframe.h"
 #include "_lua/lua.gadget.scrollArea.h"
 #include "_lua/lua.gadget.scrollBar.h"
 #include "_lua/lua.gadget.progressbar.h"
@@ -66,6 +65,7 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.textarea.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.bar.h"
+#include "_lua/lua.gadget.window.mainframe.h"
 #include "_lua/lua.gadget.window.menu.h"
 #include "_lua/lua.gadget.resizehandle.h"
 

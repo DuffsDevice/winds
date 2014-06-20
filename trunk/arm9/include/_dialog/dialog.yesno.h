@@ -4,16 +4,16 @@
 #include "_type/type.dialog.h"
 #include "_gadget/gadget.button.h"
 #include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.h"
+#include "_gadget/gadget.window.dialog.h"
 
 class _yesNoDialog : public _dialog
 {
 	private:
 		
-		_button*	yesButton;
-		_button*	noButton;
-		_label*		msg;
-		_window*	window;
+		_button*		yesButton;
+		_button*		noButton;
+		_label*			msg;
+		_dialogWindow*	window;
 		
 		_callbackReturn eventHandler( _event );
 		

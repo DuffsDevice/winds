@@ -1,4 +1,4 @@
-#include "_gadget/gadget.mainframe.h"
+#include "_gadget/gadget.window.mainframe.h"
 #include "_type/type.program.h"
 #include "_controller/controller.gui.h"
 

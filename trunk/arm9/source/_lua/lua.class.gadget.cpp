@@ -178,6 +178,7 @@ int _lua_gadget::addEnhancedChild(lua_State* L){
 const char _lua_gadget::className[] = "Gadget";
 Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "applyStyle"					, &_lua_gadget::applyStyle },
+	{ "setEnabled"					, wrap( _lua_gadget , &_gadget::setEnabled ) },
 	{ "hasFocus"					, wrap( _lua_gadget , &_gadget::hasFocus ) },
 	{ "isSelected"					, wrap( _lua_gadget , &_gadget::isSelected ) },
 	{ "isPressed"					, wrap( _lua_gadget , &_gadget::isPressed ) },

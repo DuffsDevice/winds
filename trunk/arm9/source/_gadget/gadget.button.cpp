@@ -87,11 +87,15 @@ _callbackReturn _button::refreshHandler( _event event )
 		// Background
 		bP.fill( _color::fromRGB( 31 , 31 , 31 ) );
 		
-		if( that->autoSelect )
-		{
+		if( that->hasFocus() && that->isEnabled() ){
 			// Blue Border
 			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , _color::fromRGB( 18 , 22 , 31 ) );
 			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , _color::fromRGB( 26 , 29 , 31 ) );
+		}
+		else if( that->autoSelect && that->isEnabled() ){
+			// Blue Border
+			bP.drawRect( 1 	, 1 , myW - 2 , myH - 2 , _color::fromRGB8( 229 , 151 , 0 ) );
+			bP.drawRect( 2 	, 2 , myW - 4 , myH - 4 , _color::fromRGB8( 255 , 230 , 160 ) );
 		}
 		else
 		{
@@ -204,6 +208,8 @@ _button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	
 	// Register my handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_button::refreshHandler ) );
+	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onMouseEnter , make_callback( &_button::mouseHandler ) );
 	this->setInternalEventHandler( onMouseLeave , make_callback( &_button::mouseHandler ) );
 	this->setInternalEventHandler( onMouseRepeat , _gadgetHelpers::eventForward(onMouseClick) );

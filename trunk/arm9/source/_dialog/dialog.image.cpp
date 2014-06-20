@@ -41,7 +41,7 @@ _imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 7 , 30 ) + 11; // + 11 for the window
 	
 	// Creating the window
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLbl , _style::notResizeable );
 	
 	// Move buttons to right position
 	this->okButton->moveTo( winWidth - this->okButton->getWidth() - 3 , winHeight - this->okButton->getHeight() - 12 );

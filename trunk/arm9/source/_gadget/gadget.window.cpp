@@ -22,7 +22,7 @@ void _window::maximize()
 		
 		// Maximizing
 		this->setDimensions( maxDim );
-		this->setStyle( this->getStyle() | _style::notResizeable );
+		this->applyStyle( _style::notResizeable );
 		this->triggerEvent( onMaximize );
 	}
 }
@@ -47,7 +47,7 @@ void _window::unMaximize()
 		this->normalDimensions = nullptr;
 		
 		// Set back the old dimensions
-		this->setStyle( this->getStyle() | _style::resizeable );
+		this->applyStyle( _style::resizeable );
 		this->setDimensions( dims );
 		this->triggerEvent( onUnMaximize );
 	}

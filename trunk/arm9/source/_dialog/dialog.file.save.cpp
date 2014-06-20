@@ -61,7 +61,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Window
 	_length winWidth = labelWidth + buttonWidth + textBoxAndSelectWidth + 7;
 	_length winHeight = secondLineY + this->saveButton->getHeight() + 12;
-	this->window = new _window( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_save") , false , true , _style::notResizeable | _style::draggable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_save") , _style::notResizeable );
 	
 	
 	// FileView & Addressbar & Button
@@ -82,6 +82,8 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	this->cancelButton->setInternalEventHandler( onMouseClick , make_callback( this , &_fileSaveDialog::eventHandler ) );
 	this->fileTypeChooser->setInternalEventHandler( onEdit , make_callback( this , &_fileSaveDialog::eventHandler ) );
 	this->window->setInternalEventHandler( onClose , make_callback( this , &_fileSaveDialog::eventHandler ) );
+	this->fileNameBox->setInternalEventHandler( onEdit , make_callback( this , &_fileSaveDialog::eventHandler ) );
+	this->fileNameBox->triggerEvent( onEdit );
 	
 	
 	// Add Gadgets
@@ -137,6 +139,9 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 		this->fileView->setPath( path );
 	}
 	
+	// The Text Box
+	else if( that == this->fileNameBox )
+		this->saveButton->setEnabled( !this->fileNameBox->getStrValue().empty() );
 	// Cancel-Button or Window-Close-Button
 	else
 	{
