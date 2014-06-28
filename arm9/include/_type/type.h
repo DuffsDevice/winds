@@ -34,6 +34,7 @@ using std::move;
 using std::forward;
 using std::function;
 using std::ignore;
+using std::get;
 
 template<typename T>
 	using _list = std::list<T>;
@@ -63,6 +64,8 @@ using _2s16	= _2T<_s16,_u32>;
 using _2u16	= _2T<_u16,_u32>;
 using _2s8	= _2T<_s8,_u16>;
 using _2u8	= _2T<_u8,_u16>;
+using _pos	= _2T<_coord,_u32>;
+using _size	= _2T<_length,_u32>;
 	
 
 typedef std::basic_string<_char>	string;
@@ -99,35 +102,6 @@ enum class _dimension : _u8{
 	horizontal = 0 ,
 	vertical = 1
 };
-
-enum class _direction : _u8{
-	center = 0,
-	middle = center,
-	left = 4,
-	leftup = 5,
-	leftdown = 6,
-	up = 1,
-	upleft = leftup,
-	upright = 9,
-	down = 2,
-	downright = 10,
-	downleft = leftdown,
-	right = 8,
-	rightup = upright,
-	rightdown = downright,
-	
-	// Masks to filter
-	horizontalMask = 12,
-	verticalMask = 3
-};
-
-//! Filter a horizontal/vertical part out of a given direction
-static unused constexpr _direction getHorizontalPart( _direction dir ){
-	return _direction( _u8(dir) & _u8(_direction::horizontalMask) );
-}
-static unused constexpr _direction getVerticalPart( _direction dir ){
-	return _direction( _u8(dir) & _u8(_direction::verticalMask) );
-}
 
 //! Convert _dimension to string and back
 extern _toStr<_dimension>	dimension2string;

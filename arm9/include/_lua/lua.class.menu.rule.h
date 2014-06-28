@@ -9,8 +9,8 @@
 /**
  * Proxy Classes
  */
-class _lua_menurule : public _menuHandlerRule {
-	
+class _lua_menurule : public _menuHandlerRule
+{
 	public:
 		
 		//! Constructor

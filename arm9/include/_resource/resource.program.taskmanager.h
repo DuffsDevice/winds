@@ -23,7 +23,8 @@ class PROG_TaskManager : public _progC
 		_s8					lastMemoryValueY;
 		
 		void			main( _programArgs args );
-		void			destruct();
+		void			cleanUp();
+		
 		void			timerHandler();
 		static void		drawBorders( _bitmapPort& bP );
 		static _bitmap	getLogo();

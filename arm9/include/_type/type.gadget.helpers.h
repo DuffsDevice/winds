@@ -3,6 +3,10 @@
 
 #include "_type/type.h"
 #include "_type/type.gadget.h"
+#include "_type/type.menu.h"
+#include "_type/type.direction.h"
+
+class _contextMenu;
 
 namespace _gadgetHelpers
 {
@@ -105,11 +109,61 @@ namespace _gadgetHelpers
 				bool		breakLine : 1;
 				bool		respectAutoPosition : 1;
 				bool		skipHidden : 1;
-			}PACKED; 
+			}PACKED;
 			_callbackReturn executor( _event event ) const ;
 		public:
 			// Ctor
 			moveBesidePrecedent( _direction dim = _direction::down , _length spaceX = 0 , _length spaceY = 0 , bool breakLine = false , _length offsetX = 1 , _length offsetY = 1 , bool respectAutoPosition = true , bool skipHidden = true );
+	};
+	
+	//! Opens a context menu upon call
+	class openContextMenu : public _dummyCallback<_eventHandler>
+	{
+		private:
+			_menu*				menuToOpen;
+			bool				wasAllocated;
+			static _uniquePtr<
+				_contextMenu>	contextMenu;
+			_callbackReturn executor( _event event ) const ;
+			
+			static _gadget*		currentSubject;
+		public:
+		
+			// Get the gadget that last opened the context menu
+			static _gadget*		getCurrentSubject(){ return openContextMenu::currentSubject; }
+			
+			// Ctors
+			openContextMenu( _paramAlloc<_menu> menu ) :
+				_dummyCallback<_eventHandler>( &openContextMenu::executor )
+				, menuToOpen( menu )
+				, wasAllocated( true )
+			{}
+			openContextMenu( _menu* menu ) :
+				_dummyCallback<_eventHandler>( &openContextMenu::executor )
+				, menuToOpen( menu )
+				, wasAllocated( false )
+			{}
+			
+			// Move Ctor
+			openContextMenu( openContextMenu&& menu ) :
+				_dummyCallback<_eventHandler>( &openContextMenu::executor )
+				, menuToOpen( menu.menuToOpen )
+				, wasAllocated( menu.wasAllocated )
+			{
+				menu.wasAllocated = false;
+			}
+			
+			// No Copy Ctor
+			openContextMenu( const openContextMenu& menu ) = delete;
+			
+			// Dtor
+			~openContextMenu(){
+				if( this->wasAllocated ){
+					delete this->menuToOpen;
+					this->menuToOpen = nullptr;
+					this->wasAllocated = false;
+				}
+			}
 	};
 }
 

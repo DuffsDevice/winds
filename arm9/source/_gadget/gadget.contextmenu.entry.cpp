@@ -2,19 +2,21 @@
 #include "_gadget/gadget.contextmenu.h"
 #include "_controller/controller.font.h"
 #include "_controller/controller.gui.h"
+#include "_type/type.font.glyphs.h"
 
-_contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _int id , string value , _style&& style ) :
-	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , move(style) )
-	, text( move(value) )
-	, id( id )
+_contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _u16 index , _menuEntry value , _style&& style ) :
+	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , style | _style::notDoubleClickable )
+	, entry( move(value) )
+	, index( index )
 {
 	// Update The Size
 	this->setInternalEventHandler( onUpdate , make_callback( &_contextMenuEntry::updateHandler ) );
 	this->updateNow();
 	
 	// Register Handler
+	this->setInternalEventHandler( onSelect , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onDraw , make_callback( &_contextMenuEntry::refreshHandler ) );
-	this->setInternalEventHandler( onMouseDown, make_callback( &_contextMenuEntry::mouseHandler ) );
 	this->setInternalEventHandler( onMouseClick , make_callback( &_contextMenuEntry::mouseHandler ) );
 	
 	// Update & draw
@@ -32,16 +34,16 @@ _callbackReturn _contextMenuEntry::refreshHandler( _event event )
 	_fontHandle font = _fontController::getStandardFont();
 	_u8 fontSize = _fontController::getStandardFontSize();
 	
-	_contextMenu* parent = (_contextMenu*) that->getParent();
-	
-	//!@todo Manager using _gadget::isSelected()
-	bool drawHighlighted = parent && parent->getType() == _gadgetType::contextmenu ? that == parent->activeEntry : false;
-	
 	// Fill Background
-	bP.fill( _guiController::getItemBg( drawHighlighted ) );
+	bP.fill( _guiController::getItemBg( that->isSelected() ) );
 	
 	// Draw text
-	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->text , _guiController::getItemFg( drawHighlighted ) );
+	bP.drawString( 2 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , font , that->entry.text , _guiController::getItemFg( that->isSelected() ) );
+	
+	// If there is a sub menu connected
+	if( that->entry.linkedList )
+		// Draw little arrow
+		bP.drawString( that->getWidth() - 5 , ( ( that->getHeight() - 1 ) >> 1 ) - ( ( font->getAscent( fontSize ) + 1 ) >> 1 ) , _fontController::getFont("SystemSymbols8") , string( 1 , _glyph::arrowRight ) , _guiController::getItemFg( that->isSelected() ) );
 	
 	return handled;
 }
@@ -53,7 +55,7 @@ _callbackReturn _contextMenuEntry::updateHandler( _event event )
 	_fontHandle font = _fontController::getStandardFont();
 	_u8 fontSize = _fontController::getStandardFontSize();
 	
-	that->setWidthIfAuto( font->getStringWidth( that->text , fontSize ) + 3 );
+	that->setWidthIfAuto( font->getStringWidth( that->entry.text , fontSize ) + ( that->entry.linkedList ? 9 : 3 ) );
 	
 	return handled;
 }
@@ -65,17 +67,11 @@ _callbackReturn _contextMenuEntry::mouseHandler( _event event )
 	// Fetch contextMenu instance
 	_contextMenu* parent = (_contextMenu*) that->getParent();
 	
-	if( parent->getType() != _gadgetType::contextmenu )
+	if( !parent || parent->getType() != _gadgetType::contextmenu )
 		return not_handled;
 	
-	if( parent )
-	{
-		// Only close the contextMenu if the event is an 'onMouseClick'
-		if( event == onMouseClick )
-			parent->selectEntry( that );
-		else
-			parent->highlightEntry( that );
-	}
+	// Since this entry is already selected, submit the current value of the context menu
+	parent->submit();
 	
 	return handled;
 }

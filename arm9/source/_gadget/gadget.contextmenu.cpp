@@ -1,87 +1,101 @@
 #include "_gadget/gadget.contextmenu.h"
 #include "_gadget/gadget.contextmenu.entry.divider.h"
+#include "_controller/controller.debug.h"
 
-_contextMenu::_contextMenu( _optValue<_length> width , const _menuEntryList& list , _gadget* owner , bool preserveValue , _int initialValue , _style&& style ) :
+_contextMenu::_contextMenu( _optValue<_length> width , _menu* content , _gadget* owner , bool preserveValue , _int initialValue , _u16 mainList , _style&& style ) :
 	_popup( width , ignore , owner )
-	, selectedEntry( nullptr )
-	, activeEntry( nullptr )
 	, preserveValue( preserveValue )
+	, wasMenuAllocated( true )
+	, mainList( mainList )
+	, menu( content )
+	, currentValue( initialValue )
 {
 	_gadget::setType( _gadgetType::contextmenu );
 	_gadget::setPadding( _padding( 1 , 1 , 1 , 1 ) );
 	
+	// Register Update handler
+	this->setInternalEventHandler( onUpdate , make_callback( &_contextMenu::updateHandler ) );
+	
+	// Generate _contextMenuEntry's
+	this->updateNow();
+	
 	// Register Handlers
 	this->setInternalEventHandler( onDraw , make_callback( &_contextMenu::refreshHandler ) );
 	this->setInternalEventHandler( onOpen , make_callback( &_contextMenu::openHandler ) );
+	this->setInternalEventHandler( onClose , make_callback( &_contextMenu::closeHandler ) );
 	this->setInternalEventHandler( onKeyDown , make_callback( &_contextMenu::keyHandler ) );
 	this->setInternalEventHandler( onKeyRepeat , make_callback( &_contextMenu::keyHandler ) );
-	
-	// Generate _contextMenuEntry's
-	this->generateChildren( list );
-	
-	// Select initial value
-	if( preserveValue )
-	{
-		const _gadgetList& children = this->getChildren( false );
-		
-		_gadgetList::const_iterator entry = find_if(
-			children.cbegin()
-			, children.cend()
-			, [initialValue]( _gadget* entry )->bool{
-				return ((_contextMenuEntry*)entry)->getIntValue() == initialValue;
-			}
-		);
-		
-		if( entry == children.cend() || !*entry )
-			return;
-		
-		// Write new entry in attribute
-		this->activeEntry = this->selectedEntry = (_contextMenuEntry*)(*entry);
-		
-		// Redraw the new one since it should be highlighted
-		this->activeEntry->redraw();
+	this->setUserEventHandler( onBlur , make_callback( &_contextMenu::blurHandler ) );
+}
+
+_contextMenuEntry* _contextMenu::getEntryFromValue( _u16 value ) const
+{
+	for( _gadget* gadget : this->getChildren( false ) ){
+		_contextMenuEntry* entry = (_contextMenuEntry*)gadget;
+		if( (_u16)entry->getIntValue() == value )
+			return entry;
 	}
+	return nullptr;
 }
 
 _contextMenu::~_contextMenu(){
 	this->removeChildren(true);
 }
 
-void _contextMenu::selectEntry( _contextMenuEntry* gadget )
+void _contextMenu::submit()
 {
-	// something changed?
-	if( gadget != this->selectedEntry )
-	{
-		// Apply value
-		this->selectedEntry = gadget;
-		
-		// Inform that something changed
-		this->triggerEvent( onEdit );
+	_contextMenuEntry* child = (_contextMenuEntry*)this->getSelectedChild();
+	
+	if( !child ){
+		this->shelve( true ); // Hide contextmenu
+		return;
 	}
 	
-	// Hide contextmenu
-	this->shelve( true );
-}
-
-void _contextMenu::highlightEntry( _contextMenuEntry* gadget )
-{
-	// Check if that entry isn't already highlighted
-	if( this->activeEntry != gadget )
-	{
-		// Store previous _contextMenuEntry in temporary variable
-		_gadget* temp = this->activeEntry;
+	// something changed?
+	if( child->getIntValue() != this->currentValue ){
+		this->currentValue = child->getIntValue();
 		
-		// Write new entry in attribute
-		this->activeEntry = gadget;
-		
-		// Refresh both the old and the new entry
-		if( temp )
-			temp->redraw();
-		if( this->activeEntry )
-			this->activeEntry->redraw();
+		if( !child->hasSubMenu() ){
+			this->triggerEvent( onEdit ); // Inform that I changed my value
+			this->menu->callHandler( this->mainList , child->getIntValue() );
+		}
 	}
+	
+	if( child->hasSubMenu() ){
+		if( this->curOpenedSubMenu && this->curOpenedSubMenu->isOpened() && this->curOpenedSubMenu->getListIndex() == child->getSubMenu() ){
+			this->curOpenedSubMenu->shelve( true );
+			this->curOpenedSubMenu = nullptr;
+		}
+		else{
+			this->curOpenedSubMenu = new _contextMenu( this->getWidth() , this->menu , this , this->preserveValue , -1 , child->getSubMenu() );
+			this->curOpenedSubMenu->setUserEventHandler( onClose , make_callback( this , &_contextMenu::subMenuCloseHandler ) );
+			this->curOpenedSubMenu->show( child->getAbsoluteDimensions() ); // Show
+		}
+	}
+	else
+		this->shelve( true ); // Hide contextmenu
+	
+	this->menu->callHandler( this->mainList , child->getIntValue() );
 }
 
+_callbackReturn _contextMenu::subMenuCloseHandler( _event event )
+{
+	if( !this->hasFocus() )
+		this->shelve( this->getOwner() && this->getOwner()->getType() != _gadgetType::contextmenu );
+	
+	return use_internal;
+}
+
+_callbackReturn _contextMenu::blurHandler( _event event )
+{
+	// Fetch Gadget
+	_contextMenu* that = event.getGadget<_contextMenu>();
+	
+	if( that->curOpenedSubMenu && that->curOpenedSubMenu->isOpened() )
+		return handled;
+	
+	return use_internal;
+}
 _callbackReturn _contextMenu::refreshHandler( _event event )
 {
 	// Fetch Gadget
@@ -115,49 +129,54 @@ _callbackReturn _contextMenu::keyHandler( _event event )
 	// Fetch Gadget
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
+	// Variable to determine the next selected entry
+	_contextMenuEntry* next = (_contextMenuEntry*) that->getSelectedChild();
+	
 	if( event.getKeyCode() == _key::down )
 	{
-		_contextMenuEntry* next = that->activeEntry;
 		if( next ){
 			do
 				next = (_contextMenuEntry*) next->getSubcedentChild();
-			while( next && next->getStrValue() == "----" );
+			while( next && next->getStrValue() == _menu::divider );
 			if( next ){
-				that->highlightEntry( next );
+				next->select();
 				return handled;
 			}
 		}
+		// Start again from the beginning of the list
 		next = (_contextMenuEntry*) that->getToppestChild( false );
 		if( next ){
-			while( next && next->getStrValue() == "----" )
+			while( next && next->getStrValue() == _menu::divider )
 				next = (_contextMenuEntry*) next->getSubcedentChild();
 			if( next )
-				that->highlightEntry( next );
+				next->select();
 		}
 	}
 	else if( event.getKeyCode() == _key::up )
 	{
-		_contextMenuEntry* next = that->activeEntry;
 		if( next ){
 			do
 				next = (_contextMenuEntry*) next->getPrecedentChild();
-			while( next && next->getStrValue() == "----" );
+			while( next && next->getStrValue() == _menu::divider );
 			if( next ){
-				that->highlightEntry( next );
+				next->select();
 				return handled;
 			}
 		}
+		// Start again from the end of the list
 		next = (_contextMenuEntry*) that->getLowestChild( false );
 		if( next ){
-			while( next && next->getStrValue() == "----" )
+			while( next && next->getStrValue() == _menu::divider )
 				next = (_contextMenuEntry*) next->getPrecedentChild();
 			if( next )
-				that->highlightEntry( next );
+				next->select();
 		}
 	}
 	else if( event.getKeyCode() == _key::a ) //!@todo move KEY_A into rtA!
-		that->selectEntry( that->activeEntry );
-	else if( event.getKeyCode() == _key::b ) //!@todo move KEY_B into rtA!
+		that->submit();
+	else if( event.getKeyCode() == _key::right && next && next->hasSubMenu() )
+		that->submit();
+	else if( event.getKeyCode() == _key::b || event.getKeyCode() == _key::left ) //!@todo move KEY_B into rtA!
 		that->shelve( true );
 	
 	return handled;
@@ -168,14 +187,23 @@ _callbackReturn _contextMenu::closeHandler( _event event )
 	// Fetch Gadget
 	_contextMenu* that = event.getGadget<_contextMenu>();
 	
+	_contextMenuEntry* entry = (_contextMenuEntry*) that->getSelectedChild();
+	
 	// Restore active entry
-	if( that->activeEntry != that->selectedEntry && that->preserveValue )
+	if( entry )
 	{
-		_contextMenuEntry* entry = that->activeEntry;
-		that->activeEntry = that->selectedEntry;
-		
-		entry->redraw();
-		that->activeEntry->redraw();
+		if( (_u16)entry->getIntValue() != that->currentValue && that->preserveValue ){
+			_contextMenuEntry* initialEntry = that->getEntryFromValue( that->currentValue );
+			if( initialEntry )
+				initialEntry->select();
+		}
+		else
+			entry->deselect();
+	}
+	
+	if( that->curOpenedSubMenu ){
+		that->curOpenedSubMenu->shelve( false );
+		that->curOpenedSubMenu = nullptr;
 	}
 	
 	return handled;
@@ -200,59 +228,58 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	that->setHeight( that->getLowestChild( false )->getDimensions().getY2() + 3 );
 	
 	// Possibly unhighlight the old entry
-	if( !that->preserveValue )
-	{
-		that->selectedEntry = nullptr;
-		that->highlightEntry( nullptr );
-	}
-	else
-		that->highlightEntry( that->selectedEntry );
+	if( !that->preserveValue && that->getSelectedChild() )
+		that->getSelectedChild()->deselect();
 	
 	return handled;
 }
 
-void _contextMenu::setIntValue( _int id ){
+void _contextMenu::setIntValue( _u16 entryId )
+{
 	const _gadgetList& list = this->getChildren( false );
 	
-	_gadgetList::const_iterator entry = find_if(
+	_gadgetList::const_iterator iter = find_if(
 		list.begin()
 		, list.end()
-		, [id]( _gadget* entry )->bool{
-			return ((_contextMenuEntry*)entry)->getIntValue() == id;
+		, [entryId]( _gadget* entry )->bool{
+			return (_u16)((_contextMenuEntry*)entry)->getIntValue() == entryId;
 		}
 	);
-	if( entry != this->getChildren( false ).end() )
-		this->selectEntry( ((_contextMenuEntry*)*entry) );
+	if( iter != this->getChildren( false ).end() )
+		(*iter)->select();
 }
 
-void _contextMenu::generateChildren( const _menuEntryList& list )
+_callbackReturn _contextMenu::updateHandler( _event event )
 {
-	this->removeChildren( true );
+	_contextMenu* that = event.getGadget<_contextMenu>();
 	
-	_optValue<_length> val = this->hasAutoWidth() ? _optValue<_length>( ignore ) : _optValue<_length>( this->getWidth() - 2 );
-	for( const _pair<_int,string>& entry : list )
+	that->removeChildren( true );
+	
+	// Determine new width for all entries
+	_optValue<_length> val = that->hasAutoWidth() ? _optValue<_length>( ignore ) : _optValue<_length>( that->getWidth() - 2 );
+	
+	// Iterate through list
+	for( const _pair<_u16,_menuEntry>& entry : that->getList() )
 	{
 		_contextMenuEntry* cM;
 		
-		if( entry.second != "----" )
+		if( entry.second.text != _menu::divider )
 			cM = new _contextMenuEntry( _optValue<_length>(val) , entry.first , entry.second );
 		else
 			cM = new _contextMenuEntryDivider();
 		
 		cM->setInternalEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::down , 0 , 0 , false , 0 , 0 ) );
-		this->addChild( cM , true );
+		that->addChild( cM , true );
 	}
-}
-
-_menuEntryList _contextMenu::getList()
-{
-	_menuEntryList list;
 	
-	for( _gadget* g : this->getChildren( false ) )
+	// Select initial value
+	if( that->preserveValue )
 	{
-		_contextMenuEntry* entry = ((_contextMenuEntry*)g);
-		list.insert( make_pair(entry->getIntValue(), entry->getStrValue()) );
+		_contextMenuEntry* entryToSelect = that->getEntryFromValue( that->currentValue );
+		
+		if( entryToSelect )
+			entryToSelect->select(); // Focus this entry
 	}
 	
-	return list;
+	return handled;
 }

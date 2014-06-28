@@ -3,6 +3,7 @@
 
 #include "_type/type.h"
 #include "_type/type.gadget.h"
+#include "_type/type.direction.h"
 
 class _popup : public _gadget
 {
@@ -19,14 +20,14 @@ class _popup : public _gadget
 		
 		//! Shows the popup at the specified position on the screen
 		void show( _coord x , _coord y , bool rightDownOnly = true );
-		void show( _2s32 pos , bool rightDownOnly = true ){
+		void show( _pos pos , bool rightDownOnly = true ){
 			show( pos.first , pos.second , rightDownOnly );
 		}
 		void show( _rect object , bool rightDownOnly = true );
 		
 		//! Shows the popup centered at the specified position
 		void showCentered( _coord x , _coord y );
-		void showCentered( _2s32 pos ){
+		void showCentered( _pos pos ){
 			show( pos.first , pos.second );
 		}
 		
@@ -35,7 +36,7 @@ class _popup : public _gadget
 		
 		//! Toggle between hidden and shown
 		void toggle( _coord x , _coord y , bool rightDownOnly = true );
-		void toggle( _2s32 pos , bool rightDownOnly = true ){
+		void toggle( _pos pos , bool rightDownOnly = true ){
 			toggle( pos.first , pos.second , rightDownOnly );
 		}
 		void toggle( _rect object , bool rightDownOnly = true );

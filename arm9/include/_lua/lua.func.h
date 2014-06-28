@@ -9,6 +9,7 @@
 #include "_type/type.font.h"
 #include "_type/type.color.h"
 #include "_type/type.style.h"
+#include "_type/type.direction.h"
 #include "_type/type.bitmap.h"
 #include "_type/type.bitmap.port.h"
 #include "_type/type.assocvector.h"
@@ -19,6 +20,7 @@
 #include "_type/type.shortstring.h"
 #include "_type/type.program.args.h"
 #include "_type/type.imagefile.h"
+#include "_type/type.menu.h"
 #include <type_traits>
 
 enum class _eventCallType : _u8;
@@ -33,7 +35,7 @@ namespace _luafunc
 	void	pushEvent( lua_State* state , _event&& );
 	void	pushRect( lua_State* state , _rect&& );
 	void	pushArea( lua_State* state , _area&& );
-	void	pushBitmap( lua_State* state , const _bitmap& );
+	void	pushBitmap( lua_State* state , _bitmap&& );
 	void	pushBitmapRef( lua_State* state , _bitmap& );
 	void	pushBitmapPort( lua_State* state , _bitmapPort&& );
 	void	pushGadget( lua_State* state , _gadget* );
@@ -43,6 +45,8 @@ namespace _luafunc
 	void	pushHWKP( lua_State* state , _hardwareKeyPattern&& );
 	void	pushColor( lua_State* state , _color&& );
 	void	pushMimeType( lua_State* state , _mimeType&& );
+	void	pushMenu( lua_State* state , _menu&& );
+	void	pushMenuRef( lua_State* state , _menu& );
 }
 
 #include "_lua/lua.func.isa.h"
@@ -116,6 +120,8 @@ namespace _luafunc
 	static unused Ret lightcheck( lua_State* state , int index , ParamType&& fallback = ParamType() ){
 		if( _luafunc::is_a<T>( state , index ) )
 			return _luafunc::check<T>( state , index );
+		else if( !lua_isnil( state , index ) ) // Wrong type supplied
+			lua_tagerror( state , index , LUA_TNIL );
 		return move(fallback);
 	}
 	

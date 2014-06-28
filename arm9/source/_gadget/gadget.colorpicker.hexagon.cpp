@@ -13,36 +13,36 @@ const _length hexagonHeight				= 7;
 const _coord hexagonStartX[13]			= { 25 , 21 , 17 , 13 , 9 , 5 , 1 , 5 , 9 , 13 , 17 , 21 , 25 };
 const _coord hexagonNumberPerLine[13]	= { 7 , 8 , 9 , 10 , 11 , 12 , 13 , 12 , 11 , 10 , 9 , 8 , 7 };
 
-_2s32 _hexagonColorPicker::getHexagonSize( _s16 number )
+_size _hexagonColorPicker::getHexagonSize( _s16 number )
 {
 	if( number == 127 || number == 144 )
-		return _2s32( 15 , 16 ); // White or Black
-	return _2s32( hexagonWidth , hexagonHeight );
+		return _size( 15 , 16 ); // White or Black
+	return _size( hexagonWidth , hexagonHeight );
 }
 
-_2s32 _hexagonColorPicker::getHexagonPos( _s16 number )
+_pos _hexagonColorPicker::getHexagonPos( _s16 number )
 {
 	if( number < 0 )
-		return _2s32(0);
+		return _pos(0);
 	
 	for( _u8 curRow = 0 ; curRow < 13 ; curRow++ )
 	{
 		if( number < hexagonNumberPerLine[curRow] )
-			return _2s32( 1 + hexagonStartX[curRow] + number * hexagonWidth , 1 + hexagonHeight * curRow );
+			return _pos( 1 + hexagonStartX[curRow] + number * hexagonWidth , 1 + hexagonHeight * curRow );
 		number -= hexagonNumberPerLine[curRow];
 	}
 	if( number == 0 )
-		return _2s32( 1 , COLORPICKER_BW_START_Y ); // White
+		return _pos( 1 , COLORPICKER_BW_START_Y ); // White
 	if( number >= 17 )
-		return _2s32( 89 , COLORPICKER_BW_START_Y ); // Black
-	return _2s32( 15 + 4 * number , COLORPICKER_BW_START_Y + ( (number+1) & 1 ) * 7 );
+		return _pos( 89 , COLORPICKER_BW_START_Y ); // Black
+	return _pos( 15 + 4 * number , COLORPICKER_BW_START_Y + ( (number+1) & 1 ) * 7 );
 }
 
 _color _hexagonColorPicker::getHexagonColor( _s16 number ){
 	if( number < 0 )
 		return _color::transparent;
 	
-	_2s32 pos = getHexagonPos( number );
+	_pos pos = getHexagonPos( number );
 	return BMP_ColorPicker().getPixel( pos.first + 3 , pos.second + 1 );
 }
 
@@ -102,7 +102,7 @@ _callbackReturn _hexagonColorPicker::refreshHandler( _event event )
 	bP.copyTransparent( 1 , COLORPICKER_BW_START_Y , BMP_ColorPickerGreyscale() );
 	
 	if( that->hexagonNumber >= 0 ){
-		_2s32 position = _hexagonColorPicker::getHexagonPos( that->hexagonNumber );
+		_pos position = _hexagonColorPicker::getHexagonPos( that->hexagonNumber );
 		if( _hexagonColorPicker::getHexagonSize( that->hexagonNumber ).first > hexagonWidth )
 			bP.copyTransparent( position.first , position.second , BMP_ColorPickerOverlayBig() );
 		else

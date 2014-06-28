@@ -33,9 +33,14 @@ class _lua_gadget{
 		
 		//! Get underlying _gadget instance
 		_gadget* getGadget(){ return this->gadget; }
-		operator _gadget&(){ return *this->gadget; }
+		template<typename T>
+		T* getGadget() const {
+			unused typedef typename T::_gadget def; // Tests if the supplied param is a subclass of _gadget
+			return static_cast<T*>( this->gadget );
+		}
 		
-		//! Get the internal _gadget pointer casted to a derived class of _gadget
+		//! Get the internal _gadget pointer casted to a derived class of _gadget or _gadget itself
+		operator _gadget&(){ return *this->gadget; }
 		template<typename T>
 		operator T&()
 		{

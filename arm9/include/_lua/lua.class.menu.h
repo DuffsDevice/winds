@@ -9,20 +9,30 @@
 /**
  * Proxy Classes
  */
-class _lua_menu : public _menu {
-	
+class _lua_menu
+{
+	private:
+		
+		_menu*	menu;
+		bool	wasAllocated;
+		
 	public:
 		
 		//! Constructor
 		_lua_menu( lua_State* L );
 		
 		//! C++ - Ctors
-		_lua_menu( const _menu& menu ) :
-			_menu( menu )
+		_lua_menu( _menu& menu ) :
+			menu( &menu )
+			, wasAllocated( false )
 		{}
 		_lua_menu( _menu&& menu ) :
-			_menu( move(menu) )
+			menu( new _menu( move(menu) ) )
+			, wasAllocated( true )
 		{}
+		
+		//! Cast to _menu&
+		operator _menu&(){ return *this->menu; }
 		
 		//! addMenuHandler
 		int addMenuHandler(lua_State* L);
@@ -32,9 +42,6 @@ class _lua_menu : public _menu {
 		
 		//! getList
 		int getList(lua_State* L);
-		
-		//! clear
-		int clear(lua_State* L);
 		
 		//! callHandler
 		int callHandler(lua_State* L);

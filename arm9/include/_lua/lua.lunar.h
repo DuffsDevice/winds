@@ -521,7 +521,7 @@ class Lunar
 		typedef LunarHelper::FunctionType<Class>	FunctionType;
 		typedef typename LunarHelper::StaticType	StaticType;
 		
-		// Push objects on the lua stack
+		// Push an object on the lua stack using a pointer to it
 		static void push( lua_State* state , Class* instance )
 		{
 			if( instance ) // Make sure the pointer passed is not null
@@ -534,6 +534,19 @@ class Lunar
 			}
 			else
 				lua_pushnil( state );
+		}
+		
+		// Push an object on the lua stack
+		template<typename... Arguments>
+		static void push( lua_State* state , Arguments... parameters )
+		{
+			Class* instance = new Class( std::forward<Arguments>(parameters)... );
+			
+			Class **instancePtr = static_cast<Class**>( lua_newuserdata( state , sizeof(Class*) ) ); // Create userdata
+			*instancePtr = instance; // Write pointer
+			
+			luaL_getmetatable( state , Class::className );	// Get metatable
+			lua_setmetatable( state , -2 );					// Apply to object
 		}
 		
 		// Check for objects of 'Class' on the Lua-Stack at position 'narg'

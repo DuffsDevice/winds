@@ -1,6 +1,6 @@
 #include "_type/type.menu.h"
 
-void _menu::callHandler( _int listIndex , _int entryIndex )
+void _menu::callHandler( _u16 listIndex , _u16 entryIndex ) const
 {
 	// Sort list!
 	if( !this->sorted )
@@ -23,8 +23,7 @@ void _menu::callHandler( _int listIndex , _int entryIndex )
 	}
 }
 
-
-const _menuEntryList& _menu::getListInternal( _int index ) const {
+const _menuEntryList& _menu::getList( _u16 index ) const {
 	auto it = this->find( index );
 	if( it == this->end() ){
 		static auto ret = _menuEntryList();
@@ -32,3 +31,14 @@ const _menuEntryList& _menu::getListInternal( _int index ) const {
 	}
 	return it->second;
 }
+
+_menuEntryList& _menu::getList( _u16 index ){
+	auto it = this->find( index );
+	if( it == this->end() ){
+		static auto ret = _menuEntryList();
+		return ret;
+	}
+	return it->second;
+}
+
+_literal _menu::divider = "----";

@@ -19,15 +19,15 @@ DATA		:=	data
 INCLUDES	:=	include \
 				../common/include
 SOURCES		:=	source \
-				source/_resource \
 				source/_gadget \
 				source/_lua \
 				source/_type \
-				source/_library \
 				source/_gui \
 				source/_dialog \
 				source/_controller \
 				source/_screen \
+				source/_library \
+				source/_resource \
 				../common/source/_type \
 				../common/source
 

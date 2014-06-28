@@ -46,8 +46,8 @@ class _rect{
 				//! Relativate all rects
 				_area& toRelative( const _coord absX , const _coord absY );
 				_area toRelative( const _coord absX , const _coord absY ) const ;
-				_area& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
-				_area toRelative( const _2s32 position ) const { return this->toRelative( position.first , position.second ); }
+				_area& toRelative( const _pos position ){ return this->toRelative( position.first , position.second ); }
+				_area toRelative( const _pos position ) const { return this->toRelative( position.first , position.second ); }
 				
 				//! Clip all rects to the supplied one
 				_area& clipToIntersect( const _rect& limits );
@@ -80,7 +80,7 @@ class _rect{
 		 * @param pos (X|Y)-Position
 		 * @param size (width|height)
 		 */
-		_rect( _2s32 pos , _2s32 size ) : width( size.first ) , height( size.second ) , x( pos.first ) , y( pos.second ) {}
+		_rect( _pos pos , _size size ) : width( size.first ) , height( size.second ) , x( pos.first ) , y( pos.second ) {}
 		
 		//! All about Setters and Getters...
 		_coord getX2() const { return x + _coord(width) - 1; }
@@ -96,7 +96,7 @@ class _rect{
 		//! Check for reasonable dimensions
 		bool isValid() const { return width > 0 && height > 0 ; }
 		
-		bool contains( const _2s32 position ) const { return this->contains( position.first , position.second ); }
+		bool contains( const _pos position ) const { return this->contains( position.first , position.second ); }
 		bool contains( const _coord x , const _coord y ) const {
 			return !( x < this->x || y < this->y || x > getX2() || y > getY2() );
 		}
@@ -113,8 +113,8 @@ class _rect{
 		
 		//! Make the Rect Relative to a specific position
 		//! absX and absY specify to what the resulting rectangle will be relative
-		_rect& toRelative( const _2s32 position ){ return this->toRelative( position.first , position.second ); }
-		_rect toRelative( const _2s32 position ) const { return this->toRelative( position.first , position.second ); }
+		_rect& toRelative( const _pos position ){ return this->toRelative( position.first , position.second ); }
+		_rect toRelative( const _pos position ) const { return this->toRelative( position.first , position.second ); }
 		_rect& toRelative( const _coord absX , const _coord absY ){
 			this->x -= absX; this->y -= absY; return *this;
 		}

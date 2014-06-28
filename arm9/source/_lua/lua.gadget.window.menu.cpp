@@ -18,8 +18,7 @@ _lua_windowmenu::_lua_windowmenu( lua_State* L ) :
 }
 
 int _lua_windowmenu::getStandardMenu( lua_State* L ){
-	Lunar<_lua_menu>::push( L , new _lua_menu( _windowMenu::getStandardMenu() ) );
-	return 1;
+	return push( L , _windowMenu::getStandardMenu() );
 }
 
 //! Lua-Name

@@ -47,6 +47,7 @@ using namespace _luafunc;
 #include "_lua/lua.gadget.checkbox.h"
 #include "_lua/lua.gadget.calendar.h"
 #include "_lua/lua.gadget.clock.h"
+#include "_lua/lua.gadget.contextmenu.h"
 #include "_lua/lua.gadget.counter.h"
 #include "_lua/lua.gadget.colorpicker.gradient.h"
 #include "_lua/lua.gadget.colorpicker.hexagon.h"
@@ -106,6 +107,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "WindowMenu" , &Lunar<_lua_windowmenu>::install ),
 	make_tuple( "UI" , "Calendar" , &Lunar<_lua_calendar>::install ),
 	make_tuple( "UI" , "Counter" , &Lunar<_lua_counter>::install ),
+	make_tuple( "UI" , "ContextMenu" , &Lunar<_lua_contextmenu>::install ),
 	make_tuple( "UI" , "HexagonColorPicker" , &Lunar<_lua_hexagoncolorpicker>::install ),
 	make_tuple( "UI" , "GradientColorPicker" , &Lunar<_lua_gradientcolorpicker>::install ),
 	make_tuple( "UI" , "ImageGadget" , &Lunar<_lua_imagegadget>::install ),

@@ -49,7 +49,7 @@ class _singleLineGuiString : public _guiString
 		void		drawTo( _rect guiStringDimensions , _bitmapPort& port );
 		
 		//! Get the [X-Coordinate,width] of the specific letter
-		_2s32		getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const ;
+		_2s16		getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const ;
 		
 		//! Get the preferred Width of the gui-string
 		_length		getTextWidth() const { return this->lineWidth; }

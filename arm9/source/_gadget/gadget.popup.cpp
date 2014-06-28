@@ -160,18 +160,15 @@ void _popup::shelve( bool focusOwner )
 	
 	this->opened = false;
 	
-	// Trigger Check-Event
-	if( this->handleEvent( onClose ) == prevent_default ){
-		this->opened = true;
-		return;
-	}
-	
 	// Unbind from the tree
 	this->setParent( nullptr );
 	
 	// Give back the focus
 	if( focusOwner && this->owner )
 		this->owner->focus();
+	
+	// Trigger Check-Event
+	this->triggerEvent( onClose );
 }
 
 void _popup::toggle( _rect object , bool rightDownOnly )

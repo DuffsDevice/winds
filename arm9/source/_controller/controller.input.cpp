@@ -65,8 +65,11 @@ void _inputController::frame()
 		_desktopScreen* win = (_desktopScreen*)currentHost;
 		win->toggleStartMenu();
 	}
+	
+	if( !currentFocus )
+		currentFocus = _guiController::getHost();
 
-	if( !currentFocus && !_guiController::getHost() )
+	if( !currentFocus )
 		return;
 	
 	/**
@@ -87,18 +90,12 @@ void _inputController::frame()
 		{
 			if( heldCycles[i] == 0 )
 			{
-				if( currentFocus )
-					currentFocus->triggerEvent( event.setType( onKeyDown ) );
-				else
-					currentHost->triggerEvent( event.setType( onKeyDown ) );
+				currentFocus->triggerEvent( event.setType( onKeyDown ) );
 			}
 			else if( _guiController::getKeyRepetitionDelay() && heldCycles[i] > _guiController::getKeyRepetitionDelay() && heldCycles[i] % _guiController::getKeyRepetitionPause() == 0 )
 			{
-				// Set the Args and Trigger the Event
-				if( currentFocus )
-					currentFocus->triggerEvent( event.setType( onKeyRepeat ) );
-				else
-					currentHost->triggerEvent( event.setType( onKeyRepeat ) );
+				// Set parameters and trigger Event
+				currentFocus->triggerEvent( event.setType( onKeyRepeat ) );
 			}
 			
 			// Increase Cycles
@@ -111,19 +108,12 @@ void _inputController::frame()
 			event.setType( onKeyUp );
 			
 			// Trigger the Event
-			if( currentFocus )
-				currentFocus->triggerEvent( event );
-			else
-				currentHost->triggerEvent( event );
-			
+			currentFocus->triggerEvent( event );
 			
 			// If keyup is fast enough, trigger keyClick
 			if( heldCycles[i] < _guiController::getMaxClickPeriod() )
 			{
-				if( currentFocus )
-					currentFocus->triggerEvent( event.setType( onKeyClick ) );
-				else
-					currentHost->triggerEvent( event.setType( onKeyClick ) );
+				currentFocus->triggerEvent( event.setType( onKeyClick ) );
 			}
 			
 			// Reset Cycles

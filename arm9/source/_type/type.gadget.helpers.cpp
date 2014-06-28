@@ -1,4 +1,5 @@
 #include "_gadget/gadget.fileobject.h"
+#include "_gadget/gadget.contextmenu.h"
 #include "_type/type.gadget.helpers.h"
 
 namespace _gadgetHelpers
@@ -6,14 +7,14 @@ namespace _gadgetHelpers
 	// eventForwardRefresh :: handler
 	_callbackReturn eventForwardRefresh::executor( _event event ){
 		event.getGadget()->redraw();
-		return handled;
+		return use_internal;
 	}
 	
 	// eventForwardRefreshGadget :: handler
 	_callbackReturn eventForwardRefreshGadget::executor(_event) const {
 		if( this->newGadget )
 			this->newGadget->redraw();
-		return handled;
+		return use_internal;
 	}
 	
 	// eventForward :: handler
@@ -196,4 +197,38 @@ namespace _gadgetHelpers
 		
 		return use_internal;
 	}
+	
+	// openContextMenu :: handler
+	_callbackReturn openContextMenu::executor( _event event ) const
+	{
+		// Receive Gadget
+		_gadget* that = event.getGadget();
+		
+		_uniquePtr<_contextMenu>& contextMenu = openContextMenu::contextMenu;
+		if( contextMenu ){
+			contextMenu->shelve( false );
+			contextMenu = nullptr;
+		}
+		contextMenu = new _contextMenu( ignore , this->menuToOpen , that );
+		
+		switch( event.getType() )
+		{
+			case onMouseDown:
+			case onMouseUp:
+			case onMouseClick:
+			case onMouseDblClick:
+			case onMouseRightClick:
+				contextMenu->show( event.getPos() + that->getAbsolutePosition() );
+				break;
+			default:
+				contextMenu->show( that->getAbsoluteDimensions() );
+		}
+		
+		openContextMenu::currentSubject = that;
+		
+		return use_internal;
+	}
+	
+	_uniquePtr<_contextMenu>	openContextMenu::contextMenu;
+	_gadget*					openContextMenu::currentSubject = nullptr;
 }

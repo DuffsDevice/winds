@@ -45,13 +45,13 @@ class _multiLineGuiString : public _guiString
 		void		drawTo( _rect guiStringDimensions , _bitmapPort& port );
 		
 		//! Get the [Y-Coordinate,height] of the supplied line
-		_2s32		getYMetricsOfLine( _rect guiStringDimensions , _lineNumber lineNumber ) const ;
+		_2s16		getYMetricsOfLine( _rect guiStringDimensions , _lineNumber lineNumber ) const ;
 		
 		//! Get the [X-Coordinate,width] of the supplied line
-		_2s32		getXMetricsOfLine( _rect guiStringDimensions , _lineNumber lineNumber ) const ;
+		_2s16		getXMetricsOfLine( _rect guiStringDimensions , _lineNumber lineNumber ) const ;
 		
 		//! Get the [X-Coordinate,width] of the specific letter
-		_2s32		getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const ;
+		_2s16		getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const ;
 		
 		
 		//////////////////////////////////////////

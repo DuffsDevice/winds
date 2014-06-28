@@ -15,8 +15,8 @@ _lua_bitmap::_lua_bitmap( _bitmap& b ) :
 	, wasAllocated( false )
 { }
 
-_lua_bitmap::_lua_bitmap( const _bitmap& b ) :
-	bm( new _bitmap(b) ) // Copy bitmap
+_lua_bitmap::_lua_bitmap( _bitmap&& b ) :
+	bm( new _bitmap( move(b) ) )
 	, wasAllocated( true )
 { }
 

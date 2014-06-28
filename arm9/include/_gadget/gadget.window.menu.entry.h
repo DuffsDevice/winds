@@ -11,11 +11,10 @@ class _windowMenuEntry : public _gadget
 	private:
 		
 		// Text to display
-		string	text;
-		_s32	listReference;
+		_menuEntry		entryIndex;
 		
 		// contextmenu that should be opened up on clicking
-		_contextMenu* menuList;
+		_contextMenu*	menuList;
 		
 		// Event Handlers
 		static _callbackReturn refreshHandler( _event );
@@ -26,7 +25,7 @@ class _windowMenuEntry : public _gadget
 	public:
 		
 		//! Ctor
-		_windowMenuEntry( _s32 listIndex , _menu& menu , _style&& style = _style() );
+		_windowMenuEntry( _menu* menu , _menuEntry menuEntry , _style&& style = _style() );
 		
 		//! Dtor
 		~_windowMenuEntry(){

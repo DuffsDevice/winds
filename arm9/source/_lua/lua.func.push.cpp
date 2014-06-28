@@ -11,6 +11,7 @@
 #include "_lua/lua.class.hardwarekeypattern.h"
 #include "_lua/lua.class.time.h"
 #include "_lua/lua.class.mime.h"
+#include "_lua/lua.class.menu.h"
 #include "_lua/lua.gadget.window.h"
 #include "_lua/lua.gadget.window.mainframe.h"
 #include "_lua/lua.gadget.window.bar.h"
@@ -19,6 +20,7 @@
 #include "_lua/lua.gadget.calendar.h"
 #include "_lua/lua.gadget.label.h"
 #include "_lua/lua.gadget.contextmenu.h"
+#include "_lua/lua.gadget.popup.h"
 #include "_lua/lua.gadget.progressbar.h"
 #include "_lua/lua.gadget.resizehandle.h"
 #include "_lua/lua.gadget.counter.h"
@@ -41,51 +43,59 @@
 namespace _luafunc
 {
 	void pushEvent( lua_State* L , _event&& arg ){
-		Lunar<_lua_event>::push( L , new _lua_event( move(arg) ) );
+		Lunar<_lua_event>::push( L , move(arg) );
 	}
 	
 	void pushRect( lua_State* L , _rect&& arg ){
-		Lunar<_lua_rect>::push( L , new _lua_rect( move(arg) ) );
+		Lunar<_lua_rect>::push( L , move(arg) );
 	}
 	
 	void pushArea( lua_State* L , _area&& arg ){
-		Lunar<_lua_area>::push( L , new _lua_area( move(arg) ) );
+		Lunar<_lua_area>::push( L , move(arg) );
 	}
 	
 	void pushBitmapRef( lua_State* L , _bitmap& arg ){
 		Lunar<_lua_bitmap>::push( L , new _lua_bitmap(arg) );
 	}
 	
-	void pushBorder( lua_State* L , _border&& arg ){
-		Lunar<_lua_border>::push( L , new _lua_border(arg) );
-	}
-	
-	void pushBitmap( lua_State* L , const _bitmap& arg ){
-		Lunar<_lua_bitmap>::push( L , new _lua_bitmap( arg ) );
+	void pushBitmap( lua_State* L , _bitmap&& arg ){
+		Lunar<_lua_bitmap>::push( L , new _lua_bitmap( move(arg) ) );
 	}
 	
 	void pushBitmapPort( lua_State* L , _bitmapPort&& arg ){
-		Lunar<_lua_bitmapport>::push( L , new _lua_bitmapport( move(arg) ) );
+		Lunar<_lua_bitmapport>::push( L , move(arg) );
+	}
+	
+	void pushBorder( lua_State* L , _border&& arg ){
+		Lunar<_lua_border>::push( L , move(arg) );
 	}
 	
 	void pushFont( lua_State* L , _fontHandle arg ){
-		Lunar<_lua_font>::push( L , new _lua_font(arg) );
+		Lunar<_lua_font>::push( L , arg );
 	}
 	
 	void pushTime( lua_State* L , _time&& arg ){
-		Lunar<_lua_time>::push( L , new _lua_time( move(arg) ) );
+		Lunar<_lua_time>::push( L , move(arg) );
 	}
 	
 	void pushColor( lua_State* L , _color&& arg ){
-		Lunar<_lua_color>::push( L , new _lua_color( move(arg) ) );
+		Lunar<_lua_color>::push( L , move(arg) );
 	}
 	
 	void pushHWKP( lua_State* L , _hardwareKeyPattern&& arg ){
-		Lunar<_lua_hardwarekeypattern>::push( L , new _lua_hardwarekeypattern( move(arg) ) );
+		Lunar<_lua_hardwarekeypattern>::push( L , move(arg) );
 	}
 	
 	void pushMimeType( lua_State* L , _mimeType&& arg ){
-		Lunar<_lua_mimetype>::push( L , new _lua_mimetype( move(arg) ) );
+		Lunar<_lua_mimetype>::push( L , move(arg) );
+	}
+	
+	void pushMenu( lua_State* L , _menu&& arg ){
+		Lunar<_lua_menu>::push( L , move(arg) );
+	}
+	
+	void pushMenuRef( lua_State* L , _menu& arg ){
+		Lunar<_lua_menu>::push( L , new _lua_menu( arg ) );
 	}
 	
 	void pushGadget( lua_State* L , _gadget* gadget )
@@ -169,6 +179,9 @@ namespace _luafunc
 				break;
 			case _gadgetType::contextmenu:
 				Lunar<_lua_contextmenu>::push( L , new _lua_contextmenu( (_contextMenu*)gadget ) );
+				break;
+			case _gadgetType::popup:
+				Lunar<_lua_popup>::push( L , new _lua_popup( (_contextMenu*)gadget ) );
 				break;
 			case _gadgetType::mainframe:
 				Lunar<_lua_mainframe>::push( L , new _lua_mainframe( (_mainFrame*)gadget ) );

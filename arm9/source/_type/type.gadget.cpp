@@ -512,7 +512,7 @@ void _gadget::setXInternal( _coord val )
 	
 	if( diff )
 	{
-		_2s32 pos = this->getAbsolutePosition();
+		_pos pos = this->getAbsolutePosition();
 		this->x = val;
 		
 		// Refresh if there is a parent
@@ -544,7 +544,7 @@ void _gadget::setYInternal( _coord val )
 	
 	if( diff )
 	{
-		_2s32 pos = this->getAbsolutePosition();
+		_pos pos = this->getAbsolutePosition();
 		this->y = val;
 		
 		// Refresh if there is a parent
@@ -574,7 +574,7 @@ void _gadget::moveRelativeInternal( _s16 dX , _s16 dY )
 	if( !dX && !dY )
 		return;
 	
-	_2s32 pos = this->getAbsolutePosition();
+	_pos pos = this->getAbsolutePosition();
 	
 	this->x += dX;
 	this->y += dY;
@@ -756,27 +756,27 @@ void _gadget::addChildInternal( bool enhanced , _gadget* child , bool after , _g
 }
 
 
-_2s32 _gadget::getAbsolutePosition() const
+_pos _gadget::getAbsolutePosition() const
 {
 	_gadget* p = this->parent;
 	
 	if( p )
 	{
-		_2s32 val = p->getAbsolutePosition(); // Rekursion
+		_pos val = p->getAbsolutePosition(); // Rekursion
 		
 		if( this->isEnhanced() )
-			return _2s32( val.first + this->x , val.second + this->y );
+			return _pos( val.first + this->x , val.second + this->y );
 		
-		return _2s32( val.first + this->x + p->padLeft , val.second + this->y + p->padTop );
+		return _pos( val.first + this->x + p->padLeft , val.second + this->y + p->padTop );
 	}
-	return _2s32( this->x , this->y );
+	return _pos( this->x , this->y );
 }
 
 
 void _gadget::setDimensionsInternal( _rect rc )
 {
-	_2s32 pos = this->getAbsolutePosition();
-	_2s32 size = this->getSize();
+	_pos pos = this->getAbsolutePosition();
+	_size size = this->getSize();
 	
 	// Respect Fixed width/height of the gadget
 	if( !this->isResizeableX() )
@@ -793,8 +793,8 @@ void _gadget::setDimensionsInternal( _rect rc )
 	this->y = rc.y;
 	
 	// Compute new position
-	_2s32 newPos = this->getAbsolutePosition();
-	_2s32 newSize = _2s32( rc.width , rc.height );
+	_pos newPos = this->getAbsolutePosition();
+	_size newSize = _size( rc.width , rc.height );
 	
 	if( size != newSize )
 	{
@@ -808,7 +808,7 @@ void _gadget::setDimensionsInternal( _rect rc )
 		if( !this->parent )
 			this->redraw();
 		else
-			this->redraw( _rect(pos, size).combine( _rect(newPos, newSize) ) );
+			this->redraw( _rect( pos , size ).combine( _rect( newPos , newSize ) ) );
 	}
 	else if( pos != newPos )
 	{
@@ -875,8 +875,8 @@ void _gadget::setWidthInternal( _length val )
 
 void _gadget::setBitmap( _bitmap bmp )
 {
-	_2s32 pos = this->getAbsolutePosition();
-	_2s32 size = this->getSize();
+	_pos pos = this->getAbsolutePosition();
+	_size size = this->getSize();
 	
 	_length newWidth = bmp.getWidth();
 	_length newHeight = bmp.getHeight();
@@ -900,7 +900,7 @@ void _gadget::setBitmap( _bitmap bmp )
 	this->bitmap = move(bmp);
 	
 	// Compute area to redraw
-	_2s32 refreshSize = _2s32( max( newWidth , (_length)size.first ) , max( newHeight , (_length)size.second ) );
+	_size refreshSize = _size( max<_length>( newWidth , size.first ) , max<_length>( newHeight , size.second ) );
 	
 	// Redraw!
 	this->redraw( _rect( pos , refreshSize ) );
@@ -914,7 +914,7 @@ void _gadget::setBitmap( _bitmap bmp )
 
 void _gadget::setSizeInternal( _length width , _length height )
 {
-	_2s32 size = this->getSize();
+	_size size = this->getSize();
 	
 	// Respect Fixed width/height of the gadget and size limits
 	if( !this->isResizeableX() )
@@ -931,8 +931,8 @@ void _gadget::setSizeInternal( _length width , _length height )
 		return;
 	
 	// Compute area to redraw
-	_2s32 refreshSize = _2s32( max( width , (_length)size.first ) , max( height , (_length)size.second ) );
-	_2s32 refreshPos = this->getAbsolutePosition();
+	_size refreshSize = _size( max<_length>( width , size.first ) , max<_length>( height , size.second ) );
+	_pos refreshPos = this->getAbsolutePosition();
 	
 	// Refresh
 	this->bitmap.resize( width , height );

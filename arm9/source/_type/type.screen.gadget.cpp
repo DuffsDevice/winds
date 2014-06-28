@@ -110,7 +110,9 @@ bool _gadgetScreen::processTouch( bool held , _touch newTouch )
 						this->triggerEvent( event.setType( onMouseRepeat ) );
 				}
 				else if( lastClickedGadget->isRightClickable() && this->touchCycles == _guiController::getRightClickDelay() )
+				{
 					this->triggerEvent( event.setType( onMouseRightClick ) );
+				}
 			}
 		}
 		
