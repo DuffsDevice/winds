@@ -58,7 +58,7 @@ class _guiString : public string
 		virtual void	drawTo( _rect guiStringDimensions , _bitmapPort& port ) = 0;
 		
 		//! Get the [X-Coordinate,width] of the specific letter
-		virtual _2s32	getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const = 0;
+		virtual _2s16	getXMetricsOfLetter( _rect guiStringDimensions , _letterNum letterNumber ) const = 0;
 		
 		//! Get over all Text Height
 		virtual _length	getTextHeight() const = 0;

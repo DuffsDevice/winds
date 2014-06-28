@@ -11,8 +11,8 @@ class _windowMenu : public _menu , public _gadget
 		
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn updateHandler( _event );
-		void menuHandler( _s32 list , _s32 index );
 		
+		void menuHandler( _u16 list , _u16 index );
 		void generateChildren();
 		
 	public:
@@ -20,7 +20,12 @@ class _windowMenu : public _menu , public _gadget
 		static const _menu& getStandardMenu();
 		
 		//! Ctor
-		_windowMenu( const _menu& menu = _menu() , _style&& style = _style() );
+		_windowMenu( _menu menu = _menu() , _style&& style = _style() );
+		
+		//! Dtor
+		~_windowMenu(){
+			this->removeChildren( true );
+		}
 };
 
 #endif

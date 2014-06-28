@@ -21,10 +21,17 @@ class _select : public _gadget
 		_callbackReturn			refreshButtonHandler( _event );
 		
 		// Toggles visibility of the contextMenu
-		void toggleContextMenu();
+		void	toggleContextMenu();
 		
 		// Updates both position and appearence
-		void updateArrowButton();
+		void	updateArrowButton();
+		
+		// Returns a menu object with only the main list set
+		_menu	getMenuFromList( const _menuEntryList& list ){
+			_menu menu;
+			menu.setList( list );
+			return move(menu);
+		}
 		
 	public:
 	
@@ -36,11 +43,13 @@ class _select : public _gadget
 		void	setIntValue( _int value ){ this->contextMenu->setIntValue( value ); }
 		
 		//! Get the list of values
-		_menuEntryList getList(){ return this->contextMenu->getList(); }
+		const _menuEntryList&	getList() const { return this->contextMenu->getMenu().getList(); }
+		_menuEntryList&			getList(){ return this->contextMenu->getMenu().getList(); }
 		
 		//! Set the list
-		void setList( const _menuEntryList& lst ){
-			this->contextMenu->setList( lst );
+		void	setList( _menuEntryList lst ){
+			this->contextMenu->getMenu().setList( move(lst) );
+			this->update();
 		}
 		
 		//! Ctor

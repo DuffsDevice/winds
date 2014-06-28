@@ -305,7 +305,7 @@ _length _singleLineGuiString::getLineStart( _rect dimensions ) const
 	}
 }
 
-_2s32 _singleLineGuiString::getXMetricsOfLetter( _rect dimensions , _letterNum letterNumber ) const
+_2s16 _singleLineGuiString::getXMetricsOfLetter( _rect dimensions , _letterNum letterNumber ) const
 {
 	// Iteration variables
 	_literal startPtr		= this->c_str();
@@ -334,7 +334,7 @@ _2s32 _singleLineGuiString::getXMetricsOfLetter( _rect dimensions , _letterNum l
 			_u32 charWidth = this->font->getCharacterWidth( *curPtr );
 			
 			if( !--letterNumber )
-				return _2s32( currentX + charWidth , charWidth );
+				return _2s16( currentX + charWidth , charWidth );
 			
 			// Advance current width
 			if( charWidth ){
@@ -347,7 +347,7 @@ _2s32 _singleLineGuiString::getXMetricsOfLetter( _rect dimensions , _letterNum l
 		curPtr++;
 	}
 	
-	return _2s32( currentX , 0 );
+	return _2s16( currentX , 0 );
 }
 
 void _singleLineGuiString::setCursorFromTouch( _rect dimensions , _coord cursorX , _coord cursorY )

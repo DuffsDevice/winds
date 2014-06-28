@@ -255,7 +255,7 @@ void _multiLineGuiString::drawTo( _rect dimensions , _bitmapPort& port )
 
 
 
-_2s32 _multiLineGuiString::getXMetricsOfLetter( _rect dimensions ,_letterNum letterNumber ) const
+_2s16 _multiLineGuiString::getXMetricsOfLetter( _rect dimensions ,_letterNum letterNumber ) const
 {
 	// Setup character positions
 	_lineNumber lineNumber		= getLineContainingIndex( getNumBytesFromNumLetters( letterNumber ) );
@@ -288,7 +288,7 @@ _2s32 _multiLineGuiString::getXMetricsOfLetter( _rect dimensions ,_letterNum let
 			_u32 charWidth = this->font->getCharacterWidth( *curPtr );
 			
 			if( !--letterNumber )
-				return _2s32( currentX + charWidth , charWidth );
+				return _2s16( currentX + charWidth , charWidth );
 			
 			// Advance current width
 			if( charWidth ){
@@ -301,7 +301,7 @@ _2s32 _multiLineGuiString::getXMetricsOfLetter( _rect dimensions ,_letterNum let
 		curPtr++;
 	}
 	
-	return _2s32( currentX , 0 );
+	return _2s16( currentX , 0 );
 }
 
 
@@ -442,14 +442,14 @@ _u32 _multiLineGuiString::getLineContainingIndex( _u32 index ) const
 
 
 
-_2s32 _multiLineGuiString::getYMetricsOfLine( _rect dimensions , _u32 lineNumber ) const
+_2s16 _multiLineGuiString::getYMetricsOfLine( _rect dimensions , _u32 lineNumber ) const
 {
 	_coord currentY = this->getOffsetY( dimensions ) + dimensions.y;
 	_u32 maxLine = min( lineNumber , this->getLineCount() );
 	_u32 curLine = 0;
 	for( ; curLine < maxLine ; curLine++ )
 		currentY += this->lineStarts[curLine+1].lineHeight;
-	return _2s32( currentY , this->lineStarts[curLine+1].lineHeight );
+	return _2s16( currentY , this->lineStarts[curLine+1].lineHeight );
 }
 
 
@@ -459,14 +459,14 @@ _lineNumber _multiLineGuiString::moveCursorByLine( _rect dimensions , bool incre
 	_s32 curCursorX = this->tmpCursorX;
 	
 	if( curCursorX < 0 ){
-		_2s32	xMetrics	= this->getXMetricsOfLetter( dimensions , this->cursor );
+		_2s16	xMetrics	= this->getXMetricsOfLetter( dimensions , this->cursor );
 		this->tmpCursorX	= curCursorX = xMetrics.first + xMetrics.second;
 	}
 	
 	_u32		cursor		= this->getNumBytesFromNumLetters( this->cursor );
 	_lineNumber	curLine		= this->getLineContainingIndex( cursor );
 	_lineNumber	newLine		= mid( 0 , curLine + ( increase ? 1 : -1 ) , this->getLineCount() - 1 );
-	_2s32		yPos		= this->getYMetricsOfLine( dimensions , newLine );
+	_2s16		yPos		= this->getYMetricsOfLine( dimensions , newLine );
 	
 	// Set New Cursor
 	this->setCursorFromTouch( dimensions , tmpCursorX , yPos.first + 1 );
@@ -477,10 +477,10 @@ _lineNumber _multiLineGuiString::moveCursorByLine( _rect dimensions , bool incre
 
 
 
-_2s32 _multiLineGuiString::getXMetricsOfLine( _rect dimensions , _lineNumber lineNumber ) const
+_2s16 _multiLineGuiString::getXMetricsOfLine( _rect dimensions , _lineNumber lineNumber ) const
 {
 	if( lineNumber >= this->getLineCount() )
-		return _2s32(0);
+		return _2s16(0);
 	
 	// Useful variables
 	_length guiStringWidth = dimensions.width;
@@ -496,5 +496,5 @@ _2s32 _multiLineGuiString::getXMetricsOfLine( _rect dimensions , _lineNumber lin
 		default:				lineX = guiStringWidth - lineWidth; break;
 	}
 	
-	return _2s32( lineX , lineWidth );
+	return _2s16( lineX , lineWidth );
 }

@@ -118,20 +118,19 @@ void PROG_Mapper::main( _programArgs args )
 	mainFrame->addChild( this->fileLabel );
 }
 
-void PROG_Mapper::destruct()
+void PROG_Mapper::cleanUp()
 {
-	if( this->description )			delete this->description;
-	if( this->cancelButton )		delete this->cancelButton;
-	if( this->browseButton )		delete this->browseButton;
-	if( this->okButton )			delete this->okButton;
-	if( this->saveDescision )		delete this->saveDescision;
-	if( this->saveDescisionLabel )	delete this->saveDescisionLabel;
-	if( this->fileLabel )			delete this->fileLabel;
+	delete this->description;
+	delete this->cancelButton;
+	delete this->browseButton;
+	delete this->okButton;
+	delete this->saveDescision;
+	delete this->saveDescisionLabel;
+	delete this->fileLabel;
 	
-	if( this->scrollArea ){
-		this->scrollArea->removeChildren( true );
-		delete this->scrollArea;
-	}
+	// Delete all PROG_Mapper_Object's
+	this->scrollArea->removeChildren( true );
+	delete this->scrollArea;
 }
 
 _callbackReturn PROG_Mapper::handler( _event event )

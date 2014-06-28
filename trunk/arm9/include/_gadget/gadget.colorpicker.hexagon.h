@@ -18,8 +18,8 @@ class _hexagonColorPicker : public _gadget
 		_callbackReturn refreshHandler( _event );
 		_callbackReturn inputHandler( _event );
 		
-		static _2s32 getHexagonPos( _s16 number );
-		static _2s32 getHexagonSize( _s16 number );
+		static _pos getHexagonPos( _s16 number );
+		static _size getHexagonSize( _s16 number );
 		static _color getHexagonColor( _s16 number );
 		
 	public:

@@ -6,6 +6,7 @@
 #include "_controller/controller.localization.h"
 #include "_controller/controller.debug.h"
 #include "_type/type.windows.h"
+#include "_gadget/gadget.window.dialog.h"
 
 PROG_Credits::PROG_Credits()
 {
@@ -26,6 +27,7 @@ void PROG_Credits::main( _programArgs args )
 	// Window
 	_mainFrame* mainFrame = _program::getMainFrame( 150 , 150 , _style::notResizeable );
 	mainFrame->setUserEventHandler( onClose , make_callback( this , &PROG_Credits::handler ) );
+	mainFrame->setUserEventHandler( onKeyDown , make_callback( &_dialogWindow::submitEscapeHandler ) );
 	mainFrame->setBgColor( _color::white );
 	
 	// Logo

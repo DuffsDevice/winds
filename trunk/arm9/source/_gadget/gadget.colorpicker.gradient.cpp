@@ -160,8 +160,8 @@ void _gradientColorPicker::refreshBigGradient()
 	//	float radiants = float( a ) * M_PI / 180;
 	//	float c = cos( radiants );
 	//	float s = sin( radiants );
-	//	_2s32 outer = _2s32( imgWidth / 2 + c * radius , imgHeight / 2 + s * radius );
-	//	_2s32 inner = _2s32( imgWidth / 2 + c * radiusSmall , imgHeight / 2 + s * radiusSmall );
+	//	_pos outer = _pos( imgWidth / 2 + c * radius , imgHeight / 2 + s * radius );
+	//	_pos inner = _pos( imgWidth / 2 + c * radiusSmall , imgHeight / 2 + s * radiusSmall );
 	//	this->hueSatImage.drawLine( outer.first , outer.second , inner.first , inner.second , _color().setHSL( a , 100 , 50 ).getColor() );
 	//}
 }

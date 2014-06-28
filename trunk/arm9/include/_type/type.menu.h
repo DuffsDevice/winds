@@ -7,39 +7,67 @@
 #include "_type/type.menu.rule.h"
 #include <memory>
 
-using _menuEntry = _pair<_int,string>;
-using _menuEntryList = _assocVector<_int,string>;
-using _rawMenuEntryLists = _assocVector<_int,_menuEntryList>;
-using _menuHandler = void( _int listIndex , _int listEntryIndex );
-using PtrType = std::shared_ptr<_callback<_menuHandler>>;
-using HandlerPair = _pair<_menuHandlerRule,PtrType>;
+// Specifies all the data that is stored for each entry
+struct _menuEntry
+{
+	string	text;
+	_u16	linkedList;
+	
+	//! Default Ctor
+	_menuEntry( string text = "" , _u16 linkedList = 0 ) : text( move(text) ) , linkedList( linkedList ) {}
+	
+	//! Ctor
+	_menuEntry( _literal text , _u16 linkedList = 0 ) : text( text ) , linkedList( linkedList ) {}
+	
+	//! Ctor from tuple
+	_menuEntry( _tuple<string,_u16> tuple ) : _menuEntry( move(get<0>(tuple)) , get<1>(tuple) ) {}
+	
+	//! Copy & Move Ctor
+	_menuEntry( _menuEntry&& menu ) : text( move(menu.text) ) , linkedList( menu.linkedList ) {}
+	_menuEntry( const _menuEntry& menu ) : text( menu.text ) , linkedList( menu.linkedList ) {}
+	
+	//! Copy & Move Assignment Operators
+	_menuEntry& operator=( _menuEntry&& menu ){
+		text		= move(menu.text);
+		linkedList	= menu.linkedList;
+		return *this;
+	}
+	_menuEntry& operator=( const _menuEntry& menu ){
+		text		= menu.text;
+		linkedList	= menu.linkedList;
+		return *this;
+	}
+	
+	//! Cast to tuple
+	operator _tuple<string,_u16>(){ return make_tuple( text , linkedList ); }
+};
 
+using _menuEntryList		= _assocVector<_u16,_menuEntry>;		// Specifies a list of entries, sorted by their index
+using _rawMenuEntryLists	= _assocVector<_u16,_menuEntryList>;	// Specifies a collection of lists. The list at index [0] is the starting point of the menu
+
+// The type that a handler must have to receive selections of individual menu entries
+using _menuHandler			= void( _u16 listIndex , _u16 listEntryIndex );
 class _menu : private _rawMenuEntryLists
 {
 	private:
 		
-		_vector<HandlerPair> handlers;
-		_bool sorted;
+		// Internal Helper types
+		using PtrType		= std::shared_ptr<_callback<_menuHandler>>;
+		using HandlerPair	= _pair<_menuHandlerRule,PtrType>;
 		
-		// Internal getter for one of the stored lists
-		const _menuEntryList& getListInternal( _int index ) const ;
-		_menuEntryList& getListInternal( _int index ){
-			return const_cast<_menuEntryList&>(((const _menu*)this)->getList( index ));
-		}
-		// Internal setter
-		void setListInternal( _int index , _menuEntryList list ){
-			(*this)[index] = move(list);
-		}
-		
-		// Returns a from zero different number that represents 'index'
-		constexpr static inline _int transformIndex( _int index ){
-			return index >= 0 ? index + 1 : index;
-		}
+		mutable _vector<HandlerPair>	handlers;
+		mutable _bool					sorted;
 		
 	public:
 		
 		//! Ctor
 		_menu() : sorted( true )
+		{}
+		
+		//! Ctor with main List
+		_menu( _menuEntryList mainList ) : 
+			_rawMenuEntryLists( { { 0 , mainList } } )
+			, sorted( true )
 		{}
 		
 		//! Add a handler for the menu applying for all entries for which the passed 'rule' returns true
@@ -53,34 +81,20 @@ class _menu : private _rawMenuEntryLists
 			this->sorted = false;
 		}
 		
-		//! Set entry point of the menu; the list that makes the first appearence
-		void setMainList( _menuEntryList list ){
-			setListInternal( 0 , move(list) );
-		}
-		
-		//! Get the entry point list of the menu
-		const _menuEntryList& getMainList() const {
-			return getListInternal( 0 );
-		}
-		_menuEntryList& getMainList(){
-			return getListInternal( 0 );
-		}
-		
 		//! Supply the list of index 'index' to the menu
-		void setList( _int index , _menuEntryList list ){
-			setListInternal( index , move(list) );
+		void setList( _menuEntryList list ){
+			(*this)[0] = move(list);
+		}
+		void setList( _u16 listIndex , _menuEntryList list ){
+			(*this)[listIndex] = move(list);
 		}
 		
 		//! Get a reference to a specific list of index 'index'
-		const _menuEntryList& getList( _int index ) const {
-			return getListInternal( index );
-		}
-		_menuEntryList& getList( _int index ){
-			return getListInternal( index );
-		}
+		const _menuEntryList&	getList( _u16 listIndex = 0 ) const ;
+		_menuEntryList&			getList( _u16 listIndex = 0 );
 		
 		//! Clear all lists
-		void clear(){
+		void clearMenu(){
 			_rawMenuEntryLists::clear();
 		}
 		
@@ -90,17 +104,10 @@ class _menu : private _rawMenuEntryLists
 		}
 		
 		//! Call the handler that applies to the passed list number and entry number
-		void callHandler( _int listIndex ,_int entryIndex );
+		void callHandler( _u16 listIndex , _u16 entryIndex ) const ;
 		
-		//static _int getLinkFromText( const string& entry ){
-		//	_literal str = entry.c_str();
-		//	_literal strEnd = str + entry.length();
-		//	_literal strCur = strEnd;
-		//	while( strCur < strEnd && *strCur != "$" );
-		//	if( strCur != strEnd )
-		//		return string2int( strCur );
-		//	return -1;
-		//}
+		//! String the represents a dividing line
+		static _literal divider;
 };
 
 #endif

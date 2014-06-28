@@ -22,13 +22,21 @@ union _2T
 	
 	operator bool(){ return this->val != 0; }
 	_2T operator+( SingleType val ){ return _2T( first + val , second + val ); }
+	_2T operator+( _2T val ){ return _2T( first + val.first , second + val.second ); }
 	_2T operator-( SingleType val ){ return _2T( first - val , second - val ); }
+	_2T operator-( _2T val ){ return _2T( first - val.first , second - val.second ); }
 	_2T operator*( SingleType val ){ return _2T( first * val , second * val ); }
+	_2T operator*( _2T val ){ return _2T( first * val.first , second * val.second ); }
 	_2T operator/( SingleType val ){ return _2T( first / val , second / val ); }
+	_2T operator/( _2T val ){ return _2T( first / val.first , second / val.second ); }
 	_2T& operator+=( SingleType val ){ first += val; second += val; return *this; }
+	_2T& operator+=( _2T val ){ first += val.first; second += val.second; return *this; }
 	_2T& operator-=( SingleType val ){ first -= val; second -= val; return *this; }
+	_2T& operator-=( _2T val ){ first -= val.first; second -= val.second; return *this; }
 	_2T& operator*=( SingleType val ){ first *= val; second *= val; return *this; }
+	_2T& operator*=( _2T val ){ first *= val.first; second *= val.second; return *this; }
 	_2T& operator/=( SingleType val ){ first /= val; second /= val; return *this; }
+	_2T& operator/=( _2T val ){ first /= val.first; second /= val.second; return *this; }
 	bool operator==( _2T val ){ return val.val == this->val; }
 	bool operator!=( _2T val ){ return val.val != this->val; }
 };

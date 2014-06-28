@@ -57,6 +57,7 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _eventCallType* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _eventType* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _dimension* dummy ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _direction* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _style* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _timeAttr* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _align* dummy ){ return is_a( state , index , LUA_TSTRING ); }

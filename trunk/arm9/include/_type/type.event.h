@@ -196,14 +196,14 @@ class _event
 		 * Parameters
 		 */
 		mutable _gadget*		gadget;			//! Gadget to receive the Event
-		_int 					posX;			//! X-Position of the Mouse when the Event was triggered
-		_int 					posY;			//! Y-Position of the Mouse when the Event was triggered
-		_int 					effectiveX;		//! X-Position of the Stylus on the Screen when the Event was triggered
-		_int 					effectiveY;		//! Y-Position of the Stylus on the Screen when the Event was triggered
+		_coord 					posX;			//! X-Position of the Mouse when the Event was triggered
+		_coord 					posY;			//! Y-Position of the Mouse when the Event was triggered
+		_coord 					effectiveX;		//! X-Position of the Stylus on the Screen when the Event was triggered
+		_coord 					effectiveY;		//! Y-Position of the Stylus on the Screen when the Event was triggered
 		_hardwareKeyPattern		currentKeyCodes;//! Keycode-State of that Moment the Event was triggered
 		_flexPtr<_area>			damagedRects;	//! this Attribute will specify the Area, that is invalid/damaged and has to be repainted
-		_int 					deltaX;			//! Delta-X, used at dragging-events
-		_int 					deltaY;			//! Delta-Y, used at dragging-events
+		_s16 					deltaX;			//! Delta-X, used at dragging-events
+		_s16 					deltaY;			//! Delta-Y, used at dragging-events
 		union{
 			//! Only used at: keyUp, keyClick
 			struct{
@@ -269,18 +269,19 @@ class _event
 		void resetParams( _gadget* dest = nullptr );
 		
 		//! Setters...
-		_event& setType( _eventType type ){//!..........................................................................<= Manually set Event Type
+		_event& setType( _eventType type ){//!.................................................................<= Manually set Event Type
 			this->type = type;
 			return *this;
 		}
 		_event& setDestination( _gadget* newVal ){ this->gadget = newVal; return *this; }//!...................<= Set the Destination
 		_event& setPressure( _u32 val ){ this->pressure = val; return *this; }//!..............................<= Set Touchscreen Pressure
-		_event& setPosX( _int val ){ this->posX = val; return *this; }//!......................................<= Set Triggering Point X
-		_event& setPosY( _int val ){ this->posY = val; return *this; }//!......................................<= Set Triggering Point Y
-		_event& setEffectivePosX( _int val ){ this->effectiveX = val; return *this; }//!.......................<= Set Triggering Point X which results in the position on the screen that the user effectively touched
-		_event& setEffectivePosY( _int val ){ this->effectiveY = val; return *this; }//!.......................<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
-		_event& setDeltaX( _int val ){ this->deltaX = val; return *this; }//!..................................<= Set Delta Point X
-		_event& setDeltaY( _int val ){ this->deltaY = val; return *this; }//!..................................<= Set Delta Point Y
+		_event& setPosX( _coord val ){ this->posX = val; return *this; }//!....................................<= Set Triggering Point X
+		_event& setPosY( _coord val ){ this->posY = val; return *this; }//!....................................<= Set Triggering Point Y
+		_event& setPos( _pos val ){ this->posX = val.first; this->posY = val.second; return *this; }//!........<= Set Triggering Point Y
+		_event& setEffectivePosX( _coord val ){ this->effectiveX = val; return *this; }//!.....................<= Set Triggering Point X which results in the position on the screen that the user effectively touched
+		_event& setEffectivePosY( _coord val ){ this->effectiveY = val; return *this; }//!.....................<= Set Triggering Point Y which results in the position on the screen that the user effectively touched
+		_event& setDeltaX( _s16 val ){ this->deltaX = val; return *this; }//!..................................<= Set Delta Point X
+		_event& setDeltaY( _s16 val ){ this->deltaY = val; return *this; }//!..................................<= Set Delta Point Y
 		_event& setKeyCode( _key code ){ this->keyCode = code; return *this; }//!..............................<= Set triggering KeyCode
 		_event& setHeldTime( _u16 heldTime ){ this->heldTime = heldTime; return *this; }//!....................<= Set Held Time of the key that triggered the Event
 		_event& setCurrentKeys( _hardwareKeyPattern keys ){ this->currentKeyCodes = keys; return *this; }//!...<= Set KeyCode State of that Moment the Event was triggered
@@ -291,12 +292,13 @@ class _event
 		//! Getters
 		_gadget* getDestination() const { return this->gadget; }//!...............................<= Get Destination Gadget
 		_u32 getPressure() const { return this->pressure; }//!....................................<= Get Touchscreen Pressure
-		_int getPosX() const { return this->posX; }//!............................................<= Get Triggering Point X
-		_int getPosY() const { return this->posY; }//!............................................<= Get Triggering Point Y
-		_int getEffectivePosX() const { return this->effectiveX; }//!.............................<= Get effective Triggering Point X
-		_int getEffectivePosY() const { return this->effectiveY; }//!.............................<= Get effective Triggering Point Y
-		_int getDeltaX() const { return this->deltaX; }//!........................................<= Get Delta-X
-		_int getDeltaY() const { return this->deltaY; }//!........................................<= Get Delta-Y
+		_coord getPosX() const { return this->posX; }//!..........................................<= Get Triggering Point X
+		_coord getPosY() const { return this->posY; }//!..........................................<= Get Triggering Point Y
+		_pos getPos() const { return _pos( this->posX , this->posY ); }//!.......................<= Get Triggering Point as _pos (X|Y)
+		_coord getEffectivePosX() const { return this->effectiveX; }//!...........................<= Get effective Triggering Point X
+		_coord getEffectivePosY() const { return this->effectiveY; }//!...........................<= Get effective Triggering Point Y
+		_s16 getDeltaX() const { return this->deltaX; }//!........................................<= Get Delta-X
+		_s16 getDeltaY() const { return this->deltaY; }//!........................................<= Get Delta-Y
 		_key getKeyCode() const { return this->keyCode; }//!......................................<= Get triggering KeyCode
 		_u16 getHeldTime() const { return this->heldTime; }//!....................................<= Get Held Time of the key that triggered the Event
 		const _hardwareKeyPattern& getCurrentKeys() const { return this->currentKeyCodes; }//!....<= Get KeyCode State of that Moment the Event was triggered

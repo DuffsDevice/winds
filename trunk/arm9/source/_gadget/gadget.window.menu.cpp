@@ -30,15 +30,15 @@ const _menu& _windowMenu::getStandardMenu(){
 	
 	if( !initialized )
 	{
-		ret.setMainList( { { 1 , _localizationController::getBuiltInString("lbl_file") } } );
+		ret.setList( 0 , { { 1 , { _localizationController::getBuiltInString("lbl_file") , 1 } } } );
 		ret.setList( 1 ,
 			{
-				{ 1 , _localizationController::getBuiltInString("lbl_new") } ,
-				{ 2 , _localizationController::getBuiltInString("lbl_open") } ,
-				{ 3 , _localizationController::getBuiltInString("lbl_save") } ,
-				{ 4 , _localizationController::getBuiltInString("lbl_save_as") } ,
-				{ 100 , "----" } ,
-				{ 101 , _localizationController::getBuiltInString("lbl_exit") }
+				{ 1		, _localizationController::getBuiltInString("lbl_new") } ,
+				{ 2		, _localizationController::getBuiltInString("lbl_open") } ,
+				{ 3		, _localizationController::getBuiltInString("lbl_save") } ,
+				{ 4		, _localizationController::getBuiltInString("lbl_save_as") } ,
+				{ 100	, _menu::divider } ,
+				{ 101	, _localizationController::getBuiltInString("lbl_exit") }
 			}
 		);
 		initialized = true;
@@ -50,9 +50,9 @@ void _windowMenu::generateChildren()
 {
 	this->removeChildren( true );
 	
-	for( const _pair<_int,string>& entry : this->getMainList() )
+	for( const _pair<_u16,_menuEntry>& entry : this->getList() )
 	{
-		_windowMenuEntry* cM = new _windowMenuEntry( entry.first , *this );
+		_windowMenuEntry* cM = new _windowMenuEntry( this , entry.second );
 		
 		cM->setInternalEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::right , 0 , 0 , false , 0 , 0 ) );
 		this->addChild( cM , true );
@@ -77,7 +77,7 @@ _callbackReturn _windowMenu::updateHandler( _event event )
 	return handled;
 }
 
-void _windowMenu::menuHandler( _int list , _int entry )
+void _windowMenu::menuHandler( _u16 list , _u16 entry )
 {
 	if( list == 1 && entry == 101 ) // Close
 	{
@@ -87,8 +87,9 @@ void _windowMenu::menuHandler( _int list , _int entry )
 	}
 }
 
-_windowMenu::_windowMenu( const _menu& menu , _style&& style ) :
-	_menu( menu ) , _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _guiController::getListItemHeight() , move(style) )
+_windowMenu::_windowMenu( _menu menu , _style&& style ) :
+	_menu( move(menu) )
+	, _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _guiController::getListItemHeight() , move(style) )
 {
 	this->setMinHeight( _guiController::getListItemHeight() );
 	

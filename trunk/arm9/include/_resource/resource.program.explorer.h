@@ -24,7 +24,7 @@ class PROG_Explorer : public _progC
 		_windowBar*		windowBar;
 		
 		void	main( _programArgs args );
-		void	destruct();
+		void	cleanUp();
 		
 		void setWindowTitle();
 		

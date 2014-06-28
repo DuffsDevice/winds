@@ -42,7 +42,7 @@ void _textArea::adjustScrollToCursor()
 	_s32 cursorIndex = this->text.getNumBytesFromNumLetters( this->text.getCursor() );
 	
 	// Get Position and height of cursor
-	_2s32 dimensions = this->text.getYMetricsOfLine( this->getGuiStringDimensions() , this->text.getLineContainingIndex( cursorIndex ) );
+	_2s16 dimensions = this->text.getYMetricsOfLine( this->getGuiStringDimensions() , this->text.getLineContainingIndex( cursorIndex ) );
 	
 	// Store Current Scroll
 	_int scrollValue = this->scrollBar->getValue();

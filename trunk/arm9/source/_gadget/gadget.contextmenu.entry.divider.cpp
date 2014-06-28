@@ -3,7 +3,7 @@
 #include "_controller/controller.gui.h"
 
 _contextMenuEntryDivider::_contextMenuEntryDivider( _style&& style ) :
-	_contextMenuEntry( ignore , -1 , "----" , move(style) )
+	_contextMenuEntry( ignore , -1 , _menu::divider , move(style) )
 {
 	this->setHeight( 3 );
 	this->setX( 1 );

@@ -59,13 +59,13 @@ void PROG_TaskManager::main( _programArgs args )
 	this->updateTimer.start();
 }
 
-void PROG_TaskManager::destruct(){
-	this->getMainFrame()->removeChildren( true );
-	
+void PROG_TaskManager::cleanUp(){
+	_program::getMainFrame()->removeChildren( true );
 	this->updateTimer.stop();
 }
 
-void PROG_TaskManager::drawBorders( _bitmapPort& bP ){
+void PROG_TaskManager::drawBorders( _bitmapPort& bP )
+{
 	// Draw bevelled border
 	bP.drawVerticalLine( 0 , 0 , bP.getHeight() , _guiController::getControlFg() );
 	bP.drawVerticalLine( bP.getWidth() - 1 , 0 , bP.getHeight() , _color::white );

@@ -346,8 +346,7 @@ class _gadget
 		
 		//! Get Absolute Dimensions of the Gadget
 		_rect getAbsoluteDimensions() const {
-			_2s32 val = getAbsolutePosition();
-			return _rect( val.first , val.second , getWidth() , getHeight() );
+			return _rect( getAbsolutePosition() , getSize() );
 		}
 		
 		/**
@@ -384,7 +383,7 @@ class _gadget
 		///////////////////////
 		
 		//! Get both y and y absolute coordinate
-		_2s32 getAbsolutePosition() const ITCM_CODE;
+		_pos getAbsolutePosition() const ITCM_CODE;
 		
 		//! Get the absolute X-position
 		noinline _coord getAbsoluteX() const {
@@ -582,10 +581,10 @@ class _gadget
 		_rect getSizeRect() const { return _rect( 0 , 0 , this->getWidth() , this->getHeight() ); }
 		
 		//! Get the Size of the Gadget as a pair of (width|height)
-		_2s32 getSize() const { return _2s32( this->getWidth() , this->getHeight() ); }
+		_size getSize() const { return _size( this->getWidth() , this->getHeight() ); }
 		
 		//! Get the relative Area that normal children can inherit
-		_rect getClientRect() const { return _rect( 0 , 0 , this->getWidth() , this->getHeight() ).applyPadding( this->padding ); }
+		_rect getClientRect() const { return _rect( _pos(0) , getSize() ).applyPadding( this->padding ); }
 		
 		
 		//! Get the height of the Gadget

@@ -4,6 +4,7 @@
 
 #include "_lua/lua.lunar.h"
 #include "_lua/lua.class.gadget.h"
+#include "_lua/lua.gadget.popup.h"
 #include "_gadget/gadget.contextmenu.h"
 
 /**
@@ -13,8 +14,10 @@ class _lua_contextmenu : public _lua_gadget
 {
 	public:
 		
+		//! Lua Ctor
 		_lua_contextmenu( lua_State* L );
 		
+		//! C-Ctor with reference
 		_lua_contextmenu( _contextMenu* s ) : _lua_gadget( s , false )
 		{ }
 		
@@ -27,12 +30,6 @@ class _lua_contextmenu : public _lua_gadget
 		//! clearList
 		int clearList( lua_State* L );
 		
-		//! getList
-		int getList( lua_State* L );
-		
-		//! setList
-		int setList( lua_State* L );
-		
 		//! getEntryFromNumber
 		int getEntryFromNumber( lua_State* L );
 		
@@ -40,7 +37,7 @@ class _lua_contextmenu : public _lua_gadget
 		static const char className[];
 		static Lunar<_lua_contextmenu>::FunctionType methods[];
 		static Lunar<_lua_contextmenu>::PropertyType properties[];
-		using baseclasses = Lunar<_lua_contextmenu>::BaseClassType<_lua_gadget>;
+		using baseclasses = Lunar<_lua_contextmenu>::BaseClassType<_lua_popup>;
 };
 
 #endif

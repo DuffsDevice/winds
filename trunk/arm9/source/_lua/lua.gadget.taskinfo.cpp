@@ -13,7 +13,7 @@ _lua_taskinfo::_lua_taskinfo( lua_State* L ) :
 
 int _lua_taskinfo::displayNotification( lua_State* L )
 {
-	_taskInfo* tI = (_taskInfo*)this->getGadget();
+	_taskInfo* tI = this->getGadget<_taskInfo>();
 	
 	if( is_a<_voidCallback>( L , 3 ) )
 		tI->displayNotification( check<string>( L , 1 ) , check<string>( L , 2 ) , check<_voidCallback>( L , 3 ) , lightcheck<_bitmap>( L , 4 ) );
@@ -23,7 +23,7 @@ int _lua_taskinfo::displayNotification( lua_State* L )
 	return 0;
 }
 
-//! Lua-button
+//! Lua-taskInfo
 const char _lua_taskinfo::className[] = "TaskInfo";
 Lunar<_lua_taskinfo>::FunctionType _lua_taskinfo::methods[] = {
 	{ "displayNotification" , &_lua_taskinfo::displayNotification },

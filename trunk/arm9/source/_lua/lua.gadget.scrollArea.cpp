@@ -22,10 +22,10 @@ _lua_scrollarea::_lua_scrollarea( lua_State* L ) :
 { }
 
 //! setScrollTypeX
-int _lua_scrollarea::setScrollTypeX( lua_State* L ){ ((_scrollArea*)_lua_gadget::getGadget())->setScrollTypeX( string2scrollType[ check<string>( L , 1 ) ] ); return 0; }
+int _lua_scrollarea::setScrollTypeX( lua_State* L ){ this->getGadget<_scrollArea>()->setScrollTypeX( string2scrollType[ check<string>( L , 1 ) ] ); return 0; }
 
 //! setScrollTypeY
-int _lua_scrollarea::setScrollTypeY( lua_State* L ){ ((_scrollArea*)_lua_gadget::getGadget())->setScrollTypeY( string2scrollType[ check<string>( L , 1 ) ] ); return 0; }
+int _lua_scrollarea::setScrollTypeY( lua_State* L ){ this->getGadget<_scrollArea>()->setScrollTypeY( string2scrollType[ check<string>( L , 1 ) ] ); return 0; }
 
 //! Lua-button
 const char _lua_scrollarea::className[] = "ScrollArea";

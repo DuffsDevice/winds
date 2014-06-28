@@ -193,6 +193,17 @@ public:
 			i = end();
 		return i->second;
 	}
+	
+	// value access:
+	value_type& get(const key_type& key)
+	{ return *insert(value_type(key, mapped_type())).first; }
+	const value_type& get(const key_type& key) const
+	{
+		const_iterator i(lower_bound(key));
+		if (i != end() && this->operator()(key, i->first))
+			i = end();
+		return *i;
+	}
 
 	// modifiers:
 	std::pair<iterator, bool> insert(value_type val)

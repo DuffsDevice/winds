@@ -8,6 +8,7 @@
 #include "_lua/lua.class.color.h"
 #include "_lua/lua.class.border.h"
 #include "_lua/lua.class.mime.h"
+#include "_lua/lua.class.menu.h"
 #include "_lua/lua.class.bitmap.h"
 #include "_lua/lua.class.bitmap.port.h"
 #include "_lua/lua.class.hardwarekeypattern.h"
@@ -36,6 +37,15 @@ namespace _luafunc
 		_time check( lua_State* L , int index , _time* dummy ){
 			_lua_time* b = Lunar<_lua_time>::lightcheck( L , index );
 			return b ? *b : _time();
+		}
+		
+		_menu check( lua_State* L , int index , _menu* dummy )
+		{
+			if( get_type( L , index ) == LUA_TTABLE )
+				return _menu( check( L , index , (_menuEntryList*)nullptr ) );
+			
+			_lua_menu* m = Lunar<_lua_menu>::lightcheck( L , index );
+			return m ? (_menu&)*m : _menu();
 		}
 		
 		_color check( lua_State* L , int index , _color* dummy )
@@ -85,7 +95,7 @@ namespace _luafunc
 		_fontHandle check( lua_State* L , int index , _fontHandle* dummy ){
 			_lua_font* ft = Lunar<_lua_font>::lightcheck( L , index );
 			if( ft )
-				return (_fontHandle)*ft; // You CAN cast _lua_font to _font*
+				return (_fontHandle)*ft; // You CAN cast _lua_font to _fontHandle
 			return nullptr;
 		}
 		
