@@ -7,6 +7,7 @@
 #include "_type/type.controller.h"
 #include "_type/type.screen.gadget.h"
 #include "_type/type.color.palette.h"
+#include "_type/type.menu.h"
 #include "_screen/screen.keyboard.h"
 #include "_controller/controller.video.h"
 

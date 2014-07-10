@@ -20,13 +20,17 @@ class _fileObject : public _gadget {
 		_direntry*		file;
 		_fileViewType	viewType;
 		
-		bool 			pressed;
-		
+		// Handler for specific events
 		static _callbackReturn refreshHandler( _event );
 		static _callbackReturn dragHandler( _event );
 		static _callbackReturn focusHandler( _event );
 		static _callbackReturn updateHandler( _event );
 		static _callbackReturn keyHandler( _event );
+		
+		// Default Menu to Open on right Click
+		static _uniquePtr<_menu>	defaultMenu;
+		static void					defaultMenuHandler( _u16 listIndex , _u16 entryIndex );
+		void						initializeMenu();
 		
 	public:
 	

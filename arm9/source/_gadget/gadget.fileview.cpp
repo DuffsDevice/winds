@@ -88,8 +88,8 @@ void _fileView::generateChildren()
 			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
 			
 			// Read Children of directory
-			for( string str : { "Haloo.drp" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
-			//for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
+			//for( string str : { "Haloo.drp" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
+			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , _style::rightClickable );
@@ -99,7 +99,6 @@ void _fileView::generateChildren()
 				// Add User-defined Handler
 				fo->setUserEventHandler( onMouseClick , make_callback( &_fileView::eventForwarder ) );
 				fo->setUserEventHandler( onMouseDblClick , make_callback( &_fileView::eventForwarder ) );
-				fo->setUserEventHandler( onMouseRightClick , _gadgetHelpers::openContextMenu( _menu({ { 1 , "Hallo!" } }) ) );
 				
 				this->addChild( fo , true );
 			}

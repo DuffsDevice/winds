@@ -76,6 +76,7 @@ void _debugController::vdebug( _literal fmt , va_list args )
 }
 
 void _debugController::submit(){
+	printf("Press A Key To Continue...\n");
 	while( true )
 	{
 		scanKeys();

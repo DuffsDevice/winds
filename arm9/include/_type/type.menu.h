@@ -71,7 +71,7 @@ class _menu : private _rawMenuEntryLists
 		{}
 		
 		//! Add a handler for the menu applying for all entries for which the passed 'rule' returns true
-		void addMenuHandler( _menuHandlerRule rule , _paramAlloc<_callback<_menuHandler>> handler ){
+		void addHandler( _menuHandlerRule rule , _paramAlloc<_callback<_menuHandler>> handler ){
 			this->handlers.push_back(
 				make_pair(
 					rule

@@ -43,15 +43,15 @@
 namespace _luafunc
 {
 	void pushEvent( lua_State* L , _event&& arg ){
-		Lunar<_lua_event>::push( L , move(arg) );
+		Lunar<_lua_event>::emplace( L , move(arg) );
 	}
 	
 	void pushRect( lua_State* L , _rect&& arg ){
-		Lunar<_lua_rect>::push( L , move(arg) );
+		Lunar<_lua_rect>::emplace( L , move(arg) );
 	}
 	
 	void pushArea( lua_State* L , _area&& arg ){
-		Lunar<_lua_area>::push( L , move(arg) );
+		Lunar<_lua_area>::emplace( L , move(arg) );
 	}
 	
 	void pushBitmapRef( lua_State* L , _bitmap& arg ){
@@ -63,35 +63,35 @@ namespace _luafunc
 	}
 	
 	void pushBitmapPort( lua_State* L , _bitmapPort&& arg ){
-		Lunar<_lua_bitmapport>::push( L , move(arg) );
+		Lunar<_lua_bitmapport>::emplace( L , move(arg) );
 	}
 	
 	void pushBorder( lua_State* L , _border&& arg ){
-		Lunar<_lua_border>::push( L , move(arg) );
+		Lunar<_lua_border>::emplace( L , move(arg) );
 	}
 	
 	void pushFont( lua_State* L , _fontHandle arg ){
-		Lunar<_lua_font>::push( L , arg );
+		Lunar<_lua_font>::emplace( L , arg );
 	}
 	
 	void pushTime( lua_State* L , _time&& arg ){
-		Lunar<_lua_time>::push( L , move(arg) );
+		Lunar<_lua_time>::emplace( L , move(arg) );
 	}
 	
 	void pushColor( lua_State* L , _color&& arg ){
-		Lunar<_lua_color>::push( L , move(arg) );
+		Lunar<_lua_color>::emplace( L , move(arg) );
 	}
 	
 	void pushHWKP( lua_State* L , _hardwareKeyPattern&& arg ){
-		Lunar<_lua_hardwarekeypattern>::push( L , move(arg) );
+		Lunar<_lua_hardwarekeypattern>::emplace( L , move(arg) );
 	}
 	
 	void pushMimeType( lua_State* L , _mimeType&& arg ){
-		Lunar<_lua_mimetype>::push( L , move(arg) );
+		Lunar<_lua_mimetype>::emplace( L , move(arg) );
 	}
 	
 	void pushMenu( lua_State* L , _menu&& arg ){
-		Lunar<_lua_menu>::push( L , move(arg) );
+		Lunar<_lua_menu>::push( L , new _lua_menu( move(arg) ) );
 	}
 	
 	void pushMenuRef( lua_State* L , _menu& arg ){
@@ -108,89 +108,34 @@ namespace _luafunc
 		
 		switch( gadget->getType() )
 		{
-			case _gadgetType::window:
-				Lunar<_lua_window>::push( L , new _lua_window( (_window*)gadget ) );
-				break;
-			case _gadgetType::button:
-				Lunar<_lua_button>::push( L , new _lua_button( (_button*)gadget ) );
-				break;
-			case _gadgetType::stickybutton:
-				Lunar<_lua_stickybutton>::push( L , new _lua_stickybutton( (_stickyButton*)gadget ) );
-				break;
-			case _gadgetType::label:
-				Lunar<_lua_label>::push( L , new _lua_label( (_label*)gadget ) );
-				break;
-			case _gadgetType::clockgadget:
-				Lunar<_lua_clockgadget>::push( L , new _lua_clockgadget( (_clockGadget*)gadget ) );
-				break;
-			case _gadgetType::checkbox:
-				Lunar<_lua_checkbox>::push( L , new _lua_checkbox( (_checkbox*)gadget ) );
-				break;
-			case _gadgetType::selectbox:
-				Lunar<_lua_select>::push( L , new _lua_select( (_select*)gadget ) );
-				break;
-			case _gadgetType::textbox:
-				Lunar<_lua_textbox>::push( L , new _lua_textbox( (_textBox*)gadget ) );
-				break;
-			case _gadgetType::textarea:
-				Lunar<_lua_textarea>::push( L , new _lua_textarea( (_textArea*)gadget ) );
-				break;
-			case _gadgetType::counter:
-				Lunar<_lua_counter>::push( L , new _lua_counter( (_counter*)gadget ) );
-				break;
-			case _gadgetType::progressbar:
-				Lunar<_lua_progressbar>::push( L , new _lua_progressbar( (_progressBar*)gadget ) );
-				break;
-			case _gadgetType::radiobox:
-				Lunar<_lua_radio>::push( L , new _lua_radio( (_radio*)gadget ) );
-				break;
-			case _gadgetType::calendar:
-				Lunar<_lua_calendar>::push( L , new _lua_calendar( (_calendar*)gadget ) );
-				break;
-			case _gadgetType::imagebutton:
-				Lunar<_lua_imagebutton>::push( L , new _lua_imagebutton( (_imageButton*)gadget ) );
-				break;
-			case _gadgetType::imagegadget:
-				Lunar<_lua_imagegadget>::push( L , new _lua_imagegadget( (_imageGadget*)gadget ) );
-				break;
-			case _gadgetType::scrollarea:
-				Lunar<_lua_scrollarea>::push( L , new _lua_scrollarea( (_scrollArea*)gadget ) );
-				break;
-			case _gadgetType::scrollbar:
-				Lunar<_lua_scrollbar>::push( L , new _lua_scrollbar( (_scrollBar*)gadget ) );
-				break;
-			case _gadgetType::gradientcolorpicker:
-				Lunar<_lua_gradientcolorpicker>::push( L , new _lua_gradientcolorpicker( (_gradientColorPicker*)gadget ) );
-				break;
-			case _gadgetType::hexagoncolorpicker:
-				Lunar<_lua_hexagoncolorpicker>::push( L , new _lua_hexagoncolorpicker( (_hexagonColorPicker*)gadget ) );
-				break;
-			case _gadgetType::resizehandle:
-				Lunar<_lua_resizehandle>::push( L , new _lua_resizehandle( (_resizeHandle*)gadget ) );
-				break;
-			case _gadgetType::windowbar:
-				Lunar<_lua_windowbar>::push( L , new _lua_windowbar( (_windowBar*)gadget ) );
-				break;
-			case _gadgetType::windowmenu:
-				Lunar<_lua_windowmenu>::push( L , new _lua_windowmenu( (_windowMenu*)gadget ) );
-				break;
-			case _gadgetType::slider:
-				Lunar<_lua_slider>::push( L , new _lua_slider( (_slider*)gadget ) );
-				break;
-			case _gadgetType::contextmenu:
-				Lunar<_lua_contextmenu>::push( L , new _lua_contextmenu( (_contextMenu*)gadget ) );
-				break;
-			case _gadgetType::popup:
-				Lunar<_lua_popup>::push( L , new _lua_popup( (_contextMenu*)gadget ) );
-				break;
-			case _gadgetType::mainframe:
-				Lunar<_lua_mainframe>::push( L , new _lua_mainframe( (_mainFrame*)gadget ) );
-				break;
-			case _gadgetType::taskinfo:
-				Lunar<_lua_taskinfo>::push( L , new _lua_taskinfo( (_taskInfo*)gadget ) );
-				break;
-			default:
-				Lunar<_lua_gadget>::push( L , new _lua_gadget( gadget , false ) );
+			case _gadgetType::window:				Lunar<_lua_window>::emplace( L , (_window*)gadget );							break;
+			case _gadgetType::button:				Lunar<_lua_button>::emplace( L , (_button*)gadget );							break;
+			case _gadgetType::stickybutton:			Lunar<_lua_stickybutton>::emplace( L , (_stickyButton*)gadget );				break;
+			case _gadgetType::label:				Lunar<_lua_label>::emplace( L , (_label*)gadget );								break;
+			case _gadgetType::clockgadget:			Lunar<_lua_clockgadget>::emplace( L , (_clockGadget*)gadget );					break;
+			case _gadgetType::checkbox:				Lunar<_lua_checkbox>::emplace( L , (_checkbox*)gadget );						break;
+			case _gadgetType::selectbox:			Lunar<_lua_select>::emplace( L , (_select*)gadget );							break;
+			case _gadgetType::textbox:				Lunar<_lua_textbox>::emplace( L , (_textBox*)gadget );							break;
+			case _gadgetType::textarea:				Lunar<_lua_textarea>::emplace( L , (_textArea*)gadget );						break;
+			case _gadgetType::counter:				Lunar<_lua_counter>::emplace( L , (_counter*)gadget );							break;
+			case _gadgetType::progressbar:			Lunar<_lua_progressbar>::emplace( L , (_progressBar*)gadget );					break;
+			case _gadgetType::radiobox:				Lunar<_lua_radio>::emplace( L , (_radio*)gadget );								break;
+			case _gadgetType::calendar:				Lunar<_lua_calendar>::emplace( L , (_calendar*)gadget );						break;
+			case _gadgetType::imagebutton:			Lunar<_lua_imagebutton>::emplace( L , (_imageButton*)gadget );					break;
+			case _gadgetType::imagegadget:			Lunar<_lua_imagegadget>::emplace( L , (_imageGadget*)gadget );					break;
+			case _gadgetType::scrollarea:			Lunar<_lua_scrollarea>::emplace( L , (_scrollArea*)gadget );					break;
+			case _gadgetType::scrollbar:			Lunar<_lua_scrollbar>::emplace( L , (_scrollBar*)gadget );						break;
+			case _gadgetType::gradientcolorpicker:	Lunar<_lua_gradientcolorpicker>::emplace( L , (_gradientColorPicker*)gadget );	break;
+			case _gadgetType::hexagoncolorpicker:	Lunar<_lua_hexagoncolorpicker>::emplace( L , (_hexagonColorPicker*)gadget );	break;
+			case _gadgetType::resizehandle:			Lunar<_lua_resizehandle>::emplace( L , (_resizeHandle*)gadget );				break;
+			case _gadgetType::windowbar:			Lunar<_lua_windowbar>::emplace( L , (_windowBar*)gadget );						break;
+			case _gadgetType::windowmenu:			Lunar<_lua_windowmenu>::emplace( L , (_windowMenu*)gadget );					break;
+			case _gadgetType::slider:				Lunar<_lua_slider>::emplace( L , (_slider*)gadget );							break;
+			case _gadgetType::contextmenu:			Lunar<_lua_contextmenu>::emplace( L , (_contextMenu*)gadget );					break;
+			case _gadgetType::popup:				Lunar<_lua_popup>::emplace( L , (_contextMenu*)gadget );						break;
+			case _gadgetType::mainframe:			Lunar<_lua_mainframe>::emplace( L , (_mainFrame*)gadget );						break;
+			case _gadgetType::taskinfo:				Lunar<_lua_taskinfo>::emplace( L , (_taskInfo*)gadget );						break;
+			default:								Lunar<_lua_gadget>::emplace( L , gadget , false );
 		}
 	}
 }

@@ -12,10 +12,10 @@ _lua_menu::_lua_menu( lua_State* L ) :
 	menu( new _menu() )
 { }
 
-int _lua_menu::addMenuHandler(lua_State* L){
+int _lua_menu::addHandler(lua_State* L){
 	_lua_menurule* rule = Lunar<_lua_menurule>::check( L , 1 );
 	if( rule )
-		menu->addMenuHandler( *rule , check<_callback<_menuHandler>>( L , 2 ) );
+		menu->addHandler( *rule , check<_callback<_menuHandler>>( L , 2 ) );
 	return 0;
 }
 
@@ -36,7 +36,7 @@ const char _lua_menu::className[] = "Menu";
 Lunar<_lua_menu>::FunctionType _lua_menu::methods[] = {
 	{ "getList"			, &_lua_menu::getList },
 	{ "setList"			, &_lua_menu::setList },
-	{ "addMenuHandler"	, &_lua_menu::addMenuHandler },
+	{ "addHandler"		, &_lua_menu::addHandler },
 	{ "clearMenu"		, wrap( _lua_menu , &_menu::clearMenu ) },
 	{ "clearHandlers"	, wrap( _lua_menu , &_menu::clearHandlers ) },
 	{ "callHandler"		, wrap( _lua_menu , &_menu::callHandler ) },

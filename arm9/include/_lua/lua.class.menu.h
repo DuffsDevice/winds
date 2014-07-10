@@ -34,8 +34,8 @@ class _lua_menu
 		//! Cast to _menu&
 		operator _menu&(){ return *this->menu; }
 		
-		//! addMenuHandler
-		int addMenuHandler(lua_State* L);
+		//! addHandler
+		int addHandler(lua_State* L);
 		
 		//! setList
 		int setList(lua_State* L);

@@ -8,8 +8,7 @@ using namespace _luafunc;
 ##           Lua-Window           ##
 ##################################*/
 
-_lua_window::_lua_window( lua_State* L ) : 
-	_lua_gadget()
+_lua_window::_lua_window( lua_State* L )
 {
 	if( is_a<_bitmap>( L , 6 ) )
 	{
@@ -23,7 +22,7 @@ _lua_window::_lua_window( lua_State* L ) :
 				, check<_bitmap>( L , 6 )
 				, lightcheck<bool>( L , 7 , true )
 				, lightcheck<bool>( L , 8 , true )
-				, lightcheck<_style>( L , 9 , _style() | _style::draggable )
+				, lightcheck<_style>( L , 9 )
 			) 
 		);
 	}
@@ -38,7 +37,7 @@ _lua_window::_lua_window( lua_State* L ) :
 				, check<string>( L , 5 )
 				, lightcheck<bool>( L , 6 , true )
 				, lightcheck<bool>( L , 7 , true )
-				, lightcheck<_style>( L , 8 , _style() | _style::draggable ) 
+				, lightcheck<_style>( L , 8 ) 
 			)
 		);
 	}

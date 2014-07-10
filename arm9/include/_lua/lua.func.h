@@ -120,8 +120,8 @@ namespace _luafunc
 	static unused Ret lightcheck( lua_State* state , int index , ParamType&& fallback = ParamType() ){
 		if( _luafunc::is_a<T>( state , index ) )
 			return _luafunc::check<T>( state , index );
-		else if( !lua_isnil( state , index ) ) // Wrong type supplied
-			lua_tagerror( state , index , LUA_TNIL );
+		else if( !lua_isnoneornil( state , index ) ) // Wrong type supplied
+			lua_notnoneerror( state , index );
 		return move(fallback);
 	}
 	
