@@ -538,15 +538,8 @@ class Lunar
 		
 		// Push an object on the lua stack
 		template<typename... Arguments>
-		static void push( lua_State* state , Arguments... parameters )
-		{
-			Class* instance = new Class( std::forward<Arguments>(parameters)... );
-			
-			Class **instancePtr = static_cast<Class**>( lua_newuserdata( state , sizeof(Class*) ) ); // Create userdata
-			*instancePtr = instance; // Write pointer
-			
-			luaL_getmetatable( state , Class::className );	// Get metatable
-			lua_setmetatable( state , -2 );					// Apply to object
+		static void emplace( lua_State* state , Arguments... parameters ){
+			Lunar<Class>::push( state , new Class( std::forward<Arguments>(parameters)... ) );
 		}
 		
 		// Check for objects of 'Class' on the Lua-Stack at position 'narg'

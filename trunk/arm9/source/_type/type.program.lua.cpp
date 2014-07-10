@@ -190,12 +190,16 @@ int _progLua::lua_usingClass( lua_State* L )
 	
 	return 1;
 }
+int _progLua::lua_pause( lua_State* L ){
+	_debugController::submit();
+	return 0;
+}
 
 bool _progLua::parseProgramHeader()
 {
 	_programHeader header;
 	
-	if( this->content && ! this->headParsed )
+	if( this->content && !this->headParsed )
 	{
 		string		attribute;
 		_tokenizer	tok = _tokenizer( *this->content , attribute , "\n\r" , true );
@@ -283,6 +287,7 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"keyboardOpen"			, lua_keyboardOpen },
 	{"keyboardClose"		, lua_keyboardClose },
 	{"debug"				, lua_writeDebug },
+	{"pause"				, lua_pause },
 	{"pushEvent"			, lua_pushEvent },
 	{ NULL , NULL }
 };

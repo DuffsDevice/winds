@@ -44,7 +44,7 @@ void PROG_Explorer::main( _programArgs args )
 	
 	// Create Menu
 	_menu menu = _windowMenu::getStandardMenu();
-	//menu.setList( 1 , { { 101 , _localizationController::getBuiltInString("lbl_exit") } } );
+	menu.setList( 1 , { { 101 , _localizationController::getBuiltInString("lbl_exit") } } );
 	
 	mainFrame->addChild( this->fileView );
 	mainFrame->addChild( this->windowBar = new _windowBar() );

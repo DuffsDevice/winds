@@ -67,8 +67,8 @@ function main( filename )
 	windowRawMenu.setList( 2 , { { 1 , System.getLocalizedString("lbl_size") } } ) -- Reference a list
 	
 	-- Add a WindowMenu built from the _menu we constructed
-	windowRawMenu.addMenuHandler( MenuRule( 1 , 1 , 4 ) , menu1Handler ) -- Add our Handler for "open", "save" and "save as..."
-	windowRawMenu.addMenuHandler( MenuRule( 2 , 1 ) , menu2Handler ) -- Add our Handler for "open", "save" and "save as..."
+	windowRawMenu.addHandler( MenuRule( 1 , 1 , 4 ) , menu1Handler ) -- Add our Handler for "open", "save" and "save as..."
+	windowRawMenu.addHandler( MenuRule( 2 , 1 ) , menu2Handler ) -- Add our Handler for "open", "save" and "save as..."
 	APPDATA.windowMenu = WindowMenu( windowRawMenu )
 
 	

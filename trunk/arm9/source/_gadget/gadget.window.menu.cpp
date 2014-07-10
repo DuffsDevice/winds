@@ -30,7 +30,7 @@ const _menu& _windowMenu::getStandardMenu(){
 	
 	if( !initialized )
 	{
-		ret.setList( 0 , { { 1 , { _localizationController::getBuiltInString("lbl_file") , 1 } } } );
+		ret.setList( { { 1 , { _localizationController::getBuiltInString("lbl_file") , 1 } } } );
 		ret.setList( 1 ,
 			{
 				{ 1		, _localizationController::getBuiltInString("lbl_new") } ,
@@ -94,7 +94,7 @@ _windowMenu::_windowMenu( _menu menu , _style&& style ) :
 	this->setMinHeight( _guiController::getListItemHeight() );
 	
 	// Add a handler to the standard Menu
-	this->addMenuHandler( _menuHandlerRule() , make_callback( this , &_windowMenu::menuHandler ) );
+	this->addHandler( _menuHandlerRule() , make_callback( this , &_windowMenu::menuHandler ) );
 	
 	// Register updatehandler
 	this->setInternalEventHandler( onUpdate , make_callback( &_windowMenu::updateHandler ) );

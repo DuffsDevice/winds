@@ -35,6 +35,7 @@ class _progLua : public _program
 		static int	lua_writeDebug( lua_State* L );
 		static int	lua_pushEvent( lua_State* L );
 		static int	lua_getMainFrame( lua_State* L );
+		static int	lua_pause( lua_State* L );
 		
 		//! system.exit() method
 		static int	lua_exit( lua_State* L );

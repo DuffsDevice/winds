@@ -7,6 +7,7 @@
 #include "_type/type.gadget.helpers.h"
 #include "_controller/controller.font.h"
 #include "_controller/controller.gui.h"
+#include "_controller/controller.localization.h"
 
 _callbackReturn _fileObject::keyHandler( _event event )
 {
@@ -152,12 +153,34 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 //	return not_handled;
 //}
 
+void _fileObject::initializeMenu()
+{
+	if( !_fileObject::defaultMenu )
+	{
+		_fileObject::defaultMenu = new _menu(
+			{
+				{ 1	, _localizationController::getBuiltInString("lbl_open") } ,
+				{ 2	, _menu::divider } ,
+				{ 3	, _localizationController::getBuiltInString("lbl_cut") } ,
+				{ 4	, _localizationController::getBuiltInString("lbl_copy") } ,
+				{ 5	, _menu::divider } ,
+				{ 6	, _localizationController::getBuiltInString("lbl_delete") } ,
+				{ 7	, _menu::divider } ,
+				{ 8	, _localizationController::getBuiltInString("lbl_rename") } ,
+				{ 9	, _localizationController::getBuiltInString("lbl_move_to") }
+			}
+		);
+		_fileObject::defaultMenu->addHandler( _menuHandlerRule() , make_callback( &_fileObject::defaultMenuHandler ) );
+	}
+}
+
 _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& filename , _fileViewType viewtype , _style&& style ) :
 	_gadget( _gadgetType::fileobject , x , y , width , height , move(style) )
 	, file( new _direntry(filename) )
 	, viewType( viewtype )
-	, pressed( false )
 {
+	this->initializeMenu();
+	
 	// Replace _direntry with the more specialized class '_shortcut'
 	if( file->getMimeType() == _mime::application_x_ms_shortcut ){
 		delete this->file;
@@ -178,6 +201,7 @@ _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	this->setInternalEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onKeyDown , make_callback( &_fileObject::keyHandler ) );
 	this->setInternalEventHandler( onKeyRepeat , make_callback( &_fileObject::keyHandler ) );
+	this->setInternalEventHandler( onMouseRightClick , _gadgetHelpers::openContextMenu( _fileObject::defaultMenu.get() ) );
 	
 	// Refresh...
 	this->redraw();
@@ -188,3 +212,33 @@ _fileObject::~_fileObject()
 	if( this->file )
 		delete this->file;
 }
+
+void _fileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
+{
+	_fileObject* file = (_fileObject*)_gadgetHelpers::openContextMenu::getCurrentSubject();
+	
+	if( file || file->getType() != _gadgetType::fileobject )
+		return;
+	
+	if( listIndex == 0 )
+	{
+		switch( entryIndex )
+		{
+			case 1: // Open
+				file->execute();
+				break;
+			case 6: // Delete
+			{
+				// Delete the file
+				file->file->unlink( true );
+				
+				_fileView* parent = (_fileView*)file->getParent();
+				if( parent && parent->getType() == _gadgetType::fileview )
+					parent->setPath( parent->getPath() );
+				break;
+			}
+		}
+	}
+}
+
+_uniquePtr<_menu> _fileObject::defaultMenu;
