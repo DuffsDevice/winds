@@ -1,7 +1,7 @@
 #ifndef _WIN_T_FIXEDPOINT_
 #define _WIN_T_FIXEDPOINT_
 
-#include "stdio.h"
+#include <stdio.h>
 
 // Fixed-point Math implementation
 namespace _detail_{inline _int CountLeadingZeros(_int x);}

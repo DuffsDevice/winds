@@ -2,11 +2,11 @@
 #ifndef _WIN_EVENT_
 #define _WIN_EVENT_
 
-#include "_type/type.h"
-#include "_type/type.rect.h"
-#include "_type/type.flexptr.h"
-#include "_type/type.dependency.h"
-#include "_type/type.key.h"
+#include <_type/type.h>
+#include <_type/type.rect.h>
+#include <_type/type.flexptr.h>
+#include <_type/type.dependency.h>
+#include <_type/type.key.h>
 
 /**
  * Specifies how the event was handled

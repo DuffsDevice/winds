@@ -1,7 +1,7 @@
 #ifndef _WIN_T_GUISTRING_SINGLELINE_
 #define _WIN_T_GUISTRING_SINGLELINE_
 
-#include "_type/type.guistring.h"
+#include <_type/type.guistring.h>
 
 class _singleLineGuiString : public _guiString
 {

@@ -18,7 +18,7 @@
  *
  */
 
-#include "_library/library.image.ico.h"
+#include <_library/library.image.ico.h>
 
 unsigned int GenericIcoDecoder::getNumPages( const unsigned char* buffer ){
 	ICONDIR* icoDir = (ICONDIR*)buffer;

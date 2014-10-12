@@ -1,6 +1,6 @@
-#include "_gui/gui.setup.page.2.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.font.h"
+#include <_gui/gui.setup.page.2.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.font.h>
 
 void _guiSetupPage2::create( _gadget* viewParent )
 {

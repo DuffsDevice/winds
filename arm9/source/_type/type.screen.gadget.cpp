@@ -1,5 +1,5 @@
-#include "_type/type.screen.gadget.h"
-#include "_controller/controller.gui.h"
+#include <_type/type.screen.gadget.h>
+#include <_controller/controller.gui.h>
 
 _gadgetScreen::_gadgetScreen( int bgId , _gadgetScreenType sType , _length width , _length height , _style&& style ) :
 	_screen( bgId )

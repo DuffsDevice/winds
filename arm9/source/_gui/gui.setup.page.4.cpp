@@ -1,8 +1,8 @@
-#include "_gui/gui.setup.page.4.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.font.h"
-#include "_type/type.windows.h"
-#include "_type/type.user.h"
+#include <_gui/gui.setup.page.4.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.font.h>
+#include <_type/type.windows.h>
+#include <_type/type.user.h>
 
 const _s8		_guiSetupPage4::iconNumbers[] = { 5 , 16 , 17 , 22 , 3 , 11 , 4 , 2 , -1 };
 

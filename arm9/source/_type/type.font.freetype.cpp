@@ -1,7 +1,7 @@
-#include "_type/type.font.freetype.h"
+#include <_type/type.font.freetype.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION // Request implementation instead of just header
-#include "_library/library.truetype.h"
+#include <_library/library.truetype.h>
 #undef STB_TRUETYPE_IMPLEMENTATION
 
 _u32 LUT_Transparency[256] = 

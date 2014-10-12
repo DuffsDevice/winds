@@ -1,8 +1,8 @@
-#include "_gui/gui.setup.page.5.h"
-#include "_gui/gui.setup.page.4.h"
-#include "_gui/gui.setup.page.3.h"
-#include "_controller/controller.localization.h"
-#include "_type/type.user.h"
+#include <_gui/gui.setup.page.5.h>
+#include <_gui/gui.setup.page.4.h>
+#include <_gui/gui.setup.page.3.h>
+#include <_controller/controller.localization.h>
+#include <_type/type.user.h>
 
 void _guiSetupPage5::timerCallback()
 {

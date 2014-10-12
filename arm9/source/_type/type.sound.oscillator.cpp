@@ -1,4 +1,4 @@
-#include "_type/type.sound.oscillator.h"
+#include <_type/type.sound.oscillator.h>
 #include <nds/fifocommon.h>
 
 _s8 _soundOscillator::prepareChannel( _u8 volume , _s8 panning )

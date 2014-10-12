@@ -2,7 +2,7 @@
 #ifndef _WIN_T_COLOR_
 #define _WIN_T_COLOR_
 
-#include "type.h"
+#include <_type/type.h>
 
 class _color{
 	

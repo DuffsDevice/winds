@@ -1,7 +1,7 @@
-#include "_gadget/gadget.resizehandle.h"
-#include "_type/type.font.glyphs.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.resizehandle.h>
+#include <_type/type.font.glyphs.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
 
 _callbackReturn _resizeHandle::refreshHandler( _event event )
 {

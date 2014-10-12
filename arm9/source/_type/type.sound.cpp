@@ -1,5 +1,5 @@
-#include "_type/type.sound.h"
-#include "_controller/controller.sound.h"
+#include <_type/type.sound.h>
+#include <_controller/controller.sound.h>
 
 // Sound Controls
 void _sound::play( _u8 volume , _s8 panning ){ _soundController::playSound( this ); }

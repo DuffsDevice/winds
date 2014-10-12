@@ -1,11 +1,11 @@
 #ifndef _WIN_G_SETUP_PAGE5_
 #define _WIN_G_SETUP_PAGE5_
 
-#include "_type/type.h"
-#include "_type/type.view.h"
+#include <_type/type.h>
+#include <_type/type.view.h>
 
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.progressbar.h"
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.progressbar.h>
 
 class _guiSetupPage5 : public _view
 {

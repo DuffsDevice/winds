@@ -1,7 +1,7 @@
-#include "_gadget/gadget.colorpicker.gradient.h"
-#include "_type/type.color.h"
-#include "_type/type.font.glyphs.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.colorpicker.gradient.h>
+#include <_type/type.color.h>
+#include <_type/type.font.glyphs.h>
+#include <_controller/controller.font.h>
 
 #include <math.h>
 

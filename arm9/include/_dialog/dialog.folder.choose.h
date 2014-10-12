@@ -1,11 +1,11 @@
 #ifndef _WIN_D_FOLDERCHOOSE_
 #define _WIN_D_FOLDERCHOOSE_
 
-#include "_type/type.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.filetree.h"
+#include <_type/type.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.filetree.h>
 
 class _folderChooseDialog : public _dialog
 {

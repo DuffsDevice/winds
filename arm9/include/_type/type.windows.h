@@ -1,9 +1,9 @@
 #ifndef _WIN_T_WINDOWS_
 #define _WIN_T_WINDOWS_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.language.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.language.h>
 
 //! Enumerates the underlying hardware
 enum class _hardwareType{

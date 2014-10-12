@@ -1,7 +1,7 @@
 #ifndef _WIN_T_PROGRAMARGS_
 #define _WIN_T_PROGRAMARGS_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 class _programArgs : public _vector<string>
 {

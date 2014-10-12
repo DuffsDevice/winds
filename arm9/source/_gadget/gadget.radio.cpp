@@ -1,9 +1,9 @@
-#include "_gadget/gadget.radio.h"
-#include "_type/type.singlevaluegroup.h"
-#include "_type/type.gadget.helpers.h"
+#include <_gadget/gadget.radio.h>
+#include <_type/type.singlevaluegroup.h>
+#include <_type/type.gadget.helpers.h>
 
 // Graphics
-#include "_resource/resource.image.radiobuttons.h"
+#include <_resource/resource.image.radiobuttons.h>
 
 _constBitmap _radio::graphic[4] = { BMP_RadioChecked() , BMP_RadioUnchecked() , BMP_RadioBorder() , BMP_RadioBorderPressed() };
 

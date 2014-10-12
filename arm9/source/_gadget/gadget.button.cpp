@@ -1,6 +1,6 @@
-#include "_gadget/gadget.button.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.button.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.font.h>
 
 void _button::setStrValue( string val )
 {

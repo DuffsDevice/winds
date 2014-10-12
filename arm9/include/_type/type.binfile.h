@@ -3,8 +3,8 @@
 
 // This Class is mainly useless except for the fact that it can read built-in binary-files
 
-#include "_type/type.h"
-#include "_type/type.direntry.h"
+#include <_type/type.h>
+#include <_type/type.direntry.h>
 
 class _binFile : _direntry
 {

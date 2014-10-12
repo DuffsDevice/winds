@@ -1,9 +1,9 @@
 #ifndef _WIN_T_VIEWSWITCHER_
 #define _WIN_T_VIEWSWITCHER_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.view.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.view.h>
 
 class _viewSwitcher
 {

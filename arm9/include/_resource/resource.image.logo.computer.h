@@ -1,8 +1,8 @@
 #ifndef _BMP_COMPUTERLOGO_H_
 #define _BMP_COMPUTERLOGO_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ComputerLogo_bmp[2448] = {
 64478, 57079, 59193, 58136, 58136, 58136, 58136, 57079, 57079, 57079, 57079, 

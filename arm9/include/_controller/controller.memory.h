@@ -1,8 +1,8 @@
 #ifndef _WIN_C_MEMORY_
 #define _WIN_C_MEMORY_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
 
 void memset32( void* dest , _u32 val , _u32 wordCount );
 void memcpy32( void* dest , const void* src , _u32 wordCount );

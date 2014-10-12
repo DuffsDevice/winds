@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_STREAM_
 #define _WIN_T_SOUND_STREAM_
 
-#include "_type/type.h"
-#include "_type/type.sound.h"
-#include "_type/type.uniqueptr.h"
+#include <_type/type.h>
+#include <_type/type.sound.h>
+#include <_type/type.uniqueptr.h>
 
 class _soundStream : public _sound
 {

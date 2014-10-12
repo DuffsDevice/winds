@@ -1,5 +1,5 @@
-#include "_gadget/gadget.scrollBar.button.h"
-#include "_resource/resource.image.scrollbuttons.h"
+#include <_gadget/gadget.scrollBar.button.h>
+#include <_resource/resource.image.scrollbuttons.h>
 
 _bitmap btn_background_released = BMP_ScrollButton();
 _bitmap btn_background_pressed 	= BMP_ScrollButtonPressed();

@@ -2,9 +2,9 @@
 #ifndef _WIN_L_WINDOW_
 #define _WIN_L_WINDOW_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.window.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.window.h>
 
 /**
  * Proxy Classes

@@ -1,11 +1,11 @@
-#include "_resource/resource.program.mapper.h"
-#include "_resource/resource.program.mapper.progobject.h"
-#include "_controller/controller.filesystem.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.registry.h"
-#include "_controller/controller.gui.h"
-#include "_type/type.gadget.helpers.h"
-#include "_type/type.windows.h"
+#include <_resource/resource.program.mapper.h>
+#include <_resource/resource.program.mapper.progobject.h>
+#include <_controller/controller.filesystem.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.registry.h>
+#include <_controller/controller.gui.h>
+#include <_type/type.gadget.helpers.h>
+#include <_type/type.windows.h>
 
 PROG_Mapper::PROG_Mapper() :
 	chooseButNotOpen( false )

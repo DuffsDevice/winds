@@ -1,10 +1,10 @@
-#include "_resource/resource.program.taskmanager.h"
-#include "_resource/resource.icon.taskmgr.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.memory.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
-#include "_type/type.windows.h"
+#include <_resource/resource.program.taskmanager.h>
+#include <_resource/resource.icon.taskmgr.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.memory.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
+#include <_type/type.windows.h>
 
 PROG_TaskManager::PROG_TaskManager() :
 	updateTimer( make_callback( this , &PROG_TaskManager::timerHandler ) , 400 , true )

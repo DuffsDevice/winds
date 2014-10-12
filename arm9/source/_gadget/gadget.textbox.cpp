@@ -1,6 +1,6 @@
-#include "_gadget/gadget.textbox.h"
-#include "_type/type.windows.soundbank.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.textbox.h>
+#include <_type/type.windows.soundbank.h>
+#include <_controller/controller.font.h>
 
 _rect _textBox::getGuiStringDimensions() const {
 	_length width = this->hasFocus() ? this->text.getPreferredTextWidth() : ( this->getWidth() - 4 );

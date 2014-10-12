@@ -1,8 +1,8 @@
 #ifndef _BMP_LUAICON_H_
 #define _BMP_LUAICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_LuaIcon_bmp[100] = {
 65535, 65535, 63104, 49152, 49152, 49152, 49152, 63347, 63104, 49152, 65535, 

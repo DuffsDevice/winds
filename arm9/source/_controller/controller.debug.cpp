@@ -1,6 +1,6 @@
-#include "_controller/controller.debug.h"
-#include "_dialog/dialog.runtimeerror.h"
-#include "_controller/controller.localization.h"
+#include <_controller/controller.debug.h>
+#include <_dialog/dialog.runtimeerror.h>
+#include <_controller/controller.localization.h>
 
 extern "C" void scanKeys();
 extern "C" void consoleDemoInit();

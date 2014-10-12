@@ -1,8 +1,8 @@
 #ifndef _FONT_SYSTEMSYMBOLS8_
 #define _FONT_SYSTEMSYMBOLS8_
 
-#include "_type/type.h"
-#include "_type/type.font.memory.h"
+#include <_type/type.h>
+#include <_type/type.font.memory.h>
 
 /**
  * FONT_SystemSymbols8 font.

@@ -2,9 +2,9 @@
 #ifndef _WIN_L_WINDOWBAR_
 #define _WIN_L_WINDOWBAR_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.window.bar.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.window.bar.h>
 
 /**
  * Proxy Class

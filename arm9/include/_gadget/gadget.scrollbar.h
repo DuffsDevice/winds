@@ -1,9 +1,9 @@
 #ifndef _WIN_G_SCROLLBAR_
 #define _WIN_G_SCROLLBAR_
 
-#include "_type/type.gadget.h"
-#include "_type/type.animation.h"
-#include "_gadget/gadget.scrollBar.button.h"
+#include <_type/type.gadget.h>
+#include <_type/type.animation.h>
+#include <_gadget/gadget.scrollBar.button.h>
 
 class _scrollBar : public _gadget {
 	

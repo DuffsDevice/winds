@@ -1,7 +1,7 @@
 #ifndef _WIN_T_KEY_
 #define _WIN_T_KEY_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 //! Seccesary things from libnds
 #include <nds/input.h>

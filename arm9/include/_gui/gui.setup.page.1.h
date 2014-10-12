@@ -1,11 +1,11 @@
 #ifndef _WIN_G_SETUP_PAGE1_
 #define _WIN_G_SETUP_PAGE1_
 
-#include "_type/type.h"
-#include "_type/type.view.h"
+#include <_type/type.h>
+#include <_type/type.view.h>
 
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.select.h"
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.select.h>
 
 class _guiSetupPage1 : public _view
 {

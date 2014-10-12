@@ -1,6 +1,6 @@
-#include "_screen/screen.desktop.h"
-#include "_controller/controller.gui.h"
-#include "func.gridcreator.h"
+#include <_screen/screen.desktop.h>
+#include <_controller/controller.gui.h>
+#include <_func/func.gridcreator.h>
 
 void _desktopScreen::taskHandler( _window* ref )
 {

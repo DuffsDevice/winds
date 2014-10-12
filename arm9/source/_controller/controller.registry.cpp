@@ -1,27 +1,27 @@
-#include "_controller/controller.registry.h"
-#include "_controller/controller.filesystem.h"
-#include "_controller/controller.debug.h"
-#include "_dialog/dialog.runtimeerror.h"
+#include <_controller/controller.registry.h>
+#include <_controller/controller.filesystem.h>
+#include <_controller/controller.debug.h>
+#include <_dialog/dialog.runtimeerror.h>
 
-#include "_type/type.time.h"
-#include "_type/type.user.guest.h"
-#include "_type/type.windows.h"
+#include <_type/type.time.h>
+#include <_type/type.user.guest.h>
+#include <_type/type.windows.h>
 
 //! File-Images
-#include "_resource/resource.icon.file.h"
-#include "_resource/resource.icon.exe.h"
-#include "_resource/resource.icon.txt.h"
-#include "_resource/resource.icon.xml.h"
-#include "_resource/resource.icon.nds.h"
-#include "_resource/resource.icon.gba.h"
-#include "_resource/resource.icon.ini.h"
-#include "_resource/resource.icon.lua.h"
-#include "_resource/resource.icon.folder.h"
-#include "_resource/resource.icon.font.h"
-#include "_resource/resource.icon.music.h"
-#include "_resource/resource.icon.jpg.h"
-#include "_resource/resource.icon.image.h"
-#include "_resource/resource.icon.registry.h"
+#include <_resource/resource.icon.file.h>
+#include <_resource/resource.icon.exe.h>
+#include <_resource/resource.icon.txt.h>
+#include <_resource/resource.icon.xml.h>
+#include <_resource/resource.icon.nds.h>
+#include <_resource/resource.icon.gba.h>
+#include <_resource/resource.icon.ini.h>
+#include <_resource/resource.icon.lua.h>
+#include <_resource/resource.icon.folder.h>
+#include <_resource/resource.icon.font.h>
+#include <_resource/resource.icon.music.h>
+#include <_resource/resource.icon.jpg.h>
+#include <_resource/resource.icon.image.h>
+#include <_resource/resource.icon.registry.h>
 
 bool _registryController::init()
 {

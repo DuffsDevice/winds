@@ -1,8 +1,8 @@
 #ifndef _FONT_COURIERNEW10_
 #define _FONT_COURIERNEW10_
 
-#include "_type/type.font.memory.h"
-#include "_type/type.h"
+#include <_type/type.font.memory.h>
+#include <_type/type.h>
 
 /**
  * COURIER_NEW_FONT font.

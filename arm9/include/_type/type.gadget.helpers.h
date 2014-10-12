@@ -1,10 +1,10 @@
 #ifndef _WIN_T_GADGTEHELPERS_
 #define _WIN_T_GADGTEHELPERS_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.menu.h"
-#include "_type/type.direction.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.menu.h>
+#include <_type/type.direction.h>
 
 class _contextMenu;
 

@@ -2,9 +2,9 @@
 #ifndef _WIN_G_TEXTAREA_
 #define _WIN_G_TEXTAREA_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.scrollBar.h"
-#include "_type/type.guistring.multiline.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.scrollBar.h>
+#include <_type/type.guistring.multiline.h>
 
 class _textArea : public _gadget{
 	

@@ -1,4 +1,4 @@
-#include "_type/type.rect.h"
+#include <_type/type.rect.h>
 
 optimized _area& _area::clipToIntersect( const _rect& limits )
 {

@@ -1,11 +1,11 @@
 #ifndef _WIN_G_BUBBLE_
 #define _WIN_G_BUBBLE_
 
-#include "_type/type.gadget.h"
-#include "_type/type.timer.h"
-#include "_type/type.guistring.singleline.h"
-#include "_type/type.guistring.multiline.h"
-#include "_gadget/gadget.popup.h"
+#include <_type/type.gadget.h>
+#include <_type/type.timer.h>
+#include <_type/type.guistring.singleline.h>
+#include <_type/type.guistring.multiline.h>
+#include <_gadget/gadget.popup.h>
 
 class _bubble : public _popup
 {

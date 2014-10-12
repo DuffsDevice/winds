@@ -1,6 +1,6 @@
-#include "_gadget/gadget.window.mainframe.h"
-#include "_type/type.program.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.window.mainframe.h>
+#include <_type/type.program.h>
+#include <_controller/controller.gui.h>
 
 string _mainFrame::getDisplayName( _programHandle handle )
 {

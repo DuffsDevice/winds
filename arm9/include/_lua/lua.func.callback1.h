@@ -1,11 +1,11 @@
 #ifndef _WIN_L_FUNC_
-	#include "_lua/lua.func.h"
+	#include <_lua/lua.func.h>
 #endif
 
 #ifndef _WIN_L_CALLBACK_1_
 #define _WIN_L_CALLBACK_1_
 
-#include "_type/type.callback.h"
+#include <_type/type.callback.h>
 
 namespace
 {

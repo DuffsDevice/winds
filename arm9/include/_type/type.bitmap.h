@@ -2,11 +2,11 @@
 #ifndef _WIN_T_BITMAP_
 #define _WIN_T_BITMAP_
 
-#include "_type/type.h"
-#include "_type/type.font.handle.h"
-#include "_type/type.rect.h"
-#include "_type/type.color.h"
-#include "_controller/controller.memory.h"
+#include <_type/type.h>
+#include <_type/type.font.handle.h>
+#include <_type/type.rect.h>
+#include <_type/type.color.h>
+#include <_controller/controller.memory.h>
 
 class _font;
 

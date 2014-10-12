@@ -1,10 +1,10 @@
 #ifndef _WIN_G_CALENDAR_
 #define _WIN_G_CALENDAR_
 
-#include "_type/type.time.h"
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.button.sticky.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.time.h>
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.button.sticky.h>
+#include <_gadget/gadget.label.h>
 
 class _calendar : public _gadget , private _singleValueGroup<_stickyButton>
 {

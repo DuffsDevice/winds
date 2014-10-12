@@ -1,8 +1,8 @@
 #ifndef _WIN_D_ERRORWARNINGINFO_
 #define _WIN_D_ERRORWARNINGINFO_
 
-#include "_dialog/dialog.image.h"
-#include "_type/type.bitmap.h"
+#include <_dialog/dialog.image.h>
+#include <_type/type.bitmap.h>
 
 //! Error - Dialog
 class _errorDialog : public _imageDialog

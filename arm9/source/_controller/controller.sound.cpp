@@ -1,5 +1,5 @@
-#include "_controller/controller.sound.h"
-#include "_controller/controller.debug.h"
+#include <_controller/controller.sound.h>
+#include <_controller/controller.debug.h>
 
 extern "C"{
 	#include <nds/fifocommon.h>

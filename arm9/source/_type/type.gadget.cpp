@@ -1,10 +1,10 @@
-#include "_type/type.gadget.h"
-#include "_type/type.screen.gadget.h"
-#include "_type/type.timer.h"
-#include "_type/type.bitmap.toner.h"
-#include "_gadget/gadget.button.h"
-#include "_controller/controller.event.h"
-#include "_controller/controller.gui.h"
+#include <_type/type.gadget.h>
+#include <_type/type.screen.gadget.h>
+#include <_type/type.timer.h>
+#include <_type/type.bitmap.toner.h>
+#include <_gadget/gadget.button.h>
+#include <_controller/controller.event.h>
+#include <_controller/controller.gui.h>
 
 _array<_staticCallback<_eventHandler>,14> _gadget::defaultEventHandlers = {
 	{

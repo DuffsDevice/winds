@@ -2,8 +2,8 @@
 #ifndef _WIN_L_INI_
 #define _WIN_L_INI_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.ini.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.ini.h>
 
 /**
  * Proxy Classes

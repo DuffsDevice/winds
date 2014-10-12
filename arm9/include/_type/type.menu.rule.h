@@ -1,7 +1,7 @@
 #ifndef _WIN_T_MENURULE_
 #define _WIN_T_MENURULE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _menuHandlerRuleType : _u8{
 	listIndex,

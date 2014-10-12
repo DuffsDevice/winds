@@ -1,11 +1,11 @@
-#include "_screen/screen.desktop.startbutton.h"
-#include "_screen/screen.desktop.infoarea.h"
-#include "_type/type.time.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.interrupt.h"
+#include <_screen/screen.desktop.startbutton.h>
+#include <_screen/screen.desktop.infoarea.h>
+#include <_type/type.time.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.interrupt.h>
 
 //! Graphics
-#include "_resource/resource.image.windows.infoarea.h"
+#include <_resource/resource.image.windows.infoarea.h>
 
 void _desktopScreenInfoArea::timerHandler()
 {

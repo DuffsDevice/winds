@@ -2,9 +2,9 @@
 #ifndef _WIN_L_ANIMATION_
 #define _WIN_L_ANIMATION_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.h"
-#include "_type/type.animation.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.h>
+#include <_type/type.animation.h>
 
 /**
  * Proxy Classes

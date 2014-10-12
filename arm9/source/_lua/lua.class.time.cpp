@@ -1,7 +1,7 @@
-#include "_lua/lua.class.time.h"
-#include "_lua/lua.func.h"
-#include "_lua/lua.func.wrap.h"
-#include "_type/type.callback.derives.h"
+#include <_lua/lua.class.time.h>
+#include <_lua/lua.func.h>
+#include <_lua/lua.func.wrap.h>
+#include <_type/type.callback.derives.h>
 using namespace _luafunc;
 
 /*##################################

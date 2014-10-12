@@ -1,22 +1,22 @@
-#include "_type/type.windows.soundbank.h"
-#include "_type/type.sound.static.h"
+#include <_type/type.windows.soundbank.h>
+#include <_type/type.sound.static.h>
 #include <stdlib.h>
 
 // Sound Files
-#include "sound_alert_22_pcm.h"
-#include "sound_click_44_pcm.h"
-#include "sound_bubble_22_pcm.h"
-#include "sound_error_22_pcm.h"
-#include "sound_fatalerror_22_pcm.h"
-#include "sound_logoff_22_pcm.h"
-#include "sound_logon_22_pcm.h"
-#include "sound_minimize_22_pcm.h"
-#include "sound_navigation_44_pcm.h"
-#include "sound_ping_22_pcm.h"
-#include "sound_recycle_22_pcm.h"
-#include "sound_restore_22_pcm.h"
-#include "sound_startup_22_pcm.h"
-#include "sound_shutdown_22_pcm.h"
+#include <sound_alert_22_pcm.h>
+#include <sound_click_44_pcm.h>
+#include <sound_bubble_22_pcm.h>
+#include <sound_error_22_pcm.h>
+#include <sound_fatalerror_22_pcm.h>
+#include <sound_logoff_22_pcm.h>
+#include <sound_logon_22_pcm.h>
+#include <sound_minimize_22_pcm.h>
+#include <sound_navigation_44_pcm.h>
+#include <sound_ping_22_pcm.h>
+#include <sound_recycle_22_pcm.h>
+#include <sound_restore_22_pcm.h>
+#include <sound_startup_22_pcm.h>
+#include <sound_shutdown_22_pcm.h>
 
 void _windowsSoundBank::play( _windowsSound snd )
 {

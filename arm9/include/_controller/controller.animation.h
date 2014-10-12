@@ -1,8 +1,8 @@
 #ifndef _WIN_C_ANIMATION_
 #define _WIN_C_ANIMATION_
 
-#include "_type/type.controller.h"
-#include "_type/type.animation.h"
+#include <_type/type.controller.h>
+#include <_type/type.animation.h>
 
 typedef _vector<_animation*>	_animationList;
 

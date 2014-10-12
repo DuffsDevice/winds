@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "_library/library.image.png.decoder.h"
-#include "_library/library.image.png.encoder.h"
+#include <_library/library.image.png.decoder.h>
+#include <_library/library.image.png.encoder.h>
 
 class YsPngCRCCalculator
 {

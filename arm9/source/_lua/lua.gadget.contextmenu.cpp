@@ -1,8 +1,10 @@
-#include "_lua/lua.gadget.contextmenu.h"
-#include "_lua/lua.class.menu.h"
-#include "_lua/lua.func.h"
-#include "_lua/lua.func.wrap.h"
+#include <_lua/lua.gadget.contextmenu.h>
+#include <_lua/lua.class.menu.h>
+#include <_lua/lua.func.h>
+#include <_lua/lua.func.wrap.h>
 using namespace _luafunc;
+
+#include <_controller/controller.debug.h>
 
 /*##################################
 ##         Lua-ContextMenu        ##
@@ -15,8 +17,8 @@ _lua_contextmenu::_lua_contextmenu( lua_State* L ) :
 //! addIndex
 int _lua_contextmenu::addIndex( lua_State* L ){
 	_contextMenu* slc = this->getGadget<_contextMenu>();
-	slc->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
-	slc->update();
+	//slc->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
+	//slc->update();
 	return 0;
 }
 
@@ -43,7 +45,7 @@ int _lua_contextmenu::getEntryFromNumber( lua_State* L ){
 }
 
 //! Lua-button
-const char _lua_contextmenu::className[] = "Select";
+const char _lua_contextmenu::className[] = "ContextMenu";
 Lunar<_lua_contextmenu>::FunctionType _lua_contextmenu::methods[] = {
 	LUA_CLASS_FUNC(_lua_contextmenu,addIndex),
 	LUA_CLASS_FUNC(_lua_contextmenu,removeIndex),

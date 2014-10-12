@@ -1,4 +1,4 @@
-#include "_resource/resource.font.system.7.h"
+#include <_resource/resource.font.system.7.h>
 
 static const _u16 FONT_System7_glyphdata[483] = {
 /* ' ' */	0x3A00,

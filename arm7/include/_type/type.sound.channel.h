@@ -1,10 +1,10 @@
 #ifndef _WIN_T_SOUND_CHANNEL_
 #define _WIN_T_SOUND_CHANNEL_
 
-#include "_type/type.predefines.h"
-#include "_type/type.sound.definitions.h"
-#include "_type/type.sound.msg.channel.h"
-#include "_type/type.callback.h"
+#include <_type/type.predefines.h>
+#include <_type/type.sound.definitions.h>
+#include <_type/type.sound.msg.channel.h>
+#include <_type/type.callback.h>
 
 // Note: 
 // ~~~~~

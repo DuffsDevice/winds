@@ -2,8 +2,8 @@
 #ifndef _WIN_L_FILE_
 #define _WIN_L_FILE_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.direntry.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.direntry.h>
 
 /**
  * Proxy Classes

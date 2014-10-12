@@ -1,8 +1,8 @@
 #ifndef _WIN_S_STARTUP_
 #define _WIN_S_STARTUP_
 
-#include "_type/type.h"
-#include "_type/type.screen.gadget.h"
+#include <_type/type.h>
+#include <_type/type.screen.gadget.h>
 
 class _startupScreen : public _gadgetScreen
 {

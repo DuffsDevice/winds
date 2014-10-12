@@ -1,8 +1,8 @@
 #ifndef _BMP_TASKMGRICON_H_
 #define _BMP_TASKMGRICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_TaskMgrIcon_bmp[90] = {
     0,     0, 52851, 51794, 52819, 52819, 52819, 52819, 52819,     0, 

@@ -1,9 +1,9 @@
 #ifndef _WIN_T_ANIMATION_
 #define _WIN_T_ANIMATION_
 
-#include "_type/type.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.callback.h"
+#include <_type/type.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.callback.h>
 
 typedef _float						(_easingFunction)( _float t , _float b , _float c , _float d );
 

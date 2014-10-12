@@ -1,4 +1,4 @@
-#include "_type/type.language.h"
+#include <_type/type.language.h>
 
 _array<_language,8> id2language = {
 	"ja" ,

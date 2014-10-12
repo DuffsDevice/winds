@@ -1,7 +1,7 @@
 #ifndef _WIN_T_USER_GUEST_
 #define _WIN_T_USER_GUEST_
 
-#include "_type/type.user.h"
+#include <_type/type.user.h>
 
 class _guestUser : public _user
 {

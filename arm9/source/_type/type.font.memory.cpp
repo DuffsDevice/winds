@@ -1,4 +1,4 @@
-#include "_type/type.font.memory.h"
+#include <_type/type.font.memory.h>
 #include <nds/bios.h>
 
 _memoryFont::_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace ) :

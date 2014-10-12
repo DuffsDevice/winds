@@ -2,8 +2,8 @@
 #ifndef _WIN_G_RADIO_
 #define _WIN_G_RADIO_
 
-#include "_type/type.gadget.h"
-#include "_type/type.singlevaluegroup.h"
+#include <_type/type.gadget.h>
+#include <_type/type.singlevaluegroup.h>
 
 
 class _radio : public _gadget {

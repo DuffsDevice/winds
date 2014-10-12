@@ -1,8 +1,8 @@
 #ifndef _BMP_ACTIONBUTTONS_H_
 #define _BMP_ACTIONBUTTONS_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ActionBtnNext_bmp[81] = {
 0	 , 43690, 42632, 40551, 40551, 39526, 38501, 36355, 0	 , 

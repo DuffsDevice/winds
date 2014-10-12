@@ -1,7 +1,7 @@
 #ifndef _WIN_G_ACTIONBUTTON_
 #define _WIN_G_ACTIONBUTTON_
 
-#include "_gadget/gadget.button.h"
+#include <_gadget/gadget.button.h>
 
 enum class _actionButtonType : _u8{
 	next,

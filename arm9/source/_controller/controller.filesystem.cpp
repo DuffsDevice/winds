@@ -1,7 +1,7 @@
-#include "_controller/controller.filesystem.h"
+#include <_controller/controller.filesystem.h>
 
 extern "C"{
-	#include "_library/_fat/fatfile.h"
+	#include <_library/_fat/fatfile.h>
 	bool sdio_IsInserted(); // libnds method
 }
 

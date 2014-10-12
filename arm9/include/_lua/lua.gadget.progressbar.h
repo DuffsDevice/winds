@@ -2,9 +2,9 @@
 #ifndef _WIN_L_PROGRESSBAR_
 #define _WIN_L_PROGRESSBAR_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.progressbar.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.progressbar.h>
 
 /**
  * Proxy Classes

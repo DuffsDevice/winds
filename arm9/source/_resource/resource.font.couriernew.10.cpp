@@ -1,4 +1,4 @@
-#include "_resource/resource.font.couriernew.10.h"
+#include <_resource/resource.font.couriernew.10.h>
 
 const _u16 FONT_CourierNew10_data[972] = {
 /* '!' */	0x0FA0,

@@ -1,9 +1,9 @@
-#include "_lua/lua.class.bitmap.port.h"
-#include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.rect.h"
-#include "_lua/lua.class.area.h"
-#include "_lua/lua.func.h"
-#include "_lua/lua.func.wrap.h"
+#include <_lua/lua.class.bitmap.port.h>
+#include <_lua/lua.class.bitmap.h>
+#include <_lua/lua.class.rect.h>
+#include <_lua/lua.class.area.h>
+#include <_lua/lua.func.h>
+#include <_lua/lua.func.wrap.h>
 using namespace _luafunc;
 
 /*##################################

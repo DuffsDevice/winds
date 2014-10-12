@@ -2,9 +2,9 @@
 #ifndef _WIN_L_CLOCKGADGET_
 #define _WIN_L_CLOCKGADGET_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.clock.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.clock.h>
 
 /**
  * Proxy Classes

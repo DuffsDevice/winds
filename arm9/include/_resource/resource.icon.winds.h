@@ -1,8 +1,8 @@
 #ifndef _BMP_WINDS_H_
 #define _BMP_WINDS_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_WinDSIcon_bmp[90] = {
     0,     0,     0, 64302, 50858, 52021,     0,     0,     0, 

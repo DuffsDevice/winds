@@ -1,12 +1,12 @@
-#include "_type/type.user.h"
-#include "_type/type.imagefile.h"
-#include "_type/type.bitmap.transform.h"
-#include "_type/type.cwdchanger.h"
-#include "_type/type.time.h"
-#include "func.md5.h"
+#include <_type/type.user.h>
+#include <_type/type.imagefile.h>
+#include <_type/type.bitmap.transform.h>
+#include <_type/type.cwdchanger.h>
+#include <_type/type.time.h>
+#include <_func/func.md5.h>
 
-#include "_resource/resource.image.defaultuser.h" // Border of a user's logo
-#include "_resource/resource.image.windows.wallpaper.h" // Default Wallpaper
+#include <_resource/resource.image.defaultuser.h> // Border of a user's logo
+#include <_resource/resource.image.windows.wallpaper.h> // Default Wallpaper
 
 _bitmap _user::getLogoFromImage( _constBitmap& bmp ){
 	_bitmap logo = _bitmap( 14 , 14 );

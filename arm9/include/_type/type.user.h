@@ -1,8 +1,8 @@
 #ifndef _WIN_T_USER_
 #define _WIN_T_USER_
 
-#include "_type/type.ini.file.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.ini.file.h>
+#include <_type/type.bitmap.h>
 
 enum class _wallpaperViewType{
 	original = 0,

@@ -1,9 +1,9 @@
 #ifndef _WIN_G_SCROLLAREA_
 #define _WIN_G_SCROLLAREA_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.scrollBar.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.scrollBar.h>
 
 enum class _scrollType : _u8{
 	scroll = 0,

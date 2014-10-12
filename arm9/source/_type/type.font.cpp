@@ -1,8 +1,8 @@
-#include "_type/type.font.h"
-#include "_type/type.font.memory.h"
-#include "_type/type.font.freetype.h"
-#include "_type/type.direntry.h"
-#include "_controller/controller.filesystem.h"
+#include <_type/type.font.h>
+#include <_type/type.font.memory.h>
+#include <_type/type.font.freetype.h>
+#include <_type/type.direntry.h>
+#include <_controller/controller.filesystem.h>
 
 _length _font::getStringWidth( _literal str , _u8 fontSize ) const
 {
@@ -23,12 +23,12 @@ _length _font::getStringWidth( _literal str , _u8 fontSize ) const
 	return tempX;
 }
 
-#include "_resource/resource.font.arialblack.13.h"
-#include "_resource/resource.font.couriernew.10.h"
-#include "_resource/resource.font.system.7.h"
-#include "_resource/resource.font.system.10.h"
-#include "_resource/resource.font.systemsymbols.8.h"
-#include "_resource/resource.font.handwriting.9.h"
+#include <_resource/resource.font.arialblack.13.h>
+#include <_resource/resource.font.couriernew.10.h>
+#include <_resource/resource.font.system.7.h>
+#include <_resource/resource.font.system.10.h>
+#include <_resource/resource.font.systemsymbols.8.h>
+#include <_resource/resource.font.handwriting.9.h>
 
 //! Receive a font, created from file
 _uniquePtr<_font> _font::fromFile( const string& path ) 

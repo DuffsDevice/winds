@@ -1,10 +1,10 @@
 #ifndef _WIN_G_SELECT_
 #define _WIN_G_SELECT_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.contextmenu.h"
-#include "_gadget/gadget.scrollbar.button.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.contextmenu.h>
+#include <_gadget/gadget.scrollbar.button.h>
 
 class _select : public _gadget
 {

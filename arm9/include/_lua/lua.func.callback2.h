@@ -1,11 +1,11 @@
 #ifndef _WIN_L_FUNC_
-	#include "_lua/lua.func.h"
+	#include <_lua/lua.func.h>
 #endif
 
 #ifndef _WIN_L_CALLBACK_2_
 #define _WIN_L_CALLBACK_2_
 
-#include "_controller/controller.debug.h"
+#include <_controller/controller.debug.h>
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ A Lua-Callback ~~~~~~~~~~~~~~~~~~~~~~~
 template<typename T, typename... Parameters>

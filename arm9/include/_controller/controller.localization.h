@@ -1,12 +1,12 @@
 #ifndef _WIN_C_LOCALIZATION_
 #define _WIN_C_LOCALIZATION_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.language.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.ini.h"
-#include "_type/type.key.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.language.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.ini.h>
+#include <_type/type.key.h>
 
 class _localizationController : public _controller
 {

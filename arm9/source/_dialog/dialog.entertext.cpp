@@ -1,6 +1,6 @@
-#include "_dialog/dialog.entertext.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.entertext.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 void _enterTextDialog::executeInternal(){
 	this->textBox->setStrValue( this->initialValue );

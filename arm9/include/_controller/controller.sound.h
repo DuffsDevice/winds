@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_HARDWARE_
 #define _WIN_T_SOUND_HARDWARE_
 
-#include "_type/type.h"
-#include "_type/type.sound.h"
-#include "_type/type.controller.h"
+#include <_type/type.h>
+#include <_type/type.sound.h>
+#include <_type/type.controller.h>
 
 class _soundController : public _controller
 {

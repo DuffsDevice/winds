@@ -1,8 +1,8 @@
 #ifndef _WIN_T_FONT_HANDLE_
 #define _WIN_T_FONT_HANDLE_
 
-#include "_type/type.h"
-#include "_type/type.font.h"
+#include <_type/type.h>
+#include <_type/type.font.h>
 
 class _fontHandle
 {

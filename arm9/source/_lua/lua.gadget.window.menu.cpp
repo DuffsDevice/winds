@@ -1,6 +1,6 @@
-#include "_lua/lua.gadget.window.menu.h"
-#include "_lua/lua.class.menu.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.gadget.window.menu.h>
+#include <_lua/lua.class.menu.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 /*##################################

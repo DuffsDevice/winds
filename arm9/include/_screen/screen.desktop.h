@@ -3,14 +3,14 @@
 #define _WIN_S_DESKTOP_
 
 //! Types
-#include "_type/type.gadget.h"
-#include "_type/type.screen.gadget.h"
+#include <_type/type.gadget.h>
+#include <_type/type.screen.gadget.h>
 
-#include "_screen/screen.desktop.view.h"
-#include "_screen/screen.desktop.startbutton.h"
-#include "_screen/screen.desktop.taskbutton.h"
-#include "_screen/screen.desktop.infoarea.h"
-#include "_gadget/gadget.programswitcher.h"
+#include <_screen/screen.desktop.view.h>
+#include <_screen/screen.desktop.startbutton.h>
+#include <_screen/screen.desktop.taskbutton.h>
+#include <_screen/screen.desktop.infoarea.h>
+#include <_gadget/gadget.programswitcher.h>
 
 class _desktopScreen : public _gadgetScreen
 {

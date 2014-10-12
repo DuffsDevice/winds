@@ -1,5 +1,5 @@
-#include "_type/type.dependency.h"
-#include "_type/type.event.h"
+#include <_type/type.dependency.h>
+#include <_type/type.event.h>
 
 bool _dependency::get( _eventType type ) const
 {

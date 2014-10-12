@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_
 #define _WIN_T_SOUND_
 
-#include "_type/type.predefines.h"
-#include "_type/type.sound.definitions.h"
-#include "_type/type.sound.channel.h"
+#include <_type/type.predefines.h>
+#include <_type/type.sound.definitions.h>
+#include <_type/type.sound.channel.h>
 
 class _sound
 {

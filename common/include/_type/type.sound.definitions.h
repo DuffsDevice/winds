@@ -1,8 +1,8 @@
 #ifndef _WIN_T_SOUND_DEFINITIONS
 #define _WIN_T_SOUND_DEFINITIONS
 
-#include "_type/type.predefines.h"
-#include "_type/type.callback.h"
+#include <_type/type.predefines.h>
+#include <_type/type.callback.h>
 
 enum class _channelType : _u8{
 	stream = 0,

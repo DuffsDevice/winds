@@ -1,11 +1,11 @@
 #ifndef _WIN_G_CONTEXTMENU_
 #define _WIN_G_CONTEXTMENU_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.menu.h"
-#include "_gadget/gadget.popup.h"
-#include "_gadget/gadget.contextmenu.entry.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.menu.h>
+#include <_gadget/gadget.popup.h>
+#include <_gadget/gadget.contextmenu.entry.h>
 
 class _contextMenu : public _popup
 {

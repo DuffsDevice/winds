@@ -1,5 +1,5 @@
 #ifndef _WIN_T_LUAFUNC_
-	#include "_lua/lua.func.h"
+	#include <_lua/lua.func.h>
 #endif
 
 #ifndef _WIN_L_FUNC_CHECK_2_

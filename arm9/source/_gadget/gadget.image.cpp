@@ -1,4 +1,4 @@
-#include "_gadget/gadget.image.h"
+#include <_gadget/gadget.image.h>
 
 _callbackReturn _imageGadget::refreshHandler( _event event ){
 	return handled; // If we would return 'use_default', children would be painted on my bitmap

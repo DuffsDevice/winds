@@ -1,9 +1,9 @@
 #ifndef _WIN_G_COUNTER_
 #define _WIN_G_COUNTER_
 
-#include "_type/type.h"
-#include "_gadget/gadget.scrollBar.button.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.h>
+#include <_gadget/gadget.scrollBar.button.h>
+#include <_gadget/gadget.label.h>
 
 class _counter : public _gadget{
 	

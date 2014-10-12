@@ -2,7 +2,7 @@
 #ifndef _WIN_L_LUNAR_
 #define _WIN_L_LUNAR_
 
-#include "_lua/lua.h"
+#include <_lua/lua.h>
 #include <type_traits>
 #include <tuple>
 #include <map>

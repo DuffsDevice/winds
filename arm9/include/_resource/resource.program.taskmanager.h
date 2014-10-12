@@ -1,10 +1,10 @@
 #ifndef _WIN_PROG_TASKMANAGER_
 #define _WIN_PROG_TASKMANAGER_
 
-#include "_type/type.program.c.h"
-#include "_type/type.timer.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.program.c.h>
+#include <_type/type.timer.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.label.h>
 
 class PROG_TaskManager : public _progC
 {

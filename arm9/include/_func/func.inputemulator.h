@@ -1,10 +1,10 @@
 #ifndef _WIN_F_INPUT_EMULATOR_
 #define _WIN_F_INPUT_EMULATOR_
 
-#include "_type/type.h"
-#include "_type/type.event.h"
-#include "_type/type.gadget.h"
-#include "_type/type.direction.h"
+#include <_type/type.h>
+#include <_type/type.event.h>
+#include <_type/type.gadget.h>
+#include <_type/type.direction.h>
 
 void emulateMouseClick( _gadget* emulatedOn , _direction clickPosition = _direction::center )
 {

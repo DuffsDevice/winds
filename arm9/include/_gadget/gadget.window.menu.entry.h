@@ -1,10 +1,10 @@
 #ifndef _WIN_G_WINDOWMENUENTRY_
 #define _WIN_G_WINDOWMENUENTRY_
 
-#include "_type/type.menu.h"
-#include "_type/type.gadget.h"
-#include "_type/type.gadget.helpers.h"
-#include "_gadget/gadget.contextmenu.h"
+#include <_type/type.menu.h>
+#include <_type/type.gadget.h>
+#include <_type/type.gadget.helpers.h>
+#include <_gadget/gadget.contextmenu.h>
 
 class _windowMenuEntry : public _gadget
 {

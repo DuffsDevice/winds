@@ -1,7 +1,7 @@
 #ifndef _WIN_T_DEPENDENCY_
 #define _WIN_T_DEPENDENCY_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum _eventType : _u8;
 

@@ -1,4 +1,4 @@
-#include "_type/type.h"
+#include <_type/type.h>
 #include <nds/bios.h>
 #include <stdio.h>
 

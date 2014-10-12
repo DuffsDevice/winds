@@ -1,6 +1,6 @@
-#include "_gadget/gadget.fileview.h"
-#include "_type/type.gadget.helpers.h"
-#include "_type/type.windows.soundbank.h"
+#include <_gadget/gadget.fileview.h>
+#include <_type/type.gadget.helpers.h>
+#include <_type/type.windows.soundbank.h>
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _optValue<_length> width , _optValue<_length> height , string path

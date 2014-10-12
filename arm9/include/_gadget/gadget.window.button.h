@@ -1,8 +1,8 @@
 #ifndef _WIN_G_WINDOWBUTTON_
 #define _WIN_G_WINDOWBUTTON_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.button.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.button.h>
 
 class _windowButton : public _button
 {

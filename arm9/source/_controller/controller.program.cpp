@@ -1,6 +1,6 @@
-#include "_controller/controller.program.h"
-#include "_controller/controller.gui.h"
-#include "_type/type.program.h"
+#include <_controller/controller.program.h>
+#include <_controller/controller.gui.h>
+#include <_type/type.program.h>
 
 bool _programController::isExistent( const _program* prog )
 {

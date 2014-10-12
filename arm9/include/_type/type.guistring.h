@@ -1,10 +1,10 @@
 #ifndef _WIN_T_DISPLAY_STRING_
 #define _WIN_T_DISPLAY_STRING_
 
-#include "_type/type.h"
-#include "_type/type.font.h"
-#include "_type/type.bitmap.port.h"
-#include "_type/type.uniqueptr.h"
+#include <_type/type.h>
+#include <_type/type.font.h>
+#include <_type/type.bitmap.port.h>
+#include <_type/type.uniqueptr.h>
 #include <stack>
 
 using _fontStack		= std::stack<_fontPtr>;

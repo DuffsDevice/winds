@@ -2,9 +2,9 @@
 #ifndef _WIN_L_SLIDER_
 #define _WIN_L_SLIDER_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.slider.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.slider.h>
 
 /**
  * Proxy Classes

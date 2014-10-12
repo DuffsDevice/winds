@@ -1,9 +1,9 @@
 #ifndef _WIN_T_TIMER_
 #define _WIN_T_TIMER_
 
-#include "_type/type.h"
-#include "_type/type.callback.h"
-#include "_type/type.uniqueptr.h"
+#include <_type/type.h>
+#include <_type/type.callback.h>
+#include <_type/type.uniqueptr.h>
 
 class _timer
 {

@@ -2,7 +2,7 @@
 #ifndef _WIN_G_CHECKBOX_
 #define _WIN_G_CHECKBOX_
 
-#include "_type/type.gadget.h"
+#include <_type/type.gadget.h>
 
 class _checkbox : public _gadget {
 	

@@ -1,12 +1,12 @@
 #ifndef _WIN_PROG_MAPPER_
 #define _WIN_PROG_MAPPER_
 
-#include "_type/type.program.c.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.checkbox.h"
-#include "_gadget/gadget.scrollarea.h"
-#include "_dialog/dialog.file.open.h"
+#include <_type/type.program.c.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.checkbox.h>
+#include <_gadget/gadget.scrollarea.h>
+#include <_dialog/dialog.file.open.h>
 
 class PROG_Mapper : public _progC
 {

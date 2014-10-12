@@ -1,7 +1,7 @@
 #include <nds/arm7/audio.h>
 
 // First include audio.h, then the windows header file
-#include "_type/type.windows.h"
+#include <_type/type.windows.h>
 
 #include <time.h>
 #include <nds/timers.h>

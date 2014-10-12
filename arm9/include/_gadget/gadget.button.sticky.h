@@ -2,9 +2,9 @@
 #ifndef _WIN_G_STICKYBUTTON_
 #define _WIN_G_STICKYBUTTON_
 
-#include "_type/type.gadget.h"
-#include "_type/type.singlevaluegroup.h"
-#include "_gadget/gadget.button.h"
+#include <_type/type.gadget.h>
+#include <_type/type.singlevaluegroup.h>
+#include <_gadget/gadget.button.h>
 
 class _stickyButton : public _button
 {

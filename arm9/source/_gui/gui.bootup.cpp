@@ -1,6 +1,6 @@
-#include "_gui/gui.bootup.h"
-#include "_screen/screen.bootup.h"
-#include "_controller/controller.gui.h"
+#include <_gui/gui.bootup.h>
+#include <_screen/screen.bootup.h>
+#include <_controller/controller.gui.h>
 
 // Callback to change systemState
 void _guiBootup::timerCallback(){

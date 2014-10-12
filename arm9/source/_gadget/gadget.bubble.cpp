@@ -1,8 +1,8 @@
-#include "_gadget/gadget.bubble.h"
-#include "_controller/controller.font.h"
-#include "_resource/resource.image.bubblearrow.h"
-#include "_type/type.bitmap.transform.h"
-#include "_type/type.windows.soundbank.h"
+#include <_gadget/gadget.bubble.h>
+#include <_controller/controller.font.h>
+#include <_resource/resource.image.bubblearrow.h>
+#include <_type/type.bitmap.transform.h>
+#include <_type/type.windows.soundbank.h>
 
 void _bubble::timerHandler(){
 	this->shelve( false );

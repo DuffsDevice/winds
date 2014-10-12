@@ -2,8 +2,8 @@
 #ifndef _WIN_G_PROGRESSBAR_
 #define _WIN_G_PROGRESSBAR_
 
-#include "_type/type.gadget.h"
-#include "_type/type.timer.h"
+#include <_type/type.gadget.h>
+#include <_type/type.timer.h>
 
 class _progressBar : public _gadget {
 	

@@ -1,8 +1,8 @@
 #ifndef _BMP_IMAGEICON_H_
 #define _BMP_IMAGEICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ImageIcon_bmp[80] = {
 50533, 50533, 50533, 50533, 50533, 50533, 0    , 0    , 

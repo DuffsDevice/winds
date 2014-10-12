@@ -1,8 +1,8 @@
 #ifndef _BMP_HORIZ_SLIDER_H_
 #define _BMP_HORIZ_SLIDER_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_HorizontalSlider_bmp[66] = {
 0    , 53009, 53042, 53042, 49902, 0    , 

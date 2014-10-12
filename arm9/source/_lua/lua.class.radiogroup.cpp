@@ -1,6 +1,6 @@
-#include "_lua/lua.class.radiogroup.h"
-#include "_lua/lua.gadget.radio.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.class.radiogroup.h>
+#include <_lua/lua.gadget.radio.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 /*##################################

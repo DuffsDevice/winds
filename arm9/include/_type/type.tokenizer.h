@@ -1,7 +1,7 @@
 #ifndef _WIN_T_TOKENIZER_
 #define _WIN_T_TOKENIZER_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 //! Class for tokenizing a string iteratively
 class _tokenizer

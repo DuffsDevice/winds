@@ -1,11 +1,11 @@
-#include "_screen/screen.desktop.startbutton.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.gui.h"
+#include <_screen/screen.desktop.startbutton.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.gui.h>
 
 //! Graphics
-#include "_resource/resource.image.windows.startbutton.h"
+#include <_resource/resource.image.windows.startbutton.h>
 
 
 _callbackReturn _desktopScreenStartButton::mouseHandler( _event event ){

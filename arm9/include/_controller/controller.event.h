@@ -1,10 +1,10 @@
 #ifndef _WIN_C_EVENT_
 #define _WIN_C_EVENT_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.event.h"
-#include "_type/type.event.calltype.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.event.h>
+#include <_type/type.event.calltype.h>
 
 using _eventList = _vector<_pair<_event,_eventCallType>>;
 

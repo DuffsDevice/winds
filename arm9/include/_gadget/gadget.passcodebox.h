@@ -1,7 +1,7 @@
 #ifndef _WIN_G_PASSCODEBOX_
 #define _WIN_G_PASSCODEBOX_
 
-#include "_gadget/gadget.textbox.h"
+#include <_gadget/gadget.textbox.h>
 
 class _passcodeBox : public _textBox
 {

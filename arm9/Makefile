@@ -28,6 +28,7 @@ SOURCES		:=	source \
 				source/_screen \
 				source/_library \
 				source/_resource \
+				source/_func \
 				../common/source/_type \
 				../common/source
 
@@ -42,7 +43,7 @@ CFLAGS		:=	-g -Wall -O1\
 			$(ARCH)
 
 CFLAGS		+=	$(INCLUDE) -DARM9
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -Wno-parentheses -std=gnu++11 -Wextra -Wno-unused-parameter -Wno-psabi
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -Wno-parentheses -fno-exceptions -std=gnu++0x -Wextra -Wno-unused-parameter -Wno-psabi
 ## C++0x:   -std=gnu++0x; -std=c++11
 ## ASM Out:	-save-temps
 

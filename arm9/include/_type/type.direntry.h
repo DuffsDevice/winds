@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <sys/dir.h>
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
-#include "_type/type.mime.h"
-#include "_type/type.ini.h"
-#include "_type/type.program.args.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
+#include <_type/type.mime.h>
+#include <_type/type.ini.h>
+#include <_type/type.program.args.h>
 
 //! Statistics in bytes of the mounted device
 struct _driveStats{

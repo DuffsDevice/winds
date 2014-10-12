@@ -1,7 +1,7 @@
-#include "_dialog/dialog.errorwarninginfo.h"
-#include "_resource/resource.image.alerts.h"
-#include "_controller/controller.localization.h"
-#include "_type/type.windows.soundbank.h"
+#include <_dialog/dialog.errorwarninginfo.h>
+#include <_resource/resource.image.alerts.h>
+#include <_controller/controller.localization.h>
+#include <_type/type.windows.soundbank.h>
 
 void _errorDialog::executeInternal(){
 	_windowsSoundBank::play( _windowsSound::fatalError );

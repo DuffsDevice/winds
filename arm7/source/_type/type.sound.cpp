@@ -1,5 +1,5 @@
-#include "_type/type.sound.h"
-#include "_type/type.sound.msg.h"
+#include <_type/type.sound.h>
+#include <_type/type.sound.msg.h>
 
 #include <nds/timers.h>
 #include <nds/arm7/audio.h>

@@ -1,12 +1,12 @@
 #ifndef _WIN_D_RUNTIMEERROR_
 #define _WIN_D_RUNTIMEERROR_
 
-#include "_type/type.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.textarea.h"
+#include <_type/type.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.textarea.h>
 
 class _runtimeErrorDialog : public _dialog
 {

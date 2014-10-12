@@ -1,7 +1,7 @@
 #ifndef _WIN_F_GRID_CREATOR_
 #define _WIN_F_GRID_CREATOR_
 
-#include "_type/type.h"
+#include <_type/type.h>
 #include <nds/arm9/math.h>
 
 static unused _uniquePtr<_pixel[]> computeGradient( _color fromColor , _color toColor , _length gradientLength , _length offset = 0 , _u32* numConsecutivePixels = nullptr )

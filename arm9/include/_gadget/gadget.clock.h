@@ -2,9 +2,9 @@
 #ifndef _WIN_G_CLOCKGADGET_
 #define _WIN_G_CLOCKGADGET_
 
-#include "_type/type.gadget.h"
-#include "_type/type.time.h"
-#include "_type/type.timer.h"
+#include <_type/type.gadget.h>
+#include <_type/type.time.h>
+#include <_type/type.timer.h>
 
 class _clockGadget : public _gadget
 {

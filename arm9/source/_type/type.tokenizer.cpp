@@ -1,4 +1,4 @@
-#include "_type/type.tokenizer.h"
+#include <_type/type.tokenizer.h>
 
 bool _tokenizer::next()
 {

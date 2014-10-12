@@ -1,8 +1,8 @@
 #ifndef _BMP_ALERTIMAGES_H_
 #define _BMP_ALERTIMAGES_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 //
 // Info Sign

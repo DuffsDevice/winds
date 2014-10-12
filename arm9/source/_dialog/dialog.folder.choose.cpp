@@ -1,7 +1,7 @@
-#include "_dialog/dialog.folder.choose.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.folder.choose.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 void _folderChooseDialog::executeInternal(){
 	this->folderPath.clear();

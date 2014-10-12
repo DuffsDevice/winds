@@ -1,4 +1,4 @@
-#include "_gadget/gadget.button.sticky.h"
+#include <_gadget/gadget.button.sticky.h>
 
 _callbackReturn _stickyButton::mouseHandler( _event event )
 {

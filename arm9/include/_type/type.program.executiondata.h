@@ -1,9 +1,9 @@
 #ifndef _WIN_T_PROGRAM_EXECUTIONDATA_
 #define _WIN_T_PROGRAM_EXECUTIONDATA_
 
-#include "_type/type.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.program.args.h"
+#include <_type/type.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.program.args.h>
 
 // Struct that gives information about the state of a running program
 struct _programExecutionData

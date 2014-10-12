@@ -1,7 +1,7 @@
 #ifndef _WIN_T_SOUND_MSG_MIC_
 #define _WIN_T_SOUND_MSG_MIC_
 
-#include "_type/type.predefines.h"
+#include <_type/type.predefines.h>
 
 struct _micRecordMsg{
 	_s8*	buffer;

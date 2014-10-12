@@ -1,5 +1,5 @@
-#include "_type/type.style.h"
-#include "_type/type.tokenizer.h"
+#include <_type/type.style.h>
+#include <_type/type.tokenizer.h>
 	
 _style _style::storeHandle( void* data , _style attr ){
 	_style g = _style( attr );

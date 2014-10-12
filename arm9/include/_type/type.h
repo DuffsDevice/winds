@@ -2,11 +2,11 @@
 #ifndef _WIN_T_TYPES_
 #define _WIN_T_TYPES_
 
-#include "_type/type.predefines.h"
+#include <_type/type.predefines.h>
 
 #include <string.h>
 #include <list>
-#define _GLIBCXX_DEBUG // Because vector::operator[] leads to undefined behaviour when undefined
+#define _GLIBCXX_DEBUG // Because vector::operator[] leads to undefined behaviour when undefined key
 #include <vector>
 #include <deque>
 #undef _GLIBCXX_DEBUG
@@ -21,12 +21,9 @@
 //! Code section
 #define ITCM_CODE	__attribute__((section(".itcm"), long_call))
 
-//! Define if you want speed & memory profiling
-//#define DEBUG_PROFILING
-
 //! Additional CV-Like Qualifiers
-#define DEPRECATED __attribute__(( deprecated ))
-#define unused __attribute__(( unused ))
+#define DEPRECATED	__attribute__(( deprecated ))
+#define unused		__attribute__(( unused ))
 
 using std::make_pair;
 using std::make_tuple;
@@ -56,7 +53,7 @@ template<typename T>
 	using _initializerList = std::initializer_list<T>;
 
 //! Two values packed in one variable
-#include "_type/type.2t.h"
+#include <_type/type.2t.h>
 
 using _2s32	= _2T<_s32,_u64>;
 using _2u32	= _2T<_u32,_u32>;
@@ -305,6 +302,6 @@ extern _fromStr<_valign>	string2valign;
 void trim( string& , _literal delims = " \n\r\t" , bool front = true , bool back = true );
 
 //! Tools for analyzing the efficiency of code
-#include "_type/type.analyzer.h"
+#include <_type/type.analyzer.h>
 
 #endif

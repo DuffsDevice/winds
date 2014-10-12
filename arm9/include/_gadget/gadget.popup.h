@@ -1,9 +1,9 @@
 #ifndef _WIN_G_POPUP_
 #define _WIN_G_POPUP_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.direction.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.direction.h>
 
 class _popup : public _gadget
 {

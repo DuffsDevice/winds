@@ -2,8 +2,8 @@
 #ifndef _WIN_L_CONTROLLER_GUI_
 #define _WIN_L_CONTROLLER_GUI_
 
-#include "_lua/lua.lunar.h"
-#include "_controller/controller.gui.h"
+#include <_lua/lua.lunar.h>
+#include <_controller/controller.gui.h>
 
 /**
  * Proxy Classes

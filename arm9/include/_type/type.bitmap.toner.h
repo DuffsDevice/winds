@@ -1,9 +1,9 @@
 #ifndef _WIN_T_BITMAP_TONER_
 #define _WIN_T_BITMAP_TONER_
 
-#include "_type/type.bitmap.h"
-#include "_type/type.bitmap.selection.h"
-#include "_type/type.color.palette.h"
+#include <_type/type.bitmap.h>
+#include <_type/type.bitmap.selection.h>
+#include <_type/type.color.palette.h>
 
 class _bitmapToner
 {

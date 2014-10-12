@@ -1,8 +1,8 @@
 #ifndef _BMP_COLORPICKER_COLOR_H_
 #define _BMP_COLORPICKER_COLOR_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ColorPicker_bmp[9568] = {
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 

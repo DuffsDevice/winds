@@ -1,8 +1,8 @@
 #ifndef _BMP_GRIP_H_
 #define _BMP_GRIP_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_Grip_bmp[320] = {
 0    , 0    , 0    , 41191, 43305, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 44362, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43338, 43305, 41191, 0    , 0    , 0    , 

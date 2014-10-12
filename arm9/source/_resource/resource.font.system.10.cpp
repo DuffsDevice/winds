@@ -1,4 +1,4 @@
-#include "_resource/resource.font.system.10.h"
+#include <_resource/resource.font.system.10.h>
 
 static const _u16 FONT_System10_glyphdata[950] = {
 /* '!' */	0x03FF,0x3C00,

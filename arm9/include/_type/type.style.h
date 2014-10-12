@@ -1,7 +1,7 @@
 #ifndef _WIN_T_style_
 #define _WIN_T_style_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 //! Predefine class
 class _program;

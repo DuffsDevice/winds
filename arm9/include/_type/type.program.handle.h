@@ -1,7 +1,7 @@
 #ifndef _WIN_T_PROGRAM_HANDLE_
 #define _WIN_T_PROGRAM_HANDLE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 class _program;
 

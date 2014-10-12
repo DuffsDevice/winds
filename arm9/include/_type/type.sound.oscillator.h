@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_OSCILLATOR_
 #define _WIN_T_SOUND_OSCILLATOR_
 
-#include "_type/type.h"
-#include "_type/type.sound.h"
-#include "_type/type.sound.note.h"
+#include <_type/type.h>
+#include <_type/type.sound.h>
+#include <_type/type.sound.note.h>
 
 
 class _soundOscillator : public _sound

@@ -2,11 +2,11 @@
 #ifndef _WIN_G_WINDOW_
 #define _WIN_G_WINDOW_
 
-#include "_type/type.gadget.h"
-#include "_type/type.bitmap.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.window.button.h"
+#include <_type/type.gadget.h>
+#include <_type/type.bitmap.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.window.button.h>
 
 class _window;
 

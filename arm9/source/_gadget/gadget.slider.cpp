@@ -1,5 +1,5 @@
-#include "_gadget/gadget.slider.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.slider.h>
+#include <_controller/controller.font.h>
 
 #define OFFSETX 3
 #define OFFSETX2 3

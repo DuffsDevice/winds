@@ -1,4 +1,4 @@
-#include "_type/type.guistring.h"
+#include <_type/type.guistring.h>
 
 namespace{
 	//! Structure that simplifies the serialization of a font pointer

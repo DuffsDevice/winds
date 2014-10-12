@@ -1,5 +1,5 @@
-#include "_gadget/gadget.taskinfo.h"
-#include "_gadget/gadget.bubble.h"
+#include <_gadget/gadget.taskinfo.h>
+#include <_gadget/gadget.bubble.h>
 
 _list<_taskInfo*>					_taskInfo::taskInfos;
 _list<_uniquePtr<_taskInfoHandler>>	_taskInfo::taskInfoHandlers;

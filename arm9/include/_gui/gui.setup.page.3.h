@@ -1,20 +1,20 @@
 #ifndef _WIN_G_SETUP_PAGE3_
 #define _WIN_G_SETUP_PAGE3_
 
-#include "_type/type.h"
-#include "_type/type.view.h"
-#include "_type/type.view.switcher.h"
-#include "_type/type.timer.h"
-#include "_type/type.gadget.h"
-#include "_type/type.gadget.helpers.h"
+#include <_type/type.h>
+#include <_type/type.view.h>
+#include <_type/type.view.switcher.h>
+#include <_type/type.timer.h>
+#include <_type/type.gadget.h>
+#include <_type/type.gadget.helpers.h>
 
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.clock.h"
-#include "_gadget/gadget.counter.h"
-#include "_gadget/gadget.radio.h"
-#include "_gadget/gadget.calendar.h"
-#include "_type/type.singlevaluegroup.h"
-#include "_type/type.time.h"
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.clock.h>
+#include <_gadget/gadget.counter.h>
+#include <_gadget/gadget.radio.h>
+#include <_gadget/gadget.calendar.h>
+#include <_type/type.singlevaluegroup.h>
+#include <_type/type.time.h>
 
 class _guiSetupPage3 : public _view
 {

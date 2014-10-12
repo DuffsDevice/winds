@@ -1,8 +1,8 @@
 #ifndef _BMP_FONTICON_H_
 #define _BMP_FONTICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_FontIcon_bmp[80] = {
 49680, 49680, 49680, 49680, 49680, 49680, 0    , 0    , 

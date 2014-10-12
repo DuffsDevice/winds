@@ -2,9 +2,9 @@
 #ifndef _WIN_T_BITMAPPORT_
 #define _WIN_T_BITMAPPORT_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
-#include "_type/type.rect.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
+#include <_type/type.rect.h>
 
 class _bitmapPort
 {	

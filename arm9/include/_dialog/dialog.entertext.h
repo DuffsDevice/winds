@@ -1,11 +1,11 @@
 #ifndef _WIN_D_ENTERTEXT_
 #define _WIN_D_ENTERTEXT_
 
-#include "_type/type.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.textbox.h"
+#include <_type/type.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.textbox.h>
 
 class _enterTextDialog : public _dialog
 {

@@ -1,9 +1,9 @@
 #ifndef _WIN_C_TIMER_
 #define _WIN_C_TIMER_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.timer.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.timer.h>
 
 typedef _vector<_timer*> _timerList;
 

@@ -1,5 +1,5 @@
-#include "_controller/controller.event.h"
-#include "_type/type.gadget.h"
+#include <_controller/controller.event.h>
+#include <_type/type.gadget.h>
 
 void _eventController::removeEventsOf( _gadget* g )
 {

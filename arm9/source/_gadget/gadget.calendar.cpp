@@ -1,9 +1,9 @@
-#include "_gadget/gadget.calendar.h"
-#include "_type/type.font.glyphs.h"
-#include "_type/type.color.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.localization.h"
-#include "func.gridcreator.h"
+#include <_gadget/gadget.calendar.h>
+#include <_type/type.font.glyphs.h>
+#include <_type/type.color.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.localization.h>
+#include <_func/func.gridcreator.h>
 
 _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _color bgColor , _style&& style )
 	: _gadget( _gadgetType::button , x , y , width , height , (_style&&)style )

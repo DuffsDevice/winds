@@ -1,10 +1,10 @@
-#include "_screen/screen.keyboard.h"
-#include "_screen/screen.desktop.h"
-#include "_type/type.animation.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.memory.h"
+#include <_screen/screen.keyboard.h>
+#include <_screen/screen.desktop.h>
+#include <_type/type.animation.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.memory.h>
 
 // NDS Includes
 extern "C"{
@@ -15,7 +15,7 @@ extern "C"{
 }
 
 // Resources
-#include "_resource/resource.image.keyboard.grip.h"
+#include <_resource/resource.image.keyboard.grip.h>
 
 //! Define if you want the upper screen to show
 //! the full lower screen when keyboard is expanded

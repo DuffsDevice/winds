@@ -1,7 +1,7 @@
 #ifndef _WIN_T_FONTGLYPHS_
 #define _WIN_T_FONTGLYPHS_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 namespace _glyph
 {

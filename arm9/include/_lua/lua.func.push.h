@@ -1,11 +1,11 @@
 #ifndef _WIN_T_LUAFUNC_
-	#include "_lua/lua.func.h"
+	#include <_lua/lua.func.h>
 #endif
 
 #ifndef _WIN_L_FUNC_PUSH_
 #define _WIN_L_FUNC_PUSH_
 
-#include "_lua/lua.func.h"
+#include <_lua/lua.func.h>
 
 namespace _luafunc
 {
@@ -15,6 +15,7 @@ namespace _luafunc
 	template<typename ContainerType> void					pushContainer( lua_State* state , ContainerType arg );
 	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , ContainerType arg );
 	template<typename... T, typename... TN> int				push( lua_State* state , _tuple<T...> arg , TN... args );
+	template<typename T1, typename T2, typename... TN> int	push( lua_State* state , _pair<T1,T2> arg , TN... args );
 	
 	
 	
@@ -37,6 +38,8 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , const string& arg			, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN, int mB,typename dT>
 								inline int push( lua_State* state , _shortString<mB,dT> arg		, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN, typename ST,typename DT>
+								inline int push( lua_State* state , _2T<ST,DT> arg				, TN... args){ return 1 + push( state , make_pair( move(arg.first) , move(arg.second) ) , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _dimension arg				, TN... args){ return 1 + push( state , dimension2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _direction arg				, TN... args){ return 1 + push( state , direction2string[arg] , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _align arg					, TN... args){ return 1 + push( state , align2string[arg] , forward<TN>(args)... ); }
@@ -103,11 +106,28 @@ namespace _luafunc
 	template<typename T1, typename T2, typename... TN>
 	inline int push( lua_State* state , _pair<T1,T2> arg , TN... args )
 	{
-		lua_createtable( state , 2 , 0 ); // Create table
-		push( state , move(arg.first) ); // Push Key
-		lua_rawseti( state , -2 , 1 );
-		push( state , move(arg.second) ); // Push Value
-		lua_rawseti( state , -2 , 2 );
+		#ifdef _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
+		lua_createtable( state , 2 , 2 );	// Create table
+		push( state , move(arg.first) );	// Push First Value
+		lua_rawseti( state , -2 , 1 );		// Add to table
+		push( state , move(arg.second) );	// Push Second Value
+		lua_rawseti( state , -2 , 2 );		// Add to table
+		lua_pushliteral( state , "first" );	// Push Key of first value
+		push( state , move(arg.first) );	// Push First Value
+		lua_rawset( state , -3 );			// Add to table
+		lua_pushliteral( state , "second" );// Push Key of second Value
+		push( state , move(arg.second) );	// Push Second Value
+		lua_rawset( state , -3 );			// Add to table
+		#else
+		lua_createtable( state , 0 , 2 );	// Create table
+		lua_pushliteral( state , "first" );	// Push Key of first value
+		push( state , move(arg.first) );	// Push Value
+		lua_rawset( state , -3 );			// Add to table
+		lua_pushliteral( state , "second" );// Push Key of second Value
+		push( state , move(arg.second) );	// Push Value
+		lua_rawset( state , -3 );			// Add to table
+		#endif
+		
 		return push( state , args... ) + 1;
 	}
 	

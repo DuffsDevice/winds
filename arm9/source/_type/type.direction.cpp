@@ -1,4 +1,4 @@
-#include "_type/type.direction.h"
+#include <_type/type.direction.h>
 
 _fromStr<_direction> string2direction = {
 	{ "center" , _direction::center } ,

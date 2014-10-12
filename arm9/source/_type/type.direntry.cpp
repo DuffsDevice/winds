@@ -1,14 +1,14 @@
-#include "_type/type.direntry.h"
-#include "_type/type.program.h"
-#include "_type/type.windows.h"
-#include "_controller/controller.filesystem.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.registry.h"
+#include <_type/type.direntry.h>
+#include <_type/type.program.h>
+#include <_type/type.windows.h>
+#include <_controller/controller.filesystem.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.registry.h>
 
 extern "C"{
-#include "_library/_fat/partition.h"
-#include "_library/_fat/fatfile.h"
-#include "_library/_fat/file_allocation_table.h"
+#include <_library/_fat/partition.h>
+#include <_library/_fat/fatfile.h>
+#include <_library/_fat/file_allocation_table.h>
 }
 
 namespace unistd{

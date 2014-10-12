@@ -1,8 +1,8 @@
 #ifndef _BMP_JPEGICON_H_
 #define _BMP_JPEGICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_JpegIcon_bmp[99] = {
 50533, 50533, 50533, 50533, 50533, 50533, 50533, 50533, 50533, 50533, 50533, 

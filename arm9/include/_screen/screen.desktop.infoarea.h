@@ -1,10 +1,10 @@
 #ifndef _WIN_S_DESKTOP_TASKINFOCONTROLLER_
 #define _WIN_S_DESKTOP_TASKINFOCONTROLLER_
 
-#include "_type/type.gadget.h"
-#include "_type/type.timer.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.taskinfo.h"
+#include <_type/type.gadget.h>
+#include <_type/type.timer.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.taskinfo.h>
 
 class _desktopScreenInfoArea : public _gadget {
 	

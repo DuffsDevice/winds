@@ -1,7 +1,7 @@
 #ifndef _WIN_T_DIRECTION_
 #define _WIN_T_DIRECTION_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _direction : _u8
 {

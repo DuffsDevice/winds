@@ -1,8 +1,8 @@
 #ifndef _BMP_MUSICICON_H_
 #define _BMP_MUSICICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_MusicIcon_bmp[90] = {
 49680, 49680, 49680, 49680, 49680, 49680, 0    , 0    , 

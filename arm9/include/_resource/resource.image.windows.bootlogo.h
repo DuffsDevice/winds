@@ -1,8 +1,8 @@
 #ifndef _BMP_WINDOWSBOOTLOGO_H_
 #define _BMP_WINDOWSBOOTLOGO_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_WindowsBootLogoSmall_bmp[663] = {
 52416, 52416, 52416, 52416, 55649, 53829, 42503, 45347, 52416, 52416, 52416, 

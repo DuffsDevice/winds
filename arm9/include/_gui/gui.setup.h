@@ -1,10 +1,10 @@
 #ifndef _WIN_G_SETUP_
 #define _WIN_G_SETUP_
 
-#include "_type/type.gui.h"
-#include "_type/type.view.switcher.h"
-#include "_gadget/gadget.button.action.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.gui.h>
+#include <_type/type.view.switcher.h>
+#include <_gadget/gadget.button.action.h>
+#include <_gadget/gadget.label.h>
 
 class _guiSetup : public _gui
 {

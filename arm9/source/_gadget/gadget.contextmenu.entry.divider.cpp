@@ -1,6 +1,6 @@
-#include "_gadget/gadget.contextmenu.entry.divider.h"
-#include "_gadget/gadget.contextmenu.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.contextmenu.entry.divider.h>
+#include <_gadget/gadget.contextmenu.h>
+#include <_controller/controller.gui.h>
 
 _contextMenuEntryDivider::_contextMenuEntryDivider( _style&& style ) :
 	_contextMenuEntry( ignore , -1 , _menu::divider , move(style) )

@@ -17,9 +17,6 @@
 ** Search for "@@" to find all configurable definitions.
 ** ===================================================================
 */
-#define LUA_USE_C99
-#define LUA_USE_POSIX
-#define lua_c
 
 
 /*

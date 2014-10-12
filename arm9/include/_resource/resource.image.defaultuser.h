@@ -1,8 +1,8 @@
 #ifndef _BMP_DEFAULTUSERICON_H_
 #define _BMP_DEFAULTUSERICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_DefaultUserIcon_bmp[144] = {
 64511, 64511, 64511, 64511, 64511, 64511, 64511, 64511, 64511, 64511, 64511, 

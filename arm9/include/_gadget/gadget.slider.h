@@ -1,11 +1,11 @@
 #ifndef _WIN_G_SLIDER_
 #define _WIN_G_SLIDER_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.popup.h"
-#include "_gadget/gadget.slider.handle.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.popup.h>
+#include <_gadget/gadget.slider.handle.h>
 
 class _slider : public _gadget{
 	

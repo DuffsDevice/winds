@@ -1,7 +1,7 @@
 #ifndef _WIN_T_SOUND_NOTE_
 #define _WIN_T_SOUND_NOTE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 struct _note
 {

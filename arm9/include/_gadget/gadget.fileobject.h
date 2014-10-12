@@ -2,9 +2,9 @@
 #ifndef _WIN_G_FILEOBJECT_
 #define _WIN_G_FILEOBJECT_
 
-#include "_type/type.gadget.h"
-#include "_type/type.direntry.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.gadget.h>
+#include <_type/type.direntry.h>
+#include <_gadget/gadget.label.h>
 
 enum class _fileViewType : _u8{
 	detail = 0,

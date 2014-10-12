@@ -1,7 +1,7 @@
 #ifndef _WIN_T_WINDOWS_SOUND_BANK_
 #define _WIN_T_WINDOWS_SOUND_BANK_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _windowsSound : _u8
 {

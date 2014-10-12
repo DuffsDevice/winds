@@ -1,8 +1,8 @@
-#include "_lua/lua.controller.gui.h"
-#include "_screen/screen.desktop.h"
-#include "_screen/screen.bootup.h"
-#include "_screen/screen.startup.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.controller.gui.h>
+#include <_screen/screen.desktop.h>
+#include <_screen/screen.bootup.h>
+#include <_screen/screen.startup.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 int _lua_guicontroller::getState(lua_State* L){

@@ -1,4 +1,4 @@
-#include "_gadget/gadget.clock.h"
+#include <_gadget/gadget.clock.h>
 #include <math.h>
 
 void _clockGadget::setTime( _u8 hour , _u8 minutes , _u8 seconds )

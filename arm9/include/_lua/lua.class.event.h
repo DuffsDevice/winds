@@ -2,8 +2,8 @@
 #ifndef _WIN_L_EVENT_
 #define _WIN_L_EVENT_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.event.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.event.h>
 
 class _lua_event : public _event {
 	

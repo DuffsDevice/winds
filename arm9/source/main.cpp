@@ -1,5 +1,5 @@
-#include "_type/type.windows.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.windows.h>
+#include <_type/type.bitmap.h>
 
 int main( int argc , char* argv[] )
 {

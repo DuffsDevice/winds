@@ -1,10 +1,10 @@
 #ifndef _WIN_D_YESNO_
 #define _WIN_D_YESNO_
 
-#include "_type/type.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
+#include <_type/type.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
 
 class _yesNoDialog : public _dialog
 {
