@@ -2,9 +2,9 @@
 #ifndef _WIN_L_SCROLLBAR_
 #define _WIN_L_SCROLLBAR_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.scrollBar.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.scrollBar.h>
 
 /**
  * Proxy Classes

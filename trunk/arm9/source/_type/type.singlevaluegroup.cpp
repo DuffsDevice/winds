@@ -1,4 +1,4 @@
-#include "_type/type.singlevaluegroup.h"
+#include <_type/type.singlevaluegroup.h>
 
 template<class _selector>
 void _singleValueGroup<_selector>::removeSelector( _selector* radio )
@@ -136,9 +136,9 @@ _s32 _singleValueGroup<_selector>::getIntValue()
 }
 
 
-#include "_gadget/gadget.checkbox.h"
-#include "_gadget/gadget.button.sticky.h"
-#include "_gadget/gadget.radio.h"
+#include <_gadget/gadget.checkbox.h>
+#include <_gadget/gadget.button.sticky.h>
+#include <_gadget/gadget.radio.h>
 
 
 // Create Specializations

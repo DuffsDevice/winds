@@ -1,10 +1,10 @@
 #ifndef _WIN_T_GADGETSCREEN_
 #define _WIN_T_GADGETSCREEN_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.screen.h"
-#include "_type/type.touch.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.screen.h>
+#include <_type/type.touch.h>
 
 enum class _gadgetScreenType : _u8{
 	desktop,

@@ -2,10 +2,10 @@
 #ifndef _WIN_L_INIFILE_
 #define _WIN_L_INIFILE_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.ini.h"
-#include "_lua/lua.class.direntry.h"
-#include "_type/type.ini.file.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.ini.h>
+#include <_lua/lua.class.direntry.h>
+#include <_type/type.ini.file.h>
 
 /**
  * Proxy Classes

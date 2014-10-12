@@ -1,4 +1,4 @@
-#include "_type/type.rect.h"
+#include <_type/type.rect.h>
 
 optimized bool _rect::intersectsWith( const _area& other ) const
 {

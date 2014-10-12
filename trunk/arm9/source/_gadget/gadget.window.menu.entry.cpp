@@ -1,8 +1,8 @@
-#include "_gadget/gadget.window.menu.entry.h"
-#include "_gadget/gadget.window.menu.h"
-#include "_gadget/gadget.contextmenu.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.window.menu.entry.h>
+#include <_gadget/gadget.window.menu.h>
+#include <_gadget/gadget.contextmenu.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
 
 _windowMenuEntry::_windowMenuEntry( _menu* menu , _menuEntry menuEntry , _style&& style ) :
 	_gadget( _gadgetType::windowmenuentry , ignore , ignore , ignore , _guiController::getListItemHeight() - 2 , move(style) )

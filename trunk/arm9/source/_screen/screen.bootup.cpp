@@ -1,5 +1,5 @@
-#include "_screen/screen.bootup.h"
-#include "_resource/resource.image.windows.bootlogo.h"
+#include <_screen/screen.bootup.h>
+#include <_resource/resource.image.windows.bootlogo.h>
 
 _callbackReturn _bootupScreen::refreshHandler( _event event )
 {

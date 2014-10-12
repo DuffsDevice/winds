@@ -1,5 +1,5 @@
-#include "_type/type.bitmap.transform.h"
-#include "_controller/controller.memory.h"
+#include <_type/type.bitmap.transform.h>
+#include <_controller/controller.memory.h>
 
 void _bitmapTransform::compute(){
 	this->scaleRect( *this , *this->src , this->srcArea , this->flipHorizontal , this->flipVertical );

@@ -1,8 +1,8 @@
 #ifndef _WIN_L_MIME_
 #define _WIN_L_MIME_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.mime.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.mime.h>
 
 /**
  * Proxy Classes

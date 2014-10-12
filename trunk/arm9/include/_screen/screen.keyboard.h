@@ -2,10 +2,10 @@
 #ifndef _WIN_S_KEYBOARD_
 #define _WIN_S_KEYBOARD_
 
-#include "_type/type.screen.gadget.h"
-#include "_type/type.animation.h"
-#include "_type/type.sound.static.h"
-#include "_screen/screen.keyboard.button.h"
+#include <_type/type.screen.gadget.h>
+#include <_type/type.animation.h>
+#include <_type/type.sound.static.h>
+#include <_screen/screen.keyboard.button.h>
 
 class _keyboardScreen : public _gadgetScreen
 {

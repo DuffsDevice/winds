@@ -1,12 +1,12 @@
-#include "_gui/gui.login.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.registry.h"
+#include <_gui/gui.login.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.registry.h>
 
 //! Gadgets we need
-#include "_gadget/gadget.label.h"
-#include "_screen/screen.startup.h"
+#include <_gadget/gadget.label.h>
+#include <_screen/screen.startup.h>
 
 
 _callbackReturn _guiLogin::userLoginHandler( _event event )

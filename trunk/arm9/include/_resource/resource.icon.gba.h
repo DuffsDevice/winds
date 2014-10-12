@@ -1,8 +1,8 @@
 #ifndef _BMP_GBAICON_H_
 #define _BMP_GBAICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_GbaIcon_bmp[70] = {
 51794, 51794, 51794, 51794, 51794, 51794, 51794, 51794, 65535, 65535, 65535, 

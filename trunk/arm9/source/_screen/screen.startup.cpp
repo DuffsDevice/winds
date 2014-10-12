@@ -1,8 +1,8 @@
-#include "_screen/screen.startup.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.counter.h"
-#include "_gadget/gadget.fileview.h"
-#include "_resource/resource.image.windows.bootlogo.h"
+#include <_screen/screen.startup.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.counter.h>
+#include <_gadget/gadget.fileview.h>
+#include <_resource/resource.image.windows.bootlogo.h>
 
 _color SUpalette[] = { 
 	_color::fromRGB( 0 , 6 , 19 ) , _color::fromRGB( 0 , 6 , 15 ) , _color::fromRGB( 21 , 24 , 31 ) , // --- Topper Bar ( Main color , dark Main , bright Accent )

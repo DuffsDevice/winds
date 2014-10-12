@@ -2,11 +2,11 @@
 #ifndef _WIN_G_FILETREE_
 #define _WIN_G_FILETREE_
 
-#include "_type/type.gadget.h"
-#include "_type/type.uniqueptr.h"
-#include "_gadget/gadget.scrollArea.h"
-#include "_gadget/gadget.fileobject.h"
-#include "_gadget/gadget.treeview.h"
+#include <_type/type.gadget.h>
+#include <_type/type.uniqueptr.h>
+#include <_gadget/gadget.scrollArea.h>
+#include <_gadget/gadget.fileobject.h>
+#include <_gadget/gadget.treeview.h>
 
 class _fileTree : public _treeView
 {

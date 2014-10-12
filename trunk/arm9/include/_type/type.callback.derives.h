@@ -3,8 +3,8 @@
 #define _WIN_T_CALLBACK_DERIVES_
 
 #include <type_traits>
-#include "_type/type.callback.h"
-#include "_lua/lua.func.h"
+#include <_type/type.callback.h>
+#include <_lua/lua.func.h>
 
 template<typename T> class _staticCallback{ };
 

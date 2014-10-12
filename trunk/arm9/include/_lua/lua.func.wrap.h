@@ -1,9 +1,9 @@
 #ifndef _WIN_L_FUNC_WRAP_
 #define _WIN_L_FUNC_WRAP_
 
-#include "_type/type.h"
-#include "_lua/lua.func.h"
-#include "_lua/lua.h"
+#include <_type/type.h>
+#include <_lua/lua.func.h>
+#include <_lua/lua.h>
 #include <type_traits>
 
 namespace wrapHelpers

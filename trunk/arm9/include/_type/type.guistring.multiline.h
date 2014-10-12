@@ -1,7 +1,7 @@
 #ifndef _WIN_T_GUISTRING_MULTILINE_
 #define _WIN_T_GUISTRING_MULTILINE_
 
-#include "_type/type.guistring.h"
+#include <_type/type.guistring.h>
 
 class _multiLineGuiString : public _guiString
 {

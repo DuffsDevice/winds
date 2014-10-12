@@ -1,4 +1,4 @@
-#include "_type/type.dialog.h"
+#include <_type/type.dialog.h>
 
 void _dialog::execute()
 {

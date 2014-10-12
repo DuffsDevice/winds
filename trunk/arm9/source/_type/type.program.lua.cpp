@@ -1,74 +1,75 @@
-#include "_type/type.program.lua.h"
-#include "_type/type.callback.h"
-#include "_type/type.callback.derives.h"
-#include "_type/type.tokenizer.h"
-#include "_type/type.cwdchanger.h"
-#include "_screen/screen.keyboard.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.registry.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.event.h"
+#include <_type/type.program.lua.h>
+#include <_type/type.callback.h>
+#include <_type/type.callback.derives.h>
+#include <_type/type.tokenizer.h>
+#include <_type/type.cwdchanger.h>
+#include <_screen/screen.keyboard.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.registry.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.event.h>
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 /**
  * Proxy Classes
  */
-#include "_lua/lua.class.rect.h"
-#include "_lua/lua.class.area.h"
-#include "_lua/lua.class.border.h"
-#include "_lua/lua.class.time.h"
-#include "_lua/lua.class.dialogs.h"
-#include "_lua/lua.class.animation.h"
-#include "_lua/lua.class.font.h"
-#include "_lua/lua.class.direntry.h"
-#include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.bitmap.port.h"
-#include "_lua/lua.class.gadget.h"
-#include "_lua/lua.class.event.h"
-#include "_lua/lua.class.radiogroup.h"
-#include "_lua/lua.class.mime.h"
-#include "_lua/lua.class.menu.h"
-#include "_lua/lua.class.menu.rule.h"
-#include "_lua/lua.class.imagefile.h"
-#include "_lua/lua.class.dialogs.h"
-#include "_lua/lua.class.color.h"
-#include "_lua/lua.class.timer.h"
-#include "_lua/lua.class.ini.h"
-#include "_lua/lua.class.ini.file.h"
+#include <_lua/lua.class.rect.h>
+#include <_lua/lua.class.area.h>
+#include <_lua/lua.class.border.h>
+#include <_lua/lua.class.time.h>
+#include <_lua/lua.class.dialogs.h>
+#include <_lua/lua.class.animation.h>
+#include <_lua/lua.class.font.h>
+#include <_lua/lua.class.direntry.h>
+#include <_lua/lua.class.bitmap.h>
+#include <_lua/lua.class.bitmap.port.h>
+#include <_lua/lua.class.gadget.h>
+#include <_lua/lua.class.event.h>
+#include <_lua/lua.class.radiogroup.h>
+#include <_lua/lua.class.mime.h>
+#include <_lua/lua.class.menu.h>
+#include <_lua/lua.class.menu.rule.h>
+#include <_lua/lua.class.imagefile.h>
+#include <_lua/lua.class.dialogs.h>
+#include <_lua/lua.class.color.h>
+#include <_lua/lua.class.timer.h>
+#include <_lua/lua.class.ini.h>
+#include <_lua/lua.class.ini.file.h>
 
-#include "_lua/lua.controller.font.h"
-#include "_lua/lua.controller.gui.h"
+#include <_lua/lua.controller.font.h>
+#include <_lua/lua.controller.gui.h>
 
-#include "_lua/lua.gadget.button.h"
-#include "_lua/lua.gadget.checkbox.h"
-#include "_lua/lua.gadget.calendar.h"
-#include "_lua/lua.gadget.clock.h"
-#include "_lua/lua.gadget.contextmenu.h"
-#include "_lua/lua.gadget.counter.h"
-#include "_lua/lua.gadget.colorpicker.gradient.h"
-#include "_lua/lua.gadget.colorpicker.hexagon.h"
-#include "_lua/lua.gadget.button.image.h"
-#include "_lua/lua.gadget.button.sticky.h"
-#include "_lua/lua.gadget.image.h"
-#include "_lua/lua.gadget.label.h"
-#include "_lua/lua.gadget.scrollArea.h"
-#include "_lua/lua.gadget.scrollBar.h"
-#include "_lua/lua.gadget.progressbar.h"
-#include "_lua/lua.gadget.radio.h"
-#include "_lua/lua.gadget.select.h"
-#include "_lua/lua.gadget.slider.h"
-#include "_lua/lua.gadget.taskinfo.h"
-#include "_lua/lua.gadget.textbox.h"
-#include "_lua/lua.gadget.textarea.h"
-#include "_lua/lua.gadget.window.h"
-#include "_lua/lua.gadget.window.bar.h"
-#include "_lua/lua.gadget.window.mainframe.h"
-#include "_lua/lua.gadget.window.menu.h"
-#include "_lua/lua.gadget.resizehandle.h"
+#include <_lua/lua.gadget.button.h>
+#include <_lua/lua.gadget.checkbox.h>
+#include <_lua/lua.gadget.calendar.h>
+#include <_lua/lua.gadget.clock.h>
+#include <_lua/lua.gadget.contextmenu.h>
+#include <_lua/lua.gadget.counter.h>
+#include <_lua/lua.gadget.colorpicker.gradient.h>
+#include <_lua/lua.gadget.colorpicker.hexagon.h>
+#include <_lua/lua.gadget.button.image.h>
+#include <_lua/lua.gadget.button.sticky.h>
+#include <_lua/lua.gadget.image.h>
+#include <_lua/lua.gadget.label.h>
+#include <_lua/lua.gadget.scrollArea.h>
+#include <_lua/lua.gadget.scrollBar.h>
+#include <_lua/lua.gadget.popup.h>
+#include <_lua/lua.gadget.progressbar.h>
+#include <_lua/lua.gadget.radio.h>
+#include <_lua/lua.gadget.select.h>
+#include <_lua/lua.gadget.slider.h>
+#include <_lua/lua.gadget.taskinfo.h>
+#include <_lua/lua.gadget.textbox.h>
+#include <_lua/lua.gadget.textarea.h>
+#include <_lua/lua.gadget.window.h>
+#include <_lua/lua.gadget.window.bar.h>
+#include <_lua/lua.gadget.window.mainframe.h>
+#include <_lua/lua.gadget.window.menu.h>
+#include <_lua/lua.gadget.resizehandle.h>
 
 _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "Controller" , "Font" , &Lunar<_lua_fontcontroller>::install ),
@@ -114,6 +115,7 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "ImageButton" , &Lunar<_lua_imagebutton>::install ),
 	make_tuple( "UI" , "MainFrame" , &Lunar<_lua_mainframe>::install ),
 	make_tuple( "UI" , "Button" , &Lunar<_lua_button>::install ),
+	make_tuple( "UI" , "Popup" , &Lunar<_lua_popup>::install ),
 	make_tuple( "UI" , "Select" , &Lunar<_lua_select>::install ),
 	make_tuple( "UI" , "CheckBox" , &Lunar<_lua_checkbox>::install ),
 	make_tuple( "UI" , "Label" , &Lunar<_lua_label>::install ),
@@ -188,7 +190,9 @@ int _progLua::lua_usingClass( lua_State* L )
 	// Return Result
 	push( L , found );
 	
-	return 1;
+	if( found )
+		return 1;
+	return luaL_error( L , "The package '%s' is not available." , classPath.c_str() );
 }
 int _progLua::lua_pause( lua_State* L ){
 	_debugController::submit();

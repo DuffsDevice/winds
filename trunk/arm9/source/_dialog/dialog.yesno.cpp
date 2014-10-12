@@ -1,6 +1,6 @@
-#include "_dialog/dialog.yesno.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.yesno.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 void _yesNoDialog::executeInternal(){
 	this->window->setParent( _guiController::getHost() );

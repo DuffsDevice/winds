@@ -2,8 +2,8 @@
 #ifndef _WIN_L_TIMER_
 #define _WIN_L_TIMER_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.timer.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.timer.h>
 
 /**
  * Proxy Classes

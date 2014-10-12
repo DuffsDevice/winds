@@ -2,9 +2,9 @@
 #ifndef _WIN_L_TASKINFO_
 #define _WIN_L_TASKINFO_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.taskinfo.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.taskinfo.h>
 
 /**
  * Proxy Classes

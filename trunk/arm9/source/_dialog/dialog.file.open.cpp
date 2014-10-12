@@ -1,8 +1,8 @@
-#include "_dialog/dialog.file.open.h"
-#include "_type/type.tokenizer.h"
-#include "_resource/resource.icon.folder.up.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.file.open.h>
+#include <_type/type.tokenizer.h>
+#include <_resource/resource.icon.folder.up.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 _fileExtensionList _fileOpenDialog::getFileMask( _int value ) const {
 	const string& extensions = std::get<1>( this->fileTypes[value] );

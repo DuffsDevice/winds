@@ -1,8 +1,8 @@
 #ifndef _FONT_SYSTEMFONT7_
 #define _FONT_SYSTEMFONT7_
 
-#include "_type/type.h"
-#include "_type/type.font.memory.h"
+#include <_type/type.h>
+#include <_type/type.font.memory.h>
 
 /**
  * FONT_System7 font.

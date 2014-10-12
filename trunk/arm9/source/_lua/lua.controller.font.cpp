@@ -1,5 +1,5 @@
-#include "_lua/lua.controller.font.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.controller.font.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 int _lua_fontcontroller::getFont(lua_State* L){

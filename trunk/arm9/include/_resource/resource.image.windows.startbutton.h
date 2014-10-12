@@ -1,8 +1,8 @@
 #ifndef _BMP_STARTBUTTON_H_
 #define _BMP_STARTBUTTON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 //
 // NORMAL

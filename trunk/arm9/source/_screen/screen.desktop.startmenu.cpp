@@ -1,10 +1,10 @@
-#include "_screen/screen.desktop.startmenu.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.fileview.h"
-#include "_gadget/gadget.button.action.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.registry.h"
-#include "_controller/controller.localization.h"
+#include <_screen/screen.desktop.startmenu.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.fileview.h>
+#include <_gadget/gadget.button.action.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.registry.h>
+#include <_controller/controller.localization.h>
 
 #define CONST_BOTTOM_BAR_HEIGHT 12
 #define CONST_TOP_BAR_HEIGHT 16

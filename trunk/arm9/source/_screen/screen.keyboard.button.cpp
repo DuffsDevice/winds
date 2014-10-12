@@ -1,8 +1,8 @@
-#include "_screen/screen.keyboard.button.h"
-#include "_screen/screen.keyboard.h"
-#include "_screen/screen.desktop.startMenu.h"
-#include "_type/type.windows.soundbank.h"
-#include "_type/type.key.h"
+#include <_screen/screen.keyboard.button.h>
+#include <_screen/screen.keyboard.h>
+#include <_screen/screen.desktop.startMenu.h>
+#include <_type/type.windows.soundbank.h>
+#include <_type/type.key.h>
 
 _callbackReturn _keyboardScreenButton::mouseHandler( _event event )
 {

@@ -1,12 +1,12 @@
 #ifndef _WIN_G_LOGIN_
 #define _WIN_G_LOGIN_
 
-#include "_type/type.gui.h"
-#include "_gui/gui.login.userwrapper.h"
-#include "_type/type.animation.h"
-#include "_type/type.timer.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.image.h"
+#include <_type/type.gui.h>
+#include <_gui/gui.login.userwrapper.h>
+#include <_type/type.animation.h>
+#include <_type/type.timer.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.image.h>
 
 
 class _guiLogin : public _gui

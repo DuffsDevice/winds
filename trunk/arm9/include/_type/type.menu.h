@@ -1,10 +1,10 @@
 #ifndef _WIN_T_MENU_
 #define _WIN_T_MENU_
 
-#include "_type/type.h"
-#include "_type/type.assocvector.h"
-#include "_type/type.callback.h"
-#include "_type/type.menu.rule.h"
+#include <_type/type.h>
+#include <_type/type.assocvector.h>
+#include <_type/type.callback.h>
+#include <_type/type.menu.rule.h>
 #include <memory>
 
 // Specifies all the data that is stored for each entry

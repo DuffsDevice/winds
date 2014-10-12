@@ -1,4 +1,4 @@
-#include "_resource/resource.font.systemsymbols.8.h"
+#include <_resource/resource.font.systemsymbols.8.h>
 
 static const _u16 FONT_SystemSymbols8_glyphdata[450] = {
 /* '!' */	0x0028,0x28EF,0x00FF,0x0000,0x0000,

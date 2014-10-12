@@ -1,6 +1,6 @@
-#include "_resource/resource.program.explorer.h"
-#include "_resource/resource.icon.folder.up.h"
-#include "_controller/controller.localization.h"
+#include <_resource/resource.program.explorer.h>
+#include <_resource/resource.icon.folder.up.h>
+#include <_controller/controller.localization.h>
 
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )

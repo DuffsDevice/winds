@@ -1,8 +1,8 @@
-#include "_gadget/gadget.checkbox.h"
-#include "_type/type.gadget.helpers.h"
+#include <_gadget/gadget.checkbox.h>
+#include <_type/type.gadget.helpers.h>
 
 // Graphics
-#include "_resource/resource.image.checkboxes.h"
+#include <_resource/resource.image.checkboxes.h>
 
 _constBitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
 

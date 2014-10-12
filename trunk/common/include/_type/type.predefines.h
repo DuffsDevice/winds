@@ -2,9 +2,7 @@
 #ifndef _WIN_T_PREDEFINES_
 #define _WIN_T_PREDEFINES_
 
-#define _WIN_VER_MAJOR_ 0
-#define _WIN_VER_MINOR_ 98
-#define _WIN_VER_STATE_ "beta"
+#include <winconfig.h>
 
 #include <nds/ndstypes.h>
 #include <stdint.h>

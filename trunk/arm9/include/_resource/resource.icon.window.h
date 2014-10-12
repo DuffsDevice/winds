@@ -1,8 +1,8 @@
 #ifndef _BMP_WINDOW_H_
 #define _BMP_WINDOW_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_WindowIcon_bmp[36] = {
 60904, 60839, 62919, 51569, 46488, 55693, 

@@ -1,7 +1,7 @@
-#include "_gadget/gadget.passcodebox.h"
-#include "_type/type.font.glyphs.h"
-#include "_type/type.guistring.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.passcodebox.h>
+#include <_type/type.font.glyphs.h>
+#include <_type/type.guistring.h>
+#include <_controller/controller.font.h>
 
 void _passcodeBox::refresher()
 {

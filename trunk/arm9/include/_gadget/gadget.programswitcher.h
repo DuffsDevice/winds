@@ -1,12 +1,12 @@
 #ifndef _WIN_G_PROGRAMSWITCHER_
 #define _WIN_G_PROGRAMSWITCHER_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.program.handle.h"
-#include "_gadget/gadget.window.h"
-#include "_gadget/gadget.popup.h"
-#include "_gadget/gadget.label.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.program.handle.h>
+#include <_gadget/gadget.window.h>
+#include <_gadget/gadget.popup.h>
+#include <_gadget/gadget.label.h>
 
 class _programSwitcher : public _popup
 {

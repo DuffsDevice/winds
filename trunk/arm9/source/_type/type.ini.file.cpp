@@ -1,4 +1,4 @@
-#include "_type/type.ini.file.h"
+#include <_type/type.ini.file.h>
 
 _iniFile::_iniFile( const string& filename ) :
 	_direntry( filename )

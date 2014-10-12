@@ -1,7 +1,7 @@
-#include "_gadget/gadget.counter.h"
-#include "_gadget/gadget.button.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.counter.h>
+#include <_gadget/gadget.button.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.font.h>
 
 _counter::_counter( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , bool circular , _s32 value , _optValue<_s32> upperBound , _optValue<_s32> lowerBound  , _optValue<_u8> numbersystem , _style&& style ) :
 	_gadget( _gadgetType::counter , x , y , width , _guiController::getCounterHeight() , (_style&&)style )

@@ -1,6 +1,6 @@
-#include "_lua/lua.gadget.popup.h"
-#include "_lua/lua.func.h"
-#include "_lua/lua.func.wrap.h"
+#include <_lua/lua.gadget.popup.h>
+#include <_lua/lua.func.h>
+#include <_lua/lua.func.wrap.h>
 using namespace _luafunc;
 
 /*##################################
@@ -8,7 +8,7 @@ using namespace _luafunc;
 ##################################*/
 
 _lua_popup::_lua_popup( lua_State* L ) :
-	_lua_gadget( new _popup( optcheck<_coord>( L , 1 ) , optcheck<_coord>( L , 2 ) , lightcheck<_gadget*>( L , 3 ) , lightcheck<_style>( L , 4 ) ) )
+	_lua_gadget( new _popup( optcheck<_length>( L , 1 ) , optcheck<_length>( L , 2 ) , lightcheck<_gadget*>( L , 3 ) , lightcheck<_style>( L , 4 ) ) )
 {}
 
 //! show

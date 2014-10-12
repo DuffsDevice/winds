@@ -1,10 +1,10 @@
 #ifndef _WIN_PROG_MAPPER_PROGOBJECT_
 #define _WIN_PROG_MAPPER_PROGOBJECT_
 
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.image.h"
-#include "_gadget/gadget.window.h"
-#include "_type/type.direntry.h"
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.image.h>
+#include <_gadget/gadget.window.h>
+#include <_type/type.direntry.h>
 
 class PROG_Mapper_Object : public _gadget
 {

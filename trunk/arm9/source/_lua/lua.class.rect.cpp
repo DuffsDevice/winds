@@ -1,6 +1,6 @@
-#include "_lua/lua.class.rect.h"
-#include "_lua/lua.class.area.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.class.rect.h>
+#include <_lua/lua.class.area.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 /*##################################

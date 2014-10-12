@@ -1,5 +1,5 @@
-#include "_lua/lua.class.menu.rule.h"
-#include "_lua/lua.func.h"
+#include <_lua/lua.class.menu.rule.h>
+#include <_lua/lua.func.h>
 using namespace _luafunc;
 
 /*##################################

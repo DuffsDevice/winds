@@ -1,9 +1,9 @@
-#include "_gadget/gadget.colorpicker.hexagon.h"
-#include "_resource/resource.image.picker.color.h"
-#include "_resource/resource.image.picker.greyscale.h"
-#include "_resource/resource.image.picker.overlay.h"
-#include "_resource/resource.image.picker.overlay.big.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.colorpicker.hexagon.h>
+#include <_resource/resource.image.picker.color.h>
+#include <_resource/resource.image.picker.greyscale.h>
+#include <_resource/resource.image.picker.overlay.h>
+#include <_resource/resource.image.picker.overlay.big.h>
+#include <_controller/controller.gui.h>
 
 #define COLORPICKER_BW_START_Y 95
 #define COLORPICKER_NUM_HEXAGONS 145

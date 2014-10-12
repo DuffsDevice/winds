@@ -1,12 +1,12 @@
-#include "_gui/gui.setup.h"
-#include "_gui/gui.setup.page.1.h"
-#include "_gui/gui.setup.page.2.h"
-#include "_gui/gui.setup.page.3.h"
-#include "_gui/gui.setup.page.4.h"
-#include "_gui/gui.setup.page.5.h"
-#include "_screen/screen.startup.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_gui/gui.setup.h>
+#include <_gui/gui.setup.page.1.h>
+#include <_gui/gui.setup.page.2.h>
+#include <_gui/gui.setup.page.3.h>
+#include <_gui/gui.setup.page.4.h>
+#include <_gui/gui.setup.page.5.h>
+#include <_screen/screen.startup.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 _u8 state = 1;
 

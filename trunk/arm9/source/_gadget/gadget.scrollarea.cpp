@@ -1,5 +1,5 @@
-#include "_gadget/gadget.scrollArea.h"
-#include "_gadget/gadget.button.h"
+#include <_gadget/gadget.scrollArea.h>
+#include <_gadget/gadget.button.h>
 
 _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX , _scrollType scrollTypeY , _style&& style ) :
 	_gadget( _gadgetType::scrollarea , x , y , width , height , (_style&&)style )

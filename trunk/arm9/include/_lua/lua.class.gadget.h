@@ -2,8 +2,8 @@
 #ifndef _WIN_L_GADGET_
 #define _WIN_L_GADGET_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.gadget.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.gadget.h>
 
 
 /**

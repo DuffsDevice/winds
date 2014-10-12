@@ -1,8 +1,8 @@
 #ifndef _FONT_ARIALBLACK13_
 #define _FONT_ARIALBLACK13_
 
-#include "_type/type.font.memory.h"
-#include "_type/type.h"
+#include <_type/type.font.memory.h>
+#include <_type/type.h>
 
 /**
  * COURIER_NEW_FONT font.

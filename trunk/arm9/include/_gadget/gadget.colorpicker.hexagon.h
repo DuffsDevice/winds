@@ -1,8 +1,8 @@
 #ifndef _WIN_G_COLORPICKER_HEXAGON_
 #define _WIN_G_COLORPICKER_HEXAGON_
 
-#include "_type/type.gadget.h"
-#include "_type/type.color.h"
+#include <_type/type.gadget.h>
+#include <_type/type.color.h>
 
 class _hexagonColorPicker : public _gadget
 {

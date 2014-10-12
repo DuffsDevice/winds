@@ -1,11 +1,11 @@
 #ifndef _WIN_D_IMAGE_
 #define _WIN_D_IMAGE_
 
-#include "_type/type.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.image.h"
+#include <_type/type.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.image.h>
 
 class _imageDialog : public _dialog
 {

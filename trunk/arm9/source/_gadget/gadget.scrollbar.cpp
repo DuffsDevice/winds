@@ -1,7 +1,7 @@
-#include "_gadget/gadget.scrollBar.h"
-#include "_resource/resource.image.scrollbuttons.h"
+#include <_gadget/gadget.scrollBar.h>
+#include <_resource/resource.image.scrollbuttons.h>
 
-#include "nds/arm9/math.h"
+#include <nds/arm9/math.h>
 
 _bitmap scroll_bg_vert 			= BMP_ScrollBgSnipVertical();
 _bitmap scroll_bg_horiz 		= BMP_ScrollBgSnipHorizontal();

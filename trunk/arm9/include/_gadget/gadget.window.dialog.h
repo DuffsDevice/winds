@@ -2,7 +2,7 @@
 #ifndef _WIN_G_WINDOW_DIALOG_
 #define _WIN_G_WINDOW_DIALOG_
 
-#include "_gadget/gadget.window.h"
+#include <_gadget/gadget.window.h>
 
 class _dialogWindow : public _window
 {

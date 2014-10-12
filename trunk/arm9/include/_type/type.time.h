@@ -1,7 +1,7 @@
 #ifndef _WIN_T_TIME_
 #define _WIN_T_TIME_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _timeAttr : _u8
 {

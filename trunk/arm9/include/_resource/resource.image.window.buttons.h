@@ -2,8 +2,8 @@
 #ifndef _BMP_WINDOWBUTTONS_H_
 #define _BMP_WINDOWBUTTONS_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_WindowButtonMinimize_bmp[64] = {
 0	 , 63977, 63977, 63977, 63977, 63977, 63977, 0	  , 

@@ -11,8 +11,8 @@
 /*  None of this code's thread-safe/reentrant.  BFD.                        */
 /* ======================================================================== */
 
-#include "_library/library.image.gif.encoder.h"
-#include "_controller/controller.debug.h"
+#include <_library/library.image.gif.encoder.h>
+#include <_controller/controller.debug.h>
 #include <string.h>
 #include <malloc.h>
 #include <assert.h>

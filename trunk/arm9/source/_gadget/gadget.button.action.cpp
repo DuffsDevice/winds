@@ -1,5 +1,5 @@
-#include "_gadget/gadget.button.action.h"
-#include "_resource/resource.image.actionbuttons.h"
+#include <_gadget/gadget.button.action.h>
+#include <_resource/resource.image.actionbuttons.h>
 
 _constBitmap _actionButton::bitmaps[5] = { BMP_ActionBtnNext() , BMP_ActionBtnPrev() , BMP_ActionBtnShutdown() , BMP_ActionBtnLogOff() , BMP_ActionBtnSwitchUser() };
 

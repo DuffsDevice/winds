@@ -2,9 +2,9 @@
 #ifndef _WIN_L_COLOR_
 #define _WIN_L_COLOR_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.h"
-#include "_type/type.color.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.h>
+#include <_type/type.color.h>
 
 /**
  * Proxy Classes

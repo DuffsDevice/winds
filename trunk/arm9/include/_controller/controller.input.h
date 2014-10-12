@@ -1,8 +1,8 @@
 #ifndef _WIN_C_INPUT_
 #define _WIN_C_INPUT_
 
-#include "_type/type.controller.h"
-#include "_type/type.h"
+#include <_type/type.controller.h>
+#include <_type/type.h>
 
 class _inputController : public _controller
 {

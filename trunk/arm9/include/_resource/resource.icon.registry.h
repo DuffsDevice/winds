@@ -1,8 +1,8 @@
 #ifndef _BMP_REGISTRYICON_H_
 #define _BMP_REGISTRYICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_RegistryIcon_bmp[100] = {
     0,     0,     0,     0,     0,     0,     0,     0, 57076,     0, 

@@ -1,5 +1,5 @@
-#include "_gadget/gadget.contextMenu.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.contextMenu.h>
+#include <_controller/controller.gui.h>
 
 _callbackReturn _popup::blurHandler( _event event )
 {

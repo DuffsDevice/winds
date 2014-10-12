@@ -1,9 +1,9 @@
 #ifndef _WIN_PROG_CREDITS_
 #define _WIN_PROG_CREDITS_
 
-#include "_type/type.program.c.h"
-#include "_gadget/gadget.button.h"
-#include "_gadget/gadget.image.h"
+#include <_type/type.program.c.h>
+#include <_gadget/gadget.button.h>
+#include <_gadget/gadget.image.h>
 
 class PROG_Credits : public _progC
 {

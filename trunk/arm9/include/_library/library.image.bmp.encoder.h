@@ -24,7 +24,7 @@
 #define DefaultYPelsPerMeter 3780
 
 #include <stdio.h>
-#include "_type/type.predefines.h"
+#include <_type/type.predefines.h>
 
 class GenericBMPEncoder
 {

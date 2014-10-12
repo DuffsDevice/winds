@@ -1,7 +1,7 @@
 #ifndef _WIN_L_BMPDECODER_
 #define _WIN_L_BMPDECODER_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 class GenericBMPDecoder
 {

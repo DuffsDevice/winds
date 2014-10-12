@@ -1,8 +1,8 @@
-#include "_gadget/gadget.button.expand.h"
-#include "_type/type.gadget.helpers.h"
+#include <_gadget/gadget.button.expand.h>
+#include <_type/type.gadget.helpers.h>
 
 // Graphics
-#include "_resource/resource.icon.foldunfold.h"
+#include <_resource/resource.icon.foldunfold.h>
 
 _constBitmap _expandButton::graphic = BMP_FoldUnFoldIcon();
 

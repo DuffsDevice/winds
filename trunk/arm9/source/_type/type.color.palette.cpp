@@ -1,5 +1,5 @@
-#include "_type/type.color.palette.h"
-#include "_library/library.color.mediancut.h"
+#include <_type/type.color.palette.h>
+#include <_library/library.color.mediancut.h>
 
 _colorPalette::_colorPalette( _initializerList<_color> list ) :
 	hasTransparent( false )

@@ -2,8 +2,8 @@
 #ifndef _WIN_L_BITMAPPORT_
 #define _WIN_L_BITMAPPORT_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.bitmap.port.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.bitmap.port.h>
 
 /**
  * Proxy Classes

@@ -1,8 +1,8 @@
 #ifndef _FONT_HANDWRITING9_
 #define _FONT_HANDWRITING9_
 
-#include "_type/type.h"
-#include "_type/type.font.memory.h"
+#include <_type/type.h>
+#include <_type/type.font.memory.h>
 
 /**
  * FONT_System7 font.

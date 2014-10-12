@@ -2,9 +2,9 @@
 #ifndef _WIN_L_MENU_
 #define _WIN_L_MENU_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.h"
-#include "_type/type.menu.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.h>
+#include <_type/type.menu.h>
 
 /**
  * Proxy Classes

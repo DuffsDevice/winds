@@ -1,4 +1,4 @@
-#include "_resource/resource.font.handwriting.9.h"
+#include <_resource/resource.font.handwriting.9.h>
 
 const _u16 FONT_Handwriting9_data[705] = {
 /* ' ' */	0x0154,0x4000,

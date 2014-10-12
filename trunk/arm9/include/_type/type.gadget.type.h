@@ -1,7 +1,7 @@
 #ifndef _WIN_T_GADGETTYPE_
 #define _WIN_T_GADGETTYPE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 /**
  * Specifies the Type of an API-Element (aka _gadget)

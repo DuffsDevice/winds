@@ -1,8 +1,8 @@
 #ifndef _WIN_T_LANGUAGE_
 #define _WIN_T_LANGUAGE_
 
-#include "_type/type.h"
-#include "_type/type.shortstring.h"
+#include <_type/type.h>
+#include <_type/type.shortstring.h>
 
 //! Enumerates available _languages for WinDS
 //! Every language is made of two unique characters e.g. "en" for English

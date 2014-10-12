@@ -1,9 +1,9 @@
 #ifndef _WIN_T_COLOR_PALETTE_
 #define _WIN_T_COLOR_PALETTE_
 
-#include "_type/type.h"
-#include "_type/type.color.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.color.h>
+#include <_type/type.bitmap.h>
 
 class _colorPalette
 {

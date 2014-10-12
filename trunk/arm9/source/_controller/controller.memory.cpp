@@ -1,5 +1,5 @@
-#include "_controller/controller.memory.h"
-#include "_controller/controller.debug.h"
+#include <_controller/controller.memory.h>
+#include <_controller/controller.debug.h>
 
 //! NDS-Headers
 #include <nds/dma.h>

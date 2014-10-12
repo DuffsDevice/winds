@@ -1,7 +1,7 @@
-#include "_screen/screen.desktop.view.h"
-#include "_controller/controller.registry.h"
-#include "_type/type.color.h"
-#include "_type/type.font.freetype.h"
+#include <_screen/screen.desktop.view.h>
+#include <_controller/controller.registry.h>
+#include <_type/type.color.h>
+#include <_type/type.font.freetype.h>
 
 _callbackReturn _desktopScreenView::refreshHandler( _event event )
 {

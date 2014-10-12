@@ -1,13 +1,13 @@
-#include "_gadget/gadget.fileobject.h"
-#include "_gadget/gadget.fileview.h"
-#include "_gadget/gadget.image.h"
-#include "_type/type.mime.h"
-#include "_type/type.windows.h"
-#include "_type/type.direntry.shortcut.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_gadget/gadget.fileobject.h>
+#include <_gadget/gadget.fileview.h>
+#include <_gadget/gadget.image.h>
+#include <_type/type.mime.h>
+#include <_type/type.windows.h>
+#include <_type/type.direntry.shortcut.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 _callbackReturn _fileObject::keyHandler( _event event )
 {

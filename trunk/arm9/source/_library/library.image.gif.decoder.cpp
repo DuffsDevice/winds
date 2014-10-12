@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <nds/memory.h>
-#include "_library/library.image.gif.decoder.h"
+#include <_library/library.image.gif.decoder.h>
 
 /*	READING GIF FILES
 	=================

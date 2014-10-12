@@ -1,7 +1,7 @@
 #ifndef _WIN_G_CONTEXTMENUENTRYDIVIDER_
 #define _WIN_G_CONTEXTMENUENTRYDIVIDER_
 
-#include "_gadget/gadget.contextmenu.h"
+#include <_gadget/gadget.contextmenu.h>
 
 class _contextMenuEntryDivider : public _contextMenuEntry
 {

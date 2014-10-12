@@ -1,8 +1,8 @@
 #ifndef _WIN_MEMORYFONT_
 #define _WIN_MEMORYFONT_
 
-#include "_type/type.h"
-#include "_type/type.font.h"
+#include <_type/type.h>
+#include <_type/type.font.h>
 
 class _memoryFont : public _font{
 

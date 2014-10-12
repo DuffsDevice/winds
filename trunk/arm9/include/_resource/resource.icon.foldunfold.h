@@ -1,8 +1,8 @@
 #ifndef _BMP_FOLDUNFOLDICON_H_
 #define _BMP_FOLDUNFOLDICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_FoldUnFoldIcon_bmp[49] = {
 55919, 55919, 56943, 56943, 56943, 55919, 55919, 

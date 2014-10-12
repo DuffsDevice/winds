@@ -1,4 +1,4 @@
-#include "func.md5.h"
+#include <_func/func.md5.h>
 
 /* MD5
  converted to C++ class by Frank Thilo (thilo@unix-ag.org)

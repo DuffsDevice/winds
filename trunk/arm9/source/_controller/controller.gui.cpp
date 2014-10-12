@@ -1,8 +1,8 @@
-#include "_controller/controller.gui.h"
-#include "_controller/controller.interrupt.h"
-#include "_controller/controller.registry.h"
-#include "_screen/screen.keyboard.h"
-#include "func.gradientcreator.h"
+#include <_controller/controller.gui.h>
+#include <_controller/controller.interrupt.h>
+#include <_controller/controller.registry.h>
+#include <_screen/screen.keyboard.h>
+#include <_func/func.gradientcreator.h>
 
 // NDS Interrupts
 #include <nds/interrupts.h>
@@ -10,13 +10,13 @@
 #include <nds/system.h>
 
 // Gui States
-#include "_gui/gui.setup.h"
-#include "_gui/gui.bootup.h"
-#include "_gui/gui.desktop.h"
-#include "_gui/gui.login.h"
+#include <_gui/gui.setup.h>
+#include <_gui/gui.bootup.h>
+#include <_gui/gui.desktop.h>
+#include <_gui/gui.login.h>
 
 // Graphic
-#include "_resource/resource.image.window.header.h"
+#include <_resource/resource.image.window.header.h>
 
 bool _guiController::init()
 {

@@ -1,7 +1,7 @@
 #ifndef _WIN_G_DESKTOP_
 #define _WIN_G_DESKTOP_
 
-#include "_type/type.gui.h"
+#include <_type/type.gui.h>
 
 class _guiDesktop : public _gui
 {	

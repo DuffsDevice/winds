@@ -2,9 +2,9 @@
 #ifndef _WIN_L_TEXTAREA_
 #define _WIN_L_TEXTAREA_
 
-#include "_lua/lua.lunar.h"
-#include "_lua/lua.class.gadget.h"
-#include "_gadget/gadget.textarea.h"
+#include <_lua/lua.lunar.h>
+#include <_lua/lua.class.gadget.h>
+#include <_gadget/gadget.textarea.h>
 
 /**
  * Proxy Classes

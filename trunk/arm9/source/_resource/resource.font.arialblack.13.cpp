@@ -1,4 +1,4 @@
-#include "_resource/resource.font.arialblack.13.h"
+#include <_resource/resource.font.arialblack.13.h>
 
 const _u16 FONT_ArialBlack13_data[1089] = {
 /* '!' */	0x03FF,0xCF00,

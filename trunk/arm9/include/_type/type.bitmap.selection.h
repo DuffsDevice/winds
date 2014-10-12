@@ -1,8 +1,8 @@
 #ifndef _WIN_T_BITMAP_SELECTION_
 #define _WIN_T_BITMAP_SELECTION_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 using _bitField = _vector<bool>;
 

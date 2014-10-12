@@ -1,8 +1,8 @@
 #ifndef _WIN_G_TASKINFO_
 #define _WIN_G_TASKINFO_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.image.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.image.h>
 
 class _taskInfo;
 class _bubble;

@@ -16,7 +16,7 @@ Retrieved from: http://en.literateprograms.org/Median_cut_algorithm_(C_Plus_Plus
 #include <limits>
 #include <queue>
 #include <algorithm>
-#include "_library/library.color.mediancut.h"
+#include <_library/library.color.mediancut.h>
 
 Block::Block(Point* points, int pointsLength)
 {

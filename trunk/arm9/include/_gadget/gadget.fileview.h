@@ -2,11 +2,11 @@
 #ifndef _WIN_G_FILEVIEW_
 #define _WIN_G_FILEVIEW_
 
-#include "_type/type.gadget.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.sound.static.h"
-#include "_gadget/gadget.scrollArea.h"
-#include "_gadget/gadget.fileobject.h"
+#include <_type/type.gadget.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.sound.static.h>
+#include <_gadget/gadget.scrollArea.h>
+#include <_gadget/gadget.fileobject.h>
 
 class _fileView : public _scrollArea {
 	

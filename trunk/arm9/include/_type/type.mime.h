@@ -1,7 +1,7 @@
 #ifndef _WIN_T_MIMETYPE_
 #define _WIN_T_MIMETYPE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _mime : _u8{
 	plain,

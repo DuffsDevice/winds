@@ -1,8 +1,8 @@
 #ifndef _WIN_T_INI_
 #define _WIN_T_INI_
 
-#include "_type/type.h"
-#include "_type/type.assocVector.h"
+#include <_type/type.h>
+#include <_type/type.assocVector.h>
 
 typedef _assocVector<string,_assocVector<string,string>> _iniStructure;
 

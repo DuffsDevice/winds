@@ -1,10 +1,10 @@
 #ifndef _WIN_FONT_
 #define _WIN_FONT_
 
-#include "_type/type.h"
-#include "_type/type.rect.h"
-#include "_type/type.color.h"
-#include "_type/type.uniqueptr.h"
+#include <_type/type.h>
+#include <_type/type.rect.h>
+#include <_type/type.color.h>
+#include <_type/type.uniqueptr.h>
 
 class _font{
 

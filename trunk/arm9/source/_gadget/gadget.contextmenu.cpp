@@ -1,6 +1,6 @@
-#include "_gadget/gadget.contextmenu.h"
-#include "_gadget/gadget.contextmenu.entry.divider.h"
-#include "_controller/controller.debug.h"
+#include <_gadget/gadget.contextmenu.h>
+#include <_gadget/gadget.contextmenu.entry.divider.h>
+#include <_controller/controller.debug.h>
 
 _contextMenu::_contextMenu( _optValue<_length> width , _menu* content , _gadget* owner , bool preserveValue , _int initialValue , _u16 mainList , _style&& style ) :
 	_popup( width , ignore , owner )

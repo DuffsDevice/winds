@@ -3,10 +3,10 @@
 #define _WIN_T_LUAPROG_
 
 //! Lua
-#include "_lua/lua.h"
+#include <_lua/lua.h>
 
 //! Program
-#include "_type/type.program.h"
+#include <_type/type.program.h>
 
 class _progLua : public _program
 {

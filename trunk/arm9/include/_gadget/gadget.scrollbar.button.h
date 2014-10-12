@@ -1,9 +1,9 @@
 #ifndef _WIN_G_SCROLLBUTTON_
 #define _WIN_G_SCROLLBUTTON_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.button.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.button.h>
 
 enum class _scrollButtonType : _u8{
 	buttonHandleX = 0,

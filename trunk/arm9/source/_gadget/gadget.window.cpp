@@ -1,6 +1,6 @@
-#include "_gadget/gadget.window.h"
-#include "_type/type.windows.soundbank.h"
-#include "_controller/controller.gui.h"
+#include <_gadget/gadget.window.h>
+#include <_type/type.windows.soundbank.h>
+#include <_controller/controller.gui.h>
 
 void _window::maximize()
 {

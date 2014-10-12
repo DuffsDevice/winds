@@ -1,4 +1,4 @@
-#include "_controller/controller.power.h"
+#include <_controller/controller.power.h>
 
 extern "C"{
 	#include <nds/system.h>

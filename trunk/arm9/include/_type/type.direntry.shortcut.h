@@ -1,10 +1,10 @@
 #ifndef _WIN_T_DIRENTRYSHORTCUT_
 #define _WIN_T_DIRENTRYSHORTCUT_
 
-#include "_type/type.h"
-#include "_type/type.direntry.h"
-#include "_type/type.ini.h"
-#include "_type/type.program.args.h"
+#include <_type/type.h>
+#include <_type/type.direntry.h>
+#include <_type/type.ini.h>
+#include <_type/type.program.args.h>
 
 class _shortcut : public _direntry {
 	

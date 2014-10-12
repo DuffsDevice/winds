@@ -1,8 +1,8 @@
 #ifndef _BMP_SHORTCUTOVERLAY_H_
 #define _BMP_SHORTCUTOVERLAY_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ShortcutOverlay_bmp[25] = {
 32768, 32768, 32768, 32768, 32768, 

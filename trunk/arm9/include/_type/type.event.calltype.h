@@ -1,7 +1,7 @@
 #ifndef _WIN_T_EVENTCALLTYPE_
 #define _WIN_T_EVENTCALLTYPE_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 enum class _eventCallType : _u8{
 	normal,		// handleEvent( ... , false )

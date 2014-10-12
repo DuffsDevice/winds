@@ -2,14 +2,14 @@
 #ifndef _WIN_L_DIALOGS_
 #define _WIN_L_DIALOGS_
 
-#include "_lua/lua.lunar.h"
-#include "_dialog/dialog.yesno.h"
-#include "_dialog/dialog.entertext.h"
-#include "_dialog/dialog.errorwarninginfo.h"
-#include "_dialog/dialog.image.h"
-#include "_dialog/dialog.file.save.h"
-#include "_dialog/dialog.file.open.h"
-#include "_dialog/dialog.folder.choose.h"
+#include <_lua/lua.lunar.h>
+#include <_dialog/dialog.yesno.h>
+#include <_dialog/dialog.entertext.h>
+#include <_dialog/dialog.errorwarninginfo.h>
+#include <_dialog/dialog.image.h>
+#include <_dialog/dialog.file.save.h>
+#include <_dialog/dialog.file.open.h>
+#include <_dialog/dialog.folder.choose.h>
 
 /**
  * Proxy Classes

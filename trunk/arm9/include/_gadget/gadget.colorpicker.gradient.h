@@ -1,8 +1,8 @@
 #ifndef _WIN_G_COLORPICKER_
 #define _WIN_G_COLORPICKER_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.image.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.image.h>
 
 class _gradientColorPicker : public _gadget
 {

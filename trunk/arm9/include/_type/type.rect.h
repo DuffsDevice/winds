@@ -1,7 +1,7 @@
 #ifndef _WIN_T_RECT_
 #define _WIN_T_RECT_
 
-#include "_type/type.h"
+#include <_type/type.h>
 #include <cmath>
 #include <algorithm>
 

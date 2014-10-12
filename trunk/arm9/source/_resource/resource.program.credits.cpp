@@ -1,12 +1,12 @@
-#include "_resource/resource.program.credits.h"
-#include "_resource/resource.image.logo.computer.h"
-#include "_resource/resource.icon.winds.h"
-#include "_type/type.gadget.helpers.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.debug.h"
-#include "_type/type.windows.h"
-#include "_gadget/gadget.window.dialog.h"
+#include <_resource/resource.program.credits.h>
+#include <_resource/resource.image.logo.computer.h>
+#include <_resource/resource.icon.winds.h>
+#include <_type/type.gadget.helpers.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.debug.h>
+#include <_type/type.windows.h>
+#include <_gadget/gadget.window.dialog.h>
 
 PROG_Credits::PROG_Credits()
 {

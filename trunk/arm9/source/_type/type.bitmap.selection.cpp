@@ -1,4 +1,4 @@
-#include "_type/type.bitmap.selection.h"
+#include <_type/type.bitmap.selection.h>
 
 _bitmapSelection _bitmapSelection::fromColorRange( const _bitmap& origin , _color color , _u8 tolerance )
 {

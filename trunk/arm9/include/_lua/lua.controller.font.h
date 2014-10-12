@@ -2,8 +2,8 @@
 #ifndef _WIN_L_CONTROLLER_FONT_
 #define _WIN_L_CONTROLLER_FONT_
 
-#include "_lua/lua.lunar.h"
-#include "_controller/controller.font.h"
+#include <_lua/lua.lunar.h>
+#include <_controller/controller.font.h>
 
 /**
  * Proxy Classes

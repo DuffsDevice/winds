@@ -1,8 +1,8 @@
 #ifndef _BMP_SCROLLBUTTONS_H_
 #define _BMP_SCROLLBUTTONS_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ScrollButton_bmp[64] = { 
 	0	 , 64345, 64311, 64311, 64310, 64310, 64278, 0    , 

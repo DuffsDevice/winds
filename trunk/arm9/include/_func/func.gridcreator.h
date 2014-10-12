@@ -1,7 +1,7 @@
 #ifndef _WIN_F_GRID_CREATOR_
 #define _WIN_F_GRID_CREATOR_
 
-#include "_type/type.h"
+#include <_type/type.h>
 #include <nds/arm9/math.h>
 
 static unused _vector<int> computeGrid( int wholeLength , int numFields )

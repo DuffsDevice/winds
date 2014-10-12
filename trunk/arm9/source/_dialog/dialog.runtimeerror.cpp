@@ -1,7 +1,7 @@
-#include "_dialog/dialog.runtimeerror.h"
-#include "_resource/resource.image.alerts.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.runtimeerror.h>
+#include <_resource/resource.image.alerts.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 _constBitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
 

@@ -1,14 +1,14 @@
-#include "_type/type.h"
+#include <_type/type.h>
 #undef new
 
-#ifdef DEBUG_PROFILING
+#ifdef _WIN_CONFIG_BUILD_DEBUG_PROFILING_
 
 #include <nds/timers.h>
 #include <nds/arm9/math.h>
 #include <nds/arm9/console.h>
 #include <malloc.h>
-#include "_controller/controller.debug.h"
-#include "_controller/controller.timer.h"
+#include <_controller/controller.debug.h>
+#include <_controller/controller.timer.h>
 
 _map<_literal,_u32>		_codeAnalyzer::name2Time;
 _map<_literal,_u32>		_codeAnalyzer::name2CallCount;

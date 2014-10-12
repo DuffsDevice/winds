@@ -1,14 +1,16 @@
-#include "_controller/controller.input.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.registry.h"
-#include "_type/type.event.h"
-#include "_type/type.key.h"
-#include "_type/type.screen.gadget.h"
-#include "_screen/screen.desktop.h"
+#include <_controller/controller.input.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.registry.h>
+#include <_type/type.event.h>
+#include <_type/type.key.h>
+#include <_type/type.screen.gadget.h>
+#include <_screen/screen.desktop.h>
 
 extern "C"{
 	#include <nds/touch.h>
-	#include <nds/arm9/input.h>
+	//#include <nds/arm9/input.h>
+	void scanKeys();
+	void touchRead( touchPosition* );
 }
 
 bool _inputController::init(){

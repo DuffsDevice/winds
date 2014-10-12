@@ -1,7 +1,7 @@
-#include "_gadget/gadget.textarea.h"
-#include "_type/type.gadget.helpers.h"
-#include "_type/type.windows.soundbank.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.textarea.h>
+#include <_type/type.gadget.helpers.h>
+#include <_type/type.windows.soundbank.h>
+#include <_controller/controller.font.h>
 
 _callbackReturn _textArea::refreshHandler( _event event )
 {

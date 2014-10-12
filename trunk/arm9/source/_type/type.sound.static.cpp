@@ -1,4 +1,4 @@
-#include "_type/type.sound.static.h"
+#include <_type/type.sound.static.h>
 #include <nds/fifocommon.h>
 #include <stdio.h>
 

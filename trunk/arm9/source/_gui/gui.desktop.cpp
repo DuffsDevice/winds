@@ -1,8 +1,8 @@
-#include "_gui/gui.desktop.h"
-#include "_screen/screen.desktop.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.debug.h"
-#include "_type/type.windows.h"
+#include <_gui/gui.desktop.h>
+#include <_screen/screen.desktop.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.debug.h>
+#include <_type/type.windows.h>
 
 _guiDesktop::_guiDesktop()
 {

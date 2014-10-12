@@ -1,5 +1,5 @@
-#include "_gadget/gadget.label.h"
-#include "_controller/controller.font.h"
+#include <_gadget/gadget.label.h>
+#include <_controller/controller.font.h>
 
 _callbackReturn _label::updateHandler( _event event )
 {

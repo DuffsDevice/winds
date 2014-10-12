@@ -1,8 +1,8 @@
 #ifndef _BMP_VERTICAL_SLIDER_H_
 #define _BMP_VERTICAL_SLIDER_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_VerticalSlider_bmp[72] = {
 0    , 57173, 62363, 62330, 62330, 62330, 62330, 62330, 63387, 59256, 52976, 0    , 

@@ -1,16 +1,16 @@
-#include "_type/type.imagefile.h"
-#include "_type/type.color.palette.h"
-#include "_controller/controller.debug.h"
+#include <_type/type.imagefile.h>
+#include <_type/type.color.palette.h>
+#include <_controller/controller.debug.h>
 
-#include "_library/library.image.png.decoder.h"
-#include "_library/library.image.png.encoder.h"
-#include "_library/library.image.jpeg.decoder.h"
-#include "_library/library.image.jpeg.encoder.h"
-#include "_library/library.image.bmp.decoder.h"
-#include "_library/library.image.bmp.encoder.h"
-#include "_library/library.image.ico.h"
-#include "_library/library.image.gif.decoder.h"
-#include "_library/library.image.gif.encoder.h"
+#include <_library/library.image.png.decoder.h>
+#include <_library/library.image.png.encoder.h>
+#include <_library/library.image.jpeg.decoder.h>
+#include <_library/library.image.jpeg.encoder.h>
+#include <_library/library.image.bmp.decoder.h>
+#include <_library/library.image.bmp.encoder.h>
+#include <_library/library.image.ico.h>
+#include <_library/library.image.gif.decoder.h>
+#include <_library/library.image.gif.encoder.h>
 
 _mimeType _imageFile::getRealMime()
 {

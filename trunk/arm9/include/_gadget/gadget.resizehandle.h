@@ -1,8 +1,8 @@
 #ifndef _WIN_G_RESIZEHANDLE_
 #define _WIN_G_RESIZEHANDLE_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
 
 class _resizeHandle : public _gadget
 {

@@ -1,7 +1,7 @@
 #ifndef _WIN_T_TOUCH_
 #define _WIN_T_TOUCH_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 #define u16 _u16
 #include <nds/touch.h>

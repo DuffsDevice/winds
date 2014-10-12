@@ -1,6 +1,6 @@
-#include "_controller/controller.interrupt.h"
-#include "_controller/controller.debug.h"
-#include "_type/type.windows.h"
+#include <_controller/controller.interrupt.h>
+#include <_controller/controller.debug.h>
+#include <_type/type.windows.h>
 
 #include <nds/interrupts.h>
 #include <nds/bios.h>

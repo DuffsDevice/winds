@@ -1,8 +1,8 @@
 #ifndef _WIN_C_INTERRUPT_
 #define _WIN_C_INTERRUPT_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
 
 class _interruptController : public _controller
 {

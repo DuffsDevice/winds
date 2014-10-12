@@ -2,7 +2,7 @@
 #ifndef _WIN_G_BUTTON_
 #define _WIN_G_BUTTON_
 
-#include "_type/type.gadget.h"
+#include <_type/type.gadget.h>
 
 class _button : public _gadget
 {

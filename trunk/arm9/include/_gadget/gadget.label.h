@@ -2,8 +2,8 @@
 #ifndef _WIN_G_LABEL_
 #define _WIN_G_LABEL_
 
-#include "_type/type.gadget.h"
-#include "_type/type.guistring.singleline.h"
+#include <_type/type.gadget.h>
+#include <_type/type.guistring.singleline.h>
 
 class _label : public _gadget {
 	

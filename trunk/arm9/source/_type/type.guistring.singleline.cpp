@@ -1,4 +1,4 @@
-#include "_type/type.guistring.singleline.h"
+#include <_type/type.guistring.singleline.h>
 
 _length _singleLineGuiString::getPreferredTextWidth() const
 {

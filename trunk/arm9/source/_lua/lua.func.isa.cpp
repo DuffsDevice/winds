@@ -1,15 +1,15 @@
-#include "_lua/lua.func.h"
-#include "_lua/lua.class.event.h"
-#include "_lua/lua.class.rect.h"
-#include "_lua/lua.class.area.h"
-#include "_lua/lua.class.font.h"
-#include "_lua/lua.class.border.h"
-#include "_lua/lua.class.color.h"
-#include "_lua/lua.class.bitmap.h"
-#include "_lua/lua.class.bitmap.port.h"
-#include "_lua/lua.class.time.h"
-#include "_lua/lua.class.mime.h"
-#include "_lua/lua.class.hardwarekeypattern.h"
+#include <_lua/lua.func.h>
+#include <_lua/lua.class.event.h>
+#include <_lua/lua.class.rect.h>
+#include <_lua/lua.class.area.h>
+#include <_lua/lua.class.font.h>
+#include <_lua/lua.class.border.h>
+#include <_lua/lua.class.color.h>
+#include <_lua/lua.class.bitmap.h>
+#include <_lua/lua.class.bitmap.port.h>
+#include <_lua/lua.class.time.h>
+#include <_lua/lua.class.mime.h>
+#include <_lua/lua.class.hardwarekeypattern.h>
 
 namespace _luafunc
 {

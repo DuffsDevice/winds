@@ -1,8 +1,8 @@
-#include "_type/type.windows.h"
-#include "_type/type.sound.h"
-#include "_type/type.sound.channel.h"
-#include "_type/type.sound.msg.h"
-#include "_type/type.sound.definitions.h"
+#include <_type/type.windows.h>
+#include <_type/type.sound.h>
+#include <_type/type.sound.channel.h>
+#include <_type/type.sound.msg.h>
+#include <_type/type.sound.definitions.h>
 
 #include <nds/timers.h>
 #include <nds/system.h>

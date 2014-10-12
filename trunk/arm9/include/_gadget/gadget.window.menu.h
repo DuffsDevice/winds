@@ -1,9 +1,9 @@
 #ifndef _WIN_G_WINDOWMENU_
 #define _WIN_G_WINDOWMENU_
 
-#include "_type/type.menu.h"
-#include "_type/type.gadget.h"
-#include "_type/type.gadget.helpers.h"
+#include <_type/type.menu.h>
+#include <_type/type.gadget.h>
+#include <_type/type.gadget.helpers.h>
 
 class _windowMenu : public _menu , public _gadget
 {

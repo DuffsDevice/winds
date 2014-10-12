@@ -1,4 +1,4 @@
-#include "_type/type.bitmap.toner.h"
+#include <_type/type.bitmap.toner.h>
 
 void _bitmapToner::convertToGreyscale() const
 {

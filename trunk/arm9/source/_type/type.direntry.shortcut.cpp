@@ -1,8 +1,8 @@
-#include "_type/type.direntry.shortcut.h"
-#include "_controller/controller.gui.h"
+#include <_type/type.direntry.shortcut.h>
+#include <_controller/controller.gui.h>
 
 // Shortcut-Icon
-#include "_resource/resource.image.shortcutoverlay.h"
+#include <_resource/resource.image.shortcutoverlay.h>
 
 _shortcut::_shortcut( string&& fn) :
 	_direntry( move(fn) )

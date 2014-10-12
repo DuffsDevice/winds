@@ -1,4 +1,4 @@
-#include "_type/type.color.h"
+#include <_type/type.color.h>
 #include <math.h>
 
 _color::_color( const string& name )

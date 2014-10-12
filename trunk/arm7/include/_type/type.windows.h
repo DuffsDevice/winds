@@ -1,8 +1,8 @@
 #ifndef _WIN_T_WINDOWS_
 #define _WIN_T_WINDOWS_
 
-#include "_type/type.predefines.h"
-#include "_type/type.sound.h"
+#include <_type/type.predefines.h>
+#include <_type/type.sound.h>
 
 class _windows{
 	

@@ -2,13 +2,13 @@
 #ifndef _WIN_T_PROGRAM_
 #define _WIN_T_PROGRAM_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
-#include "_type/type.language.h"
-#include "_type/type.program.args.h"
-#include "_type/type.program.executiondata.h"
-#include "_type/type.uniqueptr.h"
-#include "_gadget/gadget.window.mainframe.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
+#include <_type/type.language.h>
+#include <_type/type.program.args.h>
+#include <_type/type.program.executiondata.h>
+#include <_type/type.uniqueptr.h>
+#include <_gadget/gadget.window.mainframe.h>
 
 // Describes the type of a program
 enum class _programType{

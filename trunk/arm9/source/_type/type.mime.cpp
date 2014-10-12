@@ -1,4 +1,4 @@
-#include "_type/type.mime.h"
+#include <_type/type.mime.h>
 
 _fromStr<_mime> string2mimeType = {
 	{ "directory" , _mime::directory } ,

@@ -30,7 +30,8 @@ CFLAGS	:=	-g -Wall -O2\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM7
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-rtti -std=c++11 -O3
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-rtti -std=c++0x -O3
+# -std=gnu++0x
 #-v
 
 

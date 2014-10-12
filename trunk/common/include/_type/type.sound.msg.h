@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_MSG_
 #define _WIN_T_SOUND_MSG_
 
-#include "_type/type.predefines.h"
-#include "_type/type.sound.msg.channel.h"
-#include "_type/type.sound.msg.mic.h"
+#include <_type/type.predefines.h>
+#include <_type/type.sound.msg.channel.h>
+#include <_type/type.sound.msg.mic.h>
 
 enum class _soundDataMsgType : _u8
 {

@@ -1,7 +1,7 @@
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.button.h"
-#include "_type/type.windows.soundbank.h"
-#include "func.inputemulator.h"
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.button.h>
+#include <_type/type.windows.soundbank.h>
+#include <_func/func.inputemulator.h>
 
 _callbackReturn _dialogWindow::submitEscapeHandler( _event event )
 {

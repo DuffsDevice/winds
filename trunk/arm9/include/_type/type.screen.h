@@ -2,8 +2,8 @@
 #define _WIN_T_SCREEN_
 
 //! Types
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 class _screen
 {
@@ -41,7 +41,7 @@ class _screen
 		_screen( int bgId );
 		
 		//! Dtor
-		virtual ~_screen() = default;
+		virtual ~_screen(){};
 };
 
 #endif

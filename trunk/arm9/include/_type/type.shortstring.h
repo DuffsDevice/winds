@@ -2,7 +2,7 @@
 #define _WIN_T_SHORTSTRING_
 
 #include <string.h>
-#include "_type/type.h"
+#include <_type/type.h>
 
 template<int maxBytes,typename dataType = char>
 class _shortString
@@ -32,6 +32,11 @@ class _shortString
 		}
 		//! Copy Ctor
 		_shortString( const _shortString& str ){
+			*this = str;
+		}
+		
+		//! Move Ctor
+		_shortString( _shortString&& str ){
 			*this = str;
 		}
 		
@@ -81,6 +86,9 @@ class _shortString
 		}
 		
 		//! Assignment Operator
+		_shortString& operator=( _shortString&& sstr ){
+			return *this = (const _shortString&)sstr;
+		}
 		_shortString& operator=( const _shortString& sstr )
 		{
 			int idx = maxBytes;

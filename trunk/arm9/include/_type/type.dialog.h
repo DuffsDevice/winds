@@ -1,8 +1,8 @@
 #ifndef _WIN_T_DIALOG_
 #define _WIN_T_DIALOG_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
 
 enum class _dialogResult : _u8{
 	undefined,

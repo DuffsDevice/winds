@@ -1,7 +1,7 @@
 #ifndef _BMP_WINDOWSWALLPAPER_H_
 #define _BMP_WINDOWSWALLPAPER_H_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
 static const _pixel BMP_WindowsWallpaper_bmp[49152] = {
 62952, 62952, 62952, 62952, 62952, 62951, 62951, 62951, 62951, 62951, 62951, 

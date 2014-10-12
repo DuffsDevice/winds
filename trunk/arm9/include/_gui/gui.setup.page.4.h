@@ -1,14 +1,14 @@
 #ifndef _WIN_G_SETUP_PAGE4_
 #define _WIN_G_SETUP_PAGE4_
 
-#include "_type/type.h"
-#include "_type/type.view.h"
-#include "_type/type.gadget.h"
-#include "_type/type.gadget.helpers.h"
+#include <_type/type.h>
+#include <_type/type.view.h>
+#include <_type/type.gadget.h>
+#include <_type/type.gadget.helpers.h>
 
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.image.h"
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.textbox.h>
+#include <_gadget/gadget.image.h>
 
 class _guiSetupPage4 : public _view
 {

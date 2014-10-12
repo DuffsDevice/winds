@@ -2,7 +2,7 @@
 #ifndef _WIN_T_BITMAP_TRANSFORM_
 #define _WIN_T_BITMAP_TRANSFORM_
 
-#include "_type/type.bitmap.h"
+#include <_type/type.bitmap.h>
 
 class _bitmapTransform : public _bitmap
 {

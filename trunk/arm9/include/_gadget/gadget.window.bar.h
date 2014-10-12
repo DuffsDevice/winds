@@ -1,8 +1,8 @@
 #ifndef _WIN_G_WINDOWBAR_
 #define _WIN_G_WINDOWBAR_
 
-#include "_type/type.gadget.h"
-#include "_type/type.gadget.helpers.h"
+#include <_type/type.gadget.h>
+#include <_type/type.gadget.helpers.h>
 
 class _windowBar : public _gadget
 {

@@ -1,10 +1,10 @@
 #ifndef _WIN_C_PROGRAM_
 #define _WIN_C_PROGRAM_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.program.h"
-#include "_type/type.program.executiondata.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.program.h>
+#include <_type/type.program.executiondata.h>
 
 // Type of a list of _programs and thier corresponding execution detail structs
 typedef _list<_uniquePtr<_program>> _programList;

@@ -1,10 +1,10 @@
 #ifndef _WIN_T_FREETYPEFONT_
 #define _WIN_T_FREETYPEFONT_
 
-#include "_type/type.font.h"
-#include "_type/type.direntry.h"
-#include "_type/type.bitmap.h"
-#include "_library/library.truetype.h"
+#include <_type/type.font.h>
+#include <_type/type.direntry.h>
+#include <_type/type.bitmap.h>
+#include <_library/library.truetype.h>
 
 class _freetypeFont : private _direntry , public _font
 {	

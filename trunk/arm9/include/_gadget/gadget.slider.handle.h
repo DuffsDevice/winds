@@ -1,8 +1,8 @@
 #ifndef _WIN_G_SLIDERHANDLE_
 #define _WIN_G_SLIDERHANDLE_
 
-#include "_type/type.h"
-#include "_type/type.gadget.h"
+#include <_type/type.h>
+#include <_type/type.gadget.h>
 
 class _sliderHandle : public _gadget{
 	

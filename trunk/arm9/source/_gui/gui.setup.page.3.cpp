@@ -1,6 +1,6 @@
-#include "_gui/gui.setup.page.3.h"
-#include "_controller/controller.localization.h"
-#include "_controller/controller.font.h"
+#include <_gui/gui.setup.page.3.h>
+#include <_controller/controller.localization.h>
+#include <_controller/controller.font.h>
 
 #include <math.h>
 #define M_PI		3.14159265358979323846

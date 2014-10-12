@@ -2,9 +2,9 @@
 #ifndef _WIN_L_HARDWAREKEYS_
 #define _WIN_L_HARDWAREKEYS_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.h"
-#include "_type/type.key.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.h>
+#include <_type/type.key.h>
 
 /**
  * Proxy Classes

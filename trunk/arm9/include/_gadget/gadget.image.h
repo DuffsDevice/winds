@@ -2,8 +2,8 @@
 #ifndef _WIN_G_IMAGE_
 #define _WIN_G_IMAGE_
 
-#include "_type/type.gadget.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.gadget.h>
+#include <_type/type.bitmap.h>
 
 class _imageGadget : public _gadget {
 	

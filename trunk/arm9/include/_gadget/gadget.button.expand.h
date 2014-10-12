@@ -2,7 +2,7 @@
 #ifndef _WIN_G_EXPANDBUTTON_
 #define _WIN_G_EXPANDBUTTON_
 
-#include "_type/type.gadget.h"
+#include <_type/type.gadget.h>
 
 class _expandButton : public _gadget {
 	

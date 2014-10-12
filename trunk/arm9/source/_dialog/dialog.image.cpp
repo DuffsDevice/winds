@@ -1,6 +1,6 @@
-#include "_dialog/dialog.image.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.image.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 void _imageDialog::executeInternal(){
 	this->window->setParent( _guiController::getHost() );

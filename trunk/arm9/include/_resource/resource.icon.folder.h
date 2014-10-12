@@ -1,8 +1,8 @@
 #ifndef _BMP_FOLDERICON_H_
 #define _BMP_FOLDERICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_FolderIcon_bmp[90] = {
     0, 46974, 41789, 41789, 46974,     0,     0,     0,     0,     0, 

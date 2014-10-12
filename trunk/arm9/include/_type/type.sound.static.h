@@ -1,8 +1,8 @@
 #ifndef _WIN_T_SOUND_STATIC_
 #define _WIN_T_SOUND_STATIC_
 
-#include "_type/type.h"
-#include "_type/type.sound.h"
+#include <_type/type.h>
+#include <_type/type.sound.h>
 
 class _staticSound : public _sound
 {

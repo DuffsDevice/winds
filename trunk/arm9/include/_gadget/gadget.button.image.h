@@ -2,8 +2,8 @@
 #ifndef _WIN_G_IMAGEBUTTON_
 #define _WIN_G_IMAGEBUTTON_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.button.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.button.h>
 
 class _imageButton : public _button {
 	

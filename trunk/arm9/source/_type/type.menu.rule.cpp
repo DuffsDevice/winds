@@ -1,4 +1,4 @@
-#include "_type/type.menu.rule.h"
+#include <_type/type.menu.rule.h>
 
 bool _menuHandlerRule::operator()( _int listIndex , _int index ) const 
 {

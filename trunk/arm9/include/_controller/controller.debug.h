@@ -1,9 +1,9 @@
 #ifndef _WIN_C_DEBUG_
 #define _WIN_C_DEBUG_
 
-#include "_type/type.controller.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.direntry.h"
+#include <_type/type.controller.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.direntry.h>
 
 struct lua_State;
 class _runtimeErrorDialog;

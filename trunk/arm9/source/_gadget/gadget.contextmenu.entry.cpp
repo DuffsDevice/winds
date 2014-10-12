@@ -1,8 +1,8 @@
-#include "_gadget/gadget.contextmenu.entry.h"
-#include "_gadget/gadget.contextmenu.h"
-#include "_controller/controller.font.h"
-#include "_controller/controller.gui.h"
-#include "_type/type.font.glyphs.h"
+#include <_gadget/gadget.contextmenu.entry.h>
+#include <_gadget/gadget.contextmenu.h>
+#include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
+#include <_type/type.font.glyphs.h>
 
 _contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _u16 index , _menuEntry value , _style&& style ) :
 	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , style | _style::notDoubleClickable )

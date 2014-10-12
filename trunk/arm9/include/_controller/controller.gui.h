@@ -1,15 +1,15 @@
 #ifndef _WIN_C_SCENARIO_
 #define _WIN_C_SCENARIO_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
-#include "_type/type.gui.h"
-#include "_type/type.controller.h"
-#include "_type/type.screen.gadget.h"
-#include "_type/type.color.palette.h"
-#include "_type/type.menu.h"
-#include "_screen/screen.keyboard.h"
-#include "_controller/controller.video.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
+#include <_type/type.gui.h>
+#include <_type/type.controller.h>
+#include <_type/type.screen.gadget.h>
+#include <_type/type.color.palette.h>
+#include <_type/type.menu.h>
+#include <_screen/screen.keyboard.h>
+#include <_controller/controller.video.h>
 
 enum class _guiState : _u8{
 	empty,

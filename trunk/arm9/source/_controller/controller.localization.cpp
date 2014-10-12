@@ -1,8 +1,8 @@
-#include "_controller/controller.localization.h"
-#include "_controller/controller.registry.h"
-#include "_type/type.key.h"
-#include "_type/type.binfile.h"
-#include "_type/type.font.glyphs.h"
+#include <_controller/controller.localization.h>
+#include <_controller/controller.registry.h>
+#include <_type/type.key.h>
+#include <_type/type.binfile.h>
+#include <_type/type.font.glyphs.h>
 
 bool _localizationController::init()
 {

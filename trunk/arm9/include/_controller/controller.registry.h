@@ -1,11 +1,11 @@
 #ifndef _WIN_C_REGISTRY_
 #define _WIN_C_REGISTRY_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
-#include "_type/type.ini.file.h"
-#include "_type/type.uniqueptr.h"
-#include "_type/type.user.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
+#include <_type/type.ini.file.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.user.h>
 
 struct lua_State;
 
@@ -80,7 +80,7 @@ class _registryController : public _controller
 		
 		//! Loads a user configuration (.usr-file) from the supplied path
 		static void		setUserRegistry( _uniquePtr<_user> registry );
-		static void		setUserRegistry( nullptr_t ){ setUserRegistry( _uniquePtr<_user>( nullptr ) ); }
+		static void		setUserRegistry( decltype(nullptr) ){ setUserRegistry( _uniquePtr<_user>( nullptr ) ); }
 		static void		setUserRegistry( string registryPath ){ setUserRegistry( new _user( registryPath ) ); }
 };
 

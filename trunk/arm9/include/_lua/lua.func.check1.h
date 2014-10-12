@@ -1,5 +1,5 @@
 #ifndef _WIN_T_LUAFUNC_
-	#include "_lua/lua.func.h"
+	#include <_lua/lua.func.h>
 #endif
 
 #ifndef _WIN_L_FUNC_CHECK_1_
@@ -60,7 +60,7 @@ namespace _luafunc
 				return lua_toboolean(state, index);
 			return luaL_checkinteger( state , index );
 		}
-		static unused inline string					check( lua_State* state , int index , string* dummy ){ return luaL_checkstring( state , index ); }
+		static unused inline string					check( lua_State* state , int index , string* dummy ){ _literal str = luaL_checkstring( state , index ); return str ? str : ""; }
 		static unused inline _literal				check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
 		template<int mB,typename dT = char>
 		static unused inline _shortString<mB,dT>	check( lua_State* state , int index , _shortString<mB,dT>* dummy ){ return luaL_checkstring( state , index ); }
@@ -117,7 +117,9 @@ namespace _luafunc
 			return checkTupleElementsInternal<sizeof...(T),1,T...>( state , index );
 		}
 		static unused inline _menuEntry				check( lua_State* state , int index , _menuEntry* arg ){
-			return check( state , index , (_tuple<string,_u16>*)nullptr );
+			if( lua_istable( state , index ) )
+				return _menuEntry( check( state , index , (_tuple<string,_u16>*)nullptr ) );
+			return _menuEntry( check( state , index , (string*)nullptr) );
 		}
 		template<
 			int countDown
@@ -257,6 +259,9 @@ namespace _luafunc
 			// Check if table is present
 			if( !lua_istable( state , index ) )
 				lua_tagerror( state , index , LUA_TTABLE );
+			
+			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
+			index = lua_toAbsIndex( state , index );
 			
 			lua_rawgeti( state , index , 2 );	// Get second value
 			lua_rawgeti( state , index , 1 );	// Get first value

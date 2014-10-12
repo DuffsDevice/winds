@@ -1,9 +1,9 @@
 #ifndef _WIN_F_IMAGEFILE_
 #define _WIN_F_IMAGEFILE_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
-#include "_type/type.direntry.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
+#include <_type/type.direntry.h>
 
 enum class _imageFileCompression : _u8{
 	low = 30,

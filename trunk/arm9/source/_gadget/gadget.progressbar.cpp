@@ -1,4 +1,4 @@
-#include "_gadget/gadget.progressbar.h"
+#include <_gadget/gadget.progressbar.h>
 
 _pixel paletteBlue[4] = {
 	_color::fromRGB8( 94 , 119 , 238 )

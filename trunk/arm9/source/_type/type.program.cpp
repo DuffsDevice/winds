@@ -1,22 +1,22 @@
-#include "_type/type.program.h"
-#include "_type/type.program.lua.h"
-#include "_type/type.program.c.h"
-#include "_type/type.tokenizer.h"
-#include "_controller/controller.program.h"
-#include "_controller/controller.filesystem.h"
-#include "_controller/controller.registry.h"
-#include "_controller/controller.timer.h"
+#include <_type/type.program.h>
+#include <_type/type.program.lua.h>
+#include <_type/type.program.c.h>
+#include <_type/type.tokenizer.h>
+#include <_controller/controller.program.h>
+#include <_controller/controller.filesystem.h>
+#include <_controller/controller.registry.h>
+#include <_controller/controller.timer.h>
 
-#include "_resource/resource.program.credits.h"
-#include "_resource/resource.program.explorer.h"
-#include "_resource/resource.program.mapper.h"
-#include "_resource/resource.program.taskmanager.h"
-#include "_resource/resource.icon.lua.h"
-#include "_resource/resource.icon.exe.h"
-#include "program_example_lua.h"
-#include "program_pong_lua.h"
-#include "program_paint_lua.h"
-#include "program_calculator_lua.h"
+#include <_resource/resource.program.credits.h>
+#include <_resource/resource.program.explorer.h>
+#include <_resource/resource.program.mapper.h>
+#include <_resource/resource.program.taskmanager.h>
+#include <_resource/resource.icon.lua.h>
+#include <_resource/resource.icon.exe.h>
+#include <program_example_lua.h>
+#include <program_pong_lua.h>
+#include <program_paint_lua.h>
+#include <program_calculator_lua.h>
 
 _constBitmap	_program::standardFileImage = BMP_ExeIcon();
 

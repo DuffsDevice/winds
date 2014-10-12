@@ -1,9 +1,9 @@
 #ifndef _WIN_S_BOOTUP_
 #define _WIN_S_BOOTUP_
 
-#include "_type/type.h"
-#include "_type/type.screen.gadget.h"
-#include "_gadget/gadget.progressbar.h"
+#include <_type/type.h>
+#include <_type/type.screen.gadget.h>
+#include <_gadget/gadget.progressbar.h>
 
 class _bootupScreen : public _gadgetScreen
 {

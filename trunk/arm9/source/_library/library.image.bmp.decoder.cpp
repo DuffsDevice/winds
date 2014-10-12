@@ -1,6 +1,6 @@
-#include "_library/library.image.bmp.decoder.h"
-#include "_type/type.h"
-#include "_type/type.color.h"
+#include <_library/library.image.bmp.decoder.h>
+#include <_type/type.h>
+#include <_type/type.color.h>
 
 unsigned short* GenericBMPDecoder::decode( const unsigned char* data , const unsigned int size , unsigned int& width , unsigned int& height )
 {

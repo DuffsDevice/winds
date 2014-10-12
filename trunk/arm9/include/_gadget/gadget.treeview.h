@@ -1,8 +1,8 @@
 #ifndef _WIN_G_TREEVIEW_
 #define _WIN_G_TREEVIEW_
 
-#include "_type/type.gadget.h"
-#include "_gadget/gadget.scrollarea.h"
+#include <_type/type.gadget.h>
+#include <_gadget/gadget.scrollarea.h>
 
 class _treeViewNode
 {

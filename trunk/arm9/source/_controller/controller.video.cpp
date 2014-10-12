@@ -1,6 +1,6 @@
-#include "_controller/controller.video.h"
-#include "_controller/controller.timer.h"
-#include "_type/type.color.h"
+#include <_controller/controller.video.h>
+#include <_controller/controller.timer.h>
+#include <_type/type.color.h>
 
 extern "C"{
 	#undef unused

@@ -1,26 +1,26 @@
 #ifndef _WIN_L_FUNC_
 #define _WIN_L_FUNC_
 
-#include "_lua/lua.h"
-#include "_type/type.h"
-#include "_type/type.event.h"
-#include "_type/type.rect.h"
-#include "_type/type.language.h"
-#include "_type/type.font.h"
-#include "_type/type.color.h"
-#include "_type/type.style.h"
-#include "_type/type.direction.h"
-#include "_type/type.bitmap.h"
-#include "_type/type.bitmap.port.h"
-#include "_type/type.assocvector.h"
-#include "_type/type.callback.h"
-#include "_type/type.mime.h"
-#include "_type/type.time.h"
-#include "_type/type.key.h"
-#include "_type/type.shortstring.h"
-#include "_type/type.program.args.h"
-#include "_type/type.imagefile.h"
-#include "_type/type.menu.h"
+#include <_lua/lua.h>
+#include <_type/type.h>
+#include <_type/type.event.h>
+#include <_type/type.rect.h>
+#include <_type/type.language.h>
+#include <_type/type.font.h>
+#include <_type/type.color.h>
+#include <_type/type.style.h>
+#include <_type/type.direction.h>
+#include <_type/type.bitmap.h>
+#include <_type/type.bitmap.port.h>
+#include <_type/type.assocvector.h>
+#include <_type/type.callback.h>
+#include <_type/type.mime.h>
+#include <_type/type.time.h>
+#include <_type/type.key.h>
+#include <_type/type.shortstring.h>
+#include <_type/type.program.args.h>
+#include <_type/type.imagefile.h>
+#include <_type/type.menu.h>
 #include <type_traits>
 
 enum class _eventCallType : _u8;
@@ -49,11 +49,11 @@ namespace _luafunc
 	void	pushMenuRef( lua_State* state , _menu& );
 }
 
-#include "_lua/lua.func.isa.h"
-#include "_lua/lua.func.push.h"
-#include "_lua/lua.func.check1.h"
-#include "_lua/lua.func.callback1.h"
-#include "_lua/lua.func.check2.h"
+#include <_lua/lua.func.isa.h>
+#include <_lua/lua.func.push.h>
+#include <_lua/lua.func.check1.h>
+#include <_lua/lua.func.callback1.h>
+#include <_lua/lua.func.check2.h>
 
 namespace _luafunc
 {
@@ -134,6 +134,6 @@ namespace _luafunc
 	}
 }
 
-#include "_lua/lua.func.callback2.h"
+#include <_lua/lua.func.callback2.h>
 
 #endif

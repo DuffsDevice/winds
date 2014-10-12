@@ -2,8 +2,8 @@
 #ifndef _WIN_L_BORDER_
 #define _WIN_L_BORDER_
 
-#include "_lua/lua.lunar.h"
-#include "_type/type.h"
+#include <_lua/lua.lunar.h>
+#include <_type/type.h>
 
 /**
  * Proxy Classes

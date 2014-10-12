@@ -1,5 +1,5 @@
-#include "_type/type.bitmap.h"
-#include "func.gradientcreator.h"
+#include <_type/type.bitmap.h>
+#include <_func/func.gradientcreator.h>
 
 #include <nds/arm9/math.h>
 #include <nds/bios.h>

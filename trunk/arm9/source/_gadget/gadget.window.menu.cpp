@@ -1,10 +1,10 @@
-#include "_gadget/gadget.window.h"
-#include "_gadget/gadget.window.menu.h"
-#include "_gadget/gadget.window.menu.entry.h"
-#include "_gadget/gadget.window.menu.entry.h"
-#include "_type/type.font.glyphs.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_gadget/gadget.window.h>
+#include <_gadget/gadget.window.menu.h>
+#include <_gadget/gadget.window.menu.entry.h>
+#include <_gadget/gadget.window.menu.entry.h>
+#include <_type/type.font.glyphs.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 _callbackReturn _windowMenu::refreshHandler( _event event )
 {

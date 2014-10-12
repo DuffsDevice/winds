@@ -1,9 +1,9 @@
 #ifndef _WIN_T_INI_FILE_
 #define _WIN_T_INI_FILE_
 
-#include "_type/type.h"
-#include "_type/type.ini.h"
-#include "_type/type.direntry.h"
+#include <_type/type.h>
+#include <_type/type.ini.h>
+#include <_type/type.direntry.h>
 
 class _iniFile : public _ini , public _direntry
 {

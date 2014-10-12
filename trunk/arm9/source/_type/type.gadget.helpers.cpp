@@ -1,6 +1,6 @@
-#include "_gadget/gadget.fileobject.h"
-#include "_gadget/gadget.contextmenu.h"
-#include "_type/type.gadget.helpers.h"
+#include <_gadget/gadget.fileobject.h>
+#include <_gadget/gadget.contextmenu.h>
+#include <_type/type.gadget.helpers.h>
 
 namespace _gadgetHelpers
 {

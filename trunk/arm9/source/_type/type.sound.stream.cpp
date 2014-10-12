@@ -1,5 +1,5 @@
-#include "_type/type.sound.stream.h"
-#include "_type/type.callback.derives.h"
+#include <_type/type.sound.stream.h>
+#include <_type/type.callback.derives.h>
 #include <nds/fifocommon.h>
 
 void _soundStream::cleanupChannel( _u8 )

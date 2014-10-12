@@ -1,9 +1,9 @@
 #ifndef _WIN_T_ANALYZER_
 #define _WIN_T_ANALYZER_
 
-#include "_type/type.h"
+#include <_type/type.h>
 
-#ifdef DEBUG_PROFILING
+#ifdef _WIN_CONFIG_BUILD_DEBUG_PROFILING_
 
 #include <memory>
 
@@ -80,5 +80,5 @@ class _memoryAnalyzer{
 		inline static void printResults(){}
 };
 
-#endif // #ifdef DEBUG_PROFILING
+#endif // #ifdef _WIN_CONFIG_BUILD_DEBUG_PROFILING_
 #endif // Include once

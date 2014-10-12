@@ -42,14 +42,14 @@
  */
 
 /* public header */
-#include "_library/library.base64.h"
+#include <_library/library.base64.h>
 
 /* if on motoral, sun, ibm, arm; uncomment this */
 #define WORDS_BIGENDIAN 1
 /* else for Intel, Amd; uncomment this */
 /* #undef WORDS_BIGENDIAN */
 
-#include "_library/library.base64.data.h"
+#include <_library/library.base64.data.h>
 
 #define BADCHAR 0x01FFFFFF
 

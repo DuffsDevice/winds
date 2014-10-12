@@ -1,7 +1,7 @@
-#include "_dialog/dialog.file.save.h"
-#include "_resource/resource.icon.folder.up.h"
-#include "_controller/controller.gui.h"
-#include "_controller/controller.localization.h"
+#include <_dialog/dialog.file.save.h>
+#include <_resource/resource.icon.folder.up.h>
+#include <_controller/controller.gui.h>
+#include <_controller/controller.localization.h>
 
 void _fileSaveDialog::executeInternal(){
 	this->fileNameBox->setStrValue( this->initialName );

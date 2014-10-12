@@ -1,8 +1,8 @@
 #ifndef _BMP_EXEICON_H_
 #define _BMP_EXEICON_H_
 
-#include "_type/type.h"
-#include "_type/type.bitmap.h"
+#include <_type/type.h>
+#include <_type/type.bitmap.h>
 
 static const _pixel BMP_ExeIcon_bmp[90] = {
 55825, 55593, 55658, 55658, 56650, 54601, 55725, 56816, 57840, 48524, 55758, 

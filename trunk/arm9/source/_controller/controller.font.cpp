@@ -1,7 +1,7 @@
-#include "_controller/controller.font.h"
-#include "_controller/controller.registry.h"
-#include "_controller/controller.debug.h"
-#include "_type/type.windows.h"
+#include <_controller/controller.font.h>
+#include <_controller/controller.registry.h>
+#include <_controller/controller.debug.h>
+#include <_type/type.windows.h>
 
 bool _fontController::init()
 {

@@ -1,8 +1,8 @@
 #ifndef _WIN_C_VIDEO_
 #define _WIN_C_VIDEO_
 
-#include "_type/type.h"
-#include "_type/type.controller.h"
+#include <_type/type.h>
+#include <_type/type.controller.h>
 
 class _videoController : public _controller
 {

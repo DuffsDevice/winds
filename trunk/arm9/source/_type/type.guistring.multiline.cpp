@@ -1,5 +1,5 @@
-#include "_type/type.guistring.multiline.h"
-#include "_library/library.syllable.h"
+#include <_type/type.guistring.multiline.h>
+#include <_library/library.syllable.h>
 
 void _multiLineGuiString::update( _rect dimensions , _u32 startIndex )
 {

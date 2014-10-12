@@ -1,9 +1,9 @@
 #ifndef _WIN_T_SOUND_CHANNEL_MSG_
 #define _WIN_T_SOUND_CHANNEL_MSG_
 
-#include "_type/type.predefines.h"
-#include "_type/type.sound.definitions.h"
-#include "_type/type.callback.h"
+#include <_type/type.predefines.h>
+#include <_type/type.sound.definitions.h>
+#include <_type/type.callback.h>
 
 class _channelSetMsg
 {

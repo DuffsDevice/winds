@@ -1,17 +1,17 @@
 #ifndef _WIN_D_FILEOPEN_
 #define _WIN_D_FILEOPEN_
 
-#include "_type/type.dialog.h"
-#include "_type/type.shortstring.h"
-#include "_gadget/gadget.button.h"
-#include "_dialog/dialog.file.save.h"
-#include "_gadget/gadget.button.action.h"
-#include "_gadget/gadget.button.image.h"
-#include "_gadget/gadget.label.h"
-#include "_gadget/gadget.window.dialog.h"
-#include "_gadget/gadget.fileview.h"
-#include "_gadget/gadget.textbox.h"
-#include "_gadget/gadget.select.h"
+#include <_type/type.dialog.h>
+#include <_type/type.shortstring.h>
+#include <_gadget/gadget.button.h>
+#include <_dialog/dialog.file.save.h>
+#include <_gadget/gadget.button.action.h>
+#include <_gadget/gadget.button.image.h>
+#include <_gadget/gadget.label.h>
+#include <_gadget/gadget.window.dialog.h>
+#include <_gadget/gadget.fileview.h>
+#include <_gadget/gadget.textbox.h>
+#include <_gadget/gadget.select.h>
 
 class _fileOpenDialog : public _dialog
 {

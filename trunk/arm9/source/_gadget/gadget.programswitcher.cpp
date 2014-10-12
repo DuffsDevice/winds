@@ -1,6 +1,6 @@
-#include "_gadget/gadget.programswitcher.h"
-#include "_controller/controller.gui.h"
-#include "_resource/resource.icon.window.h"
+#include <_gadget/gadget.programswitcher.h>
+#include <_controller/controller.gui.h>
+#include <_resource/resource.icon.window.h>
 
 void _programSwitcher::taskChangeHandler( _window* ref )
 {
