@@ -128,7 +128,7 @@ _callbackReturn _textBox::keyHandler( _event event )
 				_hardwareKeyPattern::isHardwareKey( event.getKeyCode() )
 				|| !isprint( (_char)event.getKeyCode() ) // Check if printable
 			)
-				break;
+				return use_default;
 			
 			that->insertStr( that->text.getCursor() , string( 1 , (_char)event.getKeyCode() ) );
 			that->text.moveCursor( true );

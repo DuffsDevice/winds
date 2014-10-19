@@ -70,8 +70,11 @@ _callbackReturn _imageDialog::eventHandler( _event event )
 	
 	// Other-Button
 	if( that == this->otherButton )
+		this->callCallback( _dialogResult::no );
+	// Ok-Button
+	if( that == this->okButton )
 		this->callCallback( _dialogResult::yes );
-	// Dismiss-Button or Window-Close-Button
+	//Window-Close-Button
 	else
 		this->callCallback( _dialogResult::cancel );
 	

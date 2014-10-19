@@ -1109,8 +1109,10 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				return ret;
 			
 			// Try to focus the child if its not focused yet
-			if( event == onMouseDown )
-				that->focusChild( mouseContain );
+			bool isFocused = mouseContain->hasFocus();
+			bool isFocusing = false;
+			if( !isFocused && event == onMouseDown )
+				isFocusing = that->focusChild( mouseContain );
 			
 			// Independent of whether the gadget has focus or not
 			if( event == onMouseUp && mouseContain->state.pressed )
@@ -1118,6 +1120,10 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				mouseContain->state.pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
 			}
+			
+			// Supress a mouseDown event, if the gadget is being focused (if wanted by the gadget)
+			if( !mouseContain->style.mouseDownWhenFocusing && isFocusing )
+				return handled;
 			
 			if( mouseContain->hasClickRights() )
 			{

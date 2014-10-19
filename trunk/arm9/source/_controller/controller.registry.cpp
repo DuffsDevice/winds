@@ -66,6 +66,7 @@ void _registryController::prepareFileTypeRegistry()
 			//{ "%dir%" , "" }
 		} }
 	} );
+	fileTypeRegistry->flush();
 }
 
 void _registryController::prepareSystemRegistry()
@@ -97,6 +98,7 @@ void _registryController::prepareSystemRegistry()
 			{ "fileExtensionVisible" , "1" } ,
 		} }
 	} );
+	systemRegistry->flush();
 }
 
 void _registryController::indicateSafeShutdown(){

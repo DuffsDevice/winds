@@ -17,7 +17,7 @@ class PROG_Mapper : public _progC
 		_button*			okButton;
 		_button*			cancelButton;
 		_button*			browseButton;
-		_checkbox*			saveDescision;
+		_checkBox*			saveDescision;
 		_label*				saveDescisionLabel;
 		_scrollArea*		scrollArea;
 		bool				chooseButNotOpen;

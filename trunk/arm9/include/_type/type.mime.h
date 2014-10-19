@@ -4,7 +4,7 @@
 #include <_type/type.h>
 
 enum class _mime : _u8{
-	plain,
+	unknown,
 	directory,
 	image_jpeg ,
 	image_png ,
@@ -38,6 +38,7 @@ enum class _mime : _u8{
 extern _fromStr<_mime>	string2mimeType;
 extern _fromStr<_mime>	extension2mimeType;
 extern _toStr<_mime>	mimeType2string;
+extern _toStr<_mime>	mimeType2name;
 	
 
 class _mimeType{
@@ -54,7 +55,7 @@ class _mimeType{
 		{ }
 		
 		//! Ctor
-		_mimeType( _mime type = _mime::plain ) :
+		_mimeType( _mime type = _mime::unknown ) :
 			type( type )
 		{ }
 		
@@ -76,6 +77,11 @@ class _mimeType{
 		//! Comparison operator
 		bool operator==( _mime other ){
 			return other == type;
+		}
+		
+		//! Get the Name of the Mime Type
+		_literal getName(){
+			return mimeType2name[ this->type ];
 		}
 };
 #endif

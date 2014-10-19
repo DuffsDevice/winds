@@ -1,5 +1,5 @@
-#ifndef _BMP_CHECKBOX_H_
-#define _BMP_CHECKBOX_H_
+#ifndef _BMP_checkBox_H_
+#define _BMP_checkBox_H_
 
 #include <_type/type.h>
 #include <_type/type.bitmap.h>

@@ -4,6 +4,7 @@
 #include <_controller/controller.filesystem.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.registry.h>
+#include <_controller/controller.localization.h>
 
 extern "C"{
 #include <_library/_fat/partition.h>
@@ -328,7 +329,7 @@ bool _direntry::create()
 }
 
 
-bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes ) const
+bool _direntry::read( void* dest , _optValue<_u64> size , _u64* numBytes ) const
 {	
 	if( _filesystemController::isFatReady() && !this->isDirectory() )
 	{
@@ -344,7 +345,7 @@ bool _direntry::read( void* dest , _optValue<_u32> size , _u32* numBytes ) const
 		rewind( this->fHandle );
 		
 		//! Read bytes
-		_u32 numBytesRead = fread( dest , 1 , size , this->fHandle );
+		_u64 numBytesRead = fread( dest , 1 , size , this->fHandle );
 		if( numBytes )
 			*numBytes = numBytesRead;
 		
@@ -481,7 +482,7 @@ bool _direntry::rewindChildren() const
 }
 
 
-bool _direntry::write( void* src , _u32 size )
+bool _direntry::write( void* src , _u64 size )
 {
 	if( !_filesystemController::isFatReady() || this->isDirectory() )
 		return false;
@@ -523,7 +524,7 @@ bool _direntry::writeString( string str )
 }
 
 
-string _direntry::readString( _optValue<_u32> size ) const
+string _direntry::readString( _optValue<_u64> size ) const
 {
 	if( !size.isValid() )
 		size = this->getSize();
@@ -539,10 +540,10 @@ string _direntry::readString( _optValue<_u32> size ) const
 	string out;
 	
 	// Temp...
-	_char* text = new _char[(_u32)size];
+	_char* text = new _char[(_u64)size];
 	
 	// Read the Contents
-	_u32 actualSize = fread( text , sizeof(_char) , size , this->fHandle );
+	_u64 actualSize = fread( text , sizeof(_char) , size , this->fHandle );
 	
 	//! Copy 'text' into 'out'
 	out = text;
@@ -559,12 +560,12 @@ string _direntry::readString( _optValue<_u32> size ) const
 }
 
 
-_u32 _direntry::getSize() const
+_u64 _direntry::getSize() const
 {
 	if( !_filesystemController::isFatReady() || !this->exists || this->isDirectory() )
 		return 0;
 	
-	_u32 size = 0;
+	_u64 size = 0;
 	
 	//! Is the File already opened
 	if( this->mode != _direntryMode::closed && this->fHandle != nullptr )
@@ -592,6 +593,23 @@ _u32 _direntry::getSize() const
 	}
 	
 	return size;
+}
+
+string _direntry::getSizeReadable() const
+{
+	_u64		size = this->getSize();
+	const _u64	limit = 512;
+	
+	if( size < limit )
+		return fmt2string( "%d B" , _u32(size) );
+	
+    _literal units = "KMGTPEZY";
+    while( size > 1024*limit ) {
+        size >>= 10;
+        units++;
+    }
+	
+	return fmt2string( "%d%s%d %cB" , _u32(size >> 10) , _localizationController::getBuiltInString("fmt_decimal_point").c_str() , _u32( size & 1023 ) , *units );
 }
 
 bool _direntry::execute( _programArgs args )
@@ -729,6 +747,20 @@ bool _direntry::setReadOnly( bool readOnly ){
 	attrs.readonly = readOnly;
 	return this->setAttrs( move(attrs) );
 }
+
+
+_time _direntry::getCreationTime() const {
+	return _time( (_unixTime)this->stat_buf.st_ctime );
+}
+
+_time _direntry::getLastAccessTime() const {
+	return _time( (_unixTime)this->stat_buf.st_atime );
+}
+
+_time _direntry::getLastWriteTime() const {
+	return _time( (_unixTime)this->stat_buf.st_mtime );
+}
+
 
 // Root Directory
 _direntry _diskRoot_ = _direntry("/");
