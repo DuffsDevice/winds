@@ -1,10 +1,10 @@
 // Check if already included
-#ifndef _WIN_G_CHECKBOX_
-#define _WIN_G_CHECKBOX_
+#ifndef _WIN_G_checkBox_
+#define _WIN_G_checkBox_
 
 #include <_type/type.gadget.h>
 
-class _checkbox : public _gadget {
+class _checkBox : public _gadget {
 	
 	private:
 		
@@ -24,7 +24,10 @@ class _checkbox : public _gadget {
 		_int getIntValue(){ return this->intValue; }
 		
 		//! Constructor with dimensions, coordinates, title and optional: Style
-		_checkbox( _optValue<_coord> x , _optValue<_coord> y , _style&& style = _style() );
+		_checkBox( _optValue<_coord> x , _optValue<_coord> y , _style&& style = _style() ) :
+			_checkBox( x , y , 0 , (_style&&)style )
+		{}
+		_checkBox( _optValue<_coord> x , _optValue<_coord> y , _u8 value , _style&& style = _style() );
 };
 
 #endif

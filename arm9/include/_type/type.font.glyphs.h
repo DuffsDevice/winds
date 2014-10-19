@@ -88,7 +88,8 @@ namespace _glyph
 	greaterThanEqual = '¬',
 	trademark = '®',
 	dot = '°',
-	divide = '±';
+	divide = '±',
+	edit = '²';
 };
 
 namespace tiles

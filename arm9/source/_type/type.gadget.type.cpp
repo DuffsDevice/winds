@@ -43,6 +43,7 @@ _toStr<_gadgetType> gadgetType2string = {
 	{ _gadgetType::griddescriber		, "griddescriber" },
 	{ _gadgetType::gridbox				, "gridbox" },
 	{ _gadgetType::treeview				, "treeview" },
+	{ _gadgetType::divider				, "divider" },
 	{ _gadgetType::none					, "none" }
 };
 
@@ -88,5 +89,6 @@ _fromStr<_gadgetType> string2gadgetType = {
 	{ "griddescriber"		, _gadgetType::griddescriber },
 	{ "gridbox"				, _gadgetType::gridbox },
 	{ "treeview"			, _gadgetType::treeview },
+	{ "divider"				, _gadgetType::divider },
 	{ "none"				, _gadgetType::none }
 };

@@ -113,7 +113,7 @@ namespace _luafunc
 			case _gadgetType::stickybutton:			Lunar<_lua_stickybutton>::emplace( L , (_stickyButton*)gadget );				break;
 			case _gadgetType::label:				Lunar<_lua_label>::emplace( L , (_label*)gadget );								break;
 			case _gadgetType::clockgadget:			Lunar<_lua_clockgadget>::emplace( L , (_clockGadget*)gadget );					break;
-			case _gadgetType::checkbox:				Lunar<_lua_checkbox>::emplace( L , (_checkbox*)gadget );						break;
+			case _gadgetType::checkbox:				Lunar<_lua_checkbox>::emplace( L , (_checkBox*)gadget );						break;
 			case _gadgetType::selectbox:			Lunar<_lua_select>::emplace( L , (_select*)gadget );							break;
 			case _gadgetType::textbox:				Lunar<_lua_textbox>::emplace( L , (_textBox*)gadget );							break;
 			case _gadgetType::textarea:				Lunar<_lua_textarea>::emplace( L , (_textArea*)gadget );						break;

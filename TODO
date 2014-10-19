@@ -3,7 +3,7 @@ Gadgets:
 + Colorpicker-Hexagon (✓)
 + Image-Button (✓)
 + Treeview (✓)
-- Contextmenu for Files
++ Contextmenu for Files (✓)
 + Notification Bubbles (✓)
 
 Types:
@@ -44,7 +44,7 @@ Programms:
 ==========
 + Calculator (✓)
 - Editor - Rich Text Files
-- Task-manager
++ Task-manager (✓) 
 - Installer
 - Image viewer
 - System clock front-end

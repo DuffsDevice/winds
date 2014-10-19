@@ -4,12 +4,12 @@
 // Graphics
 #include <_resource/resource.image.checkboxes.h>
 
-_constBitmap _checkbox::graphic[3] = { BMP_CheckboxUnchecked() , BMP_CheckboxChecked() , BMP_CheckboxSemi() };
+_constBitmap _checkBox::graphic[3] = { BMP_checkBoxUnchecked() , BMP_checkBoxChecked() , BMP_checkBoxSemi() };
 
-_callbackReturn _checkbox::refreshHandler( _event event )
+_callbackReturn _checkBox::refreshHandler( _event event )
 {
 	// Receive Gadget
-	_checkbox* that = event.getGadget<_checkbox>();
+	_checkBox* that = event.getGadget<_checkBox>();
 	
 	// Get BitmapPort
 	_bitmapPort bP = that->getBitmapPort( event );
@@ -30,10 +30,10 @@ _callbackReturn _checkbox::refreshHandler( _event event )
 
 
 
-_callbackReturn _checkbox::mouseHandler( _event event )
+_callbackReturn _checkBox::mouseHandler( _event event )
 {
 	// Receive Gadget
-	_checkbox* that = event.getGadget<_checkbox>();
+	_checkBox* that = event.getGadget<_checkBox>();
 	
 	// Change Value
 	that->setIntValue( ! bool( that->getIntValue() ) );
@@ -45,15 +45,13 @@ _callbackReturn _checkbox::mouseHandler( _event event )
 	return handled;
 }
 
-
-
-_checkbox::_checkbox( _optValue<_coord> x , _optValue<_coord> y , _style&& style ) :
+_checkBox::_checkBox( _optValue<_coord> x , _optValue<_coord> y , _u8 value , _style&& style ) :
 	_gadget( _gadgetType::checkbox , x , y , 9 , 9 , style | _style::notResizeable | _style::notDoubleClickable )
-	, intValue( 0 )
+	, intValue( value )
 {
 	// Register my handlers
-	this->setInternalEventHandler( onDraw , make_callback( &_checkbox::refreshHandler ) );
-	this->setInternalEventHandler( onMouseClick , make_callback( &_checkbox::mouseHandler ) );
+	this->setInternalEventHandler( onDraw , make_callback( &_checkBox::refreshHandler ) );
+	this->setInternalEventHandler( onMouseClick , make_callback( &_checkBox::mouseHandler ) );
 	this->setInternalEventHandler( onMouseEnter , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onMouseLeave , _gadgetHelpers::eventForwardRefresh() );
 	

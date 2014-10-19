@@ -18,7 +18,9 @@ class _programArgs : public _vector<string>
 		//! Assignment operators
 		_programArgs& operator=( _programArgs&& ) = default;
 		_programArgs& operator=( const _programArgs& ) = default;
-	
+		
+		//! Splits a command in (executeable path;arguments)
+		static _pair<string,string> splitCommand( const string& cmd );
 };
 
 #endif

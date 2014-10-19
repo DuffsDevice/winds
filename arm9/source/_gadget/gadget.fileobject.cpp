@@ -11,7 +11,7 @@
 
 _callbackReturn _fileObject::keyHandler( _event event )
 {
-	_gadget* that = event.getGadget();
+	_fileObject* that = event.getGadget<_fileObject>();
 	
 	// Go to the next visible node
 	if( event.getKeyCode() == _key::down ){
@@ -25,8 +25,50 @@ _callbackReturn _fileObject::keyHandler( _event event )
 		if( preVisible )
 			preVisible->focus();
 	}
+	// Finish the renaming
+	else if( event.getKeyCode() == _key::a ){
+		if( that->isRenamed() )
+			that->finishRename();
+	}
 	
 	return use_default;
+}
+
+_callbackReturn _fileObject::blurHandler( _event event ){
+	_fileObject* that = event.getGadget<_fileObject>();
+	that->finishRename();
+	return handled;
+}
+
+_callbackReturn _fileObject::clickHandler( _event event )
+{
+	_fileObject* that = event.getGadget<_fileObject>();
+	
+	if( event.getPosX() >= 10 )
+		that->initRename();
+	return handled;
+}
+
+void _fileObject::initRename()
+{
+	if( this->isRenamed() )
+		return;
+	
+	_fileObject::renameTextBox = new _textBox( 11 , 0 , this->getWidth() - 11 , this->getHeight() , this->file->getDisplayName() );
+	this->addChild( this->renameTextBox.get() );
+	_fileObject::renameTextBox->focus();
+	_fileObject::renamedFile = this;
+}
+
+void _fileObject::finishRename()
+{
+	if( !this->isRenamed() )
+		return;
+	
+	this->file->rename( _fileObject::renameTextBox->getStrValue() );
+	_fileObject::renameTextBox = nullptr;
+	_fileObject::renamedFile = nullptr;
+	this->update();
 }
 
 _callbackReturn _fileObject::updateHandler( _event event )
@@ -128,7 +170,8 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			string			fullName = that->file->getDisplayName();
 			
 			// Draw String Vertically middle and left aligned
-			bP.drawString( 12 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
+			if( !that->isRenamed() )
+				bP.drawString( 12 , ( ( myH - 1 ) >> 1 ) - ( ( ft->getAscent( ftSize ) + 1 ) >> 1 ) , ft , fullName , ftColor , ftSize );
 			
 			// Copy Icon
 			_bitmap fileIcon = that->file->getFileImage();
@@ -142,16 +185,8 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 		}
 	};
 	
-	return handled;
+	return use_default;
 }
-
-//_callbackReturn _fileObject::dragHandler( _event event )
-//{	
-//	// Receive Gadget
-//	//_fileObject* that = event.getGadget<_fileObject>();
-//	
-//	return not_handled;
-//}
 
 void _fileObject::initializeMenu()
 {
@@ -159,15 +194,17 @@ void _fileObject::initializeMenu()
 	{
 		_fileObject::defaultMenu = new _menu(
 			{
-				{ 1	, _localizationController::getBuiltInString("lbl_open") } ,
-				{ 2	, _menu::divider } ,
-				{ 3	, _localizationController::getBuiltInString("lbl_cut") } ,
-				{ 4	, _localizationController::getBuiltInString("lbl_copy") } ,
-				{ 5	, _menu::divider } ,
-				{ 6	, _localizationController::getBuiltInString("lbl_delete") } ,
-				{ 7	, _menu::divider } ,
-				{ 8	, _localizationController::getBuiltInString("lbl_rename") } ,
-				{ 9	, _localizationController::getBuiltInString("lbl_move_to") }
+				{ 1 , _localizationController::getBuiltInString("lbl_open") } ,
+				{ 2 , _menu::divider } ,
+				{ 3 , _localizationController::getBuiltInString("lbl_cut") } ,
+				{ 4 , _localizationController::getBuiltInString("lbl_copy") } ,
+				{ 5 , _menu::divider } ,
+				{ 6 , _localizationController::getBuiltInString("lbl_delete") } ,
+				{ 7 , _menu::divider } ,
+				{ 8 , _localizationController::getBuiltInString("lbl_rename") } ,
+				{ 9 , _localizationController::getBuiltInString("lbl_move_to") } ,
+				{ 10, _menu::divider } ,
+				{ 11, _localizationController::getBuiltInString("lbl_properties") }
 			}
 		);
 		_fileObject::defaultMenu->addHandler( _menuHandlerRule() , make_callback( &_fileObject::defaultMenuHandler ) );
@@ -175,7 +212,7 @@ void _fileObject::initializeMenu()
 }
 
 _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& filename , _fileViewType viewtype , _style&& style ) :
-	_gadget( _gadgetType::fileobject , x , y , width , height , move(style) )
+	_gadget( _gadgetType::fileobject , x , y , width , height , style | _style::focusingMouseDownSuppress )
 	, file( new _direntry(filename) )
 	, viewType( viewtype )
 {
@@ -197,7 +234,7 @@ _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	this->setInternalEventHandler( onDraw , make_callback( &_fileObject::refreshHandler ) );
 	this->setInternalEventHandler( onFocus , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onSelect , _gadgetHelpers::eventForwardRefresh() );
-	this->setInternalEventHandler( onBlur , _gadgetHelpers::eventForwardRefresh() );
+	this->setInternalEventHandler( onBlur , make_callback( &_fileObject::blurHandler ) );
 	this->setInternalEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
 	this->setInternalEventHandler( onKeyDown , make_callback( &_fileObject::keyHandler ) );
 	this->setInternalEventHandler( onKeyRepeat , make_callback( &_fileObject::keyHandler ) );
@@ -213,11 +250,30 @@ _fileObject::~_fileObject()
 		delete this->file;
 }
 
+void _fileObject::deleteDialogHandler( _dialogResult result )
+{
+	if( result != _dialogResult::yes )
+		return;
+	
+	_fileObject* deletedFile = _fileObject::deletedFile;
+	
+	// Delete the file
+	deletedFile->file->unlink( true );
+	
+	// Update the view
+	_fileView* parent = (_fileView*)deletedFile->getParent();
+	if( parent && parent->getType() == _gadgetType::fileview )
+		parent->setPath( parent->getPath() );
+	
+	_fileObject::deleteDialog = nullptr;
+	_fileObject::deletedFile = nullptr;
+}
+
 void _fileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 {
-	_fileObject* file = (_fileObject*)_gadgetHelpers::openContextMenu::getCurrentSubject();
+	_fileObject* fileObject = (_fileObject*)_gadgetHelpers::openContextMenu::getCurrentSubject();
 	
-	if( file || file->getType() != _gadgetType::fileobject )
+	if( !fileObject || fileObject->getType() != _gadgetType::fileobject )
 		return;
 	
 	if( listIndex == 0 )
@@ -225,20 +281,28 @@ void _fileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 		switch( entryIndex )
 		{
 			case 1: // Open
-				file->execute();
+				fileObject->execute();
 				break;
 			case 6: // Delete
 			{
-				// Delete the file
-				file->file->unlink( true );
-				
-				_fileView* parent = (_fileView*)file->getParent();
-				if( parent && parent->getType() == _gadgetType::fileview )
-					parent->setPath( parent->getPath() );
+				_fileObject::deletedFile = fileObject;
+				_fileObject::deleteDialog = new _fileDeleteDialog( *fileObject->file );
+				_fileObject::deleteDialog->setCallback( make_callback( &_fileObject::deleteDialogHandler ) );
+				_fileObject::deleteDialog->execute();
 				break;
 			}
+			case 8: // Rename
+				fileObject->initRename();
+				break;
+			case 11: // Properties
+				_windows::executeCommand("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
+				break;
 		}
 	}
 }
 
-_uniquePtr<_menu> _fileObject::defaultMenu;
+_uniquePtr<_menu> 				_fileObject::defaultMenu;
+_uniquePtr<_textBox>			_fileObject::renameTextBox;
+_fileObject*					_fileObject::renamedFile;
+_uniquePtr<_fileDeleteDialog>	_fileObject::deleteDialog;
+_fileObject*					_fileObject::deletedFile;

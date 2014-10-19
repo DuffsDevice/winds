@@ -5,6 +5,8 @@
 #include <_type/type.gadget.h>
 #include <_type/type.direntry.h>
 #include <_gadget/gadget.label.h>
+#include <_gadget/gadget.textbox.h>
+#include <_dialog/dialog.file.delete.h>
 
 enum class _fileViewType : _u8{
 	detail = 0,
@@ -17,20 +19,28 @@ class _fileObject : public _gadget {
 	private:
 	
 		// My Data...
-		_direntry*		file;
-		_fileViewType	viewType;
+		_direntry*								file;
+		static _uniquePtr<_textBox>				renameTextBox;
+		static _fileObject*						renamedFile;
+		static _uniquePtr<_fileDeleteDialog>	deleteDialog;
+		static _fileObject*						deletedFile;
+		_fileViewType							viewType;
 		
 		// Handler for specific events
 		static _callbackReturn refreshHandler( _event );
-		static _callbackReturn dragHandler( _event );
-		static _callbackReturn focusHandler( _event );
 		static _callbackReturn updateHandler( _event );
 		static _callbackReturn keyHandler( _event );
+		static _callbackReturn clickHandler( _event );
+		static _callbackReturn blurHandler( _event );
+		static void 			deleteDialogHandler( _dialogResult );
 		
 		// Default Menu to Open on right Click
 		static _uniquePtr<_menu>	defaultMenu;
-		static void					defaultMenuHandler( _u16 listIndex , _u16 entryIndex );
-		void						initializeMenu();
+		static void		defaultMenuHandler( _u16 listIndex , _u16 entryIndex );
+		void			initializeMenu();
+		void			initRename();
+		void			finishRename();
+		bool			isRenamed(){ return _fileObject::renameTextBox && _fileObject::renamedFile == this; }
 		
 	public:
 	

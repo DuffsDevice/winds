@@ -9,6 +9,7 @@
 #include <_type/type.mime.h>
 #include <_type/type.ini.h>
 #include <_type/type.program.args.h>
+#include <_type/type.time.h>
 
 //! Statistics in bytes of the mounted device
 struct _driveStats{
@@ -81,12 +82,6 @@ class _direntry
 		//! Flush a files contents to disk
 		bool flush() const ;
 		
-		//! Set UNIX-Attributes of File
-		bool setAttrs( _direntryAttributes attrs );
-		
-		//! Get UNIX-Attributes of File
-		_direntryAttributes getAttrs() const ;
-		
 		//! Open a file. The Mode for opening is specified with mode
 		virtual bool open( string mode ) const ;
 		
@@ -119,6 +114,12 @@ class _direntry
 		/////////////////////////
 		// Direntry Attributes //
 		/////////////////////////
+		
+		//! Get UNIX-Attributes of File
+		_direntryAttributes getAttrs() const ;
+		
+		//! Set UNIX-Attributes of File
+		bool setAttrs( _direntryAttributes attrs );
 		
 		//! Set whether the _direntry is hidden, returns 'true' on success
 		bool setHidden( bool hidden );
@@ -163,10 +164,10 @@ class _direntry
 		
 		//! Read the contents of the file into a block of memory
 		//! and sets 'numBytes' to the number of bytes efficiently read (-1 for an error)
-		virtual bool read( void* dest , _optValue<_u32> size = ignore , _u32* numBytes = nullptr ) const ;
+		virtual bool read( void* dest , _optValue<_u64> size = ignore , _u64* numBytes = nullptr ) const ;
 		
 		//! Write 'size' bytes of contents in 'src' to the file
-		virtual bool write( void* src , _u32 size );
+		virtual bool write( void* src , _u64 size );
 		
 		//! If the _direntry is an directory, iterate through its children
 		virtual bool readChild( _literal& child , _fileExtensionList* allowedExtensions = nullptr ) const ;
@@ -177,7 +178,7 @@ class _direntry
 		bool writeString( string str );
 		
 		//! Read the contents of the file into std::string
-		string readString( _optValue<_u32> size = ignore ) const ;
+		string readString( _optValue<_u64> size = ignore ) const ;
 		
 		//! Get Filename
 		const string& getFileName() const { return this->filename; }
@@ -195,10 +196,20 @@ class _direntry
 		_mimeType getMimeType() const { return this->mimeType; }
 		
 		//! get the size of a file (in bytes)
-		_u32 getSize() const ;
+		_u64 getSize() const ;
+		string getSizeReadable() const ;
 		
 		//! Get the Path of the parent directory
 		string getParentDirectory() const ;
+		
+		//! Get time of Creation
+		_time getCreationTime() const ;
+		
+		//! Get time of Last Access
+		_time getLastAccessTime() const ;
+		
+		//! Get time of Last Write
+		_time getLastWriteTime() const ;
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
 		virtual bool execute( _programArgs args = _programArgs() );

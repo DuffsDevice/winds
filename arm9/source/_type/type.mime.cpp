@@ -1,6 +1,7 @@
 #include <_type/type.mime.h>
 
 _fromStr<_mime> string2mimeType = {
+	{ "unknown" , _mime::unknown } ,
 	{ "directory" , _mime::directory } ,
 	{ "image/jpeg" , _mime::image_jpeg } ,
 	{ "image/png" , _mime::image_png } ,
@@ -32,6 +33,7 @@ _fromStr<_mime> string2mimeType = {
 
 // File Extensions#
 _fromStr<_mime> extension2mimeType = {
+	{ "" , _mime::unknown } ,
 	{ "jpg" , _mime::image_jpeg } ,
 	{ "jpeg" , _mime::image_jpeg } ,
 	{ "png" , _mime::image_png } ,
@@ -70,6 +72,7 @@ _fromStr<_mime> extension2mimeType = {
 };
 
 _toStr<_mime> mimeType2string = {
+	{ _mime::unknown , "unknown" } , 
 	{ _mime::directory , "directory" } , 
 	{ _mime::image_jpeg , "image/jpeg" } , 
 	{ _mime::image_png, "image/png" } ,
@@ -96,4 +99,34 @@ _toStr<_mime> mimeType2string = {
 	{ _mime::application_x_nintendo_gba_rom , "application/x-nintendo-gba-rom" } ,
 	{ _mime::application_x_bat , "application/x-bat" } ,
 	{ _mime::application_x_ms_registry , "application/x-ms-registry" }
+};
+
+_toStr<_mime>	mimeType2name = {
+	{ _mime::unknown , "Unknown Type" } , 
+	{ _mime::directory , "Directory" } , 
+	{ _mime::image_jpeg , "JPEG Image" } , 
+	{ _mime::image_png, "PNG Image" } ,
+	{ _mime::image_gif, "GIF Image" } ,
+	{ _mime::image_bmp, "BMP Image" } ,
+	{ _mime::image_ico, "Icon" } ,
+	{ _mime::text_plain, "Text Document" } ,
+	{ _mime::text_html, "HTML Document" } ,
+	{ _mime::text_xml , "XML Document" } ,
+	{ _mime::font_opentype , "OpenType Font" } ,
+	{ _mime::font_truetype , "TrueType Font" } ,
+	{ _mime::audio_mpeg , "MPEG Audio" } ,
+	{ _mime::audio_wav , "Wave Audio" } ,
+	{ _mime::audio_x_aiff , "AIFF Audio" } ,
+	{ _mime::audio_x_midi , "MIDI Audio" } ,
+	{ _mime::audio_x_mpegurl , "Backup File" } ,
+	{ _mime::audio_x_mod , "MOD Audio" } ,
+	{ _mime::application_octet_stream , "Binary Executeable" } ,
+	{ _mime::application_microsoft_installer , "Installer Package" } ,
+	{ _mime::application_x_lua_bytecode , "Lua Executeable" } ,
+	{ _mime::application_x_ms_shortcut , "Shortcut" } ,
+	{ _mime::application_x_internet_shortcut , "Internet Shortcut" } ,
+	{ _mime::application_x_nintendo_ds_rom , "Nintendo® DS ROM" } ,
+	{ _mime::application_x_nintendo_gba_rom , "Gameboy® Advance ROM" } ,
+	{ _mime::application_x_bat , "Batch File" } ,
+	{ _mime::application_x_ms_registry , "Registry File" }
 };

@@ -48,7 +48,7 @@ void PROG_Mapper::main( _programArgs args )
 	this->browseButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_Mapper::handler ) );
 	
 	// Checkbox
-	this->saveDescision	= new _checkbox( 4 , ignore );
+	this->saveDescision	= new _checkBox( 4 , ignore );
 	if( this->chooseButNotOpen ){
 		this->saveDescision->setIntValue( true );
 		this->saveDescision->removeInternalEventHandler( onMouseClick );
@@ -85,16 +85,9 @@ void PROG_Mapper::main( _programArgs args )
 		//
 		// Parse Command and filter out the executeable
 		//
-		size_t fileNameEnd = string::npos;
-		int escaped = val[0] == '"' ? 1 : 0;
-		
-		if( escaped ) // If it starts with an apostroph
-			fileNameEnd = val.find( '"' , 1 );
-		else
-			fileNameEnd = val.find( ' ' );
 		
 		// Add to List
-		handlerList[ _direntry( val.substr( escaped , fileNameEnd - escaped ) ).getFileName() ]++;
+		handlerList[ _direntry( _programArgs::splitCommand( val ).first ).getFileName() ]++;
 	}
 	
 	// Add Standard Programs

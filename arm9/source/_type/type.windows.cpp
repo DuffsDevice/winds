@@ -173,22 +173,9 @@ bool _windows::executeCommand( const string& cmd )
 	if( cmd.empty() )
 		return false;
 	
-	size_t fileNameEnd = string::npos;
+	_pair<string,string> commandData = _programArgs::splitCommand( cmd );
 	
-	int escaped = cmd[0] == '"' ? 1 : 0;
-	
-	if( escaped ) // If it starts with an apostroph
-		fileNameEnd = cmd.find( '"' , 1 );
-	else
-		fileNameEnd = cmd.find( ' ' );
-	
-	_literal parameterStr =
-		fileNameEnd != string::npos
-			? cmd.c_str() + fileNameEnd + escaped
-			: ""
-	;
-	
-	return _direntry( cmd.substr( escaped , fileNameEnd - escaped ) ).execute(parameterStr);
+	return _direntry( commandData.first ).execute( commandData.second.c_str() );
 }
 
 //! Conversion from _hardwareType to string

@@ -11,6 +11,7 @@
 #include <_resource/resource.program.explorer.h>
 #include <_resource/resource.program.mapper.h>
 #include <_resource/resource.program.taskmanager.h>
+#include <_resource/resource.program.filedetail.h>
 #include <_resource/resource.icon.lua.h>
 #include <_resource/resource.icon.exe.h>
 #include <program_example_lua.h>
@@ -113,6 +114,8 @@ _program* _program::fromFile( string filename )
 		result = new PROG_Explorer();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/progmapper.exe" ) )
 		result = new PROG_Mapper();
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/filedetail.exe" ) )
+		result = new PROG_FileDetail();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/taskmgr.exe" ) )
 		result = new PROG_TaskManager();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/credits.exe" ) )

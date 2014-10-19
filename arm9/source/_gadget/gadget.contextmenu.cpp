@@ -74,8 +74,6 @@ void _contextMenu::submit()
 	}
 	else
 		this->shelve( true ); // Hide contextmenu
-	
-	this->menu->callHandler( this->mainList , child->getIntValue() );
 }
 
 _callbackReturn _contextMenu::subMenuCloseHandler( _event event )

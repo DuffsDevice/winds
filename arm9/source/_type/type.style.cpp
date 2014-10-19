@@ -118,5 +118,11 @@ void applyString2style( _style& style , string input )
 			style |= _style::drawGreyIfDisabled;
 		else if( line == "customDrawIfDisabled" )
 			style |= _style::customDrawIfDisabled;
+		
+		// focusingMouseDownSimul
+		else if( line == "focusingMouseDownSimul" )
+			style |= _style::focusingMouseDownSimul;
+		else if( line == "focusingMouseDownSuppress" )
+			style |= _style::focusingMouseDownSuppress;
 	}
 }
