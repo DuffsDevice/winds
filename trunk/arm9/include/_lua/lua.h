@@ -27,6 +27,7 @@ extern "C"
 	static unused int lua_convToAbsIndex( lua_State* L , int& idx ){
 		return (idx = (idx > 0) ? idx : (idx <= LUA_REGISTRYINDEX) ? idx : (lua_gettop(L) + 1 + idx));
 	}
+	#define lua_rawgetfield( L , idx , field ) lua_pushliteral( L , field ); lua_rawget( L , idx )
 }
 
 #endif

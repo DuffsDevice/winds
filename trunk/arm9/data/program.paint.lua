@@ -31,10 +31,10 @@ using "Dialog.EnterTextDialog"
 
 -- Supported Filetypes
 local possibleFileTypes = {
-	{ 1 , { "Windows Bitmap" , "bmp" } } ,
-	{ 2 , { "JPEG" , "jpg" } } ,
-	{ 3 , { "Ptl. Ntwrk. Graphics" , "png" } } ,
-	{ 4 , { "Gfx. Interchange Fmt." , "gif" } }
+	[1] = { "Windows Bitmap" , "bmp" } ,
+	[2] = { "JPEG" , "jpg" } ,
+	[3] = { "Ptl. Ntwrk. Graphic" , "png" } ,
+	[4] = { "Gfx. Interchange Fmt." , "gif" }
 }
 
 local APPDATA = {
@@ -61,14 +61,14 @@ function main( filename )
 	local windowRawMenu = WindowMenu.getStandardMenu()
 	
 	-- Edit the menu and add the 'Edit' Field
-	local mainList = windowRawMenu.mainList
-	mainList[2] = { 2 , System.getLocalizedString("lbl_edit") }
-	windowRawMenu.mainList = mainList -- Set Main List
-	windowRawMenu.setList( 2 , { { 1 , System.getLocalizedString("lbl_size") } } ) -- Reference a list
+	local mainList = windowRawMenu.getList()
+	mainList[2] = { System.getLocalizedString("lbl_edit") , 2 }
+	windowRawMenu.setList( mainList ) -- Set Main List
+	windowRawMenu.setList( 2 , { System.getLocalizedString("lbl_size") } ) -- Reference a list
 	
 	-- Add a WindowMenu built from the _menu we constructed
 	windowRawMenu.addHandler( MenuRule( 1 , 1 , 4 ) , menu1Handler ) -- Add our Handler for "open", "save" and "save as..."
-	windowRawMenu.addHandler( MenuRule( 2 , 1 ) , menu2Handler ) -- Add our Handler for "open", "save" and "save as..."
+	windowRawMenu.addHandler( MenuRule( 2 , 1 ) , menu2Handler ) -- Add our Handler for "edit -> size"
 	APPDATA.windowMenu = WindowMenu( windowRawMenu )
 
 	

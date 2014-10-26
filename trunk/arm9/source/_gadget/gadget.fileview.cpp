@@ -1,21 +1,51 @@
 #include <_gadget/gadget.fileview.h>
 #include <_type/type.gadget.helpers.h>
+#include <_type/type.windows.h>
 #include <_type/type.windows.soundbank.h>
+#include <_controller/controller.localization.h>
+
+void _fileView::initializeMenu()
+{
+	if( !_fileView::defaultMenu )
+	{
+		_fileView::defaultMenu = new _menu(
+			{
+				{ 1 , _localizationController::getBuiltInString("lbl_refresh") } ,
+				{ 2 , _menu::divider } ,
+				{ 3 , _menuEntry( _localizationController::getBuiltInString("lbl_new") , 1 ) } ,
+				{ 4 , _menu::divider } ,
+				{ 5 , _localizationController::getBuiltInString("lbl_properties") }
+			}
+		);
+		_fileView::defaultMenu->setList( 1 ,
+			{
+				{ 1 , _localizationController::getBuiltInString("lbl_file") } ,
+				{ 2 , _localizationController::getBuiltInString("lbl_folder") }
+			}
+		);
+		_fileView::defaultMenu->addHandler( _menuHandlerRule() , make_callback( &_fileView::defaultMenuHandler ) );
+	}
+}
 
 _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _optValue<_length> width , _optValue<_length> height , string path
 		, _fileViewType viewType , _fileExtensionList allowedExtensions
 		, _callback<_eventHandler>* eventHandler , bool singleClickToExecute , _style&& style
 	) :
-	_scrollArea( x , y , width , height , _scrollType::meta , _scrollType::meta , (_style&&)style )
+	_scrollArea( x , y , width , height , _scrollType::meta , _scrollType::meta , style | _style::rightClickable )
 	, directory( path )
 	, viewType( viewType )
 	, filemask( allowedExtensions.empty() ? nullptr : new _fileExtensionList( move(allowedExtensions) ) )
 	, eventHandler( move(eventHandler) )
 	, singleClickToExecute( singleClickToExecute )
 {
+	this->initializeMenu();
+	
 	// Set Real Type of gadget
 	this->setType( _gadgetType::fileview );
+	
+	// Set ContextMenu
+	this->setInternalEventHandler( onMouseRightClick , _gadgetHelpers::openContextMenu( _fileView::defaultMenu.get() ) );
 	
 	// Generate _fileObject's
 	this->generateChildren();
@@ -110,3 +140,38 @@ void _fileView::generateChildren()
 _fileView::~_fileView(){
 	this->removeChildren( true );
 }
+
+void _fileView::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
+{
+	_fileView* fileView = (_fileView*)_gadgetHelpers::openContextMenu::getCurrentSubject();
+	
+	if( !fileView || fileView->getType() != _gadgetType::fileview )
+		return;
+	
+	if( listIndex == 0 )
+	{
+		switch( entryIndex )
+		{
+			case 1: // Refresh
+				fileView->generateChildren();
+				break;
+			case 5: // Properties
+				_windows::executeCommand("%SYSTEM%/filedetail.exe -\"" + fileView->directory.getFileName() + "\"" );
+				break;
+		}
+	}
+	else if( listIndex == 1 ) // New...
+	{
+		switch( entryIndex )
+		{
+			case 1: // File
+				printf("Making File!");
+				break;
+			case 2: // Folder
+				printf("Making Folder!");
+				break;
+		}
+	}
+}
+
+_uniquePtr<_menu> 				_fileView::defaultMenu;

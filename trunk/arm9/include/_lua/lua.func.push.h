@@ -12,10 +12,10 @@ namespace _luafunc
 	// ~~~~~~~~~~~~~~~~~~ Predefines ~~~~~~~~~~~~~~~~~~
 	template<int currentIndex, typename... ValueType> void	pushTupleElementsInternal( lua_State* state , const _tuple<ValueType...>& arg , typename std::enable_if<currentIndex,void*>::type = nullptr );
 	template<int currentIndex, typename... ValueType> void	pushTupleElementsInternal( lua_State* state , const _tuple<ValueType...>& arg , typename std::enable_if<!currentIndex,void*>::type = nullptr );
-	template<typename ContainerType> void					pushContainer( lua_State* state , ContainerType arg );
-	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , ContainerType arg );
-	template<typename... T, typename... TN> int				push( lua_State* state , _tuple<T...> arg , TN... args );
-	template<typename T1, typename T2, typename... TN> int	push( lua_State* state , _pair<T1,T2> arg , TN... args );
+	template<typename ContainerType> void					pushContainer( lua_State* state , const ContainerType& arg );
+	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , const ContainerType& arg );
+	template<typename... T, typename... TN> int				push( lua_State* state , const _tuple<T...>& arg , TN... args );
+	template<typename T1, typename T2, typename... TN> int	push( lua_State* state , const _pair<T1,T2>& arg , TN... args );
 	
 	
 	
@@ -104,9 +104,8 @@ namespace _luafunc
 	
 	// ~~~~~~~~~~~~~~~~~~ Pair & Tuple ~~~~~~~~~~~~~~~~~~
 	template<typename T1, typename T2, typename... TN>
-	inline int push( lua_State* state , _pair<T1,T2> arg , TN... args )
+	inline int push( lua_State* state , const _pair<T1,T2>& arg , TN... args )
 	{
-		#ifdef _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
 		lua_createtable( state , 2 , 2 );	// Create table
 		push( state , move(arg.first) );	// Push First Value
 		lua_rawseti( state , -2 , 1 );		// Add to table
@@ -118,21 +117,12 @@ namespace _luafunc
 		lua_pushliteral( state , "second" );// Push Key of second Value
 		push( state , move(arg.second) );	// Push Second Value
 		lua_rawset( state , -3 );			// Add to table
-		#else
-		lua_createtable( state , 0 , 2 );	// Create table
-		lua_pushliteral( state , "first" );	// Push Key of first value
-		push( state , move(arg.first) );	// Push Value
-		lua_rawset( state , -3 );			// Add to table
-		lua_pushliteral( state , "second" );// Push Key of second Value
-		push( state , move(arg.second) );	// Push Value
-		lua_rawset( state , -3 );			// Add to table
-		#endif
 		
 		return push( state , args... ) + 1;
 	}
 	
 	template<typename... T, typename... TN>
-	inline int push( lua_State* state , _tuple<T...> arg , TN... args )
+	inline int push( lua_State* state , const _tuple<T...>& arg , TN... args )
 	{
 		lua_createtable( state , sizeof...(T) , 0 ); // Create table
 		pushTupleElementsInternal<sizeof...(T)>( state , arg );
@@ -155,7 +145,7 @@ namespace _luafunc
 	{}
 	
 	template<typename ContainerType>
-	void pushAssociativeContainer( lua_State* state , ContainerType arg )
+	void pushAssociativeContainer( lua_State* state , const ContainerType& arg )
 	{
 		// Create Table for arguments
 		lua_createtable( state , 0 , arg.size() );
@@ -169,7 +159,7 @@ namespace _luafunc
 	}
 	
 	template<typename ContainerType>
-	void pushContainer( lua_State* state , ContainerType arg )
+	void pushContainer( lua_State* state , const ContainerType& arg )
 	{
 		// Create Table for arguments
 		lua_createtable( state , arg.size() , 0 );

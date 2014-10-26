@@ -18,11 +18,17 @@ class _fileView : public _scrollArea {
 		_uniquePtr<_callback<_eventHandler>>	eventHandler;
 		bool									singleClickToExecute;
 		
+		// ContextMenu
+		static _uniquePtr<_menu>	defaultMenu;
+		static void					defaultMenuHandler( _u16 listIndex , _u16 entryIndex );
+		void						initializeMenu();
+		
 		// Member function to forward all events to the 'eventHandler'
 		static _callbackReturn eventForwarder( _event );
 		
 		// Generates all _fileObjects
 		void generateChildren();
+		
 		//! Full Ctor
 		_fileView( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string path , _fileViewType viewType , _fileExtensionList allowedExtensions , _callback<_eventHandler>* eventHandler , bool singleClickToExecute , _style&& style );
 		

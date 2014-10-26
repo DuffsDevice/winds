@@ -21,18 +21,6 @@ class _lua_contextmenu : public _lua_gadget
 		_lua_contextmenu( _contextMenu* s ) : _lua_gadget( s , false )
 		{ }
 		
-		//! addIndex
-		int addIndex( lua_State* L );
-		
-		//! removeIndex
-		int removeIndex( lua_State* L );
-		
-		//! clearList
-		int clearList( lua_State* L );
-		
-		//! getEntryFromNumber
-		int getEntryFromNumber( lua_State* L );
-		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_contextmenu>::FunctionType methods[];
