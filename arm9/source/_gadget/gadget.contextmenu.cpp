@@ -62,7 +62,7 @@ void _contextMenu::submit()
 	}
 	
 	if( child->hasSubMenu() ){
-		if( this->curOpenedSubMenu && this->curOpenedSubMenu->isOpened() && this->curOpenedSubMenu->getListIndex() == child->getSubMenu() ){
+		if( this->curOpenedSubMenu && this->curOpenedSubMenu->getListIndex() == child->getSubMenu() ){
 			this->curOpenedSubMenu->shelve( true );
 			this->curOpenedSubMenu = nullptr;
 		}
@@ -72,8 +72,10 @@ void _contextMenu::submit()
 			this->curOpenedSubMenu->show( child->getAbsoluteDimensions() ); // Show
 		}
 	}
-	else
+	else{
+		this->setOwner( nullptr );
 		this->shelve( true ); // Hide contextmenu
+	}
 }
 
 _callbackReturn _contextMenu::subMenuCloseHandler( _event event )
@@ -216,10 +218,15 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	if( that->hasAutoWidth() )
 	{
 		_length w = 0;
-		for( _gadget* entry : that->getChildren( false ) )
+		for( _gadget* entry : that->getChildren( false ) ){
+			entry->requestAutoWidth();
 			w = max( entry->getWidth() , w );
+		}
 		
 		that->setWidthIfAuto( w + 2 );
+		
+		for( _gadget* entry : that->getChildren( false ) )
+			entry->setWidth( w );
 	}
 	
 	// Adjust height

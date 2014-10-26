@@ -218,10 +218,10 @@ namespace _gadgetHelpers
 			case onMouseClick:
 			case onMouseDblClick:
 			case onMouseRightClick:
-				contextMenu->show( event.getPos() + that->getAbsolutePosition() );
+				contextMenu->show( event.getPos() + that->getAbsolutePosition() , false );
 				break;
 			default:
-				contextMenu->show( that->getAbsoluteDimensions() );
+				contextMenu->show( that->getAbsoluteDimensions() , false );
 		}
 		
 		openContextMenu::currentSubject = that;

@@ -25,7 +25,7 @@ int _lua_menu::getList(lua_State* L){
 
 int _lua_menu::setList(lua_State* L){
 	if( is_a<_u16>( L , 1 ) )
-		menu->setList( check<_u16>( L , 1 ) , check<_menuEntryList>( L , 1 ) );
+		menu->setList( check<_u16>( L , 1 ) , check<_menuEntryList>( L , 2 ) );
 	else
 		menu->setList( check<_menuEntryList>( L , 1 ) );
 	return 0;

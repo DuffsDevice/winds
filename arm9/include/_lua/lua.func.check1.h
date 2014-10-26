@@ -133,7 +133,7 @@ namespace _luafunc
 			lua_rawgeti( state , index , currentLuaIndex ); // Get element at current index in table
 			
 			// Read the current index from the lua table
-			CurrentType current = check( state , index , (CurrentType*)nullptr );
+			CurrentType current = check( state , -1 , (CurrentType*)nullptr );
 			
 			// Pop Value
 			lua_pop( state , 1 );
@@ -202,6 +202,9 @@ namespace _luafunc
 			if( !lua_istable( state , index ) )
 				lua_tagerror( state , index , LUA_TTABLE );
 			
+			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
+			index = lua_toAbsIndex( state , index );
+			
 			ContainerType ret;
 			for( int i = 1; ; i++ )
 			{
@@ -229,6 +232,9 @@ namespace _luafunc
 			if( !lua_istable( state , index ) )
 				lua_tagerror( state , index , LUA_TTABLE );
 			
+			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
+			index = lua_toAbsIndex( state , index );
+			
 			ContainerType ret;
 			for( int i = 1; ; i++ )
 			{
@@ -238,10 +244,10 @@ namespace _luafunc
 					lua_pop( state , 1 ); // Pop Value
 					break;
 				}
-				else if( lua_istable( state , -1 ) )
+				else if( is_a( state , -1 , (_pair<KeyType,ValueType>*)nullptr ) )
 					ret.insert( check( state , -1 , (_pair<KeyType,ValueType>*)nullptr ) );
 				else
-					ret[ i - 1 ] = check( state , -1 , (ValueType*)nullptr );
+					ret[i] = check( state , -1 , (ValueType*)nullptr );
 				
 				lua_pop( state , 1 );// Pop Value
 			}
@@ -263,8 +269,9 @@ namespace _luafunc
 			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
 			index = lua_toAbsIndex( state , index );
 			
-			lua_rawgeti( state , index , 2 );	// Get second value
-			lua_rawgeti( state , index , 1 );	// Get first value
+			lua_rawgetfield( state , index , "second" );	// Get second value
+			lua_rawgetfield( state , index , "first" );	// Get first value
+			
 			// [-1] = First
 			// [-2] = Second
 			PairType ret = PairType(
@@ -273,7 +280,7 @@ namespace _luafunc
 			);
 			
 			// Pop first/second value
-			lua_pop( state , 2 );				
+			lua_pop( state , 2 );
 			
 			return move(ret);
 		}

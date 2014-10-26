@@ -71,8 +71,34 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _list<T>* dummy ){ return lua_istable( state , index ); }
 		template<typename T>
 		static unused inline bool	is_a( lua_State* state , int index , _vector<T>* dummy ){ return lua_istable( state , index ); }
+		unused static bool checkIfPair( lua_State* state , int index ){
+			if( !lua_istable( state , index ) )
+				return false;
+			
+			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
+			index = lua_toAbsIndex( state , index );
+			
+			lua_rawgetfield( state , index , "first" );
+			if( lua_isnil( state , -1 ) )
+				goto notPair;
+			
+			lua_pop( state , 1 );
+			
+			lua_rawgetfield( state , index , "second" );
+			if( lua_isnil( state , -1 ) )
+				goto notPair;
+			
+			lua_pop( state , 1 );
+			return true;
+			
+			notPair:
+			lua_pop( state , 1 );
+			return false;
+		}
 		template<typename T1, typename T2>
-		static unused inline bool	is_a( lua_State* state , int index , _pair<T1,T2>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _pair<T1,T2>* dummy ){
+			return checkIfPair( state , index );
+		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T1, typename T2>

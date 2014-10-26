@@ -14,43 +14,9 @@ _lua_contextmenu::_lua_contextmenu( lua_State* L ) :
 	_lua_gadget( new _contextMenu( optcheck<_length>( L , 1 ) , check<_menu>( L , 2 ) , lightcheck<_gadget*>( L , 3 , nullptr ) , lightcheck<bool>( L , 4 , false ) , lightcheck<int>( L , 5 , -1 ) , optcheck<int>( L , 6 ) , lightcheck<_style>( L , 7 ) ) )
 {}
 
-//! addIndex
-int _lua_contextmenu::addIndex( lua_State* L ){
-	_contextMenu* slc = this->getGadget<_contextMenu>();
-	//slc->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
-	//slc->update();
-	return 0;
-}
-
-//! removeIndex
-int _lua_contextmenu::removeIndex( lua_State* L ){
-	_contextMenu* slc = this->getGadget<_contextMenu>();
-	slc->getList().erase( check<int>( L , 1 ) );
-	slc->update();
-	return 0;
-}
-
-//! clearList
-int _lua_contextmenu::clearList( lua_State* L ){
-	_contextMenu* slc = this->getGadget<_contextMenu>();
-	slc->getList().clear();
-	slc->update();
-	return 0;
-}
-
-//! getEntryFromNumber
-int _lua_contextmenu::getEntryFromNumber( lua_State* L ){
-	_contextMenu* slc = this->getGadget<_contextMenu>();
-	return push( L , slc->getList()[check<int>(L,1)] );
-}
-
 //! Lua-button
 const char _lua_contextmenu::className[] = "ContextMenu";
 Lunar<_lua_contextmenu>::FunctionType _lua_contextmenu::methods[] = {
-	LUA_CLASS_FUNC(_lua_contextmenu,addIndex),
-	LUA_CLASS_FUNC(_lua_contextmenu,removeIndex),
-	LUA_CLASS_FUNC(_lua_contextmenu,clearList),
-	LUA_CLASS_FUNC(_lua_contextmenu,getEntryFromNumber),
 	LUA_CLASS_FUNC_END
 };
 

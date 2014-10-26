@@ -28,13 +28,13 @@ Features:
 - Mark text
 + Saving of a Programs Window Size/Position (✓)
 - Copy & Paste
-- File information window
++ File information window (✓)
 - Make font glyphs available in Lua
 + Credits page (✓)
 + Switch between programs (✓)
 + Filemask/Wildcard/Regex in _fileview (✓)
 + Right-click (✓)
-- Create/Rename/Delete files/folders
++ Create/Rename/Delete files/folders (✓)
 + Database/INI-file: which program opens which filetype (✓)
 + Image-Writes and GIF Support (✓)
 - Transmit arm7 usage to the arm9 and show it in the task manager
