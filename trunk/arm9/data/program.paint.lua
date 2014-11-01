@@ -30,11 +30,15 @@ using "Dialog.YesNoDialog"
 using "Dialog.EnterTextDialog"
 
 -- Supported Filetypes
-local possibleFileTypes = {
-	[1] = { "Windows Bitmap" , "bmp" } ,
-	[2] = { "JPEG" , "jpg" } ,
-	[3] = { "Ptl. Ntwrk. Graphic" , "png" } ,
-	[4] = { "Gfx. Interchange Fmt." , "gif" }
+local possibleSaveTypes = {
+	[1] = { ["first"] = "Windows Bitmap" , ["second"] = "bmp" } ,
+	[2] = { ["first"] = "JPEG" , ["second"] = "jpg" } ,
+	[3] = { ["first"] = "Ptl. Ntwrk. Graphic" , ["second"] = "png" } ,
+	[4] = { ["first"] = "Gfx. Interchange Fmt." , ["second"] = "gif" }
+}
+
+local possibleOpenTypes = {
+	[1] = { ["first"] = "Image" , ["second"] = "bmp,jpg,png,gif" }
 }
 
 local APPDATA = {
@@ -112,12 +116,12 @@ function menu1Handler( listIndex , entryIndex )
 	if APPDATA.dialog ~= nil and APPDATA.dialog.running then return end
 	
 	if entryIndex == 4 then -- 'save as...'
-		APPDATA.dialog = FileSaveDialog( possibleFileTypes , nil , 1 , nil , System.getLocalizedString("lbl_save_as") )
+		APPDATA.dialog = FileSaveDialog( possibleSaveTypes , nil , 1 , nil , System.getLocalizedString("lbl_save_as") )
 		APPDATA.dialog.execute()
 		APPDATA.dialog.setCallback( saveDialogHandler )
 	elseif entryIndex == 3 then -- 'save'
 		if APPDATA.imageFile == nil then
-			APPDATA.dialog = FileSaveDialog( possibleFileTypes , nil , 1 )
+			APPDATA.dialog = FileSaveDialog( possibleSaveTypes , nil , 1 )
 			APPDATA.dialog.execute()
 			APPDATA.dialog.setCallback( saveDialogHandler )
 		else
@@ -152,7 +156,7 @@ end
 
 -- Open File Dialog
 function openFileDialog()
-	APPDATA.dialog = FileOpenDialog( possibleFileTypes , nil , 1 )
+	APPDATA.dialog = FileOpenDialog( possibleOpenTypes , nil , 1 )
 	APPDATA.dialog.setCallback(
 		function( result )
 			if result == "yes" then
@@ -270,7 +274,7 @@ function runDiscardChangeDialog( callback )
 		function( result )
 			if result == "yes" then -- 
 				if APPDATA.imageFile == nil then
-					APPDATA.dialog = FileSaveDialog( possibleFileTypes , nil , 1 )
+					APPDATA.dialog = FileSaveDialog( possibleSaveTypes , nil , 1 )
 					APPDATA.dialog.setCallback(
 						function( result )
 							saveDialogHandler( result ) -- If FileSaveDialog returns "yes" -> save file!
