@@ -15,6 +15,7 @@ void _fileSaveDialog::cleanupInternal(){
 _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<string> saveLabel , _optValue<string> windowLabel ) :
 	fileTypes( move(possibleFileExtensions) )
 {
+	//printf("First: %s\n",fileTypes[1].first.c_str());
 	// Build directory and initial name
 	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _localizationController::getBuiltInString("lbl_unnamed");
 	_direntry initialFile = _direntry( move(initialFileName) );

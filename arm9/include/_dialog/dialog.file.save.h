@@ -40,11 +40,12 @@ class _fileSaveDialog : public _dialog
 			_menuEntryList menuList;
 			for( auto& value : fileTypes ){
 				string& val = menuList[value.first].text;
-				val.swap( std::get<0>(value.second) );
-				val += " (*.";
-				val += std::get<1>(value.second);
+				val.swap( value.second.first );
+				val += " (.";
+				val += value.second.second;
 				val += ")";
 			}
+			fileTypes.clear();
 			return move(menuList);
 		}
 	

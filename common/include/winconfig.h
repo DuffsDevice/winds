@@ -29,6 +29,11 @@
 // Lua Interpreter //
 /////////////////////
 
+/**
+ * Define it, if you want the Lua interpreter to make std::pair's in Lua accessible
+ * as an array using [1] and [2], additionally to .first and .second
+ */
+#define _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
 
 
 #endif

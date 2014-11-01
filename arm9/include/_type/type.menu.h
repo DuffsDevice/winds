@@ -66,7 +66,7 @@ class _menu : private _rawMenuEntryLists
 		
 		//! Ctor with main List
 		_menu( _menuEntryList mainList ) : 
-			_rawMenuEntryLists( { { 0 , mainList } } )
+			_rawMenuEntryLists( { { 0 , move(mainList) } } )
 			, sorted( true )
 		{}
 		

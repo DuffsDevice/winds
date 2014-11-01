@@ -17,10 +17,10 @@ const _menuEntryList _fileOpenDialog::generateMenuList()
 	_menuEntryList menuList;
 	for( auto& value : fileTypes ){
 		string& val = menuList[value.first].text;
-		val.swap( std::get<0>(value.second) );
-		val += " (*.";
-		_vector<string> extensions = tokenize( std::get<1>(value.second) , "," , true );
-		val += unTokenize( extensions , ", *." ).c_str();
+		val.swap( value.second.first );
+		val += " (.";
+		_vector<string> extensions = tokenize( value.second.second , "," , true );
+		val += unTokenize( extensions , ", ." ).c_str();
 		val += ")";
 	}
 	return move(menuList);

@@ -236,20 +236,19 @@ namespace _luafunc
 			index = lua_toAbsIndex( state , index );
 			
 			ContainerType ret;
-			for( int i = 1; ; i++ )
+			
+			lua_pushnil( state );  // first key
+			
+			while( lua_next( state , index ) != 0 )
 			{
-				lua_rawgeti( state , index , i ); // Get next index in table
+				// Copy key, in case some function calls lua_tostring, which would break the lua_next-iteration
+				lua_pushvalue( state , -2 );
 				
-				if( lua_isnil( state , -1 ) ){
-					lua_pop( state , 1 ); // Pop Value
-					break;
-				}
-				else if( is_a( state , -1 , (_pair<KeyType,ValueType>*)nullptr ) )
-					ret.insert( check( state , -1 , (_pair<KeyType,ValueType>*)nullptr ) );
-				else
-					ret[i] = check( state , -1 , (ValueType*)nullptr );
+				// uses copy of 'key' (at index -1) and 'value' (at index -2)
+				ret[ check( state , -1 , (KeyType*)nullptr ) ] = check( state , -2 , (ValueType*)nullptr );
 				
-				lua_pop( state , 1 );// Pop Value
+				// removes 'value' and the copy of 'key' ; keeps original 'key' for next iteration
+				lua_pop( state , 2 );
 			}
 			
 			return ret;
@@ -269,8 +268,18 @@ namespace _luafunc
 			// Convert all relative indices to absolute since they would be invalidated after lua_rawgeti
 			index = lua_toAbsIndex( state , index );
 			
-			lua_rawgetfield( state , index , "second" );	// Get second value
-			lua_rawgetfield( state , index , "first" );	// Get first value
+			lua_rawgetfield( state , index , "second" ); // Get second value
+			
+			#ifdef _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
+			// Check if the pair consists of .second and .first
+			if( lua_isnil( state , -1 ) ){
+				lua_pop( state , 1 );
+				lua_rawgeti( state , index , 2 );	// Get second value
+				lua_rawgeti( state , index , 1 );	// Get first value
+			}
+			else
+			#endif
+				lua_rawgetfield( state , index , "first" );		// Get first value
 			
 			// [-1] = First
 			// [-2] = Second

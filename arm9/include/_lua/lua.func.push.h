@@ -6,6 +6,7 @@
 #define _WIN_L_FUNC_PUSH_
 
 #include <_lua/lua.func.h>
+#include <limits>
 
 namespace _luafunc
 {
@@ -13,7 +14,8 @@ namespace _luafunc
 	template<int currentIndex, typename... ValueType> void	pushTupleElementsInternal( lua_State* state , const _tuple<ValueType...>& arg , typename std::enable_if<currentIndex,void*>::type = nullptr );
 	template<int currentIndex, typename... ValueType> void	pushTupleElementsInternal( lua_State* state , const _tuple<ValueType...>& arg , typename std::enable_if<!currentIndex,void*>::type = nullptr );
 	template<typename ContainerType> void					pushContainer( lua_State* state , const ContainerType& arg );
-	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , const ContainerType& arg );
+	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , const ContainerType& arg , typename std::enable_if<std::numeric_limits<typename ContainerType::key_type>::is_integer,void*>::type = nullptr );
+	template<typename ContainerType> void					pushAssociativeContainer( lua_State* state , const ContainerType& arg , typename std::enable_if<!std::numeric_limits<typename ContainerType::key_type>::is_integer,void*>::type = nullptr );
 	template<typename... T, typename... TN> int				push( lua_State* state , const _tuple<T...>& arg , TN... args );
 	template<typename T1, typename T2, typename... TN> int	push( lua_State* state , const _pair<T1,T2>& arg , TN... args );
 	
@@ -106,11 +108,15 @@ namespace _luafunc
 	template<typename T1, typename T2, typename... TN>
 	inline int push( lua_State* state , const _pair<T1,T2>& arg , TN... args )
 	{
+		#ifdef _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
 		lua_createtable( state , 2 , 2 );	// Create table
 		push( state , move(arg.first) );	// Push First Value
 		lua_rawseti( state , -2 , 1 );		// Add to table
 		push( state , move(arg.second) );	// Push Second Value
 		lua_rawseti( state , -2 , 2 );		// Add to table
+		#else
+		lua_createtable( state , 0 , 2 );	// Create table
+		#endif
 		lua_pushliteral( state , "first" );	// Push Key of first value
 		push( state , move(arg.first) );	// Push First Value
 		lua_rawset( state , -3 );			// Add to table
@@ -145,7 +151,11 @@ namespace _luafunc
 	{}
 	
 	template<typename ContainerType>
-	void pushAssociativeContainer( lua_State* state , const ContainerType& arg )
+	void pushAssociativeContainer(
+		lua_State* state
+		, const ContainerType& arg
+		, typename std::enable_if<!std::numeric_limits<typename ContainerType::key_type>::is_integer,void*>::type = nullptr
+	)
 	{
 		// Create Table for arguments
 		lua_createtable( state , 0 , arg.size() );
@@ -155,6 +165,23 @@ namespace _luafunc
 		for( const typename ContainerType::value_type& data : arg ){
 			push( state , data );
 			lua_rawseti( state , -2 , ++i );
+		}
+	}
+	
+	template<typename ContainerType>
+	void pushAssociativeContainer(
+		lua_State* state
+		, const ContainerType& arg
+		, typename std::enable_if<std::numeric_limits<typename ContainerType::key_type>::is_integer,void*>::type = nullptr
+	)
+	{
+		// Create Table for arguments
+		lua_createtable( state , 0 , arg.size() );
+		
+		// Push Datasets
+		for( const typename ContainerType::value_type& data : arg ){
+			push( state , data.second );
+			lua_rawseti( state , -2 , data.first );
 		}
 	}
 	
