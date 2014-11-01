@@ -38,6 +38,7 @@ class _fileObject : public _gadget {
 		static _uniquePtr<_menu>	defaultMenu;
 		static void		defaultMenuHandler( _u16 listIndex , _u16 entryIndex );
 		void			initializeMenu();
+		
 		void			initRename();
 		void			finishRename();
 		bool			isRenamed(){ return _fileObject::renameTextBox && _fileObject::renamedFile == this; }

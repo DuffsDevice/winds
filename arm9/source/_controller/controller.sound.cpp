@@ -1,5 +1,4 @@
 #include <_controller/controller.sound.h>
-#include <_controller/controller.debug.h>
 
 extern "C"{
 	#include <nds/fifocommon.h>
@@ -160,11 +159,6 @@ void _soundController::soundDataHandler( _int bytes , void* userData )
 			snd->playing = false;
 			snd = nullptr;
 		}
-	}
-	else if( msg.type == _soundDataMsgType::debug )
-	{
-		static int i = 0;
-		_debugController::debug("Message: %d -    %d\n",msg.debugInteger,i++);
 	}
 }
 

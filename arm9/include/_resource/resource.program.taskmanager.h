@@ -13,14 +13,16 @@ class PROG_TaskManager : public _progC
 		_imageGadget*		currentCpuUsage;
 		_imageGadget*		currentMemoryUsage;
 		_imageGadget*		histogramCpuUsage;
+		_imageGadget*		histogramCpuUsageSub;
 		_imageGadget*		histogramMemoryUsage;
 		_label*				cpuLabel;
 		_label*				memoryLabel;
-		_u8					pixelsBeforeNextGridLine;
 		_timer				updateTimer;
 		static const _color	gridColor;
 		_s8					lastCpuValueY;
+		_s8					lastCpuSubValueY;
 		_s8					lastMemoryValueY;
+		_u8					pixelsBeforeNextGridLine;
 		
 		void			main( _programArgs args );
 		void			cleanUp();

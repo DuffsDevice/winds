@@ -12,8 +12,7 @@ enum class _soundDataMsgType : _u8
 	micBufferFull,
 	
 	channelStopped,		// messages to arm9
-	bufferFill,
-	debug
+	bufferFill
 };
 
 struct _soundDataMsg
@@ -27,7 +26,6 @@ struct _soundDataMsg
 		_fillingParams		bufferFill;
 		_micBufferFullMsg	micBufferFull;
 		_micRecordMsg		micRecord;
-		int					debugInteger;
 	};
 	
 	//! We need a ctor here because _channelSetMsg has a non-trivial constructor
@@ -66,13 +64,6 @@ struct _soundDataMsg
 		_soundDataMsg msg;
 		msg.type = _soundDataMsgType::bufferFill;
 		msg.bufferFill = param;
-		return msg;
-	}
-	
-	static _soundDataMsg debugMsg( int param ){
-		_soundDataMsg msg;
-		msg.type = _soundDataMsgType::debug;
-		msg.debugInteger = param;
 		return msg;
 	}
 };
