@@ -1,4 +1,5 @@
 #include <_type/type.windows.h>
+#include <_type/type.system.msg.h>
 #include <_type/type.language.h>
 #include <_controller/controller.animation.h>
 #include <_controller/controller.debug.h>
@@ -22,6 +23,7 @@
 extern "C"{
 	#include <nds/bios.h>
 	#include <nds/system.h>
+	#include <nds/fifocommon.h>
 }
 
 void _windows::init()
@@ -95,11 +97,25 @@ void _windows::init()
 	
 	_windows::active = true;
 	_windows::terminateMain = false;
+	
+	fifoSetDatamsgHandler( FIFO_USER_01 , _windows::fifoDataHandler , nullptr );
 }
 
 void _windows::stop(){
 	_windows::terminateMain = true;
 }
+
+void _windows::fifoDataHandler( _s32 bytes , void* userData )
+{
+	_systemDataMsg msg;
+	
+	// Receive DataMsg
+	fifoGetDatamsg( FIFO_USER_01 , bytes , (_u8*)&msg );
+	
+	if( msg.type == _systemDataMsgType::cpuUsage )
+		_windows::cpuUsageTempSub = msg.cpuUsage;
+}
+
 
 void _windows::main()
 {
@@ -190,5 +206,6 @@ _vector<_controllerFrame*>				_windows::mainMethods;
 _vector<_controllerFrame*>				_windows::interruptMethods;
 _vector<_controllerEnd*>				_windows::endMethods;
 _int									_windows::cpuUsageTemp;
+_int									_windows::cpuUsageTempSub;
 bool									_windows::active = false;
 bool									_windows::terminateMain = false;

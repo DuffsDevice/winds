@@ -1,7 +1,6 @@
 #include <nds/arm7/audio.h>
-
-// First include audio.h, then the windows header file
 #include <_type/type.windows.h>
+#include <_type/type.system.msg.h>
 
 #include <time.h>
 #include <nds/timers.h>
@@ -127,20 +126,50 @@ void _windows::init()
 		TIMER_CR(0) = TIMER_ENABLE | ClockDivider_1024;
 }
 
+void _windows::sendCpuUsage( _u8 percent ){
+	// Tell the arm9!
+	_systemDataMsg msg = _systemDataMsg::cpuUsageMsg( percent );
+	fifoSendDatamsg( FIFO_USER_01 , sizeof(_systemDataMsg) , (_u8*)&msg );
+}
+
 void _windows::main()
 {
 	static const _u16 keyPattern = KEY_SELECT|KEY_START|KEY_L|KEY_R;
 	
+	int sendingCpuUsage = 0;
+	const int sendingCpuUsagePeriod = 5;
+	
 	while( !_windows::exitMain )
 	{
+		_tempTime milliTime = _windows::getBUSTime();
+		
+		
 		if( ( REG_KEYINPUT & keyPattern ) == 0 )
 			_windows::exitMain = true;
 		
 		_sound::runSounds();
+		
+		
+		// Time measurements
+		_u32 deltaTime = _windows::getBUSTime() - milliTime;
+		deltaTime = deltaTime * 100 * 60 / 1000; // Time relative to 1/60s
+		if( deltaTime > 100 )
+			deltaTime = 100;
+		
+		// Compute System-Usage
+		_windows::cpuUsageTemp = _windows::cpuUsageTemp * 15 + deltaTime;
+		_windows::cpuUsageTemp >>= 4;
+		
+		if( ++sendingCpuUsage >= sendingCpuUsagePeriod ){
+			sendingCpuUsage = 0;
+			_windows::sendCpuUsage( _windows::cpuUsageTemp );
+		}
+		
 		
 		// Wait 0.01 seconds
 		swiDelay( BUS_CLOCK / 100 );
 	}
 }
 
-volatile bool _windows::exitMain = false;
+volatile bool	_windows::exitMain = false;
+int				_windows::cpuUsageTemp = 0;

@@ -1,5 +1,6 @@
 #include <_type/type.bitmap.h>
 #include <_func/func.gradientcreator.h>
+#include <_controller/controller.timer.h>
 
 #include <nds/arm9/math.h>
 #include <nds/bios.h>
@@ -942,9 +943,12 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 {
 	_codeAnalyzer analyzer {"_bitmap::move"};
 	
-	// Do nothing if no copying involved
-	if ( ( sourceX == destX ) && ( sourceY == destY ) ) return;
-
+	_s16 deltaX = destX - sourceX;
+	_s16 deltaY = destY - sourceY;
+	
+	// Do nothing if nothing to move
+	if ( !deltaX && !deltaY ) return;
+	
 	// Get end point of source
 	_coord x2 = sourceX + width - 1;
 	_coord y2 = sourceY + height - 1;
@@ -959,8 +963,6 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 	// Get end point of dest
 	x2 = destX + width - 1;
 	y2 = destY + height - 1;
-	
-	_s16 dX = destX;
 
 	// Attempt to clip
 	if ( ! this->clipCoordinates( destX , destY , x2 , y2 ) ) return;
@@ -969,47 +971,68 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 	width = x2 + 1 - destX;
 	height = y2 + 1 - destY;
 	
-	dX -= destX;
-	
 	// If there is no vertical movement and the source and destination overlap,
 	// we need to use an offscreen buffer to copy
-	if ( sourceY == destY )
+	if( !deltaY )
 	{
-		if ( ( destX >= sourceX ) && ( destX <= _coord( width + sourceX ) ) )
+		_tempTime time = _timerController::getMicroTime();
+		_pixelArray bmp = this->bmp + sourceX + deltaX + this->width * sourceY;
+		
+		if( deltaX < width ) // Do lines overlap horizontally?
 		{
-			_pixelArray buffer = new _pixel[width+dX];
+			_length		paddingToFullWidth = this->width - width;
+			_length		widthPlusFullWidth = this->width + width;
 			
-			for ( _int y = 0; y != height; ++y )
+			if( deltaX < 0 ) // Copy in left direction
 			{
-				// Copy row to buffer
-				memcpy16( buffer , this->bmp + sourceX - dX + this->width * ( sourceY + y ) , width );
-				
-				// Copy row back to screen
-				memcpy16( this->bmp + destX + this->width * ( sourceY + y ) , buffer , width );
+				for ( _int y = 0 ; y != height ; ++y ){
+					for( _int x = 0 ; x < width ; ++x ){
+						*bmp = bmp[-deltaX];
+						bmp++;
+					}
+					bmp += paddingToFullWidth;
+				}
 			}
-			
-			delete[] buffer;
-			
-			return;
+			else // Copy in right direction
+			{
+				for ( _int y = 0 ; y != height ; ++y ){
+					bmp += width;
+					for( _int x = 0 ; x < width ; ++x ){
+						bmp--;
+						*bmp = bmp[-deltaX];
+					}
+					bmp += this->width;
+				}
+			}
 		}
+		else
+		{
+			// Copy whole lines
+			for ( _int y = 0; y != height; ++y ){
+				memcpy16( bmp + deltaX , bmp , width );
+				bmp += this->width;
+			}
+		}
+		
+		return;
 	}
 	
 	// Vertical movement or non overlap means we do not need to use an intermediate buffer
 	// Copy from top to bottom if moving up; from bottom to top if moving down.
 	// Ensures that rows to be copied are not overwritten
-	if (sourceY > destY)
+	if( deltaY < 0 ) // Copying up
 	{
-		_pixelArray src = this->bmp + sourceX - dX + this->width * sourceY;
-		_pixelArray dst = this->bmp + destX + this->width * destY;
+		_pixelArray src = this->bmp + sourceX + this->width * sourceY;
+		_pixelArray dst = this->bmp + sourceX + deltaX + this->width * ( sourceY + deltaY );
 		
 		// Copy up
 		for ( _int i = 0 ; i < height ; ++i , src += this->width , dst += this->width )
 			memcpy16( dst , src , width );
 	}
-	else
+	else // Copy down
 	{
-		_pixelArray src = this->bmp + sourceX - dX + this->width * ( sourceY + height - 1 );
-		_pixelArray dst = this->bmp + destX + this->width * ( destY + height - 1 );
+		_pixelArray src = this->bmp + sourceX + this->width * ( sourceY + height - 1 );
+		_pixelArray dst = this->bmp + sourceX + deltaX + this->width * ( sourceY + deltaY + height - 1 );
 		
 		// Copy down
 		for ( _u32 i = height ; i > 0 ; --i , src -= this->width , dst -= this->width )

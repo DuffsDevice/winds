@@ -20,6 +20,12 @@ class _windows{
 		static void vblHandler();
 		static void powerBtnHandler();
 		
+		//! Sends cpuUsage to arm9
+		static void sendCpuUsage( _u8 percent );
+		
+		//! Temporary variable
+		static int cpuUsageTemp;
+		
 	public:
 		
 		//! Constructor
@@ -32,7 +38,7 @@ class _windows{
 		static void			main();
 		
 		//! The BUS-Clock-Frequency (number of ticks per second)
-		static const _u32 ticksPerSecond;
+		static const _u32	ticksPerSecond;
 };
 
 #endif

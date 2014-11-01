@@ -167,8 +167,3 @@ void _sound::installFIFO(){
 	fifoSetDatamsgHandler( FIFO_SOUND , _sound::soundDataHandler , 0 );
 	fifoSetValue32Handler( FIFO_SOUND , (FifoValue32HandlerFunc) &_sound::soundMsgHandler , 0 );
 }
-
-void _sound::sendInteger( int val ){
-	_soundDataMsg msg = _soundDataMsg::debugMsg( val );
-	fifoSendDatamsg( FIFO_SOUND , sizeof(_soundDataMsg) , (_u8*)&msg );
-}

@@ -16,7 +16,7 @@ _guiDesktop::_guiDesktop()
 	//_windows::executeCommand("%SYSTEM%/credits.exe");
 	//_windows::executeCommand("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");
 	//_windows::executeCommand("%WINDIR%/accessories/exampleprogram.exe");
-	_windows::executeCommand("%WINDIR%/accessories/paint.exe");
+	//_windows::executeCommand("%WINDIR%/accessories/paint.exe");
 	//_windows::executeCommand("%WINDIR%/accessories/calculator.exe");
 	//_windows::executeCommand("%WINDIR%/games/pong.exe");
 }

@@ -25,6 +25,7 @@ class _windows
 		
 		//! Allows tracking of the processor usage
 		static int 					cpuUsageTemp;
+		static int 					cpuUsageTempSub;
 		
 		//! Flag indicating whether end() was not called after an initial call to init()
 		static bool					active;
@@ -34,6 +35,9 @@ class _windows
 		
 		//! For debug purposes only
 		static void					displayMemoryUsage();
+		
+		//! DMA Handler for messages from the arm7
+		static void					fifoDataHandler( _s32 bytes , void* userData );
 		
 	public:
 		
@@ -54,6 +58,7 @@ class _windows
 		
 		//! Get current Cpu-usage
 		static _u8					getCpuUsage(){ return cpuUsageTemp; }
+		static _u8					getCpuUsageSub(){ return cpuUsageTempSub; }
 		
 		//! Get the name of the user within the DS internal firmware
 		static const string&		getDSUserName();

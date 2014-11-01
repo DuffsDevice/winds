@@ -72,9 +72,6 @@ class _sound
 					return id;
 			return -1;
 		}
-		
-		//! Send an integer to arm9
-		static void sendInteger( int val );
 };
 
 #endif

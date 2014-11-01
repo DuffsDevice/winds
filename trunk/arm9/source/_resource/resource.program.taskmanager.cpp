@@ -23,7 +23,7 @@ PROG_TaskManager::PROG_TaskManager() :
 
 void PROG_TaskManager::main( _programArgs args )
 {
-	_mainFrame* mainFrame = _program::getMainFrame( 110 , 95 , _style::notResizeable );
+	_mainFrame* mainFrame = _program::getMainFrame( 109 , 95 , _style::notResizeable );
 	
 	// Simple Indicators
 	this->currentCpuUsage = new _imageGadget( 7 , 10 , _bitmap( 29 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );
@@ -32,17 +32,21 @@ void PROG_TaskManager::main( _programArgs args )
 	this->currentMemoryUsage->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::usageRefreshHandler ) );
 	
 	// Histograms
-	this->histogramCpuUsage = new _imageGadget( 42 , 10 , _bitmap( 58 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );
+	this->histogramCpuUsage = new _imageGadget( 42 , 10 , _bitmap( 28 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );
+	this->histogramCpuUsageSub = new _imageGadget( 72 , 10 , _bitmap( 28 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );
 	this->histogramMemoryUsage = new _imageGadget( 42 , 49 , _bitmap( 58 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );
 	
 	// Prepare Histograms
 	this->histogramCpuUsage->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramPrepareHandler ) );
+	this->histogramCpuUsageSub->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramPrepareHandler ) );
 	this->histogramMemoryUsage->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramPrepareHandler ) );
 	histogramCpuUsage->redraw();
+	histogramCpuUsageSub->redraw();
 	histogramMemoryUsage->redraw();
 	
 	// Register the 'real' refresh-handler
 	this->histogramCpuUsage->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramRefreshHandler ) );
+	this->histogramCpuUsageSub->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramRefreshHandler ) );
 	this->histogramMemoryUsage->setInternalEventHandler( onDraw , make_callback( this , &PROG_TaskManager::histogramRefreshHandler ) );
 	
 	// Labels
@@ -54,6 +58,7 @@ void PROG_TaskManager::main( _programArgs args )
 	mainFrame->addChild( this->currentCpuUsage );
 	mainFrame->addChild( this->currentMemoryUsage );
 	mainFrame->addChild( this->histogramCpuUsage );
+	mainFrame->addChild( this->histogramCpuUsageSub );
 	mainFrame->addChild( this->histogramMemoryUsage );
 	
 	this->updateTimer.start();
@@ -85,13 +90,12 @@ _callbackReturn PROG_TaskManager::histogramPrepareHandler( _event event )
 	
 	int curX = 1;
 	
-	// Draw Vertical
-	for( curX = 0; curX < bP.getWidth() - 1 ; curX++ )
-	{
+	// Draw Vertical lines
+	for( curX = 1; curX < bP.getWidth() ; curX++ ){
 		if( curX % 7 == 0 )
-			bP.drawVerticalLine( curX , 1 , bP.getHeight() - 2 , gridColor );
+			bP.drawVerticalLine( bP.getWidth() - curX , 1 , bP.getHeight() - 2 , gridColor );
 	}
-	this->pixelsBeforeNextGridLine = ( bP.getWidth() - 4 ) % 7;
+	this->pixelsBeforeNextGridLine = 1;
 	
 	return handled;
 }
@@ -102,7 +106,7 @@ _callbackReturn PROG_TaskManager::histogramRefreshHandler( _event event )
 	_bitmapPort bP = that->getBitmapPort( event );
 	
 	// Move everything to the left
-	that->getBitmap().move( 0 , 0 , -1 , 0 , bP.getWidth() , bP.getHeight() );
+	that->getBitmap().move( 1 , 0 , 0 , 0 , bP.getWidth() , bP.getHeight() );
 	
 	// Draw a new background
 	if( !this->pixelsBeforeNextGridLine )
@@ -132,6 +136,19 @@ _callbackReturn PROG_TaskManager::histogramRefreshHandler( _event event )
 		
 		// Save last value for line drawing
 		this->lastCpuValueY = newCpuValue;
+	}
+	else if( that == this->histogramCpuUsageSub )
+	{
+		_s8 newCpuSubValue = availHeight - availHeight * _windows::getCpuUsageSub() / 100;
+		
+		// Either draw dot (first time the graph is painted)
+		if( this->lastCpuSubValueY >= 0 )
+			bP.drawLine( bP.getWidth() - 3 , this->lastCpuSubValueY , bP.getWidth() - 2 , newCpuSubValue , _color::lime );
+		else
+			bP.drawPixel( bP.getWidth() - 2 , newCpuSubValue , _color::lime );
+		
+		// Save last value for line drawing
+		this->lastCpuSubValueY = newCpuSubValue;
 	}
 	else{
 		availHeight--; // Decrease area because the graph is 2px width
@@ -173,7 +190,7 @@ _callbackReturn PROG_TaskManager::usageRefreshHandler( _event event )
 	_u8		percentageValue;
 	
 	if( that == this->currentCpuUsage ){
-		percentageValue = _windows::getCpuUsage();
+		percentageValue = _windows::getCpuUsage() * _windows::getCpuUsageSub();
 		rawValue = percentageValue;
 	}else{
 		_u32 freeMemory = _memoryController::getFreeMemory();
@@ -218,22 +235,25 @@ _callbackReturn PROG_TaskManager::usageRefreshHandler( _event event )
 }
 
 void PROG_TaskManager::timerHandler(){
+	if( !this->pixelsBeforeNextGridLine )
+		pixelsBeforeNextGridLine = 7;
+	
+	this->pixelsBeforeNextGridLine--;
+	
+	// Redraw everything
 	this->currentCpuUsage->redraw();
 	this->currentMemoryUsage->redraw();
 	this->histogramCpuUsage->redraw();
+	this->histogramCpuUsageSub->redraw();
 	this->histogramMemoryUsage->redraw();
-	if( !this->pixelsBeforeNextGridLine )
-		pixelsBeforeNextGridLine = 7;
-	this->pixelsBeforeNextGridLine--;
 }
 
 _bitmap PROG_TaskManager::getLogo()
 {
 	_bitmap logo {6,6,_color::black};
-	logo.drawVerticalLine( 1 , 0 , 6 , _color::lime );
-	logo.drawVerticalLine( 4 , 0 , 6 , _color::lime );
-	logo.drawHorizontalLine( 0 , 1 , 6 , _color::lime );
-	logo.drawHorizontalLine( 0 , 4 , 6 , _color::lime );
+	logo.drawLine( 0 , 4 , 3 , 1 , _color::lime );
+	logo.drawPixel( 4 , 2 , _color::lime );
+	logo.drawPixel( 5 , 1 , _color::lime );
 	return move( logo );
 }
 

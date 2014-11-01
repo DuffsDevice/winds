@@ -124,13 +124,11 @@ void _soundChannel::stop()
 	{
 		_tempTime time = _windows::getBUSTime();
 		
-		static const _u32 ticksPerSecond = BUS_CLOCK;
-		
 		_s32 elapsedTicks = time - this->lastCheck; // Ticks of Timer0 that have elapsed since the last call to process()
-		_s32 elapsedSamples = elapsedTicks * this->frequency / ticksPerSecond;
+		_s32 elapsedSamples = elapsedTicks * this->frequency / _windows::ticksPerSecond;
 		
 		// Indicate that we have check a few samples
-		this->lastCheck = elapsedSamples * ticksPerSecond / this->frequency - this->lastCheck;
+		this->lastCheck = elapsedSamples * _windows::ticksPerSecond / this->frequency - this->lastCheck;
 	}
 	
 	this->wasExecuted = false;
