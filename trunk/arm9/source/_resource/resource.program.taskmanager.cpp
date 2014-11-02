@@ -4,6 +4,7 @@
 #include <_controller/controller.memory.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
+#include <_gadget/gadget.window.dialog.h>
 #include <_type/type.windows.h>
 
 PROG_TaskManager::PROG_TaskManager() :
@@ -24,6 +25,7 @@ PROG_TaskManager::PROG_TaskManager() :
 void PROG_TaskManager::main( _programArgs args )
 {
 	_mainFrame* mainFrame = _program::getMainFrame( 109 , 95 , _style::notResizeable );
+	mainFrame->setUserEventHandler( onKeyDown , make_callback( &_dialogWindow::submitEscapeHandler ) );
 	
 	// Simple Indicators
 	this->currentCpuUsage = new _imageGadget( 7 , 10 , _bitmap( 29 , 29 , _color::black ) , ignore , ignore , _style::canNotTakeFocus );

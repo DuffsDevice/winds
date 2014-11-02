@@ -29,7 +29,7 @@ class PROG_Credits : public _progC
 		
 		void			main( _programArgs args );
 		
-		_callbackReturn handler( _event event );
+		_callbackReturn handler( _event );
 		
 	public:
 		
