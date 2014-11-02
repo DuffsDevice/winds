@@ -26,7 +26,6 @@ void PROG_Credits::main( _programArgs args )
 	
 	// Window
 	_mainFrame* mainFrame = _program::getMainFrame( 150 , 150 , _style::notResizeable );
-	mainFrame->setUserEventHandler( onClose , make_callback( this , &PROG_Credits::handler ) );
 	mainFrame->setUserEventHandler( onKeyDown , make_callback( &_dialogWindow::submitEscapeHandler ) );
 	mainFrame->setBgColor( _color::white );
 	
@@ -84,9 +83,8 @@ void PROG_Credits::main( _programArgs args )
 	mainFrame->addChild( this->winLogo );
 }
 
-_callbackReturn PROG_Credits::handler( _event event )
+_callbackReturn PROG_Credits::handler( _event )
 {
 	this->terminate();
-	
 	return handled;
 }
