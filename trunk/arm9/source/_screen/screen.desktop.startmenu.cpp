@@ -1,13 +1,26 @@
 #include <_screen/screen.desktop.startmenu.h>
 #include <_gadget/gadget.image.h>
 #include <_gadget/gadget.fileview.h>
-#include <_gadget/gadget.button.action.h>
 #include <_controller/controller.font.h>
+#include <_controller/controller.gui.h>
 #include <_controller/controller.registry.h>
 #include <_controller/controller.localization.h>
 
 #define CONST_BOTTOM_BAR_HEIGHT 12
 #define CONST_TOP_BAR_HEIGHT 16
+
+_callbackReturn _desktopScreenStartMenu::buttonHandler( _event event )
+{
+	_gadget* that = event.getGadget();
+	
+	if( that == this->shutdownLabel || that == this->shutdownButton )
+		_guiController::changeState( _guiState::shutdown );
+	
+	else if( that == this->logOffLabel || that == this->logOffButton )
+		_guiController::changeState( _guiState::logout );
+	
+	return handled;
+}
 
 _callbackReturn _desktopScreenStartMenu::clickHandler( _event event ){
 	if( event == onMouseClick ){
@@ -86,20 +99,32 @@ _desktopScreenStartMenu::_desktopScreenStartMenu( _style&& style ) :
 	_coord buttonY = this->getHeight() - 11;
 	
 	// Shutdown button & label
-	_label* shutdownLabel = new _label( halfWidth + 12 , buttonY , halfWidth - 12 , 10 , _localizationController::getBuiltInString("lbl_turn_off") );
-	shutdownLabel->setColor( _color::white );
-	shutdownLabel->setVAlign( _valign::middle );
-	shutdownLabel->setAlign( _align::left );
-	this->addChild( new _actionButton( halfWidth + 1 , buttonY , _actionButtonType::shutdown ) );
+	this->shutdownLabel = new _label( halfWidth + 12 , buttonY , halfWidth - 12 , 10 , _localizationController::getBuiltInString("lbl_turn_off") );
+	this->shutdownLabel->setColor( _color::white );
+	this->shutdownLabel->setVAlign( _valign::middle );
+	this->shutdownLabel->setAlign( _align::left );
+	this->shutdownLabel->applyStyle( _style::clickable );
+	this->shutdownLabel->setUserEventHandler( onMouseClick , make_callback( this , &_desktopScreenStartMenu::buttonHandler ) );
+	
+	this->shutdownButton = new _actionButton( halfWidth + 1 , buttonY , _actionButtonType::shutdown );
+	this->shutdownButton->setUserEventHandler( onMouseClick , make_callback( this , &_desktopScreenStartMenu::buttonHandler ) );
+	
+	this->addChild( shutdownButton );
 	this->addChild( shutdownLabel );
 	
 	
 	// Log Off button & label
-	_label* logOffLabel = new _label( 14 , buttonY , halfWidth - 14 , 10 , _localizationController::getBuiltInString("lbl_log_off") );
-	logOffLabel->setColor( _color::white );
-	logOffLabel->setVAlign( _valign::middle );
-	logOffLabel->setAlign( _align::left );
-	this->addChild( new _actionButton( 3 , buttonY , _actionButtonType::logoff ) );
+	this->logOffLabel = new _label( 14 , buttonY , halfWidth - 14 , 10 , _localizationController::getBuiltInString("lbl_log_off") );
+	this->logOffLabel->setColor( _color::white );
+	this->logOffLabel->setVAlign( _valign::middle );
+	this->logOffLabel->setAlign( _align::left );
+	this->logOffLabel->applyStyle( _style::clickable );
+	this->logOffLabel->setUserEventHandler( onMouseClick , make_callback( this , &_desktopScreenStartMenu::buttonHandler ) );
+	
+	this->logOffButton = new _actionButton( 3 , buttonY , _actionButtonType::logoff );
+	this->logOffButton->setUserEventHandler( onMouseClick , make_callback( this , &_desktopScreenStartMenu::buttonHandler ) );
+	
+	this->addChild( logOffButton );
 	this->addChild( logOffLabel );
 	
 	// Username

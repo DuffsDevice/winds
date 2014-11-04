@@ -2,6 +2,20 @@
 #include <_controller/controller.gui.h>
 #include <_type/type.program.h>
 
+void _programController::removeProgramsOfGadgetHost( _gadgetScreen* host )
+{
+	std::for_each(
+		runningPrograms.begin()
+		, runningPrograms.end()
+		, [host]( _programList::value_type& p )
+			{
+				// Delete the program if it is marked for termination
+				if( p->getMainFrame() && p->getMainFrame()->getParent() == host )
+					p->terminate();
+			}
+	);
+}
+
 bool _programController::isExistent( const _program* prog )
 {
 	// Iterate over currently running programs
@@ -26,6 +40,12 @@ bool _programController::executeProgram( _uniquePtr<_program> prog )
 }
 
 void _programController::terminateAllPrograms(){
+	std::for_each(
+		runningPrograms.begin()
+		, runningPrograms.end()
+		, []( _programList::value_type& p ){ p->terminate(); }
+	);
+	frame();
 	runningPrograms.clear();
 	programsToExecute.clear();
 }

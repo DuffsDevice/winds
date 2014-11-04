@@ -48,15 +48,17 @@ bool _localizationController::init()
 }
 
 const string& _localizationController::getMonth( _u8 month ){
-	const string& value = localizationMonthTable->readIndex( int2string( month ) , currentLanguage );
-	if( value.empty() )
+	bool exists = true;
+	const string& value = localizationMonthTable->readIndex( int2string( month ) , currentLanguage , &exists );
+	if( !exists )
 		return invalidStringSignature;
 	return value;
 }
 
 const string& _localizationController::getBuiltInString( const string& name ){
-	const string& value = localizationTextTable->readIndex( name , currentLanguage );
-	if( value.empty() )
+	bool exists;
+	const string& value = localizationTextTable->readIndex( name , currentLanguage , &exists );
+	if( !exists )
 		return invalidStringSignature;
 	return value;
 }

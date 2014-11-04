@@ -14,9 +14,11 @@
 enum class _guiState : _u8{
 	empty,
 	login,
+	logout,
 	bootup,
 	setup,
-	desktop
+	desktop,
+	shutdown
 };
 
 extern _fromStr<_guiState>	string2guiState;

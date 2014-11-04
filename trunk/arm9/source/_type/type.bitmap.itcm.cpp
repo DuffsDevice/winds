@@ -468,6 +468,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	
 	_u32 j = w;
 	
+	#ifdef _WIN_CONFIG_GRADIENT_DITHER_
 	if( difference >= 8 )
 		VERTICAL_GRADIENT_FILLER_RAND( 23 , 15 , 8 , x )
 	else if( difference >= 4 )
@@ -475,6 +476,7 @@ void _bitmap::drawVerticalGradient( _coord x , _coord y , _length w , _length h 
 	else if( difference >= 2 )
 		VERTICAL_GRADIENT_FILLER_RAND( 6 , 3 , 2 , x )
 	else
+	#endif
 	{
 		_u16 val;
 		
@@ -554,6 +556,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	// Draw Set Bitmap-starting-ptr
 	_pixelArray pos = this->bmp + y * this->width + x;
 	
+	#ifdef _WIN_CONFIG_GRADIENT_DITHER_
 	if( numConsecutivePixels >= 8 )
 		horizontalGradientFillerHelper< 23 , 15 , 7 >( gradientTable , w , h , pos , this->width , y );
 	else if( numConsecutivePixels >= 4 )
@@ -561,6 +564,7 @@ void _bitmap::drawHorizontalGradient( _coord x , _coord y , _length w , _length 
 	else if( numConsecutivePixels >= 2 )
 		horizontalGradientFillerHelper< 6 , 3 , 1 >( gradientTable , w , h , pos , this->width , y );
 	else
+	#endif
 	{
 		// Set end
 		_pixelArray gradientTableEnd = _pixelArray( gradientTable ) + gradWidth - 1;
@@ -975,13 +979,11 @@ void _bitmap::move( _coord sourceX , _coord sourceY , _coord destX , _coord dest
 	// we need to use an offscreen buffer to copy
 	if( !deltaY )
 	{
-		_tempTime time = _timerController::getMicroTime();
 		_pixelArray bmp = this->bmp + sourceX + deltaX + this->width * sourceY;
 		
 		if( deltaX < width ) // Do lines overlap horizontally?
 		{
 			_length		paddingToFullWidth = this->width - width;
-			_length		widthPlusFullWidth = this->width + width;
 			
 			if( deltaX < 0 ) // Copy in left direction
 			{

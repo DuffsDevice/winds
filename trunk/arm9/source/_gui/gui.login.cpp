@@ -3,6 +3,7 @@
 #include <_controller/controller.gui.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.registry.h>
+#include <_resource/resource.image.windows.startuplogo.h>
 
 //! Gadgets we need
 #include <_gadget/gadget.label.h>
@@ -31,6 +32,11 @@ _callbackReturn _guiLogin::userLoginHandler( _event event )
 	this->welcomeBg->setColor( _color::fromRGB( 30 , 30 , 30 ) );
 	this->welcome->setAlign( _align::right );
 	this->welcomeBg->setAlign( _align::right );
+	
+	// Remove windows logo and the descriptions
+	this->beginLabel1->setParent( nullptr );
+	this->beginLabel2->setParent( nullptr );
+	this->windowsLogo->setParent( nullptr );
 	
 	_guiController::getHost()->addChild( welcome );
 	_guiController::getHost()->addChild( welcomeBg );
@@ -119,6 +125,21 @@ _guiLogin::_guiLogin() :
 	this->separator = new _imageGadget( 126 , 20 , separator );
 	
 	_guiController::getHost()->addChild( this->separator );
+	
+	// Logo and begin-label
+	this->beginLabel1 = new _label( 2 , 98 , 120 , ignore , _localizationController::getBuiltInString("lbl_click_username_1") );
+	this->beginLabel1->setColor( _color::white );
+	this->beginLabel1->setAlign( _align::right );
+	
+	this->beginLabel2 = new _label( 2 , 107 , 120 , ignore , _localizationController::getBuiltInString("lbl_click_username_2") );
+	this->beginLabel2->setColor( _color::white );
+	this->beginLabel2->setAlign( _align::right );
+	
+	this->windowsLogo = new _imageGadget( 50 , 43 , BMP_WindowsStartUpLogo() );
+	
+	_guiController::getHost()->addChild( this->beginLabel1 );
+	_guiController::getHost()->addChild( this->beginLabel2 );
+	_guiController::getHost()->addChild( this->windowsLogo );
 }
 
 
@@ -130,4 +151,7 @@ _guiLogin::~_guiLogin()
 	delete this->welcome;
 	delete this->welcomeBg;
 	delete this->separator;
+	delete this->windowsLogo;
+	delete this->beginLabel1;
+	delete this->beginLabel2;
 }
