@@ -22,13 +22,29 @@ _lua_ini::_lua_ini( const _ini* i ) :
 	wasAllocated( true )
 {}
 
+int _lua_ini::readIndex( lua_State* L ){
+	bool exists;
+	return push( L , this->ini->readIndex( check<string>( L , 1 ) , check<string>( L , 2 ) , &exists ) , exists );
+}
+
+int _lua_ini::readIndexInt( lua_State* L ){
+	bool exists;
+	return push( L , this->ini->readIndexInt( check<string>( L , 1 ) , check<string>( L , 2 ) , &exists ) , exists );
+}
+
+int _lua_ini::readSection( lua_State* L ){
+	bool exists;
+	return push( L , this->ini->readSection( check<string>( L , 1 ) , &exists ) , exists );
+}
+
 //! Lua-_ini
 const char _lua_ini::className[] = "Ini";
 Lunar<_lua_ini>::FunctionType _lua_ini::methods[] = {
 	{ "read"			, wrap( _lua_ini , &_ini::read ) },
 	{ "write"			, wrap( _lua_ini , &_ini::write ) },
-	{ "readIndex"		, wrap( _lua_ini , &_ini::readIndex ) },
-	{ "readIndexInt"	, wrap( _lua_ini , &_ini::readIndexInt ) },
+	{ "readIndex"		, &_lua_ini::readIndex },
+	{ "readIndexInt"	, &_lua_ini::readIndexInt },
+	{ "readSection"		, &_lua_ini::readSection },
 	{ "deleteSection"	, wrap( _lua_ini , &_ini::deleteSection ) },
 	{ "deleteIndex"		, wrap( _lua_ini , &_ini::deleteIndex ) },
 	LUA_CLASS_FUNC_END

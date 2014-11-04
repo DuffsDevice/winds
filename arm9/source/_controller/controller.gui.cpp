@@ -1,6 +1,7 @@
 #include <_controller/controller.gui.h>
 #include <_controller/controller.interrupt.h>
 #include <_controller/controller.registry.h>
+#include <_controller/controller.program.h>
 #include <_screen/screen.keyboard.h>
 #include <_func/func.gradientcreator.h>
 
@@ -14,6 +15,8 @@
 #include <_gui/gui.bootup.h>
 #include <_gui/gui.desktop.h>
 #include <_gui/gui.login.h>
+#include <_gui/gui.shutdown.h>
+#include <_gui/gui.logout.h>
 
 // Graphic
 #include <_resource/resource.image.window.header.h>
@@ -88,6 +91,9 @@ void _guiController::frame()
 	_guiController::deleteHost();
 	_guiController::disableKeyboard();
 	
+	// Delete programs that are dependent of the current host
+	_programController::removeProgramsOfGadgetHost( _guiController::host );
+	
 	// Create new state
 	switch( _guiController::state )
 	{
@@ -97,11 +103,17 @@ void _guiController::frame()
 		case _guiState::login:
 			_guiController::activeGui = new _guiLogin();
 			break;
+		case _guiState::logout:
+			_guiController::activeGui = new _guiLogout();
+			break;
 		case _guiState::setup:
 			_guiController::activeGui = new _guiSetup();
 			break;
 		case _guiState::desktop:
 			_guiController::activeGui = new _guiDesktop();
+			break;
+		case _guiState::shutdown:
+			_guiController::activeGui = new _guiShutdown();
 			break;
 		default:
 			break;

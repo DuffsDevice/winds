@@ -44,8 +44,9 @@ class _ini
 		}
 		
 		//! Read an index from the registry out of the supplied section
-		const string& readIndex( const string& section , const string& name ) const ;
-		_int readIndexInt( const string& section , const string& name ) const ;
+		//! If 'exists' is not null, it will be set to true, if the key exists, false otherwise
+		const string& readIndex( const string& section , const string& name , bool* exists = nullptr ) const ;
+		_int readIndexInt( const string& section , const string& name , bool* exists = nullptr ) const ;
 		
 		//! Write an index to the registry, a section and a key will be generated, if they're not existent
 		void writeIndex( const string& section , const string& name , const string& value ){ this->array[section][name] = value; }
@@ -57,7 +58,8 @@ class _ini
 		void deleteIndex( const string& section , const string& name );
 		
 		//! Read whole Section
-		const _assocVector<string,string>& readSection( const string& section ) const ;
+		//! If 'exists' is not null, it will be set to true, if the key exists, false otherwise
+		const _assocVector<string,string>& readSection( const string& section , bool* exists = nullptr ) const ;
 		
 		//! Virtual Dtor
 		virtual ~_ini(){};

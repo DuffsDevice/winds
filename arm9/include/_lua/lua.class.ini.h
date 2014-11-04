@@ -28,6 +28,15 @@ class _lua_ini
 		_lua_ini( _ini* , bool wasAllocated = false );
 		_lua_ini( const _ini* );
 		
+		//! readIndex
+		int readIndex( lua_State* L );
+		
+		//! readIndexInt
+		int readIndexInt( lua_State* L );
+		
+		//! readSection
+		int readSection( lua_State* L );
+		
 		
 		//! Lunar !//
 		static const char className[];

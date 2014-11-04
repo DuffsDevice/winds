@@ -111,7 +111,6 @@ void _registryController::end()
 	// Delete currently logged in user
 	setUserRegistry( nullptr );
 	
-	
 	// Update time that windows ran
 	_unixTime timeOnline = getSystemRegistry().readIndexInt( "bootParams" , "timeOnline" );
 	timeOnline += _time::now().toUnixTime() - systemStartTime;						// Add difference between system end and system start
@@ -123,6 +122,9 @@ void _registryController::end()
 	// Delete Registries
 	systemRegistry = nullptr; // Flush the system registry
 	fileTypeRegistry = nullptr; // Flush the filetype registry
+	
+	// Indicate that the computer was successfully shut down
+	indicateSafeShutdown();
 }
 
 const string& _registryController::getFileTypeHandler( const string& extension )

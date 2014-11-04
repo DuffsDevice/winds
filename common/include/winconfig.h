@@ -36,4 +36,13 @@
 #define _WIN_CONFIG_LUA_PAIR_AS_ARRAY_
 
 
+////////////////
+// Appearence //
+////////////////
+
+/**
+ * Define it, if you want gradients to be dithered
+ */
+#define _WIN_CONFIG_GRADIENT_DITHER_
+
 #endif

@@ -2,7 +2,7 @@
 #include <_type/type.tokenizer.h>
 #include <_type/type.color.h>
 
-const string& _ini::readIndex( const string& section , const string& name ) const
+const string& _ini::readIndex( const string& section , const string& name , bool* exists ) const
 {
 	auto it1 = this->array.find( section );	
 	
@@ -12,8 +12,16 @@ const string& _ini::readIndex( const string& section , const string& name ) cons
 		auto it2 = it1->second.find( name );
 		
 		if( it2 != it1->second.end() )
+		{
+			if( exists )
+				*exists = true;
 			return it2->second;
+		}
 	}
+	
+	if( exists )
+		*exists = false;
+	
 	static const string output;
 	return output;
 }
@@ -27,14 +35,20 @@ void _ini::deleteIndex( const string& section , const string& name )
 		it1->second.erase(name);
 }
 
-const _assocVector<string,string>& _ini::readSection( const string& section ) const
+const _assocVector<string,string>& _ini::readSection( const string& section , bool* exists ) const
 {
 	auto it = this->array.find( section );	
 	
 	// Check if section available
 	if( it != this->array.end() )
+	{
+		if( exists )
+			*exists = true;
 		return it->second;
+	}
 	
+	if( exists )
+		*exists = false;
 	static const _assocVector<string,string> output;
 	return output;
 }
@@ -95,9 +109,9 @@ _s16 _ini::read( const string& input )
 	return errorNo;
 }
 
-_int _ini::readIndexInt( const string& section , const string& name ) const 
+_int _ini::readIndexInt( const string& section , const string& name , bool* exists ) const 
 {
-	const string& attr = this->readIndex( section , name );
+	const string& attr = this->readIndex( section , name , exists );
 	
 	// Allow formats of RGB( 14 , 6 , 9 ) and rgba( 1 , 20 , 25 , 0 )
 	if( attr.substr( 0 , 3 ) == "RGB" || attr.substr( 0 , 3 ) == "rgb" )

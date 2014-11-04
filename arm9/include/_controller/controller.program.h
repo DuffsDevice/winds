@@ -3,6 +3,7 @@
 
 #include <_type/type.h>
 #include <_type/type.controller.h>
+#include <_type/type.screen.gadget.h>
 #include <_type/type.program.h>
 #include <_type/type.program.executiondata.h>
 
@@ -43,6 +44,9 @@ class _programController : public _controller
 		
 		//! Check if a program still exists
 		static bool isExistent( const _program* prog );
+		
+		//! Removes all programs that are dependent of the supplied gadget host
+		static void removeProgramsOfGadgetHost( _gadgetScreen* host );
 };
 
 #endif

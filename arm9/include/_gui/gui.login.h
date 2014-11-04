@@ -30,6 +30,10 @@ class _guiLogin : public _gui
 		_label*							welcomeBg;
 		_imageGadget*					separator;
 		
+		_label*							beginLabel1;
+		_label*							beginLabel2;
+		_imageGadget*					windowsLogo;
+		
 		friend class _userWrapper;
 	
 	public:
