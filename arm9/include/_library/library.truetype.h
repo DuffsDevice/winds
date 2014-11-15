@@ -384,8 +384,8 @@ int main(int arg, char **argv)
    #endif
 
    #ifndef STBTT_memcpy
-   #define STBTT_memcpy       memcpy8
-   #define STBTT_memset       memset8
+   #define STBTT_memcpy       memcpy
+   #define STBTT_memset       memset
    #endif
 #endif
 

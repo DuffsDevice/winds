@@ -136,7 +136,7 @@ bool _direntry::close() const
 	if( !_filesystemController::isFatReady() || !this->exists )
 		return false;
 	
-	// Returnm, if everything is closed already
+	// Return, if everything is closed already
 	if( this->mode == _direntryMode::closed || !this->fHandle ) // same as dHandle
 		return true;
 	
@@ -223,9 +223,9 @@ bool _direntry::open( string mode ) const
 	return false;
 }
 
-string _direntry::getDisplayName( bool forceRealName ) const
+string _direntry::getFullName( bool forceExtension ) const
 {
-	if( !forceRealName )
+	if( !forceExtension )
 	{
 		_mimeType mime = this->getMimeType();
 		switch( mime )
@@ -269,12 +269,12 @@ string _direntry::getDisplayName( bool forceRealName ) const
 }
 
 
-bool _direntry::openread() const {
+bool _direntry::openRead() const {
 	return this->open( "rb" ); // Open for read, do not create
 }
 
 
-bool _direntry::openwrite( bool eraseOld )
+bool _direntry::openWrite( bool eraseOld )
 {
 	if( this->exists )
 		return this->open( eraseOld ? "wb" : "ab" ); // Open for read & write, do not create if already existing
@@ -325,9 +325,12 @@ bool _direntry::create()
 		return result && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) );
 	}
 	else
-		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && ( this->exists = !stat( this->filename.c_str() , &this->stat_buf ) ) && this->close();
+		return ( this->fHandle = fopen( this->filename.c_str() , "w" ) ) && updateStats() && this->close();
 }
 
+bool _direntry::updateStats(){
+	return this->exists = !stat( this->filename.c_str() , &this->stat_buf );
+}
 
 bool _direntry::read( void* dest , _optValue<_u64> size , _u64* numBytes ) const
 {	
@@ -338,7 +341,7 @@ bool _direntry::read( void* dest , _optValue<_u64> size , _u64* numBytes ) const
 		
 		_direntryMode modePrev = this->mode;
 		
-		if( this->mode == _direntryMode::closed && !this->openread() )
+		if( this->mode == _direntryMode::closed && !this->openRead() )
 			return false;
 		
 		//! Set Iterator to beginning
@@ -364,7 +367,7 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 	if( _filesystemController::isFatReady() && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::closed && this->openread() == false )
+		if( this->mode == _direntryMode::closed && this->openRead() == false )
 			return false;
 		if( !this->dHandle )
 			return false;
@@ -429,7 +432,7 @@ bool _direntry::readChildFolderOnly( _literal& child ) const
 	if( _filesystemController::isFatReady() && this->exists && this->isDirectory() )
 	{
 		// Open the Directory if necesary
-		if( this->mode == _direntryMode::closed && this->openread() == false )
+		if( this->mode == _direntryMode::closed && this->openRead() == false )
 			return false;
 		if( !this->dHandle )
 			return false;
@@ -489,7 +492,7 @@ bool _direntry::write( void* src , _u64 size )
 	
 	_direntryMode modePrev = this->mode; // Save old state
 	
-	if( this->mode == _direntryMode::closed && !this->openwrite() )
+	if( this->mode == _direntryMode::closed && !this->openWrite() )
 		return false;
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
@@ -510,7 +513,7 @@ bool _direntry::writeString( string str )
 	
 	_direntryMode modePrev = this->mode; // Save old state
 	
-	if( this->mode == _direntryMode::closed && !this->openwrite() )
+	if( this->mode == _direntryMode::closed && !this->openWrite() )
 		return false;
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
@@ -531,7 +534,7 @@ string _direntry::readString( _optValue<_u64> size ) const
 	
 	_direntryMode modePrev = this->mode;
 	
-	if( this->mode == _direntryMode::closed && !this->openread() )
+	if( this->mode == _direntryMode::closed && !this->openRead() )
 		return "";
 	if( size <= 0 || !this->fHandle )
 		return "";
@@ -582,7 +585,7 @@ _u64 _direntry::getSize() const
 		fsetpos( this->fHandle , &lastpos );
 	}
 	//! Open the file
-	else if( this->openread() )
+	else if( this->openRead() )
 	{
 		//! "Tell" Size
 		fseek ( this->fHandle , 0 , SEEK_END );

@@ -151,10 +151,10 @@ class _direntry
 		_direntryMode getMode() const { return this->mode; }
 		
 		//! Open the file for reading
-		virtual bool openread() const ;
+		virtual bool openRead() const ;
 		
 		//! open the file for writing
-		virtual bool openwrite( bool eraseOldContent = true );
+		virtual bool openWrite( bool eraseOldContent = true );
 		
 		//! Create a file with the specified filename
 		virtual bool create();
@@ -187,7 +187,7 @@ class _direntry
 		virtual const string& getName() const { return this->name; }
 		
 		//! Get the string that should be displayed if the direntry-name should be drawn
-		string getDisplayName( bool forceRealName = false ) const ;
+		string getFullName( bool forceExtension = false ) const ;
 		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
 		virtual const string& getExtension() const { return this->extension; }
@@ -226,6 +226,9 @@ class _direntry
 		
 		//! To rename the file
 		bool rename( string newName );
+		
+		//! Updates the stats in a file (returns true, if successful)
+		bool updateStats();
 };
 
 extern _direntry _diskRoot_;

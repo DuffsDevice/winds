@@ -63,7 +63,7 @@ void PROG_Mapper::main( _programArgs args )
 	this->description	= new _label( 5 , 2 , ignore , ignore , _localizationController::getBuiltInString("def_choose_program_to_open") );
 	
 	// File Label
-	this->fileLabel = new _label( 5 , 11 , ignore , ignore , _localizationController::getBuiltInString("def_filename") + "  " + _direntry(this->fileToOpen).getDisplayName(true) );
+	this->fileLabel = new _label( 5 , 11 , ignore , ignore , _localizationController::getBuiltInString("def_filename") + "  " + _direntry(this->fileToOpen).getFullName(true) );
 	this->fileLabel->setColor( _color::fromBW( 12 ) );
 	
 	// Create List of Programs

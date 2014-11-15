@@ -22,6 +22,7 @@
 #include <_resource/resource.icon.jpg.h>
 #include <_resource/resource.icon.image.h>
 #include <_resource/resource.icon.registry.h>
+#include <_resource/resource.icon.archive.h>
 
 bool _registryController::init()
 {
@@ -181,6 +182,9 @@ _bitmap _registryController::getFileTypeImage( const string& extension , _mimeTy
 				
 			case _mime::application_x_nintendo_gba_rom:
 				return BMP_GbaIcon();
+			
+			case _mime::application_zip:
+				return BMP_ArchiveIcon();
 			
 			case _mime::font_opentype:
 			case _mime::font_truetype:

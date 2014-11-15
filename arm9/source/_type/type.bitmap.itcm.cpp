@@ -21,24 +21,31 @@ void _bitmap::setWidth( _length w )
 		_pixelArray newBmp;
 		
 		if( this->wasAllocated )
-		{
 			newBmp = new _pixel[ w * this->height ];
-			memset16( newBmp , 0 , w * this->height );
-		}
 		else
 			newBmp = this->bmp;
 			
 		if( w < this->width )
 		{
-			for( _int y = 1; y != this->height ; y++ )
-				for( _int x = 0; x != w ; x++ )
-					newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+			_pixelArray newBmpTemp = newBmp;
+			_pixelArray bmpTemp = this->bmp;
+			_length heightTemp = this->height;
+			while( heightTemp-- > 0 ){
+				memcpy16( newBmpTemp , bmpTemp , w );
+				newBmpTemp += w;
+				bmpTemp += this->width;
+			}
 		}
 		else
 		{
-			for( _int y = this->height ; y > 0 ; y-- )
-				for( _int x = this->width - 1; x >= 0 ; x-- )
-					newBmp[ ( y - 1 ) * w + x ] = this->bmp[ ( y - 1 ) * this->width + x ];
+			_length heightTemp = this->height - 1;
+			_pixelArray newBmpTemp = newBmp + w * heightTemp;
+			_pixelArray bmpTemp = this->bmp + this->width + heightTemp;
+			while( heightTemp-- >= 0 ){
+				memcpy16( newBmpTemp , bmpTemp , w );
+				newBmpTemp -= w;
+				bmpTemp -= this->width;
+			}
 		}
 		
 		// Finish work, copy buffers and free unused memory
@@ -65,14 +72,9 @@ void _bitmap::setHeight( _length h )
 	if( this->wasAllocated && this->isValid() )
 	{
 		_pixelArray newBmp = new _pixel[ h * this->width ];
-		_pixelArray tmpNew = newBmp;
-		_pixelArray oldBmp = this->bmp;
 		
-		_u32 cnt = min( h , this->height ) * this->width;
-		
-		do
-			*tmpNew++ = *oldBmp++;
-		while( --cnt > 0 );
+		// Copy data...
+		memcpy16( newBmp , this->bmp , min( h , this->height ) * this->width );
 		
 		// Release old Buffer and set new Buffer
 		this->destruct();
@@ -108,31 +110,32 @@ void _bitmap::resize( _length w , _length h )
 		else
 			newBmp = this->bmp;
 		
+		_length heightToCopy = min( this->height , h );
+		
 		// Resize
 		if( w < this->width )
 		{
-			// Set y first to 1, because the first line of pixels will ever be the same
-			for( _int y = 1; y < min( this->height , h ) ; y++ )
-				for( _int x = 0; x < w ; x++ )
-					newBmp[ y * w + x ] = this->bmp[ y * this->width + x ];
+			_pixelArray newBmpTemp = newBmp;
+			_pixelArray bmpTemp = this->bmp;
+			while( heightToCopy-- > 0 ){
+				memcpy16( newBmpTemp , bmpTemp , w );
+				newBmpTemp += w;
+				bmpTemp += this->width;
+			}
 		}
 		else if( w > this->width )
 		{
-			for( _int y = min( this->height , h ) ; y > 0 ; y-- )
-				for( _int x = this->width - 1; x >= 0 ; x-- )
-					newBmp[ ( y - 1 ) * w + x ] = this->bmp[ ( y - 1 ) * this->width + x ];
+			heightToCopy--;
+			_pixelArray newBmpTemp = newBmp + w * heightToCopy;
+			_pixelArray bmpTemp = this->bmp + this->width + heightToCopy;
+			while( heightToCopy-- >= 0 ){
+				memcpy16( newBmpTemp , bmpTemp , w );
+				newBmpTemp -= w;
+				bmpTemp -= this->width;
+			}
 		}
 		else if( this->wasAllocated )
-		{
-			_pixelArray tmpNew = newBmp;
-			_pixelArray oldBmp = this->bmp;
-			
-			_u32 cnt = min( h , this->height ) * this->width;
-			
-			do
-				*tmpNew++ = *oldBmp++;
-			while( --cnt > 0 );
-		}
+			memcpy16( newBmp , this->bmp , min( h , this->height ) * this->width );
 		
 		// Finish work, copy buffers, free the old (if needed)
 		this->destruct();

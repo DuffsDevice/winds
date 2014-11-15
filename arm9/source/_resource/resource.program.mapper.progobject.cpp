@@ -56,7 +56,7 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 		if( header.name && !header.name->empty() )
 			this->progName = move( *header.name );
 		else
-			this->progName = programFile.getDisplayName();
+			this->progName = programFile.getFullName();
 		
 		// Set Author
 		if( header.author && !header.author->empty() )
@@ -65,7 +65,7 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 		delete progObject;
 	}
 	else
-		this->progName = programFile.getDisplayName();
+		this->progName = programFile.getFullName();
 	
 	// Set Program Image
 	this->progImage = programFile.getFileImage();

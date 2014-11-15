@@ -54,7 +54,7 @@ void _fileObject::initRename()
 	if( this->isRenamed() )
 		return;
 	
-	_fileObject::renameTextBox = new _textBox( 11 , 0 , this->getWidth() - 11 , this->getHeight() , this->file->getDisplayName() );
+	_fileObject::renameTextBox = new _textBox( 11 , 0 , this->getWidth() - 11 , this->getHeight() , this->file->getFullName() );
 	this->addChild( this->renameTextBox.get() );
 	_fileObject::renameTextBox->focus();
 	_fileObject::renamedFile = this;
@@ -82,7 +82,7 @@ _callbackReturn _fileObject::updateHandler( _event event )
 			break;
 		case _fileViewType::list:
 			that->setSizeIfAuto(
-				_fontController::getStandardFont()->getStringWidth( that->file->getDisplayName() , _fontController::getStandardFontSize() ) + 12
+				_fontController::getStandardFont()->getStringWidth( that->file->getFullName() , _fontController::getStandardFontSize() ) + 12
 				, _guiController::getFileObjectHeight()
 			);
 			break;
@@ -136,7 +136,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			_fontHandle		ft = _fontController::getStandardFont();
 			_u8				ftSize = _fontController::getStandardFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( true );
-			string			fullName = that->file->getDisplayName();
+			string			fullName = that->file->getFullName();
 			
 			// Draw String Vertically middle and left aligned
 			bP.drawString( max( 1 , int( myW - ft->getStringWidth( fullName ) ) >> 1 ) , myH - ft->getHeight() , ft , fullName , ftColor , ftSize );
@@ -167,7 +167,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			_u8				fOH = _guiController::getFileObjectHeight();
 			_u8				ftSize = _fontController::getStandardFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( that->hasFocus() , that->isSelected() );
-			string			fullName = that->file->getDisplayName();
+			string			fullName = that->file->getFullName();
 			
 			// Draw String Vertically middle and left aligned
 			if( !that->isRenamed() )

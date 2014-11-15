@@ -7,7 +7,7 @@ _fileDeleteDialog::_fileDeleteDialog( _direntry fileToDelete ) :
 			fileToDelete.isDirectory() ?
 				_localizationController::getBuiltInString("fmt_delete_folder").c_str()
 				: _localizationController::getBuiltInString("fmt_delete_file").c_str()
-			, fileToDelete.getDisplayName().c_str()
+			, fileToDelete.getFullName().c_str()
 		)
 		, _localizationController::getBuiltInString("lbl_delete")
 		, fileToDelete.getFileImage()

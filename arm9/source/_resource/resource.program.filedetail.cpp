@@ -31,7 +31,7 @@ void PROG_FileDetail::main( _programArgs args )
 	mainFrame->setUserEventHandler( onClose , make_callback( this , &PROG_FileDetail::handler ) );
 	
 	this->fileIcon			= new _imageGadget( 7 , 7 , this->file->getFileImage() );
-	this->fileNameTextbox	= new _textBox( 25 , 7 , 91 , ignore , this->file->getDisplayName() );
+	this->fileNameTextbox	= new _textBox( 25 , 7 , 91 , ignore , this->file->getFullName() );
 	mainFrame->addChild( this->fileIcon );
 	mainFrame->addChild( this->fileNameTextbox );
 	
