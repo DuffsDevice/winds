@@ -28,7 +28,8 @@ _fromStr<_mime> string2mimeType = {
 	{ "application/x-internet-shortcut" , _mime::application_x_internet_shortcut } ,
 	{ "application/x-nintendo-ds-rom" , _mime::application_x_nintendo_ds_rom } ,
 	{ "application/x-nintendo-gba-rom" , _mime::application_x_nintendo_gba_rom } ,
-	{ "application/x-bat" , _mime::application_x_bat }
+	{ "application/x-bat" , _mime::application_x_bat } ,
+	{ "application/zip" , _mime::application_zip }
 };
 
 // File Extensions#
@@ -68,7 +69,8 @@ _fromStr<_mime> extension2mimeType = {
 	{ "gba" , _mime::application_x_nintendo_gba_rom } ,
 	{ "gbc" , _mime::application_x_nintendo_gba_rom } ,
 	{ "bat" , _mime::application_x_nintendo_gba_rom } ,
-	{ "reg" , _mime::application_x_ms_registry }
+	{ "reg" , _mime::application_x_ms_registry } ,
+	{ "zip" , _mime::application_zip }
 };
 
 _toStr<_mime> mimeType2string = {
@@ -98,7 +100,8 @@ _toStr<_mime> mimeType2string = {
 	{ _mime::application_x_nintendo_ds_rom , "application/x-nintendo-ds-rom" } ,
 	{ _mime::application_x_nintendo_gba_rom , "application/x-nintendo-gba-rom" } ,
 	{ _mime::application_x_bat , "application/x-bat" } ,
-	{ _mime::application_x_ms_registry , "application/x-ms-registry" }
+	{ _mime::application_x_ms_registry , "application/x-ms-registry" } ,
+	{ _mime::application_zip , "application/zip" }
 };
 
 _toStr<_mime>	mimeType2name = {
@@ -128,5 +131,6 @@ _toStr<_mime>	mimeType2name = {
 	{ _mime::application_x_nintendo_ds_rom , "Nintendo® DS ROM" } ,
 	{ _mime::application_x_nintendo_gba_rom , "Gameboy® Advance ROM" } ,
 	{ _mime::application_x_bat , "Batch File" } ,
-	{ _mime::application_x_ms_registry , "Registry File" }
+	{ _mime::application_x_ms_registry , "Registry File" } ,
+	{ _mime::application_zip , "Zip Archive" }
 };

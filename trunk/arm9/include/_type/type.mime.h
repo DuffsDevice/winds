@@ -32,7 +32,8 @@ enum class _mime : _u8{
 	application_x_internet_shortcut,
 	application_x_nintendo_ds_rom,
 	application_x_nintendo_gba_rom,
-	application_x_bat
+	application_x_bat,
+	application_zip
 };
 
 extern _fromStr<_mime>	string2mimeType;

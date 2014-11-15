@@ -346,8 +346,7 @@ void _progLua::main( _programArgs args )
 	// Create State
 	this->state = luaL_newstate();
 	
-	string luaSrcToken = "=";
-	luaSrcToken += _direntry( this->getPath() ).getDisplayName(true);
+	string luaSrcToken = "=" + _direntry( this->getPath() ).getFullName(true);
 	
 	// Load our lua-piece
 	luaL_loadbuffer( this->state , this->content->c_str() , this->content->length() , luaSrcToken.c_str() );

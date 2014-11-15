@@ -209,7 +209,7 @@ end
 function updateWindowTitle()
 	if APPDATA.window ~= nil then
 		if APPDATA.imageFile ~= nil then
-			APPDATA.window.title = APPDATA.imageFile.displayName .. " - Paint"
+			APPDATA.window.title = APPDATA.imageFile.getFullName() .. " - Paint"
 		else
 			APPDATA.window.title = System.getLocalizedString("lbl_unnamed") .. " - Paint"
 		end

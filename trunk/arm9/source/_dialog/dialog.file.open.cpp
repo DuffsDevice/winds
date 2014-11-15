@@ -124,7 +124,7 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 	{
 		_fileObject* fO = (_fileObject*)that;
 		if( event == onMouseClick && !fO->getDirentry().isDirectory() ){
-			this->fileNameBox->setStrValue( fO->getDirentry().getDisplayName() );
+			this->fileNameBox->setStrValue( fO->getDirentry().getFullName() );
 			this->fileNameBox->triggerEvent( onEdit );
 		}
 		else if( event == onMouseDblClick ){

@@ -8,7 +8,7 @@ extern "C" void consoleDemoInit();
 bool _debugController::init(){
 	debugFile = new _direntry("%WINDIR%/debug.txt");
 	debugFile->create();
-	debugFile->openwrite();
+	debugFile->openWrite();
 	return true;
 }
 

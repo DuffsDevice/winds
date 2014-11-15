@@ -42,12 +42,12 @@ int _lua_direntry::readChildFolderOnly( lua_State* L )
 	return push( L , child );
 }
 
-int _lua_direntry::getDisplayName( lua_State* L ){
-	return push( L , _direntry::getDisplayName( lightcheck<bool>( L , 1 , false ) ) );
+int _lua_direntry::getFullName( lua_State* L ){
+	return push( L , _direntry::getFullName( lightcheck<bool>( L , 1 , false ) ) );
 }
 
-int _lua_direntry::openwrite( lua_State* L ){
-	return push( L , _direntry::openwrite( lightcheck<bool>( L , 1 , false ) ) );
+int _lua_direntry::openWrite( lua_State* L ){
+	return push( L , _direntry::openWrite( lightcheck<bool>( L , 1 , false ) ) );
 }
 
 int _lua_direntry::execute( lua_State* L ){
@@ -57,8 +57,8 @@ int _lua_direntry::execute( lua_State* L ){
 //! Lua-_gadget
 const char _lua_direntry::className[] = "Direntry";
 Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
-	{ "openwrite"			, &_lua_direntry::openwrite },
-	{ "openread"			, wrap( _lua_direntry , &_direntry::openread ) },
+	{ "openWrite"			, &_lua_direntry::openWrite },
+	{ "openRead"			, wrap( _lua_direntry , &_direntry::openRead ) },
 	{ "create"				, wrap( _lua_direntry , &_direntry::create ) },
 	{ "exists"				, wrap( _lua_direntry , &_direntry::isExisting ) },
 	{ "close"				, wrap( _lua_direntry , &_direntry::close ) },
@@ -71,13 +71,13 @@ Lunar<_lua_direntry>::FunctionType _lua_direntry::methods[] = {
 	{ "rename"				, wrap( _lua_direntry , &_direntry::rename ) },
 	{ "unlink"				, wrap( _lua_direntry , &_direntry::unlink ) },
 	{ "getParentDirectory"	, wrap( _lua_direntry , &_direntry::getParentDirectory ) },
+	{ "getFullName"			, &_lua_direntry::getFullName },
 	LUA_CLASS_FUNC_END
 };
 
 Lunar<_lua_direntry>::PropertyType _lua_direntry::properties[] = {
 	{ "fileName"	, wrap( _lua_direntry , &_direntry::getFileName ) , nullptr },
 	{ "name"		, wrap( _lua_direntry , &_direntry::getName ) , nullptr },
-	{ "displayName"	, &_lua_direntry::getDisplayName , nullptr },
 	{ "extension"	, wrap( _lua_direntry , &_direntry::getExtension ) , nullptr },
 	{ "mimeType"	, wrap( _lua_direntry , &_direntry::getMimeType ) , nullptr },
 	{ "image"		, wrap( _lua_direntry , &_direntry::getFileImage ) , nullptr },

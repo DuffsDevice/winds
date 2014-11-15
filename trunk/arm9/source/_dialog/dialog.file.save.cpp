@@ -19,7 +19,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Build directory and initial name
 	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _localizationController::getBuiltInString("lbl_unnamed");
 	_direntry initialFile = _direntry( move(initialFileName) );
-	this->initialName = initialFile.getDisplayName();
+	this->initialName = initialFile.getFullName();
 	
 	// Constants
 	_coord firstLineY = 70;
@@ -109,7 +109,7 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 	{
 		_fileObject* fO = (_fileObject*)that;
 		if( event == onMouseClick && !fO->getDirentry().isDirectory() )
-			this->fileNameBox->setStrValue( fO->getDirentry().getDisplayName() );
+			this->fileNameBox->setStrValue( fO->getDirentry().getFullName() );
 		else if( event == onMouseDblClick ){
 			if( fO->getDirentry().isDirectory() )
 				fO->execute();

@@ -12,7 +12,7 @@ _iniFile::_iniFile( const string& filename ) :
 
 void _iniFile::flush()
 {
-	_direntry::openwrite( true );
+	_direntry::openWrite( true );
 	_direntry::writeString( _ini::write() );
 	_direntry::close();
 }
