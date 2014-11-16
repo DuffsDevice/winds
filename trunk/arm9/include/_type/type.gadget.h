@@ -154,6 +154,9 @@ class _gadget
 		/** Check whether or not this gadget wants to be automatically drawn greyscale if it is uneditable */
 		bool isDrawnGreyIfDisabled() const { return this->style.isDrawnGreyIfDisabled; }
 		
+		/** Check whether or not this gadget has transparent parts */
+		bool hasTransparentParts() const { return this->style.respectAlphaChannel; }
+		
 		
 		/**
 		 * Check whether this Gadget is doubleclickable

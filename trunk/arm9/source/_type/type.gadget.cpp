@@ -944,7 +944,6 @@ void _gadget::setSizeInternal( _length width , _length height )
 	this->redraw( _rect( refreshPos , refreshSize ) );
 }
 
-
 optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 {
 	_codeAnalyzer analyzer {"_gadget::gadgetRefreshHandler"};
@@ -977,7 +976,10 @@ optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 		}
 		
 		// Copy...
-		bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		if( gadget->hasTransparentParts() )
+			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		else
+			bP.copy( dim.x , dim.y , gadget->getBitmap() );
 		
 		if( ++cnt1 == numEnhancedChildren )
 			break;
@@ -1019,10 +1021,17 @@ optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 			_bitmapToner toner = _bitmapToner( tempBitmap );
 			toner.convertBrightnessToPalette( _guiController::getDisabledPalette() );
 			
-			bP.copyTransparent( dim.x , dim.y , tempBitmap );
+			if( gadget->hasTransparentParts() )
+				bP.copyTransparent( dim.x , dim.y , tempBitmap );
+			else
+				bP.copy( dim.x , dim.y , tempBitmap );
 		}
-		else
-			bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+		else{
+			if( gadget->hasTransparentParts() )
+				bP.copyTransparent( dim.x , dim.y , gadget->getBitmap() );
+			else
+				bP.copy( dim.x , dim.y , gadget->getBitmap() );
+		}
 		
 		if( ++cnt2 == numChildren )
 			break;
@@ -1109,10 +1118,8 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				return ret;
 			
 			// Try to focus the child if its not focused yet
-			bool isFocused = mouseContain->hasFocus();
-			bool isFocusing = false;
-			if( !isFocused && event == onMouseDown )
-				isFocusing = that->focusChild( mouseContain );
+			if( !mouseContain->hasFocus() && event == onMouseDown )
+				that->focusChild( mouseContain );
 			
 			// Independent of whether the gadget has focus or not
 			if( event == onMouseUp && mouseContain->state.pressed )
@@ -1120,10 +1127,6 @@ _callbackReturn _gadget::gadgetMouseHandler( _event event )
 				mouseContain->state.pressed = false; // adjust state
 				mouseContain->triggerEvent( onMouseLeave );
 			}
-			
-			// Supress a mouseDown event, if the gadget is being focused (if wanted by the gadget)
-			if( !mouseContain->style.mouseDownWhenFocusing && isFocusing )
-				return handled;
 			
 			if( mouseContain->hasClickRights() )
 			{

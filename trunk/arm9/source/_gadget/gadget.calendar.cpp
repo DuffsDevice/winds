@@ -6,7 +6,7 @@
 #include <_func/func.gridcreator.h>
 
 _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _u16 year , _u8 month , _u8 dayOfMonth , _color bgColor , _style&& style )
-	: _gadget( _gadgetType::button , x , y , width , height , (_style&&)style )
+	: _gadget( _gadgetType::button , x , y , width , height , style | _style::noTransparentParts )
 	, _singleValueGroup<_stickyButton>()
 	, curMonth( month )
 	, curYear( year )

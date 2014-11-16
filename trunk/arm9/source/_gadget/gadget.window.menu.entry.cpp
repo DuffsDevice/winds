@@ -5,7 +5,7 @@
 #include <_controller/controller.gui.h>
 
 _windowMenuEntry::_windowMenuEntry( _menu* menu , _menuEntry menuEntry , _style&& style ) :
-	_gadget( _gadgetType::windowmenuentry , ignore , ignore , ignore , _guiController::getListItemHeight() - 2 , move(style) )
+	_gadget( _gadgetType::windowmenuentry , ignore , ignore , ignore , _guiController::getListItemHeight() - 2 , style | _style::noTransparentParts )
 	, entryIndex( move(menuEntry) )
 	, menuList( entryIndex.linkedList ? new _contextMenu( ignore , menu , this , false , -1 , entryIndex.linkedList ) : nullptr )
 {

@@ -76,7 +76,7 @@ _dividerGadget::_dividerGadget( _dimension dim , _optValue<_coord> position , _u
 		, dim == _dimension::vertical ? _optValue<_coord>(ignore) : _optValue<_coord>(position)
 		, ignore
 		, ignore
-		, style | _style::notClickable
+		, style | _style::notClickable | _style::noTransparentParts
 	)
 	, margin( margin )
 	, dim( dim )

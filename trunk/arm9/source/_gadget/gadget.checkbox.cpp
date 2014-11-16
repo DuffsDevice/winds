@@ -46,7 +46,7 @@ _callbackReturn _checkBox::mouseHandler( _event event )
 }
 
 _checkBox::_checkBox( _optValue<_coord> x , _optValue<_coord> y , _u8 value , _style&& style ) :
-	_gadget( _gadgetType::checkbox , x , y , 9 , 9 , style | _style::notResizeable | _style::notDoubleClickable )
+	_gadget( _gadgetType::checkbox , x , y , 9 , 9 , style | _style::notResizeable | _style::notDoubleClickable | _style::noTransparentParts )
 	, intValue( value )
 {
 	// Register my handlers

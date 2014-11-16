@@ -89,7 +89,7 @@ void _windowMenu::menuHandler( _u16 list , _u16 entry )
 
 _windowMenu::_windowMenu( _menu menu , _style&& style ) :
 	_menu( move(menu) )
-	, _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _guiController::getListItemHeight() , move(style) )
+	, _gadget( _gadgetType::windowmenu , ignore , ignore , ignore , _guiController::getListItemHeight() , style | _style::noTransparentParts )
 {
 	this->setMinHeight( _guiController::getListItemHeight() );
 	

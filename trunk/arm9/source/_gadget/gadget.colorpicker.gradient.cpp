@@ -6,7 +6,7 @@
 #include <math.h>
 
 _gradientColorPicker::_gradientColorPicker( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _color initialColor , _style&& style ) :
-	_gadget( _gadgetType::gradientcolorpicker , x , y , width , height , (_style&&)style )
+	_gadget( _gadgetType::gradientcolorpicker , x , y , width , height , style | _style::noTransparentParts )
 	, hueSatImage( width - 14 , height - 2 )
 {
 	// Set Color

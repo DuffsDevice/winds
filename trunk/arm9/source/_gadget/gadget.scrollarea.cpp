@@ -2,7 +2,7 @@
 #include <_gadget/gadget.button.h>
 
 _scrollArea::_scrollArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _scrollType scrollTypeX , _scrollType scrollTypeY , _style&& style ) :
-	_gadget( _gadgetType::scrollarea , x , y , width , height , (_style&&)style )
+	_gadget( _gadgetType::scrollarea , x , y , width , height , style | _style::noTransparentParts )
 	, scrollTypeX( scrollTypeX )
 	, scrollTypeY( scrollTypeY )
 	, scrollBarX( new _scrollBar( 0 , 0 , 8 , 1 , 1 , _dimension::horizontal ) )

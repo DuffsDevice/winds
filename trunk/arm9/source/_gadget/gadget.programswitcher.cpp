@@ -144,7 +144,7 @@ _callbackReturn _programSwitcher::refreshHandler( _event event )
 }
 
 _programSwitcher::_programSwitcher( _style&& style ) :
-	_popup( 40 , 40 , nullptr , (_style&&)style )
+	_popup( 40 , 40 , nullptr , style | _style::noTransparentParts )
 	, label( new _label( 0 , 9 , ignore , ignore , "----" ) )
 {
 	_window::addTaskHandler( make_callback( this , &_programSwitcher::taskChangeHandler ) );

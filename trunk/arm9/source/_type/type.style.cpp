@@ -113,16 +113,16 @@ void applyString2style( _style& style , string input )
 		else if( line == "notClickable" )
 			style |= _style::notClickable;
 		
-		// drawGreyscaleIfStatic
+		// drawGreyIfDisabled
 		else if( line == "drawGreyIfDisabled" )
 			style |= _style::drawGreyIfDisabled;
 		else if( line == "customDrawIfDisabled" )
 			style |= _style::customDrawIfDisabled;
 		
-		// focusingMouseDownSimul
-		else if( line == "focusingMouseDownSimul" )
-			style |= _style::focusingMouseDownSimul;
-		else if( line == "focusingMouseDownSuppress" )
-			style |= _style::focusingMouseDownSuppress;
+		// hasTransparentParts
+		else if( line == "hasTransparentParts" )
+			style |= _style::hasTransparentParts;
+		else if( line == "noTransparentParts" )
+			style |= _style::noTransparentParts;
 	}
 }
