@@ -61,6 +61,7 @@ void _registryController::prepareFileTypeRegistry()
 			{ "bmp"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 			{ "gif"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 			{ "ico"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
+			{ "nds"	, "%SYSTEM%/rom_exec.exe -\"$F\"" } ,
 			{ "*"	, "%SYSTEM%/progmapper.exe -\"$F\"" }
 		} }
 		, { "fileIcon" , {
@@ -134,7 +135,7 @@ const string& _registryController::getFileTypeHandler( const string& extension )
 	
 	// Read mapper that can read all types of files
 	if( index.empty() )
-		return getSystemRegistry().readIndex( "fileMapper" , "*" );
+		return fileTypeRegistry->readIndex( "fileMapper" , "*" );
 	
 	return index;
 }
@@ -193,7 +194,7 @@ _bitmap _registryController::getFileTypeImage( const string& extension , _mimeTy
 			case _mime::audio_mpeg:
 			case _mime::audio_wav:
 			case _mime::audio_x_aiff:
-			case _mime::audio_mid:
+			case _mime::audio_x_midi:
 			case _mime::audio_x_mpegurl:
 			case _mime::audio_x_mod:
 				return BMP_MusicIcon();
@@ -225,7 +226,7 @@ void _registryController::setFileTypeHandler( const string& extension , const st
 
 void _registryController::setUserRegistry( _uniquePtr<_user> newUser ){
 	userRegistry = move(newUser);
-	_filesystemController::setCurrentUserDir( newUser ? newUser->getHomeFolder() : "" );
+	_filesystemController::setCurrentUserDir( userRegistry ? userRegistry->getHomeFolder() : "" );
 }
 
 _uniquePtr<_iniFile>				_registryController::systemRegistry;

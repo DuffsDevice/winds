@@ -200,7 +200,8 @@ end
 -- Updates the greyBackground
 function redrawCanvas()
 	if APPDATA.greyBackground ~= nil then
-		APPDATA.greyBackground.redraw()
+		local pos = APPDATA.greyBackground.getAbsolutePosition()
+		APPDATA.greyBackground.redraw( Rect( pos[1] + 2 , pos[2] + 2 , APPDATA.canvas.width , APPDATA.canvas.height ) )
 	end
 end
 
@@ -312,7 +313,12 @@ function refreshHandler( event )
 	local port = APPDATA.greyBackground.getBitmapPort( event )
 	
 	port.fill( "gray" )
-	port.copy( 2 , 2 , APPDATA.canvas )
+	local flag = 1
+	for i = 0 , APPDATA.canvas.height do
+		port.drawHorizontalDottedLine( flag + 2 , i + 2 , APPDATA.canvas.width - flag , "white" )
+		flag = flag ~ 1
+	end
+	port.copyTransparent( 2 , 2 , APPDATA.canvas )
 	port.drawVerticalLine( APPDATA.canvas.width + 2 , 3 , APPDATA.canvas.height - 1 , "black" )
 	port.drawHorizontalLine( 3 , APPDATA.canvas.height + 2 , APPDATA.canvas.width , "black" )
 	return "handled"

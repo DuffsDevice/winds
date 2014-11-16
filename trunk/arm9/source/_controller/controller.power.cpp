@@ -20,3 +20,15 @@ int _powerController::getBatteryLevel(){
 void _powerController::sleep(){
 	systemSleep();
 }
+
+void _powerController::end()
+{
+	// Call handlers
+	for( _uniquePtr<_callback<void(void)>>& func : beforeShutdownHandlers )
+		(*func.get())();
+	
+	// Shut down the system
+	shutDown();
+}
+
+_vector<_uniquePtr<_callback<void(void)>>> _powerController::beforeShutdownHandlers;

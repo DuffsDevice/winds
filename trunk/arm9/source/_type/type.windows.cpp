@@ -157,7 +157,7 @@ void _windows::end()
 	for( auto iter = _windows::endMethods.rbegin() ; iter != _windows::endMethods.rend() ; iter++ )
 		(**iter)();
 	
-	_windows::active = true;
+	_windows::active = false;
 }
 
 const string& _windows::getDSUserName()

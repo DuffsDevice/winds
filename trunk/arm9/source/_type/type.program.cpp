@@ -12,6 +12,7 @@
 #include <_resource/resource.program.mapper.h>
 #include <_resource/resource.program.taskmanager.h>
 #include <_resource/resource.program.filedetail.h>
+#include <_resource/resource.program.romexecutor.h>
 #include <_resource/resource.icon.lua.h>
 #include <_resource/resource.icon.exe.h>
 #include <program_example_lua.h>
@@ -112,6 +113,8 @@ _program* _program::fromFile( string filename )
 		result = new _progLua( d.readString() );
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/rom_exec.exe" ) )
+		result = new PROG_RomExecutor();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/progmapper.exe" ) )
 		result = new PROG_Mapper();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/filedetail.exe" ) )

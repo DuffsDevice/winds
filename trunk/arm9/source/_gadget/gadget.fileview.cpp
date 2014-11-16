@@ -118,7 +118,7 @@ void _fileView::generateChildren()
 			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
 			
 			// Read Children of directory
-			//for( string str : { "Haloo.drp" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
+			//for( string str : { "Haloo.ini" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
 			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject

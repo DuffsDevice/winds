@@ -132,7 +132,7 @@ static unused int	string2int( string str ){ return string2int( str.c_str() ); }
 
 //! Converts an int to string
 extern string		int2string( _int val , _u8 zeroFill = 0 , _u8 numbersystem = 10 );
-extern string		fmt2string( _literal format , ... ) __attribute__(( format(gnu_printf, 1 , 2) )) ;
+extern string		fmt2string( _literal format , ... ) __attribute__(( format( printf , 1 , 2 ) )) ;
 extern string		vfmt2string( _literal format , va_list );
 
 //! Alignment enumeration
