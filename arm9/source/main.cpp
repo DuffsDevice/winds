@@ -7,5 +7,5 @@ int main( int argc , char* argv[] )
 	_windows::main();
 	_windows::end();
 	
-	std::exit(0);
+	return 0;
 }

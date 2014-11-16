@@ -5,7 +5,7 @@
 #include <_type/type.font.glyphs.h>
 
 _contextMenuEntry::_contextMenuEntry( _optValue<_length> width , _u16 index , _menuEntry value , _style&& style ) :
-	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , style | _style::notDoubleClickable | _style::noTransparentParts )
+	_gadget( _gadgetType::contextmenuentry , ignore , ignore , width , _guiController::getListItemHeight() , style | _style::notDoubleClickable )
 	, entry( move(value) )
 	, index( index )
 {

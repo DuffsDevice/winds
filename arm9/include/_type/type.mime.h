@@ -20,7 +20,6 @@ enum class _mime : _u8{
 	audio_mpeg,
 	audio_wav,
 	audio_x_aiff,
-	audio_mid,
 	audio_x_mpegurl,
 	audio_x_mod,
 	audio_x_midi,

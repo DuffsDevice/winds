@@ -3,13 +3,22 @@
 
 #include <_type/type.h>
 #include <_type/type.controller.h>
+#include <_type/type.uniqueptr.h>
+#include <_type/type.callback.h>
 
 class _powerController : public _controller
 {
+	private:
+		
+		static _vector<_uniquePtr<_callback<void(void)>>> beforeShutdownHandlers;
+		
 	public:
 		
-		//! Inits the interrupt system
+		//! Inits the power controller
 		static bool init();
+		
+		//! Terminates the power controller and shuts down the system
+		static void end();
 		
 		//! Shuts down the system
 		static void shutDown();
@@ -19,6 +28,11 @@ class _powerController : public _controller
 		
 		//! Get the DS' Battery Level
 		static int getBatteryLevel();
+		
+		//! Method to add functions that get called
+		static void addShutdownCallback( _paramAlloc<_callback<void(void)>> cb ){
+			beforeShutdownHandlers.push_back( cb.get() );
+		}
 };
 
 #endif

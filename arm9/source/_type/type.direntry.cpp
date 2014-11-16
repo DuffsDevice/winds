@@ -1,4 +1,5 @@
 #include <_type/type.direntry.h>
+#include <_type/type.direntry.shortcut.h>
 #include <_type/type.program.h>
 #include <_type/type.windows.h>
 #include <_controller/controller.filesystem.h>
@@ -225,6 +226,8 @@ bool _direntry::open( string mode ) const
 
 string _direntry::getFullName( bool forceExtension ) const
 {
+	string ext;
+	
 	if( !forceExtension )
 	{
 		_mimeType mime = this->getMimeType();
@@ -258,9 +261,11 @@ string _direntry::getFullName( bool forceExtension ) const
 		// Certain Files do not have an .extension
 		if( !_guiController::showFileExtension() )
 			return this->name;
+		
+		ext = this->getExtension();
 	}
-	
-	const string& ext = this->getExtension();
+	else
+		ext = this->extension;
 	
 	if( ext.empty() )
 		return this->name;
@@ -376,19 +381,22 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 		
 		while( ( dir = readdir( this->dHandle ) ) != nullptr )
 		{
-			if( dir->d_name[0] == '.' 
+			_literal curName = dir->d_name;
+			
+			if( curName[0] == '.' 
 				&& (
-					dir->d_name[1] == 0
-					|| ( dir->d_name[1] == '.' && dir->d_name[2] == 0 )
+					curName[1] == 0
+					|| ( curName[1] == '.' && curName[2] == 0 )
 				)
 			)
 				continue;
-				
+			
 			// Check whether we have to check for a specific file extension (only if the currently processed file is not a directory)
 			if( allowedExtensions && dir->d_type != DT_DIR )
 			{
-				_u32 nameLen = strlen( dir->d_name );
-				_literal nameEnd = dir->d_name + nameLen - 1;
+				//checkAgain:
+				_u32 nameLen = strlen( curName );
+				_literal nameEnd = curName + nameLen - 1;
 				
 				for( const string& ext : *allowedExtensions ) // Iterate over valid extensions
 				{
@@ -411,13 +419,20 @@ bool _direntry::readChild( _literal& child , _fileExtensionList* allowedExtensio
 						goto _found;
 					_continue:;
 				}
+				
+				// If file is shortcut to a valid file
+				//if( nameLen >= 4 && strcmp( nameEnd-4 , ".lnk" ) == 0 ){
+				//	curName = _shortcut( this->filename + curName ).getDestination().c_str();
+				//	goto checkAgain;
+				//}
+				
 				continue; // File does not match any extension
 			}
 			
 			_found:
 			
 			// Write Name to destination and return, that we have found a valid next directory entry
-			child = dir->d_name;
+			child = curName;
 			return true;
 		}
 	}
@@ -445,7 +460,7 @@ bool _direntry::readChildFolderOnly( _literal& child ) const
 				dir->d_type != DT_DIR
 				||
 				(
-					dir->d_name[0] == '.' 
+					dir->d_name[0] == '.'
 					&& (
 						dir->d_name[1] == 0
 						|| ( dir->d_name[1] == '.' && dir->d_name[2] == 0 )
@@ -617,7 +632,7 @@ string _direntry::getSizeReadable() const
 
 bool _direntry::execute( _programArgs args )
 {
-	//if( _windows::getHardwareType() != _hardwareType::emulator && !_filesystemController::isFatReady() )
+	//if( !_filesystemController::isFatReady() )
 	//	return false;
 	
 	if( this->isDirectory() )

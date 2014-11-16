@@ -6,6 +6,7 @@
 #include <_controller/controller.gui.h>
 #include <_controller/controller.debug.h>
 #include <_type/type.font.glyphs.h>
+#include <_type/type.windows.h>
 
 PROG_FileDetail::PROG_FileDetail()
 {
@@ -91,6 +92,7 @@ void PROG_FileDetail::main( _programArgs args )
 				
 				this->openedWithChangeButton = new _button( 104 , 32 , 13 , 11 , string( 1 , _glyph::edit ) );
 				this->openedWithChangeButton->setFont( _fontController::getFont( "SystemSymbols8" ) );
+				this->openedWithChangeButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_FileDetail::handler ) );
 				mainFrame->addChild( this->openedWithChangeButton );
 			}
 	}
@@ -191,6 +193,12 @@ _callbackReturn PROG_FileDetail::handler( _event event )
 			this->fileNameTextbox->blink();
 			return handled;
 		}
+	}
+	else if( that == this->openedWithChangeButton ){
+		_windows::executeCommand(
+			string("%SYSTEM%/progmapper.exe -\"*.") + this->file->getExtension().c_str() + "\" -save_choice" 
+		);
+		return handled;
 	}
 	this->terminate();
 	

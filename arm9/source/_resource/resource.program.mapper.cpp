@@ -50,14 +50,16 @@ void PROG_Mapper::main( _programArgs args )
 	// Checkbox
 	this->saveDescision	= new _checkBox( 4 , ignore );
 	if( this->chooseButNotOpen ){
-		this->saveDescision->setIntValue( true );
-		this->saveDescision->removeInternalEventHandler( onMouseClick );
+		this->saveDescision->setIntValue(true);
+		this->saveDescision->setEnabled(false);
 	}
 	this->saveDescision->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::down , 1 , 2 ) );
 	
 	// .. and its description
 	this->saveDescisionLabel	= new _label( ignore , ignore , ignore , 10 , _localizationController::getBuiltInString("lbl_save_choice") );
 	this->saveDescisionLabel->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::right , 2 , 1 ) );
+	if( this->chooseButNotOpen )
+		this->saveDescisionLabel->setEnabled(false);
 	
 	// Label
 	this->description	= new _label( 5 , 2 , ignore , ignore , _localizationController::getBuiltInString("def_choose_program_to_open") );
@@ -221,7 +223,7 @@ void PROG_Mapper::dialogHandler( _dialogResult result )
 		}
 		
 		// Add Prog_Object
-		auto* ptr = new PROG_Mapper_Object( 70 , pathToAdd );
+		PROG_Mapper_Object* ptr = new PROG_Mapper_Object( 70 , pathToAdd );
 		ptr->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::right , 1 , 1 , true , 1 , 1 ) );
 		this->scrollArea->addChild( ptr , true );
 	}

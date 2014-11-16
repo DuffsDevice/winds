@@ -34,7 +34,7 @@ bool _guiController::init()
 	selectFg	= _color::black;
 	selectBg	= _color::fromRGB( 22 , 22 , 20 );
 	itemFg		= _color::black;
-	itemBg		= _color::transparent;
+	itemBg		= _color::white;
 	controlBg	= _color::fromRGB( 28 , 28 , 27 );
 	controlFg	= _color::fromRGB( 22 , 22 , 20 );
 	

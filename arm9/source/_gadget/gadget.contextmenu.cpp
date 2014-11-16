@@ -3,7 +3,7 @@
 #include <_controller/controller.debug.h>
 
 _contextMenu::_contextMenu( _optValue<_length> width , _menu* content , _gadget* owner , bool preserveValue , _int initialValue , _u16 mainList , _style&& style ) :
-	_popup( width , ignore , owner , style | _style::noTransparentParts )
+	_popup( width , ignore , owner , style | _style::hasTransparentParts )
 	, preserveValue( preserveValue )
 	, wasMenuAllocated( true )
 	, mainList( mainList )
