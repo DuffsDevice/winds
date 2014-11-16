@@ -83,19 +83,19 @@ class _style
 		template<_u16 t, bool set>
 		_style( _styleAttr<t,set> param ) :
 			attrs( _style() | param )
-			, data( 0 )
+			, val( 0 )
 		{}
 		
-		//! Ctor by sum
-		_style( _u16 sum ) :
+		//! Ctor by sum and data
+		_style( _u16 sum , _int data = 0 ) :
 			attrs( sum )
-			, data( 0 )
+			, val( data )
 		{}
 		
 		
 		//! To concatenate style attributes
-		template<_u16 t> constexpr _style operator |( const _styleAttr<t,true> ) const { return _style( attrs | t ); }
-		template<_u16 t> constexpr _style operator |( const _styleAttr<t,false> ) const { return _style( attrs & ( _u16(~0) ^ t ) ); }
+		template<_u16 t> constexpr _style operator |( const _styleAttr<t,true> ) const { return _style( attrs | t , val ); }
+		template<_u16 t> constexpr _style operator |( const _styleAttr<t,false> ) const { return _style( attrs & ( _u16(~0) ^ t ) , val ); }
 		template<_u16 t> _style& operator |=( const _styleAttr<t,true> ){ this->attrs |= t; return *this; }
 		template<_u16 t> _style& operator |=( const _styleAttr<t,false> ){ this->attrs &= _u16(~0) ^ t; return *this; }
 		
