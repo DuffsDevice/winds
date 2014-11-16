@@ -45,7 +45,7 @@ class _style
 				bool	doesFocusMoveFront : 1;		/** Whether a focus leads to moving the gadget to the front of adjacent children **/
 				bool	isClickable : 1;			/** Whether the user can interact with the gadget by the stylus */
 				bool	isDrawnGreyIfDisabled : 1;	/** If set to true, the gadget class will automatically paint the gadget greyscale if it is uneditable */
-				bool	mouseDownWhenFocusing : 1;	/** If set to false, the gadget will only receive a mousedown event if it is not being focused while clicking */
+				bool	respectAlphaChannel : 1;	/** If set to false, the gadget will be copied more efficient, because no alpha channel is taken into account */
 			}PACKED;
 		};
 		
@@ -74,7 +74,7 @@ class _style
 				| doubleClickable		| noKeyboardRequest
 				| notDraggable			| focusNoAction
 				| clickable				| drawGreyIfDisabled
-				| focusingMouseDownSimul
+				| hasTransparentParts
 			)
 			, data( 0 )
 		{}
@@ -147,8 +147,8 @@ class _style
 		static const _styleAttr<(1 << 14),true>		drawGreyIfDisabled;
 		static const _styleAttr<(1 << 14),false>	customDrawIfDisabled;
 		
-		static const _styleAttr<(1 << 15),true>		focusingMouseDownSimul;
-		static const _styleAttr<(1 << 15),false>	focusingMouseDownSuppress;
+		static const _styleAttr<(1 << 15),true>		hasTransparentParts;
+		static const _styleAttr<(1 << 15),false>	noTransparentParts;
 };
 
 extern void applyString2style( _style& attr , string input );

@@ -83,7 +83,7 @@ function main( filename )
 		createEmptyCanvas()
 	end
 	
-	local bg = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragThld" )
+	local bg = ImageGadget( 0 , 9 , Bitmap( 150 , 140 ) , "draggable | smallDragThld | noTransparentParts" )
 	bg.setInternalEventHandler( "onDraw" , refreshHandler )
 	bg.setUserEventHandler( "onDragging" , dragHandler )
 	bg.setUserEventHandler( "onDragStop" , dragHandler )

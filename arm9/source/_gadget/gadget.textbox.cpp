@@ -198,7 +198,7 @@ _callbackReturn _textBox::mouseHandler( _event event )
 }
 
 _textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
-	_gadget( _gadgetType::textbox , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld )
+	_gadget( _gadgetType::textbox , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld | _style::noTransparentParts )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, scroll( 0 )
 	, text( move(value) , _fontController::getStandardFont() , _color::fromRGB( 0 , 0 , 0 ) , _fontController::getStandardFontSize() )

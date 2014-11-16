@@ -12,7 +12,7 @@ _scrollBar::_scrollBar( _optValue<_coord> x , _optValue<_coord> y , _length gadg
 		, x , y 
 		, dim == _dimension::horizontal ? gadgetLength : 8
 		,  dim == _dimension::vertical ? gadgetLength : 8 
-		, style | _style::canNotTakeFocus | _style::notFocusable
+		, style | _style::canNotTakeFocus | _style::notFocusable | _style::noTransparentParts
 	)
 	, value( 0 )
 	, length( length )

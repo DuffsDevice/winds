@@ -211,7 +211,7 @@ _callbackReturn _textArea::mouseHandler( _event event )
 }
 
 _textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
-	_gadget( _gadgetType::textarea , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld )
+	_gadget( _gadgetType::textarea , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld | _style::noTransparentParts )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, text( move(value) , _fontController::getStandardFont() , _color::black , _fontController::getStandardFontSize() )
 {

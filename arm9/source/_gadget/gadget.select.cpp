@@ -3,7 +3,7 @@
 #include <_controller/controller.gui.h>
 
 _select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , const _menuEntryList& lst , _int initialValue , _style&& style ) :
-	_gadget( _gadgetType::selectbox , x , y , width , _guiController::getSelectHeight() , (_style&&)style )
+	_gadget( _gadgetType::selectbox , x , y , width , _guiController::getSelectHeight() , style | _style::noTransparentParts )
 	, contextMenu( new _contextMenu( ignore , _menu( move(lst) ) , this , true , initialValue ) )
 	, arrow( new _scrollButton( 8 , 8 , 0 , 0 , _scrollButtonType::buttonBottom ) )
 {

@@ -32,7 +32,7 @@ _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 		, _fileViewType viewType , _fileExtensionList allowedExtensions
 		, _callback<_eventHandler>* eventHandler , bool singleClickToExecute , _style&& style
 	) :
-	_scrollArea( x , y , width , height , _scrollType::meta , _scrollType::meta , style | _style::rightClickable )
+	_scrollArea( x , y , width , height , _scrollType::meta , _scrollType::meta , style | _style::rightClickable | _style::noTransparentParts )
 	, directory( path )
 	, viewType( viewType )
 	, filemask( allowedExtensions.empty() ? nullptr : new _fileExtensionList( move(allowedExtensions) ) )

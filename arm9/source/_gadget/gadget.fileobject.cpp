@@ -212,7 +212,7 @@ void _fileObject::initializeMenu()
 }
 
 _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& filename , _fileViewType viewtype , _style&& style ) :
-	_gadget( _gadgetType::fileobject , x , y , width , height , style | _style::focusingMouseDownSuppress )
+	_gadget( _gadgetType::fileobject , x , y , width , height , style | _style::noTransparentParts )
 	, file( new _direntry(filename) )
 	, viewType( viewtype )
 {

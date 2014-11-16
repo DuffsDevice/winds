@@ -6,7 +6,7 @@ _fileTree::_fileTree( _optValue<_coord> x , _optValue<_coord> y
 		, _fileExtensionList allowedExtensions
 		, _callback<_eventHandler>* eventHandler , bool folderOnly , bool singleClickToExecute , _style&& style
 	) :
-	_treeView( x , y , width , height , {} , _scrollType::meta , _scrollType::meta , (_style&&)style )
+	_treeView( x , y , width , height , {} , _scrollType::meta , _scrollType::meta , style | _style::noTransparentParts )
 	, directory( path )
 	, filemask( allowedExtensions.empty() ? nullptr : new _fileExtensionList( move(allowedExtensions) ) )
 	, eventHandler( move(eventHandler) )
