@@ -25,7 +25,9 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	for( _u32 curSize = 0; curSize < 31 ; curSize++ )
 	{
 		_stickyButton* btn = new _stickyButton( 15 , 15 , -5 , -5 , int2string( curSize + 1 ) , _style::storeInt( curSize + 1 ) );
+		
 		btn->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
+		
 		// Add to singleValueGroup
 		this->addSelector( btn , curSize + 1 );
 	}
