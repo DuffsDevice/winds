@@ -24,7 +24,7 @@ struct _systemDataMsg
 	_systemDataMsg(){}
 	
 	//! Named constructors for different scenarios
-	static _systemDataMsg debugMsg( char param[] ){
+	static _systemDataMsg debugMsg( _literal param ){
 		_systemDataMsg msg;
 		msg.type = _systemDataMsgType::debug;
 		strcpy( msg.debugMessage , param );

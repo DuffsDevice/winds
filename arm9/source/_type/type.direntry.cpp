@@ -337,28 +337,24 @@ bool _direntry::updateStats(){
 	return this->exists = !stat( this->filename.c_str() , &this->stat_buf );
 }
 
-bool _direntry::read( void* dest , _optValue<_u64> size , _u64* numBytes ) const
+bool _direntry::read( void* dest , _optValue<_u64> size , bool rewindFlag , _u64* numBytes ) const
 {	
 	if( _filesystemController::isFatReady() && !this->isDirectory() )
 	{
 		if( !size.isValid() )
 			size = this->getSize();
 		
-		_direntryMode modePrev = this->mode;
-		
 		if( this->mode == _direntryMode::closed && !this->openRead() )
 			return false;
 		
 		//! Set Iterator to beginning
-		rewind( this->fHandle );
+		if( rewindFlag )
+			rewind( this->fHandle );
 		
 		//! Read bytes
 		_u64 numBytesRead = fread( dest , 1 , size , this->fHandle );
 		if( numBytes )
 			*numBytes = numBytesRead;
-		
-		if( modePrev == _direntryMode::closed )
-			this->close();
 		
 		return 0 == ferror( this->fHandle ); // Check if there was an error	
 	}
@@ -505,17 +501,12 @@ bool _direntry::write( void* src , _u64 size )
 	if( !_filesystemController::isFatReady() || this->isDirectory() )
 		return false;
 	
-	_direntryMode modePrev = this->mode; // Save old state
-	
 	if( this->mode == _direntryMode::closed && !this->openWrite() )
 		return false;
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
 	
 	int result = fwrite( src , size , 1 , this->fHandle );
-	
-	if( modePrev == _direntryMode::closed )
-		this->close();
 	
 	return result == 0;
 }
@@ -526,17 +517,12 @@ bool _direntry::writeString( string str )
 	if( !_filesystemController::isFatReady() || this->isDirectory() )
 		return false;
 	
-	_direntryMode modePrev = this->mode; // Save old state
-	
 	if( this->mode == _direntryMode::closed && !this->openWrite() )
 		return false;
 	else if( this->mode == _direntryMode::read || !this->fHandle )
 		return false;
 	
 	int result = fputs( str.c_str() , this->fHandle );
-	
-	if( modePrev == _direntryMode::closed )
-		this->close();
 	
 	return result >= 0;
 }
@@ -546,8 +532,6 @@ string _direntry::readString( _optValue<_u64> size ) const
 {
 	if( !size.isValid() )
 		size = this->getSize();
-	
-	_direntryMode modePrev = this->mode;
 	
 	if( this->mode == _direntryMode::closed && !this->openRead() )
 		return "";
@@ -570,9 +554,6 @@ string _direntry::readString( _optValue<_u64> size ) const
 	
 	// Free temorary storage
 	delete[] text;
-	
-	if( modePrev == _direntryMode::closed )
-		this->close();
 	
 	return move(out);
 }

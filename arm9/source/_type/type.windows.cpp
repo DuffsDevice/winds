@@ -114,6 +114,8 @@ void _windows::fifoDataHandler( _s32 bytes , void* userData )
 	
 	if( msg.type == _systemDataMsgType::cpuUsage )
 		_windows::cpuUsageTempSub = msg.cpuUsage;
+	else if( msg.type == _systemDataMsgType::debug )
+		_debugController::debug( msg.debugMessage );
 }
 
 

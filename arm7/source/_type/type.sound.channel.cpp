@@ -168,7 +168,7 @@ optimized void _soundChannel::process()
 		this->samplesPlayed += elapsedSamples;
 		
 		// Check if the end of the buffer would be reached in about 1/4 second
-		const _s32 criticalLowRun = min( _u32(this->frequency >> 2) , this->bufferSize >> 2 );
+		const _s32 criticalLowRun = min<_u32>( this->frequency , this->bufferSize ) >> 1;
 		
 		while( this->bufferFilled <= criticalLowRun )
 		{

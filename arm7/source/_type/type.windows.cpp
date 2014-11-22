@@ -13,7 +13,8 @@
 #include <dswifi7.h>
 
 //const _u32 _windows::ticksPerSecond = ( BUS_CLOCK + 32768 ) >> 10; // Works for about 5 Minutes (>5min.: buffer underrun)
-const _u32 _windows::ticksPerSecond = 65521; // Tested and found to work >6min
+const _u32 _windows::ticksPerSecond = 65477; // Testing... works
+//const _u32 _windows::ticksPerSecond = 65521; // Tested and found to work >6min
 
 //! the speed in which the timer ticks in hertz.
 //! #define BUS_CLOCK (33513982)
@@ -129,6 +130,12 @@ void _windows::init()
 void _windows::sendCpuUsage( _u8 percent ){
 	// Tell the arm9!
 	_systemDataMsg msg = _systemDataMsg::cpuUsageMsg( percent );
+	fifoSendDatamsg( FIFO_USER_01 , sizeof(_systemDataMsg) , (_u8*)&msg );
+}
+
+void _windows::debug( _literal text ){
+	// Tell the arm9!
+	_systemDataMsg msg = _systemDataMsg::debugMsg( text );
 	fifoSendDatamsg( FIFO_USER_01 , sizeof(_systemDataMsg) , (_u8*)&msg );
 }
 

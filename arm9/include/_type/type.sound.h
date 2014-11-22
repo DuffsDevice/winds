@@ -18,6 +18,7 @@ class _sound
 		//! Function that will prepare a channel for use and returns the channel number (overwritten by subclasses)
 		virtual _s8		prepareChannel( _u8 volume , _s8 panning ) = 0;
 		virtual void	cleanupChannel( _u8 channel ){};
+		virtual bool	isChannelReady(){ return true; }
 		
 		friend class _soundController;
 		

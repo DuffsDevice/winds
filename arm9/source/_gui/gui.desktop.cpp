@@ -6,6 +6,7 @@
 #include <_type/type.windows.h>
 #include <_type/type.direntry.zip.h>
 #include <_type/type.user.guest.h>
+#include <_type/type.sound.stream.file.h>
 
 _guiDesktop::_guiDesktop()
 {

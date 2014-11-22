@@ -1,4 +1,5 @@
 #include <_controller/controller.sound.h>
+#include <stdio.h>
 
 extern "C"{
 	#include <nds/fifocommon.h>
@@ -116,7 +117,7 @@ void _soundController::killSound( _sound* snd )
 		return;
 	
 	// Destroy the channel through arm7
-	_soundController::sendCommand( _soundCommand::channelKill );
+	_soundController::sendCommand( _soundCommand::channelKill , channelId );
 	
 	// Indicate that this sound isn't running
 	snd->playing = false;

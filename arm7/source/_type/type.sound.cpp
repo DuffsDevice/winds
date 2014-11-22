@@ -1,5 +1,6 @@
 #include <_type/type.sound.h>
 #include <_type/type.sound.msg.h>
+#include <_type/type.windows.h>
 
 #include <nds/timers.h>
 #include <nds/arm7/audio.h>
@@ -55,7 +56,7 @@ void _sound::soundDataHandler( _s32 bytes , void* userData )
 	
 	// Receive DataMsg
 	fifoGetDatamsg( FIFO_SOUND , bytes , (_u8*)&msg );
-
+	
 	if( msg.type == _soundDataMsgType::channelSet )
 	{
 		// Allocates and writes itself into global
@@ -69,6 +70,13 @@ void _sound::soundMsgHandler( _u32 command , void* userData )
 {
 	_soundCommandMsg msg = _soundCommandMsg( command );
 	_soundChannel* chn = _sound::globalChannels[msg.channel];
+	
+	//char text[30] = "Command Received: ";
+	//text[18] = '0'+command;
+	//text[19] = ',';
+	//text[20] = '0'+msg.channel;
+	//text[21] = 0;
+	//_windows::debug( text );
 	
 	switch( msg.cmd )
 	{
