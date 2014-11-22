@@ -2,7 +2,7 @@
 #include <_controller/controller.sound.h>
 
 // Sound Controls
-void _sound::play( _u8 volume , _s8 panning ){ _soundController::playSound( this ); }
+void _sound::play( _u8 volume , _s8 panning ){ if( this->isChannelReady() ) _soundController::playSound( this ); }
 void _sound::stop(){ _soundController::killSound( this ); }
 void _sound::pause(){ _soundController::pauseSound( this ); }
 

@@ -39,6 +39,9 @@ class _windows{
 		
 		//! The BUS-Clock-Frequency (number of ticks per second)
 		static const _u32	ticksPerSecond;
+		
+		//! Send a debug message
+		static void			debug( _literal message );
 };
 
 #endif

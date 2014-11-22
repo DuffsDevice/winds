@@ -164,7 +164,7 @@ class _direntry
 		
 		//! Read the contents of the file into a block of memory
 		//! and sets 'numBytes' to the number of bytes efficiently read (-1 for an error)
-		virtual bool read( void* dest , _optValue<_u64> size = ignore , _u64* numBytes = nullptr ) const ;
+		virtual bool read( void* dest , _optValue<_u64> size = ignore , bool rewind = true , _u64* numBytes = nullptr ) const ;
 		
 		//! Write 'size' bytes of contents in 'src' to the file
 		virtual bool write( void* src , _u64 size );
