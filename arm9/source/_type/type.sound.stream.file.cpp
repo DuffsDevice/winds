@@ -41,7 +41,7 @@ _u32 _fileSoundStreamFiller::executor( _u32 requestedSize , _s8* destination , _
 	if( format == _channelFormat::bit16 )
 		requestedSize <<= 1;
 	
-	if( !this->reference.source.read( destination , requestedSize , false , &numBytes ) )
+	if( !this->reference.source.read( destination , requestedSize , ignore , &numBytes ) )
 		this->reference.stop();
 	
 	return requestedSize;

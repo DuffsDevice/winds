@@ -4,6 +4,7 @@
 #include <_controller/controller.debug.h>
 #include <_controller/controller.gui.h>
 #include <_library/library.rom.h>
+#include <_type/type.direntry.rom.h>
 
 PROG_RomExecutor::PROG_RomExecutor()
 {
@@ -23,9 +24,17 @@ void PROG_RomExecutor::main( _programArgs args )
 		this->terminate();
 		return;
 	}
-	_direntry rom = _direntry(args[0]);
+	
+	_ndsExecuteable rom = _ndsExecuteable( args[0] );
+	
 	if( !rom.isExisting() ){
 		_debugController::debug( "Please pass an existing .nds" );
+		this->terminate();
+		return;
+	}
+	
+	if( !rom.isHomeBrew() ){
+		_debugController::debug( "WinDS can only execute homebrew roms." );
 		this->terminate();
 		return;
 	}

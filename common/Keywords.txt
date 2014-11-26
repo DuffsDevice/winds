@@ -12,7 +12,7 @@ _imageDialog _imageFile _imageFileCompression _imageButton _imageGadget _infoDia
 _key _keyboardScreen _keyboardScreenButton
 _label _language _length _letterNum _lineStart _list _literal _localizationController _luaCallback _luaEventHandler _luafunc
 _mainFrame _map _margin _memoryAnalyzer _memoryController _memoryFont _menu _menuEntry _menuEntry _menuEntryList _menuHandler _menuHandlerRule _menuHandlerRuleType _micBufferFullMsg _micFormat _micRecordMsg _mime _mimeType
-_networkController _note
+_networkClient _networkController _note
 _optValue
 _padding _pair _paramAlloc _passcodeBox _pixel _pixelArray _popup _pos _powerController _progC _progFile _progLua _program _programArgs _programController _programExecutionData _programHandle _programHeader _programList _programManager _programType _programSwitcher _progressBar _psgDutyCycle
 _radio _rawMenuEntryLists _rect _registryController _resizeHandle _runtimeErrorDialog
@@ -22,6 +22,6 @@ _staticCallback _staticSound _stickyButton _string _strRange _style _styleAttr
 _taskInfo _taskInfoHandler _tcpType _tempTime _textArea _textBox _time _timeAttr _timer _timerController _timerList _tokenizer _toStr _touch _treeView _treeViewNode _tuple
 _u16 _u32 _u64 _u8 _unixTime _uniquePtr _unorderedMap _user
 _valign _vector _videoController _view _viewSwitcher _voidCallback
-_wallpaperViewType _warningDialog _wifiSocketClient _window _windowBar _windowButton _windowMenu _windowMenuEntry _windows _windowsSound _windowsSoundBank _windowTaskHandler
+_wallpaperViewType _warningDialog _window _windowBar _windowButton _windowMenu _windowMenuEntry _windows _windowsSound _windowsSoundBank _windowTaskHandler
 _yesNoDialog
 string that touchPosition
