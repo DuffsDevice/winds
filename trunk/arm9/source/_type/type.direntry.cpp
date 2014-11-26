@@ -1,5 +1,6 @@
 #include <_type/type.direntry.h>
 #include <_type/type.direntry.shortcut.h>
+#include <_type/type.direntry.rom.h>
 #include <_type/type.program.h>
 #include <_type/type.windows.h>
 #include <_controller/controller.filesystem.h>
@@ -337,7 +338,7 @@ bool _direntry::updateStats(){
 	return this->exists = !stat( this->filename.c_str() , &this->stat_buf );
 }
 
-bool _direntry::read( void* dest , _optValue<_u64> size , bool rewindFlag , _u64* numBytes ) const
+bool _direntry::read( void* dest , _optValue<_u64> size , _optValue<_u64> fromPos , _u64* numBytes ) const
 {	
 	if( _filesystemController::isFatReady() && !this->isDirectory() )
 	{
@@ -347,9 +348,9 @@ bool _direntry::read( void* dest , _optValue<_u64> size , bool rewindFlag , _u64
 		if( this->mode == _direntryMode::closed && !this->openRead() )
 			return false;
 		
-		//! Set Iterator to beginning
-		if( rewindFlag )
-			rewind( this->fHandle );
+		//! Set Iterator to position?
+		if( fromPos.isValid() && fseek( this->fHandle , (_u64)fromPos , SEEK_SET ) != 0 )
+			return false;
 		
 		//! Read bytes
 		_u64 numBytesRead = fread( dest , 1 , size , this->fHandle );
@@ -683,6 +684,12 @@ _bitmap _direntry::getFileImage() const
 				if( bmp.isValid() )
 					return move(bmp);
 			}
+		}
+		case _mime::application_x_nintendo_ds_rom:
+		{
+			_bitmap bmp = _ndsExecuteable( this->getFileName() ).getFileImage();
+			if( bmp.isValid() )
+				return move(bmp);
 		}
 		default:
 			break;

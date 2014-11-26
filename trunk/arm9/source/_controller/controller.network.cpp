@@ -6,4 +6,5 @@ extern "C"{
 
 bool _networkController::init(){
 	return Wifi_InitDefault( INIT_ONLY );
+	//return Wifi_InitDefault( WFC_CONNECT );
 }
