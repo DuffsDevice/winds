@@ -2,6 +2,9 @@
 #include <_resource/resource.icon.folder.up.h>
 #include <_controller/controller.localization.h>
 
+// Special Pages
+#include <_resource/resource.explorer.computer.h>
+
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )
 {
@@ -13,12 +16,17 @@ PROG_Explorer::PROG_Explorer() :
 	this->setHeader( move(header) );
 }
 
-void PROG_Explorer::main( _programArgs args )
+void PROG_Explorer::main( _args args )
 {
 	if( !args.empty() && !args[0].empty() )
 		this->path = _direntry(args[0]).getFileName();
 	
+	this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_computer") , new _explorerPageComputer() );
+	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_systemsettings") , _explorerPageSystemSettings() );
+	
 	_mainFrame* mainFrame = _program::getMainFrame( 120 , 90 );
+	
+	this->scrollArea = new _scrollArea( 0 , 21 , ignore , ignore , _style::storeHandle( this ) );
 	this->fileView = new _fileView( 0 , 21 , ignore , ignore , this->path , _fileViewType::list );
 	this->addressBar = new _textBox( 1 , 10 , ignore , 10 , this->path );
 	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style::canNotTakeFocus );
@@ -27,6 +35,12 @@ void PROG_Explorer::main( _programArgs args )
 	this->fileView->setUserEventHandler( onEdit , make_callback( this , &PROG_Explorer::handler ) );
 	this->fileView->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );
 	this->fileView->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
+	
+	this->scrollArea->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );
+	this->scrollArea->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
+	
+	// Set viewParent of viewSwitcher
+	this->viewSwitcher.setViewParent( this->scrollArea );
 	
 	this->addressBar->setInternalEventHandler( onParentResize , _gadgetHelpers::sizeParent( 23 , ignore ) );
 	this->addressBar->setInternalEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
@@ -47,6 +61,11 @@ void PROG_Explorer::main( _programArgs args )
 	menu.setList( 1 , { { 101 , _localizationController::getBuiltInString("lbl_exit") } } );
 	
 	mainFrame->addChild( this->fileView );
+	mainFrame->addChild( this->scrollArea );
+	
+	// Updates the fileview and eventually display a special page
+	this->updateFileView();
+	
 	mainFrame->addChild( this->windowBar = new _windowBar() );
 	mainFrame->addChild( this->windowMenu = new _windowMenu(move(menu)) );
 	mainFrame->addChild( this->addressBar );
@@ -70,6 +89,26 @@ void PROG_Explorer::setWindowTitle()
 	_program::getMainFrame()->setTitle( path.empty() ? "/" : path );
 }
 
+void PROG_Explorer::updateFileView()
+{
+	string path = this->fileView->getPath();
+	
+	if( path.front() == '/' )
+		path = path.substr( 1 );
+	
+	// Display Special Page?
+	if( this->viewSwitcher.getViewByName( path ) ){
+		this->fileView->hide();
+		//this->scrollArea->show();
+		this->viewSwitcher.set( path );
+	}
+	else{
+		this->viewSwitcher.unset();
+		this->scrollArea->hide();
+		this->fileView->show();
+	}
+}
+
 _callbackReturn PROG_Explorer::handler( _event event )
 {
 	_gadget* that = event.getGadget();
@@ -89,6 +128,7 @@ _callbackReturn PROG_Explorer::handler( _event event )
 	else if( that->getType() == _gadgetType::fileview ){
 		this->addressBar->setStrValue( this->fileView->getPath() );
 		this->setWindowTitle();
+		this->updateFileView();
 	}
 	
 	return handled;

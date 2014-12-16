@@ -5,9 +5,10 @@
 #include <_type/type.h>
 #include <_type/type.gadget.h>
 #include <_type/type.language.h>
-#include <_type/type.program.args.h>
+#include <_type/type.arguments.h>
 #include <_type/type.program.executiondata.h>
 #include <_type/type.uniqueptr.h>
+#include <_type/type.service.h>
 #include <_gadget/gadget.window.mainframe.h>
 
 // Describes the type of a program
@@ -17,7 +18,8 @@ enum class _programType{
 };
 
 // Struct about a program's details
-struct _programHeader{
+struct _programHeader
+{
 	_uniquePtr<_bitmap>	fileIcon;
 	_uniquePtr<string>	fileName;
 	_uniquePtr<_bitmap>	windowIcon;
@@ -43,6 +45,8 @@ struct _programHeader{
 
 class _program
 {
+	friend class _executionController;
+	
 	private:
 		
 		//! Type of the program
@@ -58,11 +62,40 @@ class _program
 		//! _mainFrame-Object
 		_uniquePtr<_mainFrame>	mainFrame;
 		
-		//! This method creates a hash that 
-		string					createHash();
+		//! This method creates a hash that serves as a key in the registry
+		string					getRegistryHash();
 		
-		//! Main function to be called from _programController
-		virtual void			main( _programArgs args ){};
+		//! Main function to be called from _executionController
+		virtual void			main( _args args ){};
+		virtual void			dispatch( _serviceId id , _serviceTransfer args ){};
+		virtual void			process( _serviceId id , _serviceState& state ){};
+		virtual _serviceTransfer getServiceData( _serviceId id ){ return _serviceTransfer(); };
+		
+		/**
+		 * Prepares the program for execution (called by _executionController)
+		 */
+		void					prepareExecution( _args args );
+		
+		//! Main function to be called from _executionController
+		void					callMain(){
+			if( this->executionData.mainCalled )
+				return;
+			this->main( move(this->executionData.argumentsForMain) );
+			this->executionData.mainCalled = true;
+		}
+		
+		//! Calls the 'dispatch' function to process a service request
+		void					callDispatch( _serviceId id , _serviceTransfer arguments ){
+			this->dispatch( id , move(arguments) );
+		}
+		
+		//! Calls the 'process' function to process a service (every vbl)
+		void					callProcess( _serviceId id , _serviceState& state ){
+			this->process( id , state );
+		}
+		
+		//! Called every 1/60s
+		virtual	void			frame( _int numRunningPrograms ){}
 		
 	protected:
 		
@@ -80,18 +113,13 @@ class _program
 		//! Dtor (made virtual to work for subclasses)
 		virtual ~_program();
 		
-		/**
-		 * Executes the program, which includes pushing it to _programManager's list of programs to execute
-		 * @return Whether or not the program was executed (true) or is already running (false)
-		 */
-		bool					execute( _programArgs args = _programArgs() );
-		
-		//! Terminate the program
-		void 					terminate();
-		
 		
 		//! Returns, whether this program instance is currently running
 		bool					isRunning() const ;
+		
+		
+		//! Terminates the program (only called by the _executionController)
+		void 					terminate();
 		
 		
 		//! Get the image of the program
@@ -128,27 +156,11 @@ class _program
 		const string&			getPath() const { return this->path; }
 		string&					getPath(){ return this->path; }
 		
-		//! Main function to be called from _programController
-		void					callMain(){
-			if( this->executionData.mainCalled )
-				return;
-			this->main( move(this->executionData.argumentsForMain) );
-			this->executionData.mainCalled = true;
-		}
-		
-		//! Called every 1/60s
-		virtual	void			frame( _int numRunningPrograms ){}
-		
 		//! Function to clean up the program (pendant to main)
 		virtual	void			cleanUp(){};
 		
-	public:
-		
-		//! Standard file-icon of a program
-		static _constBitmap		standardFileImage;
-		
 		//! Generate a _program instance from file
-		static _program*		fromFile( string filename );
+		static _uniquePtr<_program>	fromFile( string filename );
 };
 
 #endif

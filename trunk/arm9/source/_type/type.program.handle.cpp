@@ -1,12 +1,12 @@
 #include <_type/type.program.handle.h>
-#include <_controller/controller.program.h>
+#include <_controller/controller.execution.h>
 
 _program* _programHandle::prev()
 {
 	if( !this->ptr )
 		return this->back();
 	
-	const _programList& list = _programController::getRunningPrograms();
+	const _programList& list = _executionController::getRunningPrograms();
 	
 	_programList::const_reverse_iterator it = find_if(
 		list.crbegin()
@@ -27,7 +27,7 @@ _program* _programHandle::next()
 	if( !this->ptr )
 		return this->front();
 	
-	const _programList& list = _programController::getRunningPrograms();
+	const _programList& list = _executionController::getRunningPrograms();
 	
 	_programList::const_iterator it = find_if(
 		list.cbegin()
@@ -44,16 +44,16 @@ _program* _programHandle::next()
 
 _program* _programHandle::back()
 {
-	if( !_programController::getRunningPrograms().empty() )
-		return this->ptr = _programController::getRunningPrograms().back();
+	if( !_executionController::getRunningPrograms().empty() )
+		return this->ptr = _executionController::getRunningPrograms().back();
 	
 	return this->ptr = nullptr;
 }
 
 _program* _programHandle::front()
 {
-	if( !_programController::getRunningPrograms().empty() )
-		return this->ptr = _programController::getRunningPrograms().front();
+	if( !_executionController::getRunningPrograms().empty() )
+		return this->ptr = _executionController::getRunningPrograms().front();
 	
 	return this->ptr = nullptr;
 }
@@ -63,7 +63,7 @@ _program* _programHandle::validate() const
 	if( !this->ptr )
 		return nullptr;
 	
-	if( _programController::isExistent( this->ptr ) )
+	if( _executionController::isExistent( this->ptr ) )
 		return this->ptr;
 	
 	return this->ptr = nullptr;

@@ -19,7 +19,7 @@ PROG_Mapper::PROG_Mapper() :
 	this->setHeader( move(header) );
 }
 
-void PROG_Mapper::main( _programArgs args )
+void PROG_Mapper::main( _args args )
 {
 	for( string& arg : args ){
 		if( arg == "save_choice" )
@@ -89,7 +89,7 @@ void PROG_Mapper::main( _programArgs args )
 		//
 		
 		// Add to List
-		handlerList[ _direntry( _programArgs::splitCommand( val ).first ).getFileName() ]++;
+		handlerList[ _direntry( _args::splitCommand( val ).first ).getFileName() ]++;
 	}
 	
 	// Add Standard Programs

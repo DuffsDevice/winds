@@ -17,7 +17,7 @@ class _freetypeFont : private _direntry , public _font
 	protected:
 		
 		//! Check if the supplied character can be displayed by the font
-		bool isCharSupportedInternal( const _char codepoint ) const ;
+		bool isCharSupportedInternal( _char codepoint ) const ;
 		
 	public:
 		
@@ -29,7 +29,7 @@ class _freetypeFont : private _direntry , public _font
 							, _char character , _color color , _rect clip , _u8 fontSize = 8 ) const ITCM_CODE ;
 		
 		//! Get the CharacterWidth related to a specific character
-		_length getCharacterWidth( const _char codepoint , _u8 fontSize = 8 ) const ;
+		_length getCharacterWidth( _char codepoint , _u8 fontSize = 8 ) const ;
 		
 		//! Check whether this font is monospace
 		_length isMonospace() const { 
@@ -37,13 +37,13 @@ class _freetypeFont : private _direntry , public _font
 		}
 		
 		//! Get the Main-Height of the font
-		_length getAscent( _u8 fontSize = 8 ) const ;
+		_length getAscent( _u8 fontSize = 8 , _char ch = 'a' ) const ;
 		
 		//! Get the Height of the font
-		_length getHeight( _u8 fontSize = 8 ) const { return fontSize; }
+		_length getHeight( _u8 fontSize = 8 , _char ch = 'a' ) const { return fontSize; }
 		
 		//! Get Space between two letters
-		_length getLetterSpace( _u8 fontSize = 0 ) const {
+		_length getLetterSpace( _u8 = 8 , _char = 'a' ) const {
 			// We return 0, because the letter space is
 			// already included in the width of one character
 			return 0;

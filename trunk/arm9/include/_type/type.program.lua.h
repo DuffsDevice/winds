@@ -17,6 +17,7 @@ class _progLua : public _program
 		string*					content;
 		bool					headParsed;
 		bool					mainFrameAllocated;
+		int						serviceDispatchTableIndex;
 		
 		//! Array filled with the methods that will be registered
 		static luaL_Reg			windowsLibrary[];
@@ -32,10 +33,22 @@ class _progLua : public _program
 		static int	lua_keyboardIsOpened( lua_State* L );
 		static int	lua_keyboardOpen( lua_State* L );
 		static int	lua_keyboardClose( lua_State* L );
+		static int	lua_keyboardSetShift( lua_State* L );
+		static int	lua_keyboardSetCaps( lua_State* L );
+		static int	lua_keyboardIsShift( lua_State* L );
+		static int	lua_keyboardIsCaps( lua_State* L );
+		
 		static int	lua_writeDebug( lua_State* L );
 		static int	lua_pushEvent( lua_State* L );
 		static int	lua_getMainFrame( lua_State* L );
 		static int	lua_pause( lua_State* L );
+		
+		//! Services
+		static int	lua_startService( lua_State* L );
+		static int	lua_closeService( lua_State* L );
+		static int	lua_getServiceState( lua_State* L );
+		static int	lua_setServiceHandler( lua_State* L );
+		static int	lua_getServiceHandler( lua_State* L );
 		
 		//! system.exit() method
 		static int	lua_exit( lua_State* L );
@@ -55,7 +68,14 @@ class _progLua : public _program
 		_progLua( string prog );
 		
 		//! Main function that will be called at the start of execution (one shot)
-		void main( _programArgs args ) override ;
+		void main( _args args ) override ;
+		
+		//! Service functions
+		void dispatch( _serviceId id , _serviceTransfer args ) override ;
+		void process( _serviceId id , _serviceState& state ) override ;
+		
+		//! Returns the service data
+		_serviceTransfer getServiceData( _serviceId id ) override ;
 		
 		//! Cleans up the Lua program and state
 		void cleanUp() override ;

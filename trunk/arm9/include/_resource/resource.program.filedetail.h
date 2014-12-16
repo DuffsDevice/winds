@@ -49,7 +49,7 @@ class PROG_FileDetail : public _progC
 		_uniquePtr<_dividerGadget>	divider3;
 		
 		
-		void			main( _programArgs args );
+		void			main( _args args );
 		
 		_callbackReturn handler( _event event );
 		

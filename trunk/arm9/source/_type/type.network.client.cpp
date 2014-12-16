@@ -113,7 +113,7 @@ void _networkClient::disconnect()
 	}
 }
 
-string _networkClient::receive( _u32 fragmentSize )
+string _networkClient::receive( _u32 fragmentSize , bool wholeResult )
 {
 	string	buffer;
 	int		bytesReceived;
@@ -126,6 +126,9 @@ string _networkClient::receive( _u32 fragmentSize )
             tempBuffer[bytesReceived] = 0; // null-terminate
 			buffer += tempBuffer;
 		}
+		
+		if( !wholeResult )
+			return buffer;
 	}
 	
 	return buffer;

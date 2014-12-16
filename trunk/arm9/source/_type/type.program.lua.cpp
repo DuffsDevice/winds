@@ -9,6 +9,7 @@
 #include <_controller/controller.localization.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.event.h>
+#include <_controller/controller.execution.h>
 
 #include <_lua/lua.lunar.h>
 #include <_lua/lua.func.h>
@@ -136,6 +137,10 @@ int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _guiController
 int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isOpened() ); return 1; }
 int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->open(); return 0; }
 int _progLua::lua_keyboardClose( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->close(); return 1; }
+int _progLua::lua_keyboardIsShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isShift() ); return 1; }
+int _progLua::lua_keyboardIsCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isCaps() ); return 1; }
+int _progLua::lua_keyboardSetShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setShift( check<bool>( L , 1 ) ); return 0; }
+int _progLua::lua_keyboardSetCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setCaps( check<bool>( L , 1 ) ); return 0; }
 
 int _progLua::lua_writeDebug( lua_State* L ){ _debugController::debug( check<_literal>( L , 1 ) ); return 0; }
 int _progLua::lua_pushEvent( lua_State* L ){ _eventController::pushEvent( check<_event>( L , 1 ) , _eventCallType::normal ); return 0; }
@@ -197,6 +202,55 @@ int _progLua::lua_usingClass( lua_State* L )
 int _progLua::lua_pause( lua_State* L ){
 	_debugController::submit();
 	return 0;
+}
+int	_progLua::lua_closeService( lua_State* L ){
+	return push( L , serviceState2string[ _executionController::closeService( check<_serviceId>( L , 1 ) ) ] );
+}
+int	_progLua::lua_startService( lua_State* L )
+{
+	_serviceTransfer transferData;
+	
+	// READ ADDITIONAL DATA
+	if( lua_istable( L , 3 ) )
+	{
+		lua_pushnil( L );  // first key
+		while( lua_next( L , 3 ) != 0 )
+		{
+			// Copy key, in case some function calls lua_tostring, which would break the lua_next-iteration
+			lua_pushvalue( L , -2 );
+			
+			// uses copy of 'key' (at index -1) and 'value' (at index -2)
+			_literal key = check<_literal>( L , -1 );
+			
+			if( strcmp(key,"strData") == 0 || ( is_a<string>( L , -3 ) && !transferData.strData) )
+				transferData.strData = check<string>( L , -2 );
+			else if( strcmp(key,"bitmapData") == 0 || ( is_a<_bitmap>( L , -3 ) && !transferData.bitmapData ) )
+				transferData.bitmapData = check<_bitmap>( L , -2 );
+			else if( strcmp(key,"int1Data") == 0 )
+				transferData.int1Data = check<_int>( L , -2 );
+			else if( strcmp(key,"int2Data") == 0 )
+				transferData.int2Data = check<_int>( L , -2 );
+			else if( strcmp(key,"float1Data") == 0 )
+				transferData.float1Data = check<float>( L , -2 );
+			else if( strcmp(key,"float2Data") == 0 )
+				transferData.float2Data = check<float>( L , -2 );
+			
+			// removes 'value' and the copy of 'key' ; keeps original 'key' for next iteration
+			lua_pop( L , 2 );
+		}
+	}
+	transferData.arguments = check<_args>( L , 2 );
+	return push( L , _executionController::startService( check<_literal>( L , 1 ) , move(transferData) ) );
+}
+int	_progLua::lua_getServiceState( lua_State* L ){
+	return push( L , serviceState2string[ _executionController::getServiceState( check<_serviceId>( L , 1 ) ) ] );
+}
+int	_progLua::lua_setServiceHandler( lua_State* L ){
+	_registryController::setPackagePath( check<_literal>( L , 1 ) , check<string>( L , 2 ) );
+	return 0;
+}
+int	_progLua::lua_getServiceHandler( lua_State* L ){
+	return push( L , _registryController::getPackagePath( check<_literal>( L , 1 ) ) );
 }
 
 bool _progLua::parseProgramHeader()
@@ -288,11 +342,20 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"getFont"				, lua_getFont },
 	{"keyboardIsRegistered"	, lua_keyboardIsRegistered },
 	{"keyboardIsOpened"		, lua_keyboardIsOpened },
+	{"keyboardIsShift"		, lua_keyboardIsShift },
+	{"keyboardIsCaps"		, lua_keyboardIsCaps },
 	{"keyboardOpen"			, lua_keyboardOpen },
 	{"keyboardClose"		, lua_keyboardClose },
+	{"keyboardSetShift"		, lua_keyboardSetShift },
+	{"keyboardSetCaps"		, lua_keyboardSetCaps },
 	{"debug"				, lua_writeDebug },
 	{"pause"				, lua_pause },
 	{"pushEvent"			, lua_pushEvent },
+	{"startService"			, lua_startService },
+	{"closeService"			, lua_closeService },
+	{"getServiceState"		, lua_getServiceState },
+	{"setServiceHandler"	, lua_setServiceHandler },
+	{"getServiceHandler"	, lua_getServiceHandler },
 	{ NULL , NULL }
 };
 
@@ -338,7 +401,7 @@ void _progLua::registerSystem()
 	lua_setglobal( this->state , "using" );
 }
 
-void _progLua::main( _programArgs args )
+void _progLua::main( _args args )
 {
 	if( !this->content )
 		return;
@@ -383,6 +446,137 @@ void _progLua::main( _programArgs args )
 	}
 	else
 		lua_pop( this->state , 2 );
+}
+
+void _progLua::dispatch( _serviceId id , _serviceTransfer args )
+{
+	lua_getglobal( this->state , "dispatch" );
+	
+	if( lua_isfunction( this->state , -1 ) )
+	{
+		if( this->serviceDispatchTableIndex == LUA_NOREF ){
+			lua_createtable( this->state , 1 , 0 );		// Create table for all open services
+			if( (this->serviceDispatchTableIndex = luaL_ref( state , LUA_REGISTRYINDEX )) == LUA_NOREF )
+				return;
+		}
+		
+		lua_createtable( this->state , 1 , 1 );	// Create service data table
+		int serviceData = lua_gettop( this->state );
+		lua_rawgeti( this->state , LUA_REGISTRYINDEX , this->serviceDispatchTableIndex ); // Get main table of all open services in this state
+		lua_pushvalue( this->state , -2 );		// Copy service data
+		lua_rawseti( this->state , -2 , id );	// Insert data for service in service table
+		lua_pop( this->state , 1 );				// Pop the main Table, which leaves us with the service data
+		
+		// Push State
+		push( this->state , "state" );
+		push( this->state , serviceState2string[_serviceState::init] );
+		lua_rawset( this->state ,  serviceData );
+		
+		// Push Arguments
+		push( this->state , move(args.arguments) );
+		
+		// Push Additional data table
+		lua_createtable( this->state , 0 , 6 );	// Create service data table
+		
+		if( args.strData ){
+			push( this->state , "strData" );
+			push( this->state , args.strData.release() );
+			lua_rawset( this->state , serviceData );
+		}
+		if( args.bitmapData ){
+			push( this->state , "bitmapData" );
+			push( this->state , args.bitmapData.release() );
+			lua_rawset( this->state , serviceData );
+		}
+		push( this->state , "int1Data" );
+		push( this->state , args.int1Data );
+		lua_rawset( this->state , serviceData );
+		push( this->state , "int2Data" );
+		push( this->state , args.int2Data);
+		lua_rawset( this->state , serviceData );
+		push( this->state , "float1Data" );
+		push( this->state , args.float1Data);
+		lua_rawset( this->state , serviceData );
+		push( this->state , "float2Data" );
+		push( this->state , args.float2Data );
+		lua_rawset( this->state , serviceData );
+		
+		if( lua_pcall( this->state , 3 /* 3 Arguments */ , 0 , 0 ) )
+			_debugController::luaErrorHandler( this->state , lua_tostring( this->state , -1 ) );
+	}
+}
+
+void _progLua::process( _serviceId id , _serviceState& serviceState )
+{
+	lua_getglobal( this->state , "dispatch" );
+	
+	if( lua_isfunction( this->state , -1 ) )
+	{
+		lua_rawgeti( this->state , LUA_REGISTRYINDEX , this->serviceDispatchTableIndex ); // Get main table of all open services in this state
+		lua_rawgeti( this->state , -1 , id ); // Get service data
+		
+		push( this->state , "state" );
+		push( this->state , serviceState2string[serviceState] );
+		lua_rawset( this->state , -3 );
+		
+		if( lua_pcall( this->state , 1 /* One Argument */ , 0 , 0 ) ){
+			serviceState = _serviceState::error;
+			_debugController::luaErrorHandler( this->state , lua_tostring( this->state , -1 ) );
+			return;
+		}
+		
+		lua_rawgeti( this->state , LUA_REGISTRYINDEX , this->serviceDispatchTableIndex ); // Get main table of all open services in this state
+		lua_rawgeti( this->state , -1 , id ); // Get service data
+		lua_rawgetfield( this->state , -1 , "state" );
+		
+		serviceState = string2serviceState[ optcheck<string>( this->state , 1 ) ];
+		
+		lua_pop( this->state , 3 );
+	}
+	else
+		serviceState = _serviceState::error;
+}
+
+_serviceTransfer _progLua::getServiceData( _serviceId id )
+{
+	_serviceTransfer transfer;
+	
+	lua_rawgeti( this->state , LUA_REGISTRYINDEX , this->serviceDispatchTableIndex ); // Get main table of all open services in this state
+	lua_rawgeti( this->state , -1 , id ); // Get service data
+	
+	if( lua_isnil( this->state , -1 ) )
+		return _serviceTransfer();
+	
+	lua_pushnil( this->state );  // first key
+	
+	while( lua_next( this->state , -1 ) != 0 )
+	{
+		// Copy key, in case some function calls lua_tostring, which would break the lua_next-iteration
+		lua_pushvalue( this->state , -2 );
+		
+		// uses copy of 'key' (at index -1) and 'value' (at index -2)
+		_literal key = check<_literal>( this->state , -1 );
+		
+		if( strcmp(key,"strData") == 0 )
+			transfer.strData = check<string>( this->state , -2 );
+		else if( strcmp(key,"bitmapData") == 0 )
+			transfer.bitmapData = check<_bitmap>( this->state , -2 );
+		else if( strcmp(key,"returnValue") == 0 )
+			transfer.returnData = check<_int>( this->state , -2 );
+		else if( strcmp(key,"int1Data") == 0 )
+			transfer.int1Data = check<_int>( this->state , -2 );
+		else if( strcmp(key,"int2Data") == 0 )
+			transfer.int2Data = check<_int>( this->state , -2 );
+		else if( strcmp(key,"float1Data") == 0 )
+			transfer.float1Data = check<float>( this->state , -2 );
+		else if( strcmp(key,"float2Data") == 0 )
+			transfer.float2Data = check<float>( this->state , -2 );
+		
+		// removes 'value' and the copy of 'key' ; keeps original 'key' for next iteration
+		lua_pop( this->state , 2 );
+	}
+	
+	return move(transfer);
 }
 
 void _progLua::cleanUp()

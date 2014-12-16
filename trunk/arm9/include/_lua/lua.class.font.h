@@ -37,6 +37,15 @@ class _lua_font
 		//! isCharSupported
 		int isCharSupported( lua_State* L );
 		
+		//! getAscent
+		int getAscent( lua_State* L );
+		
+		//! getLetterSpace
+		int getLetterSpace( lua_State* L );
+		
+		//! getHeight
+		int getHeight( lua_State* L );
+		
 		//! Lunar !//
 		static const char className[];
 		static Lunar<_lua_font>::FunctionType methods[];

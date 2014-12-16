@@ -55,6 +55,8 @@ namespace _luafunc
 		static unused inline char					check( lua_State* state , int index , char* dummy ){ return luaL_checkinteger( state , index ); }
 		static unused inline unsigned char			check( lua_State* state , int index , unsigned char* dummy ){ return luaL_checkinteger( state , index ); }
 		static unused inline signed char			check( lua_State* state , int index , signed char* dummy ){ return luaL_checkinteger( state , index ); }
+		static unused inline signed char			check( lua_State* state , int index , float* dummy ){ return luaL_checknumber( state , index ); }
+		static unused inline signed char			check( lua_State* state , int index , double* dummy ){ return luaL_checknumber( state , index ); }
 		static unused inline bool					check( lua_State* state , int index , bool* dummy ){
 			if( lua_isboolean( state , index ) )
 				return lua_toboolean(state, index);
@@ -64,7 +66,7 @@ namespace _luafunc
 		static unused inline _literal				check( lua_State* state , int index , _literal* dummy ){ return luaL_checkstring( state , index ); }
 		template<int mB,typename dT = char>
 		static unused inline _shortString<mB,dT>	check( lua_State* state , int index , _shortString<mB,dT>* dummy ){ return luaL_checkstring( state , index ); }
-		static unused inline _programArgs			check( lua_State* state , int index , _programArgs* dummy ){ return _programArgs( luaL_checkstring( state , index ) ); }
+		static unused inline _args			check( lua_State* state , int index , _args* dummy ){ return _args( luaL_checkstring( state , index ) ); }
 		static unused inline _key					check( lua_State* state , int index , _key* dummy ){
 			return is_a( state , index , LUA_TSTRING ) ? (_key)lua_tostring( state , index )[0] : (_key)luaL_checkint( state , index );
 		}

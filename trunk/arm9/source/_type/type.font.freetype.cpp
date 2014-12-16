@@ -52,14 +52,14 @@ _freetypeFont::~_freetypeFont()
 	this->cache = nullptr;
 }
 
-_length _freetypeFont::getCharacterWidth( const _char codepoint , _u8 fontSize ) const 
+_length _freetypeFont::getCharacterWidth( _char codepoint , _u8 fontSize ) const 
 { 
 	int advWidth , leftSideBearing;
 	stbtt_GetCodepointHMetrics( &this->fontInfo , codepoint , &advWidth , &leftSideBearing );
 	return stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize ) * advWidth;
 }
 
-bool _freetypeFont::isCharSupportedInternal( const _char codepoint ) const 
+bool _freetypeFont::isCharSupportedInternal( _char codepoint ) const 
 {
 	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 	
@@ -234,7 +234,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 	return output;
 }
 
-_length _freetypeFont::getAscent( _u8 fontSize ) const 
+_length _freetypeFont::getAscent( _u8 fontSize , _char ch ) const 
 {
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
 	

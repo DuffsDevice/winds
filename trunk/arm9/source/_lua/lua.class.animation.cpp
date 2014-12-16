@@ -24,7 +24,7 @@ int _lua_animation::setEasing(lua_State* L){ _animation::setEasing( string2easin
 int _lua_animation::terminate(lua_State* L){ _animation::terminate( lightcheck<bool>( L , 1 , false ) ); return 0; }
 
 //! getEasing
-int _lua_animation::getEasing(lua_State* L){ lua_pushstring( L , easingFunc2string[ _animation::getEasing() ] ); return 1; }
+int _lua_animation::getEasing(lua_State* L){ push( L , easingFunc2string[ _animation::getEasing() ] ); return 1; }
 
 
 //! Lua-_rect

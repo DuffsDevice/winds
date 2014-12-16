@@ -24,7 +24,7 @@ class PROG_Mapper : public _progC
 		string				fileToOpen;
 		_fileOpenDialog*	openDialog;
 		
-		void				main( _programArgs args );
+		void				main( _args args );
 		void				cleanUp();
 		
 		_callbackReturn		handler( _event event );

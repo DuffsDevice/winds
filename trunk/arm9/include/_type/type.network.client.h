@@ -40,5 +40,5 @@ class _networkClient
 		bool request( _literal path );
 		
 		//! Tries to receive something
-		string receive( _u32 fragmentSize = 128 );
+		string receive( _u32 fragmentSize = 128 , bool wholeResult = true );
 };

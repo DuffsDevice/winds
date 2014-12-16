@@ -51,7 +51,7 @@ int _lua_direntry::openWrite( lua_State* L ){
 }
 
 int _lua_direntry::execute( lua_State* L ){
-	return push( L , _direntry::execute( lightcheck<_programArgs>( L , 1 ) ) );
+	return push( L , _direntry::execute( lightcheck<_args>( L , 1 ) ) );
 }
 
 //! Lua-_gadget

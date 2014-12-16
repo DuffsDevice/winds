@@ -24,7 +24,7 @@ int _lua_radiogroup::enableRadio(lua_State* L){ _lua_radio* r = (_lua_radio*)Lun
 int _lua_radiogroup::setValue(lua_State* L){ _singleValueGroup<_radio>::setIntValue( check<int>( L , 1 ) ); return 0; }
 
 //! getIntValue
-int _lua_radiogroup::getValue(lua_State* L){ lua_pushnumber( L , _singleValueGroup<_radio>::getIntValue() ); return 1; }
+int _lua_radiogroup::getValue(lua_State* L){ push( L , _singleValueGroup<_radio>::getIntValue() ); return 1; }
 
 //! Lua-_radiogroup
 const char _lua_radiogroup::className[] = "RadioGroup";

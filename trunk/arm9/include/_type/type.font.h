@@ -20,8 +20,6 @@ class _font{
 			this->name = newName;
 		}
 		
-		//! Sets Name
-		
 		//! Check if the supplied character can be displayed by the font
 		virtual bool isCharSupportedInternal( _char ch ) const = 0;
 		
@@ -54,7 +52,7 @@ class _font{
 		}
 		
 		//! Get the Height of the font
-		virtual _length getHeight( _u8 fontSize = 0 ) const = 0;
+		virtual _length getHeight( _u8 fontSize = 0 , _char ch = 'a'  ) const = 0;
 		
 		//! Get the Main-Height of the font, which is :
 		/**
@@ -64,7 +62,7 @@ class _font{
 								|      GH
 							 \,,/	<- T
 		*/
-		virtual _length getAscent( _u8 fontSize = 0 ) const = 0;
+		virtual _length getAscent( _u8 fontSize = 0 , _char ch = 'a'  ) const = 0;
 		
 		//! Check if this font is valid
 		virtual bool isValid() const = 0;
@@ -75,7 +73,7 @@ class _font{
 		}
 		
 		//! Get Space between two letters
-		virtual _length getLetterSpace( _u8 fontSize = 0 ) const = 0;
+		virtual _length getLetterSpace( _u8 fontSize = 0 , _char ch = 'a' ) const = 0;
 		
 		//! Draw a character!
 		virtual _length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const = 0;

@@ -46,7 +46,7 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 	this->setUserEventHandler( onDeselect , _gadgetHelpers::eventForwardRefresh() );
 	
 	// Set necessary information
-	_program* progObject = _program::fromFile( programFile.getFileName() );
+	_uniquePtr<_program> progObject = _program::fromFile( programFile.getFileName() );
 	if( progObject )
 	{
 		// Fetch Header of program
@@ -61,8 +61,6 @@ PROG_Mapper_Object::PROG_Mapper_Object( _length width , string path ) :
 		// Set Author
 		if( header.author && !header.author->empty() )
 			progAuthor = move( *header.author );
-		
-		delete progObject;
 	}
 	else
 		this->progName = programFile.getFullName();

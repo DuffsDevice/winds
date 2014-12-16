@@ -10,7 +10,7 @@ class PROG_RomExecutor : public _progC
 		static string	fileToExecute;
 		static void		shutdownCallback();
 		
-		void			main( _programArgs args );
+		void			main( _args args );
 		
 	public:
 		

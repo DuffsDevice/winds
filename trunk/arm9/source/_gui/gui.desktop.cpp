@@ -2,7 +2,6 @@
 #include <_screen/screen.desktop.h>
 #include <_controller/controller.gui.h>
 #include <_type/type.windows.h>
-#include <_type/type.network.client.h>
 
 _guiDesktop::_guiDesktop()
 {
@@ -16,7 +15,7 @@ _guiDesktop::_guiDesktop()
 	//printf("Response: %s\n",client.receive().c_str());
 	
 	//_windows::executeCommand("%SYSTEM%/taskmgr.exe");
-	//_windows::executeCommand("%SYSTEM%/explorer.exe");
+	//_windows::executeCommand("%SYSTEM%/explorer.exe -Computer");
 	//_windows::executeCommand("%SYSTEM%/filedetail.exe -/filename.jpg");
 	//_windows::executeCommand("%SYSTEM%/credits.exe");
 	//_windows::executeCommand("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");

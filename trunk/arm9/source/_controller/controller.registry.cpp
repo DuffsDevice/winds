@@ -99,9 +99,12 @@ void _registryController::prepareSystemRegistry()
 			{ "startButtonTextColor" , "RGB(30,30,30)" } ,
 			{ "fileExtensionVisible" , "1" } ,
 		} }
+		, { "serviceMapper" , {
+		} }
 	} );
 	systemRegistry->flush();
 }
+
 
 void _registryController::indicateSafeShutdown(){
 	systemRegistry->writeIndex( "bootParams" , "correctShutDown" , "1" );
@@ -127,6 +130,14 @@ void _registryController::end()
 	
 	// Indicate that the computer was successfully shut down
 	indicateSafeShutdown();
+}
+
+string	_registryController::getPackagePath( const string& package ){
+	return fileTypeRegistry->readIndex( "serviceMapper" , package );
+}
+
+void	_registryController::setPackagePath( const string& package , string path ){
+	fileTypeRegistry->writeIndex( "serviceMapper" , package , move(path) );
 }
 
 const string& _registryController::getFileTypeHandler( const string& extension )

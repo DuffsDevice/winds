@@ -36,9 +36,9 @@ bool _filesystemController::init()
 
 _vector<string> _filesystemController::getDrives()
 {
-	_vector<string> vec = { "fat" };
+	_vector<string> vec = { "fat:" };
 	if( sdio_IsInserted()  )
-		vec.push_back("fat2");
+		vec.push_back("fat2:");
 	return vec;
 }
 
@@ -57,6 +57,11 @@ bool _filesystemController::getDriveStats( string driveName , _driveStats& dest 
 {
 	if( driveName.back() != ':' )
 		driveName += ':';
+	
+	if( driveName[3] == '0' || driveName[3] == ':' )
+		dest.removable = false;
+	else
+		dest.removable = true;
 	
 	/* Any file on the filesystem in question */
 	struct statvfs buf;

@@ -4,7 +4,7 @@
 #include <_type/type.h>
 #include <_type/type.direntry.h>
 #include <_type/type.ini.h>
-#include <_type/type.program.args.h>
+#include <_type/type.arguments.h>
 
 class _ndsExecuteable : public _direntry {
 	

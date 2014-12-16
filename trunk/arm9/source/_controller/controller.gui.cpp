@@ -1,7 +1,7 @@
 #include <_controller/controller.gui.h>
 #include <_controller/controller.interrupt.h>
 #include <_controller/controller.registry.h>
-#include <_controller/controller.program.h>
+#include <_controller/controller.execution.h>
 #include <_screen/screen.keyboard.h>
 #include <_func/func.gradientcreator.h>
 
@@ -92,7 +92,7 @@ void _guiController::frame()
 	_guiController::disableKeyboard();
 	
 	// Delete programs that are dependent of the current host
-	_programController::removeProgramsOfGadgetHost( _guiController::host );
+	_executionController::removeProgramsOfGadgetHost( _guiController::host );
 	
 	// Create new state
 	switch( _guiController::state )

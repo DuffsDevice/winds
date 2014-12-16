@@ -157,7 +157,7 @@ void _bitmap::drawVerticalLine( _coord x , _coord y , _length length , _color co
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinatesY( x , y , y2 ) ) return;
-		
+	
 	// Calculate new height
 	length = y2 - y + 1;
 	
@@ -183,7 +183,7 @@ void _bitmap::drawVerticalDottedLine( _coord x , _coord y , _length length , _co
 	
 	// Attempt to clip
 	if ( ! this->clipCoordinatesY( x , y , y2 ) ) return;
-		
+	
 	// Calculate new height
 	length = y2 - y + 1;
 	
@@ -333,14 +333,14 @@ void _bitmap::drawFilledRect( _coord x , _coord y , _length w , _length h , _col
 		swiDivMod( h , 8 , &n , &rem );
 		
 		switch( rem ) {
-			case 7: do{ memset16( to , color , w );to += this->width;
-			case 6:		memset16( to , color , w );to += this->width;
-			case 5:		memset16( to , color , w );to += this->width;
-			case 4:		memset16( to , color , w );to += this->width;
-			case 3:		memset16( to , color , w );to += this->width;
-			case 2:		memset16( to , color , w );to += this->width;
-			case 1:		memset16( to , color , w );to += this->width;
-			case 0:		memset16( to , color , w );to += this->width;
+			case 7: do{ memset16( to , color , w ); to += this->width;
+			case 6:		memset16( to , color , w ); to += this->width;
+			case 5:		memset16( to , color , w ); to += this->width;
+			case 4:		memset16( to , color , w ); to += this->width;
+			case 3:		memset16( to , color , w ); to += this->width;
+			case 2:		memset16( to , color , w ); to += this->width;
+			case 1:		memset16( to , color , w ); to += this->width;
+			case 0:		memset16( to , color , w ); to += this->width;
 				} while( --n > 0 );
 		}
 	}
@@ -613,7 +613,7 @@ void _bitmap::drawCircle( _coord xc, _coord yc, _length radius, _color color )
 		}
 		x++;
 		ddF_x += 2;
-		f += ddF_x + 1;    
+		f += ddF_x + 1;
 		this->drawPixel(xc + x, yc + y, color);
 		this->drawPixel(xc - x, yc + y, color);
 		this->drawPixel(xc + x, yc - y, color);
