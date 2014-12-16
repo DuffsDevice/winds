@@ -78,6 +78,12 @@ class _registryController : public _controller
 		//! Makes the specified command the default handler to open files of the specified file type
 		static void		setFileTypeHandler( const string& extension , const string& command );
 		
+		//! Returns the path to the executeable corresponding to the package identifier
+		static string	getPackagePath( const string& package );
+		
+		//! Sets the executeable corresponding to the package identifier supplied
+		static void		setPackagePath( const string& package , string path );
+		
 		//! Loads a user configuration (.usr-file) from the supplied path
 		static void		setUserRegistry( _uniquePtr<_user> registry );
 		static void		setUserRegistry( decltype(nullptr) ){ setUserRegistry( _uniquePtr<_user>( nullptr ) ); }

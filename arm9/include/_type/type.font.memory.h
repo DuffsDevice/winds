@@ -53,17 +53,17 @@ class _memoryFont : public _font{
 		}
 		
 		//! Get the Height of the font
-		_length getHeight( _u8 fontSize = 0 ) const {
+		_length getHeight( _u8 fontSize = 0 , _char ch = 'a'  ) const {
 			return this->height;
 		}
 		
 		//! Get the Main-Height of the font
-		_length getAscent( _u8 fontSize = 0 ) const {
+		_length getAscent( _u8 fontSize = 0 , _char ch = 'a'  ) const {
 			return this->mainHeight;
 		}
 		
 		//! Get Space between two letters
-		_length getLetterSpace( _u8 fontSize = 0 ) const {
+		_length getLetterSpace( _u8 fontSize = 0 , _char ch = 'a' ) const {
 			return this->letterSpace;
 		}
 		

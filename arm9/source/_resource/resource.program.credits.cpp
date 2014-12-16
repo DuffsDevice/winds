@@ -19,7 +19,7 @@ PROG_Credits::PROG_Credits()
 	this->setHeader( move(header) );
 }
 
-void PROG_Credits::main( _programArgs args )
+void PROG_Credits::main( _args args )
 {
 	static const _coord startX1 = 63;
 	static const _coord startX2 = 70;

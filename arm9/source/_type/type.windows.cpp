@@ -13,7 +13,7 @@
 #include <_controller/controller.memory.h>
 #include <_controller/controller.network.h>
 #include <_controller/controller.power.h>
-#include <_controller/controller.program.h>
+#include <_controller/controller.execution.h>
 #include <_controller/controller.registry.h>
 #include <_controller/controller.sound.h>
 #include <_controller/controller.timer.h>
@@ -49,7 +49,7 @@ void _windows::init()
 		, { &_fontController::init , "font" }
 		, { &_eventController::init , "event" }
 		, { &_guiController::init , "gui" }
-		, { &_programController::init , "program" }
+		, { &_executionController::init , "program" }
 		, { &_interruptController::init , "interrupt" }
 	};
 	
@@ -57,7 +57,7 @@ void _windows::init()
 		&_guiController::frame
 		, &_timerController::frame
 		, &_eventController::frame
-		, &_programController::frame
+		, &_executionController::frame
 	};
 	
 	_windows::interruptMethods = {
@@ -81,7 +81,7 @@ void _windows::init()
 		, &_fontController::end
 		, &_eventController::end
 		, &_guiController::end
-		, &_programController::end
+		, &_executionController::end
 		, &_interruptController::end
 	};
 	
@@ -191,7 +191,7 @@ bool _windows::executeCommand( const string& cmd )
 	if( cmd.empty() )
 		return false;
 	
-	_pair<string,string> commandData = _programArgs::splitCommand( cmd );
+	_pair<string,string> commandData = _args::splitCommand( cmd );
 	
 	return _direntry( commandData.first ).execute( commandData.second.c_str() );
 }

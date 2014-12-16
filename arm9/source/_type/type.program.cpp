@@ -2,7 +2,7 @@
 #include <_type/type.program.lua.h>
 #include <_type/type.program.c.h>
 #include <_type/type.tokenizer.h>
-#include <_controller/controller.program.h>
+#include <_controller/controller.execution.h>
 #include <_controller/controller.filesystem.h>
 #include <_controller/controller.registry.h>
 #include <_controller/controller.timer.h>
@@ -20,21 +20,14 @@
 #include <program_paint_lua.h>
 #include <program_calculator_lua.h>
 
-_constBitmap	_program::standardFileImage = BMP_ExeIcon();
-
-bool _program::execute( _programArgs args )
+void _program::prepareExecution( _args args )
 {
 	this->executionData.startTime = _timerController::getMilliTime();
 	this->executionData.argumentsForMain = move(args);
-	
-	_program* prog = this;
-	
-	// Add to the program Manager's list of programs to be executed
-	return _programController::executeProgram( move(prog) );
 }
 
 bool _program::isRunning() const {
-	return _programController::isExistent( this );
+	return _executionController::isExistent( this );
 }
 
 void _program::terminate(){
@@ -48,7 +41,7 @@ _program::~_program()
 		// Save Dimensions of the mainframe to the registry
 		_mainFrame& frame = *this->mainFrame;
 		
-		string hash = this->createHash();
+		string hash = this->getRegistryHash();
 		
 		// Abort writing dimensions, because the program has no distinct header attributes
 		if( hash.empty() )
@@ -66,7 +59,7 @@ _program::~_program()
 		);
 		
 		// Write the resulting string to the registry
-		_registryController::getSystemRegistry().writeIndex( "programPreferences" , hash , move(dimensionString) );
+		_registryController::getSystemRegistry().writeIndex( hash , "$mainFrame" , move(dimensionString) );
 	}
 }
 
@@ -74,11 +67,11 @@ _mainFrame* _program::getMainFrame( _length width , _length height , bool forceS
 {
 	if( !this->mainFrame )
 	{
-		string hash = this->createHash();
+		string hash = this->getRegistryHash();
 		string dimensionString;
 		
 		if( !hash.empty() )
-			dimensionString = _registryController::getSystemRegistry().readIndex( "programPreferences" , hash );
+			dimensionString = _registryController::getSystemRegistry().readIndex( hash , "$mainFrame" );
 		
 		// Read Dimensions of the mainframe from the registry
 		_vector<string> dim = tokenize( dimensionString , ", " , true );
@@ -97,7 +90,7 @@ _mainFrame* _program::getMainFrame( _length width , _length height , bool forceS
 	return this->mainFrame;
 }
 
-_program* _program::fromFile( string filename )
+_uniquePtr<_program> _program::fromFile( string filename )
 {
 	_direntry d = _direntry( filename );
 	string fn = d.getFileName();
@@ -147,11 +140,11 @@ _program* _program::fromFile( string filename )
 	if( result )
 		result->setPath(fn);
 	
-	return result;
+	return move(result);
 }
 
 
-string _program::createHash()
+string _program::getRegistryHash()
 {
 	// Hashing Function: djb2
 		_s32 initialSeed = 5381;
@@ -188,5 +181,5 @@ string _program::createHash()
 	if( hashVal < 0 ) // Do not allow negative hashes
 		hashVal = -hashVal;
 	
-	return int2string( hashVal , 0 , 16 );
+	return string("program{") + int2string( hashVal , 0 , 16 ) + "}";
 }

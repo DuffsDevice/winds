@@ -94,7 +94,7 @@ _callbackReturn _fileObject::updateHandler( _event event )
 	return handled;
 }
 
-void _fileObject::execute( _programArgs args , bool openInNewWindow )
+void _fileObject::execute( _args args , bool openInNewWindow )
 {
 	// Execute!
 	if( this->file->isDirectory() )
@@ -212,9 +212,9 @@ void _fileObject::initializeMenu()
 	}
 }
 
-_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& filename , _fileViewType viewtype , _style&& style ) :
+_fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string filename , _fileViewType viewtype , _style&& style ) :
 	_gadget( _gadgetType::fileobject , x , y , width , height , ( viewtype == _fileViewType::symbol ) ? (_style&&)style : style | _style::noTransparentParts )
-	, file( new _direntry(filename) )
+	, file( new _direntry( move(filename) ) )
 	, viewType( viewtype )
 {
 	this->initializeMenu();
@@ -222,7 +222,7 @@ _fileObject::_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<
 	// Replace _direntry with the more specialized class '_shortcut'
 	if( file->getMimeType() == _mime::application_x_ms_shortcut ){
 		delete this->file;
-		this->file = new _shortcut( filename );
+		this->file = new _shortcut( this->file->getFileName() );
 	}
 	
 	// Register Update Handler..

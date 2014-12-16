@@ -18,7 +18,7 @@ PROG_FileDetail::PROG_FileDetail()
 	this->setHeader( move(header) );
 }
 
-void PROG_FileDetail::main( _programArgs args )
+void PROG_FileDetail::main( _args args )
 {
 	if( args[0].empty() ){
 		this->terminate();
@@ -69,7 +69,7 @@ void PROG_FileDetail::main( _programArgs args )
 		default:
 			{
 				string command = _registryController::getFileTypeHandler( this->file->getExtension() );
-				_program* progObject = _program::fromFile( _programArgs::splitCommand( command ).first );
+				_uniquePtr<_program> progObject = _program::fromFile( _args::splitCommand( command ).first );
 				string progName = move(command);
 				if( progObject )
 				{
@@ -79,8 +79,6 @@ void PROG_FileDetail::main( _programArgs args )
 					// Set Name to display
 					if( header.name && !header.name->empty() )
 						progName = move( *header.name );
-					
-					delete progObject;
 				}
 				this->openedWithLabel = new _label( 4 , 34 , 48 , ignore , "Def. program:" );
 				this->openedWithValueLabel = new _label( 56 , 34 , 46 , ignore , progName );

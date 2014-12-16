@@ -22,7 +22,7 @@ PROG_TaskManager::PROG_TaskManager() :
 	this->setHeader( move(header) );
 }
 
-void PROG_TaskManager::main( _programArgs args )
+void PROG_TaskManager::main( _args args )
 {
 	_mainFrame* mainFrame = _program::getMainFrame( 109 , 95 , _style::notResizeable );
 	mainFrame->setUserEventHandler( onKeyDown , make_callback( &_dialogWindow::submitEscapeHandler ) );

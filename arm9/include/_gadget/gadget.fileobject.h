@@ -14,10 +14,10 @@ enum class _fileViewType : _u8{
 	symbol = 3
 };
 
-class _fileObject : public _gadget {
-	
-	private:
-	
+class _fileObject : public _gadget
+{
+	protected:
+		
 		// My Data...
 		_direntry*								file;
 		static _uniquePtr<_textBox>				renameTextBox;
@@ -44,9 +44,9 @@ class _fileObject : public _gadget {
 		bool			isRenamed(){ return _fileObject::renameTextBox && _fileObject::renamedFile == this; }
 		
 	public:
-	
+		
 		//! Ctor
-		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , const string& file , _fileViewType viewtype = _fileViewType::list , _style&& style = _style() );
+		_fileObject( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string file , _fileViewType viewtype = _fileViewType::list , _style&& style = _style() );
 		
 		//! Dtor
 		~_fileObject();
@@ -57,7 +57,7 @@ class _fileObject : public _gadget {
 		}
 		
 		//! Execute this file
-		void execute( _programArgs args = _programArgs() , bool openInNewWindow = false );
+		void execute( _args args = _args() , bool openInNewWindow = false );
 };
 
 #endif

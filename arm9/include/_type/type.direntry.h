@@ -8,7 +8,7 @@
 #include <_type/type.bitmap.h>
 #include <_type/type.mime.h>
 #include <_type/type.ini.h>
-#include <_type/type.program.args.h>
+#include <_type/type.arguments.h>
 #include <_type/type.time.h>
 
 //! Statistics in bytes of the mounted device
@@ -17,6 +17,7 @@ struct _driveStats{
 	_u64 size;
 	_u64 free;
 	_u64 used;
+	bool removable;
 };
 
 enum class _direntryMode : _u8{
@@ -213,7 +214,7 @@ class _direntry
 		_time getLastWriteTime() const ;
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
-		virtual bool execute( _programArgs args = _programArgs() );
+		virtual bool execute( _args args = _args() );
 		
 		//! Get File-Image
 		virtual _bitmap getFileImage() const ;

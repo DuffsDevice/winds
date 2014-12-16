@@ -63,7 +63,7 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , _align* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _valign* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _language* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _programArgs* dummy ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _args* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		static unused inline bool	is_a( lua_State* state , int index , _imageFileCompression* dummy ){ return is_a( state , index , LUA_TSTRING ); }
 		
 		// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~

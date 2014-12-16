@@ -18,7 +18,7 @@
 #include <_type/type.time.h>
 #include <_type/type.key.h>
 #include <_type/type.shortstring.h>
-#include <_type/type.program.args.h>
+#include <_type/type.arguments.h>
 #include <_type/type.imagefile.h>
 #include <_type/type.menu.h>
 #include <type_traits>

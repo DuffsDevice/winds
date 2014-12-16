@@ -17,7 +17,7 @@ PROG_RomExecutor::PROG_RomExecutor()
 	this->setHeader( move(header) );
 }
 
-void PROG_RomExecutor::main( _programArgs args )
+void PROG_RomExecutor::main( _args args )
 {
 	if( !args.size() ){
 		_debugController::debug( "Please pass a valid .nds" );

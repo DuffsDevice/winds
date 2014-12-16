@@ -23,12 +23,12 @@ void _shortcut::readAttributes() const
 		// Read Fallback Arguments
 		const string& fallbackArgsString = parser.readIndex( "LocalShortcut" , "FallbackArgs" );
 		if( !fallbackArgsString.empty() )
-			this->fallbackArgs = new _programArgs( fallbackArgsString.c_str() );
+			this->fallbackArgs = new _args( fallbackArgsString.c_str() );
 		
 		// Read standard arguments
 		const string& standardArgsString = parser.readIndex( "LocalShortcut" , "StandardArgs" );
 		if( !standardArgsString.empty() )
-			this->standardArgs = new _programArgs( standardArgsString.c_str() );
+			this->standardArgs = new _args( standardArgsString.c_str() );
 	}
 }
 
@@ -55,7 +55,7 @@ _bitmap _shortcut::getFileImage() const
 	return this->image;
 }
 
-bool _shortcut::execute( _programArgs args )
+bool _shortcut::execute( _args args )
 {
 	const string& dest = this->getDestination();
 	

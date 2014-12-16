@@ -97,7 +97,8 @@ bool _viewSwitcher::set( string assocName )
 		return false;
 	
 	// Apply new view
-	_view* newView = this->views[assocName];
+	_view* newView = this->getViewByName( assocName );
+	
 	if( newView && viewParent )
 	{
 		newView->create( viewParent );

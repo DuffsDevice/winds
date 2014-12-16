@@ -63,7 +63,8 @@ class _viewSwitcher
 		
 		//! Returns the _view object having the supplied associated name
 		_view* getViewByName( string assocName ){
-			return this->views[assocName];
+			auto iter = this->views.find(assocName);
+			return iter != this->views.end() ? iter->second : nullptr ;
 		}
 		
 		//! Upadets the currently active view

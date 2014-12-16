@@ -7,6 +7,7 @@
 #include <_controller/controller.gui.h>
 #include <_controller/controller.registry.h>
 #include <_controller/controller.localization.h>
+#include <_controller/controller.execution.h>
 
 extern "C"{
 #include <_library/_fat/partition.h>
@@ -238,7 +239,7 @@ string _direntry::getFullName( bool forceExtension ) const
 			case _mime::application_microsoft_installer:
 			case _mime::application_x_lua_bytecode:
 			{
-				_program* prog = _program::fromFile( this->getFileName() );
+				_uniquePtr<_program> prog = _program::fromFile( this->getFileName() );
 				if( prog )
 				{
 					// Get Header of the program
@@ -247,9 +248,6 @@ string _direntry::getFullName( bool forceExtension ) const
 					string name = "";
 					if( header.fileName != nullptr )
 						name = move(*header.fileName);
-					
-					// Delete the program again
-					delete prog;
 					
 					if( !name.empty() )	
 						return move(name);
@@ -612,11 +610,8 @@ string _direntry::getSizeReadable() const
 	return fmt2string( "%d%s%d %cB" , _u32(size >> 10) , _localizationController::getBuiltInString("fmt_decimal_point").c_str() , _u32( size & 1023 ) , *units );
 }
 
-bool _direntry::execute( _programArgs args )
+bool _direntry::execute( _args args )
 {
-	//if( !_filesystemController::isFatReady() )
-	//	return false;
-	
 	if( this->isDirectory() )
 		return false;
 	
@@ -625,14 +620,7 @@ bool _direntry::execute( _programArgs args )
 		case _mime::application_octet_stream:
 		case _mime::application_microsoft_installer:
 		case _mime::application_x_lua_bytecode:
-		{
-			_program* prog = _program::fromFile( this->getFileName() );
-			if( prog )
-				prog->execute( move( args ) );
-			else
-				return false;
-			return true;
-		}
+			return _executionController::execute( _program::fromFile( this->getFileName() ) , move(args) );
 		case _mime::application_x_bat:
 			return _windows::executeCommand( this->readString() );
 		
@@ -677,10 +665,10 @@ _bitmap _direntry::getFileImage() const
 		case _mime::application_microsoft_installer:
 		case _mime::application_x_lua_bytecode:
 		{
-			_program* prog = _program::fromFile( this->getFileName() );
-			if( prog ){
+			_uniquePtr<_program> prog = _program::fromFile( this->getFileName() );
+			if( prog )
+			{
 				_bitmap bmp = prog->getFileImage();
-				delete prog;
 				if( bmp.isValid() )
 					return move(bmp);
 			}

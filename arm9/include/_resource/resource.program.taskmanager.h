@@ -24,7 +24,7 @@ class PROG_TaskManager : public _progC
 		_s8					lastMemoryValueY;
 		_u8					pixelsBeforeNextGridLine;
 		
-		void			main( _programArgs args );
+		void			main( _args args );
 		void			cleanUp();
 		
 		void			timerHandler();

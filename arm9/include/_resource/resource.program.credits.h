@@ -27,7 +27,7 @@ class PROG_Credits : public _progC
 		_uniquePtr<_label>			heading3;
 		_uniquePtr<_label>			value3_1;
 		
-		void			main( _programArgs args );
+		void			main( _args args );
 		
 		_callbackReturn handler( _event );
 		

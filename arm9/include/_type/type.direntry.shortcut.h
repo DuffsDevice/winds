@@ -4,7 +4,7 @@
 #include <_type/type.h>
 #include <_type/type.direntry.h>
 #include <_type/type.ini.h>
-#include <_type/type.program.args.h>
+#include <_type/type.arguments.h>
 
 class _shortcut : public _direntry {
 	
@@ -12,8 +12,8 @@ class _shortcut : public _direntry {
 		
 		mutable _bitmap			image;
 		mutable string*			destination;
-		mutable _programArgs*	fallbackArgs;
-		mutable _programArgs*	standardArgs;
+		mutable _args*	fallbackArgs;
+		mutable _args*	standardArgs;
 		
 		void readAttributes() const ;
 		
@@ -32,7 +32,7 @@ class _shortcut : public _direntry {
 		}
 		
 		//! execute the thing behind the shortcut
-		bool execute( _programArgs args = _programArgs() );
+		bool execute( _args args = _args() );
 		
 		//! get the shortcuts extension, which is anyway null
 		const string& getExtension() const {
