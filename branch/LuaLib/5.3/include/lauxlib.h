@@ -210,14 +210,23 @@ LUALIB_API void (luaL_openlib) (lua_State *L, const char *libname,
 ** ===================================================================
 */
 
+typedef void (*lua_printfunc_t)(lua_State* L, const char* str, size_t length);
+
+extern lua_printfunc_t lua_printfunc;
+
+/* set a printing function */
+#if !defined(lua_setprintfunc)
+#define lua_setprintfunc(p)   (lua_printfunc=(p))
+#endif
+
 /* print a string */
 #if !defined(lua_writestring)
-#define lua_writestring(s,l)   fwrite((s), sizeof(char), (l), stdout)
+#define lua_writestring(L,s,l)   {if(lua_printfunc!=NULL)(*lua_printfunc)(L,s,l);else fwrite((s), sizeof(char), (l), stdout);}
 #endif
 
 /* print a newline and flush the output */
 #if !defined(lua_writeline)
-#define lua_writeline()        (lua_writestring("\n", 1), fflush(stdout))
+#define lua_writeline(L)        {if(lua_printfunc!=NULL)(*lua_printfunc)(L,"\n",1);else{lua_writestring(L,"\n", 1);fflush(stdout);}}
 #endif
 
 /* print an error message */
@@ -248,7 +257,6 @@ LUALIB_API void (luaL_openlib) (lua_State *L, const char *libname,
 
 #endif
 /* }============================================================ */
-
 
 
 #endif

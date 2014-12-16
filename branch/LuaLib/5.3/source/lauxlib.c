@@ -36,6 +36,7 @@
 #define LEVELS1	12	/* size of the first part of the stack */
 #define LEVELS2	10	/* size of the second part of the stack */
 
+lua_printfunc_t lua_printfunc = NULL;
 
 
 /*

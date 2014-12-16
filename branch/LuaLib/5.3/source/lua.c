@@ -210,8 +210,8 @@ static int docall (lua_State *L, int narg, int nres) {
 
 
 static void print_version (void) {
-  lua_writestring(LUA_COPYRIGHT, strlen(LUA_COPYRIGHT));
-  lua_writeline();
+  lua_writestring(NULL, LUA_COPYRIGHT, strlen(LUA_COPYRIGHT));
+  lua_writeline(NULL);
 }
 
 
@@ -412,7 +412,7 @@ static void doREPL (lua_State *L) {
     else report(L, status);
   }
   lua_settop(L, 0);  /* clear stack */
-  lua_writeline();
+  lua_writeline(L);
   progname = oldprogname;
 }
 
