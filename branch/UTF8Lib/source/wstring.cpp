@@ -56,6 +56,26 @@ wstring::wstring( _literal str ) :
 	}
 }
 
+wstring::wstring( _literal str , _u32 len ) :
+	stringLen( len )
+	, indicesOfMultibyte( nullptr )
+	, misFormated( false )
+{
+	if( str ){
+		this->bufferLen = std::min<_u32>( len , strlen( (const char*)str ) ) + 1;
+		this->buffer = new _char[this->bufferLen];
+		this->indicesLen = this->bufferLen / multibytePartGuess;
+		strncpy( (char*)this->buffer , (const char*)str , bufferLen - 1 );
+		this->buffer[ this->bufferLen - 1 ] = '\0';
+		refreshIndices();
+	}
+	else{
+		this->buffer = nullptr;
+		this->bufferLen = 0;
+		this->indicesLen = 0;
+	}
+}
+
 optimized wstring::wstring( _wliteral str ) :
 	indicesOfMultibyte( nullptr )
 	, indicesLen( 0 )
@@ -418,6 +438,11 @@ optimized _u32 wstring::getActualIndex( _u32 requestedIndex ) const
 
 optimized wstring wstring::rawSubstr( _u32 byteIndex , _u32 byteCount , _u32 numCodepoints ) const
 {
+	byteCount = std::min( byteCount , this->size() - byteIndex );
+	
+	if( !byteCount )
+		return wstring();
+	
 	_u32	actualStartIndex = byteIndex;
 	_u32	actualEndIndex = byteIndex + byteCount;
 	
@@ -602,4 +627,78 @@ optimized _s32 wstring::compare( const wstring& str ) const
 		it2++;
 	}
 	return ( it1 == end1 ? 1 : 0 ) - ( it2 == end2 ? 1 : 0 );
+}
+
+optimized bool wstring::equals( _literal str ) const
+{
+	_literal it1 = this->buffer;
+	_literal it2 = str;
+	
+	while( *it1 && *it2 ){
+		if( *it1 != *it2 )
+			return false;
+	}
+	return *it1 == *it2;
+}
+
+_u32 wstring::find( _wchar ch , _u32 startPos ) const {
+	for( wstring::iterator it = this->begin() + startPos ; it < this->end() ; it++ )
+		if( *it == ch )
+			return it - this->begin();
+	return wstring::npos;
+}
+
+_u32 wstring::rfind( _wchar ch , _u32 startPos ) const {
+	for( wstring::reverse_iterator it = this->rbegin() + startPos ; it < this->rend() ; it++ )
+		if( *it == ch )
+			return it - this->rbegin();
+	return wstring::npos;
+}
+
+_u32 wstring::find_first_of( _wliteral str , _u32 startPos ) const {
+	for( wstring::iterator it = this->begin() + startPos ; it < this->end() ; it++ )
+	{
+		_wliteral tmp = str;
+		do{
+			if( *it == *tmp )
+				return it - this->begin();
+		}while( *++tmp );
+	}
+	return wstring::npos;
+}
+
+_u32 wstring::find_last_of( _wliteral str , _u32 startPos ) const {
+	for( wstring::reverse_iterator it = this->rbegin() + startPos ; it < this->rend() ; it++ )
+	{
+		_wliteral tmp = str;
+		do{
+			if( *it == *tmp )
+				return it - this->rbegin();
+		}while( *++tmp );
+	}
+	return wstring::npos;
+}
+
+_u32 wstring::find_first_not_of( _wliteral str , _u32 startPos ) const {
+	for( wstring::iterator it = this->begin() + startPos ; it < this->end() ; it++ )
+	{
+		_wliteral tmp = str;
+		do{
+			if( *it != *tmp )
+				return it - this->begin();
+		}while( *++tmp );
+	}
+	return wstring::npos;
+}
+
+_u32 wstring::find_last_not_of( _wliteral str , _u32 startPos ) const {
+	for( wstring::reverse_iterator it = this->rbegin() + startPos ; it < this->rend() ; it++ )
+	{
+		_wliteral tmp = str;
+		do{
+			if( *it == *tmp )
+				return it - this->rbegin();
+		}while( *++tmp );
+	}
+	return wstring::npos;
 }

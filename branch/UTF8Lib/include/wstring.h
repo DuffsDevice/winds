@@ -1,3 +1,28 @@
+// Copyright (c) 2014 Jakob Riedle (DuffsDevice)
+// 
+// Version 1.0
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+#ifndef _UTF8_LIB_
+#define _UTF8_LIB_
+
 #include "type.h"
 #include "type.uniqueptr.h"
 
@@ -72,6 +97,10 @@ class wstring
 					, instance( instance )
 				{}
 				
+				//! Default function
+				wstring_iterator( const wstring_iterator& ) = default;
+				wstring_iterator& operator=( const wstring_iterator& it ){ this->rawIndex = it.rawIndex; return *this; }
+				
 				//! Get the index
 				_s32 getIndex() const {
 					return this->rawIndex;
@@ -96,28 +125,15 @@ class wstring
 				}
 				
 				//! Increase the Iterator %nth times
-				wstring_iterator operator+( _u32 nth ){
-					_u32 newIndex = this->rawIndex;
-					while( nth-- > 0 )
-						newIndex += this->instance.getIndexBytes( newIndex );
-					return wstring_iterator( newIndex , this->instance );
-				}
+				friend wstring_iterator operator+( const wstring_iterator& it , _u32 nth );
 				wstring_iterator& operator+=( _u32 nth ){
 					while( nth-- > 0 )
 						this->rawIndex += this->instance.getIndexBytes( this->rawIndex );
 					return *this;
 				}
 				
-				//! Convert the iterator to an int
-				operator int() const { return this->instance.getNumberOfResultingCodepoints( 0 , rawIndex ); }
-				
 				//! Get the difference between two iterators
-				int operator-( const wstring_iterator& it ){
-					_u32 minIndex = std::min( this->rawIndex , it.rawIndex );
-					_u32 maxIndex = std::max( this->rawIndex , it.rawIndex );
-					_u32 numCodepoints = this->instance.getNumberOfResultingCodepoints( minIndex , maxIndex - minIndex );
-					return maxIndex == this->rawIndex ? numCodepoints : -numCodepoints;
-				}
+				friend int operator-( const wstring_iterator& left , const wstring_iterator& right );
 				
 				//! Compare two iterators
 				bool operator==( const wstring_iterator& it ) const { return this->rawIndex == it.rawIndex; }
@@ -155,6 +171,14 @@ class wstring
 					wstring_iterator( rawIndex , const_cast<wstring&>(instance) )
 				{}
 				
+				//! Cast ctor
+				wstring_const_iterator& operator=( const wstring_iterator& it ){ this->rawIndex = it.getIndex(); this->instance = it.getInstance(); return *this; }
+				wstring_const_iterator( const wstring_iterator& it ) : wstring_iterator( it.getIndex() , it.getInstance() ) { }
+				
+				//! Default function
+				wstring_const_iterator( const wstring_const_iterator& ) = default;
+				wstring_const_iterator& operator=( const wstring_const_iterator& it ){ this->rawIndex = it.rawIndex; return *this; }
+				
 				//! Remove setter
 				void setValue( _wchar value ) = delete;
 				
@@ -171,6 +195,20 @@ class wstring
 				
 			public:
 				
+				//! Ctor
+				wstring_reverse_iterator( _s32 rawIndex , wstring& instance ) :
+					rawIndex( rawIndex )
+					, instance( instance )
+				{}
+				
+				//! Default function
+				wstring_reverse_iterator( const wstring_reverse_iterator& ) = default;
+				wstring_reverse_iterator& operator=( const wstring_reverse_iterator& it ){ this->rawIndex = it.rawIndex; return *this; }
+				
+				//! From wstring_iterator to wstring_reverse_iterator
+				wstring_reverse_iterator& operator=( const wstring_iterator& it ){ this->rawIndex = it.getIndex(); this->instance = it.getInstance(); return *this; }
+				wstring_reverse_iterator( const wstring_iterator& it ) : rawIndex( it.getIndex() ) , instance( it.getInstance() ) { }
+				
 				//! Get the index
 				_s32 getIndex() const {
 					return this->rawIndex;
@@ -181,6 +219,9 @@ class wstring
 					this->rawIndex = rawIndex;
 				}
 				
+				//! Returns the wstring instance the iterator refers to
+				wstring& getInstance() const { return this->instance; }
+				
 				wstring_reverse_iterator& operator++(){ // prefix iter++
 					this->rawIndex -= this->instance.getIndexPreBytes( this->rawIndex );
 					return *this;
@@ -189,12 +230,7 @@ class wstring
 					this->rawIndex -= this->instance.getIndexPreBytes( this->rawIndex );
 					return *this;
 				}
-				wstring_reverse_iterator operator+( _u32 nth ){
-					_s32 newIndex = this->rawIndex;
-					while( nth-- > 0 )
-						newIndex -= this->instance.getIndexPreBytes( newIndex );
-					return wstring_reverse_iterator( newIndex , this->instance );
-				}
+				friend wstring_reverse_iterator operator+( const wstring_reverse_iterator& it , _u32 nth );
 				wstring_reverse_iterator& operator+=( _u32 nth ){
 					while( nth-- > 0 )
 						this->rawIndex -= this->instance.getIndexPreBytes( this->rawIndex );
@@ -202,12 +238,7 @@ class wstring
 				}
 				
 				//! Get the difference between two iterators
-				int operator-( const wstring_reverse_iterator& it ) const {
-					_s32 minIndex = std::min( this->rawIndex , it.rawIndex );
-					_s32 maxIndex = std::max( this->rawIndex , it.rawIndex );
-					_u32 numCodepoints = this->instance.getNumberOfResultingCodepoints( minIndex , maxIndex - minIndex );
-					return maxIndex == it.rawIndex ? numCodepoints : -numCodepoints;
-				}
+				friend int operator-( const wstring_reverse_iterator& left , const wstring_reverse_iterator& right );
 				
 				//! Compare two iterators
 				bool operator==( const wstring_reverse_iterator& it ) const { return this->rawIndex == it.rawIndex; }
@@ -229,21 +260,6 @@ class wstring
 				//! Check whether there is a Node following this one
 				bool hasNext() const { return this->rawIndex > 0; }
 				
-				//! Convert the iterator to an int
-				operator int() const { return this->instance.length() - this->instance.getNumberOfResultingCodepoints( 0 , rawIndex ); }
-				
-				//! From wstring_iterator to wstring_reverse_iterator
-				wstring_reverse_iterator& operator=( const wstring_iterator& it ){ this->rawIndex = it.getIndex(); this->instance = it.getInstance(); return *this; }
-				wstring_reverse_iterator& operator=( const wstring_reverse_iterator& it ){ this->rawIndex = it.rawIndex; this->instance = it.instance; return *this; }
-				wstring_reverse_iterator( const wstring_iterator& it ) : rawIndex( it.getIndex() ) , instance( it.getInstance() ) { }
-				wstring_reverse_iterator( const wstring_reverse_iterator& it ) : rawIndex( it.rawIndex ) , instance( it.instance ) { }
-				
-				//! Ctor
-				wstring_reverse_iterator( _s32 rawIndex , wstring& instance ) :
-					rawIndex( rawIndex )
-					, instance( instance )
-				{}
-				
 				//! Check if the Iterator is valid
 				operator bool() const { return this->valid(); }
 				
@@ -259,6 +275,14 @@ class wstring
 				wstring_const_reverse_iterator( _u32 rawIndex , const wstring& instance ) :
 					wstring_reverse_iterator( rawIndex , const_cast<wstring&>(instance) )
 				{}
+				
+				//! Cast ctor
+				wstring_const_reverse_iterator& operator=( const wstring_reverse_iterator& it ){ this->setIndex( it.getIndex() ); this->instance = it.getInstance(); return *this; }
+				wstring_const_reverse_iterator( const wstring_reverse_iterator& it ) : wstring_reverse_iterator( it.getIndex() , it.getInstance() ) { }
+				
+				//! Default functions
+				wstring_const_reverse_iterator( const wstring_const_reverse_iterator& ) = default;
+				wstring_const_reverse_iterator& operator=( const wstring_const_reverse_iterator& it ){ this->rawIndex = it.rawIndex; return *this; }
 				
 				//! Remove setter
 				void setValue( _wchar value ) = delete;
@@ -398,6 +422,7 @@ class wstring
 		typedef wstring::wstring_const_iterator			const_iterator;
 		typedef wstring::wstring_reverse_iterator		reverse_iterator;
 		typedef wstring::wstring_const_reverse_iterator	const_reverse_iterator;
+		constexpr static _u32							npos = string::npos;
 		
 		//! Default Ctor
 		wstring() :
@@ -414,6 +439,9 @@ class wstring
 		
 		//! Ctor from string literal
 		wstring( _literal str );
+		
+		//! Ctor from string literal
+		wstring( _literal str , _u32 len );
 		
 		//! Ctor from std::string literal
 		wstring( string str ) :
@@ -451,9 +479,18 @@ class wstring
 		//! Move Assignment operator
 		wstring& operator=( wstring&& str );
 		
+		//! Swap Assignment operator
+		void swap( wstring& str ){
+			std::swap( *this , str );
+		}
+		
 		
 		//! Clears the whole string
 		void clear();
+		
+		
+		//! Returns whether the string has an encoding error in it
+		bool isMisFormated() const { return this->misFormated; }
 		
 		
 		//! Returns the codepoint at place n
@@ -461,14 +498,12 @@ class wstring
 		
 		
 		//! Returns a reference to the codepoint at position n
-		wstring_reference operator[]( _u32 n ){
-			return wstring_reference( n , *this );
-		}
+		wstring_reference operator[]( _u32 n ){ return wstring_reference( n , *this ); }
+		_wchar operator[]( _u32 n ) const { return at( n ); }
 		
 		//! Returns a reference to the codepoint at byte n
-		wstring_raw_reference operator()( _u32 n ){
-			return wstring_raw_reference( n , *this );
-		}
+		wstring_raw_reference operator()( _u32 n ){ return wstring_raw_reference( n , *this ); }
+		_wchar operator()( _u32 n ) const { return rawAt( n ); }
 		
 		
 		//! Get the data as const char*
@@ -510,6 +545,12 @@ class wstring
 		
 		//! Get a reverse iterator to the end of the wstring
 		wstring_reverse_iterator rend(){ return wstring_reverse_iterator( -1 , *this ); }
+		
+		//! Get a const reverse iterator to the beginning of the wstring
+		wstring_const_reverse_iterator rbegin() const { return wstring_const_reverse_iterator( this->bufferLen - this->getIndexPreBytes( this->bufferLen - 1 ) , *this ); }
+		
+		//! Get a const reverse iterator to the end of the wstring
+		wstring_const_reverse_iterator rend() const { return wstring_const_reverse_iterator( -1 , *this ); }
 		
 		//! Get an iterator to the beginning of the unmodifyable wstring
 		wstring_const_iterator cbegin() const { return wstring_const_iterator( 0 , *this ); }
@@ -576,7 +617,7 @@ class wstring
 		wstring operator+( const wstring& summand ) const {
 			wstring str = *this;
 			str.append( summand );
-			return move( str );
+			return std::move( str );
 		}
 		
 		
@@ -621,6 +662,24 @@ class wstring
 			return this->rawSubstr( actualStartIndex , actualEndIndex - actualStartIndex , len );
 		}
 		
+		//! Find content in string
+		//_u32 find( wstring str , _u32 startPos = 0 ) const ;
+		//_u32 find( _literal str , _u32 startPos = 0 ) const ;
+		_u32 find( _wchar ch , _u32 startPos = 0 ) const ;
+		
+		//! Find content in string
+		//_u32 rfind( wstring str , _u32 startPos = 0 ) const ;
+		//_u32 rfind( _literal str , _u32 startPos = 0 ) const ;
+		_u32 rfind( _wchar ch , _u32 startPos = 0 ) const ;
+		
+		//! Find character in string
+		_u32 find_first_of( _wliteral str , _u32 startPos = 0 ) const ;
+		_u32 find_last_of( _wliteral str , _u32 startPos = 0 ) const ;
+		
+		//! Find absence of character in string
+		_u32 find_first_not_of( _wliteral str , _u32 startPos = 0 ) const ;
+		_u32 find_last_not_of( _wliteral str , _u32 startPos = 0 ) const ;
+		
 		
 		//! Removes the last codepoint in the wstring
 		wstring& pop_back(){
@@ -639,9 +698,19 @@ class wstring
 		 */
 		_s32 compare( const wstring& str ) const ;
 		
-		//! Compare two wstrings
-		bool operator==( const wstring& str ) const { return str.compare( *this ) == 0; }
-		bool operator!=( const wstring& str ) const { return str.compare( *this ) != 0; }
+		//! Returns true, if the supplied string compares equal to this one
+		bool equals( const wstring& str ) const { return equals( str.c_str() ); }
+		bool equals( const string& str ) const { return equals( str.c_str() ); }
+		bool equals( _literal str ) const ;
+		
+		//! Compare this wstring to another string
+		bool operator==( const wstring& str ) const { return this->equals( str ); }
+		bool operator!=( const wstring& str ) const { return !this->equals( str ); }
+		bool operator==( _literal str ) const { return this->equals( str ); }
+		bool operator!=( _literal str ) const { return !this->equals( str ); }
+		bool operator==( const string& str ) const { return this->equals( str ); }
+		bool operator!=( const string& str ) const { return !this->equals( str ); }
+		
 		bool operator>( const wstring& str ) const { return str.compare( *this ) > 0; }
 		bool operator>=( const wstring& str ) const { return str.compare( *this ) >= 0; }
 		bool operator<( const wstring& str ) const { return str.compare( *this ) < 0; }
@@ -682,4 +751,35 @@ class wstring
 		
 		//! Returns a portion of the string (indexed on byte-base)
 		wstring rawSubstr( _u32 byteIndex , _u32 byteCount , _u32 numCodepoints ) const ;
+		
+		//! Friend iterator difference computation functions
+		friend int operator-( const wstring::reverse_iterator& left , const wstring::reverse_iterator& right );
+		friend int operator-( const wstring::iterator& left , const wstring::iterator& right );
 };
+
+int operator-( const wstring::iterator& left , const wstring::iterator& right ){
+	_u32 minIndex = std::min( left.rawIndex , right.rawIndex );
+	_u32 maxIndex = std::max( left.rawIndex , right.rawIndex );
+	_u32 numCodepoints = left.instance.getNumberOfResultingCodepoints( minIndex , maxIndex - minIndex );
+	return maxIndex == left.rawIndex ? numCodepoints : -numCodepoints;
+}
+wstring::iterator operator+( const wstring::iterator& it , _u32 nth ){
+	_u32 newIndex = it.rawIndex;
+	while( nth-- > 0 )
+		newIndex += it.instance.getIndexBytes( newIndex );
+	return wstring::iterator( newIndex , it.instance );
+}
+int operator-( const wstring::reverse_iterator& left , const wstring::reverse_iterator& right ){
+	_s32 minIndex = std::min( left.rawIndex , right.rawIndex );
+	_s32 maxIndex = std::max( left.rawIndex , right.rawIndex );
+	_u32 numCodepoints = left.instance.getNumberOfResultingCodepoints( minIndex , maxIndex - minIndex );
+	return maxIndex == right.rawIndex ? numCodepoints : -numCodepoints;
+}
+wstring::reverse_iterator operator+( const wstring::reverse_iterator& it , _u32 nth ){
+	_s32 newIndex = it.rawIndex;
+	while( nth-- > 0 )
+		newIndex -= it.instance.getIndexPreBytes( newIndex );
+	return wstring::reverse_iterator( newIndex , it.instance );
+}
+
+#endif
