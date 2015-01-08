@@ -1,9 +1,9 @@
-#include "parser.h"
+#include <parser.h>
 
-unsigned char SyllableParser::getNumCharsBeforeSyllableEnd( const char* start )
+unsigned char TinyHyphenator::getNumCharsBeforeSyllableEnd( Literal start ) const 
 {
 	unsigned char numConsonants = 0;
-	const char* curChar = start;
+	Literal curChar = start;
 	while( *curChar && isConsonant( curChar ) )
 	{
 		curChar++;
@@ -92,19 +92,19 @@ unsigned char SyllableParser::getNumCharsBeforeSyllableEnd( const char* start )
 	return found;
 }
 
-std::list<int> SyllableParser::parseTextInternal( const char* txt , const char* end )
+std::list<int> TinyHyphenator::parseTextInternal( Literal txt , Literal end ) const 
 {
-	const char* startPos;
-	const char* endPos;
+	Literal startPos;
+	Literal endPos;
 	
 	// Current poition of iteration
-	const char* curPos = txt;
+	Literal curPos = txt;
 	
 	std::list<int> ret;
 	
 	do
 	{
-		const char* nextEnd = SyllableParser::findFirstOf( curPos , SyllableParser::wordSeparators );
+		Literal nextEnd = TinyHyphenator::findFirstOf( curPos , language.wordSeparators );
 		
 		if( nextEnd && nextEnd <= end ){ // Found something
 			startPos = curPos;
@@ -118,7 +118,7 @@ std::list<int> SyllableParser::parseTextInternal( const char* txt , const char* 
 		
 		if( startPos < endPos )
 		{
-			std::list<int> lst = SyllableParser::parseWordInternal( startPos , endPos );
+			std::list<int> lst = TinyHyphenator::parseWordInternal( startPos , endPos );
 			
 			std::ptrdiff_t delta = startPos - txt;
 			
@@ -143,7 +143,7 @@ enum parserState
 	, Pend
 };
 
-std::list<int> SyllableParser::parseWordInternal( const char* startPos , const char* endPos )
+std::list<int> TinyHyphenator::parseWordInternal( Literal startPos , Literal endPos ) const 
 {
 	parserState state = Pstart;
 	
@@ -153,7 +153,7 @@ std::list<int> SyllableParser::parseWordInternal( const char* startPos , const c
 	// Temporary value that will be filled with the position of the next syllable, if requested
 	int syllablePos = -1;
 	
-	const char* curPos = startPos;
+	Literal curPos = startPos;
 	unsigned int size = 0;
 	int index = 0;
 	
