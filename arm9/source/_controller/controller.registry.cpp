@@ -54,8 +54,8 @@ bool _registryController::init()
 
 void _registryController::prepareFileTypeRegistry()
 {
-	fileTypeRegistry->setMap( {
-		{ "fileMapper" , {
+	fileTypeRegistry->setMap( {{
+		{ "fileMapper" , {{
 			{ "jpg"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 			{ "png"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 			{ "bmp"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
@@ -63,26 +63,26 @@ void _registryController::prepareFileTypeRegistry()
 			{ "ico"	, "%WINDIR%/accessories/paint.exe -\"$F\"" } ,
 			{ "nds"	, "%SYSTEM%/rom_exec.exe -\"$F\"" } ,
 			{ "*"	, "%SYSTEM%/progmapper.exe -\"$F\"" }
-		} }
-		, { "fileIcon" , {
+		}} }
+		, { "fileIcon" , {{
 			//{ "%dir%" , "" }
-		} }
-	} );
+		} }}
+	}} );
 	fileTypeRegistry->flush();
 }
 
 void _registryController::prepareSystemRegistry()
 {
-	systemRegistry->setMap( {
-		{ "bootParams" , {
+	systemRegistry->setMap( {{
+		{ "bootParams" , {{
 			{ "safeBootMode" , "0" } ,
 			{ "correctShutDown" , "1" } ,
 			{ "timeOnline" , "0" } ,
-		} }
-		, { "localization" , {
+		}} }
+		, { "localization" , {{
 			{ "language" , _windows::getDSLanguage().c_str() }
-		} }
-		, { "gui" , {
+		}} }
+		, { "gui" , {{
 			{ "minDragDistance" , "9" } ,
 			{ "maxClickPeriod" , "30" } ,
 			{ "keyRepetitionDelay" , "30" } ,
@@ -98,10 +98,10 @@ void _registryController::prepareSystemRegistry()
 			
 			{ "startButtonTextColor" , "RGB(30,30,30)" } ,
 			{ "fileExtensionVisible" , "1" } ,
-		} }
-		, { "serviceMapper" , {
-		} }
-	} );
+		}} }
+		, { "serviceMapper" , {{
+		}} }
+	}} );
 	systemRegistry->flush();
 }
 

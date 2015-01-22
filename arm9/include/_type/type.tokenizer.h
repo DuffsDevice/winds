@@ -35,7 +35,7 @@ extern _vector<string> tokenize( const string& input , _literal separators , boo
 
 
 //! Join a list of elements in a string, each element separated with 'sep'
-template<template<class> class Container>
+template<template<class...> class Container>
 string unTokenize( const Container<string>& container , const string& sep = "," , bool sepAtStart = false , bool sepAtEnd = false )
 {
 	string result;

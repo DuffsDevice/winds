@@ -686,6 +686,55 @@ _bitmap _direntry::getFileImage() const
 	return _registryController::getFileTypeImage( extension , mime );
 }
 
+int remove_directory( _literal path )
+{
+	DIR *d = opendir( path );
+	size_t path_len = strlen( path );
+	int r = -1;
+
+	if( d )
+	{
+		struct dirent *p;
+		r = 0;
+		
+		while( !r && ( p = readdir( d ) ) != nullptr )
+		{
+			int r2 = -1;
+			char *buf;
+			size_t len;
+			
+			/* Skip the names "." and ".." as we don't want to recurse on them. */
+			if( p->d_name[0] == '.' && ( !p->d_name[1] || ( p->d_name[1] == '.' && !p->d_name[2] ) ) )
+				continue;
+			
+			len = path_len + strlen(p->d_name) + 2; 
+			buf = new char(len);
+			
+			if (buf)
+			{
+				struct stat statbuf;
+				snprintf( buf , len , "%s/%s" , path , p->d_name );
+				
+				if( !stat( buf , &statbuf ) )
+				{
+					if( S_ISDIR(statbuf.st_mode) )
+						r2 = remove_directory( buf );
+					else
+						r2 = unistd::unlink( buf );
+				}
+				delete[] buf;
+			}
+			r = r2;
+		}
+		closedir( d );
+	}
+
+	if( !r )
+		r = remove( path );
+
+	return r;
+}
+
 bool _direntry::unlink( bool removeContents )
 {
 	if( !this->exists )
@@ -694,8 +743,13 @@ bool _direntry::unlink( bool removeContents )
 	if( this->mode != _direntryMode::closed && !this->close() )
 		return false; // Cannot close the file!
 	
-	if( ( !this->isDirectory() || std::remove( (this->filename + "/*").c_str() ) == 0 ) && std::remove( this->filename.c_str() ) == 0 )
-	{
+	if(
+		( this->isDirectory() && removeContents && remove_directory( this->filename.c_str() ) == 0 ) // Nonempty directories
+		|| (
+			( !removeContents || !this->isDirectory() ) // Files and directories, that should be empty
+			&& remove( this->filename.c_str() ) == 0
+		)
+	){
 		this->exists = false;
 		return true;
 	}
