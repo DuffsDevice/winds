@@ -1,7 +1,7 @@
 #ifndef _WIN_T_DIRENTRY_
 #define _WIN_T_DIRENTRY_
 
-#include <stdio.h>
+#include <cstdio>
 #include <sys/dir.h>
 
 #include <_type/type.h>

@@ -3,7 +3,7 @@
 #include <_controller/controller.localization.h>
 
 // Special Pages
-#include <_resource/resource.explorer.computer.h>
+//#include <_resource/resource.explorer.computer.h>
 
 PROG_Explorer::PROG_Explorer() :
 	path( "/" )
@@ -21,7 +21,7 @@ void PROG_Explorer::main( _args args )
 	if( !args.empty() && !args[0].empty() )
 		this->path = _direntry(args[0]).getFileName();
 	
-	this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_computer") , new _explorerPageComputer() );
+	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_computer") , new _explorerPageComputer() );
 	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_systemsettings") , _explorerPageSystemSettings() );
 	
 	_mainFrame* mainFrame = _program::getMainFrame( 120 , 90 );
