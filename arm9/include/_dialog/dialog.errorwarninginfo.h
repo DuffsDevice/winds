@@ -18,7 +18,7 @@ class _errorDialog : public _imageDialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_errorDialog( string message , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore );
+		_errorDialog( wstring message , _optValue<wstring> okLabel = ignore , _optValue<wstring> otherLabel = ignore );
 };
 
 //! Warning - Dialog
@@ -35,7 +35,7 @@ class _warningDialog : public _imageDialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_warningDialog( string message , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore );
+		_warningDialog( wstring message , _optValue<wstring> okLabel = ignore , _optValue<wstring> otherLabel = ignore );
 };
 
 //! Info - Dialog
@@ -52,7 +52,7 @@ class _infoDialog : public _imageDialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_infoDialog( string message , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore );
+		_infoDialog( wstring message , _optValue<wstring> okLabel = ignore , _optValue<wstring> otherLabel = ignore );
 };
 
 #endif

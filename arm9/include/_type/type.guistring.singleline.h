@@ -19,7 +19,7 @@ class _singleLineGuiString : public _guiString
 		 * @param fontColor The color of the font to use for this text object
 		 * @param fontSize The size of the font to use for this text object
 		 */
-		_singleLineGuiString( string text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
+		_singleLineGuiString( wstring text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
 			_guiString( move(text) , font , fontColor , fontSize )
 			, ellipsis( -1 )
 			, omitStart( -1 )
@@ -29,11 +29,11 @@ class _singleLineGuiString : public _guiString
 		{}
 		
 		//! Override the current value of this formatString
-		_singleLineGuiString& operator=( const string& str ){
+		_singleLineGuiString& operator=( const wstring& str ){
 			_guiString::operator=( str );
 			return *this;
 		}
-		_singleLineGuiString& operator=( string&& str ){
+		_singleLineGuiString& operator=( wstring&& str ){
 			_guiString::operator=( move(str) );
 			return *this;
 		}

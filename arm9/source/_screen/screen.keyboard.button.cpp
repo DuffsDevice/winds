@@ -32,7 +32,7 @@ _callbackReturn _keyboardScreenButton::mouseHandler( _event event )
 	return handled;
 }
 
-_keyboardScreenButton::_keyboardScreenButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key , string title , _style&& style ) :
+_keyboardScreenButton::_keyboardScreenButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key , wstring title , _style&& style ) :
 	_button( x , y , width , height , title , (_style&&)style )
 	, key( key )
 {	

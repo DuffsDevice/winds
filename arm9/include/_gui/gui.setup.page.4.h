@@ -21,7 +21,7 @@ class _guiSetupPage4 : public _view
 		_map<_imageGadget*,_bitmap>	imgProfileIcons;
 		
 		// profile name will be stored here
-		string						profileName;
+		wstring						profileName;
 		_s8							profileIcon;
 		
 		_callbackReturn profileIconClickHandler( _event event );

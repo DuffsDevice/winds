@@ -38,11 +38,8 @@ void _textArea::adjustScrollToCursor()
 	// First, check if we need to update the text; then place cursor
 	this->checkUpdate();
 	
-	// Letter index 2 byte index
-	_s32 cursorIndex = this->text.getNumBytesFromNumLetters( this->text.getCursor() );
-	
 	// Get Position and height of cursor
-	_2s16 dimensions = this->text.getYMetricsOfLine( this->getGuiStringDimensions() , this->text.getLineContainingIndex( cursorIndex ) );
+	_2s16 dimensions = this->text.getYMetricsOfLine( this->getGuiStringDimensions() , this->text.getLineContainingIndex( this->text.getCursor() ) );
 	
 	// Store Current Scroll
 	_int scrollValue = this->scrollBar->getValue();
@@ -119,12 +116,12 @@ _callbackReturn _textArea::keyHandler( _event event )
 			break;
 		default:
 			if( _hardwareKeyPattern::isHardwareKey( event.getKeyCode() ) 
-				|| ( !isprint( (_char)event.getKeyCode() ) && !iscntrl( (_char)event.getKeyCode() ) ) // Check if printable
+				|| ( !isprint( (_char)event.getKeyCode() ) && !iscntrl( (_wchar)event.getKeyCode() ) ) // Check if printable
 			)
 				break;
 			
 			// Insert glyphCode()
-			that->text.insert( that->text.getCursor() , (_char)event.getKeyCode() );
+			that->text.insert( that->text.getCursor() , (_wchar)event.getKeyCode() );
 			
 			// Notify that content has changed
 			that->triggerEvent( onEdit );
@@ -210,16 +207,11 @@ _callbackReturn _textArea::mouseHandler( _event event )
 	return handled;
 }
 
-_textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+_textArea::_textArea( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value , _style&& style ) :
 	_gadget( _gadgetType::textarea , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld | _style::noTransparentParts )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, text( move(value) , _fontController::getStandardFont() , _color::black , _fontController::getStandardFontSize() )
 {
-	// Adjust guiString object
-	this->text.setFontChangeEnabled( false );
-	this->text.setFontColorChangeEnabled( false );
-	this->text.setFontSizeChangeEnabled( false );
-	
 	this->scrollBar =
 		new _scrollBar(
 			width - 9 , /* x-coord */

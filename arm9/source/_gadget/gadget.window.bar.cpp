@@ -1,5 +1,4 @@
 #include <_gadget/gadget.window.bar.h>
-#include <_type/type.font.glyphs.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
 
@@ -23,13 +22,14 @@ _callbackReturn _windowBar::refreshHandler( _event event )
 	if( parent )
 	{
 		_color col = _guiController::getControlFg();
+		_fontHandle ft = _fontController::getFont("System7");
 		
 		if( parent->isResizeableX() && parent->isResizeableY() )
-			bP.drawChar( myW - 8 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleXY , col );
+			bP.drawChar( myW - 8 , myH - 8 , ft , L'\u25A8' , col );
 		else if( parent->isResizeableY() )
-			bP.drawChar( myW - 7 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleY , col );
+			bP.drawChar( myW - 7 , myH - 8 , ft , L'\u25A4' , col );
 		else if( parent->isResizeableX() )
-			bP.drawChar( myW - 8 , myH - 8 , _fontController::getFont("SystemSymbols8") , _glyph::resizeHandleX , col );
+			bP.drawChar( myW - 8 , myH - 8 , ft , L'\u25A5' , col );
 		else
 			return use_default;
 		

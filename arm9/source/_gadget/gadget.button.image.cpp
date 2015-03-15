@@ -52,7 +52,7 @@ _callbackReturn _imageButton::refreshHandler( _event event )
 	return use_default;
 }
 
-_imageButton::_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _optValue<_bitmap> imagePressed , string value , _style&& style ) :
+_imageButton::_imageButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _bitmap image , _optValue<_bitmap> imagePressed , wstring value , _style&& style ) :
 	_button( x , y , width , height , value , (_style&&)style )
 	, image( (_bitmap&&)image )
 	, pressedImage( (_bitmap&&)imagePressed )

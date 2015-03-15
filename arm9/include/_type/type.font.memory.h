@@ -9,8 +9,8 @@ class _memoryFont : public _font{
 	private:
 		_u8 		spaceWidth;
 		_u8			monospace;
-		_char		firstChar;
-		_char		lastChar;
+		_wchar		firstChar;
+		_wchar		lastChar;
 		_u8			height;
 		_u8			mainHeight;
 		_s8			letterSpace;
@@ -21,7 +21,7 @@ class _memoryFont : public _font{
 	protected:
 		
 		//! Check if the supplied character can be displayed by the font
-		bool isCharSupportedInternal( _char ch ) const {
+		bool isCharSupportedInternal( _wchar ch ) const {
 			return ch <= this->lastChar && ch >= this->firstChar;
 		}
 		
@@ -42,10 +42,10 @@ class _memoryFont : public _font{
 		 * @param sW The Width of a Space
 		 * @return void
 		 */
-		_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace = 1 );
+		_memoryFont( string nN , _wchar fc , _wchar lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace = 1 );
 		
 		//! Get the CharacterWidth related to a specific character
-		_length getCharacterWidth( _char ch , _u8 fontSize = 0 ) const ;
+		_length getCharacterWidth( _wchar ch , _fontSize fontSize = 0 ) const ;
 		
 		//! Check whether this font is monospace
 		_length isMonospace() const {
@@ -53,17 +53,17 @@ class _memoryFont : public _font{
 		}
 		
 		//! Get the Height of the font
-		_length getHeight( _u8 fontSize = 0 , _char ch = 'a'  ) const {
+		_length getHeight( _fontSize fontSize = 0 , _wchar ch = 'a'  ) const {
 			return this->height;
 		}
 		
 		//! Get the Main-Height of the font
-		_length getAscent( _u8 fontSize = 0 , _char ch = 'a'  ) const {
+		_length getAscent( _fontSize fontSize = 0 , _wchar ch = 'a'  ) const {
 			return this->mainHeight;
 		}
 		
 		//! Get Space between two letters
-		_length getLetterSpace( _u8 fontSize = 0 , _char ch = 'a' ) const {
+		_length getLetterSpace( _fontSize fontSize = 0 , _wchar ch = 'a' ) const {
 			return this->letterSpace;
 		}
 		
@@ -73,7 +73,7 @@ class _memoryFont : public _font{
 		}
 		
 		//! draw a Character!
-		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char character , _color color , _rect clip , _u8 fontSize = 0 ) const ;
+		_length drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _wchar character , _color color , _rect clip , _fontSize fontSize = 0 ) const ;
 		
 };
 

@@ -40,6 +40,7 @@ enum class _gadgetType : _u8
 	windowmenu,
 	windowmenuentry,
 	mainframe,
+	codepointmatrix,
 	screen,
 	popup,
 	contextmenu,

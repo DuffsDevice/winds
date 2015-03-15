@@ -36,7 +36,7 @@ _callbackReturn _taskInfo::notificationClickHandler( _event event )
 	return handled;
 }
 
-void _taskInfo::displayNotification( string title , string content , _bitmap icon )
+void _taskInfo::displayNotification( wstring title , wstring content , _bitmap icon )
 {
 	this->notificationBubbleHandler = nullptr;
 	this->notificationBubble = new _bubble( content.length() > 22 ? 85 : 60 , move(title) , move(content) , icon );

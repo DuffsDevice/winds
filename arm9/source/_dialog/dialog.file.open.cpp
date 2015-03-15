@@ -16,11 +16,11 @@ const _menuEntryList _fileOpenDialog::generateMenuList()
 	
 	_menuEntryList menuList;
 	for( auto& value : fileTypes ){
-		string& val = menuList[value.first].text;
+		wstring& val = menuList[value.first].text;
 		val.swap( value.second.first );
 		val += " (.";
 		_vector<string> extensions = tokenize( value.second.second , "," , true );
-		val += unTokenize( extensions , ", ." ).c_str();
+		val += unTokenize( extensions , ", ." );
 		val += ")";
 	}
 	return move(menuList);
@@ -31,11 +31,12 @@ void _fileOpenDialog::executeInternal(){
 	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
+
 void _fileOpenDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string initialFilePath , _int initialFileExtension , _optValue<string> openLabel , _optValue<string> windowLabel ) :
+_fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string initialFilePath , _int initialFileExtension , _optValue<wstring> openLabel , _optValue<wstring> windowLabel ) :
 	fileTypes( move(possibleFileExtensions) )
 {
 	// Constants
@@ -50,7 +51,6 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	const _length textBoxWidth = 60;
 	const _length labelWidth = this->fileNameLabel->getWidth();
 	
-	
 	// Create Filename Box
 	this->fileNameBox = new _textBox( labelWidth + 3 , firstLineY , textBoxWidth , ignore );
 	
@@ -61,7 +61,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	
 	// Create the two buttons
 	this->cancelButton = new _button( secondRowX , secondLineY , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
-	this->openButton = new _button( secondRowX + cancelButton->getWidth() + 1 , secondLineY , ignore , ignore , openLabel.isValid() ? (string&&)openLabel : _localizationController::getBuiltInString("lbl_open") );
+	this->openButton = new _button( secondRowX + cancelButton->getWidth() + 1 , secondLineY , ignore , ignore , openLabel.isValid() ? (wstring&&)openLabel : _localizationController::getBuiltInString("lbl_open") );
 	
 	
 	// Create file type Selectbox
@@ -76,7 +76,7 @@ _fileOpenDialog::_fileOpenDialog( _fileTypeList possibleFileExtensions , string 
 	// Window
 	_length winWidth = labelWidth + this->fileTypeChooser->getWidth() + textBoxWidth + 7;
 	_length winHeight = secondLineY + this->openButton->getHeight() + 12;
-	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_open") , _style::notResizeable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (wstring&&)windowLabel : _localizationController::getBuiltInString("lbl_open") , _style::notResizeable );
 	
 	// Fix Filepath
 	initialFilePath = _direntry( initialFilePath ).getFileName();
@@ -148,7 +148,7 @@ _callbackReturn _fileOpenDialog::eventHandler( _event event )
 	
 	// The Goto Button was pressed
 	else if( that == this->gotoButton )
-		this->fileView->setPath( this->fileViewAddress->getStrValue() );
+		this->fileView->setPath( this->fileViewAddress->getStrValue().cpp_str() );
 	
 	// The Folder Up Button
 	else if( that == this->folderUpButton ){

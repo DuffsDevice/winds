@@ -135,7 +135,7 @@ namespace _luafunc
 			case _gadgetType::popup:				Lunar<_lua_popup>::emplace( L , (_contextMenu*)gadget );						break;
 			case _gadgetType::mainframe:			Lunar<_lua_mainframe>::emplace( L , (_mainFrame*)gadget );						break;
 			case _gadgetType::taskinfo:				Lunar<_lua_taskinfo>::emplace( L , (_taskInfo*)gadget );						break;
-			default:								Lunar<_lua_gadget>::emplace( L , gadget , false );
+			default:								Lunar<_lua_gadget>::emplace( L , gadget );
 		}
 	}
 }

@@ -12,12 +12,12 @@ void _fileSaveDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<string> saveLabel , _optValue<string> windowLabel ) :
+_fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName , _int initialFileExtension , _optValue<wstring> saveLabel , _optValue<wstring> windowLabel ) :
 	fileTypes( move(possibleFileExtensions) )
 {
 	//printf("First: %s\n",fileTypes[1].first.c_str());
 	// Build directory and initial name
-	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _localizationController::getBuiltInString("lbl_unnamed");
+	initialFileName = initialFileName.isValid() ? (string&&)initialFileName : _localizationController::getBuiltInString("lbl_unnamed").cpp_str();
 	_direntry initialFile = _direntry( move(initialFileName) );
 	this->initialName = initialFile.getFullName();
 	
@@ -50,7 +50,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	
 	// Buttons
 	this->cancelButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , firstLineY , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
-	this->saveButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , secondLineY , ignore , ignore , saveLabel.isValid() ? (string&&)saveLabel : _localizationController::getBuiltInString("lbl_save") );
+	this->saveButton = new _button( labelWidth + textBoxAndSelectWidth + 4 , secondLineY , ignore , ignore , saveLabel.isValid() ? (wstring&&)saveLabel : _localizationController::getBuiltInString("lbl_save") );
 	
 	
 	// Button Width
@@ -62,7 +62,7 @@ _fileSaveDialog::_fileSaveDialog( _fileTypeList possibleFileExtensions , _optVal
 	// Window
 	_length winWidth = labelWidth + buttonWidth + textBoxAndSelectWidth + 7;
 	_length winHeight = secondLineY + this->saveButton->getHeight() + 12;
-	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_save") , _style::notResizeable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , windowLabel.isValid() ? (wstring&&)windowLabel : _localizationController::getBuiltInString("lbl_save") , _style::notResizeable );
 	
 	
 	// FileView & Addressbar & Button
@@ -131,7 +131,7 @@ _callbackReturn _fileSaveDialog::eventHandler( _event event )
 	
 	// The Goto Button was pressed
 	else if( that == this->gotoButton )
-		this->fileView->setPath( this->fileViewAddress->getStrValue() );
+		this->fileView->setPath( this->fileViewAddress->getStrValue().cpp_str() );
 	
 	// The Folder Up Button
 	else if( that == this->folderUpButton ){

@@ -77,9 +77,9 @@ void PROG_Mapper::main( _args args )
 	_assocVector<string,int> handlerList;
 	
 	// Create List of Programs
-	for( const _pair<string,string>& value : _registryController::getSystemRegistry().readSection("fileMapper") )
+	for( const _pair<wstring,wstring>& value : _registryController::getSystemRegistry().readSection("fileMapper") )
 	{
-		const string& val = value.second;
+		const wstring& val = value.second;
 		
 		if( val.empty() || value.first == "*" ) // Skip if filehandler is empty
 			continue;
@@ -89,7 +89,7 @@ void PROG_Mapper::main( _args args )
 		//
 		
 		// Add to List
-		handlerList[ _direntry( _args::splitCommand( val ).first ).getFileName() ]++;
+		handlerList[ _direntry( _args::splitCommand( val.cpp_str() ).first ).getFileName() ]++;
 	}
 	
 	// Add Standard Programs
@@ -192,7 +192,7 @@ _callbackReturn PROG_Mapper::handler( _event event )
 						string cmd = "\"" + selection->getPath() + "\" -\"" + this->fileToOpen + "\"";
 						
 						// Execute File
-						_windows::executeCommand( move(cmd) );
+						_windows::execute( move(cmd) );
 					}
 				}
 				

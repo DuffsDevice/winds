@@ -13,6 +13,7 @@
 #include <_resource/resource.program.taskmanager.h>
 #include <_resource/resource.program.filedetail.h>
 #include <_resource/resource.program.romexecutor.h>
+#include <_resource/resource.program.console.h>
 #include <_resource/resource.icon.lua.h>
 #include <_resource/resource.icon.exe.h>
 #include <program_example_lua.h>
@@ -71,7 +72,7 @@ _mainFrame* _program::getMainFrame( _length width , _length height , bool forceS
 		string dimensionString;
 		
 		if( !hash.empty() )
-			dimensionString = _registryController::getSystemRegistry().readIndex( hash , "$mainFrame" );
+			dimensionString = _registryController::getSystemRegistry().readIndex( hash , "$mainFrame" ).cpp_str();
 		
 		// Read Dimensions of the mainframe from the registry
 		_vector<string> dim = tokenize( dimensionString , ", " , true );
@@ -108,6 +109,8 @@ _uniquePtr<_program> _program::fromFile( string filename )
 		result = new PROG_Explorer();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/rom_exec.exe" ) )
 		result = new PROG_RomExecutor();
+	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/console.exe" ) )
+		result = new PROG_Console();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/progmapper.exe" ) )
 		result = new PROG_Mapper();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/filedetail.exe" ) )
@@ -137,8 +140,10 @@ _uniquePtr<_program> _program::fromFile( string filename )
 		result = new _progLua( move(str) );
 	}
 	
-	if( result )
+	if( result ){
 		result->setPath(fn);
+		result->setCWD( _direntry(fn).getParentDirectory() );
+	}
 	
 	return move(result);
 }

@@ -5,18 +5,16 @@
 
 //! Seccesary things from libnds
 #include <nds/input.h>
-extern "C" unsigned long int keysHeld();
-extern "C" unsigned long int keysDown();
-
+extern "C" uint32_t keysHeld();
+extern "C" uint32_t keysDown();
 /*	
 	Usage of character codes lower than 32 (space):
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	1-7, 14-20: Hardware Keys
 	8,10, 21-23: Windows Specific Keys (Caps,Shift,Windows-Key,...)
-	22-30: Initiation of font, font color or font size change (declared in type.guistring.h)
 */
 
-enum class _key : _char
+enum class _key : _wchar
 {
 	none = 0,
 	a = 1,

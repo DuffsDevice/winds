@@ -19,17 +19,17 @@ class _multiLineGuiString : public _guiString
 		 * @param fontColor The color of the font to use for this text object
 		 * @param fontSize The size of the font to use for this text object
 		 */
-		_multiLineGuiString( string text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
+		_multiLineGuiString( wstring text , _fontHandle font , _color fontColor , _fontSize fontSize = 0 ) :
 			_guiString( move(text) , font , fontColor , fontSize )
 			, tmpCursorX( -1 )
 		{}
 		
 		//! Override the current value of this formatString
-		_multiLineGuiString& operator=( const string& str ){
+		_multiLineGuiString& operator=( const wstring& str ){
 			_guiString::operator=( str );
 			return *this;
 		}
-		_multiLineGuiString& operator=( string&& str ){
+		_multiLineGuiString& operator=( wstring&& str ){
 			_guiString::operator=( move(str) );
 			return *this;
 		}
@@ -109,7 +109,7 @@ class _multiLineGuiString : public _guiString
 		 * @return The text in the upplied line or
 		 * returns "" if that line is either empty or if 'lineNo' is invalid
 		**/
-		string		getLineContent( _lineNumber lineNo ) const ;
+		wstring		getLineContent( _lineNumber lineNo ) const ;
 		
 		//! Get over all Text Height
 		_length		getTextHeight() const ;

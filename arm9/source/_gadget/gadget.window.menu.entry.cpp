@@ -33,7 +33,7 @@ _callbackReturn _windowMenuEntry::refreshHandler( _event event )
 	
 	// Fetch Font data
 	_fontHandle font = _fontController::getStandardFont();
-	_u8 fontSize = _fontController::getStandardFontSize();
+	_fontSize fontSize = _fontController::getStandardFontSize();
 	
 	bool opened = that->menuList ? that->menuList->isOpened() : false;
 	
@@ -51,7 +51,7 @@ _callbackReturn _windowMenuEntry::updateHandler( _event event )
 	_windowMenuEntry* that = event.getGadget<_windowMenuEntry>();
 	
 	_fontHandle font = _fontController::getStandardFont();
-	_u8 fontSize = _fontController::getStandardFontSize();
+	_fontSize fontSize = _fontController::getStandardFontSize();
 	
 	// Adjust width
 	that->setWidthIfAuto( font->getStringWidth( that->entryIndex.text , fontSize ) + 3 );

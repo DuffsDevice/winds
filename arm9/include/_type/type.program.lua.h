@@ -28,6 +28,8 @@ class _progLua : public _program
 		static int	lua_getSystemRegistry( lua_State* L );
 		static int	lua_getUserRegistry( lua_State* L );
 		static int	lua_getFont( lua_State* L );
+		static int	lua_getWorkingDir( lua_State* L );
+		static int	lua_getBinaryPath( lua_State* L );
 		
 		static int	lua_keyboardIsRegistered( lua_State* L );
 		static int	lua_keyboardIsOpened( lua_State* L );
@@ -43,10 +45,14 @@ class _progLua : public _program
 		static int	lua_getMainFrame( lua_State* L );
 		static int	lua_pause( lua_State* L );
 		
+		//! Print Function
+		static void	lua_print( lua_State* L , _literal str , unsigned int length );
+		
 		//! Services
 		static int	lua_startService( lua_State* L );
 		static int	lua_closeService( lua_State* L );
 		static int	lua_getServiceState( lua_State* L );
+		static int	lua_getServiceTransferData( lua_State* L );
 		static int	lua_setServiceHandler( lua_State* L );
 		static int	lua_getServiceHandler( lua_State* L );
 		
@@ -55,6 +61,9 @@ class _progLua : public _program
 		
 		//! Register DSWindows-Libs
 		static int	lua_usingClass( lua_State* L );
+		
+		//! Pushes a table with all transfer data onto the given stack
+		static void	pushTransferData( lua_State* L , _serviceTransfer transfer );
 		
 		//! registers system.* namespace
 		void registerSystem();

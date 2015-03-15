@@ -42,7 +42,7 @@ _callbackReturn _label::refreshHandler( _event event )
 }
 
 
-_label::_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+_label::_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value , _style&& style ) :
 	_gadget( _gadgetType::label , x , y , width , height , (_style&&)style )
 	, bgColor( _color::transparent )
 	, text( move(value) , _fontController::getStandardFont() , _color::black , _fontController::getStandardFontSize() )
@@ -64,4 +64,5 @@ _label::_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> w
 	
 	// Refresh and 
 	this->redraw();
+	
 }

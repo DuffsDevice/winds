@@ -223,7 +223,7 @@ _callbackReturn PROG_TaskManager::usageRefreshHandler( _event event )
 	}
 	
 	_fontHandle	font = _fontController::getStandardFont();
-	_u8			fontSize = _fontController::getStandardFontSize();
+	_fontSize	fontSize = _fontController::getStandardFontSize();
 	string		displayString;
 	
 	if( that == this->currentCpuUsage )

@@ -37,9 +37,9 @@ Lunar<_lua_yesnodialog>::PropertyType _lua_yesnodialog::properties[] = {
 _lua_entertextdialog::_lua_entertextdialog(lua_State* L) :
 	_enterTextDialog(
 		check<string>( L , 1 )
-		, check<string>( L , 2 )
-		, optcheck<string>( L , 3 )
-		, optcheck<string>( L , 4 )
+		, check<wstring>( L , 2 )
+		, optcheck<wstring>( L , 3 )
+		, optcheck<wstring>( L , 4 )
 	)
 {}
 

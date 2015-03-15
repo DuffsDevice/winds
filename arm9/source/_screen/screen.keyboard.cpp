@@ -9,6 +9,7 @@
 // NDS Includes
 extern "C"{
 	#undef unused
+	#undef deprecated
 	#include <nds/interrupts.h>
 	#include <nds/arm9/background.h>
 	#include <nds/arm9/video.h>
@@ -369,16 +370,22 @@ _callbackReturn _keyboardScreen::updateHandler( _event event )
 	
 	int i = 0;
 	
-	for( _gadget* btn : that->getChildren( false ) )
+	for( _gadget* gadget : that->getChildren(false) )
 	{
-		if( i == 30 /* Caps Lock */ )
-			((_keyboardScreenButton*)btn)->setStrValue( _localizationController::getKeyboardTexts( that->caps )[ i ] );
-		else if( i == 45 || i == 40 /* Shift */ )
-			((_keyboardScreenButton*)btn)->setStrValue( _localizationController::getKeyboardTexts( that->shift )[ i ] );
-		else
-		{
-			((_keyboardScreenButton*)btn)->setStrValue( textmap[i] );
-			((_keyboardScreenButton*)btn)->setKey( (_key) charmap[i] );
+		_keyboardScreenButton* btn = (_keyboardScreenButton*)gadget;
+		
+		/* Caps Lock */
+		if( i == 30 )
+			btn->setStrValue( _localizationController::getKeyboardTexts( that->caps )[ i ] );
+		
+		/* Shift */
+		else if( i == 45 || i == 40 )
+			btn->setStrValue( _localizationController::getKeyboardTexts( that->shift )[ i ] );
+		
+		/* Every Other Key */
+		else{
+			btn->setStrValue( textmap[i] );
+			btn->setKey( (_key) charmap[i] );
 		}
 		i++;
 	}
@@ -544,7 +551,7 @@ _keyboardScreen::_keyboardScreen( _u8 bgId , _optValue<_coord> position , _style
 	, anim( 0 , 0 , 800 )
 {
 	_fontHandle fnt			= _fontController::getFont( "CourierNew10" );
-	_fontHandle systemFont	= _fontController::getFont( "SystemSymbols8" );
+	_fontHandle systemFont	= _fontController::getFont( "System7" );
 	const auto& textmap		= _localizationController::getKeyboardTexts( false );
 	const auto& charmap		= _localizationController::getKeyboardKeys( false );
 	

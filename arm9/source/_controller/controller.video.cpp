@@ -4,6 +4,7 @@
 
 extern "C"{
 	#undef unused
+	#undef deprecated
 	#include <nds/arm9/video.h>
 	#include <nds/arm9/background.h>
 	#include <nds/arm9/console.h>

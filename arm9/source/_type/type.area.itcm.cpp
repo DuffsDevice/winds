@@ -4,6 +4,9 @@ optimized _area& _area::clipToIntersect( const _rect& limits )
 {
 	_codeAnalyzer analyzer {"_rect::clipToIntersect"};
 	
+	if( !limits.isValid() )
+		this->rects.clear();
+	
 	// Fastest way!!!
 	this->rects.erase(
 		remove_if(
@@ -23,6 +26,9 @@ optimized _area& _area::clipToIntersect( const _rect& limits )
 optimized _area& _area::reduce( const _rect& dim )
 {
 	_codeAnalyzer analyzer {"_rect::reduce"};
+	
+	if( !dim.isValid() )
+		return *this;
 	
 	// Temp Rects
 	_vector<_rect> tR = move( this->rects );

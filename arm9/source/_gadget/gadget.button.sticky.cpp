@@ -18,7 +18,7 @@ _callbackReturn _stickyButton::mouseHandler( _event event )
 	return handled;
 }
 
-_stickyButton::_stickyButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string text , _style&& style ) :
+_stickyButton::_stickyButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring text , _style&& style ) :
 	_button( x , y , width , height , text , (_style&&)style )
 	, group( nullptr )
 {

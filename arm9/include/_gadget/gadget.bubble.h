@@ -30,7 +30,7 @@ class _bubble : public _popup
 	public:
 		
 		//! Ctor
-		_bubble( _length width , string title , string content , _bitmap icon = _bitmap() , bool closeable = true , _style&& style = _style() );
+		_bubble( _length width , wstring title , wstring content , _bitmap icon = _bitmap() , bool closeable = true , _style&& style = _style() );
 		
 		//! Other, still possible ways to open the bubble
 		using _popup::show;

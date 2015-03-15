@@ -31,8 +31,8 @@ class _shortcut : public _direntry {
 			return *this->destination;
 		}
 		
-		//! execute the thing behind the shortcut
-		bool execute( _args args = _args() );
+		//! Execute the thing behind the shortcut
+		_programHandle execute( _args args = _args() );
 		
 		//! get the shortcuts extension, which is anyway null
 		const string& getExtension() const {

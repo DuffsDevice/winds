@@ -5,7 +5,6 @@
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.debug.h>
-#include <_type/type.font.glyphs.h>
 #include <_type/type.windows.h>
 
 PROG_FileDetail::PROG_FileDetail()
@@ -70,7 +69,7 @@ void PROG_FileDetail::main( _args args )
 			{
 				string command = _registryController::getFileTypeHandler( this->file->getExtension() );
 				_uniquePtr<_program> progObject = _program::fromFile( _args::splitCommand( command ).first );
-				string progName = move(command);
+				wstring progName = command;
 				if( progObject )
 				{
 					// Fetch Header of program
@@ -88,8 +87,7 @@ void PROG_FileDetail::main( _args args )
 				mainFrame->addChild( this->openedWithLabel );
 				mainFrame->addChild( this->openedWithValueLabel );
 				
-				this->openedWithChangeButton = new _button( 104 , 32 , 13 , 11 , string( 1 , _glyph::edit ) );
-				this->openedWithChangeButton->setFont( _fontController::getFont( "SystemSymbols8" ) );
+				this->openedWithChangeButton = new _button( 104 , 32 , 13 , 11 , "✎" );
 				this->openedWithChangeButton->setUserEventHandler( onMouseClick , make_callback( this , &PROG_FileDetail::handler ) );
 				mainFrame->addChild( this->openedWithChangeButton );
 			}
@@ -185,7 +183,7 @@ _callbackReturn PROG_FileDetail::handler( _event event )
 			attrs.hidden = this->hiddenCheckbox->getIntValue();
 			attrs.system = this->systemCheckbox->getIntValue();
 			this->file->setAttrs( attrs );
-			this->file->rename( this->fileNameTextbox->getStrValue() );
+			this->file->rename( this->fileNameTextbox->getStrValue().cpp_str() );
 		}
 		else{
 			this->fileNameTextbox->blink();
@@ -193,7 +191,7 @@ _callbackReturn PROG_FileDetail::handler( _event event )
 		}
 	}
 	else if( that == this->openedWithChangeButton ){
-		_windows::executeCommand(
+		_windows::execute(
 			string("%SYSTEM%/progmapper.exe -\"*.") + this->file->getExtension().c_str() + "\" -save_choice" 
 		);
 		return handled;

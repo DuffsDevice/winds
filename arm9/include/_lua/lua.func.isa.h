@@ -29,48 +29,49 @@ namespace _luafunc
 		static unused inline bool	is_a( lua_State* state , int index , unsigned short		int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
 		static unused inline bool	is_a( lua_State* state , int index , unsigned long		int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
 		static unused inline bool	is_a( lua_State* state , int index , unsigned long long	int*	dummy){ return is_a( state , index , LUA_TNUMBER ); }
-		static unused inline bool	is_a( lua_State* state , int index , bool* dummy ){
+		static unused inline bool	is_a( lua_State* state , int index , bool* ){
 			int type = get_type( state , index );
 			return type == LUA_TBOOLEAN || type == LUA_TNUMBER;
 		}
-		static unused inline bool	is_a( lua_State* state , int index , _literal* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , string* dummy ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _literal* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , string* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , wstring* ){ return is_a( state , index , LUA_TSTRING ); }
 		template<typename... TN, int mB,typename dT>
-		static unused inline bool	is_a( lua_State* state , int index , _shortString<mB,dT>* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _key* dummy ){
+		static unused inline bool	is_a( lua_State* state , int index , _shortString<mB,dT>* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _key* ){
 			int type = get_type( state , index );
 			return type == LUA_TSTRING || type == LUA_TNUMBER;
 		}
-		bool						is_a( lua_State* state , int index , _fontHandle* dummy );
-		bool						is_a( lua_State* state , int index , _event* dummy );
-		bool						is_a( lua_State* state , int index , _rect* dummy );
-		bool						is_a( lua_State* state , int index , _hardwareKeyPattern* dummy );
-		bool						is_a( lua_State* state , int index , _area* dummy );
-		bool						is_a( lua_State* state , int index , _bitmap* dummy );
-		bool						is_a( lua_State* state , int index , _bitmapPort* dummy );
-		bool						is_a( lua_State* state , int index , _border* dummy );
-		bool						is_a( lua_State* state , int index , _time* dummy );
-		bool						is_a( lua_State* state , int index , _mimeType* dummy );
-		bool						is_a( lua_State* state , int index , _color* dummy );
-		static unused inline bool	is_a( lua_State* state , int index , _gadget** dummy ){ return lua_isuserdata( state , index ); }
-		static unused inline bool	is_a( lua_State* state , int index , _callbackReturn* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _eventCallType* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _eventType* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _dimension* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _direction* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _style* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _timeAttr* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _align* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _valign* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _language* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _args* dummy ){ return is_a( state , index , LUA_TSTRING ); }
-		static unused inline bool	is_a( lua_State* state , int index , _imageFileCompression* dummy ){ return is_a( state , index , LUA_TSTRING ); }
+		bool						is_a( lua_State* state , int index , _fontHandle* );
+		bool						is_a( lua_State* state , int index , _event* );
+		bool						is_a( lua_State* state , int index , _rect* );
+		bool						is_a( lua_State* state , int index , _hardwareKeyPattern* );
+		bool						is_a( lua_State* state , int index , _area* );
+		bool						is_a( lua_State* state , int index , _bitmap* );
+		bool						is_a( lua_State* state , int index , _bitmapPort* );
+		bool						is_a( lua_State* state , int index , _border* );
+		bool						is_a( lua_State* state , int index , _time* );
+		bool						is_a( lua_State* state , int index , _mimeType* );
+		bool						is_a( lua_State* state , int index , _color* );
+		static unused inline bool	is_a( lua_State* state , int index , _gadget** ){ return lua_isuserdata( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _callbackReturn* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _eventCallType* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _eventType* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _dimension* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _direction* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _style* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _timeAttr* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _align* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _valign* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _language* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _args* ){ return is_a( state , index , LUA_TSTRING ); }
+		static unused inline bool	is_a( lua_State* state , int index , _imageFileCompression* ){ return is_a( state , index , LUA_TSTRING ); }
 		
 		// ~~~~~~~~~~~~~~~~~~ Normal Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T>
-		static unused inline bool	is_a( lua_State* state , int index , _list<T>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _list<T>* ){ return lua_istable( state , index ); }
 		template<typename T>
-		static unused inline bool	is_a( lua_State* state , int index , _vector<T>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _vector<T>* ){ return lua_istable( state , index ); }
 		unused static bool checkIfPair( lua_State* state , int index ){
 			if( !lua_istable( state , index ) )
 				return false;
@@ -96,17 +97,17 @@ namespace _luafunc
 			return false;
 		}
 		template<typename T1, typename T2>
-		static unused inline bool	is_a( lua_State* state , int index , _pair<T1,T2>* dummy ){
+		static unused inline bool	is_a( lua_State* state , int index , _pair<T1,T2>* ){
 			return checkIfPair( state , index );
 		}
 		
 		// ~~~~~~~~~~~~~~~~~~ Associative Containers ~~~~~~~~~~~~~~~~~~
 		template<typename T1, typename T2>
-		static unused inline bool	is_a( lua_State* state , int index , _map<T1,T2>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _map<T1,T2>* ){ return lua_istable( state , index ); }
 		template<typename T1, typename T2>
-		static unused inline bool	is_a( lua_State* state , int index , _unorderedMap<T1,T2>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _unorderedMap<T1,T2>* ){ return lua_istable( state , index ); }
 		template<typename T1, typename T2, typename C, typename A>
-		static unused inline bool	is_a( lua_State* state , int index , _assocVector<T1,T2,C,A>* dummy ){ return lua_istable( state , index ); }
+		static unused inline bool	is_a( lua_State* state , int index , _assocVector<T1,T2,C,A>* ){ return lua_istable( state , index ); }
 		
 		// ~~~~~~~~~~~~~~~~~~ Lua-Proxy-Classes ~~~~~~~~~~~~~~~~~~
 		template<typename T>

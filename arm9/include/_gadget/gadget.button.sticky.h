@@ -27,7 +27,7 @@ class _stickyButton : public _button
 		_s32 getIntValue(){ return isStuckDown(); }
 		
 		//! Constructor with dimensions, coordinates, title and optional: Style
-		_stickyButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title = "" , _style&& style = _style() );
+		_stickyButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title = "" , _style&& style = _style() );
 };
 
 #endif

@@ -14,7 +14,7 @@ _lua_select::_lua_select( lua_State* L ) :
 //! addIndex
 int _lua_select::addIndex( lua_State* L ){
 	_select* slc = this->getGadget<_select>();
-	slc->getList()[ check<int>( L , 1 ) ] = check<string>( L , 2 );
+	slc->getList()[ check<int>( L , 1 ) ] = check<wstring>( L , 2 );
 	slc->update();
 	return 0;
 }

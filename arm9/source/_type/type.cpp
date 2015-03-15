@@ -1,6 +1,6 @@
 #include <_type/type.h>
 #include <nds/bios.h>
-#include <stdio.h>
+#include <cstdio>
 
 _s32 mid( _s32 a , _s32 b , _s32 c ){
 	_s32 mi = min( a , min( b , c ) );
@@ -76,32 +76,63 @@ namespace DSWindows
 void trim( string& str , _literal delims , bool front , bool back )
 {
 	size_t endpos = back ? str.find_last_not_of(delims) : string::npos;
-	if( string::npos != endpos )
+	size_t startpos = front ? str.find_first_not_of(delims) : 0;
+	
+	if( endpos != string::npos )
 	{
-		str = str.substr( 0, endpos+1 );
+		endpos++; // Move behind the last non-delimiter character
+		
+		if( startpos != 0 )
+			str = str.substr( startpos , endpos - startpos );
+		else
+			str.erase( endpos , str.length() - endpos );
 	}
-	size_t startpos = front ? str.find_first_not_of(delims) : string::npos;
-	if( string::npos != startpos )
-	{
-		str = str.substr( startpos );
+	else if( startpos != 0 ){
+		if( startpos == string::npos )
+			str.clear();
+		else
+			str.erase( 0 , startpos );
 	}
 }
 
-int string2int( const _char *p ){
-    int x = 0;
-    bool neg = false;
-    if (*p == '-') {
+void trim( wstring& str , _wliteral delims , bool front , bool back )
+{
+	size_t startpos = front ? str.rawFind_first_not_of( delims ) : 0;
+	size_t endpos = back ? str.rawFind_last_not_of( delims ) : wstring::npos;
+	
+	if( endpos != string::npos )
+	{
+		endpos += str.getIndexBytes( endpos ); // Move behind the last non-delimiter codepoint
+		
+		if( startpos != 0 )
+			str = str.rawSubstr( startpos , endpos - startpos );
+		else
+			str.rawErase( endpos , str.size() - endpos );
+	}	
+	else if( startpos != 0 ){
+		if( startpos == wstring::npos )
+			str.clear();
+		else
+			str.rawErase( 0 , startpos );
+	}
+}
+
+int string2int( _literal p )
+{
+    int		x = 0;
+    bool	neg = false;
+	
+    if( *p == '-' ){
         neg = true;
         ++p;
     }
-    while (*p >= '0' && *p <= '9') {
+	
+    while(*p >= '0' && *p <= '9'){
         x = (x*10) + (*p - '0');
         ++p;
     }
-    if (neg) {
-        x = -x;
-    }
-    return x;
+	
+    return neg ? -x : x;
 }
 
 const _char numbers[37] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

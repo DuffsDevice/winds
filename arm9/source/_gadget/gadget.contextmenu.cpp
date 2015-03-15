@@ -1,6 +1,5 @@
 #include <_gadget/gadget.contextmenu.h>
 #include <_gadget/gadget.contextmenu.entry.divider.h>
-#include <_controller/controller.debug.h>
 
 _contextMenu::_contextMenu( _optValue<_length> width , _menu* content , _gadget* owner , bool preserveValue , _int initialValue , _u16 mainList , _style&& style ) :
 	_popup( width , ignore , owner , style | _style::hasTransparentParts )
@@ -223,6 +222,7 @@ _callbackReturn _contextMenu::openHandler( _event event )
 			w = max( entry->getWidth() , w );
 		}
 		
+		
 		that->setWidthIfAuto( w + 2 );
 		
 		for( _gadget* entry : that->getChildren( false ) )
@@ -230,7 +230,9 @@ _callbackReturn _contextMenu::openHandler( _event event )
 	}
 	
 	// Adjust height
-	that->setHeight( that->getLowestChild( false )->getDimensions().getY2() + 3 );
+	_gadget* lowestChild = that->getLowestChild( false );
+	if( lowestChild )
+		that->setHeight( lowestChild->getDimensions().getY2() + 3 );
 	
 	// Possibly unhighlight the old entry
 	if( !that->preserveValue && that->getSelectedChild() )
@@ -285,6 +287,8 @@ _callbackReturn _contextMenu::updateHandler( _event event )
 		if( entryToSelect )
 			entryToSelect->select(); // Focus this entry
 	}
+	else
+		that->currentValue = -1;
 	
 	return handled;
 }

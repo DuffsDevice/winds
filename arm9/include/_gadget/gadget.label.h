@@ -37,16 +37,16 @@ class _label : public _gadget {
 	public:
 		
 		//! Set the Text to be displayed
-		void setStrValue( string val ){ this->text = move(val); this->checkRefresh(); }
+		void setStrValue( wstring val ){ this->text = move(val); this->checkRefresh(); }
 		
 		//! Get the Text of the textbox
-		string getStrValue(){ return this->text; }
+		wstring getStrValue(){ return this->text; }
 		
 		//! Get Text Font
 		_fontHandle getFont(){ return this->text.getFont(); }
 		
 		//! Get Text FontSize
-		_u8 getFontSize(){ return this->text.getFontSize(); }
+		_fontSize getFontSize(){ return this->text.getFontSize(); }
 		
 		//! Set Text Font
 		void setFont( _fontHandle ft ){
@@ -57,7 +57,7 @@ class _label : public _gadget {
 		}
 		
 		//! Set FontSize
-		void setFontSize( _u8 fontSize ){
+		void setFontSize( _fontSize fontSize ){
 			this->text.setFontSize( fontSize );
 			this->checkRefresh();
 		}
@@ -101,7 +101,7 @@ class _label : public _gadget {
 		
 		
 		//! Construcor including dimensions
-		_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style = _style::notClickable );
+		_label( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value , _style&& style = _style::notClickable );
 };
 
 #endif

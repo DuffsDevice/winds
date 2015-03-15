@@ -20,7 +20,7 @@ int _lua_fontcontroller::getStandardFontSize(lua_State* L){
 }
 
 int _lua_fontcontroller::setStandardFontSize(lua_State* L){
-	_fontController::setStandardFontSize( check<_u8>( L , 1 ) );
+	_fontController::setStandardFontSize( check<_fontSize>( L , 1 ) );
 	return 0;
 }
 

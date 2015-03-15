@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/param.h>
-//#include <fat.h>
+#include <fat.h>
 
 #include "data_load_bin.h"
 

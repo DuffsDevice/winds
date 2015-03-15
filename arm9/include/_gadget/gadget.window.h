@@ -56,13 +56,13 @@ class _window : public _gadget
 	public:
 		
 		//! Set Title of window
-		void setStrValue( string title );
+		void setStrValue( wstring title );
 		
 		//! Get the title
-		string getStrValue() const { return this->label->getStrValue(); }
+		wstring getStrValue() const { return this->label->getStrValue(); }
 		
 		//! Set Icon to show in the top left corner
-		void setIcon( const _bitmap& icon );
+		void setIcon( _bitmap icon );
 		
 		//! Check if the window has an Icon
 		bool hasIcon() const { return this->icon->getImage().isValid(); }
@@ -118,12 +118,12 @@ class _window : public _gadget
 		_color getBgColor(){ return this->bgColor; }
 		
 		//! Ctor
-		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , bool minimizeable = true , bool closeable = true , _style&& style = _style() ) :
+		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title , bool minimizeable = true , bool closeable = true , _style&& style = _style() ) :
 			_window( x , y , width , height , title , _bitmap() , minimizeable , closeable , (_style&&)style ) // C++0x! Yay!
 		{}
 		
 		//! Ctor with icon
-		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() );
+		_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title , _bitmap icon , bool minimizeable = true , bool closeable = true , _style&& style = _style() );
 		
 		//! Dtor
 		virtual ~_window();

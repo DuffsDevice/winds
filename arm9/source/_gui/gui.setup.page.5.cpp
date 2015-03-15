@@ -11,10 +11,15 @@ void _guiSetupPage5::timerCallback()
 	//_guiSetupPage3* page3 = (_guiSetupPage3*) switcher.getViewByName( "3" );
 	_guiSetupPage4* page4 = (_guiSetupPage4*) switcher.getViewByName( "4" );
 	
-	string profileName = page4->profileName;
+	string path = "%USERS%/" + page4->profileName.cpp_str();
 	
-	_user user = _user( profileName );
+	// Create Home Folder
+	_direntry( path + "/" ).create();
+	
+	_user user = _user( path + ".ini" );
 	user.setLogo( page4->profileIcon );
+	user.setUserName( page4->profileName );
+	user.setHomeFolder( path + "/" );
 }
 
 void _guiSetupPage5::create( _gadget* viewParent )

@@ -10,22 +10,22 @@ class _mainFrame : public _window
 	private:
 		
 		_programHandle	programHandle;
-		string			title;
+		wstring			title;
 		
 		//! handler to handle onClose-events triggered by the base class _window
 		static _callbackReturn closeHandler( _event );
 		
 		//! Get the String that should be displayed as the title of the window
-		static string	getDisplayName( _programHandle handle );
+		static wstring	getDisplayName( _programHandle handle );
 		static _bitmap	getIcon( _programHandle handle );
 		
 	public:
 		
 		//! Set Title of window
-		void setTitle( string title );
+		void setTitle( wstring title );
 		
 		//! Get the title
-		string getTitle() const { return this->title; }
+		wstring getTitle() const { return this->title; }
 		
 		//! Ctor
 		_mainFrame( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _programHandle progHandle , _style&& style = _style() );

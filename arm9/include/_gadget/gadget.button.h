@@ -11,10 +11,10 @@ class _button : public _gadget
 		bool autoSelect;
 		
 		//! String to be displayed
-		string 			strValue;
+		wstring 		strValue;
 		_fontHandle		font;
 		_color			fontColor;
-		_u8				fontSize;
+		_fontSize		fontSize;
 		bool			pressed;
 		
 		//! Alignment
@@ -40,10 +40,10 @@ class _button : public _gadget
 		_valign getVAlign(){ return this->vAlign; }
 		
 		//! Set Title to be displayed on top of the button
-		void setStrValue( string val );
+		void setStrValue( wstring val );
 		
 		//! Get Title of the button
-		string getStrValue(){ return this->strValue; }
+		wstring getStrValue(){ return this->strValue; }
 		
 		//! Whether the button should be outlined by a blue line
 		void setAutoSelect( bool aS ){ if( this->autoSelect == aS ) return; this->autoSelect = aS; this->redraw(); }
@@ -58,10 +58,10 @@ class _button : public _gadget
 		_fontHandle getFont(){ return this->font; }
 		
 		//! Get Text FontSize
-		_u8 getFontSize(){ return this->fontSize; }
+		_fontSize getFontSize(){ return this->fontSize; }
 		
 		//! Get Text FontSize
-		void setFontSize( _u8 size );
+		void setFontSize( _fontSize size );
 		
 		//! Set Text Color
 		void setFontColor( _color col ){ if( this->fontColor == col ) return; this->fontColor = col; this->redraw(); }
@@ -70,7 +70,7 @@ class _button : public _gadget
 		_color getFontColor(){ return this->fontColor; }
 		
 		//! Constructor with dimsnions, coordinates, title and optional: Style
-		_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title = "" , _style&& style = _style() );
+		_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title = "" , _style&& style = _style() );
 };
 
 #endif

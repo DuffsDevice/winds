@@ -16,7 +16,7 @@ class _enterTextDialog : public _dialog
 		_label*			msg;
 		_textBox*		textBox;
 		_dialogWindow*	window;
-		string			initialValue;
+		wstring			initialValue;
 		
 		_callbackReturn eventHandler( _event );
 		
@@ -27,20 +27,20 @@ class _enterTextDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_enterTextDialog( string message , string windowLabel , string initialValue = "" , _optValue<string> okLabel = ignore , _optValue<string> cancelLabel = ignore );
+		_enterTextDialog( wstring message , wstring windowLabel , wstring initialValue = "" , _optValue<wstring> okLabel = ignore , _optValue<wstring> cancelLabel = ignore );
 		
 		//! Get the Entered string
-		string getResult(){
+		wstring getResult(){
 			return this->textBox->getStrValue();
 		}
 		
 		//! Set value to be displayed on default
-		void setInitialValue( string initialValue ){
+		void setInitialValue( wstring initialValue ){
 			this->initialValue = move(initialValue);
 		}
 		
 		//! Get initial Value
-		string getInitialValue(){
+		wstring getInitialValue(){
 			return this->initialValue;
 		}
 		

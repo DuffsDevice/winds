@@ -1,5 +1,4 @@
 #include <_gadget/gadget.calendar.h>
-#include <_type/type.font.glyphs.h>
 #include <_type/type.color.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.localization.h>
@@ -33,15 +32,14 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	}
 	
 	//! Arrows & month label
-	_fontHandle symbolFt = _fontController::getFont( "SystemSymbols8" );
 	_u8 arrowWidth = this->getArrowWidth();
 	_u8 monthSelectorHeight = this->getMonthSelectorHeight();
 	
 	this->monthLabel	= new _label( this->getWidth() - arrowWidth * 2 - 4 , monthSelectorHeight - 3 , arrowWidth + 2 , 1 , "" );
-	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRight ) , _style::clickRepeat );
-	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowLeft ) , _style::clickRepeat );
-	this->todayButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::reset ) );
-	this->resetButton	= new _button( 1 , 1 , 1 , 1 , string( 1 , _glyph::arrowRotateLeft ) );
+	this->rightArrow	= new _button( 1 , 1 , 1 , 1 , "\u25BA" , _style::clickRepeat );
+	this->leftArrow		= new _button( 1 , 1 , 1 , 1 , "\u25C0" , _style::clickRepeat );
+	this->todayButton	= new _button( 1 , 1 , 1 , 1 , "\u2913" );
+	this->resetButton	= new _button( 1 , 1 , 1 , 1 , "\u21BA" );
 	
 	// Register my handler
 	this->leftArrow->setInternalEventHandler( onMouseClick , make_callback( this , &_calendar::clickHandler ) );
@@ -57,12 +55,6 @@ _calendar::_calendar( _optValue<_coord> x , _optValue<_coord> y , _optValue<_len
 	this->setInternalEventHandler( onDraw , make_callback( &_calendar::refreshHandler ) );
 	this->setInternalEventHandler( onKeyDown , make_callback( this , &_calendar::keyHandler ) );
 	this->setInternalEventHandler( onKeyRepeat , make_callback( this , &_calendar::keyHandler ) );
-	
-	// Set Symbol-font
-	this->leftArrow->setFont( symbolFt );
-	this->rightArrow->setFont( symbolFt );
-	this->todayButton->setFont( symbolFt );
-	this->resetButton->setFont( symbolFt );
 	
 	this->monthLabel->setAlign( _align::center );
 	

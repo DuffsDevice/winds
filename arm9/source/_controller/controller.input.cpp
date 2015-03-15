@@ -8,7 +8,6 @@
 
 extern "C"{
 	#include <nds/touch.h>
-	//#include <nds/arm9/input.h>
 	void scanKeys();
 	void touchRead( touchPosition* );
 }

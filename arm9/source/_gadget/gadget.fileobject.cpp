@@ -66,7 +66,7 @@ void _fileObject::finishRename()
 	if( !this->isRenamed() )
 		return;
 	
-	this->file->rename( _fileObject::renameTextBox->getStrValue() );
+	this->file->rename( _fileObject::renameTextBox->getStrValue().cpp_str() );
 	_fileObject::renameTextBox = nullptr;
 	_fileObject::renamedFile = nullptr;
 	this->update();
@@ -102,7 +102,7 @@ void _fileObject::execute( _args args , bool openInNewWindow )
 		_fileView* fileView = (_fileView*) this->getParent();
 		
 		if( openInNewWindow )
-			_windows::executeCommand("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
+			_windows::execute("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
 		else if( fileView->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onEdit'-Event
@@ -135,7 +135,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			
 			// Receive Font
 			_fontHandle		ft = _fontController::getStandardFont();
-			_u8				ftSize = _fontController::getStandardFontSize();
+			_fontSize		ftSize = _fontController::getStandardFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( true );
 			string			fullName = that->file->getFullName();
 			
@@ -166,7 +166,7 @@ _callbackReturn _fileObject::refreshHandler( _event event )
 			// Font
 			_fontHandle		ft = _fontController::getStandardFont();
 			_u8				fOH = _guiController::getFileObjectHeight();
-			_u8				ftSize = _fontController::getStandardFontSize();
+			_fontSize		ftSize = _fontController::getStandardFontSize();
 			_color			ftColor = that->file->isHidden() ? _color::gray : _guiController::getItemFg( that->hasFocus() , that->isSelected() );
 			string			fullName = that->file->getFullName();
 			
@@ -296,7 +296,7 @@ void _fileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 				fileObject->initRename();
 				break;
 			case 11: // Properties
-				_windows::executeCommand("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
+				_windows::execute("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
 				break;
 		}
 	}

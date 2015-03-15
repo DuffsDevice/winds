@@ -5,22 +5,23 @@
 #include <_type/type.assocvector.h>
 #include <_type/type.callback.h>
 #include <_type/type.menu.rule.h>
+#include <_type/type.paramalloc.h>
 #include <memory>
 
 // Specifies all the data that is stored for each entry
 struct _menuEntry
 {
-	string	text;
+	wstring	text;
 	_u16	linkedList;
 	
 	//! Default Ctor
-	_menuEntry( string text = "" , _u16 linkedList = 0 ) : text( move(text) ) , linkedList( linkedList ) {}
+	_menuEntry( wstring text = "" , _u16 linkedList = 0 ) : text( move(text) ) , linkedList( linkedList ) {}
 	
 	//! Ctor
 	_menuEntry( _literal text , _u16 linkedList = 0 ) : text( text ) , linkedList( linkedList ) {}
 	
 	//! Ctor from tuple
-	_menuEntry( _tuple<string,_u16> tuple ) : _menuEntry( move(get<0>(tuple)) , get<1>(tuple) ) {}
+	_menuEntry( _tuple<wstring,_u16> tuple ) : _menuEntry( move(get<0>(tuple)) , get<1>(tuple) ) {}
 	
 	//! Copy & Move Ctor
 	_menuEntry( _menuEntry&& menu ) : text( move(menu.text) ) , linkedList( menu.linkedList ) {}
@@ -39,7 +40,7 @@ struct _menuEntry
 	}
 	
 	//! Cast to tuple
-	operator _tuple<string,_u16>(){ return make_tuple( text , linkedList ); }
+	operator _tuple<wstring,_u16>(){ return make_tuple( text , linkedList ); }
 };
 
 using _menuEntryList		= _assocVector<_u16,_menuEntry>;		// Specifies a list of entries, sorted by their index
@@ -106,7 +107,7 @@ class _menu : private _rawMenuEntryLists
 		//! Call the handler that applies to the passed list number and entry number
 		void callHandler( _u16 listIndex , _u16 entryIndex ) const ;
 		
-		//! String the represents a dividing line
+		//! String that represents a dividing line
 		static _literal divider;
 };
 

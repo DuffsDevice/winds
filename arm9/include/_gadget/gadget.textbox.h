@@ -39,7 +39,7 @@ class _textBox : public _gadget
 		
 		//! Made virtual because of e.g. _passcodeBox
 		virtual void	removeStr( _int position , _length numChars = 1 );
-		virtual void	insertStr( _int position , string s );
+		virtual void	insertStr( _int position , wstring s );
 		
 		//! Checks if the textbox should be redrawn
 		void			checkRefresh(){
@@ -61,16 +61,16 @@ class _textBox : public _gadget
 	public:
 		
 		//! Set string-value
-		virtual void	setStrValue( string val ){ this->text = move(val); this->checkRefresh(); }
+		virtual void	setStrValue( wstring val ){ this->text = move(val); this->checkRefresh(); }
 		
 		//! Get string-value
-		virtual string	getStrValue() const { return this->text; }
+		virtual wstring	getStrValue() const { return this->text; }
 		
 		//! Get Text Font
 		_fontHandle		getFont() const { return this->text.getFont(); }
 		
 		//! Get Text FontSize
-		_u8				getFontSize() const { return this->text.getFontSize(); }
+		_fontSize		getFontSize() const { return this->text.getFontSize(); }
 		
 		//! Set Text Font
 		void			setFont( _fontHandle ft ){
@@ -81,7 +81,7 @@ class _textBox : public _gadget
 		}
 		
 		//! Set FontSize
-		void			setFontSize( _u8 fontSize ){
+		void			setFontSize( _fontSize fontSize ){
 			this->text.setFontSize( fontSize );
 			this->checkRefresh();
 		}
@@ -123,7 +123,7 @@ class _textBox : public _gadget
 		
 		
 		//! Ctor
-		_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _style&& style = _style() );
+		_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value = "" , _style&& style = _style() );
 };
 
 #endif

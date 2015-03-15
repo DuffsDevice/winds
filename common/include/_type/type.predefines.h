@@ -13,26 +13,29 @@
 #define forceinline __attribute__(( always_inline )) inline
 #define optimized __attribute__(( hot ))
 
-typedef uint8_t 					_u8;
-typedef int8_t 						_s8;
-typedef uint16_t 					_u16;
-typedef int16_t 					_s16;
-typedef unsigned int				_u32;
-typedef int		 					_s32; // int32_t = long int = int (preserves backwards compatibility)
-typedef uint64_t 					_u64;
-typedef int64_t 					_s64;
-typedef bool						_bool;
-typedef _u8							_byte;
-typedef _s16 						_length;
-typedef _s16 						_coord;
-typedef char						_char;
-typedef int 						_int;
-typedef _u16			 			_pixel;
-typedef _pixel* 					_pixelArray;
-typedef float 						_float;
-typedef _u64 						_tempTime;
-typedef const _char*				_literal;
-typedef int							_unixTime;
+typedef uint8_t 		_u8;
+typedef int8_t 			_s8;
+typedef uint16_t 		_u16;
+typedef int16_t 		_s16;
+typedef unsigned int	_u32;
+typedef int		 		_s32; // int32_t = long int = int (preserves backwards compatibility)
+typedef uint64_t 		_u64;
+typedef int64_t 		_s64;
+typedef bool			_bool;
+typedef _u8				_byte;
+typedef _s16 			_length;
+typedef _s16 			_coord;
+typedef char			_char;
+typedef wchar_t			_wchar;
+typedef _u8				_fontSize;
+typedef int 			_int;
+typedef _u16			_pixel;
+typedef _pixel* 		_pixelArray;
+typedef float 			_float;
+typedef _u64 			_tempTime;
+typedef const _char*	_literal;
+typedef const _wchar*	_wliteral;
+typedef int				_unixTime;
 
 #include <nds/ndstypes.h>
 #include <nds/touch.h>

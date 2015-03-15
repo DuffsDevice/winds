@@ -12,7 +12,7 @@ void _folderChooseDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _optValue<string> okLabel , _optValue<string> windowLabel ) :
+_folderChooseDialog::_folderChooseDialog( _optValue<wstring> descriptionLabel , _optValue<wstring> okLabel , _optValue<wstring> windowLabel ) :
 	descriptionLabel( nullptr )
 {
 	// Determine some dimensions
@@ -25,7 +25,7 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	_length			winHeight = fileTreeHeight + 43;
 	
 	// Build initial folder path and description label
-	windowLabel = windowLabel.isValid() ? (string&&)windowLabel : _localizationController::getBuiltInString("lbl_choose_folder");
+	windowLabel = windowLabel.isValid() ? (wstring&&)windowLabel : _localizationController::getBuiltInString("lbl_choose_folder");
 	
 	// Description Label
 	if( descriptionLabel.isValid() )
@@ -41,13 +41,13 @@ _folderChooseDialog::_folderChooseDialog( _optValue<string> descriptionLabel , _
 	
 	// Buttons
 	this->cancelButton = new _button( ignore , ignore , ignore , ignore , _localizationController::getBuiltInString("lbl_cancel") );
-	this->okButton = new _button( ignore , ignore , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _localizationController::getBuiltInString("lbl_ok") );
+	this->okButton = new _button( ignore , ignore , ignore , ignore , okLabel.isValid() ? (wstring&&)okLabel : _localizationController::getBuiltInString("lbl_ok") );
 	this->cancelButton->setUserEventHandler( onParentAdd , _gadgetHelpers::rightBottomAlign( 5 , 3 ) );
 	this->okButton->setUserEventHandler( onParentAdd , _gadgetHelpers::moveBesidePrecedent( _direction::left , 1 ) );
 	
 	
 	// Window
-	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLabel , _style::notResizeable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (wstring&&)windowLabel , _style::notResizeable );
 	
 	
 	// FileTree

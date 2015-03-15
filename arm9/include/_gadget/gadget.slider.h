@@ -19,8 +19,8 @@ class _slider : public _gadget{
 		_u32		snap;
 		
 		_sliderHandle*	sliderHandle;
-		string			upperBoundText;
-		string			lowerBoundText;
+		wstring			upperBoundText;
+		wstring			lowerBoundText;
 		
 		_callbackReturn dragHandler( _event );
 		static _callbackReturn keyHandler( _event );
@@ -74,12 +74,12 @@ class _slider : public _gadget{
 		_u32 getSnap(){ return this->snap; }
 		
 		//! Set Texts to be displayed at the extremes
-		void setLowerLabel( string text ){ if( this->lowerBoundText == text ) return; this->lowerBoundText = text; this->update(); }
-		void setUpperLabel( string text ){ if( this->upperBoundText == text ) return; this->upperBoundText = text; this->update(); }
+		void setLowerLabel( wstring text ){ if( this->lowerBoundText == text ) return; this->lowerBoundText = text; this->update(); }
+		void setUpperLabel( wstring text ){ if( this->upperBoundText == text ) return; this->upperBoundText = text; this->update(); }
 		
 		//! ... and getters for them
-		string getUpperLabel(){ return this->upperBoundText; }
-		string getLowerLabel(){ return this->lowerBoundText; }
+		wstring getUpperLabel(){ return this->upperBoundText; }
+		wstring getLowerLabel(){ return this->lowerBoundText; }
 		
 		//! Increases the slider value
 		void increase(){ this->setIntValue( this->intValue + 1 ); }

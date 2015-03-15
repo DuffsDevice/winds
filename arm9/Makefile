@@ -37,13 +37,13 @@ SOURCES		:=	source \
 #---------------------------------------------------------------------------------
 ARCH		:=	-mthumb -mthumb-interwork
 
-CFLAGS		:=	-g -Wall -O1\
+CFLAGS		:=	-g -Wall -O3\
  			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 			-ffast-math \
 			$(ARCH)
 
 CFLAGS		+=	$(INCLUDE) -DARM9
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -Wno-parentheses -fno-exceptions -std=gnu++0x -Wextra -Wno-unused-parameter -Wno-psabi
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -Wno-parentheses -fno-exceptions -std=gnu++11 -Wextra -Wno-unused-parameter -Wno-psabi
 ## C++0x:   -std=gnu++0x; -std=c++11
 ## ASM Out:	-save-temps
 

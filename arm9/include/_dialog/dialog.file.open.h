@@ -41,7 +41,7 @@ class _fileOpenDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_fileOpenDialog( _fileTypeList possibleFileExtensions , string initialFilePath = "" , _int initialFileExtension = 0 , _optValue<string> openLabel = ignore , _optValue<string> windowLabel = ignore );
+		_fileOpenDialog( _fileTypeList possibleFileExtensions , string initialFilePath = "" , _int initialFileExtension = 0 , _optValue<wstring> openLabel = ignore , _optValue<wstring> windowLabel = ignore );
 		
 		
 		//! Get Index of the selected entry in 'possibleFileExtensions'
@@ -56,7 +56,7 @@ class _fileOpenDialog : public _dialog
 		
 		//! Get Selected filename
 		string getFileName(){
-			return _direntry( this->fileView->getPath() ).getFileName() + this->fileNameBox->getStrValue();
+			return _direntry( this->fileView->getPath() ).getFileName() + this->fileNameBox->getStrValue().cpp_str();
 		}
 		
 		//! Dtor

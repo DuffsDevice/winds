@@ -29,7 +29,7 @@ class _runtimeErrorDialog : public _dialog
 		
 		//! Ctor(s)
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_runtimeErrorDialog( string message , string additionalInfo = "" );
+		_runtimeErrorDialog( wstring message , wstring additionalInfo = "" );
 		
 		//! Dtor
 		~_runtimeErrorDialog(){

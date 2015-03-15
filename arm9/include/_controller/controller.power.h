@@ -5,6 +5,7 @@
 #include <_type/type.controller.h>
 #include <_type/type.uniqueptr.h>
 #include <_type/type.callback.h>
+#include <_type/type.paramalloc.h>
 
 class _powerController : public _controller
 {

@@ -72,12 +72,6 @@ class _lua_gadget{
 		//! setHeight
 		int setHeight(lua_State* L);
 		
-		//! setMinWidth
-		int setMinWidth(lua_State* L);
-		
-		//! setMinHeight
-		int setMinHeight(lua_State* L);
-		
 		//! triggerEvent
 		int triggerEvent(lua_State* L);
 		

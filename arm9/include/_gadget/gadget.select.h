@@ -36,7 +36,7 @@ class _select : public _gadget
 	public:
 	
 		//! To receive/set the value
-		string	getStrValue(){ return this->contextMenu->getStrValue(); }
+		wstring	getStrValue(){ return this->contextMenu->getStrValue(); }
 		_int	getIntValue(){ return this->contextMenu->getIntValue(); }
 		
 		//! Set index of selected value

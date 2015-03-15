@@ -59,7 +59,7 @@ function main()
 	
 	-- First row
 	btnClear		= Button( btnStartX , btnStartY , btnWidth , btnHeight , "C" )
-	btnBackspace	= Button( btnStartX + btnWidthEx * 1 , btnStartY , btnWidth , btnHeight , "®" )
+	btnBackspace	= Button( btnStartX + btnWidthEx * 1 , btnStartY , btnWidth , btnHeight , "‚Üê" )
 	btnAdd			= Button( btnStartX + btnWidthEx * 2 , btnStartY , btnWidth , btnHeight , "+" )
 	btnSub			= Button( btnStartX + btnWidthEx * 3 , btnStartY , btnWidth , btnHeight , "-" )
 	
@@ -67,33 +67,25 @@ function main()
 	btn1		= Button( btnStartX , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "1" , "clickRepeat" )
 	btn2		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "2" , "clickRepeat" )
 	btn3		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "3" , "clickRepeat" )
-	btnMul		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "∞" )
+	btnMul		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 1 , btnWidth , btnHeight , "√ó" )
 	
 	-- Third
 	btn4		= Button( btnStartX , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "4" , "clickRepeat" )
 	btn5		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "5" , "clickRepeat" )
 	btn6		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "6" , "clickRepeat" )
-	btnDiv		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "±" )
+	btnDiv		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 2 , btnWidth , btnHeight , "√∑" )
 	
 	-- Fourth
 	btn7		= Button( btnStartX , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "7" , "clickRepeat" )
 	btn8		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "8" , "clickRepeat" )
 	btn9		= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "9" , "clickRepeat" )
-	btnSqrt		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "." )
+	btnSqrt		= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 3 , btnWidth , btnHeight , "‚àö" )
 	
 	-- Fifth
-	btnSign		= Button( btnStartX , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "±" )
+	btnSign		= Button( btnStartX , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "¬±" )
 	btn0		= Button( btnStartX + btnWidthEx * 1 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "0" , "clickRepeat" )
 	btnComma	= Button( btnStartX + btnWidthEx * 2 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "." )
 	btnEqual	= Button( btnStartX + btnWidthEx * 3 , btnStartY + btnHeightEx * 4 , btnWidth , btnHeight , "=" )
-	
-	local symbolFont = System.getFont("SystemSymbols8")
-	
-	-- Adjust some fonts
-	btnSqrt.font = symbolFont
-	btnMul.font = symbolFont
-	btnDiv.font = symbolFont
-	btnBackspace.font = symbolFont
 	
 	-- Add Buttons
 	wnd.addChild( btn0 )
@@ -177,15 +169,16 @@ function stuffHandler( event )
 
 	-- Fetch gadget of event
 	local gadget = event.gadget
-	if gadget.equals( btnAdd ) then
+	
+	if gadget == btnAdd then
 		set_operator( op_add )
-	elseif gadget.equals( btnSub ) then
+	elseif gadget == btnSub then
 		set_operator( op_sub )
-	elseif gadget.equals( btnMul ) then
+	elseif gadget == btnMul then
 		set_operator( op_mul )
-	elseif gadget.equals( btnDiv ) then
+	elseif gadget == btnDiv then
 		set_operator( op_div )
-	elseif gadget.equals( btnSign ) then
+	elseif gadget == btnSign then
 		if calcState == 2 then
 			calcState = 1
 			OPERATOR = nil
@@ -193,7 +186,7 @@ function stuffHandler( event )
 		CURNUMBER = tostring( 0 - tonumber(CURNUMBER) )
 		-- Apply to label
 		label.text = CURNUMBER
-	elseif gadget.equals( btnClear ) then
+	elseif gadget == btnClear then
 		--reset calcState
 		calcState = 1
 		OPERAND_FIRST = nil
@@ -201,7 +194,7 @@ function stuffHandler( event )
 		OPERATOR = nil
 		CURNUMBER = "0"
 		label.text = "0"
-	elseif gadget.equals( btnSqrt ) then
+	elseif gadget == btnSqrt then
 		if calcState == 3 then
 			solve() -- Solve equitation first, then build square root out of result
 		end
@@ -210,19 +203,19 @@ function stuffHandler( event )
 		
 		-- compute and apply
 		OPERAND_FIRST = math.sqrt( OPERAND_FIRST )
-		CURNUMBER = tostring(OPERAND_FIRST)
+		CURNUMBER = tostring( OPERAND_FIRST )
 		label.text = CURNUMBER
 		
 		-- reset calcState
 		calcState = 1
 		OPERAND_FIRST = nil
 		OPERATOR = nil
-	elseif gadget.equals( btnEqual ) then
+	elseif gadget == btnEqual then
 		if calcState == 3 then -- When both operands and operator are set: compute!
 			solve()
 		end
 		calcState = 1
-	elseif gadget.equals( btnBackspace ) then
+	elseif gadget == btnBackspace then
 		removeNumber()
 	end
 end

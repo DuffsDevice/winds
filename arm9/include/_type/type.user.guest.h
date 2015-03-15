@@ -12,7 +12,7 @@ class _guestUser : public _user
 		
 		//! These Functions overwrite the ones found in _user
 		_constBitmap&	getLogo() const ;
-		const string&	getName() const ;
+		const wstring&	getUserName() const ;
 };
 
 #endif

@@ -896,7 +896,7 @@ class flist
 		 * @return iterator
 		 */
 		template<typename evaluator>
-		void sort( evaluator func )
+		iterator find_if( evaluator func )
 		{
 			for( iterator i = this->begin() ; i ; )
 			{
@@ -941,7 +941,7 @@ class flist
 				cur = cur->getNext();
 				delete tmp;
 			}
-				
+			
 			this->bottom = nullptr;
 			this->top = nullptr;
 			this->count = 0;

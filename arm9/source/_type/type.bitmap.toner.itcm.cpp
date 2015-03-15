@@ -25,7 +25,7 @@ bool _bitmapToner::convertToGreyscale( const _bitmapSelection& selection ) const
 	const _bitField& selectionData = selection.data;
 	
 	// Iterate through pixels
-	for( auto selected : selectionData ){
+	for( bool selected : selectionData ){
 		_color cur = *data;
 		if( selected & cur.getAlpha() )
 			*data = _color::fromBW( cur.getL() * 31 / 100 );
@@ -47,7 +47,7 @@ bool _bitmapToner::fill( const _bitmapSelection& selection , _color replacement 
 	const _bitField& selectionData = selection.data;
 	
 	// Iterate through pixels
-	for( auto selected : selectionData ){
+	for( bool selected : selectionData ){
 		if( selected )
 			*data = replacement;
 		++data;
@@ -79,7 +79,7 @@ bool _bitmapToner::invert( const _bitmapSelection& selection ) const
 	const _bitField& selectionData = selection.data;
 	
 	// Iterate through pixels
-	for( auto selected : selectionData ){
+	for( bool selected : selectionData ){
 		if( selected )
 			*data = _color(*data).invert();
 		++data;
@@ -113,7 +113,7 @@ bool _bitmapToner::convertBrightnessToPalette( _colorPalette palette , const _bi
 	const _bitField& selectionData = selection.data;
 	
 	// Iterate through pixels
-	for( auto selected : selectionData ){
+	for( bool selected : selectionData ){
 		_color cur = *data;
 		if( selected & cur.getAlpha() )
 			*data = palette[ extendedRange ? cur.getL() : cur.getL() * 31 / 100 ];

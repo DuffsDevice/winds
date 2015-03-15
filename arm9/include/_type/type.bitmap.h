@@ -45,8 +45,8 @@ class _bitmap
 		 */
 		_bitmap( _pixelArray base , _length w , _length h ) :
 			bmp( base )
-			, width( max( (_length)1 , w ) )
-			, height( max( (_length)1 , h ) )
+			, width( max<_length>( 1 , w ) )
+			, height( max<_length>( 1 , h ) )
 			, wasAllocated( false )
 		{
 			this->resetClippingRect();
@@ -59,8 +59,8 @@ class _bitmap
 		 * @return void
 		 */
 		_bitmap( _length w , _length h ) :
-			width( max( (_length)1 , w ) )
-			, height( max( (_length)1 , h ) )
+			width( max<_length>( 1 , w ) )
+			, height( max<_length>( 1 , h ) )
 			, wasAllocated( true )
 		{
 			this->bmp = new _pixel[w*h];
@@ -100,7 +100,7 @@ class _bitmap
 		 * @param bm Source Bitmap
 		 * @return void
 		 */
-		_bitmap( _bitmap &&bm )
+		_bitmap( _bitmap&& bm )
 			: bmp( bm.bmp )
 			, width( bm.width )
 			, height( bm.height )
@@ -192,8 +192,8 @@ class _bitmap
 		 * Operator for [i] to get a specific position of the bmp
 		 *
 		 */
-		_pixel& operator[]( const _u32 pos ) const {
-			return this->bmp[ min( _u32( this->width * this->height - 1 ) , pos ) ];
+		_pixel& operator[]( _u32 pos ) const {
+			return this->bmp[ min<_u32>( this->width * this->height - 1 , pos ) ];
 		}
 		
 		/**
@@ -202,8 +202,8 @@ class _bitmap
 		 */
 		_pixel& operator()( _coord x , _coord y ) const
 		{
-			x = min( x , _coord( this->width - 1 ) );
-			y = min( y , _coord( this->height - 1 ) );
+			x = min<_coord>( x , this->width - 1 );
+			y = min<_coord>( y , this->height - 1 );
 			
 			_u32 position = y * this->width + x;
 			
@@ -494,7 +494,7 @@ class _bitmap
 		 * @param color Color of the _character
 		 * @return int The Width of the _character it has drawn
 		 */
-		_u16 drawChar( _coord x0 , _coord y0 , _fontHandle font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawChar( _coord x0 , _coord y0 , _fontHandle font , _wchar ch , _color color , _fontSize fontSize = 0 )
 		{
 			// Check if everything is valid
 			if( !this->isValid() || !font || !font->isValid() ) 
@@ -503,7 +503,7 @@ class _bitmap
 			return drawCharUnsafe( x0 , y0 , font , ch , color , fontSize );
 		}
 		private:
-		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _fontHandle font , _char ch , _color color , _u8 fontSize = 0 )
+		_u16 drawCharUnsafe( _coord x0 , _coord y0 , _fontHandle font , _wchar ch , _color color , _fontSize fontSize = 0 )
 		{
 			// Fetch the destination where to draw To
 			_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
@@ -522,11 +522,12 @@ class _bitmap
 		 * @param color Color of the String
 		 * @return void
 		 */
-		void drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _u8 fontSize = 0 );
-		void drawString( _coord x0 , _coord y0 , _fontHandle font , string str , _color color , _u8 fontSize = 0 )
-		{
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _fontSize fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , const string& str , _color color , _fontSize fontSize = 0 ){
 			drawString( x0 , y0 , font , str.c_str() , color , fontSize );
 		}
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , _wliteral str , _color color , _fontSize fontSize = 0 );
+		void drawString( _coord x0 , _coord y0 , _fontHandle font , const wstring& str , _color color , _fontSize fontSize = 0 );
 		
 		/**
 		 * Copy a _bitmap onto the bitmap
@@ -578,7 +579,7 @@ class _bitmap
 		 * @return void
 		 */
 		void setClippingRect( _rect rc ){
-			this->setClippingRectUnsafe( (_rect&&)rc.clipToIntersect( _rect( 0 , 0 , this->width , this->height ) ) );
+			this->setClippingRectUnsafe( rc.clipToIntersect( _rect( 0 , 0 , this->width , this->height ) ) );
 		}
 		
 		
@@ -588,7 +589,7 @@ class _bitmap
 		 * @param rc Rect The rect to be clipped to
 		 * @return void
 		 */
-		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = (_rect&&)rc; }
+		void setClippingRectUnsafe( _rect rc ){ this->activeClippingRect = rc; }
 		
 		/**
 		 * Get the active ClippingRect

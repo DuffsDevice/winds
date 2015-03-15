@@ -21,17 +21,25 @@ class _rect{
 			public:
 				
 				//! Ctors
-				_area( _initializerList<_rect> rects ) : rects( rects ) {}
-				_area( _vector<_rect>&& rects ) : rects( move(rects) ) {}
-				_area( const _vector<_rect>& rects ) : rects( rects ) {}
-				_area( _rect&& rc ) : rects( 1 ) { if( rc.isValid() ) rects.push_back( (_rect&&)rc ); }
-				_area( const _rect& rc ) : rects( 1 ) { if( rc.isValid() ) rects.push_back( rc ); }
+				_area( _initializerList<_rect> rects ) : rects( move(rects) ) {}
+				_area( _vector<_rect> rects ) : rects( move(rects) ) {}
+				_area( _rect rc ) : rects( rc.isValid() ? 1 : 0 ) { if( rc.isValid() ) rects.push_back( rc ); }
 				_area(){}
-					
+				
+				//! Copy & Move Ctors
+				_area( _area&& ar ) : rects( move(ar.rects) ) {}
+				_area( const _area& ar ) : rects( ar.rects ) {}
+				
 				//! Push-back Aliases
-				void add( _rect rc ){ if( rc.isValid() ) rects.push_back( rc ); }
-				void add( _area&& cR ){ move( cR.rects.begin() , cR.rects.end() , back_inserter( rects ) ); }
-				void add( const _area& cR ){ copy( cR.rects.begin() , cR.rects.end() , back_inserter( rects ) ); }
+				void add( _rect rc ){
+					if( rc.isValid() )
+						rects.emplace_back( move(rc) );
+				}
+				void add( const _area& cR ){
+					rects.reserve( rects.size() + cR.rects.size() );
+					for( _rect rc : cR.rects )
+						add( move(rc) );
+				}
 				
 				//! Clear
 				void clearRects(){ rects.clear(); }
@@ -102,12 +110,16 @@ class _rect{
 		}
 		
 		bool contains( const _rect& rc ) const {
-			return !( rc.x < x || rc.y < y || rc.getX2() > getX2() || rc.getY2() > getY2() );
+			return rc.isValid() && !( rc.x < x || rc.y < y || rc.getX2() > getX2() || rc.getY2() > getY2() );
 		}
 		
 		//! Methods to generate a Rect
-		static _rect fromCoords( const _coord left , const _coord top , const _coord right , const _coord bottom )
+		static _rect fromCoords( _coord left , _coord top , _coord right , _coord bottom )
 		{
+			if( left > right )
+				std::swap( left , right );
+			if( top > bottom )
+				std::swap( top , bottom );
 			return _rect( left , top , _length( right - left + 1 ) , _length( bottom - top + 1 ) );
 		}
 		
@@ -136,8 +148,8 @@ class _rect{
 		{
 			this->x -= p.left;
 			this->y -= p.top;
-			this->width += p.right + p.left;
-			this->height += p.bottom + p.top;
+			this->width = max<_length>( this->width + p.right + p.left , 0 );
+			this->height = max<_length>( this->height + p.bottom + p.top , 0 );
 			return *this;
 		}
 		
@@ -146,8 +158,8 @@ class _rect{
 		{
 			this->x += p.left;
 			this->y += p.top;
-			this->width -= p.right + p.left;
-			this->height -= p.bottom + p.top;
+			this->width = max<_length>( this->width - p.right - p.left , 0 );
+			this->height = max<_length>( this->height - p.bottom - p.top , 0 );
 			return *this;
 		}
 		
@@ -173,13 +185,13 @@ class _rect{
 		
 		
 		// Only used in type.gadget.h
-		inline _rect& expand( _coord dX , _coord dY ){
+		inline _rect& expand( _length dX , _length dY ){
 			this->expandX( dX );
 			this->expandY( dY );
 			return *this;
 		}
 		
-		noinline _rect& expandX( _coord dX )
+		noinline _rect& expandX( _length dX )
 		{
 			if( dX < 0 ){
 				this->x += dX;
@@ -189,7 +201,7 @@ class _rect{
 			return *this;
 		}
 		
-		noinline _rect& expandY( _coord dY )
+		noinline _rect& expandY( _length dY )
 		{
 			if( dY < 0 ){
 				this->y += dY;
@@ -199,33 +211,33 @@ class _rect{
 			return *this;
 		}
 		
-		inline _rect& shrink( _coord dX , _coord dY ){
+		inline _rect& shrink( _length dX , _length dY ){
 			this->shrinkX( dX );
 			this->shrinkY( dY );
 			return *this;
 		}
 		
-		noinline _rect& shrinkX( _coord dX )
+		noinline _rect& shrinkX( _length dX )
 		{
 			if( dX > 0 ){
-				dX = min( dX , (_coord)this->width );
+				dX = min<_length>( dX , this->width );
 				this->x += dX;
 				this->width -= dX;
 			}else if( dX < 0 ){
-				dX = max( dX , (_coord)-this->width );
+				dX = max<_length>( dX , -this->width );
 				this->width += dX;
 			}
 			return *this;
 		}
 		
-		noinline _rect& shrinkY( _coord dY )
+		noinline _rect& shrinkY( _length dY )
 		{
 			if( dY > 0 ){
-				dY = min( dY , (_coord)this->height );
+				dY = min<_length>( dY , this->height );
 				this->y += dY;
 				this->height -= dY;
 			}else if( dY < 0 ){
-				dY = max( dY , (_coord)-this->height );
+				dY = max<_length>( dY , -this->height );
 				this->height += dY;
 			}
 			return *this;
