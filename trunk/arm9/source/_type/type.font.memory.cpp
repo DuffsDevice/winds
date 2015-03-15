@@ -1,7 +1,7 @@
 #include <_type/type.font.memory.h>
 #include <nds/bios.h>
 
-_memoryFont::_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace ) :
+_memoryFont::_memoryFont( string nN , _wchar fc , _wchar lc , _u8 ht , _u8 mH , const _u16* data , const _u8* widths , const _u16* offsets , _u8 ms , _u8 sW , _s8 letterSpace ) :
 	_font( nN )
 	, spaceWidth( sW )
 	, monospace( ms )
@@ -15,7 +15,7 @@ _memoryFont::_memoryFont( string nN , _char fc , _char lc , _u8 ht , _u8 mH , co
 	, charOffsets( offsets )
 { }
 
-_length _memoryFont::getCharacterWidth( _char character , _u8 fontSize ) const
+_length _memoryFont::getCharacterWidth( _wchar character , _u8 fontSize ) const
 {
 	// Check if 'character' is a space
 	if( character == ' ' )
@@ -31,7 +31,7 @@ _length _memoryFont::getCharacterWidth( _char character , _u8 fontSize ) const
 	return this->charWidths[ character - this->firstChar ];
 }
 
-_length _memoryFont::drawCharacter( _pixelArray dest , _length destWidth , _coord posX , _coord posY , _char ch , _color color , _rect clip , _u8 fontSize ) const 
+_length _memoryFont::drawCharacter( _pixelArray dest , _length destWidth , _coord posX , _coord posY , _wchar ch , _color color , _rect clip , _u8 fontSize ) const 
 {
 	// If it's a Whitespace
 	if( ch == ' ' )

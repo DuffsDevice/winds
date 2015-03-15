@@ -6,14 +6,11 @@ void _timer::start()
 	this->startTime = _timerController::getMilliTime();
 	this->runs = true;
 	
-	_timerController::registerTimerToExecute( this ); // Kotzen!
+	_timerController::addTimerToExecute( this ); // Kotzen!
 }
 
-void _timer::stop()
-{
+void _timer::stop(){
 	this->runs = false;
-	
-	_timerController::deleteTimer( this ); // Kotzen!
 }
 
 _timer& _timer::operator=( _timer&& tmr )

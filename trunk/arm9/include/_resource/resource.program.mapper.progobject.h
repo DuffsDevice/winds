@@ -11,8 +11,8 @@ class PROG_Mapper_Object : public _gadget
 	private:
 		
 		_bitmap		progImage;
-		string		progAuthor;
-		string		progName;
+		wstring		progAuthor;
+		wstring		progName;
 		_direntry	programFile;
 		
 		static _callbackReturn refreshHandler( _event event );

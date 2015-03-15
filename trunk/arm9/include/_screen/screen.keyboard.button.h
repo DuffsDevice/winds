@@ -3,8 +3,8 @@
 
 #include <_gadget/gadget.button.h>
 
-class _keyboardScreenButton : public _button {
-	
+class _keyboardScreenButton : public _button
+{
 	private:
 		
 		//! the Key it represents (e.g. upper case 'A')
@@ -23,7 +23,7 @@ class _keyboardScreenButton : public _button {
 		
 		//! Ctor
 		_keyboardScreenButton( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , _key key
-			, string title , _style&& style = _style() | _style::clickRepeat );
+			, wstring title , _style&& style = _style() | _style::clickRepeat );
 };
 
 #endif

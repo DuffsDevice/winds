@@ -2,7 +2,7 @@
 #include <_type/type.program.h>
 #include <_controller/controller.gui.h>
 
-string _mainFrame::getDisplayName( _programHandle handle )
+wstring _mainFrame::getDisplayName( _programHandle handle )
 {
 	_program* prog = handle.get();
 	if( !prog )
@@ -52,12 +52,12 @@ _mainFrame::_mainFrame( _optValue<_coord> x , _optValue<_coord> y , _optValue<_l
 	this->setParent( _guiController::getHost() );
 }
 
-void _mainFrame::setTitle( string title )
+void _mainFrame::setTitle( wstring title )
 {
 	if( !this->programHandle.isValid() )
 		return;
 	
-	string progName = _mainFrame::getDisplayName( programHandle );
+	wstring progName = _mainFrame::getDisplayName( programHandle );
 	
 	if( title.empty() ){
 		_window::label->setEllipsis( true );

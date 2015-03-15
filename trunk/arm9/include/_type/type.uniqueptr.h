@@ -30,7 +30,7 @@ class _uniquePtr : public std::unique_ptr<T>
 		_uniquePtr( T*&& val ) :
 			base( move( val ) )
 		{}
-		_uniquePtr( const T*& val ) :
+		_uniquePtr( T* const & val ) :
 			base( val ? new T( *val ) : nullptr )
 		{}
 		
@@ -54,7 +54,7 @@ class _uniquePtr : public std::unique_ptr<T>
 			base::reset( move(val) );
 			return *this;
 		}
-		_uniquePtr& operator=( const T*& val ){
+		_uniquePtr& operator=( T* const & val ){
 			base::reset( val ? new T( *val ) : nullptr );
 			return *this;
 		}

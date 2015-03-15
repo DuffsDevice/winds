@@ -1,16 +1,15 @@
-#ifndef _FONT_SYSTEMFONT7_
-#define _FONT_SYSTEMFONT7_
+#ifndef _FONT_SYSTEM_7_
+#define _FONT_SYSTEM_7_
 
 #include <_type/type.h>
-#include <_type/type.font.memory.h>
+#include <_type/type.font.virtual.h>
 
 /**
  * FONT_System7 font.
  */
-class FONT_System7 : public _memoryFont {
-	
+class FONT_System7 : public _virtualFont
+{
 	public:
-
 		/**
 		 * Constructor.
 		 * @param fixedWidth Set to 0 for proportional or a width for monospace

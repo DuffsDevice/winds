@@ -12,18 +12,18 @@ enum class _wallpaperViewType{
 	pattern = 4
 };
 
-using _startMenuList = _vector<_pair<string,string>>;
+using _startMenuList = _vector<_pair<string,wstring>>;
 
 class _user : public _iniFile
 {
 	private:
 		
-		_color							desktopColor;
-		bool							hasAdminRights;
-		_bitmap							userLogo;
-		_bitmap							wallpaper;
-		_wallpaperViewType				wallpaperViewType;
-		_vector<_pair<string,string>>	startMenuEntries;
+		_color				desktopColor;
+		bool				hasAdminRights;
+		_bitmap				userLogo;
+		_bitmap				wallpaper;
+		_wallpaperViewType	wallpaperViewType;
+		_startMenuList		startMenuEntries;
 		
 		//! Methods to create a users logo
 		static _bitmap getLogoFromImage( _constBitmap& image );
@@ -57,11 +57,11 @@ class _user : public _iniFile
 		void			setWallpaper( string path );
 		
 		//! Get/Set the Users Name
-		virtual const string&	getName() const ;
-		void			setName( string );
+		virtual const wstring&	getUserName() const ;
+		void			setUserName( wstring );
 		
 		//! Get/Set the path to the home folder
-		const string&	getHomeFolder() const ;
+		string			getHomeFolder() const ;
 		void			setHomeFolder( string path );
 		
 		//! Match a supplied raw string against the password

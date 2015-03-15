@@ -1,6 +1,6 @@
 #include <_type/type.sound.static.h>
 #include <nds/fifocommon.h>
-#include <stdio.h>
+#include <cstdio>
 
 _s8 _staticSound::prepareChannel( _u8 volume , _s8 panning )
 {

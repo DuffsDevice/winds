@@ -8,6 +8,6 @@ _guestUser::_guestUser() :
 	_iniFile::writeIndex( "_global_" , "homeFolder" , "%USERS%/%guest" );
 }
 
-const string&	_guestUser::getName() const {
+const wstring&	_guestUser::getUserName() const {
 	return _localizationController::getBuiltInString("lbl_guest");
 }

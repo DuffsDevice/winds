@@ -55,7 +55,7 @@ void _textBox::removeStr( _int position , _length numChars ){
 	this->text.erase( position , numChars );
 }
 
-void _textBox::insertStr( _int position , string s ){
+void _textBox::insertStr( _int position , wstring s ){
 	this->text.insert( position , move(s) );
 }
 
@@ -94,8 +94,6 @@ _callbackReturn _textBox::keyHandler( _event event )
 {
 	_textBox* that = event.getGadget<_textBox>();
 	
-	string val = that->text;
-	
 	switch( event.getKeyCode() ){
 		case _key::backspace:
 		case _key::b:
@@ -121,7 +119,7 @@ _callbackReturn _textBox::keyHandler( _event event )
 			that->setInternalCursor( 0 , true );
 			break;
 		case _key::down:
-			that->setInternalCursor( that->text.getNumLetters() , true );
+			that->setInternalCursor( that->text.length() , true );
 			break;
 		default:
 			if(
@@ -130,8 +128,12 @@ _callbackReturn _textBox::keyHandler( _event event )
 			)
 				return use_default;
 			
-			that->insertStr( that->text.getCursor() , string( 1 , (_char)event.getKeyCode() ) );
+			// Insert glyphCode()
+			that->text.insert( that->text.getCursor() , (_wchar)event.getKeyCode() );
+			
+			// Move Cursor one position ahead
 			that->text.moveCursor( true );
+			
 			if( !that->makeSureCursorIsVisible() )
 				that->redraw();
 			
@@ -148,7 +150,7 @@ _callbackReturn _textBox::focusHandler( _event event )
 	_textBox* that = event.getGadget<_textBox>();
 	
 	// Set Cursor
-	_u32 cursor = event == onFocus ? that->text.getNumLetters() : 0;
+	_u32 cursor = event == onFocus ? that->text.length() : 0;
 	that->handleEvent( onResize );
 	that->setInternalCursor( cursor , event == onFocus );
 	that->checkRefresh();
@@ -197,16 +199,12 @@ _callbackReturn _textBox::mouseHandler( _event event )
 	return handled;
 }
 
-_textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+_textBox::_textBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value , _style&& style ) :
 	_gadget( _gadgetType::textbox , x , y , width , height , style | _style::keyboardRequest | _style::draggable | _style::smallDragThld | _style::noTransparentParts )
 	, bgColor( _color::fromRGB( 31 , 31 , 31 ) )
 	, scroll( 0 )
 	, text( move(value) , _fontController::getStandardFont() , _color::fromRGB( 0 , 0 , 0 ) , _fontController::getStandardFontSize() )
 {
-	// Adjust guiString object
-	this->text.setFontChangeEnabled( false );
-	this->text.setFontColorChangeEnabled( false );
-	this->text.setFontSizeChangeEnabled( false );
 	this->text.setEllipsis( 0 );
 	
 	// Set update Handler & update

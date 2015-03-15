@@ -22,7 +22,7 @@ class _contextMenuEntry : public _gadget
 	public:
 	
 		//! Get text
-		string getStrValue() const { return this->entry.text; }
+		wstring getStrValue() const { return this->entry.text; }
 		
 		//! Get id
 		_u16 getIntValue() const { return this->index; }

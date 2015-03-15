@@ -52,14 +52,14 @@ _freetypeFont::~_freetypeFont()
 	this->cache = nullptr;
 }
 
-_length _freetypeFont::getCharacterWidth( _char codepoint , _u8 fontSize ) const 
+_length _freetypeFont::getCharacterWidth( _wchar codepoint , _fontSize fontSize ) const 
 { 
 	int advWidth , leftSideBearing;
 	stbtt_GetCodepointHMetrics( &this->fontInfo , codepoint , &advWidth , &leftSideBearing );
 	return stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize ) * advWidth;
 }
 
-bool _freetypeFont::isCharSupportedInternal( _char codepoint ) const 
+bool _freetypeFont::isCharSupportedInternal( _wchar codepoint ) const 
 {
 	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 	
@@ -87,7 +87,7 @@ _u32 transparencyJump[256] =  {
 	0x20, 0x40, 0x80, 0x300, 0xC00, 0x3000, 0x1C000, 0xE0000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xFFFFFFFE
 };
 
-_length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _char letter , _color color , _rect clip , _u8 fontSize ) const 
+_length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _coord x , _coord y , _wchar letter , _color color , _rect clip , _fontSize fontSize ) const 
 {
 	int fontWidth , fontHeight , xOffset , yOffset , ascent /*, nextCharBegin*/ /*, xOffset2*/;
 	
@@ -234,7 +234,7 @@ _length _freetypeFont::drawCharacter( _pixelArray dest , _length bitmapWidth , _
 	return output;
 }
 
-_length _freetypeFont::getAscent( _u8 fontSize , _char ch ) const 
+_length _freetypeFont::getAscent( _fontSize fontSize , _wchar ch ) const 
 {
 	float scale = stbtt_ScaleForPixelHeight( &this->fontInfo , fontSize );
 	

@@ -7,13 +7,10 @@
 #include <_type/type.uniqueptr.h>
 #include <stack>
 
-using _fontStack		= std::stack<_fontPtr>;
-using _fontSizeStack	= std::stack<_u8>;
-using _fontColorStack	= std::stack<_color>;
 using _lineNumber		= _u32;
 using _letterNum		= size_t;
 
-class _guiString : public string
+class _guiString : public wstring
 {
 	public:
 	
@@ -28,21 +25,20 @@ class _guiString : public string
 		 * @param text A string that this text object should wrap around.
 		 * @param dimensions The Size and Position of the gui string relative to the gadget it is displayed on
 		 */
-		_guiString( string text , _fontHandle font , _color fontColor , _u8 fontSize = 0 ) :
-			string( move(text) )		, font( font )				, fontSize( fontSize )		, fontColor( fontColor )
+		_guiString( wstring text , _fontHandle font , _color fontColor , _fontSize fontSize = 0 ) :
+			wstring( move(text) )		, font( font )				, fontSize( fontSize )		, fontColor( fontColor )
 			, selection( nullptr )		, align( _align::left )		, vAlign( _valign::top )	, cursor( 0 )
 			, needsRefreshFlag( false )	, needsUpdateFlag( true )	, displaySelection( false )	, displayCursor( false )
-			, allowFontChange( true )	, allowSizeChange( true )	, allowColorChange( true )
 		{}
 		
 		//! Override the current value of this formatString
-		_guiString& operator=( const string& str ){
-			string::operator=( str );
+		_guiString& operator=( const wstring& str ){
+			wstring::operator=( str );
 			this->needsUpdateFlag = true;
 			return *this;
 		}
-		_guiString& operator=( string&& str ){
-			string::operator=( move(str) );
+		_guiString& operator=( wstring&& str ){
+			wstring::operator=( move(str) );
 			this->needsUpdateFlag = true;
 			return *this;
 		}
@@ -104,9 +100,8 @@ class _guiString : public string
 		
 		//! Set the gui string's current cursor
 		void			setCursor( _letterNum letterIndex ){
+			letterIndex = min( letterIndex , length() );
 			this->needsRefreshFlag |= this->displayCursor && letterIndex != this->cursor;
-			if( letterIndex > this->cursor )
-				letterIndex = min( letterIndex , this->getNumLetters() );
 			this->cursor = letterIndex;
 		}
 		
@@ -125,9 +120,9 @@ class _guiString : public string
 		 * @param text The text to insert.
 		 * @param index The index to insert the character after
 		 */
-		void			insert( _letterNum position , string text );
-		void			insert( _letterNum position , _char ch , _length n = 1 ){
-			this->insert( position , string(n,ch) );
+		void			insert( _letterNum position , wstring text );
+		void			insert( _letterNum position , _wchar ch , _length n = 1 ){
+			this->insert( position , wstring( n , ch ) );
 		}
 		
 		/**
@@ -136,20 +131,6 @@ class _guiString : public string
 		 * @param count The number of chars to remove.
 		 */
 		void			remove( _letterNum letterIndex , _letterNum letterCount = 1 );
-		
-		//! Get the number of characters (bytes) needed to display 'letterNum' letters
-		_u32			getNumBytesFromNumLetters( _letterNum letterNum , _letterNum offsetLetter = 0 ) const ;
-		
-		/**
-		 * Get the number of letters displayed after processing
-		 * 'charNum' characters (bytes) starting at 'offset' bytes
-		 * @param numBytes the number of bytes of which we want to know the number of letters they build
-		 * @param offset The position where we start counting
-		 */
-		_letterNum		getNumLettersFromNumBytes( _u32 numBytes , _u32 offset = 0 ) const ;
-		
-		//! Get Numebr of letters in the string
-		_letterNum		getNumLetters() const ;
 		
 		
 		///////////////////////
@@ -184,7 +165,7 @@ class _guiString : public string
 		}
 		
 		//! Set initial size of the used font
-		void		setFontSize( _u8 fontSize ){
+		void		setFontSize( _fontSize fontSize ){
 			this->needsUpdateFlag |= this->fontSize != fontSize;
 			this->fontSize = fontSize;
 		}
@@ -199,16 +180,16 @@ class _guiString : public string
 		_fontHandle	getFont() const { return this->font; }
 		
 		//! Get the used font size
-		_u8			getFontSize() const { return this->fontSize; }
+		_fontSize	getFontSize() const { return this->fontSize; }
 		
 		//! Get the used font color
 		_color		getFontColor() const { return this->fontColor; }
 		
 		//! Check whether the appearence of the text would have changed
-		bool		needsRefresh(){ return this->needsRefreshFlag || this->needsUpdateFlag; }
+		bool		needsRefresh() const { return this->needsRefreshFlag || this->needsUpdateFlag; }
 		
 		//! Check whether the _guiString wants to rearrange the lines inside
-		bool		needsUpdate(){ return this->needsUpdateFlag; }
+		bool		needsUpdate() const { return this->needsUpdateFlag; }
 		
 		//! Tell the _guiString that its appearence is on the latest state
 		void		resetRefreshFlag(){ this->needsRefreshFlag = false; }
@@ -219,52 +200,6 @@ class _guiString : public string
 			this->displayCursor = enabled;
 		}
 		
-		//! Enable or disable font changes
-		void		setFontChangeEnabled( bool enabled ){
-			this->needsUpdateFlag |= this->allowFontChange != enabled;
-			this->allowFontChange = enabled;
-		}
-		
-		//! Enable or disable font size changes
-		void		setFontSizeChangeEnabled( bool enabled ){
-			this->needsUpdateFlag |= this->allowSizeChange != enabled;
-			this->allowSizeChange = enabled;
-		}
-		
-		//! Enable or disable font color changes
-		void		setFontColorChangeEnabled( bool enabled ){
-			this->needsRefreshFlag |= this->allowColorChange != enabled;
-			this->allowColorChange = enabled;
-		}
-		
-		
-		/////////////////////////////////////////
-		// METHODS FOR CHANGE ESCAPE SEQUENCES //
-		/////////////////////////////////////////
-		
-		//! Generates an escape sequence that will change the displayed fontSize in a string
-		static string sizeChange( _u8 newSize );
-		
-		//! Generates an escape sequence that will change the displayed font color
-		static string colorChange( _color color );
-		
-		//! Generates an escape sequence that will change the used font
-		static string fontChange( _fontPtr ft );
-		
-		
-		//////////////////////////////////////////
-		// METHODS FOR RESTORE ESCAPE SEQUENCES //
-		//////////////////////////////////////////
-		
-		//! Generates an escape sequence that will restore the previously used font
-		static string fontRestore(){ _char tmp[2] = { (_char)escapeChar::fontRestore , 0 }; return tmp; }
-		
-		//! Generates an escape sequence that will restore the previously used font size
-		static string fontSizeRestore(){ _char tmp[2] = { (_char)escapeChar::sizeRestore , 0 }; return tmp; }
-		
-		//! Generates an escape sequence that will restore the previously used font color
-		static string fontColorRestore(){ _char tmp[2] = { (_char)escapeChar::colorRestore , 0 }; return tmp; }
-		
 		//! The Type of a selection
 		class _strRange{
 			public:
@@ -274,30 +209,9 @@ class _guiString : public string
 	
 	protected:
 		
-		/**
-		 * Checks, if the current character in the supplied string is an escape-char
-		 * and, if so, modifies the supplied font/size/color-Stack. The caller has nothing
-		 * to do but loop through the whole text and increment the string ptr every round
-		 * @return Whether or not the current character is not an escape code and can be processed
-		 */
-		bool		processChar( _literal& str , _fontStack& fontStack , _fontSizeStack& fontSizeStack , _fontColorStack& fontColorStack ) const ;
-		
-		//! Get the font-stacks-state at the supplied byte position and returns how many letters that were
-		_letterNum	getStacksAt( _u32 index , _fontStack& fontStack , _fontSizeStack& fontSizeStack , _fontColorStack& fontColorStack ) const ;
-		
-		//! Predefined Escape characters that introduce an escape sequence
-		enum class escapeChar : _char{
-			fontChange		= 25,
-			colorChange		= 26,
-			sizeChange		= 28,
-			fontRestore		= 29,
-			sizeRestore		= 30,
-			colorRestore	= 31
-		};
-		
 		//! Font to be used for output
 		_fontHandle				font;
-		_u8						fontSize;
+		_fontSize				fontSize;
 		_color					fontColor;
 		
 		//! Structure holding the selection attributes if some text is selected
@@ -314,9 +228,6 @@ class _guiString : public string
 			bool				needsUpdateFlag : 1;
 			bool				displaySelection : 1;
 			bool				displayCursor : 1;
-			bool				allowFontChange : 1;
-			bool				allowSizeChange : 1;
-			bool				allowColorChange : 1;
 		}PACKED;
 };
 

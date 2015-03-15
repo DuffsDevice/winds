@@ -40,6 +40,7 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , float arg					, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , double arg					, TN... args){ lua_pushnumber( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , const string& arg			, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , const wstring& arg			, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN, int mB,typename dT>
 								inline int push( lua_State* state , _shortString<mB,dT> arg		, TN... args){ lua_pushstring( state , arg.c_str() ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN, typename ST,typename DT>
@@ -68,7 +69,7 @@ namespace _luafunc
 	template<typename... TN>	inline int push( lua_State* state , _menu&& arg					, TN... args){ pushMenu( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _menu& arg					, TN... args){ pushMenuRef( state , arg ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , const _menu& arg			, TN... args){ pushMenu( state , _menu(arg) ); return 1 + push( state , forward<TN>(args)... ); }
-	template<typename... TN>	inline int push( lua_State* state , _menuEntry arg				, TN... args){ return push( state , _tuple<string,_u16>(arg) , forward<TN>(args)... ); }
+	template<typename... TN>	inline int push( lua_State* state , _menuEntry arg				, TN... args){ return push( state , _tuple<wstring,_u16>(arg) , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _time arg					, TN... args){ pushTime( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _color arg					, TN... args){ pushColor( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }
 	template<typename... TN>	inline int push( lua_State* state , _border arg					, TN... args){ pushBorder( state , move(arg) ); return 1 + push( state , forward<TN>(args)... ); }

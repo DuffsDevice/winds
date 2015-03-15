@@ -5,8 +5,8 @@
 #include <_type/type.gadget.h>
 
 template<class _selector>
-class _singleValueGroup{
-	
+class _singleValueGroup
+{	
 	protected:
 		
 		typedef _map<_s32,_selector*> selectorListType;

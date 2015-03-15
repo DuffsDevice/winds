@@ -11,8 +11,7 @@ class _cwdChanger
 		
 		_uniquePtr<string>	oldCwd;
 		
-		// Function to set/get currenly working directory
-		static string		getCWD();
+		//! Function to set the cwd
 		static void			setCWD( const string& dir );
 		
 		//! Ctor
@@ -33,6 +32,9 @@ class _cwdChanger
 			if( oldCwd )
 				this->setCWD( *oldCwd );
 		}
+		
+		//! Function to get currenly working directory
+		static string getCWD();
 };
 
 #endif

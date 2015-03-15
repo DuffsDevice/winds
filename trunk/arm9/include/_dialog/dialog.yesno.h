@@ -24,7 +24,7 @@ class _yesNoDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_yesNoDialog( string message , string windowLabel , _optValue<string> yesLbl = ignore , _optValue<string> noLbl = ignore );
+		_yesNoDialog( wstring message , wstring windowLabel , _optValue<wstring> yesLbl = ignore , _optValue<wstring> noLbl = ignore );
 		
 		//! Dtor
 		~_yesNoDialog(){

@@ -11,10 +11,10 @@ void _enterTextDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_enterTextDialog::_enterTextDialog( string message , string windowLbl , string initialValue , _optValue<string> okLbl , _optValue<string> cancelLbl ) : 
-	okButton( new _button( 0 , 0 , ignore , ignore , okLbl.isValid() ? (string&&)okLbl : _localizationController::getBuiltInString("lbl_ok") ) )
-	, cancelButton( new _button( 0 , 0 , ignore , ignore , cancelLbl.isValid() ? (string&&)cancelLbl : _localizationController::getBuiltInString("lbl_cancel") ) )
-	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
+_enterTextDialog::_enterTextDialog( wstring message , wstring windowLbl , wstring initialValue , _optValue<wstring> okLbl , _optValue<wstring> cancelLbl ) : 
+	okButton( new _button( 0 , 0 , ignore , ignore , okLbl.isValid() ? (wstring&&)okLbl : _localizationController::getBuiltInString("lbl_ok") ) )
+	, cancelButton( new _button( 0 , 0 , ignore , ignore , cancelLbl.isValid() ? (wstring&&)cancelLbl : _localizationController::getBuiltInString("lbl_cancel") ) )
+	, msg( new _label( 2 , 2 , ignore , ignore , (wstring&&)message ) )
 	, initialValue( move(initialValue) )
 {	
 	// Buttons
@@ -29,7 +29,7 @@ _enterTextDialog::_enterTextDialog( string message , string windowLbl , string i
 	_length winHeight = max( this->msg->getHeight() + this->okButton->getHeight() + 10 + this->textBox->getHeight() , 30 ) + 11; // + 11 for the window
 	
 	// Window
-	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (string&&)windowLbl , _style::notResizeable );
+	this->window = new _dialogWindow( ( SCREEN_WIDTH - winWidth ) >> 1 , ( SCREEN_HEIGHT - winHeight ) >> 1 , winWidth , winHeight , (wstring&&)windowLbl , _style::notResizeable );
 	
 	// Move Buttons
 	this->cancelButton->moveTo( winWidth - this->okButton->getWidth() - this->cancelButton->getWidth() - 4 , winHeight - this->cancelButton->getHeight() - 12 );

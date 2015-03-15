@@ -30,7 +30,7 @@ class _folderChooseDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_folderChooseDialog( _optValue<string> descriptionLabel = ignore , _optValue<string> okLabel = ignore , _optValue<string> windowLabel = ignore );
+		_folderChooseDialog( _optValue<wstring> descriptionLabel = ignore , _optValue<wstring> okLabel = ignore , _optValue<wstring> windowLabel = ignore );
 		
 		//! Get Selected filename
 		string getPath() const {

@@ -4,6 +4,7 @@
 #include <_type/type.h>
 #include <_type/type.controller.h>
 #include <_type/type.language.h>
+#include <_type/type.program.handle.h>
 
 //! Enumerates the underlying hardware
 enum class _hardwareType{
@@ -53,15 +54,15 @@ class _windows
 		//! Routine that shuts down all controllers
 		static void					end();
 		
-		//! Execute the supplied command
-		static bool					executeCommand( const string& cmd );
+		//! Execute the supplied command and eventually get back a handle to the program
+		static _programHandle		execute( const string& cmd );
 		
 		//! Get current Cpu-usage
 		static _u8					getCpuUsage(){ return cpuUsageTemp; }
 		static _u8					getCpuUsageSub(){ return cpuUsageTempSub; }
 		
 		//! Get the name of the user within the DS internal firmware
-		static const string&		getDSUserName();
+		static const wstring&		getDSUserName();
 		
 		//! GEt the DS internal language used by the firmware
 		static _language			getDSLanguage();

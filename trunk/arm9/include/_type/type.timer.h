@@ -4,6 +4,7 @@
 #include <_type/type.h>
 #include <_type/type.callback.h>
 #include <_type/type.uniqueptr.h>
+#include <_type/type.paramalloc.h>
 
 class _timer
 {

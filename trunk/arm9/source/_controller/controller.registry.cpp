@@ -1,6 +1,5 @@
 #include <_controller/controller.registry.h>
 #include <_controller/controller.filesystem.h>
-#include <_controller/controller.debug.h>
 #include <_dialog/dialog.runtimeerror.h>
 
 #include <_type/type.time.h>
@@ -66,7 +65,7 @@ void _registryController::prepareFileTypeRegistry()
 		}} }
 		, { "fileIcon" , {{
 			//{ "%dir%" , "" }
-		} }}
+		}} }
 	}} );
 	fileTypeRegistry->flush();
 }
@@ -98,6 +97,7 @@ void _registryController::prepareSystemRegistry()
 			
 			{ "startButtonTextColor" , "RGB(30,30,30)" } ,
 			{ "fileExtensionVisible" , "1" } ,
+
 		}} }
 		, { "serviceMapper" , {{
 		}} }
@@ -133,28 +133,29 @@ void _registryController::end()
 }
 
 string	_registryController::getPackagePath( const string& package ){
-	return fileTypeRegistry->readIndex( "serviceMapper" , package );
+	return fileTypeRegistry->readIndex( "serviceMapper" , package ).cpp_str();
 }
 
 void	_registryController::setPackagePath( const string& package , string path ){
 	fileTypeRegistry->writeIndex( "serviceMapper" , package , move(path) );
 }
 
-const string& _registryController::getFileTypeHandler( const string& extension )
+string _registryController::getFileTypeHandler( const string& extension )
 {
-	const string& index = fileTypeRegistry->readIndex( "fileMapper" , extension );
+	string index = fileTypeRegistry->readIndex( "fileMapper" , extension ).cpp_str();
 	
 	// Read mapper that can read all types of files
 	if( index.empty() )
-		return fileTypeRegistry->readIndex( "fileMapper" , "*" );
+		return fileTypeRegistry->readIndex( "fileMapper" , "*" ).cpp_str();
 	
-	return index;
+	return move(index);
 }
 
 _bitmap _registryController::getFileTypeImage( const string& extension , _mimeType mimeType )
 {
 	// Fetch Url of the Icon
-	const string& iconUrl = fileTypeRegistry->readIndex( "fileIcon" , extension );
+
+	const string& iconUrl = fileTypeRegistry->readIndex( "fileIcon" , extension ).cpp_str();
 	
 	// If we already loaded the icon corresponding to a specific extension
 	_pair<string,_bitmap>& cachedIcon = _registryController::extension2UrlAndimage[extension];

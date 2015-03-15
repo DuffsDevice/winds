@@ -36,16 +36,15 @@ void memcpy16( void* dst , const void* src , _u32 halfWordCount ){
 void memset8( void* dst , _u8 val , _u32 byteCount ){
 	DC_FlushRange( dst , byteCount );
 	if( byteCount & 1 ){
-		((_u8*)dst)[0] = val;
-		((_u8*&)dst)++;
+		((_u8*)dst)[byteCount-1] = val;
+		byteCount--;
 	}
 	dmaFillHalfWords( val , dst , byteCount );
 }
 
 void memcpy8( void* dst , const void* src , _u32 byteCount ){
 	if( byteCount & 1 ){
-		((_u8*)dst)[0] = ((_u8*)src)[0];
-		((_u8*&)dst)++;
+		((_u8*)dst)[byteCount-1] = ((_u8*)src)[byteCount-1];
 		byteCount--;
 	}
 	DC_FlushRange( src , byteCount );

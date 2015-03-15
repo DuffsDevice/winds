@@ -142,14 +142,21 @@ int _progLua::lua_keyboardIsCaps( lua_State* L ){ if( !_guiController::getKeyboa
 int _progLua::lua_keyboardSetShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setShift( check<bool>( L , 1 ) ); return 0; }
 int _progLua::lua_keyboardSetCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setCaps( check<bool>( L , 1 ) ); return 0; }
 
+void _progLua::lua_print( lua_State* L , _literal str , _u32 len ){ printf("%s",str); }
 int _progLua::lua_writeDebug( lua_State* L ){ _debugController::debug( check<_literal>( L , 1 ) ); return 0; }
 int _progLua::lua_pushEvent( lua_State* L ){ _eventController::pushEvent( check<_event>( L , 1 ) , _eventCallType::normal ); return 0; }
 int _progLua::lua_getCurrentFocus( lua_State* L ){ return push( L , _guiController::getCurrentFocus() ); }
 int _progLua::lua_getLocalizedString( lua_State* L ){ return push( L , _localizationController::getBuiltInString( check<_literal>( L , 1 ) ) ); }
-int _progLua::lua_getSystemRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getSystemRegistry() , false ) ); return 1; }
-int _progLua::lua_getUserRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getUserRegistry() , false ) ); return 1; }
+int _progLua::lua_getSystemRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getSystemRegistry() ) ); return 1; }
+int _progLua::lua_getUserRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getUserRegistry() ) ); return 1; }
 int _progLua::lua_getFont( lua_State* L ){
 	return push( L , is_a<_literal>( L , 1 ) ? _fontController::getFont( check<_literal>( L , 1 ) ) : _fontController::getStandardFont() );
+}
+int _progLua::lua_getWorkingDir( lua_State* L ){
+	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getCWD() ); return 0;
+}
+int _progLua::lua_getBinaryPath( lua_State* L ){
+	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getPath() ); return 0;
 }
 int _progLua::lua_exit( lua_State* L ){
 	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0;
@@ -249,6 +256,10 @@ int	_progLua::lua_setServiceHandler( lua_State* L ){
 	_registryController::setPackagePath( check<_literal>( L , 1 ) , check<string>( L , 2 ) );
 	return 0;
 }
+int	_progLua::lua_getServiceTransferData( lua_State* L ){
+	pushTransferData( L , _executionController::getServiceTransferData( check<_serviceId>( L , 1 ) ) );
+	return 1;
+}
 int	_progLua::lua_getServiceHandler( lua_State* L ){
 	return push( L , _registryController::getPackagePath( check<_literal>( L , 1 ) ) );
 }
@@ -259,8 +270,9 @@ bool _progLua::parseProgramHeader()
 	
 	if( this->content && !this->headParsed )
 	{
-		string		attribute;
-		_tokenizer	tok = _tokenizer( *this->content , attribute , "\n\r" , true );
+		wstring			attribute;
+		const wstring&	content = *this->content;
+		_wtokenizer		tok = _wtokenizer( content , attribute , L"\n\r" , true );
 		
 		/* Scan through file line by line */
 		while( tok.next() )
@@ -269,12 +281,12 @@ bool _progLua::parseProgramHeader()
 				goto end;
 			
 			// Find Position of the '='
-			size_t equalSignPosition = attribute.find( '=' , 2 ); // '2': skip the "--"
+			size_t equalSignPosition = attribute.find(L'=');
 			
 			// Check if the '=' was found
-			if( equalSignPosition != string::npos )
+			if( equalSignPosition != wstring::npos )
 			{
-				string attrName = attribute.substr( 2 , equalSignPosition - 2 );
+				wstring attrName = attribute.substr( 2 , equalSignPosition - 2 );
 				
 				// Trim whitespaces and tabs etc...
 				trim( attrName );
@@ -287,27 +299,27 @@ bool _progLua::parseProgramHeader()
 				if( equalSignPosition + 1 >= attribute.length() )
 					continue;
 				
-				string attrValue = attribute.substr( equalSignPosition + 1 );
+				wstring attrValue = attribute.substr( equalSignPosition + 1 , wstring::npos );
 				
 				// Trim whitespaces and tabs etc...
 				trim( attrValue );
 				
 				if( attrName == "FILE_ICON" ){
 					_cwdChanger changer = _cwdChanger( this->getPath() ); // Set Relative Path
-					_bitmap icon = _imageFile(move(attrValue),false).readBitmap();
+					_bitmap icon = _imageFile( attrValue.cpp_str() , false ).readBitmap();
 					if( icon.isValid() )
 						header.fileIcon = move(icon);
 				}
 				else if( attrName == "WND_ICON" ){
 					_cwdChanger changer = _cwdChanger( this->getPath() ); // Set Relative Path
-					_bitmap icon = _imageFile(move(attrValue),false).readBitmap();
+					_bitmap icon = _imageFile( attrValue.cpp_str() , false ).readBitmap();
 					if( icon.isValid() )
 						header.windowIcon = move(icon);
 				}
 				else if( attrName == "NAME" )
 					header.name = move(attrValue);
 				else if( attrName == "FILE_NAME" )
-					header.fileName = move(attrValue);
+					header.fileName = attrValue.cpp_str();
 				else if( attrName == "WND_TITLE" )
 					header.windowName = move(attrValue);
 				else if( attrName == "AUTHOR" )
@@ -319,7 +331,7 @@ bool _progLua::parseProgramHeader()
 				else if( attrName == "DESC" )
 					header.description = move(attrValue);
 				else if( attrName == "LANG" )
-					header.language = move(attrValue);
+					header.language = attrValue.cpp_str();
 			}
 		}
 		
@@ -356,17 +368,21 @@ luaL_Reg _progLua::windowsLibrary[] = {
 	{"getServiceState"		, lua_getServiceState },
 	{"setServiceHandler"	, lua_setServiceHandler },
 	{"getServiceHandler"	, lua_getServiceHandler },
+	{"getServiceData"		, lua_getServiceTransferData },
 	{ NULL , NULL }
 };
+
+#include <cmath>
 
 /**
  * Programm Stuff
  */
-_progLua::_progLua( string prog ) : 
+_progLua::_progLua( string prog ) :
 	_program( _programType::lua )
 	, content( new string( move(prog) ) )
 	, headParsed( false )
 {
+	lua_setprintfunc( &_progLua::lua_print );
 	parseProgramHeader();
 }
 
@@ -382,16 +398,29 @@ void _progLua::registerSystem()
 	}
 	
 	//! Generate System.exit function
-	push( this->state , "exit" );
-	lua_pushlightuserdata( this->state , this );
-	lua_pushcclosure( this->state , lua_exit , 1 );
-	lua_settable( this->state , -3 );
+		push( this->state , "exit" );
+		lua_pushlightuserdata( this->state , this );
+		lua_pushcclosure( this->state , lua_exit , 1 );
+		lua_settable( this->state , -3 );
 	
 	//! Generate System.getMainFrame function
-	push( this->state , "getMainFrame" );
-	lua_pushlightuserdata( this->state , this );
-	lua_pushcclosure( this->state , lua_getMainFrame , 1 );
-	lua_settable( this->state , -3 );
+		push( this->state , "getMainFrame" );
+		lua_pushlightuserdata( this->state , this );
+		lua_pushcclosure( this->state , lua_getMainFrame , 1 );
+		lua_settable( this->state , -3 );
+	
+	//! Generate System.getWorkingDir function
+		push( this->state , "getWorkingDir" );
+		lua_pushlightuserdata( this->state , this );
+		lua_pushcclosure( this->state , lua_getWorkingDir , 1 );
+		lua_settable( this->state , -3 );
+	
+	//! Generate System.getBinaryPath function
+		push( this->state , "getBinaryPath" );
+		lua_pushlightuserdata( this->state , this );
+		lua_pushcclosure( this->state , lua_getBinaryPath , 1 );
+		lua_settable( this->state , -3 );
+	
 	
 	//! Set as global "system"
 	lua_setglobal( this->state , "System" );
@@ -475,35 +504,41 @@ void _progLua::dispatch( _serviceId id , _serviceTransfer args )
 		// Push Arguments
 		push( this->state , move(args.arguments) );
 		
-		// Push Additional data table
-		lua_createtable( this->state , 0 , 6 );	// Create service data table
-		
-		if( args.strData ){
-			push( this->state , "strData" );
-			push( this->state , args.strData.release() );
-			lua_rawset( this->state , serviceData );
-		}
-		if( args.bitmapData ){
-			push( this->state , "bitmapData" );
-			push( this->state , args.bitmapData.release() );
-			lua_rawset( this->state , serviceData );
-		}
-		push( this->state , "int1Data" );
-		push( this->state , args.int1Data );
-		lua_rawset( this->state , serviceData );
-		push( this->state , "int2Data" );
-		push( this->state , args.int2Data);
-		lua_rawset( this->state , serviceData );
-		push( this->state , "float1Data" );
-		push( this->state , args.float1Data);
-		lua_rawset( this->state , serviceData );
-		push( this->state , "float2Data" );
-		push( this->state , args.float2Data );
-		lua_rawset( this->state , serviceData );
+		// Push Transfer data
+		pushTransferData( this->state , move(args) );
 		
 		if( lua_pcall( this->state , 3 /* 3 Arguments */ , 0 , 0 ) )
 			_debugController::luaErrorHandler( this->state , lua_tostring( this->state , -1 ) );
 	}
+}
+
+void _progLua::pushTransferData( lua_State* L , _serviceTransfer data )
+{
+	// Push Additional data table
+	lua_createtable( L , 0 , 6 );	// Create service data table
+	
+	if( data.strData ){
+		push( L , "strData" );
+		push( L , data.strData.release() );
+		lua_rawset( L , -3 );
+	}
+	if( data.bitmapData ){
+		push( L , "bitmapData" );
+		push( L , data.bitmapData.release() );
+		lua_rawset( L , -3 );
+	}
+	push( L , "int1Data" );
+	push( L , data.int1Data );
+	lua_rawset( L , -3 );
+	push( L , "int2Data" );
+	push( L , data.int2Data);
+	lua_rawset( L , -3 );
+	push( L , "float1Data" );
+	push( L , data.float1Data);
+	lua_rawset( L , -3 );
+	push( L , "float2Data" );
+	push( L , data.float2Data );
+	lua_rawset( L , -3 );
 }
 
 void _progLua::process( _serviceId id , _serviceState& serviceState )

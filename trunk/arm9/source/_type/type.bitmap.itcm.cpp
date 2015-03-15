@@ -10,7 +10,7 @@ void _bitmap::setWidth( _length w )
 	_codeAnalyzer analyzer {"_bitmap::setWidth"};
 	
 	// limit
-	w = max( w , _length(1) );
+	w = max<_length>( w , 1 );
 	
 	if( this->width == w )
 		return;
@@ -27,9 +27,9 @@ void _bitmap::setWidth( _length w )
 			
 		if( w < this->width )
 		{
-			_pixelArray newBmpTemp = newBmp;
-			_pixelArray bmpTemp = this->bmp;
-			_length heightTemp = this->height;
+			_pixelArray	newBmpTemp = newBmp;
+			_pixelArray	bmpTemp = this->bmp;
+			_length		heightTemp = this->height;
 			while( heightTemp-- > 0 ){
 				memcpy16( newBmpTemp , bmpTemp , w );
 				newBmpTemp += w;
@@ -38,11 +38,11 @@ void _bitmap::setWidth( _length w )
 		}
 		else
 		{
-			_length heightTemp = this->height - 1;
-			_pixelArray newBmpTemp = newBmp + w * heightTemp;
-			_pixelArray bmpTemp = this->bmp + this->width + heightTemp;
+			_length		heightTemp = this->height - 1;
+			_pixelArray	newBmpTemp = newBmp + w * heightTemp;
+			_pixelArray	bmpTemp = this->bmp + this->width + heightTemp;
 			while( heightTemp-- >= 0 ){
-				memcpy16( newBmpTemp , bmpTemp , w );
+				memcpy16( newBmpTemp , bmpTemp , this->width );
 				newBmpTemp -= w;
 				bmpTemp -= this->width;
 			}
@@ -63,7 +63,7 @@ void _bitmap::setHeight( _length h )
 	_codeAnalyzer analyzer {"_bitmap::setHeight"};
 	
 	// limit
-	h = max( h , _length(1) );
+	h = max<_length>( h , 1 );
 	
 	if( this->height == h )
 		return;
@@ -91,8 +91,8 @@ void _bitmap::resize( _length w , _length h )
 	_codeAnalyzer analyzer {"_bitmap::resize"};
 	
 	// limit
-	h = max( h , _length(1) );
-	w = max( w , _length(1) );
+	h = max<_length>( h , 1 );
+	w = max<_length>( w , 1 );
 	
 	//
 	// Do the actual resizing
@@ -129,7 +129,7 @@ void _bitmap::resize( _length w , _length h )
 			_pixelArray newBmpTemp = newBmp + w * heightToCopy;
 			_pixelArray bmpTemp = this->bmp + this->width + heightToCopy;
 			while( heightToCopy-- >= 0 ){
-				memcpy16( newBmpTemp , bmpTemp , w );
+				memcpy16( newBmpTemp , bmpTemp , this->width );
 				newBmpTemp -= w;
 				bmpTemp -= this->width;
 			}
@@ -743,7 +743,7 @@ void _bitmap::drawEllipse( _coord xc, _coord yc, _length a, _length b, _color co
 		this->drawHorizontalLine(xc-a, yc, 2*a+1 , color );
 }
 
-void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _u8 fontSize )
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _fontSize fontSize )
 {
 	_codeAnalyzer analyzer {"_bitmap::drawString"};
 	
@@ -773,6 +773,69 @@ void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal st
 		dest += width;
 		
 	}while( *++str );
+}
+
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , _wliteral str , _color color , _fontSize fontSize )
+{
+	_codeAnalyzer analyzer {"_bitmap::drawString"};
+	
+	if( !str || !*str )
+		return;
+	
+	// Check if font is valid
+	if( !font || !font->isValid() )
+		return;
+	
+	// Check if clipping Rect is valid
+	if( !this->activeClippingRect.isValid() || !this->isValid() )
+		return;
+	
+	// Fetch the destination where to draw To
+	_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
+	
+	do
+	{
+		if( x0 > this->activeClippingRect.getX2() )
+			break;
+		
+		_length width = font->drawCharacter( dest , this->width , x0 , y0 , *str , color , this->activeClippingRect , fontSize );
+		if( width )
+			width += font->getLetterSpace();
+		x0 += width;
+		dest += width;
+		
+	}while( *++str );
+}
+
+void _bitmap::drawString( _coord x0 , _coord y0 , _fontHandle font , const wstring& str , _color color , _fontSize fontSize )
+{
+	_codeAnalyzer analyzer {"_bitmap::drawString"};
+	
+	if( str.empty() )
+		return;
+	
+	// Check if font is valid
+	if( !font || !font->isValid() )
+		return;
+	
+	// Check if clipping Rect is valid
+	if( !this->activeClippingRect.isValid() || !this->isValid() )
+		return;
+	
+	// Fetch the destination where to draw To
+	_pixelArray dest = & this->bmp[ y0 * this->width + x0 ];
+	
+	for( _wchar ch : str )
+	{
+		if( x0 > this->activeClippingRect.getX2() )
+			break;
+		
+		_length width = font->drawCharacter( dest , this->width , x0 , y0 , ch , color , this->activeClippingRect , fontSize );
+		if( width )
+			width += font->getLetterSpace();
+		x0 += width;
+		dest += width;
+	}
 }
 
 void _bitmap::copy( _coord x , _coord y , _constBitmap& data )
@@ -1085,7 +1148,7 @@ optimized bool _bitmap::clipCoordinatesX( _coord &left , _coord &top , _coord &r
 	
 	// Ensure values don't exceed clipping rectangle
 	left 	= max( left , x );
-	right 	= min( right , _coord( x + _coord( activeClippingRect.width ) - 1 ) );
+	right 	= min<_coord>( right , x + activeClippingRect.width - 1 );
 	
 	return right >= left && top >= activeClippingRect.y && top <= activeClippingRect.getY2();
 }
@@ -1101,7 +1164,7 @@ optimized bool _bitmap::clipCoordinatesY( _coord &left , _coord &top , _coord &b
 	
 	// Ensure values don't exceed clipping rectangle
 	top 	= max( top , y );
-	bottom 	= min( bottom , _coord( y + _coord( activeClippingRect.height ) - 1 ) );
+	bottom 	= min<_coord>( bottom , y + activeClippingRect.height - 1 );
 	
 	return bottom >= top && left >= activeClippingRect.x && left <= activeClippingRect.getX2();
 }

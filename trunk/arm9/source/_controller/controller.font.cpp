@@ -1,26 +1,28 @@
 #include <_controller/controller.font.h>
 #include <_controller/controller.registry.h>
 #include <_controller/controller.debug.h>
+#include <_controller/controller.filesystem.h>
 #include <_type/type.windows.h>
 
 bool _fontController::init()
 {
 	//! Restore the default list of fonts
+	registerFont( _font::fromFile("%SYSTEM%/systemascii7.ttf") );
+	registerFont( _font::fromFile("%SYSTEM%/systemsymbols8.ttf") );
 	registerFont( _font::fromFile("%SYSTEM%/system7.ttf") );
 	registerFont( _font::fromFile("%SYSTEM%/system10.ttf") );
 	registerFont( _font::fromFile("%SYSTEM%/arialblack13.ttf") );
 	registerFont( _font::fromFile("%SYSTEM%/couriernew10.ttf") );
-	registerFont( _font::fromFile("%SYSTEM%/systemsymbols8.ttf") );
 	registerFont( _font::fromFile("%SYSTEM%/handwriting9.ttf") );
 	
 	// Reload all fonts
 	const auto& fonts = _registryController::getSystemRegistry().readSection("registeredFonts");
 	for( const auto& font : fonts ) // Type must at least be a std::pair
-		registerFont( _font::fromFile( font.second ) );
+		registerFont( _font::fromFile( font.second.cpp_str() ) );
 	
 	// Load standard Font and Size
 	standardFont = nullptr;
-	standardFont = _fontController::getFont( _registryController::getSystemRegistry().readIndex("appearence","standardFont") );
+	standardFont = _fontController::getFont( _registryController::getSystemRegistry().readIndex("appearence","standardFont").cpp_str() );
 	standardFontSize = _registryController::getSystemRegistry().readIndexInt("appearence","standardFontSize");
 	
 	if( standardFont )
@@ -67,14 +69,6 @@ void _fontController::registerFont( _uniquePtr<_font> font ){
 	}
 }
 
-_fontPtr _fontController::getFont( const string& fontName )
-{
-	for( const _uniquePtr<_font>& ft : _fontController::registeredFonts )
-		if( ft->getName() == fontName )
-			return ft;
-	return nullptr;
-}
-
 _fontPtr _fontController::getFont( _literal fontName )
 {
 	for( const _uniquePtr<_font>& ft : _fontController::registeredFonts )
@@ -104,4 +98,4 @@ bool _fontController::isExistent( const string& fontName ){
 
 _fontList	_fontController::registeredFonts;
 _fontPtr	_fontController::standardFont;
-_u8			_fontController::standardFontSize;
+_fontSize	_fontController::standardFontSize;

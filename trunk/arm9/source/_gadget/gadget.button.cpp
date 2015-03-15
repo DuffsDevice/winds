@@ -2,7 +2,7 @@
 #include <_type/type.gadget.helpers.h>
 #include <_controller/controller.font.h>
 
-void _button::setStrValue( string val )
+void _button::setStrValue( wstring val )
 {
 	if( this->strValue == val )
 		return;
@@ -31,7 +31,7 @@ void _button::setFont( _fontHandle ft )
 	this->redraw();
 }
 
-void _button::setFontSize( _u8 fontSize )
+void _button::setFontSize( _fontSize fontSize )
 {
 	if( this->fontSize == fontSize )
 		return;
@@ -190,7 +190,7 @@ _callbackReturn _button::mouseHandler( _event event )
 	return handled;
 }
 
-_button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value , _style&& style ) :
+_button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value , _style&& style ) :
 	_gadget( _gadgetType::button , x , y , width , height , style | _style::notDoubleClickable )
 	, autoSelect( false )
 	, strValue( value )
@@ -201,6 +201,9 @@ _button::_button( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	, align( _align::center )
 	, vAlign( _valign::middle )
 {
+	// Set Minimum Size
+	this->setMinSize( 5 , 5 );
+	
 	this->setInternalEventHandler( onUpdate , make_callback( &_button::updateHandler ) );
 	
 	// force update of size

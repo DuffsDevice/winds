@@ -192,7 +192,7 @@ void _bitmapPort::drawFilledEllipse( _coord xc, _coord yc, _length a, _length b,
 	}
 }
 
-void _bitmapPort::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _u8 fontSize )
+void _bitmapPort::drawString( _coord x0 , _coord y0 , _fontHandle font , _literal str , _color color , _fontSize fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{
@@ -204,7 +204,31 @@ void _bitmapPort::drawString( _coord x0 , _coord y0 , _fontHandle font , _litera
 	}
 }
 
-_length _bitmapPort::drawChar( _coord x0 , _coord y0 , _fontHandle font , _char ch , _color color , _u8 fontSize )
+void _bitmapPort::drawString( _coord x0 , _coord y0 , _fontHandle font , const wstring& str , _color color , _fontSize fontSize )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base.setClippingRectUnsafe( rc );
+		
+		//! Standard Bitmap Routine
+		this->base.drawString( x0 , y0 , font , str , color , fontSize );
+		//! Standard Bitmap Routine
+	}
+}
+
+void _bitmapPort::drawString( _coord x0 , _coord y0 , _fontHandle font , _wliteral str , _color color , _fontSize fontSize )
+{
+	for( const _rect& rc : clippingRects )
+	{
+		this->base.setClippingRectUnsafe( rc );
+		
+		//! Standard Bitmap Routine
+		this->base.drawString( x0 , y0 , font , str , color , fontSize );
+		//! Standard Bitmap Routine
+	}
+}
+
+_length _bitmapPort::drawChar( _coord x0 , _coord y0 , _fontHandle font , _wchar ch , _color color , _fontSize fontSize )
 {
 	for( const _rect& rc : clippingRects )
 	{

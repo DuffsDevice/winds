@@ -13,12 +13,10 @@ class _timerController : public _controller
 		
 		static _timerList	runningTimers;
 		static _timerList	timersToExecute;
-		static bool			currentlyIterating;
 		
 		friend class _timer;
 		
-		static void registerTimerToExecute( _timer* timerToExecute );
-		static void deleteTimer( _timer* timerToDelete );
+		static void addTimerToExecute( _timer* );
 	
 	public:
 		
@@ -31,7 +29,7 @@ class _timerController : public _controller
 		//! Get time since system startup
 		static _tempTime getMilliTime();	//! in Milliseconds
 		static _tempTime getMicroTime();	//! in Microseconds since system startup
-		static _tempTime getRawTime();	//! Clock Ticks at 33.513982 MHz
+		static _tempTime getRawTime();		//! Clock Ticks at 33.513982 MHz
 };
 
 #endif

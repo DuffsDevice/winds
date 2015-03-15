@@ -115,24 +115,6 @@ int _lua_gadget::moveRelative(lua_State* L){
 	return 0;
 }
 
-//! setMinHeight
-int _lua_gadget::setMinHeight( lua_State* L ){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->setMinHeight();
-	else
-		this->gadget->setMinHeight( check<int>( L , 1 ) );
-	return 0;
-}
-
-//! setMinWidth
-int _lua_gadget::setMinWidth( lua_State* L ){
-	if( lua_isnil( L , 1 ) )
-		this->gadget->setMinWidth();
-	else
-		this->gadget->setMinWidth( check<int>( L , 1 ) );
-	return 0;
-}
-
 //! setWidth
 int _lua_gadget::setWidth(lua_State* L){
 	if( lua_isnil( L , 1 ) )
@@ -159,7 +141,7 @@ int _lua_gadget::getType(lua_State* L){ return push( L , gadgetType2string[this-
 
 //! equals
 int _lua_gadget::equals(lua_State* L){
-	return push( L , bool(check<_gadget*>( L , 1 ) == this->gadget) );
+	return push( L , check<_gadget*>( L , 1 ) == this->gadget );
 }
 
 //! addChild
@@ -264,7 +246,6 @@ Lunar<_lua_gadget>::FunctionType _lua_gadget::methods[] = {
 	{ "select"						, wrap( _lua_gadget , &_gadget::select ) },
 	{ "deselect"					, wrap( _lua_gadget , &_gadget::deselect ) },
 	{ "blink"						, wrap( _lua_gadget , &_gadget::blink ) },
-	{ "equals"						, &_lua_gadget::equals  },
 	LUA_CLASS_FUNC_END
 };
 
@@ -277,8 +258,8 @@ Lunar<_lua_gadget>::PropertyType _lua_gadget::properties[] = {
 	{ "parent"		, wrap( _lua_gadget , &_gadget::getParent )					, wrap( _lua_gadget , &_gadget::setParent ) },
 	{ "height"		, wrap( _lua_gadget , &_gadget::getHeight )					, &_lua_gadget::setHeight },
 	{ "width"		, wrap( _lua_gadget , &_gadget::getWidth )					, &_lua_gadget::setWidth },
-	{ "minHeight"	, wrap( _lua_gadget , &_gadget::getMinHeight )				, &_lua_gadget::setMinHeight },
-	{ "minWidth"	, wrap( _lua_gadget , &_gadget::getMinWidth )				, &_lua_gadget::setMinWidth },
+	{ "minWidth"	, wrap( _lua_gadget , &_gadget::getMinWidth )				, wrap( _lua_gadget , &_gadget::setMinWidth ) },
+	{ "minHeight"	, wrap( _lua_gadget , &_gadget::getMinHeight )				, wrap( _lua_gadget , &_gadget::setMinHeight ) },
 	{ "type"		, &_lua_gadget::getType										, nullptr },
 	{ "bitmap"		, wrap( _lua_gadget , (helperType)&_gadget::getBitmap )		, wrap( _lua_gadget , &_gadget::setBitmap ) },
 	LUA_CLASS_ATTR_END

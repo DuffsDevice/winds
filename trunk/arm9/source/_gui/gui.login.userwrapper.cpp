@@ -75,10 +75,10 @@ _callbackReturn _userWrapper::submitHandler( _event event )
 		if( that->getType() == _gadgetType::imagegadget )
 			return handled;
 		
-		if( !wrapper->user.checkPassword( wrapper->passwordbox->getStrValue() ) )
+		if( !wrapper->user.checkPassword( wrapper->passwordbox->getStrValue().cpp_str() ) )
 		{
 			// Reset Password _textBox
-			wrapper->passwordbox->setStrValue( "" );
+			wrapper->passwordbox->setStrValue( {} );
 			
 			// Make it blink
 			wrapper->passwordbox->blink();
@@ -101,7 +101,7 @@ _callbackReturn _userWrapper::focusHandler( _event event )
 	{
 		if( event == onFocus )
 		{
-			that->passwordbox = new _passcodeBox( 19 , 13 , 55 , 8 , "" , nullptr , 0 , _style::storeHandle( that ) );
+			that->passwordbox = new _passcodeBox( 19 , 13 , 55 , 8 , "" , ignore , _style::storeHandle( that ) );
 			that->passwordsubmit = new _actionButton( 77 , 13 , _actionButtonType::next , _style::storeHandle( that , _style::canNotTakeFocus ) );
 			that->passwordsubmit->setInternalEventHandler( onMouseClick , make_callback( &_userWrapper::submitHandler ) );
 			that->passwordbox->setUserEventHandler( onDraw , make_callback( &_userWrapper::textboxRefreshHandler ) );
@@ -142,7 +142,7 @@ _userWrapper::_userWrapper( _coord x , _coord y , string iniPath , _style&& styl
 	// Add the logo
 	this->addChild( img );
 	
-	_label* lbl = new _label( 20 , 4 , ignore , ignore , user.getName() , _style::canNotTakeFocus);
+	_label* lbl = new _label( 20 , 4 , ignore , ignore , user.getUserName() , _style::canNotTakeFocus);
 	lbl->setColor( _color::white );
 	this->addChild( lbl );
 	

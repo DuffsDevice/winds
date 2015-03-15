@@ -6,26 +6,8 @@ extern "C"{
 	#include <nds/timers.h>
 }
 
-void _timerController::registerTimerToExecute( _timer* timerToExecute ){
+void _timerController::addTimerToExecute( _timer* timerToExecute ){
 	_timerController::timersToExecute.push_back( timerToExecute );
-}
-
-void _timerController::deleteTimer( _timer* timerToDelete )
-{
-	auto it = find( timersToExecute.begin() , timersToExecute.end() , timerToDelete );
-	if( it != timersToExecute.end() ){
-		if( _timerController::currentlyIterating )
-			*it = nullptr;
-		else
-			timersToExecute.erase( it );
-		return;
-	}
-	it = find( runningTimers.begin() , runningTimers.end() , timerToDelete );
-	if( it != runningTimers.end() )
-		if( _timerController::currentlyIterating )
-			*it = nullptr;
-		else
-			runningTimers.erase( it );
 }
 
 bool _timerController::init()
@@ -42,8 +24,6 @@ bool _timerController::init()
 	TIMER_CR(2) = TIMER_CASCADE | TIMER_ENABLE;
 	TIMER_CR(1) = TIMER_CASCADE | TIMER_ENABLE;
 	TIMER_CR(0) = TIMER_ENABLE;
-	
-	_timerController::currentlyIterating = false;
 	
 	return true;
 }
@@ -102,8 +82,6 @@ _tempTime _timerController::getRawTime()
 
 void _timerController::frame()
 {
-	_timerController::currentlyIterating = true;
-	
 	_tempTime curTime = _timerController::getMilliTime();
 	
 	// Move runningTimers to execute
@@ -141,10 +119,7 @@ void _timerController::frame()
 		)
 		, _timerController::runningTimers.end()
 	);
-	
-	_timerController::currentlyIterating = false;
 }
 
 _timerList	_timerController::runningTimers;
 _timerList	_timerController::timersToExecute;
-bool		_timerController::currentlyIterating;

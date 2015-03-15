@@ -116,7 +116,7 @@ _callbackReturn _slider::refreshHandler( _event event )
 	
 	// Fetch Font for labels
 	_fontHandle font = _fontController::getStandardFont();
-	_u8 fontSize = _fontController::getStandardFontSize();
+	_fontSize fontSize = _fontController::getStandardFontSize();
 	
 	if( that->dimension == _dimension::horizontal )
 	{
@@ -215,7 +215,7 @@ _callbackReturn _slider::updateHandler( _event event )
 	}
 	
 	_fontHandle font = _fontController::getStandardFont();
-	_u8 fontSize = _fontController::getStandardFontSize();
+	_fontSize fontSize = _fontController::getStandardFontSize();
 	
 	// Update Size of the slider, because the labels might have changed
 	if( that->dimension == _dimension::horizontal )

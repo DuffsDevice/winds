@@ -40,7 +40,7 @@ _callbackReturn _dialogWindow::submitEscapeHandler( _event event )
 	return handled;
 }
 
-_dialogWindow::_dialogWindow( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _style&& style ) :
+_dialogWindow::_dialogWindow( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title , _style&& style ) :
 	_window( x , y , width , height , move(title) , false , true , move(style) )
 {
 	this->setUserEventHandler( onKeyDown , make_callback( &_dialogWindow::submitEscapeHandler ) );

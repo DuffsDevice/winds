@@ -103,7 +103,7 @@ class _shortString
 		//! Convert to e.g. char* array
 		//!@note Same as .c_str()
 		operator dataType*(){
-			return this->c_str();
+			return const_cast<dataType*>( this->c_str() );
 		}
 		operator const dataType*() const {
 			return this->c_str();

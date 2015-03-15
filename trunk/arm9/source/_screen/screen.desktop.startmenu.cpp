@@ -128,7 +128,7 @@ _desktopScreenStartMenu::_desktopScreenStartMenu( _style&& style ) :
 	this->addChild( logOffLabel );
 	
 	// Username
-	_label* usrName = new _label( 20 , 2 , this->getWidth() - 20 - 2 , 14 , _registryController::getUserRegistry().getName() );
+	_label* usrName = new _label( 20 , 2 , this->getWidth() - 20 - 2 , 14 , _registryController::getUserRegistry().getUserName() );
 	
 	usrName->setVAlign( _valign::middle );
 	usrName->setAlign( _align::left );

@@ -8,7 +8,7 @@ class _flexPtr
 	
 		Type*	ptr;
 		
-		void freeData(){
+		void destruct(){
 			delete this->ptr;
 			this->ptr = nullptr;
 		}
@@ -42,39 +42,39 @@ class _flexPtr
 		_flexPtr( _flexPtr<Type>&& other ) : ptr( other.ptr ) { other.ptr = nullptr; }
 		
 		// Dtor
-		~_flexPtr(){ this->freeData(); }
+		~_flexPtr(){ this->destruct(); }
 		
 		// Copy operator
 		_flexPtr<Type>& operator=( const _flexPtr<Type>& other ){
-			this->freeData();
+			this->destruct();
 			this->ptr = other.ptr ? makeCopy<Type>(*other.ptr) : nullptr ;
 			return *this;
 		}
 		
 		// Copy operator for pointer Data
 		_flexPtr<Type>& operator=( const Type& other ){
-			this->freeData();
+			this->destruct();
 			this->ptr = makeCopy<Type>(other);
 			return *this;
 		}
 		
 		// Move operator for pointer Data
 		_flexPtr<Type>& operator=( Type&& other ){
-			this->freeData();
+			this->destruct();
 			this->ptr = new Type( move(other) );
 			return *this;
 		}
 		
 		// Move operator for pointers
 		_flexPtr<Type>& operator=( Type*&& other ){
-			this->freeData();
+			this->destruct();
 			this->ptr = (Type*)other;
 			return *this;
 		}
 		
 		// Move operator
 		_flexPtr<Type>& operator=( _flexPtr<Type>&& other ){
-			this->freeData();
+			this->destruct();
 			this->ptr = other.ptr;
 			other.ptr = nullptr;
 			return *this;
@@ -82,7 +82,7 @@ class _flexPtr
 		
 		// Delete operation
 		_flexPtr<Type>& operator=( std::nullptr_t ){
-			this->freeData();
+			this->destruct();
 			return *this;
 		}
 		

@@ -105,7 +105,7 @@ _callbackReturn _bubble::refreshHandler( _event event )
 	return use_default;
 }
 
-_bubble::_bubble( _length width , string title , string content , _bitmap icon , bool closeable , _style&& style ) :
+_bubble::_bubble( _length width , wstring title , wstring content , _bitmap icon , bool closeable , _style&& style ) :
 	_popup( width , ignore , nullptr , (_style&&)style )
 	, closeable( closeable )
 	, title( move(title) , _fontController::getStandardFont() , _color::black , _fontController::getStandardFontSize() )

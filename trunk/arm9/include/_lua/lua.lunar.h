@@ -29,6 +29,14 @@ namespace LunarHelper
 		enum{ value = std::is_same<std::true_type,decltype(test<T>(nullptr))>::value };
 	};
 	
+	template <typename T>
+	class IsComparable{
+		template<class C> static std::true_type test( decltype(&C::equals) );
+		template<class C> static std::false_type test(...);
+	public:
+		enum{ value = std::is_same<std::true_type,decltype(test<T>(nullptr))>::value };
+	};
+	
 	constexpr bool isFunc( int index ){ return index & ( 1 << 8 ); }
 	constexpr int index2func( int index ){ return index | ( 1 << 8 ); }
 	constexpr int func2index( int index ){ return index & (~( 1 << 8 )); }
@@ -106,6 +114,56 @@ namespace LunarHelper
 		// Adds the currently created table to the global namespace and pops it from stack
 		lua_setglobal( state , className );
 	}
+	
+	class dummyClass{};
+	
+	static unused int dumpHelper( lua_State* state , const char* className , FunctionType<dummyClass>* methods , PropertyType<dummyClass>* properties )
+	{
+		std::string output = "Dump of ";
+		output += className;
+		output += ':';
+		
+		if( methods[0].name )
+		{
+			output += "\nMethods:";
+			for (int i = 0; methods[i].name; i++)
+			{
+				output += "\n - ";
+				output += methods[i].name;
+			}
+		}
+		
+		if( properties[0].name )
+		{
+			output += "\nProperties:";
+			for (int i = 0; properties[i].name; i++){
+				output += "\n - ";
+				output += properties[i].name;
+			}
+		}
+		
+		lua_pushstring( state , output.c_str() );
+		
+		return 1;
+	}
+	
+	static const char* getClassName( lua_State* state , int narg ){
+		// We need the name of the object that is on the stack
+		if( !lua_getmetatable( state , narg ) )
+			return nullptr;
+		
+		lua_pushliteral( state , "__name" );
+		lua_rawget( state , -2 );
+		
+		if( !lua_isstring( state , -1 ) ){
+			lua_pop( state , 2 );
+			return nullptr;
+		}
+		
+		const char* name = lua_tostring( state , -1 );
+		lua_pop( state , 2 ); // Pop the metatable and the classname from the stack
+		return name;
+	}
 }
 
 template<class Class>
@@ -116,6 +174,8 @@ class Lunar
 	private:
 		
 		// Short typdefs
+		template<typename C,typename R = int> using requireComparable = typename std::enable_if<LunarHelper::IsComparable<C>::value,R>::type;
+		template<typename C,typename R = int> using requireNoComparable = typename std::enable_if<!LunarHelper::IsComparable<C>::value,R>::type;
 		template<typename C,typename R = int> using requireBaseClasses = typename std::enable_if<LunarHelper::HasBaseClasses<C>::value,R>::type;
 		template<typename C,typename R = int> using requireNoBaseClasses = typename std::enable_if<!LunarHelper::HasBaseClasses<C>::value,R>::type;
 		template<typename C,typename R = void> using requireStatics = typename std::enable_if<LunarHelper::HasStaticMethods<C>::value && LunarHelper::HasConstructor<C>::value,R>::type;
@@ -361,9 +421,45 @@ class Lunar
 	
 	private:
 		
+		//
+		// Check for equality of two object on the stack
+		//
+		template<typename TempClass>
+		static inline requireNoComparable<TempClass,int>  comparatorImpl( lua_State* state , Class* instance )
+		{
+			Class**	otherPtr = static_cast<Class**>( lua_touserdata( state , 2 ) );
+			Class*	other = *otherPtr; // Unreference pointer to pointer
+			
+			lua_pushboolean( state , *otherPtr && instance == other );
+			return 1;
+		}
+		
+		template<typename TempClass>
+		static inline requireComparable<TempClass,int> comparatorImpl( lua_State* state , Class* instance )
+		{
+			lua_remove( state , 1 );
+			return instance->equals( state );
+		}
+	
+	private:
+		
 		////////////////
 		// MIDDLE END //
 		////////////////
+		
+		static int comparator( lua_State* state )
+		{
+			Class**	instancePtr = static_cast<Class**>( lua_touserdata( state , 1 ) );
+			Class*	instance = *instancePtr; // Unreference pointer to pointer
+			
+			// Check if the instance is valid
+			if( !instancePtr || !instance ){
+				luaL_error( state , "Internal error, no object given!" );
+				return 0;
+			}
+			
+			return comparatorImpl<Class>( state , instance );
+		}
 		
 		static int propertyGetter( lua_State* state )
 		{
@@ -406,7 +502,7 @@ class Lunar
 		static int garbageCollector( lua_State* state )
 		{
 			// Fetch instance
-			Class** instancePtr = static_cast<Class**>( lua_touserdata( state , -1 ) );
+			Class** instancePtr = static_cast<Class**>( lua_touserdata( state , 1 ) );
 			Class* instance = *instancePtr;	// Unreference pointer to pointer
 			
 			// Check if the instance is valid
@@ -423,7 +519,7 @@ class Lunar
 		
 		static int toString( lua_State* state )
 		{
-			void** instancePtr = static_cast<void**>( lua_touserdata( state , -1 ) );
+			void** instancePtr = static_cast<void**>( lua_touserdata( state , 1 ) );
 			void* instance = *instancePtr;
 			
 			if( instancePtr && instance )
@@ -436,31 +532,12 @@ class Lunar
 		
 		static int dump( lua_State* state )
 		{
-			std::string output = "Dump of ";
-			output += Class::className;
-			
-			if( Class::methods[0].name )
-			{
-				output += ":\nMethods:";
-				for (int i = 0; Class::methods[i].name; i++)
-				{
-					output += "\n - ";
-					output += Class::methods[i].name;
-				}
-			}
-			
-			if( Class::properties[0].name )
-			{
-				output += "\nProperties:";
-				for (int i = 0; Class::properties[i].name; i++){
-					output += "\n - ";
-					output += Class::properties[i].name;
-				}
-			}
-			
-			lua_pushstring( state , output.c_str() );
-			
-			return 1;
+			return LunarHelper::dumpHelper(
+				state
+				, Class::className
+				, reinterpret_cast<LunarHelper::FunctionType<LunarHelper::dummyClass>*>(Class::methods)
+				, reinterpret_cast<LunarHelper::PropertyType<LunarHelper::dummyClass>*>(Class::properties)
+			);
 		}
 		
 		static int constructorDeleteSelfReference( lua_State* state )
@@ -555,23 +632,14 @@ class Lunar
 		
 		static bool test( lua_State* state , int narg )
 		{
-			// We need the name of the object that is on the stack
-			if( !lua_getmetatable( state , narg ) )
+			// Read class name from object on the stack
+			const char* className = LunarHelper::getClassName( state , narg );
+			
+			if( !className )
 				return false;
-			
-			lua_pushliteral( state , "__name" );
-			lua_rawget( state , -2 );
-			
-			if( !lua_isstring( state , -1 ) ){
-				lua_pop( state , 2 );
-				return false;
-			}
-			
-			const char* name = lua_tostring( state , -1 );
-			lua_pop( state , 2 ); // Pop the metatable and the classname from the stack
 			
 			// We want to check whether this class is a base class of the gadget on the stack
-			auto func = LunarHelper::className2checkIfBaseFunction[name];
+			auto func = LunarHelper::className2checkIfBaseFunction[className];
 			
 			return func && (*func)( Class::className );
 		}
@@ -616,9 +684,14 @@ class Lunar
 			lua_pushcfunction( state , &Lunar<Class>::propertyGetter );
 			lua_settable( state , metatable );
 			
-			// Register a handler for setting values of properties
+			// Register handler for property and function access
 			lua_pushliteral( state , "__newindex");
 			lua_pushcfunction( state , &Lunar<Class>::propertySetter );
+			lua_settable( state , metatable );
+			
+			// Register a handler for comparing two objects
+			lua_pushliteral( state , "__eq");
+			lua_pushcfunction( state , &Lunar<Class>::comparator );
 			lua_settable( state , metatable );
 			
 			// Pass the name of the class as an attribute in the metatable

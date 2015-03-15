@@ -1,6 +1,7 @@
 #include <_lua/lua.gadget.label.h>
 #include <_lua/lua.func.h>
 #include <_lua/lua.func.wrap.h>
+#include <_controller/controller.debug.h>
 using namespace _luafunc;
 
 /*##################################

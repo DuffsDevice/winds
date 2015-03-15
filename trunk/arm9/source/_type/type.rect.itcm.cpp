@@ -22,6 +22,9 @@ optimized _area _rect::reduce( const _rect& r2 ) const
 {
 	_codeAnalyzer analyzer {"_rect::reduce"};
 	
+	if( !r2.isValid() )
+		return _area( *this );
+	
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
 	_coord r2_x2 = r2.getX2();
@@ -29,7 +32,7 @@ optimized _area _rect::reduce( const _rect& r2 ) const
 	
 	//! Does not intersect withe 'me'
 	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
-		return {*this};
+		return _area( *this );
 	
 	// Left - Top - Right - Bottom
 	bool overlapping[4] = {
@@ -58,13 +61,16 @@ _area _rect::combine( const _rect& r2 ) const
 {
 	_codeAnalyzer analyzer {"_rect::combine"};
 	
+	if( !r2.isValid() )
+		return _area( *this );
+	
 	_coord this_x2 = this->getX2();
 	_coord this_y2 = this->getY2();
 	_coord r2_x2 = r2.getX2();
 	_coord r2_y2 = r2.getY2();
 	
 	if( this->x > r2_x2 || this_x2 < r2.x || this->y > r2_y2 || this_y2 < r2.y )
-		return { r2 , *this };
+		return _area( { r2 , *this } );
 	
 	_area out;
 	
@@ -122,12 +128,18 @@ optimized _rect& _rect::clipToIntersect( const _rect& rect )
 {
 	_codeAnalyzer analyzer {"_rect::clipToIntersect"};
 	
+	if( !rect.isValid() )
+		return *this = _rect( max( this->x , rect.x ) , max( this->y , rect.y ) , 0 , 0 );
+	
 	return *this = _rect::fromCoords( max( this->x , rect.x ) , max( this->y , rect.y ) , min( this->getX2() , rect.getX2() ) , min( this->getY2() , rect.getY2() ) );
 }
 
 optimized _rect& _rect::expandToInclude( const _rect& rect )
 {
 	_codeAnalyzer analyzer {"_rect::expandToInclude"};
+	
+	if( !rect.isValid() )
+		return *this;
 	
 	return *this = _rect::fromCoords( min( this->x , rect.x ) , min( this->y , rect.y ) , max( this->getX2() , rect.getX2() ) , max( this->getY2() , rect.getY2() ) );
 }

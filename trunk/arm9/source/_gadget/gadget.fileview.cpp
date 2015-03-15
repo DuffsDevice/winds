@@ -156,7 +156,7 @@ void _fileView::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 				fileView->generateChildren();
 				break;
 			case 5: // Properties
-				_windows::executeCommand("%SYSTEM%/filedetail.exe -\"" + fileView->directory.getFileName() + "\"" );
+				_windows::execute("%SYSTEM%/filedetail.exe -\"" + fileView->directory.getFileName() + "\"" );
 				break;
 		}
 	}

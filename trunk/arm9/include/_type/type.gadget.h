@@ -176,9 +176,16 @@ class _gadget
 		void redraw(){
 			this->redraw( getAbsoluteDimensions() );
 		}
+		//! Method for updating the child's bitmap inside the parent ones
 		void redrawParents(){
 			this->redrawParents( getAbsoluteDimensions() );
 		}
+		
+		/**
+		 * Area bound refreshes
+		 */
+		void redraw( _area&& areaToRefresh );
+		void redrawParents( _area&& areaToRefresh );
 		
 		/**
 		 * Method to update some things (optional)
@@ -623,15 +630,22 @@ class _gadget
 		
 		
 		//! Set minimum width
-		void setMinWidth( _optValue<_length> val = ignore ){
+		void setMinWidth( _optValue<_length> val ){
 			this->minWidth = val.isValid() ? max<_length>( 1 , val ) : 0;
 			setWidthInternal( this->getWidth() ); // Check if right width given
 		}
 		
 		//! Set minimum height
-		void setMinHeight( _optValue<_length> val = ignore ){
+		void setMinHeight( _optValue<_length> val ){
 			this->minHeight = val.isValid() ? max<_length>( 1 , val ) : 0;
 			setHeightInternal( this->getHeight() ); // Check if right height given
+		}
+		
+		//! Set minimum size
+		void setMinSize( _optValue<_length> width , _optValue<_length> height ){
+			this->minHeight = height.isValid() ? max<_length>( 1 , height ) : 0;
+			this->minWidth = width.isValid() ? max<_length>( 1 , width ) : 0;
+			setSizeInternal( this->getWidth() , this->getHeight() ); // Check if right height and width given
 		}
 		
 		
@@ -870,10 +884,6 @@ class _gadget
 		void resetState(){
 			this->state.sum = 0; // Does the same
 		}
-		
-		//! Range-bound-refreshes are only private
-		void redraw( _area&& areaToRefresh );
-		void redrawParents( _area&& areaToRefresh );
 		
 		
 		////////////////////

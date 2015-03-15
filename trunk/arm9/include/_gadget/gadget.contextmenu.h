@@ -70,9 +70,9 @@ class _contextMenu : public _popup
 		}
 		
 		//! Get the text of the selected Value
-		string			getStrValue() const {
+		wstring			getStrValue() const {
 			_contextMenuEntry* entry = this->getEntryFromValue( this->currentValue );
-			return entry ? entry->getStrValue() : "";
+			return entry ? entry->getStrValue() : wstring();
 		}
 		
 		//! Select entry in list

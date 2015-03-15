@@ -3,8 +3,7 @@
 
 #include <_type/type.h>
 #include <_type/type.bitmap.h>
-
-using _bitField = _vector<bool>;
+#include <_type/type.bitfield.h>
 
 class _bitmapSelection
 {

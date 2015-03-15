@@ -174,7 +174,7 @@ _callbackReturn _window::updateHandler( _event event )
 	return handled;
 }
 
-void _window::setStrValue( string title )
+void _window::setStrValue( wstring title )
 {
 	this->label->setStrValue( title );
 	
@@ -182,9 +182,9 @@ void _window::setStrValue( string title )
 	this->notifyTaskHandlers();
 }
 
-void _window::setIcon( const _bitmap& bmp )
+void _window::setIcon( _bitmap bmp )
 {
-	this->icon->setImage( bmp );
+	this->icon->setImage( move(bmp) );
 	
 	// Refresh Task Button
 	this->notifyTaskHandlers();
@@ -342,7 +342,7 @@ _window::~_window()
 	delete this->label;
 }
 
-_window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
+_window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring title , _bitmap bmp , bool minimizeable , bool closeable , _style&& style ) :
 	_gadget( _gadgetType::window , x , y , width , height , style | _style::doubleClickable | _style::focusMovesFront | _style::draggable )
 	, bgColor( _guiController::getControlBg() )
 	, normalDimensions( nullptr )
@@ -350,7 +350,7 @@ _window::_window( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	, minimized( false )
 	, closeable( closeable )
 {
-	this->setPadding( { 1 , 10 , 1 , 1 } );
+	this->setPadding( _padding( 1 , 10 , 1 , 1 ) );
 	
 	// Set minimum size
 	this->setMinWidth( 41 );

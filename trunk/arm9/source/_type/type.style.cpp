@@ -126,3 +126,38 @@ void applyString2style( _style& style , string input )
 			style |= _style::noTransparentParts;
 	}
 }
+
+const _style::_styleAttr<1,true>			_style::resizeableX;
+const _style::_styleAttr<1,false>			_style::notResizeableX;
+const _style::_styleAttr<2,true>			_style::resizeableY;
+const _style::_styleAttr<2,false>			_style::notResizeableY;
+const _style::_styleAttr<3,true>			_style::resizeable;
+const _style::_styleAttr<3,false>			_style::notResizeable;
+const _style::_styleAttr<(1 << 2),true>		_style::enabled;
+const _style::_styleAttr<(1 << 2),false>	_style::disabled;
+const _style::_styleAttr<(1 << 3),true>		_style::rightClickable;
+const _style::_styleAttr<(1 << 3),false>	_style::notRightClickable;
+const _style::_styleAttr<(1 << 4),true>		_style::canTakeFocus;
+const _style::_styleAttr<(1 << 4),false>	_style::canNotTakeFocus;
+const _style::_styleAttr<(1 << 5),true>		_style::blurrable;
+const _style::_styleAttr<(1 << 5),false>	_style::notBlurrable;
+const _style::_styleAttr<(1 << 6),true>		_style::focusable;
+const _style::_styleAttr<(1 << 6),false>	_style::notFocusable;
+const _style::_styleAttr<(1 << 7),true>		_style::smallDragThld;
+const _style::_styleAttr<(1 << 7),false>	_style::defaultDragThld;
+const _style::_styleAttr<(1 << 8),true>		_style::clickRepeat;
+const _style::_styleAttr<(1 << 8),false> 	_style::noClickRepeat;
+const _style::_styleAttr<(1 << 9),true>		_style::doubleClickable;
+const _style::_styleAttr<(1 << 9),false>	_style::notDoubleClickable;
+const _style::_styleAttr<(1 << 10),true> 	_style::keyboardRequest;
+const _style::_styleAttr<(1 << 10),false> 	_style::noKeyboardRequest;
+const _style::_styleAttr<(1 << 11),true> 	_style::draggable;
+const _style::_styleAttr<(1 << 11),false>	_style::notDraggable;
+const _style::_styleAttr<(1 << 12),true>	_style::focusMovesFront;
+const _style::_styleAttr<(1 << 12),false>	_style::focusNoAction;
+const _style::_styleAttr<(1 << 13),true>	_style::clickable;
+const _style::_styleAttr<(1 << 13),false>	_style::notClickable;
+const _style::_styleAttr<(1 << 14),true>	_style::drawGreyIfDisabled;
+const _style::_styleAttr<(1 << 14),false>	_style::customDrawIfDisabled;
+const _style::_styleAttr<(1 << 15),true>	_style::hasTransparentParts;
+const _style::_styleAttr<(1 << 15),false>	_style::noTransparentParts;

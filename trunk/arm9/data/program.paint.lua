@@ -198,10 +198,11 @@ end
 
 
 -- Updates the greyBackground
-function redrawCanvas()
+function redrawCanvas( area )
 	if APPDATA.greyBackground ~= nil then
 		local pos = APPDATA.greyBackground.getAbsolutePosition()
-		APPDATA.greyBackground.redraw( Rect( pos[1] + 2 , pos[2] + 2 , APPDATA.canvas.width , APPDATA.canvas.height ) )
+		local allRect = Rect( pos[1] + 2 , pos[2] + 2 , APPDATA.canvas.width , APPDATA.canvas.height );
+		APPDATA.greyBackground.redraw( area and area.clipToIntersect( allRect ) or allRect )
 	end
 end
 
@@ -342,9 +343,9 @@ function dragHandler( event )
 	else
 		APPDATA.canvas.drawPixel( curX , curY , APPDATA.curColor )
 	end
+	redrawCanvas( Rect.fromCoords( lastX , lastY , curX , curY ) )
 	lastX = curX
 	lastY = curY
-	redrawCanvas()
 	APPDATA.changes = true
 
 	if event.type == "onDragStop" or event.type == "onMouseUp" then

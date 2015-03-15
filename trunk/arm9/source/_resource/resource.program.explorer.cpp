@@ -21,7 +21,6 @@ void PROG_Explorer::main( _args args )
 	if( !args.empty() && !args[0].empty() )
 		this->path = _direntry(args[0]).getFileName();
 	
-	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_computer") , new _explorerPageComputer() );
 	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_systemsettings") , _explorerPageSystemSettings() );
 	
 	_mainFrame* mainFrame = _program::getMainFrame( 120 , 90 );
@@ -114,7 +113,7 @@ _callbackReturn PROG_Explorer::handler( _event event )
 	_gadget* that = event.getGadget();
 	
 	if( that == this->submitButton ){
-		string val = this->addressBar->getStrValue();
+		string val = this->addressBar->getStrValue().cpp_str();
 		this->path = val;
 		this->fileView->setPath( val );
 		this->setWindowTitle();

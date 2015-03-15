@@ -74,8 +74,8 @@ class _taskInfo : public _imageGadget
 		}
 		
 		//! Displays a text message above the taskInfo
-		void displayNotification( string title , string content , _bitmap icon = _bitmap() );
-		void displayNotification( string title , string content , _paramAlloc<_voidCallback> clickHandler , _bitmap icon = _bitmap() ){
+		void displayNotification( wstring title , wstring content , _bitmap icon = _bitmap() );
+		void displayNotification( wstring title , wstring content , _paramAlloc<_voidCallback> clickHandler , _bitmap icon = _bitmap() ){
 			this->displayNotification( move(title) , move(content) , move(icon) );
 			this->notificationBubbleHandler = clickHandler.get();
 		}

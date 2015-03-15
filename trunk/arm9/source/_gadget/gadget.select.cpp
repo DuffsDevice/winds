@@ -29,7 +29,7 @@ _select::_select( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length>
 	
 	// Add arrow
 	this->updateArrowButton(); // This updates only its position and type
-	this->addChild( this->arrow );
+	this->addEnhancedChild( this->arrow );
 }
 
 void _select::toggleContextMenu()
@@ -104,7 +104,7 @@ _callbackReturn _select::refreshHandler( _event event )
 	bP.drawRect( 0 , 0 , bP.getWidth() , bP.getHeight() , _color::fromRGB( 9 , 13 , 19 ) );
 	
 	_fontHandle font = _fontController::getStandardFont();
-	_u8 fontSize = _fontController::getStandardFontSize();
+	_fontSize fontSize = _fontController::getStandardFontSize();
 	
 	bP.drawString(
 		2

@@ -10,13 +10,14 @@
 #include <_controller/controller.execution.h>
 
 extern "C"{
-#include <_library/_fat/partition.h>
-#include <_library/_fat/fatfile.h>
-#include <_library/_fat/file_allocation_table.h>
+	#undef deprecated
+	#include <_library/_fat/partition.h>
+	#include <_library/_fat/fatfile.h>
+	#include <_library/_fat/file_allocation_table.h>
 }
 
 namespace unistd{
-#include <unistd.h>
+	#include <unistd.h>
 }
 
 /* Return a string containing the path name of the parent
@@ -43,6 +44,11 @@ string dirname( string path )
 	return path.substr( 0 , s + 2 );
 }
 
+
+extern "C"{
+	#undef unused
+	#include <nds.h>
+}
 
 _direntry::_direntry( string&& fn ) :
 	fHandle( nullptr ) // same as dHandle
@@ -610,10 +616,10 @@ string _direntry::getSizeReadable() const
 	return fmt2string( "%d%s%d %cB" , _u32(size >> 10) , _localizationController::getBuiltInString("fmt_decimal_point").c_str() , _u32( size & 1023 ) , *units );
 }
 
-bool _direntry::execute( _args args )
+_programHandle _direntry::execute( _args args )
 {
 	if( this->isDirectory() )
-		return false;
+		return nullptr;
 	
 	switch( this->mimeType )
 	{
@@ -622,7 +628,7 @@ bool _direntry::execute( _args args )
 		case _mime::application_x_lua_bytecode:
 			return _executionController::execute( _program::fromFile( this->getFileName() ) , move(args) );
 		case _mime::application_x_bat:
-			return _windows::executeCommand( this->readString() );
+			return _windows::execute( this->readString() );
 		
 		// Choose the right filetype handler
 		default:
@@ -645,9 +651,9 @@ bool _direntry::execute( _args args )
 				commandCopy.replace( pos , sizeof("$N") , this->getName() );
 			
 			// Execute the command
-			return _windows::executeCommand( move(commandCopy) );
+			return _windows::execute( move(commandCopy) );
 	}
-	return false;
+	return nullptr;
 }
 
 _bitmap _direntry::getFileImage() const

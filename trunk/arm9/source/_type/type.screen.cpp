@@ -1,6 +1,7 @@
 #include <_type/type.screen.h>
 
 #undef unused
+#undef deprecated
 
 // NDS Headers
 #include <nds/arm9/background.h>

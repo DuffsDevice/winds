@@ -95,7 +95,7 @@ _guiLogin::_guiLogin() :
 	loginAnim.setToValue( 78 );
 	
 	// Position on the screen
-	_coord userX = 135;
+	_coord userX = 140;
 	_coord userY = ( SCREEN_HEIGHT >> 1 ) - ( userHeight >> 2 );
 	_coord curY = 0;
 	
@@ -122,20 +122,20 @@ _guiLogin::_guiLogin() :
 	separator.drawVerticalGradient( 0 , 0 			   , 1 , sepHeight >> 1 , _color::fromHex( 0x5A7EDC ) , _color::fromRGB( 21 , 24 , 31 ) );
 	separator.drawVerticalGradient( 0 , sepHeight >> 1 , 1 , sepHeight >> 1 , _color::fromRGB( 21 , 24 , 31 ) , _color::fromHex( 0x5A7EDC ) );
 	
-	this->separator = new _imageGadget( 126 , 20 , separator );
+	this->separator = new _imageGadget( 131 , 20 , separator );
 	
 	_guiController::getHost()->addChild( this->separator );
 	
 	// Logo and begin-label
-	this->beginLabel1 = new _label( 2 , 98 , 120 , ignore , _localizationController::getBuiltInString("lbl_click_username_1") );
+	this->beginLabel1 = new _label( 2 , 98 , 125 , ignore , _localizationController::getBuiltInString("lbl_click_username_1") );
 	this->beginLabel1->setColor( _color::white );
 	this->beginLabel1->setAlign( _align::right );
 	
-	this->beginLabel2 = new _label( 2 , 107 , 120 , ignore , _localizationController::getBuiltInString("lbl_click_username_2") );
+	this->beginLabel2 = new _label( 2 , 107 , 125 , ignore , _localizationController::getBuiltInString("lbl_click_username_2") );
 	this->beginLabel2->setColor( _color::white );
 	this->beginLabel2->setAlign( _align::right );
 	
-	this->windowsLogo = new _imageGadget( 50 , 43 , BMP_WindowsStartUpLogo() );
+	this->windowsLogo = new _imageGadget( 55 , 43 , BMP_WindowsStartUpLogo() );
 	
 	_guiController::getHost()->addChild( this->beginLabel1 );
 	_guiController::getHost()->addChild( this->beginLabel2 );

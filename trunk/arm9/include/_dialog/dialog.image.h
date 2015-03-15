@@ -26,8 +26,8 @@ class _imageDialog : public _dialog
 		
 		//! Ctor(s)
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_imageDialog( string message , string windowLabel , _bitmap&& image , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore );
-		_imageDialog( string message , string windowLabel , _constBitmap& image , _optValue<string> okLabel = ignore , _optValue<string> otherLabel = ignore ) :
+		_imageDialog( wstring message , wstring windowLabel , _bitmap&& image , _optValue<wstring> okLabel = ignore , _optValue<wstring> otherLabel = ignore );
+		_imageDialog( wstring message , wstring windowLabel , _constBitmap& image , _optValue<wstring> okLabel = ignore , _optValue<wstring> otherLabel = ignore ) :
 			_imageDialog( move(message) , move(windowLabel) , _bitmap(image) , move(okLabel) , move(otherLabel) )
 		{}
 		

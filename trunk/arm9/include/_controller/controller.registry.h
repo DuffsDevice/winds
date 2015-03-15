@@ -67,7 +67,7 @@ class _registryController : public _controller
 		static void		indicateSafeShutdown();
 		
 		//! Get Execution command for the specified filetype extensions
-		static const string&	getFileTypeHandler( const string& extension );
+		static string	getFileTypeHandler( const string& extension );
 		
 		/**
 		 * Get File image connected to the specified filetype extensions

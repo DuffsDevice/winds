@@ -9,7 +9,8 @@ using namespace _luafunc;
 
 _lua_button::_lua_button( lua_State* L ) :
 	_lua_gadget( new _button( optcheck<int>( L , 1 ) , optcheck<int>( L , 2 ) , optcheck<int>( L , 3 ) , optcheck<int>( L , 4 ) , lightcheck<string>( L , 5 , "" ) , lightcheck<_style>( L , 6 ) ) )
-{}
+{
+}
 
 //! Lua-button
 const char _lua_button::className[] = "Button";

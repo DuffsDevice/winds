@@ -10,6 +10,7 @@
 #include <_type/type.ini.h>
 #include <_type/type.arguments.h>
 #include <_type/type.time.h>
+#include <_type/type.program.handle.h>
 
 //! Statistics in bytes of the mounted device
 struct _driveStats{
@@ -214,7 +215,8 @@ class _direntry
 		_time getLastWriteTime() const ;
 		
 		//! Execute That File (arguments passed are only applied, if the file to execute is a program)
-		virtual bool execute( _args args = _args() );
+		//! Eventually returns a handle to the executed program instance
+		virtual _programHandle execute( _args args = _args() );
 		
 		//! Get File-Image
 		virtual _bitmap getFileImage() const ;

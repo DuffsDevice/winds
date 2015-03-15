@@ -2,10 +2,12 @@
 #include <_resource/resource.image.alerts.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.localization.h>
+#include <_type/type.windows.soundbank.h>
 
 _constBitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
 
 void _runtimeErrorDialog::executeInternal(){
+	_windowsSoundBank::play( _windowsSound::fatalError );
 	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }
@@ -13,11 +15,11 @@ void _runtimeErrorDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_runtimeErrorDialog::_runtimeErrorDialog( string message , string additionalInfoText ) : 
+_runtimeErrorDialog::_runtimeErrorDialog( wstring message , wstring additionalInfoText ) : 
 	closeButton( new _button( 0 , 0 , ignore , ignore , _localizationController::getBuiltInString("lbl_close") ) )
-	, msg( new _label( errorimage.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
+	, msg( new _label( errorimage.getWidth() + 6 , 2 , ignore , ignore , (wstring&&)message ) )
 	, image( new _imageGadget( 3 , 3 , errorimage ) )
-	, additionalInfo( new _textArea( 1 , 1 , 50 , 35 , (string&&)additionalInfoText ) )
+	, additionalInfo( new _textArea( 1 , 1 , 50 , 35 , (wstring&&)additionalInfoText ) )
 {
 	// Buttons
 	this->closeButton->setAutoSelect( true );

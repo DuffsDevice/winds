@@ -17,7 +17,7 @@ _callbackReturn _bootupScreen::refreshHandler( _event event )
 _bootupScreen::_bootupScreen( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::bootUp , SCREEN_WIDTH , SCREEN_HEIGHT , style | _style::notFocusable )
 	, bar( new _progressBar( 102 , 125 , 51 , false ) )
-{	
+{
 	this->setInternalEventHandler( onDraw , make_callback( &_bootupScreen::refreshHandler ) );
 	
 	bar->setColorScheme( true );

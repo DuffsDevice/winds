@@ -77,6 +77,7 @@ _callbackReturn _desktopScreen::refreshHandler( _event event )
 	return use_default;
 }
 
+
 //! Constructor
 _desktopScreen::_desktopScreen( _u8 bgId , _style&& style ) :
 	_gadgetScreen( bgId , _gadgetScreenType::desktop , SCREEN_WIDTH , SCREEN_HEIGHT , (_style&&)style )
@@ -92,6 +93,7 @@ _desktopScreen::_desktopScreen( _u8 bgId , _style&& style ) :
 	
 	// Add FileView and Wallpaper
 	this->addChild( this->desktop = new _desktopScreenView() );
+	
 	
 	// Add TaskInfo
 	this->addEnhancedChild( this->taskInfo = new _desktopScreenInfoArea( SCREEN_WIDTH , SCREEN_HEIGHT - 10 ) );

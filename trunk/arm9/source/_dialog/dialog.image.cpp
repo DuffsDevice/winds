@@ -10,10 +10,10 @@ void _imageDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_imageDialog::_imageDialog( string message , string windowLbl , _bitmap&& bitmap ,  _optValue<string> okLabel , _optValue<string> otherLabel ) : 
-	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (string&&)okLabel : _localizationController::getBuiltInString("lbl_ok") ) )
+_imageDialog::_imageDialog( wstring message , wstring windowLbl , _bitmap&& bitmap ,  _optValue<wstring> okLabel , _optValue<wstring> otherLabel ) : 
+	okButton( new _button( 0 , 0 , ignore , ignore , okLabel.isValid() ? (wstring&&)okLabel : _localizationController::getBuiltInString("lbl_ok") ) )
 	, otherButton( otherLabel.isValid() ? new _button( 0 , 0 , ignore , ignore , otherLabel ) : nullptr )
-	, msg( new _label( bitmap.getWidth() + 6 , 2 , ignore , ignore , (string&&)message ) )
+	, msg( new _label( bitmap.getWidth() + 6 , 2 , ignore , ignore , (wstring&&)message ) )
 	, image( new _imageGadget( 3 , 3 , bitmap ) )
 {	
 	// Buttons

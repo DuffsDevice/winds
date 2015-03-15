@@ -11,7 +11,7 @@
 #include <_gadget/gadget.textbox.h>
 #include <_gadget/gadget.select.h>
 
-typedef _assocVector<_int,_pair<string,string>> _fileTypeList;
+typedef _assocVector<_int,_pair<wstring,string>> _fileTypeList;
 
 class _fileSaveDialog : public _dialog
 {
@@ -39,7 +39,7 @@ class _fileSaveDialog : public _dialog
 		const _menuEntryList generateMenuList(){
 			_menuEntryList menuList;
 			for( auto& value : fileTypes ){
-				string& val = menuList[value.first].text;
+				wstring& val = menuList[value.first].text;
 				val.swap( value.second.first );
 				val += " (.";
 				val += value.second.second;
@@ -53,7 +53,7 @@ class _fileSaveDialog : public _dialog
 		
 		//! Ctor
 		//! @note if 'ignore'/nothing is passed as argument, the appropriate localized string is inserted instead
-		_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName = ignore , _int initialFileExtension = 0 , _optValue<string> saveLabel = ignore , _optValue<string> windowLabel = ignore );
+		_fileSaveDialog( _fileTypeList possibleFileExtensions , _optValue<string> initialFileName = ignore , _int initialFileExtension = 0 , _optValue<wstring> saveLabel = ignore , _optValue<wstring> windowLabel = ignore );
 		
 		
 		//! Get Index of the selected entry in 'possibleFileExtensions'
@@ -68,7 +68,7 @@ class _fileSaveDialog : public _dialog
 		
 		//! Get Selected filename
 		string getFileName() const {
-			return _direntry( this->fileView->getPath() ).getFileName() + this->fileNameBox->getStrValue();
+			return _direntry( this->fileView->getPath() ).getFileName() + this->fileNameBox->getStrValue().cpp_str();
 		}
 		
 		//! Dtor

@@ -4,7 +4,7 @@
 #include <_type/type.h>
 #include <_type/type.assocVector.h>
 
-typedef _assocVector<string,_assocVector<string,string>> _iniStructure;
+typedef _assocVector<wstring,_assocVector<wstring,wstring>> _iniStructure;
 
 class _ini
 {
@@ -15,7 +15,7 @@ class _ini
 	public:
 		
 		//! Ctor
-		_ini( const string& input ){
+		_ini( const wstring& input ){
 			this->read( input );
 		}
 		
@@ -23,10 +23,10 @@ class _ini
 		_ini(){}
 		
 		//! Returns either -1 for success or the line number of error
-		_s16 read( const string& input );
+		_s16 read( const wstring& input );
 		
 		//! Encode the std::map structure to string
-		string write();
+		wstring write();
 		
 		//! Get the c++ std::map representation after a previous call to ::read
 		const _iniStructure& getMap() const {
@@ -45,21 +45,21 @@ class _ini
 		
 		//! Read an index from the registry out of the supplied section
 		//! If 'exists' is not null, it will be set to true, if the key exists, false otherwise
-		const string& readIndex( const string& section , const string& name , bool* exists = nullptr ) const ;
-		_int readIndexInt( const string& section , const string& name , bool* exists = nullptr ) const ;
+		const wstring& readIndex( const wstring& section , const wstring& name , bool* exists = nullptr ) const ;
+		_int readIndexInt( const wstring& section , const wstring& name , bool* exists = nullptr ) const ;
 		
 		//! Write an index to the registry, a section and a key will be generated, if they're not existent
-		void writeIndex( const string& section , const string& name , const string& value ){ this->array[section][name] = value; }
+		void writeIndex( const wstring& section , const wstring& name , const wstring& value ){ this->array[section][name] = value; }
 		
 		//! Delete a section from the ini structure
-		void deleteSection( const string& section ){ this->array.erase(section); }
+		void deleteSection( const wstring& section ){ this->array.erase(section); }
 		
 		//! Delete an index out of the supplied region
-		void deleteIndex( const string& section , const string& name );
+		void deleteIndex( const wstring& section , const wstring& name );
 		
 		//! Read whole Section
 		//! If 'exists' is not null, it will be set to true, if the key exists, false otherwise
-		const _assocVector<string,string>& readSection( const string& section , bool* exists = nullptr ) const ;
+		const _assocVector<wstring,wstring>& readSection( const wstring& section , bool* exists = nullptr ) const ;
 		
 		//! Virtual Dtor
 		virtual ~_ini(){};

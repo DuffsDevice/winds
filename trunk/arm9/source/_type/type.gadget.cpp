@@ -986,6 +986,9 @@ optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 		
 		// Reduce Painting Area
 		bP.clippingRects.reduce( dim );
+		
+		if( bP.clippingRects.isEmpty() )
+			return handled;
 	}
 	
 	// Break up?
@@ -1038,6 +1041,9 @@ optimized _callbackReturn _gadget::gadgetRefreshHandler( _event event )
 		
 		// Reduce Painting Area
 		bP.clippingRects.reduce( dim );
+		
+		if( bP.clippingRects.isEmpty() )
+			break;
 	}
 	
 	return handled;

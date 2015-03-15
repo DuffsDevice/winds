@@ -8,7 +8,7 @@ class _passcodeBox : public _textBox
 	private:
 		
 		//! The real value of the passcode box
-		string			realText;
+		wstring			realText;
 		
 		//! Char that will be used as replacement
 		_char 			replaceChar;
@@ -18,18 +18,18 @@ class _passcodeBox : public _textBox
 		
 		//! Override of _textBox::(..)
 		void removeStr( _int position , _length numChars = 1 );
-		void insertStr( _int position , string s );
+		void insertStr( _int position , wstring s );
 		
 	public:
 		
 		//! Set string-value
-		void setStrValue( string val );
+		void setStrValue( wstring val );
 		
 		//! Get string-value
-		string getStrValue(){ return this->realText; }
+		wstring getStrValue(){ return this->realText; }
 		
 		//! Ctor
-		_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , string value = "" , _fontHandle replaceFont = nullptr , _optValue<_char> replaceChar = ignore , _style&& style = _style() );
+		_passcodeBox( _optValue<_coord> x , _optValue<_coord> y , _optValue<_length> width , _optValue<_length> height , wstring value = "" , _optValue<_char> replaceChar = ignore , _style&& style = _style() );
 };
 
 #endif

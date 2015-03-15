@@ -11,10 +11,10 @@ class _windowMenuEntry : public _gadget
 	private:
 		
 		// Text to display
-		_menuEntry		entryIndex;
+		_menuEntry					entryIndex;
 		
 		// contextmenu that should be opened up on clicking
-		_contextMenu*	menuList;
+		_uniquePtr<_contextMenu>	menuList;
 		
 		// Event Handlers
 		static _callbackReturn refreshHandler( _event );
@@ -26,11 +26,6 @@ class _windowMenuEntry : public _gadget
 		
 		//! Ctor
 		_windowMenuEntry( _menu* menu , _menuEntry menuEntry , _style&& style = _style() );
-		
-		//! Dtor
-		~_windowMenuEntry(){
-			delete this->menuList;
-		}
 };
 
 #endif

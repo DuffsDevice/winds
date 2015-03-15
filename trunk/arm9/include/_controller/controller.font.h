@@ -15,7 +15,7 @@ class _fontController : public _controller
 		
 		static _fontList	registeredFonts;
 		static _fontPtr		standardFont;
-		static _u8			standardFontSize;
+		static _fontSize	standardFontSize;
 		
 	public:
 		
@@ -34,7 +34,7 @@ class _fontController : public _controller
 		
 		//! Get the one font in the font-manager which name euqlas the supplied string
 		static _fontPtr			getFont( _literal fontName );
-		static _fontPtr			getFont( const string& fontName );
+		static _fontPtr			getFont( const string& fontName ){ return getFont( fontName.c_str() ); }
 		
 		//! Get the standard system font
 		static _fontPtr			getStandardFont(){
@@ -45,10 +45,10 @@ class _fontController : public _controller
 		static void				setStandardFont( _fontPtr font );
 		
 		//! Get the standard font-size
-		static _u8				getStandardFontSize(){ return standardFontSize; }
+		static _fontSize		getStandardFontSize(){ return standardFontSize; }
 		
 		//! Set the standard font size
-		static void				setStandardFontSize( _u8 fontSize ){ standardFontSize = fontSize; }
+		static void				setStandardFontSize( _fontSize fontSize ){ standardFontSize = fontSize; }
 		
 		//! Delete the supplied font in the font-manager
 		static void				deleteFont( _fontPtr font );

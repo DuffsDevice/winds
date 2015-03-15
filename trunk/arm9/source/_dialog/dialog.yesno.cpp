@@ -10,10 +10,10 @@ void _yesNoDialog::cleanupInternal(){
 	this->window->setParent( nullptr );
 }
 
-_yesNoDialog::_yesNoDialog( string message , string windowLbl , _optValue<string> yesLbl , _optValue<string> noLbl ) :
-	yesButton( new _button( 0 , 0 , ignore , ignore , yesLbl.isValid() ? (string&&)yesLbl : _localizationController::getBuiltInString("lbl_yes") ) )
-	, noButton( new _button( 0 , 0 , ignore , ignore , noLbl.isValid() ? (string&&)noLbl : _localizationController::getBuiltInString("lbl_no") ) )
-	, msg( new _label( 2 , 2 , ignore , ignore , (string&&)message ) )
+_yesNoDialog::_yesNoDialog( wstring message , wstring windowLbl , _optValue<wstring> yesLbl , _optValue<wstring> noLbl ) :
+	yesButton( new _button( 0 , 0 , ignore , ignore , yesLbl.isValid() ? (wstring&&)yesLbl : _localizationController::getBuiltInString("lbl_yes") ) )
+	, noButton( new _button( 0 , 0 , ignore , ignore , noLbl.isValid() ? (wstring&&)noLbl : _localizationController::getBuiltInString("lbl_no") ) )
+	, msg( new _label( 2 , 2 , ignore , ignore , (wstring&&)message ) )
 {
 	// Buttons
 	this->yesButton->setAutoSelect( true );

@@ -9,6 +9,8 @@
 #include <_type/type.program.executiondata.h>
 #include <_type/type.uniqueptr.h>
 #include <_type/type.service.h>
+#include <_type/type.ref.h>
+#include <_type/type.stream.h>
 #include <_gadget/gadget.window.mainframe.h>
 
 // Describes the type of a program
@@ -23,12 +25,12 @@ struct _programHeader
 	_uniquePtr<_bitmap>	fileIcon;
 	_uniquePtr<string>	fileName;
 	_uniquePtr<_bitmap>	windowIcon;
-	_uniquePtr<string>	windowName;
-	_uniquePtr<string>	name;
-	_uniquePtr<string>	author;
-	_uniquePtr<string>	version;
-	_uniquePtr<string>	description;
-	_uniquePtr<string>	copyright;
+	_uniquePtr<wstring>	windowName;
+	_uniquePtr<wstring>	name;
+	_uniquePtr<wstring>	author;
+	_uniquePtr<wstring>	version;
+	_uniquePtr<wstring>	description;
+	_uniquePtr<wstring>	copyright;
 	_language			language;
 	
 	//! Ctor
@@ -58,6 +60,10 @@ class _program
 		
 		//! Path to the executeable
 		string					path;
+		string					cwd;
+		
+		//! Stream to output text to
+		_ref<_outStream>		outStream;
 		
 		//! _mainFrame-Object
 		_uniquePtr<_mainFrame>	mainFrame;
@@ -151,10 +157,29 @@ class _program
 			return *this;
 		}
 		
+		//! Set the directory at which the executeable shall operate from
+		_program&				setCWD( string cwd ){
+			this->cwd = cwd;
+			return *this;
+		}
+		
+		//! Set outstream device that will handle prints
+		_program&				setOutStream( _ref<_outStream> outStream ){
+			this->outStream = move(outStream);
+			return *this;
+		}
+		
 		
 		//! Get path of the executeable
 		const string&			getPath() const { return this->path; }
 		string&					getPath(){ return this->path; }
+		
+		//! Get path of the executeable
+		const string&			getCWD() const { return this->cwd; }
+		string&					getCWD(){ return this->cwd; }
+		
+		//! Function to return the outstream that is associated with this program
+		_ref<_outStream>		getOutStream() const { return this->outStream; }
 		
 		//! Function to clean up the program (pendant to main)
 		virtual	void			cleanUp(){};

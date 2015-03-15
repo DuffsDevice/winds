@@ -18,14 +18,14 @@ void _infoDialog::executeInternal(){
 	_imageDialog::executeInternal();
 }
 
-_errorDialog::_errorDialog( string message , _optValue<string> okLabel , _optValue<string> otherLabel ) : 
+_errorDialog::_errorDialog( wstring message , _optValue<wstring> okLabel , _optValue<wstring> otherLabel ) : 
 	_imageDialog( move(message) , _localizationController::getBuiltInString("lbl_error") , BMP_AlertImageError() , move(okLabel) , move(otherLabel) )
 {}
 
-_infoDialog::_infoDialog( string message , _optValue<string> okLabel , _optValue<string> otherLabel ) : 
+_infoDialog::_infoDialog( wstring message , _optValue<wstring> okLabel , _optValue<wstring> otherLabel ) : 
 	_imageDialog( move(message) , _localizationController::getBuiltInString("lbl_info") , BMP_AlertImageInfo() , move(okLabel) , move(otherLabel) )
 {}
 
-_warningDialog::_warningDialog( string message , _optValue<string> okLabel , _optValue<string> otherLabel ) : 
-	_imageDialog( move(message) , _localizationController::getBuiltInString("lbl_warning") , BMP_AlertImageWarning() , okLabel.isValid() ? move(okLabel) : _optValue<string>( _localizationController::getBuiltInString("lbl_dismiss") ) , move(otherLabel) )
+_warningDialog::_warningDialog( wstring message , _optValue<wstring> okLabel , _optValue<wstring> otherLabel ) : 
+	_imageDialog( move(message) , _localizationController::getBuiltInString("lbl_warning") , BMP_AlertImageWarning() , okLabel.isValid() ? move(okLabel) : _optValue<wstring>( _localizationController::getBuiltInString("lbl_dismiss") ) , move(otherLabel) )
 {}

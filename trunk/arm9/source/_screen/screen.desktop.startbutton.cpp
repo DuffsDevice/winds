@@ -19,7 +19,7 @@ _callbackReturn _desktopScreenStartButton::mouseHandler( _event event ){
 
 _callbackReturn _desktopScreenStartButton::refreshHandler( _event event )
 {
-	const string& sBT = _localizationController::getBuiltInString( "lbl_start_btn" );
+	const wstring& sBT = _localizationController::getBuiltInString( "lbl_start_btn" );
 	
 	// Receive Gadget
 	_desktopScreenStartButton* that = event.getGadget<_desktopScreenStartButton>();

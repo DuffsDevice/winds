@@ -21,9 +21,12 @@
 
 // libnds headers
 extern "C"{
+	#undef unused
+	#undef deprecated
 	#include <nds/bios.h>
 	#include <nds/system.h>
 	#include <nds/fifocommon.h>
+	#include <nds.h>
 }
 
 void _windows::init()
@@ -162,13 +165,13 @@ void _windows::end()
 	_windows::active = false;
 }
 
-const string& _windows::getDSUserName()
+const wstring& _windows::getDSUserName()
 {
-	static string name;
+	static wstring name;
 	if( name.empty() && PersonalData->nameLen > 0 )
 	{
 		for( int i = 0 ; i < PersonalData->nameLen ; i++ )
-			name += PersonalData->name[i];
+			name += wstring( 1 , (_wchar) PersonalData->name[i] );
 	}
 	return name;
 }
@@ -186,10 +189,10 @@ _hardwareType _windows::getHardwareType()
 	return _hardwareType::ds;
 }
 
-bool _windows::executeCommand( const string& cmd )
+_programHandle _windows::execute( const string& cmd )
 {
 	if( cmd.empty() )
-		return false;
+		return nullptr;
 	
 	_pair<string,string> commandData = _args::splitCommand( cmd );
 	
