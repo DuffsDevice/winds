@@ -102,7 +102,7 @@ void _fileObject::execute( _args args , bool openInNewWindow )
 		_fileView* fileView = (_fileView*) this->getParent();
 		
 		if( openInNewWindow )
-			_windows::execute("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
+			_winds::execute("%SYSTEM%/explorer.exe -\"" + this->file->getFileName() + "\"" );
 		else if( fileView->getType() == _gadgetType::fileview )
 		{
 			// Trigger 'onEdit'-Event
@@ -296,7 +296,7 @@ void _fileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 				fileObject->initRename();
 				break;
 			case 11: // Properties
-				_windows::execute("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
+				_winds::execute("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
 				break;
 		}
 	}

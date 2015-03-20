@@ -12,16 +12,16 @@
 #include <nds/fifocommon.h>
 #include <dswifi7.h>
 
-//const _u32 _windows::ticksPerSecond = ( BUS_CLOCK + 32768 ) >> 10; // Works for about 5 Minutes (>5min.: buffer underrun)
-const _u32 _windows::ticksPerSecond = 65477; // Testing... works
-//const _u32 _windows::ticksPerSecond = 65521; // Tested and found to work >6min
+//const _u32 _winds::ticksPerSecond = ( BUS_CLOCK + 32768 ) >> 10; // Works for about 5 Minutes (>5min.: buffer underrun)
+const _u32 _winds::ticksPerSecond = 65477; // Testing... works
+//const _u32 _winds::ticksPerSecond = 65521; // Tested and found to work >6min
 
 //! the speed in which the timer ticks in hertz.
 //! #define BUS_CLOCK (33513982)
 //! BUS_CLOCK >> 15 - BUS_CLOCK >> 21 - BUS_CLOCK >> 22 = 1000 * rawTime
 //! There you get milliseconds from rawTime!
 
-_tempTime _windows::getBUSTime()
+_tempTime _winds::getBUSTime()
 {
 	// Check Timers
 	_u64 lo = TIMER_DATA(0);
@@ -46,31 +46,31 @@ namespace{
 	static int criticaly = 1;
 }
 
-void _windows::enterCriticalSection()
+void _winds::enterCriticalSection()
 {
 	if( --criticaly <= 0 )
 		irqDisable( IRQ_VBLANK ); // Enter critical Section
 }
 
-void _windows::leaveCriticalSection()
+void _winds::leaveCriticalSection()
 {
 	if( ++criticaly > 0 )
 		irqEnable( IRQ_VBLANK ); // Leave critical Section
 }
 
-void _windows::vcntHandler(){
+void _winds::vcntHandler(){
 	inputGetAndSend();
 }
 
-void _windows::vblHandler(){
+void _winds::vblHandler(){
 	Wifi_Update();
 }
 
-void _windows::powerBtnHandler(){
-	_windows::exitMain = true;
+void _winds::powerBtnHandler(){
+	_winds::exitMain = true;
 }
 
-void _windows::init()
+void _winds::init()
 {
 	//! Power on everything 
 	powerOn( POWER_ALL );
@@ -106,12 +106,12 @@ void _windows::init()
 	
 		//! Set up interrupt handlers
 		SetYtrigger( 192 );
-		irqSet( IRQ_VBLANK , _windows::vblHandler );
-		irqSet( IRQ_VCOUNT , _windows::vcntHandler );
+		irqSet( IRQ_VBLANK , _winds::vblHandler );
+		irqSet( IRQ_VCOUNT , _winds::vcntHandler );
 		irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK );
 		
 		//! Set callback to be called at the press of the DSi's Power Button
-		setPowerButtonCB( _windows::powerBtnHandler );   
+		setPowerButtonCB( _winds::powerBtnHandler );   
 		
 		//! Start Timers
 		TIMER_CR(0) = 0;
@@ -127,49 +127,49 @@ void _windows::init()
 		TIMER_CR(0) = TIMER_ENABLE | ClockDivider_1024;
 }
 
-void _windows::sendCpuUsage( _u8 percent ){
+void _winds::sendCpuUsage( _u8 percent ){
 	// Tell the arm9!
 	_systemDataMsg msg = _systemDataMsg::cpuUsageMsg( percent );
 	fifoSendDatamsg( FIFO_USER_01 , sizeof(_systemDataMsg) , (_u8*)&msg );
 }
 
-void _windows::debug( _literal text ){
+void _winds::debug( _literal text ){
 	// Tell the arm9!
 	_systemDataMsg msg = _systemDataMsg::debugMsg( text );
 	fifoSendDatamsg( FIFO_USER_01 , sizeof(_systemDataMsg) , (_u8*)&msg );
 }
 
-void _windows::main()
+void _winds::main()
 {
 	static const _u16 keyPattern = KEY_SELECT|KEY_START|KEY_L|KEY_R;
 	
 	int sendingCpuUsage = 0;
 	const int sendingCpuUsagePeriod = 5;
 	
-	while( !_windows::exitMain )
+	while( !_winds::exitMain )
 	{
-		_tempTime milliTime = _windows::getBUSTime();
+		_tempTime milliTime = _winds::getBUSTime();
 		
 		
 		if( ( REG_KEYINPUT & keyPattern ) == 0 )
-			_windows::exitMain = true;
+			_winds::exitMain = true;
 		
 		_sound::runSounds();
 		
 		
 		// Time measurements
-		_u32 deltaTime = _windows::getBUSTime() - milliTime;
+		_u32 deltaTime = _winds::getBUSTime() - milliTime;
 		deltaTime = deltaTime * 100 * 60 / 1000; // Time relative to 1/60s
 		if( deltaTime > 100 )
 			deltaTime = 100;
 		
 		// Compute System-Usage
-		_windows::cpuUsageTemp = _windows::cpuUsageTemp * 15 + deltaTime;
-		_windows::cpuUsageTemp >>= 4;
+		_winds::cpuUsageTemp = _winds::cpuUsageTemp * 15 + deltaTime;
+		_winds::cpuUsageTemp >>= 4;
 		
 		if( ++sendingCpuUsage >= sendingCpuUsagePeriod ){
 			sendingCpuUsage = 0;
-			_windows::sendCpuUsage( _windows::cpuUsageTemp );
+			_winds::sendCpuUsage( _winds::cpuUsageTemp );
 		}
 		
 		
@@ -178,5 +178,5 @@ void _windows::main()
 	}
 }
 
-volatile bool	_windows::exitMain = false;
-int				_windows::cpuUsageTemp = 0;
+volatile bool	_winds::exitMain = false;
+int				_winds::cpuUsageTemp = 0;

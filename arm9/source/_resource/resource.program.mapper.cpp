@@ -192,7 +192,7 @@ _callbackReturn PROG_Mapper::handler( _event event )
 						string cmd = "\"" + selection->getPath() + "\" -\"" + this->fileToOpen + "\"";
 						
 						// Execute File
-						_windows::execute( move(cmd) );
+						_winds::execute( move(cmd) );
 					}
 				}
 				

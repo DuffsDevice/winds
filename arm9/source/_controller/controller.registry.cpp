@@ -79,7 +79,7 @@ void _registryController::prepareSystemRegistry()
 			{ "timeOnline" , "0" } ,
 		}} }
 		, { "localization" , {{
-			{ "language" , _windows::getDSLanguage().c_str() }
+			{ "language" , _winds::getDSLanguage().c_str() }
 		}} }
 		, { "gui" , {{
 			{ "minDragDistance" , "9" } ,

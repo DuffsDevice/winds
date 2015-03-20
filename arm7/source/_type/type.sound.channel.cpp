@@ -87,7 +87,7 @@ _s8 _soundChannel::fromMsg( _channelSetMsg msg )
 			
 			break;
 		case _channelType::stream:
-			chn->lastCheck = _windows::getBUSTime();
+			chn->lastCheck = _winds::getBUSTime();
 			
 			SCHANNEL_SOURCE(newChannel) = (_u32)chn->buffer8;
 			SCHANNEL_REPEAT_POINT(newChannel) = 0;
@@ -122,13 +122,13 @@ void _soundChannel::stop()
 	
 	if( this->type == _channelType::stream )
 	{
-		_tempTime time = _windows::getBUSTime();
+		_tempTime time = _winds::getBUSTime();
 		
 		_s32 elapsedTicks = time - this->lastCheck; // Ticks of Timer0 that have elapsed since the last call to process()
-		_s32 elapsedSamples = elapsedTicks * this->frequency / _windows::ticksPerSecond;
+		_s32 elapsedSamples = elapsedTicks * this->frequency / _winds::ticksPerSecond;
 		
 		// Indicate that we have check a few samples
-		this->lastCheck = elapsedSamples * _windows::ticksPerSecond / this->frequency - this->lastCheck;
+		this->lastCheck = elapsedSamples * _winds::ticksPerSecond / this->frequency - this->lastCheck;
 	}
 	
 	this->wasExecuted = false;
@@ -140,7 +140,7 @@ void _soundChannel::play(){
 		return;
 	
 	if( this->type == _channelType::stream )
-		this->lastCheck = _windows::getBUSTime() - this->lastCheck;
+		this->lastCheck = _winds::getBUSTime() - this->lastCheck;
 	
 	this->wasExecuted = true;
 	SCHANNEL_CR(this->channelId) |= SCHANNEL_ENABLE;
@@ -150,7 +150,7 @@ optimized void _soundChannel::process()
 {
 	if( this->type == _channelType::stream )
 	{
-		_tempTime time = _windows::getBUSTime();
+		_tempTime time = _winds::getBUSTime();
 		
 		if( time < this->lastCheck ){
 			this->lastCheck = time;
@@ -158,10 +158,10 @@ optimized void _soundChannel::process()
 		}
 		
 		_u32 elapsedTime = time - this->lastCheck; // Ticks of Timer that have elapsed since the last call to process()
-		_u32 elapsedSamples = elapsedTime * this->frequency / _windows::ticksPerSecond;
+		_u32 elapsedSamples = elapsedTime * this->frequency / _winds::ticksPerSecond;
 		
 		// Indicate that we have checked a few samples
-		this->lastCheck += elapsedSamples * _windows::ticksPerSecond / this->frequency;
+		this->lastCheck += elapsedSamples * _winds::ticksPerSecond / this->frequency;
 		
 		// disadvance the still Filled buffer with the samples that have elapsed
 		this->bufferFilled -= elapsedSamples;

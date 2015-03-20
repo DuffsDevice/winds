@@ -29,15 +29,15 @@ extern "C"{
 	#include <nds.h>
 }
 
-void _windows::init()
+void _winds::init()
 {
-	if( _windows::active )
-		_windows::end();
+	if( _winds::active )
+		_winds::end();
 	
 	//! Set initial Seed for the pseudo random number generator
 	srand( time(NULL) );
 	
-	_windows::initMethods = {
+	_winds::initMethods = {
 		{ &_powerController::init , "power" }
 		, { &_memoryController::init , "memory" }
 		, { &_filesystemController::init , "filesystem" }
@@ -56,20 +56,20 @@ void _windows::init()
 		, { &_interruptController::init , "interrupt" }
 	};
 	
-	_windows::mainMethods = {
+	_winds::mainMethods = {
 		&_guiController::frame
 		, &_timerController::frame
 		, &_eventController::frame
 		, &_executionController::frame
 	};
 	
-	_windows::interruptMethods = {
+	_winds::interruptMethods = {
 		&_animationController::frame
 		, &_inputController::frame
 	};
 	
 	// These get executed in reverse order
-	_windows::endMethods = {
+	_winds::endMethods = {
 		&_powerController::end
 		, &_memoryController::end
 		, &_filesystemController::end
@@ -89,7 +89,7 @@ void _windows::init()
 	};
 	
 	// Run Init Methods
-	for( const _pair<_controllerInit*,string>& method : _windows::initMethods )
+	for( const _pair<_controllerInit*,string>& method : _winds::initMethods )
 	{
 		if( !(*method.first)() ){
 			_debugController::debug("The %s-Controller failed to init!",method.second.c_str());
@@ -98,17 +98,17 @@ void _windows::init()
 		}
 	}
 	
-	_windows::active = true;
-	_windows::terminateMain = false;
+	_winds::active = true;
+	_winds::terminateMain = false;
 	
-	fifoSetDatamsgHandler( FIFO_USER_01 , _windows::fifoDataHandler , nullptr );
+	fifoSetDatamsgHandler( FIFO_USER_01 , _winds::fifoDataHandler , nullptr );
 }
 
-void _windows::stop(){
-	_windows::terminateMain = true;
+void _winds::stop(){
+	_winds::terminateMain = true;
 }
 
-void _windows::fifoDataHandler( _s32 bytes , void* userData )
+void _winds::fifoDataHandler( _s32 bytes , void* userData )
 {
 	_systemDataMsg msg;
 	
@@ -116,20 +116,20 @@ void _windows::fifoDataHandler( _s32 bytes , void* userData )
 	fifoGetDatamsg( FIFO_USER_01 , bytes , (_u8*)&msg );
 	
 	if( msg.type == _systemDataMsgType::cpuUsage )
-		_windows::cpuUsageTempSub = msg.cpuUsage;
+		_winds::cpuUsageTempSub = msg.cpuUsage;
 	else if( msg.type == _systemDataMsgType::debug )
 		_debugController::debug( msg.debugMessage );
 }
 
 
-void _windows::main()
+void _winds::main()
 {
-	while( !_windows::terminateMain )
+	while( !_winds::terminateMain )
 	{
 		_tempTime milliTime = _timerController::getMilliTime();
 		
 		// Run Main Methods
-		for( _controllerFrame* method : _windows::mainMethods )
+		for( _controllerFrame* method : _winds::mainMethods )
 			(*method)();
 		
 		milliTime = _timerController::getMilliTime() - milliTime;
@@ -138,34 +138,34 @@ void _windows::main()
 			milliTime = 100;
 		
 		// Compute System-Usage
-		_windows::cpuUsageTemp = _windows::cpuUsageTemp * 15 + milliTime;
-		_windows::cpuUsageTemp >>= 4;
+		_winds::cpuUsageTemp = _winds::cpuUsageTemp * 15 + milliTime;
+		_winds::cpuUsageTemp >>= 4;
 		
 		// Wait for VBlank
 		_interruptController::waitForVerticalBlank( false );
 	}
 }
 
-void _windows::interrupt()
+void _winds::interrupt()
 {
 	// Run all registered VBL-Methods
-	for( _controllerFrame* method : _windows::interruptMethods )
+	for( _controllerFrame* method : _winds::interruptMethods )
 		(*method)();
 }
 
-void _windows::end()
+void _winds::end()
 {
-	if( !_windows::active )
+	if( !_winds::active )
 		return;
 	
 	// Run all end()-methods, beginning at the end of the list
-	for( auto iter = _windows::endMethods.rbegin() ; iter != _windows::endMethods.rend() ; iter++ )
+	for( auto iter = _winds::endMethods.rbegin() ; iter != _winds::endMethods.rend() ; iter++ )
 		(**iter)();
 	
-	_windows::active = false;
+	_winds::active = false;
 }
 
-const wstring& _windows::getDSUserName()
+const wstring& _winds::getDSUserName()
 {
 	static wstring name;
 	if( name.empty() && PersonalData->nameLen > 0 )
@@ -176,11 +176,11 @@ const wstring& _windows::getDSUserName()
 	return name;
 }
 
-_language _windows::getDSLanguage(){
+_language _winds::getDSLanguage(){
 	return id2language[PersonalData->language];
 }
 
-_hardwareType _windows::getHardwareType()
+_hardwareType _winds::getHardwareType()
 {
 	if( swiIsDebugger() )
 		return _hardwareType::emulator;
@@ -189,7 +189,7 @@ _hardwareType _windows::getHardwareType()
 	return _hardwareType::ds;
 }
 
-_programHandle _windows::execute( const string& cmd )
+_programHandle _winds::execute( const string& cmd )
 {
 	if( cmd.empty() )
 		return nullptr;
@@ -206,11 +206,11 @@ _toStr<_hardwareType> hardwareType2str = {
 	{ _hardwareType::emulator	, "emulator" },
 };
 
-_vector<_pair<_controllerInit*,string>>	_windows::initMethods;
-_vector<_controllerFrame*>				_windows::mainMethods;
-_vector<_controllerFrame*>				_windows::interruptMethods;
-_vector<_controllerEnd*>				_windows::endMethods;
-_int									_windows::cpuUsageTemp;
-_int									_windows::cpuUsageTempSub;
-bool									_windows::active = false;
-bool									_windows::terminateMain = false;
+_vector<_pair<_controllerInit*,string>>	_winds::initMethods;
+_vector<_controllerFrame*>				_winds::mainMethods;
+_vector<_controllerFrame*>				_winds::interruptMethods;
+_vector<_controllerEnd*>				_winds::endMethods;
+_int									_winds::cpuUsageTemp;
+_int									_winds::cpuUsageTempSub;
+bool									_winds::active = false;
+bool									_winds::terminateMain = false;

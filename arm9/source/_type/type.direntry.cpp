@@ -642,7 +642,7 @@ _programHandle _direntry::execute( _args args )
 		case _mime::application_x_lua_bytecode:
 			return _executionController::execute( _program::fromFile( this->getFileName() ) , move(args) );
 		case _mime::application_x_bat:
-			return _windows::execute( this->readString() );
+			return _winds::execute( this->readString() );
 		
 		// Choose the right filetype handler
 		default:
@@ -665,7 +665,7 @@ _programHandle _direntry::execute( _args args )
 				commandCopy.replace( pos , sizeof("$N") , this->getName() );
 			
 			// Execute the command
-			return _windows::execute( move(commandCopy) );
+			return _winds::execute( move(commandCopy) );
 	}
 	return nullptr;
 }

@@ -14,7 +14,7 @@ enum class _hardwareType{
 };
 extern _toStr<_hardwareType> hardwareType2str;
 
-class _windows
+class _winds
 {
 	private:
 		

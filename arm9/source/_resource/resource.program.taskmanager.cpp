@@ -128,7 +128,7 @@ _callbackReturn PROG_TaskManager::histogramRefreshHandler( _event event )
 	// Draw Graph
 	if( that == this->histogramCpuUsage )
 	{
-		_s8 newCpuValue = availHeight - availHeight * _windows::getCpuUsage() / 100;
+		_s8 newCpuValue = availHeight - availHeight * _winds::getCpuUsage() / 100;
 		
 		// Either draw dot (first time the graph is painted)
 		if( this->lastCpuValueY >= 0 )
@@ -141,7 +141,7 @@ _callbackReturn PROG_TaskManager::histogramRefreshHandler( _event event )
 	}
 	else if( that == this->histogramCpuUsageSub )
 	{
-		_s8 newCpuSubValue = availHeight - availHeight * _windows::getCpuUsageSub() / 100;
+		_s8 newCpuSubValue = availHeight - availHeight * _winds::getCpuUsageSub() / 100;
 		
 		// Either draw dot (first time the graph is painted)
 		if( this->lastCpuSubValueY >= 0 )
@@ -192,7 +192,7 @@ _callbackReturn PROG_TaskManager::usageRefreshHandler( _event event )
 	_u8		percentageValue;
 	
 	if( that == this->currentCpuUsage ){
-		percentageValue = _windows::getCpuUsage() * _windows::getCpuUsageSub();
+		percentageValue = _winds::getCpuUsage() * _winds::getCpuUsageSub();
 		rawValue = percentageValue;
 	}else{
 		_u32 freeMemory = _memoryController::getFreeMemory();

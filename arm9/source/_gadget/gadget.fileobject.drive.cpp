@@ -172,7 +172,7 @@ void _driveFileObject::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 			fileObject->execute();
 			break;
 		case 3: // Properties
-			_windows::execute("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
+			_winds::execute("%SYSTEM%/filedetail.exe -\"" + fileObject->file->getFileName() + "\"" );
 			break;
 	}
 }

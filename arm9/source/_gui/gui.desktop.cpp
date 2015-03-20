@@ -19,16 +19,16 @@ _guiDesktop::_guiDesktop()
 	//printf("Sending: %d\n",client.request("/WinDSAPI/wifi.php"));
 	//printf("Response: %s\n",client.receive().c_str());
 	
-	//_windows::execute("%SYSTEM%/taskmgr.exe");
-	//_windows::execute("%SYSTEM%/explorer.exe -Computer");
-	//_windows::execute("%SYSTEM%/filedetail.exe -/filename.jpg");
-	//_windows::execute("%SYSTEM%/credits.exe");
-	//_windows::execute("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");
-	//_windows::execute("%WINDIR%/accessories/exampleprogram.exe");
-	//_windows::execute("%WINDIR%/accessories/paint.exe");
-	//_windows::execute("%WINDIR%/accessories/calculator.exe");
-	//_windows::execute("%WINDIR%/games/pong.exe");
-	//_windows::execute("%SYSTEM%/console.exe");
+	//_winds::execute("%SYSTEM%/taskmgr.exe");
+	//_winds::execute("%SYSTEM%/explorer.exe -Computer");
+	//_winds::execute("%SYSTEM%/filedetail.exe -/filename.jpg");
+	//_winds::execute("%SYSTEM%/credits.exe");
+	//_winds::execute("%SYSTEM%/progmapper.exe -Hello.jpg -save_choice");
+	//_winds::execute("%WINDIR%/accessories/exampleprogram.exe");
+	//_winds::execute("%WINDIR%/accessories/paint.exe");
+	//_winds::execute("%WINDIR%/accessories/calculator.exe");
+	//_winds::execute("%WINDIR%/games/pong.exe");
+	//_winds::execute("%SYSTEM%/console.exe");
 	
 	
 	//_label* lbl = new _label( 34 , 34 , 12 , 3 , "0" );
