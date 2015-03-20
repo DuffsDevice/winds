@@ -26,7 +26,7 @@ bool _guiSetupPage4::destroy( _gadget* viewParent )
 }
 
 _guiSetupPage4::_guiSetupPage4() :
-	profileName( _windows::getDSUserName() )
+	profileName( _winds::getDSUserName() )
 	, profileIcon( -1 )
 {}
 

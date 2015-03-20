@@ -191,7 +191,7 @@ _callbackReturn PROG_FileDetail::handler( _event event )
 		}
 	}
 	else if( that == this->openedWithChangeButton ){
-		_windows::execute(
+		_winds::execute(
 			string("%SYSTEM%/progmapper.exe -\"*.") + this->file->getExtension().c_str() + "\" -save_choice" 
 		);
 		return handled;

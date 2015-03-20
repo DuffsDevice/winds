@@ -122,8 +122,8 @@ void _fileView::generateChildren()
 			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
 			
 			// Read Children of directory
-			for( string str : { "Haloo.ini" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/" } )
-			//for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
+			//for( string str : { "Haloo.ini" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/" } )
+			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , _style::rightClickable );
@@ -160,7 +160,7 @@ void _fileView::defaultMenuHandler( _u16 listIndex , _u16 entryIndex )
 				fileView->generateChildren();
 				break;
 			case 5: // Properties
-				_windows::execute("%SYSTEM%/filedetail.exe -\"" + fileView->directory.getFileName() + "\"" );
+				_winds::execute("%SYSTEM%/filedetail.exe -\"" + fileView->directory.getFileName() + "\"" );
 				break;
 		}
 	}

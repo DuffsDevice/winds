@@ -3,9 +3,9 @@
 
 int main( int argc , char* argv[] )
 {
-	_windows::init();
-	_windows::main();
-	_windows::end();
+	_winds::init();
+	_winds::main();
+	_winds::end();
 	
 	return 0;
 }

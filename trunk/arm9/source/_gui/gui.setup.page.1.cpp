@@ -36,7 +36,7 @@ void _guiSetupPage1::create( _gadget* viewParent )
 			, { 4 , "Italiano" }
 			, { 5 , "Español" }
 		}
-		, language2id[ _windows::getDSLanguage() ]
+		, language2id[ _winds::getDSLanguage() ]
 	);
 	
 	this->slcLanguage->setUserEventHandler( onEdit , make_callback( this , &_guiSetupPage1::languageChangeHandler ) );

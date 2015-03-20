@@ -2,7 +2,7 @@
 
 int main()
 {
-	_windows::init();
-	_windows::main();
+	_winds::init();
+	_winds::main();
 	return 0;
 }

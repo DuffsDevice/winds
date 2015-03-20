@@ -4,7 +4,7 @@
 #include <_type/type.predefines.h>
 #include <_type/type.sound.h>
 
-class _windows{
+class _winds{
 	
 	private:
 		

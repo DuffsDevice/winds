@@ -76,7 +76,7 @@ void _sound::soundMsgHandler( _u32 command , void* userData )
 	//text[19] = ',';
 	//text[20] = '0'+msg.channel;
 	//text[21] = 0;
-	//_windows::debug( text );
+	//_winds::debug( text );
 	
 	switch( msg.cmd )
 	{

@@ -22,10 +22,10 @@ void _filesystemController::replaceAssocDirsInternal( string& path )
 bool _filesystemController::init()
 {
 	assocDirs = {
-		{ "%WINDIR%" , "/windows" }
-		, { "%SYSTEM%" , "/windows/system" }
-		, { "%APPDATA%" , "/windows/appdata" }
-		, { "%USERS%" , "/windows/users" }
+		{ "%WINDIR%" , "/winds" }
+		, { "%SYSTEM%" , "/winds/system" }
+		, { "%APPDATA%" , "/winds/appdata" }
+		, { "%USERS%" , "/winds/users" }
 	};
 	
 	//! libFat instantiation

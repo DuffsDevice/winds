@@ -25,7 +25,7 @@ _guiShutdown::_guiShutdown() :
 				this->shutdownLabel->setStrValue( _localizationController::getBuiltInString("lbl_windows_shutting_down") );
 				
 				// Shut down
-				_windows::stop();
+				_winds::stop();
 			}
 		)
 		, 400 , false

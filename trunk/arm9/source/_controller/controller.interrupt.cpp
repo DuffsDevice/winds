@@ -24,7 +24,7 @@ bool _interruptController::init()
 }
 
 void _interruptController::vblHandler(){
-	_windows::interrupt();
+	_winds::interrupt();
 }
 
 _u16 _interruptController::getCurrentScanline(){
