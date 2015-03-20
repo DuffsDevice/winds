@@ -1,7 +1,7 @@
 #include <_gui/gui.setup.page.1.h>
 #include <_controller/controller.localization.h>
 #include <_type/type.view.switcher.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 
 _callbackReturn _guiSetupPage1::languageChangeHandler( _event event )
 {

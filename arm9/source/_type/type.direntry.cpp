@@ -2,7 +2,7 @@
 #include <_type/type.direntry.shortcut.h>
 #include <_type/type.direntry.rom.h>
 #include <_type/type.program.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_controller/controller.filesystem.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.registry.h>

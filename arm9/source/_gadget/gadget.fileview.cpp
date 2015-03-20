@@ -1,7 +1,7 @@
 #include <_gadget/gadget.fileview.h>
 #include <_type/type.gadget.helpers.h>
-#include <_type/type.windows.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.h>
+#include <_type/type.winds.soundbank.h>
 #include <_controller/controller.localization.h>
 
 void _fileView::initializeMenu()
@@ -58,7 +58,7 @@ void _fileView::setPath( const string& path , bool preventClick )
 	this->generateChildren();
 	
 	if( !preventClick )
-		_windowsSoundBank::play( _windowsSound::navigation );
+		_windsSoundBank::play( _windsSound::navigation );
 }
 
 _callbackReturn _fileView::eventForwarder( _event event )

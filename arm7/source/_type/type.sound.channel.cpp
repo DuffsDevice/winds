@@ -1,4 +1,4 @@
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_type/type.sound.h>
 #include <_type/type.sound.channel.h>
 #include <_type/type.sound.msg.h>

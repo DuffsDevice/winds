@@ -5,7 +5,7 @@
 #include <_controller/controller.registry.h>
 #include <_controller/controller.gui.h>
 #include <_type/type.gadget.helpers.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 
 PROG_Mapper::PROG_Mapper() :
 	chooseButNotOpen( false )

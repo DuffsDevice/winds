@@ -1,6 +1,6 @@
 #include <_gadget/gadget.textarea.h>
 #include <_type/type.gadget.helpers.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 #include <_controller/controller.font.h>
 
 _callbackReturn _textArea::refreshHandler( _event event )
@@ -93,7 +93,7 @@ _callbackReturn _textArea::keyHandler( _event event )
 		case _key::backspace:
 		case _key::b:
 			if( that->text.getCursor() == 0 ){
-				_windowsSoundBank::play( _windowsSound::ping );
+				_windsSoundBank::play( _windsSound::ping );
 				break;
 			}
 			// Refresh

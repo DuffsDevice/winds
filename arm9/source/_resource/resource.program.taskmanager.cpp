@@ -5,7 +5,7 @@
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
 #include <_gadget/gadget.window.dialog.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 
 PROG_TaskManager::PROG_TaskManager() :
 	updateTimer( make_callback( this , &PROG_TaskManager::timerHandler ) , 400 , true )

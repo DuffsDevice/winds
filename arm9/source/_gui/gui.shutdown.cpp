@@ -4,7 +4,7 @@
 #include <_controller/controller.debug.h>
 #include <_controller/controller.localization.h>
 #include <_controller/controller.registry.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_resource/resource.image.windows.startuplogo.h>
 
 _guiShutdown::_guiShutdown() :
