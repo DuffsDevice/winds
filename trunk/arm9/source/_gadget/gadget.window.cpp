@@ -1,5 +1,5 @@
 #include <_gadget/gadget.window.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 #include <_controller/controller.gui.h>
 
 void _window::maximize()
@@ -34,7 +34,7 @@ void _window::restore()
 		this->minimized = false;
 		this->show();
 		this->triggerEvent( onRestore );
-		_windowsSoundBank::play( _windowsSound::restore );
+		_windsSoundBank::play( _windsSound::restore );
 	}
 }
 
@@ -63,7 +63,7 @@ void _window::minimize()
 		this->minimized = true;
 		this->hide();
 		this->triggerEvent( onMinimize );
-		_windowsSoundBank::play( _windowsSound::minimize );
+		_windsSoundBank::play( _windsSound::minimize );
 	}
 }
 

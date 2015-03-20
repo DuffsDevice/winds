@@ -1,6 +1,6 @@
 #include <_gadget/gadget.codepointmatrix.h>
 #include <_controller/controller.font.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 
 void _codepointMatrix::setFont( _fontHandle ft )
 {
@@ -354,7 +354,7 @@ _callbackReturn _codepointMatrix::keyHandler( _event event )
 		case _key::backspace:
 		case _key::b:
 			if( !that->cursor.first && !that->cursor.second ){
-				_windowsSoundBank::play( _windowsSound::ping );
+				_windsSoundBank::play( _windsSound::ping );
 				break;
 			}
 			that->backspace();

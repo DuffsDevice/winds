@@ -1,4 +1,4 @@
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_type/type.bitmap.h>
 
 int main( int argc , char* argv[] )

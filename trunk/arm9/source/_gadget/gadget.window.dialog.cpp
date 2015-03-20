@@ -1,6 +1,6 @@
 #include <_gadget/gadget.window.dialog.h>
 #include <_gadget/gadget.button.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 #include <_func/func.inputemulator.h>
 
 _callbackReturn _dialogWindow::submitEscapeHandler( _event event )
@@ -32,7 +32,7 @@ _callbackReturn _dialogWindow::submitEscapeHandler( _event event )
 		}
 		
 		if( onlyDisabledButtonFound )
-			_windowsSoundBank::play( _windowsSound::ping );
+			_windsSoundBank::play( _windsSound::ping );
 	}
 	else
 		return use_default;

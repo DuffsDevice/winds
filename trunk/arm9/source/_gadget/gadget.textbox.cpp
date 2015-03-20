@@ -1,5 +1,5 @@
 #include <_gadget/gadget.textbox.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 #include <_controller/controller.font.h>
 
 _rect _textBox::getGuiStringDimensions() const {
@@ -98,7 +98,7 @@ _callbackReturn _textBox::keyHandler( _event event )
 		case _key::backspace:
 		case _key::b:
 			if( that->text.getCursor() < 1 ){
-				_windowsSoundBank::play( _windowsSound::ping );
+				_windsSoundBank::play( _windsSound::ping );
 				break;
 			}
 			that->removeStr( that->text.getCursor() - 1 );

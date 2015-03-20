@@ -1,20 +1,20 @@
 #include <_dialog/dialog.errorwarninginfo.h>
 #include <_resource/resource.image.alerts.h>
 #include <_controller/controller.localization.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 
 void _errorDialog::executeInternal(){
-	_windowsSoundBank::play( _windowsSound::fatalError );
+	_windsSoundBank::play( _windsSound::fatalError );
 	_imageDialog::executeInternal();
 }
 
 void _warningDialog::executeInternal(){
-	_windowsSoundBank::play( _windowsSound::alert );
+	_windsSoundBank::play( _windsSound::alert );
 	_imageDialog::executeInternal();
 }
 
 void _infoDialog::executeInternal(){
-	_windowsSoundBank::play( _windowsSound::bubble );
+	_windsSoundBank::play( _windsSound::bubble );
 	_imageDialog::executeInternal();
 }
 

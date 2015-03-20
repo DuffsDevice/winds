@@ -5,7 +5,7 @@
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.debug.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 
 PROG_FileDetail::PROG_FileDetail()
 {

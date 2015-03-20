@@ -22,6 +22,6 @@ _staticCallback _staticSound _stickyButton _string _strRange _style _styleAttr
 _taskInfo _taskInfoHandler _tcpType _tempTime _textArea _textBox _time _timeAttr _timer _timerController _timerList _tokenizer _toStr _touch _treeView _treeViewNode _tuple
 _u16 _u32 _u64 _u8 _unixTime _uniquePtr _unorderedMap _user
 _valign _vector _videoController _view _viewSwitcher _virtualFont _voidCallback
-_wallpaperViewType _warningDialog _wchar _window _windowBar _windowButton _windowMenu _windowMenuEntry _winds _windowsSound _windowsSoundBank _windowTaskHandler _wliteral _wtokenizer
+_wallpaperViewType _warningDialog _wchar _window _windowBar _windowButton _windowMenu _windowMenuEntry _winds _windsSound _windsSoundBank _windowTaskHandler _wliteral _wtokenizer
 _yesNoDialog
 string that touchPosition wstring

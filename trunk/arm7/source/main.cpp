@@ -1,4 +1,4 @@
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 
 int main()
 {

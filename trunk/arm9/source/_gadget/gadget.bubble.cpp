@@ -2,7 +2,7 @@
 #include <_controller/controller.font.h>
 #include <_resource/resource.image.bubblearrow.h>
 #include <_type/type.bitmap.transform.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 
 void _bubble::timerHandler(){
 	this->shelve( false );
@@ -29,7 +29,7 @@ _rect _bubble::getContentDimensions( _rect titleDimensions ) const {
 }
 
 _callbackReturn _bubble::openHandler( _event event ){
-	_windowsSoundBank::play( _windowsSound::bubble );
+	_windsSoundBank::play( _windsSound::bubble );
 	return handled;
 }
 

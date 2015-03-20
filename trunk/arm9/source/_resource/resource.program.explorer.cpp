@@ -1,7 +1,7 @@
 #include <_resource/resource.program.explorer.h>
 #include <_resource/resource.icon.folder.up.h>
 #include <_controller/controller.localization.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 
 // Special Pages
 #include <_resource/resource.explorer.computer.h>
@@ -39,7 +39,7 @@ string PROG_Explorer::beforeChange( string newViewName ) const
 	
 	// Play Sound
 	if( !_viewSwitcher::getActiveView().empty() )
-		_windowsSoundBank::play( _windowsSound::navigation );
+		_windsSoundBank::play( _windsSound::navigation );
 	
 	// Adjust the window's title
 	_direntry	newPath = _direntry( newViewName );

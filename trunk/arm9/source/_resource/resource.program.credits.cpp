@@ -5,7 +5,7 @@
 #include <_controller/controller.font.h>
 #include <_controller/controller.localization.h>
 #include <_controller/controller.debug.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_gadget/gadget.window.dialog.h>
 
 PROG_Credits::PROG_Credits()

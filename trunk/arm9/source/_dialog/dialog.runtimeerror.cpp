@@ -2,12 +2,12 @@
 #include <_resource/resource.image.alerts.h>
 #include <_controller/controller.gui.h>
 #include <_controller/controller.localization.h>
-#include <_type/type.windows.soundbank.h>
+#include <_type/type.winds.soundbank.h>
 
 _constBitmap _runtimeErrorDialog::errorimage = BMP_AlertImageError();
 
 void _runtimeErrorDialog::executeInternal(){
-	_windowsSoundBank::play( _windowsSound::fatalError );
+	_windsSoundBank::play( _windsSound::fatalError );
 	this->window->setParent( _guiController::getHost() );
 	this->window->focus();
 }

@@ -1,7 +1,7 @@
 #include <_resource/resource.program.mapper.progobject.h>
 #include <_type/type.gadget.helpers.h>
 #include <_type/type.direntry.h>
-#include <_type/type.windows.h>
+#include <_type/type.winds.h>
 #include <_type/type.program.h>
 #include <_controller/controller.font.h>
 #include <_controller/controller.gui.h>
