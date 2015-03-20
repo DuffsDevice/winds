@@ -10,7 +10,7 @@ void _eventController::removeEventsOf( _gadget* g )
 		)
 		, buffer.end()
 	);
-	return;
+	
 	_eventList& buffer2 = eventBuffer[!curEventBuffer];
 	
 	// Remove from the currently iterated list

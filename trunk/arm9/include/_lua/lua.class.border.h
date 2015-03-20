@@ -4,6 +4,7 @@
 
 #include <_lua/lua.lunar.h>
 #include <_type/type.h>
+#include <_type/type.border.h>
 
 /**
  * Proxy Classes

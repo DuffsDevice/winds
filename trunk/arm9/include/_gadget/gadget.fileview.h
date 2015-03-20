@@ -8,8 +8,8 @@
 #include <_gadget/gadget.scrollArea.h>
 #include <_gadget/gadget.fileobject.h>
 
-class _fileView : public _scrollArea {
-	
+class _fileView : public _scrollArea
+{	
 	private:
 	
 		_direntry								directory;
@@ -35,7 +35,7 @@ class _fileView : public _scrollArea {
 	public:
 	
 		//! Method to set the Path
-		void setPath( const string& path );
+		void setPath( const string& path , bool preventClick = false );
 		
 		//! Method to get the Path
 		string getPath(){ return this->directory.getFileName(); }

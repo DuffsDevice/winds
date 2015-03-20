@@ -52,26 +52,30 @@ _fileView::_fileView( _optValue<_coord> x , _optValue<_coord> y
 }
 
 
-void _fileView::setPath( const string& path )
+void _fileView::setPath( const string& path , bool preventClick )
 {
 	this->directory = _direntry( path );
 	this->generateChildren();
 	
-	_windowsSoundBank::play( _windowsSound::navigation );
+	if( !preventClick )
+		_windowsSoundBank::play( _windowsSound::navigation );
 }
 
 _callbackReturn _fileView::eventForwarder( _event event )
 {
-	_fileView* fileView = (_fileView*)event.getGadget()->getParent();
+	_fileView* fileView = (_fileView*)event.getGadget<_fileObject>()->getParent();
 	
 	if( !fileView )
 		return use_internal;
 	
 	// Use custom Handler
-	if( fileView->eventHandler )
-		return (*fileView->eventHandler)( move(event) );
+	if( fileView->eventHandler ){
+		_callbackReturn ret = (*fileView->eventHandler)( move(event) );
+		if( ret != use_internal )
+			return ret;
+	}
 	// Use default handler
-	else if( ( event == _eventType::onMouseDblClick ) != fileView->singleClickToExecute )
+	if( ( event == _eventType::onMouseDblClick ) != fileView->singleClickToExecute )
 		event.getGadget<_fileObject>()->execute();
 	
 	return use_internal;
@@ -118,8 +122,8 @@ void _fileView::generateChildren()
 			auto cb = _gadgetHelpers::moveBesidePrecedent( _direction::down , 30 , 2 , false , 1 , 1 , false );
 			
 			// Read Children of directory
-			//for( string str : { "Haloo.ini" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/"} )
-			for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
+			for( string str : { "Haloo.ini" , "2013-10-05 16.55.56.jpg" , "Halihalo.exe" , "Hallo/" } )
+			//for( _literal str ; this->directory.readChild( str , this->filemask ) != false ; )
 			{
 				// Allocate Fileobject
 				_fileObject* fo = new _fileObject( ignore , ignore , ignore , ignore  , this->directory.getFileName() + str , this->viewType , _style::rightClickable );

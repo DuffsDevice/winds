@@ -30,6 +30,9 @@ class _timerController : public _controller
 		static _tempTime getMilliTime();	//! in Milliseconds
 		static _tempTime getMicroTime();	//! in Microseconds since system startup
 		static _tempTime getRawTime();		//! Clock Ticks at 33.513982 MHz
+		
+		//! Waits for the given amount of milliseconds
+		static void wait( _tempTime milliseconds );
 };
 
 #endif

@@ -47,7 +47,7 @@ class _luaCallback<T(Parameters...)> : public _callback<T(Parameters...)>
 			return compareCallbacks( cb.state , this->state , cb.index , this->index );
 		}
 		
-		friend class _progLua;
+		friend class _luaProgram;
 		
 	public:
 		

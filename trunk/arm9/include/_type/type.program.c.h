@@ -3,12 +3,12 @@
 
 #include <_type/type.program.h>
 
-class _progC : public _program
+class _cProgram : public _program
 {
 	public:
 		
 		//! Ctor
-		_progC() : _program( _programType::c ) { }
+		_cProgram() : _program( _programType::c ) { }
 };
 
 #endif

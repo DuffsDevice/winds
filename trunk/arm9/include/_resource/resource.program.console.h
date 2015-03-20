@@ -4,7 +4,7 @@
 #include <_type/type.program.c.h>
 #include <_gadget/gadget.codepointmatrix.h>
 
-class PROG_Console : public _progC
+class PROG_Console : public _cProgram
 {
 	private:
 		

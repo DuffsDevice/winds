@@ -57,9 +57,23 @@ _direntry::_direntry( string&& fn ) :
 	, mode( _direntryMode::closed )
 {
 	// Trim the filename
-	trim( filename );
+	trim( this->filename );
 	
-	// set Name (not filename!)
+	// Check for empty filename
+	if( this->filename.empty() )
+		this->filename = "/";
+	
+	// Set Drive
+	_u64 posColon = this->filename.find(':');
+	
+	posColon++; // string::npos = -1 => +1 = 0
+	
+	if( posColon ) // Extract everything before and including the first colon ':'
+		this->drive = this->filename.substr( 0 , posColon );
+	else
+		this->drive = string();
+	
+	// Set Name (not filename!)
 	bool hasLastDelim = this->filename.back() == '/';
 	if( hasLastDelim ) // Remove the ending '/'
 		this->filename.resize( this->filename.length() - 1 );
@@ -68,7 +82,7 @@ _direntry::_direntry( string&& fn ) :
 	if( ( posLast = this->filename.rfind('/') ) != string::npos ) // Cut everything before and including the last occouring slash ('/')
 		this->name = this->filename.substr( posLast + 1 );
 	else
-		this->name = this->filename;
+		this->name = this->filename.substr( posColon );
 	
 	// Reset stat
 	stat_buf.st_mode = 0;

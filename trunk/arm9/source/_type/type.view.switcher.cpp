@@ -13,7 +13,7 @@ _viewSwitcher::~_viewSwitcher()
 	this->views.clear();
 }
 
-bool _viewSwitcher::addView( string assocName , _view* view )
+bool _viewSwitcher::addView( string assocName , _paramAlloc<_view> view )
 {
 	if( assocName.empty() )
 		return false;
@@ -26,21 +26,22 @@ bool _viewSwitcher::addView( string assocName , _view* view )
 		return false;
 	
 	// Remove any Current Handler
-	_view* &data = this->views[assocName]; // reference to pointer
+	_uniquePtr<_view>& data = this->views[assocName]; // reference to pointer
 	
-	if( data )
-		delete data; // Delete Current associated view
-	
-	// Insert the new View
+	// Override the old view with the new View
 	data = view;
 	
 	// Tell it which switcher it belongs to
 	data->setSwitcher( this );
 	
 	// Maybe reenable the old active view if we overwrote that one
-	if( isActiveView && viewParent ){
+	if( isActiveView && viewParent )
+	{
+		// Set name of currently active view
+		this->currentView = move(assocName);
+		
+		// Let the View do its job
 		data->create( viewParent );
-		this->currentView = assocName;
 	}
 	
 	return true;
@@ -52,13 +53,10 @@ void _viewSwitcher::removeView( string assocName )
 		unset();
 	
 	// Unbind the view from the switcher
-	_map<string,_view*>::iterator oldViewIter = this->views.find( assocName );
+	const auto& oldViewIter = this->views.find( assocName );
 	
 	if( oldViewIter != this->views.end() && oldViewIter->second )
-	{
-		delete oldViewIter->second;
 		this->views.erase( oldViewIter );
-	}
 }
 
 bool _viewSwitcher::setViewParent( _gadget* viewParent )
@@ -66,21 +64,28 @@ bool _viewSwitcher::setViewParent( _gadget* viewParent )
 	if( this->viewParent == viewParent )
 		return true;
 	
+	string oldAssocName = this->currentView;
+	
 	// Remove current view
 	if( !unset() )
 		return false;
 	
 	this->viewParent = viewParent;
 	
-	// Re initialize
-	if( !this->currentView.empty() )
-	{
-		// Get current view
-		_view* view = this->views[this->currentView];
-		
-		// Repaint that one
-		view->create( this->viewParent );
-	}
+	// Re-initialize
+	_view* oldView = oldAssocName.empty() ? nullptr : getViewByName( oldAssocName );
+	
+	if( !oldView || !viewParent )
+		return true;
+	
+	// Make Sure, the Switcher instance is properly set
+	oldView->setSwitcher( this );
+	
+	// Set Name of currently active view
+	this->currentView = move( oldAssocName );
+	
+	// Repaint that the active one
+	oldView->create( this->viewParent );
 	
 	return true;
 }
@@ -92,17 +97,34 @@ bool _viewSwitcher::set( string assocName )
 	if( this->currentView == assocName )
 		return false;
 	
-	// Can we detroy the old view?
-	if( !this->unset() )
-		return false;
-	
 	// Apply new view
-	_view* newView = this->getViewByName( assocName );
+	_view* newView = assocName.empty() ? nullptr : this->getViewByName( assocName );
 	
 	if( newView && viewParent )
 	{
-		newView->create( viewParent );
-		this->currentView = move( assocName );
+		// Inform about view change, and check, if the callback
+		// is happy with the supplied new view name
+		string modification = this->beforeChange( assocName );
+		
+		if( modification.empty() || modification == assocName )
+		{
+			// Can we detroy the old view?
+			_view* currentView = this->currentView.empty() ? nullptr : getViewByName( this->currentView );
+			if( currentView && !currentView->destroy( viewParent ) )
+				return false;
+			
+			// Make Sure, the Switcher instance is properly set
+			newView->setSwitcher( this );
+			
+			// Let the View do its job
+			newView->create( viewParent );
+			
+			// Set Current View to the assoc name
+			// that this view was activated with
+			this->currentView = move( assocName );
+		}
+		else
+			return this->set( modification );
 	}
 	
 	return true;
@@ -110,31 +132,28 @@ bool _viewSwitcher::set( string assocName )
 
 bool _viewSwitcher::unset()
 {
-	if( !this->currentView.empty() && viewParent )
-	{
-		// Clear the content of the view (or at least try to)
-		bool deleteSuccess = this->views[ this->currentView ]->destroy( viewParent );
-		
-		if( deleteSuccess )
-			this->currentView.clear();
-		
-		return deleteSuccess;
-	}
+	_view* currentView = this->currentView.empty() ? nullptr : getViewByName( this->currentView );
 	
-	return true;
+	if( !currentView || !viewParent )
+		return true;
+	
+	// Clear the content of the view (or at least try to)
+	bool deleteSuccess = currentView->destroy( viewParent );
+	
+	if( deleteSuccess )
+		this->currentView.clear();
+	
+	return deleteSuccess;
 }
 
 void _viewSwitcher::update()
 {
-	if( this->currentView.empty() || !viewParent )
-		return;
-	
 	// Get current view
-	_view* view = this->views[this->currentView];
+	_view* currentView = this->currentView.empty() ? nullptr : getViewByName( this->currentView );
 	
-	if( !view )
+	if( !currentView || !viewParent )
 		return;
 	
 	// Update that one
-	view->update( this->viewParent );
+	currentView->update( this->viewParent );
 }

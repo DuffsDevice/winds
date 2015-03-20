@@ -80,6 +80,17 @@ namespace _gadgetHelpers
 			sizeParent( _optValue<_length> smallerX = 0 , _optValue<_length> smallerY = 0 );
 	};
 	
+	//! Class to resize the gadget to the size of the parent and to move it at a certain position within the parent
+	class dimensionsParent : public _dummyCallback<_eventHandler>
+	{
+		private:
+			_padding padding;
+			_callbackReturn executor( _event event ) const ;
+		public:
+			// Ctor
+			dimensionsParent( _padding padding = _padding(0) );
+	};
+	
 	//! Class to move the gadget to a position relative to the parents right and/or bottom border
 	class rightBottomAlign : public _dummyCallback<_eventHandler>
 	{

@@ -9,7 +9,7 @@
 #include <_gadget/gadget.textbox.h>
 #include <_gadget/gadget.divider.h>
 
-class PROG_FileDetail : public _progC
+class PROG_FileDetail : public _cProgram
 {
 	private:
 		

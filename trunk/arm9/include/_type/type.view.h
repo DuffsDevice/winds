@@ -25,7 +25,7 @@ class _view
 		virtual ~_view(){}
 		
 		//! Default Copy and Move ctors
-		_view() = default;
+		_view() : viewSwitcher( nullptr ) {}
 		_view( _view&& ) = default;
 		_view( const _view& ) = default;
 		
@@ -54,5 +54,7 @@ class _view
 			return *this->viewSwitcher;
 		}
 };
+
+#include <_type/type.view.switcher.h>
 
 #endif

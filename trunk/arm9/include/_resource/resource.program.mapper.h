@@ -8,7 +8,7 @@
 #include <_gadget/gadget.scrollarea.h>
 #include <_dialog/dialog.file.open.h>
 
-class PROG_Mapper : public _progC
+class PROG_Mapper : public _cProgram
 {
 	private:
 		

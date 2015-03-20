@@ -1,12 +1,27 @@
 #include <_resource/resource.program.explorer.h>
 #include <_resource/resource.icon.folder.up.h>
 #include <_controller/controller.localization.h>
+#include <_type/type.windows.soundbank.h>
 
 // Special Pages
-//#include <_resource/resource.explorer.computer.h>
+#include <_resource/resource.explorer.computer.h>
+#include <_resource/resource.explorer.folder.h>
 
-PROG_Explorer::PROG_Explorer() :
-	path( "/" )
+_view* PROG_Explorer::getViewByName( string assocName ) const
+{
+	// Try to find a special page
+	_view* page = _viewSwitcher::getViewByName( assocName );
+	
+	if( page )
+		return page;
+	
+	// Set new Path
+	this->folderPage->setPath( assocName );
+	
+	return this->folderPage;
+}
+
+PROG_Explorer::PROG_Explorer()
 {
 	_programHeader header;
 	header.name = string("Explorer");
@@ -16,30 +31,53 @@ PROG_Explorer::PROG_Explorer() :
 	this->setHeader( move(header) );
 }
 
+string PROG_Explorer::beforeChange( string newViewName ) const
+{
+	// We dont accept a filesystem root, but only the 'Computer-Page as the Root'
+	if( newViewName.empty() || newViewName == "/" )
+		return _localizationController::getBuiltInString("lbl_computer").cpp_str();
+	
+	// Play Sound
+	if( !_viewSwitcher::getActiveView().empty() )
+		_windowsSoundBank::play( _windowsSound::navigation );
+	
+	// Adjust the window's title
+	_direntry	newPath = _direntry( newViewName );
+	string		title = newPath.getName();
+	
+	// Set Window Title and AddressBar
+	_program::getMainFrame()->setTitle( title.empty() ? "/" : title );
+	
+	this->addressBar->setStrValue( newPath.getFileName() );
+	
+	return string();
+}
+
 void PROG_Explorer::main( _args args )
 {
+	string path;
+	
 	if( !args.empty() && !args[0].empty() )
-		this->path = _direntry(args[0]).getFileName();
+		path = _direntry(args[0]).getFileName();
 	
-	//this->viewSwitcher.addView( _localizationController::getBuiltInString("lbl_systemsettings") , _explorerPageSystemSettings() );
-	
+	// Create Frame for program
 	_mainFrame* mainFrame = _program::getMainFrame( 120 , 90 );
 	
-	this->scrollArea = new _scrollArea( 0 , 21 , ignore , ignore , _style::storeHandle( this ) );
-	this->fileView = new _fileView( 0 , 21 , ignore , ignore , this->path , _fileViewType::list );
-	this->addressBar = new _textBox( 1 , 10 , ignore , 10 , this->path );
-	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style::canNotTakeFocus );
-	this->folderUpButton = new _imageButton( ignore , 10 , 10 , 9 , BMP_FolderUpIcon() , ignore , "" , _style::canNotTakeFocus );
-	
-	this->fileView->setUserEventHandler( onEdit , make_callback( this , &PROG_Explorer::handler ) );
-	this->fileView->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );
-	this->fileView->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
-	
-	this->scrollArea->setUserEventHandler( onParentResize , _gadgetHelpers::sizeParent( 1 , 30 ) );
-	this->scrollArea->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
+	// Add Special Pages
+	this->setViewPadding( _padding( 0 , 11 , 0 , 0 ) );
+	this->folderPage = new _explorerPageFolder();
+	this->addView( _localizationController::getBuiltInString("lbl_computer").cpp_str() , _explorerPageComputer() );
 	
 	// Set viewParent of viewSwitcher
-	this->viewSwitcher.setViewParent( this->scrollArea );
+	_viewSwitcher::setViewParent( mainFrame );
+	
+	
+	
+	// GUI Stuff
+	
+	this->addressBar = new _textBox( 1 , 10 , ignore , 10 , path );
+	this->submitButton = new _actionButton( ignore , 10 , _actionButtonType::next , _style::canNotTakeFocus );
+	this->folderUpButton = new _imageButton( ignore , 10 , 10 , 9 , BMP_FolderUpIcon() , ignore , "" , _style::canNotTakeFocus );
 	
 	this->addressBar->setInternalEventHandler( onParentResize , _gadgetHelpers::sizeParent( 23 , ignore ) );
 	this->addressBar->setInternalEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
@@ -52,18 +90,12 @@ void PROG_Explorer::main( _args args )
 	this->folderUpButton->setUserEventHandler( onParentResize , _gadgetHelpers::rightBottomAlign( 11 , ignore ) );
 	this->folderUpButton->setUserEventHandler( onParentAdd , _gadgetHelpers::eventForward(onParentResize) );
 	
-	// Adjust the window's title
-	this->setWindowTitle();
-	
 	// Create Menu
 	_menu menu = _windowMenu::getStandardMenu();
 	menu.setList( 1 , { { 101 , _localizationController::getBuiltInString("lbl_exit") } } );
 	
-	mainFrame->addChild( this->fileView );
-	mainFrame->addChild( this->scrollArea );
-	
-	// Updates the fileview and eventually display a special page
-	this->updateFileView();
+	// Set the new active page
+	_viewSwitcher::set( path );
 	
 	mainFrame->addChild( this->windowBar = new _windowBar() );
 	mainFrame->addChild( this->windowMenu = new _windowMenu(move(menu)) );
@@ -72,63 +104,14 @@ void PROG_Explorer::main( _args args )
 	mainFrame->addChild( this->folderUpButton );
 }
 
-void PROG_Explorer::cleanUp()
-{
-	delete this->fileView;
-	delete this->addressBar;
-	delete this->submitButton;
-	delete this->folderUpButton;
-	delete this->windowMenu;
-	delete this->windowBar;
-}
-
-void PROG_Explorer::setWindowTitle()
-{
-	string path = _direntry( this->fileView->getPath() ).getName();
-	_program::getMainFrame()->setTitle( path.empty() ? "/" : path );
-}
-
-void PROG_Explorer::updateFileView()
-{
-	string path = this->fileView->getPath();
-	
-	if( path.front() == '/' )
-		path = path.substr( 1 );
-	
-	// Display Special Page?
-	if( this->viewSwitcher.getViewByName( path ) ){
-		this->fileView->hide();
-		//this->scrollArea->show();
-		this->viewSwitcher.set( path );
-	}
-	else{
-		this->viewSwitcher.unset();
-		this->scrollArea->hide();
-		this->fileView->show();
-	}
-}
-
 _callbackReturn PROG_Explorer::handler( _event event )
 {
 	_gadget* that = event.getGadget();
 	
-	if( that == this->submitButton ){
-		string val = this->addressBar->getStrValue().cpp_str();
-		this->path = val;
-		this->fileView->setPath( val );
-		this->setWindowTitle();
-	}
-	if( that == this->folderUpButton ){
-		this->path = _direntry( this->fileView->getPath() ).getParentDirectory();
-		this->addressBar->setStrValue( this->path );
-		this->fileView->setPath( this->path );
-		this->setWindowTitle();
-	}
-	else if( that->getType() == _gadgetType::fileview ){
-		this->addressBar->setStrValue( this->fileView->getPath() );
-		this->setWindowTitle();
-		this->updateFileView();
-	}
+	if( that == this->submitButton )
+		_viewSwitcher::set( this->addressBar->getStrValue().cpp_str() );
+	else if( that == this->folderUpButton )
+		_viewSwitcher::set( _direntry( _viewSwitcher::getActiveView() ).getParentDirectory() );
 	
 	return handled;
 }

@@ -57,10 +57,6 @@ _fromStr<_dimension> string2dimension = {
 	{ "vertical" , _dimension::vertical }
 };
 
-// Casts for _margin and _padding
-_border::operator _padding(){ return static_cast<_padding>(*this); }
-_border::operator _margin(){ return static_cast<_margin>(*this); }
-
 
 // Implementations
 namespace DSWindows

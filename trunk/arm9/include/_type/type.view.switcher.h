@@ -9,15 +9,20 @@ class _viewSwitcher
 {
 	private:
 	
-		_gadget*			viewParent;
-		string				currentView;
-		_map<string,_view*>	views;
+		_gadget*						viewParent;
+		_padding						viewPadding;
+		string							currentView;
+		_map<string,_uniquePtr<_view>>	views;
+		
+		//! Function to be overloaded from a child class, will be called, in case the view changes
+		virtual string beforeChange( string newViewName ) const { return string(); }
 	
 	public:
 	
 		//! Ctor
-		_viewSwitcher( _gadget* viewParent = nullptr ) :
+		_viewSwitcher( _gadget* viewParent = nullptr , _padding viewPadding = _padding(0) ) :
 			viewParent( viewParent )
+			, viewPadding( viewPadding )
 		{}
 		
 		//! Dtor
@@ -27,47 +32,47 @@ class _viewSwitcher
 		bool setViewParent( _gadget* viewParent );
 		
 		//! Get view parent
-		_gadget* getViewParent(){
+		_gadget* getViewParent() const {
 			return this->viewParent;
 		}
 		
-		//! Adds an instance of the supplied maybe derived _view-class
-		//! It can later be activated by a call to set, given the associated name you already passed to this function
-		bool addView( string assocName , _paramAlloc<_view> view ){
-			return this->addView( move(assocName) , (_view*)view );
+		//! Set view padding
+		void setViewPadding( _padding viewPadding ){
+			if( this->viewPadding == viewPadding )
+				return;
+			this->viewPadding = viewPadding;
+			update();
+		}
+		
+		//! Get view padding
+		_padding getViewPadding() const {
+			return this->viewPadding;
 		}
 		
 		//! Adds an instance of the supplied maybe derived _view-class
 		//! It can later be activated by a call to set, given the associated name you already passed to this function
-		bool addView( string assocName , _view* view );
+		bool addView( string assocName , _paramAlloc<_view> view );
 		
 		//! Removes the view with the supplied associated name
 		void removeView( string assocName );
 		
-		/**
-		 * Deactivate the currently active view
-		 * This function does nothing if no view is currently activated
-		 * @return whether the view could be unset (the current view did not prevent switching)
-		 **/
-		bool unset();
-		
 		//! Get the associated Name of the currently active view
-		string getActiveView(){
+		string getActiveView() const {
 			return this->currentView;
 		}
 		
 		//! Checks if the supplied view is the currently active view
-		bool isActive( _view* view ){
-			return this->views[this->currentView] == view;
+		bool isActive( _view* view ) const {
+			return this->getViewByName( this->currentView ) == view;
 		}
 		
 		//! Returns the _view object having the supplied associated name
-		_view* getViewByName( string assocName ){
-			auto iter = this->views.find(assocName);
-			return iter != this->views.end() ? iter->second : nullptr ;
+		virtual _view* getViewByName( string assocName ) const {
+			const auto& iter = this->views.find(assocName);
+			return iter != this->views.end() ? iter->second.get() : nullptr ;
 		}
 		
-		//! Upadets the currently active view
+		//! Updates the currently active view
 		void update();
 		
 		/**
@@ -76,6 +81,13 @@ class _viewSwitcher
 		 * @return whether the new view could be applied (the current view did not prevent switching)
 		 */
 		bool set( string assocName );
+		
+		/**
+		 * Deactivate the currently active view
+		 * This function does nothing if no view is currently activated
+		 * @return whether the view could be unset (the current view did not prevent switching)
+		 **/
+		bool unset();
 };
 
 #endif
