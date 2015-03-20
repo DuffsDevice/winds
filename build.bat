@@ -1,3 +1,3 @@
 @echo off
-make
+make -j 7
 pause

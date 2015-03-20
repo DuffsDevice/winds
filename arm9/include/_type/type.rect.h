@@ -2,6 +2,7 @@
 #define _WIN_T_RECT_
 
 #include <_type/type.h>
+#include <_type/type.border.h>
 #include <cmath>
 #include <algorithm>
 

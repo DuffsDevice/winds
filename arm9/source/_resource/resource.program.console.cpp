@@ -25,7 +25,7 @@ void PROG_Console::main( _args args )
 
 _callbackReturn PROG_Console::handler( _event event )
 {
-	_gadget* that = event.getGadget();
+	//_gadget* that = event.getGadget();
 	
 	this->terminate();
 	

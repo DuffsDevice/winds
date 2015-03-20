@@ -3,7 +3,7 @@
 
 #include <_type/type.program.c.h>
 
-class PROG_RomExecutor : public _progC
+class PROG_RomExecutor : public _cProgram
 {
 	private:
 		

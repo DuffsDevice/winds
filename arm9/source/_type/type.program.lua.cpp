@@ -133,36 +133,36 @@ _vector<_tuple<_literal,_literal,void(*)(lua_State*)>>	luaClasses = {
 	make_tuple( "UI" , "Clock" , &Lunar<_lua_clockgadget>::install )
 };
 
-int _progLua::lua_keyboardIsRegistered( lua_State* L ){ push( L , _guiController::getKeyboard() != nullptr ); return 1; }
-int _progLua::lua_keyboardIsOpened( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isOpened() ); return 1; }
-int _progLua::lua_keyboardOpen( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->open(); return 0; }
-int _progLua::lua_keyboardClose( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->close(); return 1; }
-int _progLua::lua_keyboardIsShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isShift() ); return 1; }
-int _progLua::lua_keyboardIsCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isCaps() ); return 1; }
-int _progLua::lua_keyboardSetShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setShift( check<bool>( L , 1 ) ); return 0; }
-int _progLua::lua_keyboardSetCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setCaps( check<bool>( L , 1 ) ); return 0; }
+int _luaProgram::lua_keyboardIsRegistered( lua_State* L ){ push( L , _guiController::getKeyboard() != nullptr ); return 1; }
+int _luaProgram::lua_keyboardIsOpened( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isOpened() ); return 1; }
+int _luaProgram::lua_keyboardOpen( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->open(); return 0; }
+int _luaProgram::lua_keyboardClose( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->close(); return 1; }
+int _luaProgram::lua_keyboardIsShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isShift() ); return 1; }
+int _luaProgram::lua_keyboardIsCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; push( L , _guiController::getKeyboard()->isCaps() ); return 1; }
+int _luaProgram::lua_keyboardSetShift( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setShift( check<bool>( L , 1 ) ); return 0; }
+int _luaProgram::lua_keyboardSetCaps( lua_State* L ){ if( !_guiController::getKeyboard() ) return 0; _guiController::getKeyboard()->setCaps( check<bool>( L , 1 ) ); return 0; }
 
-void _progLua::lua_print( lua_State* L , _literal str , _u32 len ){ printf("%s",str); }
-int _progLua::lua_writeDebug( lua_State* L ){ _debugController::debug( check<_literal>( L , 1 ) ); return 0; }
-int _progLua::lua_pushEvent( lua_State* L ){ _eventController::pushEvent( check<_event>( L , 1 ) , _eventCallType::normal ); return 0; }
-int _progLua::lua_getCurrentFocus( lua_State* L ){ return push( L , _guiController::getCurrentFocus() ); }
-int _progLua::lua_getLocalizedString( lua_State* L ){ return push( L , _localizationController::getBuiltInString( check<_literal>( L , 1 ) ) ); }
-int _progLua::lua_getSystemRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getSystemRegistry() ) ); return 1; }
-int _progLua::lua_getUserRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getUserRegistry() ) ); return 1; }
-int _progLua::lua_getFont( lua_State* L ){
+void _luaProgram::lua_print( lua_State* L , _literal str , _u32 len ){ printf("%s",str); }
+int _luaProgram::lua_writeDebug( lua_State* L ){ _debugController::debug( check<_literal>( L , 1 ) ); return 0; }
+int _luaProgram::lua_pushEvent( lua_State* L ){ _eventController::pushEvent( check<_event>( L , 1 ) , _eventCallType::normal ); return 0; }
+int _luaProgram::lua_getCurrentFocus( lua_State* L ){ return push( L , _guiController::getCurrentFocus() ); }
+int _luaProgram::lua_getLocalizedString( lua_State* L ){ return push( L , _localizationController::getBuiltInString( check<_literal>( L , 1 ) ) ); }
+int _luaProgram::lua_getSystemRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getSystemRegistry() ) ); return 1; }
+int _luaProgram::lua_getUserRegistry( lua_State* L ){ Lunar<_lua_ini>::push( L , new _lua_ini( &_registryController::getUserRegistry() ) ); return 1; }
+int _luaProgram::lua_getFont( lua_State* L ){
 	return push( L , is_a<_literal>( L , 1 ) ? _fontController::getFont( check<_literal>( L , 1 ) ) : _fontController::getStandardFont() );
 }
-int _progLua::lua_getWorkingDir( lua_State* L ){
-	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getCWD() ); return 0;
+int _luaProgram::lua_getWorkingDir( lua_State* L ){
+	_luaProgram* prog = static_cast<_luaProgram*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getCWD() ); return 0;
 }
-int _progLua::lua_getBinaryPath( lua_State* L ){
-	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getPath() ); return 0;
+int _luaProgram::lua_getBinaryPath( lua_State* L ){
+	_luaProgram* prog = static_cast<_luaProgram*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) return push( L , prog->getPath() ); return 0;
 }
-int _progLua::lua_exit( lua_State* L ){
-	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0;
+int _luaProgram::lua_exit( lua_State* L ){
+	_luaProgram* prog = static_cast<_luaProgram*>(lua_touserdata(L,lua_upvalueindex(1))); if( prog ) prog->terminate(); return 0;
 }
-int _progLua::lua_getMainFrame( lua_State* L ){
-	_progLua* prog = static_cast<_progLua*>(lua_touserdata(L,lua_upvalueindex(1)));
+int _luaProgram::lua_getMainFrame( lua_State* L ){
+	_luaProgram* prog = static_cast<_luaProgram*>(lua_touserdata(L,lua_upvalueindex(1)));
 	if( !prog )
 		return 0;
 	if( lua_gettop( L ) != 0 )
@@ -173,7 +173,7 @@ int _progLua::lua_getMainFrame( lua_State* L ){
 	}
 	return push( L , prog->getMainFrame() );
 }
-int _progLua::lua_usingClass( lua_State* L )
+int _luaProgram::lua_usingClass( lua_State* L )
 {
 	string classPath = check<string>( L , 1 );
 	
@@ -206,14 +206,14 @@ int _progLua::lua_usingClass( lua_State* L )
 		return 1;
 	return luaL_error( L , "The package '%s' is not available." , classPath.c_str() );
 }
-int _progLua::lua_pause( lua_State* L ){
+int _luaProgram::lua_pause( lua_State* L ){
 	_debugController::submit();
 	return 0;
 }
-int	_progLua::lua_closeService( lua_State* L ){
+int	_luaProgram::lua_closeService( lua_State* L ){
 	return push( L , serviceState2string[ _executionController::closeService( check<_serviceId>( L , 1 ) ) ] );
 }
-int	_progLua::lua_startService( lua_State* L )
+int	_luaProgram::lua_startService( lua_State* L )
 {
 	_serviceTransfer transferData;
 	
@@ -249,22 +249,22 @@ int	_progLua::lua_startService( lua_State* L )
 	transferData.arguments = check<_args>( L , 2 );
 	return push( L , _executionController::startService( check<_literal>( L , 1 ) , move(transferData) ) );
 }
-int	_progLua::lua_getServiceState( lua_State* L ){
+int	_luaProgram::lua_getServiceState( lua_State* L ){
 	return push( L , serviceState2string[ _executionController::getServiceState( check<_serviceId>( L , 1 ) ) ] );
 }
-int	_progLua::lua_setServiceHandler( lua_State* L ){
+int	_luaProgram::lua_setServiceHandler( lua_State* L ){
 	_registryController::setPackagePath( check<_literal>( L , 1 ) , check<string>( L , 2 ) );
 	return 0;
 }
-int	_progLua::lua_getServiceTransferData( lua_State* L ){
+int	_luaProgram::lua_getServiceTransferData( lua_State* L ){
 	pushTransferData( L , _executionController::getServiceTransferData( check<_serviceId>( L , 1 ) ) );
 	return 1;
 }
-int	_progLua::lua_getServiceHandler( lua_State* L ){
+int	_luaProgram::lua_getServiceHandler( lua_State* L ){
 	return push( L , _registryController::getPackagePath( check<_literal>( L , 1 ) ) );
 }
 
-bool _progLua::parseProgramHeader()
+bool _luaProgram::parseProgramHeader()
 {
 	_programHeader header;
 	
@@ -346,7 +346,7 @@ bool _progLua::parseProgramHeader()
 	return false;
 }
 
-luaL_Reg _progLua::windowsLibrary[] = {
+luaL_Reg _luaProgram::windowsLibrary[] = {
 	{"getCurrentFocus"		, lua_getCurrentFocus },
 	{"getLocalizedString"	, lua_getLocalizedString },
 	{"getSystemRegistry"	, lua_getSystemRegistry },
@@ -377,17 +377,17 @@ luaL_Reg _progLua::windowsLibrary[] = {
 /**
  * Programm Stuff
  */
-_progLua::_progLua( string prog ) :
+_luaProgram::_luaProgram( string prog ) :
 	_program( _programType::lua )
 	, content( new string( move(prog) ) )
 	, headParsed( false )
 {
-	lua_setprintfunc( &_progLua::lua_print );
+	lua_setprintfunc( &_luaProgram::lua_print );
 	parseProgramHeader();
 }
 
 //! Loads System.*
-void _progLua::registerSystem()
+void _luaProgram::registerSystem()
 {
 	lua_newtable( this->state );
 	for( luaL_Reg* lib = windowsLibrary ; lib->func ; lib++ )
@@ -430,7 +430,7 @@ void _progLua::registerSystem()
 	lua_setglobal( this->state , "using" );
 }
 
-void _progLua::main( _args args )
+void _luaProgram::main( _args args )
 {
 	if( !this->content )
 		return;
@@ -443,7 +443,7 @@ void _progLua::main( _args args )
 	// Load our lua-piece
 	luaL_loadbuffer( this->state , this->content->c_str() , this->content->length() , luaSrcToken.c_str() );
 	
-	// _progLua.content is just there for passing the 'content' of the program to the mainFunction
+	// _luaProgram.content is just there for passing the 'content' of the program to the mainFunction
 	delete this->content;
 	this->content = nullptr;
 	
@@ -477,7 +477,7 @@ void _progLua::main( _args args )
 		lua_pop( this->state , 2 );
 }
 
-void _progLua::dispatch( _serviceId id , _serviceTransfer args )
+void _luaProgram::dispatch( _serviceId id , _serviceTransfer args )
 {
 	lua_getglobal( this->state , "dispatch" );
 	
@@ -512,7 +512,7 @@ void _progLua::dispatch( _serviceId id , _serviceTransfer args )
 	}
 }
 
-void _progLua::pushTransferData( lua_State* L , _serviceTransfer data )
+void _luaProgram::pushTransferData( lua_State* L , _serviceTransfer data )
 {
 	// Push Additional data table
 	lua_createtable( L , 0 , 6 );	// Create service data table
@@ -541,7 +541,7 @@ void _progLua::pushTransferData( lua_State* L , _serviceTransfer data )
 	lua_rawset( L , -3 );
 }
 
-void _progLua::process( _serviceId id , _serviceState& serviceState )
+void _luaProgram::process( _serviceId id , _serviceState& serviceState )
 {
 	lua_getglobal( this->state , "dispatch" );
 	
@@ -572,7 +572,7 @@ void _progLua::process( _serviceId id , _serviceState& serviceState )
 		serviceState = _serviceState::error;
 }
 
-_serviceTransfer _progLua::getServiceData( _serviceId id )
+_serviceTransfer _luaProgram::getServiceData( _serviceId id )
 {
 	_serviceTransfer transfer;
 	
@@ -614,7 +614,7 @@ _serviceTransfer _progLua::getServiceData( _serviceId id )
 	return move(transfer);
 }
 
-void _progLua::cleanUp()
+void _luaProgram::cleanUp()
 {
 	if( this->content )
 		delete this->content;
@@ -623,7 +623,7 @@ void _progLua::cleanUp()
 	lua_close( this->state );
 }
 
-void _progLua::frame( _int numRunningPrograms )
+void _luaProgram::frame( _int numRunningPrograms )
 {
 	// Collect garbage!
 	// the Lua Garbage collector uses roughly ~ 12% cpu, no matter how many programs we have

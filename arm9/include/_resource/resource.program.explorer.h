@@ -12,40 +12,32 @@
 #include <_gadget/gadget.window.bar.h>
 #include <_gadget/gadget.scrollarea.h>
 
+class _explorerPageFolder;
 
-class PROG_Explorer : public _progC
+class PROG_Explorer : public _cProgram , public _viewSwitcher
 {
 	private:
 		
-		string			path;
+		_uniquePtr<_explorerPageFolder>	folderPage;
+		_uniquePtr<_textBox>			addressBar;
+		_uniquePtr<_button>				submitButton;
+		_uniquePtr<_imageButton>		folderUpButton;
+		_uniquePtr<_windowMenu>			windowMenu;
+		_uniquePtr<_windowBar>			windowBar;
 		
-		_fileView*		fileView;
-		_scrollArea*	scrollArea;
-		_textBox*		addressBar;
-		_button*		submitButton;
-		_imageButton*	folderUpButton;
-		_windowMenu*	windowMenu;
-		_windowBar*		windowBar;
-		
+		// Routine called to execute the Explorer (will be called by _cProgram)
 		void	main( _args args );
-		void	cleanUp();
 		
-		void	setWindowTitle();
-		void	updateFileView();
-		
+		// Eventhandler for arbitrary events
 		_callbackReturn handler( _event event );
 		
-		//! Object for managing special sites
-		_viewSwitcher	viewSwitcher;
+		//! Overrides _viewSwitcher-methods
+		_view*	getViewByName( string assocName ) const override ;
+		string	beforeChange( string newViewName ) const override ;
 		
 	public:
 		
-		//! Only used by special sites to change the path again
-		void setNewPath( string path ){
-			this->fileView->setPath( move(path) );
-			this->fileView->triggerEvent( onEdit );
-		}
-		
+		//! Ctor
 		PROG_Explorer();
 };
 

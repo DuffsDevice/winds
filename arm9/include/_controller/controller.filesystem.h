@@ -28,6 +28,9 @@ class _filesystemController : public _controller
 		//! Get List of connected hard drives
 		static _vector<string> getDrives();
 		
+		//! Get the Default Drive
+		static string getDefaultDrive();
+		
 		//! Get statistics about a connected hard drive
 		static bool getDriveStats( string driveName , _driveStats& dest );
 		

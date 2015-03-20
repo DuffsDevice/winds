@@ -74,6 +74,7 @@ class _direntry
 		string					filename;
 		string					name;
 		string					extension;
+		string					drive;
 		
 		//! MIME-Type
 		_mimeType 				mimeType;
@@ -186,14 +187,17 @@ class _direntry
 		//! Get Filename
 		const string& getFileName() const { return this->filename; }
 		
-		//! get Name of the file (not "C:/Hello.txt", but "Hello")
+		//! Get Name of the file (not "C:/Hello.txt", but "Hello")
 		virtual const string& getName() const { return this->name; }
+		
+		//! Get the Drive of the file ("fat1:", or "fat:")
+		virtual string getDrive() const { return this->drive; }
 		
 		//! Get the string that should be displayed if the direntry-name should be drawn
 		string getFullName( bool forceExtension = false ) const ;
 		
 		//! get Extension of the file (not "C:/Hello.txt", but "txt")
-		virtual const string& getExtension() const { return this->extension; }
+		virtual string getExtension() const { return this->extension; }
 		
 		//! Get Mime Type
 		_mimeType getMimeType() const { return this->mimeType; }

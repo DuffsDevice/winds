@@ -8,7 +8,7 @@
 //! Program
 #include <_type/type.program.h>
 
-class _progLua : public _program
+class _luaProgram : public _program
 {
 	private:
 		
@@ -74,7 +74,7 @@ class _progLua : public _program
 	public:
 		
 		//! Ctor
-		_progLua( string prog );
+		_luaProgram( string prog );
 		
 		//! Main function that will be called at the start of execution (one shot)
 		void main( _args args ) override ;

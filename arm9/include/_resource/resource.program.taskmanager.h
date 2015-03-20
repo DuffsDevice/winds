@@ -6,7 +6,7 @@
 #include <_gadget/gadget.image.h>
 #include <_gadget/gadget.label.h>
 
-class PROG_TaskManager : public _progC
+class PROG_TaskManager : public _cProgram
 {
 	private:
 		

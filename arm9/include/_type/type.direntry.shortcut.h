@@ -35,9 +35,8 @@ class _shortcut : public _direntry {
 		_programHandle execute( _args args = _args() );
 		
 		//! get the shortcuts extension, which is anyway null
-		const string& getExtension() const {
-			static string empty("");
-			return empty;
+		string getExtension() const {
+			return string();
 		}
 		
 		//! Geth the shortcuts file-image

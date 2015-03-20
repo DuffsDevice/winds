@@ -155,44 +155,6 @@ enum class _valign : _u8 {
 	bottom = 12
 };
 
-class _padding;
-class _margin;
-
-//! Class that describes the width of the four borders of a rectangle
-struct _border
-{
-	_length left;
-	_length top;
-	_length right;
-	_length bottom;
-	
-	_border( _length l , _length t , _length r , _length b ) : left(l) , top(t) , right(r) , bottom(b) {}
-	_border( _length width ) : left(width) , top(width) , right(width) , bottom(width) {}
-	_border() : left(0) , top(0) , right(0) , bottom(0) {}
-	
-	//! Comparisons
-	inline bool operator==( const _border& other ) const { return !( *this != other ); }
-	inline bool operator!=( const _border& other ) const {
-		return other.left != this->left || other.top != this->top || other.right != this->right || other.bottom != this->bottom;
-	}
-	
-	//! Casts for them
-	operator _padding();
-	operator _margin();
-};
-
-//! Typedefs for class _padding and _margin
-struct _padding : _border{
-	_padding( _length l , _length t , _length r , _length b ) : _border( l , t , r , b ) {}
-	_padding( _length width ) : _border( width ) {}
-	_padding(){}
-};
-struct _margin : _border{
-	_margin( _length l , _length t , _length r , _length b ) : _border( l , t , r , b ) {}
-	_margin( _length width ) : _border( width ) {}
-	_margin(){}
-};
-
 /**
  * This class will, used as parameter type, allow the omission
  * of one parameter using 'std::ignore' or just 'ignore'

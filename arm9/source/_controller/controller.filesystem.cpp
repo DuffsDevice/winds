@@ -37,9 +37,13 @@ bool _filesystemController::init()
 _vector<string> _filesystemController::getDrives()
 {
 	_vector<string> vec = { "fat:" };
-	if( sdio_IsInserted()  )
+	if( sdio_IsInserted() )
 		vec.push_back("fat2:");
 	return vec;
+}
+
+string _filesystemController::getDefaultDrive(){
+	return "fat:";
 }
 
 void _filesystemController::setCurrentUserDir( string path ){

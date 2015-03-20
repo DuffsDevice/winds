@@ -5,7 +5,7 @@
 #include <_gadget/gadget.button.h>
 #include <_gadget/gadget.image.h>
 
-class PROG_Credits : public _progC
+class PROG_Credits : public _cProgram
 {
 	private:
 		

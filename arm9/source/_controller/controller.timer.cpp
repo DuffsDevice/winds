@@ -4,6 +4,7 @@
 
 extern "C"{
 	#include <nds/timers.h>
+	#include <nds/bios.h>
 }
 
 void _timerController::addTimerToExecute( _timer* timerToExecute ){
@@ -119,6 +120,12 @@ void _timerController::frame()
 		)
 		, _timerController::runningTimers.end()
 	);
+}
+
+void _timerController::wait( _tempTime milliseconds ){
+	_tempTime start = _timerController::getMilliTime();
+	while( start + milliseconds > _timerController::getMilliTime() )
+		swiDelay( 300 );
 }
 
 _timerList	_timerController::runningTimers;

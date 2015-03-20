@@ -19,11 +19,11 @@ _guiSetup::_guiSetup()
 	
 	this->viewSwitcher.setViewParent( _guiController::getHost() );
 	
-	this->viewSwitcher.addView( "1" , new _guiSetupPage1() );
-	this->viewSwitcher.addView( "2" , new _guiSetupPage2() );
-	this->viewSwitcher.addView( "3" , new _guiSetupPage3() );
-	this->viewSwitcher.addView( "4" , new _guiSetupPage4() );
-	this->viewSwitcher.addView( "5" , new _guiSetupPage5() );
+	this->viewSwitcher.addView( "1" , _guiSetupPage1() );
+	this->viewSwitcher.addView( "2" , _guiSetupPage2() );
+	this->viewSwitcher.addView( "3" , _guiSetupPage3() );
+	this->viewSwitcher.addView( "4" , _guiSetupPage4() );
+	this->viewSwitcher.addView( "5" , _guiSetupPage5() );
 	
 	// Generate prev- and next buttons as well as their descriptions
 	this->prevButton = new _actionButton( 4 , 176 , _actionButtonType::prev );

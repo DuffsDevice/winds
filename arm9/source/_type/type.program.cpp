@@ -104,7 +104,7 @@ _uniquePtr<_program> _program::fromFile( string filename )
 	
 	// For the case that the program exists
 	if( d.isExisting() )
-		result = new _progLua( d.readString() );
+		result = new _luaProgram( d.readString() );
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/explorer.exe" ) )
 		result = new PROG_Explorer();
 	else if( fn == _filesystemController::replaceAssocDirs( "%SYSTEM%/rom_exec.exe" ) )
@@ -122,22 +122,22 @@ _uniquePtr<_program> _program::fromFile( string filename )
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/exampleprogram.exe" ) ){
 		string str = (_literal)program_example_lua;
 		str.resize( program_example_lua_size );
-		result = new _progLua( move(str) );
+		result = new _luaProgram( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/paint.exe" ) ){
 		string str = (_literal)program_paint_lua;
 		str.resize( program_paint_lua_size );
-		result = new _progLua( move(str) );
+		result = new _luaProgram( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/accessories/calculator.exe" ) ){
 		string str = (_literal)program_calculator_lua;
 		str.resize( program_calculator_lua_size );
-		result = new _progLua( move(str) );
+		result = new _luaProgram( move(str) );
 	}
 	else if( fn == _filesystemController::replaceAssocDirs( "%WINDIR%/games/pong.exe" ) ){
 		string str = (_literal)program_pong_lua;
 		str.resize( program_pong_lua_size );
-		result = new _progLua( move(str) );
+		result = new _luaProgram( move(str) );
 	}
 	
 	if( result ){

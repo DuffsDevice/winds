@@ -68,6 +68,32 @@ namespace _gadgetHelpers
 		return use_internal;
 	}
 	
+	// dimensionsParent :: ctor
+	dimensionsParent::dimensionsParent( _padding padding ) :
+		_dummyCallback<_eventHandler>( &dimensionsParent::executor )
+		, padding( padding )
+	{}
+	
+	// :: handler
+	_callbackReturn dimensionsParent::executor( _event event ) const
+	{
+		_gadget* parent = event.getGadget()->getParent();
+		
+		if( !parent )
+			return use_internal;
+		
+		_padding padding = this->padding;
+		
+		if( !event.getGadget()->isEnhanced() )
+			padding += parent->getPadding();
+		
+		// Set Dimensions shrunken by the padding
+		_rect newDimensions = parent->getSizeRect().applyPadding( padding );
+		event.getGadget()->setDimensions( newDimensions );
+		
+		return use_internal;
+	}
+	
 	
 	// sizeParent :: ctor
 	sizeParent::sizeParent( _optValue<_length> smallerX , _optValue<_length> smallerY ) :
@@ -82,6 +108,9 @@ namespace _gadgetHelpers
 	_callbackReturn sizeParent::executor( _event event ) const
 	{
 		_gadget* parent = event.getGadget()->getParent();
+		
+		if( !parent )
+			return use_internal;
 		
 		_length width = parent->getWidth() - this->smallerX;
 		_length height = parent->getHeight() - this->smallerY;
