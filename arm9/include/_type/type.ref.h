@@ -35,13 +35,15 @@ class _ref
 		friend class _ref;
 		
 		// Friend comparison operators
-		template<typename T2>				friend bool operator==( const _ref<T2>&	, T2* );
-		template<typename T2>				friend bool operator!=( const _ref<T2>&	, T2* );
-		template<typename T2>				friend bool operator==( T2*				, const _ref<T2>& );
-		template<typename T2>				friend bool operator!=( T2*				, const _ref<T2>& );
-		template<typename T2, typename T3>	friend bool operator==( const _ref<T2>&	, const _ref<T3>& );
-		template<typename T2, typename T3>	friend bool operator!=( const _ref<T2>&	, const _ref<T3>& );
-	
+		template<typename T2>						friend bool operator==( const _ref<T2>&	, T2* );
+		template<typename T2>						friend bool operator!=( const _ref<T2>&	, T2* );
+		template<typename T2>						friend bool operator==( T2*				, const _ref<T2>& );
+		template<typename T2>						friend bool operator!=( T2*				, const _ref<T2>& );
+		template<typename T2, typename T3>			friend bool operator==( const _ref<T2>&	, const _ref<T3>& );
+		template<typename T2, typename T3>			friend bool operator!=( const _ref<T2>&	, const _ref<T3>& );
+		template<typename T2>						friend _ref<T2> ref_own( T2* ptr );
+		template<typename T2, typename T3, class>	friend _ref<T3> ref_own( T2& ptr );
+		
 	public:
 		
 		
@@ -55,26 +57,11 @@ class _ref
 			, strong( false )
 		{}
 		
-		//! Ctor using weak pointer
+		//! Ctor using (weak) ptr
 		template<typename T2>
-		_ref( T2* const& ptr ) :
+		_ref( T2* ptr ) :
 			ref( (T*)ptr )
 			, strong( false )
-		{}
-		
-		//! Ctor using strong ptr
-		template<typename T2>
-		_ref( T2*&& ptr ) :
-			ref( (T*)ptr )
-			, strong( true )
-		{}
-		
-		
-		//! Ctor using ptr and flag, whether strong or weak
-		template<typename T2>
-		_ref( T2* ptr , bool strong ) :
-			ref( (T*)ptr )
-			, strong( strong )
 		{}
 		
 		//! Move contructor from different class
@@ -97,6 +84,8 @@ class _ref
 		~_ref(){
 			destruct();
 		}
+		
+		
 		
 		//! Assignment operators taking _ref
 		template<typename T2>
@@ -123,27 +112,61 @@ class _ref
 			return *this;
 		}
 		
+		//! Assigns the pointer of the supplied instance to this one
+		//! If the supplied object holds the same pointer as this one,
+		//! the resulting _ref object will preserve ownership, if one
+		//! of the input _ref-objects has ownership of the pointer
+		template<typename T2>
+		_ref<T>& operator |= ( _ref<T2>&& from ){
+			if( from.ref == this->ref )
+				this->strong |= from.strong;
+			else{
+				destruct();
+				this->ref = (T*)from.ref;
+				this->strong = from.strong;
+				from.strong = false;
+			}
+			return *this;
+		}
+		
 		
 		//! Other Assignment operators
 		template<typename T2>
-		_ref<T>& operator=( T2* const & ptr ){
+		_ref<T>& operator=( T2* ptr ){
 			destruct();
 			this->ref = (T*)ptr;
 			this->strong = false;
 			return *this;
 		}
-		template<typename T2>
-		_ref<T>& operator=( T2*&& ptr ){
-			destruct();
-			this->ref = (T*)ptr;
-			this->strong = true;
-			return *this;
-		}
 		
 		
 		//! Get the contained pointer
-		deprecated
-		T* const& data() const { return this->ref; }
+		T* data() const { return this->ref; }
+		
+		//! Transfers ownership to this _ref instance
+		void give( T*&& ptr ){
+			this->destruct();
+			this->ref = ptr;
+			this->strong = true;
+		}
+		void give( T&& obj ){
+			typedef typename std::decay<T>::type T2;
+			this->destruct();
+			this->ref = new T2(move(obj));
+			this->strong = true;
+		}
+		
+		//! Let this _ref instance point to the supplied object while not owning it
+		void set( T* ptr ){
+			this->destruct();
+			this->ref = ptr;
+			this->strong = false;
+		}
+		void set( T& obj ){
+			this->destruct();
+			this->ref = &obj;
+			this->strong = false;
+		}
 		
 		//! Returns true, if the currently contained pointer is strong
 		bool isStrong() const { return this->strong; }
@@ -152,10 +175,15 @@ class _ref
 		T& operator*() const { return *this->ref; }
 		
 		//! Dereferencing access operator
-		T* const& operator->() const { return this->ref; }
+		T* operator->() const { return this->ref; }
+		
+		//! Cast to template Type reference
+		template<typename T2>
+		operator T2&() const { return (T2&)*this->ref; }
 		
 		//! Cast to template Type pointer
-		operator T&() const { return *this->ref; }
+		template<typename T2>
+		operator T2*() const { return (T2*)this->ref; }
 		
 		//! Cast to const _ref
 		operator _ref<const T>&() const { return _ref<const T>( this->ref ); }
@@ -192,22 +220,23 @@ static unused inline bool operator!=( T* ptr , const _ref<T>& ref ){ return ref.
 template<typename T, typename T2>
 static unused inline bool operator!=( const _ref<T>& ref , const _ref<T2>& ptr ){ return ref.ref != ref.ref; }
 
-
-//! Static function to create _ref with allocated new instance of moved object
+//! Named Ctor with strong pointer
+template<typename T>
+static unused inline  _ref<T> ref_own( T* ptr ){
+	_ref<T> ref{ptr};
+	ref.strong = true;
+	return move(ref);
+}
+//! Named Ctor with strong pointer
 template<
 	typename T
-	, class = typename std::enable_if<!std::is_lvalue_reference<T>::value>::type
+	, typename T2 = typename std::decay<T>::type
+	, class = typename std::enable_if<!std::is_pointer<T2>::value>::type
 >
-static unused inline _ref<typename std::decay<T>::type> make_ref( T&& obj ){
-	typedef typename std::decay<T>::type T2;
-	return _ref<T2>( new T2( move(obj) ) );
-}
-
-//! Static function to create _ref with c++ reference
-template<typename T>
-static unused inline _ref<typename std::decay<T>::type> make_ref( T& obj ){
-	typedef typename std::decay<T>::type T2;
-	return _ref<T2>( (T2*)std::addressof(obj) );
+static unused inline  _ref<T2> ref_own( T& obj ){
+	_ref<T2> ref{new T2(move(obj))};
+	ref.strong = true;
+	return move(ref);
 }
 
 #endif
