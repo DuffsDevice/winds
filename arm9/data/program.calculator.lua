@@ -3,7 +3,7 @@
 --FILE_NAME	= Calculator
 --WND_TITLE	= Calculator
 --VERSION	= 1.1
---DESC		= Application to modify Images
+--DESC		= Basic Calculator
 --COPYRIGHT	= (C) 2014
 --LANG		= neutral
 
